@@ -6,7 +6,6 @@ use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Pages\SettingsPage;
-use Illuminate\Support\Facades\Route;
 use Webkul\Sale\Settings\ProductSettings;
 use Webkul\Support\Filament\Clusters\Settings;
 
@@ -18,7 +17,7 @@ class ManageProducts extends SettingsPage
 
     protected static ?string $navigationGroup = 'Sales';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 1;
 
     protected static string $settings = ProductSettings::class;
 
