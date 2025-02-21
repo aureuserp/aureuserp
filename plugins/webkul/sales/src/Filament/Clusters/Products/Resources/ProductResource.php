@@ -18,6 +18,7 @@ use Webkul\Account\Models\Tax;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Product\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Sale\Enums\InvoicePolicy;
+use Webkul\Sale\Settings\ProductSettings;
 use Webkul\Support\Models\UOM;
 
 class ProductResource extends BaseProductResource
@@ -129,6 +130,18 @@ class ProductResource extends BaseProductResource
                 ->preload(),
         ];
 
+        $newPriceComponents[] = Forms\Components\Select::make('uom_po_id')
+            ->relationship(
+                'uomPO',
+                'name',
+                fn($query) => $query
+            )
+            ->label('Purchase Unit')
+            ->hidden(function () {
+                return ! app(ProductSettings::class)?->unit_of_measurement;
+            })
+            ->default(UOM::first()->id);
+
         $priceComponent = array_merge($newPriceComponents, $priceComponent);
 
         $components[1]->getChildComponents()[1]->schema($priceComponent);
@@ -195,11 +208,10 @@ class ProductResource extends BaseProductResource
             ...$components,
             Forms\Components\Hidden::make('uom_id')
                 ->default(UOM::first()->id),
-            Forms\Components\Hidden::make('uom_po_id')
-                ->default(UOM::first()->id),
             Forms\Components\Hidden::make('sale_line_warn')
                 ->default('no-message'),
         ]);
+
 
         return $form;
     }
