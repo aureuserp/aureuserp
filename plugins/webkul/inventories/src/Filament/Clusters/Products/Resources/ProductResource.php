@@ -70,7 +70,7 @@ class ProductResource extends BaseProductResource
                             ->selectablePlaceholder(false)
                             ->options(Enums\ProductTracking::class)
                             ->default(Enums\ProductTracking::QTY->value)
-                            ->visible(fn (Forms\Get $get): bool => (bool) $get('is_storable'))
+                            ->visible(fn(Forms\Get $get): bool => (bool) $get('is_storable'))
                             ->live()
                             ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get) {
                                 if ($get('tracking') == Enums\ProductTracking::QTY->value) {
@@ -134,9 +134,9 @@ class ProductResource extends BaseProductResource
                             ->minValue(0)
                             ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.traceability.fields.alert-date-hint-tooltip')),
                     ])
-                    ->visible(fn (Forms\Get $get): bool => (bool) $get('use_expiration_date')),
+                    ->visible(fn(Forms\Get $get): bool => (bool) $get('use_expiration_date')),
             ])
-            ->visible(fn (Forms\Get $get): bool => $get('type') == ProductType::GOODS->value);
+            ->visible(fn(Forms\Get $get): bool => $get('type') == ProductType::GOODS->value);
 
         $firstGroupChildComponents[] = Forms\Components\Section::make(__('inventories::filament/clusters/products/resources/product.form.sections.additional.title'))
             ->visible(! empty($customFormFields = static::getCustomFormFields()))
@@ -237,9 +237,9 @@ class ProductResource extends BaseProductResource
                                     ->icon('heroicon-o-clock'),
                             ]),
                     ])
-                    ->visible(fn ($record): bool => (bool) $record->use_expiration_date),
+                    ->visible(fn($record): bool => (bool) $record->use_expiration_date),
             ])
-            ->visible(fn ($record): bool => $record->type == ProductType::GOODS);
+            ->visible(fn($record): bool => $record->type == ProductType::GOODS);
 
         $components[0]->childComponents($firstGroupChildComponents);
 

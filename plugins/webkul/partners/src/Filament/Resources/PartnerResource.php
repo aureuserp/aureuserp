@@ -46,7 +46,7 @@ class PartnerResource extends Resource
                                             ->required()
                                             ->maxLength(255)
                                             ->columnSpan(2)
-                                            ->placeholder(fn (Forms\Get $get): string => $get('account_type') === AccountType::INDIVIDUAL->value ? 'Jhon Doe' : 'ACME Corp')
+                                            ->placeholder(fn(Forms\Get $get): string => $get('account_type') === AccountType::INDIVIDUAL->value ? 'Jhon Doe' : 'ACME Corp')
                                             ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;']),
                                         Forms\Components\Select::make('parent_id')
                                             ->label(__('partners::filament/resources/partner.form.sections.general.fields.company'))
@@ -55,12 +55,12 @@ class PartnerResource extends Resource
                                                 titleAttribute: 'name',
                                                 // modifyQueryUsing: fn (Builder $query) => $query->where('account_type', AccountType::COMPANY->value),
                                             )
-                                            ->visible(fn (Forms\Get $get): bool => $get('account_type') === AccountType::INDIVIDUAL->value)
+                                            ->visible(fn(Forms\Get $get): bool => $get('account_type') === AccountType::INDIVIDUAL->value)
                                             ->searchable()
                                             ->preload()
                                             ->columnSpan(2)
-                                            ->createOptionForm(fn (Form $form): Form => self::form($form))
-                                            ->editOptionForm(fn (Form $form): Form => self::form($form))
+                                            ->createOptionForm(fn(Form $form): Form => self::form($form))
+                                            ->editOptionForm(fn(Form $form): Form => self::form($form))
                                             ->createOptionAction(function (Forms\Components\Actions\Action $action) {
                                                 $action
                                                     ->fillForm(function (array $arguments): array {
@@ -206,11 +206,11 @@ class PartnerResource extends Resource
                         Tables\Columns\Layout\Stack::make([
                             Tables\Columns\TextColumn::make('parent.name')
                                 ->label(__('partners::filament/resources/partner.table.columns.parent'))
-                                ->icon(fn (Partner $record) => $record->parent->account_type === AccountType::INDIVIDUAL->value ? 'heroicon-o-user' : 'heroicon-o-building-office')
+                                ->icon(fn(Partner $record) => $record->parent->account_type === AccountType::INDIVIDUAL->value ? 'heroicon-o-user' : 'heroicon-o-building-office')
                                 ->tooltip(__('partners::filament/resources/partner.table.columns.parent'))
                                 ->sortable(),
                         ])
-                            ->visible(fn (Partner $record) => filled($record->parent)),
+                            ->visible(fn(Partner $record) => filled($record->parent)),
                         Tables\Columns\Layout\Stack::make([
                             Tables\Columns\TextColumn::make('job_title')
                                 ->icon('heroicon-m-briefcase')
@@ -218,7 +218,7 @@ class PartnerResource extends Resource
                                 ->sortable()
                                 ->label('Job Title'),
                         ])
-                            ->visible(fn ($record) => filled($record->job_title)),
+                            ->visible(fn($record) => filled($record->job_title)),
                         Tables\Columns\Layout\Stack::make([
                             Tables\Columns\TextColumn::make('email')
                                 ->icon('heroicon-o-envelope')
@@ -228,7 +228,7 @@ class PartnerResource extends Resource
                                 ->color('gray')
                                 ->limit(20),
                         ])
-                            ->visible(fn ($record) => filled($record->email)),
+                            ->visible(fn($record) => filled($record->email)),
                         Tables\Columns\Layout\Stack::make([
                             Tables\Columns\TextColumn::make('phone')
                                 ->icon('heroicon-o-phone')
@@ -238,22 +238,22 @@ class PartnerResource extends Resource
                                 ->limit(30)
                                 ->sortable(),
                         ])
-                            ->visible(fn ($record) => filled($record->phone)),
+                            ->visible(fn($record) => filled($record->phone)),
                         Tables\Columns\Layout\Stack::make([
                             Tables\Columns\TextColumn::make('tags.name')
                                 ->badge()
                                 ->state(function (Partner $record): array {
-                                    return $record->tags()->get()->map(fn ($tag) => [
+                                    return $record->tags()->get()->map(fn($tag) => [
                                         'label' => $tag->name,
                                         'color' => $tag->color ?? 'primary',
                                     ])->toArray();
                                 })
                                 ->badge()
-                                ->formatStateUsing(fn ($state) => $state['label'])
-                                ->color(fn ($state) => Color::hex($state['color']))
+                                ->formatStateUsing(fn($state) => $state['label'])
+                                ->color(fn($state) => Color::hex($state['color']))
                                 ->weight(FontWeight::Bold),
                         ])
-                            ->visible(fn ($record): bool => (bool) $record->tags()->get()?->count()),
+                            ->visible(fn($record): bool => (bool) $record->tags()->get()?->count()),
                     ])->space(1),
                 ])->space(4),
             ])
@@ -371,15 +371,15 @@ class PartnerResource extends Resource
                     ]),
             ], layout: \Filament\Tables\Enums\FiltersLayout::Modal)
             ->filtersTriggerAction(
-                fn (Tables\Actions\Action $action) => $action
+                fn(Tables\Actions\Action $action) => $action
                     ->slideOver(),
             )
             ->filtersFormColumns(2)
             ->actions([
                 Tables\Actions\ViewAction::make()
-                    ->hidden(fn ($record) => $record->trashed()),
+                    ->hidden(fn($record) => $record->trashed()),
                 Tables\Actions\EditAction::make()
-                    ->hidden(fn ($record) => $record->trashed())
+                    ->hidden(fn($record) => $record->trashed())
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -467,7 +467,7 @@ class PartnerResource extends Resource
 
                                         Infolists\Components\TextEntry::make('parent.name')
                                             ->label(__('partners::filament/resources/partner.infolist.sections.general.fields.company'))
-                                            ->visible(fn ($record): bool => $record->account_type === AccountType::INDIVIDUAL->value),
+                                            ->visible(fn($record): bool => $record->account_type === AccountType::INDIVIDUAL->value),
                                     ]),
 
                                 Infolists\Components\Group::make()
@@ -517,16 +517,16 @@ class PartnerResource extends Resource
                                     ->label(__('partners::filament/resources/partner.infolist.sections.general.fields.tags'))
                                     ->badge()
                                     ->state(function (Partner $record): array {
-                                        return $record->tags()->get()->map(fn ($tag) => [
+                                        return $record->tags()->get()->map(fn($tag) => [
                                             'label' => $tag->name,
                                             'color' => $tag->color ?? 'primary',
                                         ])->toArray();
                                     })
                                     ->badge()
-                                    ->formatStateUsing(fn ($state) => $state['label'])
-                                    ->color(fn ($state) => Color::hex($state['color']))
+                                    ->formatStateUsing(fn($state) => $state['label'])
+                                    ->color(fn($state) => Color::hex($state['color']))
                                     ->separator(',')
-                                    ->visible(fn ($record): bool => (bool) $record->tags()->count()),
+                                    ->visible(fn($record): bool => (bool) $record->tags()->count()),
                             ]),
                     ]),
 

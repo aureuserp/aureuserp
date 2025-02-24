@@ -23,6 +23,7 @@ class ViewPartner extends ViewRecord
         return [
             ChatterAction::make()
                 ->setResource(static::$resource),
+            Actions\EditAction::make(),
             Actions\DeleteAction::make()
                 ->successNotification(
                     Notification::make()

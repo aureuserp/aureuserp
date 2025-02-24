@@ -29,7 +29,7 @@ class PartnerResource extends Resource
         return __('contacts::filament/resources/partner.navigation.title');
     }
 
-    public static function getNavigationGroup(): string
+    public static function getNavigationGroup(): ?string
     {
         return __('contacts::filament/resources/partner.navigation.group');
     }

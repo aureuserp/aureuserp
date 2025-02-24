@@ -42,6 +42,7 @@ class BankAccountResource extends Resource
                     ->relationship('bank', 'name')
                     ->required()
                     ->searchable()
+                    ->createOptionForm(fn(Form $form) => BankResource::form($form))
                     ->preload(),
                 Forms\Components\Select::make('partner_id')
                     ->label(__('partners::filament/resources/bank-account.form.account-holder'))
@@ -119,7 +120,7 @@ class BankAccountResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->hidden(fn ($record) => $record->trashed())
+                    ->hidden(fn($record) => $record->trashed())
                     ->successNotification(
                         Notification::make()
                             ->success()

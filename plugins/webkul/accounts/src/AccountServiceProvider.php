@@ -54,6 +54,7 @@ class AccountServiceProvider extends PackageServiceProvider
                 '2025_02_11_121635_add_columns_to_accounts_moves_lines_table copy',
                 '2025_02_17_064828_create_accounts_payment_registers_table',
                 '2025_02_17_070121_create_accounts_account_payment_register_move_lines_table',
+                '2025_02_24_123300_add_additional_columns_to_partners_partners_table',
             ])
             ->runsMigrations()
             ->hasDependencies([
