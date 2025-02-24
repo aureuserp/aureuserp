@@ -121,6 +121,7 @@ class ProductResource extends Resource
                                     ->label(__('products::filament/resources/product.form.sections.pricing.fields.price'))
                                     ->numeric()
                                     ->required()
+                                    ->live()
                                     ->default(0.00),
                                 Forms\Components\TextInput::make('cost')
                                     ->label(__('products::filament/resources/product.form.sections.pricing.fields.cost'))

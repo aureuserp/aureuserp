@@ -103,12 +103,12 @@ class Product extends Model
 
     public function uom(): BelongsTo
     {
-        return $this->belongsTo(UOM::class);
+        return $this->belongsTo(UOM::class, 'uom_id');
     }
 
     public function uomPO(): BelongsTo
     {
-        return $this->belongsTo(UOM::class);
+        return $this->belongsTo(UOM::class, 'uom_po_id');
     }
 
     public function category(): BelongsTo

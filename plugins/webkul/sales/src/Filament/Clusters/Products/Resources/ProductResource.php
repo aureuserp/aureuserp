@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Forms;
 use Filament\Forms\Get;
 use Filament\Infolists\Infolist;
+use Filament\Infolists;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Tables\Table;
 use Filament\Resources\Pages\Page;
@@ -55,6 +56,7 @@ class ProductResource extends BaseProductResource
                     'name',
                     fn($query) => $query->where('type_tax_use', TypeTaxUse::SALE->value),
                 )
+                ->label(__('sales::filament/clusters/products/resources/product.form.sections.pricing.fields.taxes'))
                 ->multiple()
                 ->live()
                 ->searchable()
@@ -62,6 +64,7 @@ class ProductResource extends BaseProductResource
 
             Forms\Components\Placeholder::make('total_tax_inclusion')
                 ->hiddenLabel()
+                ->hidden(fn(Get $get) => (empty($get('accounts_product_taxes')) || empty($get('price')) || $get('price') == 0))
                 ->content(function (Get $get) {
                     $price = floatval($get('price'));
                     $selectedTaxIds = $get('accounts_product_taxes');
@@ -130,17 +133,22 @@ class ProductResource extends BaseProductResource
                 ->preload(),
         ];
 
-        $newPriceComponents[] = Forms\Components\Select::make('uom_po_id')
-            ->relationship(
-                'uomPO',
-                'name',
-                fn($query) => $query
-            )
-            ->label('Purchase Unit')
-            ->hidden(function () {
-                return ! app(ProductSettings::class)?->unit_of_measurement;
-            })
-            ->default(UOM::first()->id);
+        if (app(ProductSettings::class)?->unit_of_measurement) {
+            $newPriceComponents[] = Forms\Components\Select::make('uom_po_id')
+                ->relationship(
+                    'uomPO',
+                    'name',
+                )
+                ->label(__('sales::filament/clusters/products/resources/product.form.sections.pricing.fields.purchase-unit'))
+                ->default(UOM::first()->id);
+            $newPriceComponents[] = Forms\Components\Select::make('uom_id')
+                ->relationship('uom', 'name')
+                ->prefixIcon('heroicon-o-scale')
+                ->label(__('sales::filament/clusters/products/resources/product.form.sections.pricing.fields.purchase-per-in'))
+                ->searchable()
+                ->preload()
+                ->default(UOM::first()->id);
+        }
 
         $priceComponent = array_merge($newPriceComponents, $priceComponent);
 
@@ -206,8 +214,6 @@ class ProductResource extends BaseProductResource
 
         $form->components([
             ...$components,
-            Forms\Components\Hidden::make('uom_id')
-                ->default(UOM::first()->id),
             Forms\Components\Hidden::make('sale_line_warn')
                 ->default('no-message'),
         ]);
@@ -223,7 +229,27 @@ class ProductResource extends BaseProductResource
 
     public static function infolist(Infolist $infolist): Infolist
     {
-        return BaseProductResource::infolist($infolist);
+        $infolist = BaseProductResource::infolist($infolist);
+
+        $secondChildComponents = $infolist->getComponents()[1];
+
+        $priceComponent = $secondChildComponents->getChildComponents()[2];
+
+        if (app(ProductSettings::class)?->unit_of_measurement) {
+            $priceComponent->schema([
+                ...$priceComponent->getChildComponents(),
+                Infolists\Components\TextEntry::make('uomPO.name')
+                    ->label(__('sales::filament/clusters/products/resources/product.infolist.sections.general.entries.purchase-unit'))
+                    ->placeholder('—')
+                    ->icon('heroicon-o-scale'),
+                Infolists\Components\TextEntry::make('uom.name')
+                    ->label(__('sales::filament/clusters/products/resources/product.infolist.sections.general.entries.purchase-per-in'))
+                    ->placeholder('—')
+                    ->icon('heroicon-o-scale'),
+            ]);
+        }
+
+        return $infolist;
     }
 
     public static function getRecordSubNavigation(Page $page): array

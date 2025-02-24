@@ -6,7 +6,7 @@ return new class extends SettingsMigration
 {
     public function up(): void
     {
-        $this->migrator->add('sales_product.unit_of_measurement', true);
+        $this->migrator->add('sales_product.unit_of_measurement', false);
     }
 
     public function down(): void
