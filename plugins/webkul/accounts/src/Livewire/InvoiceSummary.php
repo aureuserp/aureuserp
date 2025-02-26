@@ -1,11 +1,11 @@
 <?php
 
-namespace Webkul\Sale\Livewire;
+namespace Webkul\Account\Livewire;
 
 use Livewire\Attributes\Reactive;
 use Livewire\Component;
 
-class Summary extends Component
+class InvoiceSummary extends Component
 {
     #[Reactive]
     public $products = [];
@@ -25,7 +25,7 @@ class Summary extends Component
 
     public function render()
     {
-        return view('sales::livewire/summary', [
+        return view('accounts::livewire/invoice-summary', [
             'products' => $this->products,
         ]);
     }

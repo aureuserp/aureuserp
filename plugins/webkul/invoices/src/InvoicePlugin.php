@@ -3,7 +3,9 @@
 namespace Webkul\Invoice;
 
 use Filament\Contracts\Plugin;
+use Filament\Navigation\NavigationItem;
 use Filament\Panel;
+use Webkul\Invoice\Filament\Clusters\Settings\Pages\Products;
 use Webkul\Support\Package;
 
 class InvoicePlugin implements Plugin
@@ -29,7 +31,15 @@ class InvoicePlugin implements Plugin
                 $panel->discoverResources(in: $this->getPluginBasePath('/Filament/Resources'), for: 'Webkul\\Invoice\\Filament\\Resources')
                     ->discoverPages(in: $this->getPluginBasePath('/Filament/Pages'), for: 'Webkul\\Invoice\\Filament\\Pages')
                     ->discoverClusters(in: $this->getPluginBasePath('/Filament/Clusters'), for: 'Webkul\\Invoice\\Filament\\Clusters')
-                    ->discoverWidgets(in: $this->getPluginBasePath('/Filament/Widgets'), for: 'Webkul\\Invoice\\Filament\\Widgets');
+                    ->discoverWidgets(in: $this->getPluginBasePath('/Filament/Widgets'), for: 'Webkul\\Invoice\\Filament\\Widgets')
+                    ->navigationItems([
+                        NavigationItem::make('settings')
+                            ->label('Settings')
+                            ->url(fn() => Products::getUrl())
+                            ->icon('heroicon-o-wrench')
+                            ->group('Invoices')
+                            ->sort(4),
+                    ]);
             });
     }
 
@@ -42,6 +52,6 @@ class InvoicePlugin implements Plugin
     {
         $reflector = new \ReflectionClass(get_class($this));
 
-        return dirname($reflector->getFileName()).($path ?? '');
+        return dirname($reflector->getFileName()) . ($path ?? '');
     }
 }

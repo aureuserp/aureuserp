@@ -1,8 +1,9 @@
 <?php
 
-namespace Webkul\Sale\Database\Seeders;
+namespace Webkul\Product\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Webkul\Product\Models\ProductCombination;
 
 class DatabaseSeeder extends Seeder
 {
@@ -12,7 +13,9 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            SalesTeamSeeder::class,
+            PriceListSeeder::class,
+            ProductCategorySeeder::class,
+            ProductCombinationSeeder::class,
         ]);
     }
 }

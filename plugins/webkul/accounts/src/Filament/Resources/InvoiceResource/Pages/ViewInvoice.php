@@ -6,6 +6,7 @@ use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Account\Filament\Resources\InvoiceResource;
+use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 
 class ViewInvoice extends ViewRecord
 {
@@ -15,6 +16,11 @@ class ViewInvoice extends ViewRecord
     {
         return [
             Actions\EditAction::make(),
+            BaseActions\PayAction::make(),
+            BaseActions\ConfirmAction::make(),
+            BaseActions\CancelAction::make(),
+            BaseActions\ResetToDraftAction::make(),
+            BaseActions\SetAsCheckedAction::make(),
             Actions\DeleteAction::make()
                 ->successNotification(
                     Notification::make()

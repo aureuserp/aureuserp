@@ -132,7 +132,7 @@ class Move extends Model
 
     public function partnerBank()
     {
-        return $this->belongsTo(BankAccount::class);
+        return $this->belongsTo(BankAccount::class, 'partner_bank_id');
     }
 
     public function fiscalPosition()
@@ -177,7 +177,7 @@ class Move extends Model
 
     public function medium()
     {
-        return $this->belongsTo(UTMMedium::class);
+        return $this->belongsTo(UTMMedium::class, 'medium_id');
     }
 
     public function paymentMethodLine()
@@ -185,35 +185,37 @@ class Move extends Model
         return $this->belongsTo(PaymentMethodLine::class, 'preferred_payment_method_line_id');
     }
 
-    public function moveLines()
+    public function lines()
     {
         return $this->hasMany(MoveLine::class)
             ->where('display_type', 'product');
+    }
+
+    public static function generateNextInvoiceNumber()
+    {
+        $lastInvoice = self::whereNotNull('name')
+            ->where('name', 'like', 'INV/%')
+            ->orderBy('name', 'desc')
+            ->first();
+
+        if ($lastInvoice) {
+            $lastNumber = (int) substr($lastInvoice->name, strrpos($lastInvoice->name, '/') + 1);
+            $nextNumber = $lastNumber + 1;
+        } else {
+            $nextNumber = 1;
+        }
+
+        return 'INV/' . date('Y') . '/' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
     }
 
     protected static function boot()
     {
         parent::boot();
 
-        static::creating(function ($invoice) {
-            $invoice->name = 'ORD-TMP-'.time();
+        static::creating(function ($model) {
+            if (empty($model->name)) {
+                $model->name = self::generateNextInvoiceNumber();
+            }
         });
-
-        static::created(function ($invoice) {
-            $invoice->updateName();
-            $invoice->saveQuietly();
-        });
-
-        static::updating(function ($invoice) {
-            $invoice->updateName();
-        });
-    }
-
-    /**
-     * Update the name based on the state without trigger any additional events.
-     */
-    public function updateName()
-    {
-        $this->name = 'INV-'.$this->id;
     }
 }

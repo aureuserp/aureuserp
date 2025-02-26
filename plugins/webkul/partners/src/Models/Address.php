@@ -44,7 +44,7 @@ class Address extends Model
 
     /**
      * Table name.
-     *
+     *address
      * @var string
      */
     protected $casts = [

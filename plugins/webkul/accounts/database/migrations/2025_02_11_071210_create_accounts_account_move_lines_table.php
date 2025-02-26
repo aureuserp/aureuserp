@@ -31,7 +31,7 @@ return new class extends Migration
             $table->foreignId('statement_line_id')->nullable()->constrained('accounts_bank_statement_lines')->nullOnDelete();
 
             $table->foreignId('product_id')->comment('Product')->nullable()->constrained('products_products')->restrictOnDelete();
-            $table->foreignId('product_uom_id')->comment('Unit of Measure')->nullable()->constrained('unit_of_measures')->restrictOnDelete();
+            $table->foreignId('uom_id')->comment('Unit of Measure')->nullable()->constrained('unit_of_measures')->restrictOnDelete();
             $table->foreignId('created_by')->nullable()->comment('Created By')->constrained('users')->nullOnDelete();
 
             $table->string('move_name')->comment('Number')->nullable();

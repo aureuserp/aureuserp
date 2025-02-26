@@ -46,6 +46,6 @@ class SaleServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        Livewire::component('quotation-summary', Summary::class);
+        // Livewire::component('quotation-summary', Summary::class);
     }
 }

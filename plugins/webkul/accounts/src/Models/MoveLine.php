@@ -4,9 +4,6 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Webkul\Account\Enums;
 use Webkul\Invoice\Models\Product;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
@@ -38,7 +35,7 @@ class MoveLine extends Model
         'statement_id',
         'statement_line_id',
         'product_id',
-        'product_uom_id',
+        'uom_id',
         'created_by',
         'move_name',
         'parent_state',
@@ -107,9 +104,9 @@ class MoveLine extends Model
         return $this->belongsTo(Tax::class);
     }
 
-    public function taxLine()
+    public function taxes()
     {
-        return $this->belongsTo(Tax::class);
+        return $this->belongsToMany(Tax::class, 'accounts_accounts_move_line_taxes', 'move_line_id', 'tax_id');
     }
 
     public function taxGroup()
@@ -132,7 +129,7 @@ class MoveLine extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function productUom()
+    public function uom()
     {
         return $this->belongsTo(UOM::class);
     }
@@ -155,278 +152,5 @@ class MoveLine extends Model
     public function fullReconcile()
     {
         return $this->belongsTo(FullReconcile::class);
-    }
-
-    public static function createOrUpdateProductLine(array $data): Collection
-    {
-        return DB::transaction(function () use ($data) {
-            $lines = new Collection;
-
-            if (! empty($data['id'])) {
-                $productLine = self::find($data['id']);
-                $productLine->fill(array_merge($data, [
-                    'display_type' => Enums\DisplayType::PRODUCT->value,
-                    'name'         => $data['name'] ?? Product::find($data['product_id'])?->name,
-                ]));
-            } else {
-                $productLine = new self;
-                $productLine->fill(array_merge($data, [
-                    'display_type' => Enums\DisplayType::PRODUCT->value,
-                    'name'         => $data['name'] ?? Product::find($data['product_id'])?->name,
-                ]));
-            }
-
-            $productLine->calculateAmounts($data);
-            $productLine->save();
-            $lines->push($productLine);
-
-            if (! empty($data['tax'])) {
-                $existingTaxLines = self::where('move_id', $data['move_id'])
-                    ->where('display_type', Enums\DisplayType::TAX->value)
-                    ->get();
-
-                $taxes = Tax::whereIn('id', $data['tax'])->get();
-
-                $existingTaxLines->each(function ($taxLine) use ($data) {
-                    if (! in_array($taxLine->tax_line_id, $data['tax'])) {
-                        $taxLine->delete();
-                    }
-                });
-
-                foreach ($taxes as $tax) {
-                    $taxLine = $existingTaxLines->first(function ($line) use ($tax) {
-                        return $line->tax_line_id === $tax->id;
-                    });
-
-                    if (! $taxLine) {
-                        $taxLine = new self;
-                    }
-
-                    $taxLineData = array_merge($data, [
-                        'display_type'   => 'tax',
-                        'name'           => $tax->name,
-                        'product_id'     => null,
-                        'product_uom_id' => null,
-                        'quantity'       => null,
-                        'price_unit'     => null,
-                        'tax_line_id'    => $tax->id,
-                    ]);
-
-                    $taxLine->fill($taxLineData);
-                    $taxLine->calculateAmounts($taxLineData);
-                    $taxLine->save();
-                    $lines->push($taxLine);
-                }
-            }
-
-            $paymentLine = self::where('move_id', $data['move_id'])
-                ->where('display_type', Enums\DisplayType::PAYMENT_TERM->value)
-                ->first();
-
-            if (! $paymentLine) {
-                $paymentLine = new self;
-            }
-
-            $paymentLineData = array_merge($data, [
-                'display_type'   => Enums\DisplayType::PAYMENT_TERM->value,
-                'name'           => null,
-                'product_id'     => null,
-                'product_uom_id' => null,
-                'quantity'       => null,
-                'price_unit'     => null,
-            ]);
-
-            $paymentLine->fill($paymentLineData);
-            $paymentLine->calculateAmounts($paymentLineData);
-            $paymentLine->save();
-            $lines->push($paymentLine);
-
-            return $lines;
-        });
-    }
-
-    /**
-     * Calculate amounts based on display type
-     */
-    public function calculateAmounts(array $data): void
-    {
-        if ($this->display_type === Enums\DisplayType::PRODUCT->value) {
-            $this->calculateProductAmounts($data);
-        } elseif ($this->display_type === Enums\DisplayType::TAX->value) {
-            $this->calculateTaxAmounts($data);
-        } elseif ($this->display_type === Enums\DisplayType::PAYMENT_TERM->value) {
-            $this->calculatePaymentTermAmounts($data);
-        }
-
-        $this->updateMoveAmounts();
-    }
-
-    /**
-     * Update related move's amounts
-     */
-    protected function updateMoveAmounts(): void
-    {
-        if (! $this->move_id) {
-            return;
-        }
-
-        $move = Move::find($this->move_id);
-        if (! $move) {
-            return;
-        }
-
-        $moveLines = self::where('move_id', $this->move_id)->get();
-
-        $amountUntaxed = $moveLines
-            ->where('display_type', Enums\DisplayType::PRODUCT->value)
-            ->sum('price_subtotal');
-
-        $amountTax = $moveLines
-            ->where('display_type', Enums\DisplayType::TAX->value)
-            ->sum('credit');
-
-        $amountTotal = $amountUntaxed + $amountTax;
-
-        $amountResidual = $moveLines
-            ->whereIn('display_type', [
-                Enums\DisplayType::PRODUCT->value,
-                Enums\DisplayType::TAX->value,
-            ])
-            ->sum('amount_residual');
-
-        $move->update([
-            'amount_untaxed'                    => $amountUntaxed,
-            'amount_tax'                        => $amountTax,
-            'amount_total'                      => $amountTotal,
-            'amount_residual'                   => $amountResidual,
-            'amount_untaxed_signed'             => $amountUntaxed,
-            'amount_untaxed_in_currency_signed' => $amountUntaxed,
-            'amount_tax_signed'                 => $amountTax,
-            'amount_total_signed'               => $amountTotal,
-            'amount_total_in_currency_signed'   => $amountTotal,
-            'amount_residual_signed'            => $amountResidual,
-        ]);
-    }
-
-    /**
-     * Calculate product line amounts
-     */
-    protected function calculateProductAmounts(array $data): void
-    {
-        $quantity = floatval($data['quantity'] ?? 0);
-        $priceUnit = floatval($data['price_unit'] ?? 0);
-        $discount = floatval($data['discount'] ?? 0);
-
-        $baseSubtotal = $quantity * $priceUnit;
-        $discountAmount = $baseSubtotal * ($discount / 100);
-        $subtotalAfterDiscount = $baseSubtotal - $discountAmount;
-
-        $taxAmount = 0;
-        $includedTaxAmount = 0;
-
-        if (! empty($data['tax'])) {
-            $taxes = Tax::whereIn('id', $data['tax'])->get();
-
-            foreach ($taxes as $tax) {
-                if ($tax->include_base_amount) {
-                    $includedTaxRate = floatval($tax->amount) / 100;
-                    $includedTaxAmount += $subtotalAfterDiscount - ($subtotalAfterDiscount / (1 + $includedTaxRate));
-                }
-            }
-
-            $baseForAdditionalTax = $subtotalAfterDiscount - $includedTaxAmount;
-            foreach ($taxes as $tax) {
-                if (! $tax->include_base_amount) {
-                    $taxAmount += $baseForAdditionalTax * (floatval($tax->amount) / 100);
-                }
-            }
-        }
-
-        $this->price_subtotal = $subtotalAfterDiscount - $includedTaxAmount;
-        $this->price_total = $subtotalAfterDiscount + $taxAmount;
-        $this->discount_amount_currency = $discountAmount;
-        $this->discount_balance = $discountAmount;
-        $this->debit = 0;
-        $this->credit = $this->price_total;
-        $this->balance = -$this->price_total;
-        $this->amount_currency = $this->balance;
-        $this->amount_residual = $this->balance;
-        $this->amount_residual_currency = $this->balance;
-    }
-
-    /**
-     * Calculate tax line amounts
-     */
-    protected function calculateTaxAmounts(array $data): void
-    {
-        if (empty($this->tax_line_id)) {
-            return;
-        }
-
-        $tax = $this->taxLine;
-        $productLine = self::where('move_id', $data['move_id'])
-            ->where('display_type', 'product')
-            ->first();
-
-        if (! $productLine) {
-            return;
-        }
-
-        $baseAmount = $productLine->price_subtotal;
-        $taxAmount = $baseAmount * (floatval($tax->amount) / 100);
-
-        $this->tax_base_amount = $baseAmount;
-        $this->debit = 0;
-        $this->credit = $taxAmount;
-        $this->balance = -$taxAmount;
-        $this->amount_currency = $this->balance;
-        $this->amount_residual = $this->balance;
-        $this->amount_residual_currency = $this->balance;
-    }
-
-    /**
-     * Calculate payment term line amounts
-     */
-    protected function calculatePaymentTermAmounts(array $data): void
-    {
-        $totalAmount = self::where('move_id', $data['move_id'])
-            ->whereIn('display_type', [Enums\DisplayType::PRODUCT->value, Enums\DisplayType::TAX->value])
-            ->sum('credit');
-
-        $this->debit = $totalAmount;
-        $this->credit = 0;
-        $this->balance = $totalAmount;
-        $this->amount_currency = $this->balance;
-        $this->amount_residual = $this->balance;
-        $this->amount_residual_currency = $this->balance;
-    }
-
-    /**
-     * Override the save method to ensure calculations are performed
-     */
-    public function save(array $options = [])
-    {
-        $result = parent::save($options);
-
-        if ($this->move_id) {
-            $this->updateMoveAmounts();
-        }
-
-        return $result;
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($moveLine) {
-            $moveLine->sort = self::max('sort') + 1;
-        });
-
-        static::deleted(function ($moveLine) {
-            if ($moveLine->move_id) {
-                $moveLine->updateMoveAmounts();
-            }
-        });
     }
 }

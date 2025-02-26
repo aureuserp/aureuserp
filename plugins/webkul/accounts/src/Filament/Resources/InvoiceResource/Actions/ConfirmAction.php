@@ -24,13 +24,7 @@ class ConfirmAction extends Action
             ->label(__('accounts::filament/resources/invoice/actions/confirm-action.title'))
             ->color('gray')
             ->action(function (Move $record, Component $livewire): void {
-                if ($record->moveLines()->get()->isEmpty()) {
-                    Notification::make()
-                        ->warning()
-                        ->title(__('Error'))
-                        ->body(__('Please add at least one line to the invoice.'))
-                        ->send();
-
+                if (! $this->validateMove($record)) {
                     return;
                 }
 
@@ -41,8 +35,33 @@ class ConfirmAction extends Action
             })
             ->hidden(function (Move $record) {
                 return
-                    $record->state != MoveState::DRAFT->value ||
-                    ($record->auto_post != AutoPost::NO->value && $record->date > now());
+                    $record->state !== MoveState::DRAFT->value ||
+                    ($record->auto_post !== AutoPost::NO->value && $record->date > now());
             });
+    }
+
+    private function validateMove(Move $record): bool
+    {
+        if (! $record->partner_id) {
+            Notification::make()
+                ->warning()
+                ->title(__('Customer validation'))
+                ->body(__('Please provide a valid Customer to proceed with the Customer Invoice validation.'))
+                ->send();
+
+            return false;
+        }
+
+        if ($record->lines->isEmpty()) {
+            Notification::make()
+                ->warning()
+                ->title(__('Move Line validation'))
+                ->body(__('Please add at least one line to the invoice.'))
+                ->send();
+
+            return false;
+        }
+
+        return true;
     }
 }

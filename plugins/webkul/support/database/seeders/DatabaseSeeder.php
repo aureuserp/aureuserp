@@ -3,6 +3,7 @@
 namespace Webkul\Support\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Webkul\Support\Models\UTMMedium;
 
 class DatabaseSeeder extends Seeder
 {
@@ -25,6 +26,8 @@ class DatabaseSeeder extends Seeder
             UOMSeeder::class,
             UtmStageSeeder::class,
             UtmCampaignSeeder::class,
+            UTMMediumSeeder::class,
+            UTMSourceSeeder::class,
         ]);
     }
 }

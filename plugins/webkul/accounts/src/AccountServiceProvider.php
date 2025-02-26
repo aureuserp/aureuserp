@@ -2,6 +2,8 @@
 
 namespace Webkul\Account;
 
+use Livewire\Livewire;
+use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Support\Console\Commands\InstallCommand;
 use Webkul\Support\Console\Commands\UninstallCommand;
 use Webkul\Support\Package;
@@ -55,6 +57,7 @@ class AccountServiceProvider extends PackageServiceProvider
                 '2025_02_17_064828_create_accounts_payment_registers_table',
                 '2025_02_17_070121_create_accounts_account_payment_register_move_lines_table',
                 '2025_02_24_123300_add_additional_columns_to_partners_partners_table',
+                '2025_02_24_124300_create_accounts_accounts_move_line_taxes_table',
             ])
             ->runsMigrations()
             ->hasDependencies([
@@ -68,5 +71,10 @@ class AccountServiceProvider extends PackageServiceProvider
                     ->runsSeeders();
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {});
+    }
+
+    public function packageBooted(): void
+    {
+        Livewire::component('invoice-summary', InvoiceSummary::class);
     }
 }

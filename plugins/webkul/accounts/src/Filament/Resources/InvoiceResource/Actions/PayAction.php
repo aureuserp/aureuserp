@@ -43,7 +43,7 @@ class PayAction extends Action
                                 ->relationship(
                                     'journal',
                                     'name',
-                                    fn ($query) => $query->whereIn('type', ['bank', 'cash'])
+                                    fn($query) => $query->whereIn('type', ['bank', 'cash'])
                                 )
                                 ->default(function ($record) {
                                     return Journal::where('type', 'bank')->first()->id;
@@ -54,9 +54,9 @@ class PayAction extends Action
                                 ->required(),
                             Forms\Components\TextInput::make('amount')
                                 ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.amount'))
-                                ->prefix(fn ($record) => $record->currency->symbol ?? '')
-                                ->formatStateUsing(fn ($record) => number_format($record->moveLines->sum('price_total'), 2, '.', ''))
-                                ->dehydrateStateUsing(fn ($state) => (float) str_replace(',', '', $state))
+                                ->prefix(fn($record) => $record->currency->symbol ?? '')
+                                ->formatStateUsing(fn($record) => number_format($record->moveLines->sum('price_total'), 2, '.', ''))
+                                ->dehydrateStateUsing(fn($state) => (float) str_replace(',', '', $state))
                                 ->required(),
                             Forms\Components\Select::make('payment_method_line_id')
                                 ->relationship(

@@ -16,8 +16,6 @@ class DatabaseSeeder extends Seeder
             DegreeSeeder::class,
             RefuseReasonSeeder::class,
             ApplicantCategorySeeder::class,
-            UTMMediumSeeder::class,
-            UTMSourceSeeder::class,
         ]);
     }
 }

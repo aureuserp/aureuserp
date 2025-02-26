@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\Recruitment\Database\Seeders;
+namespace Webkul\Support\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +26,6 @@ class UTMMediumSeeder extends Seeder
         DB::table('utm_mediums')->insert(collect($mediums)->map(function ($medium) {
             return [
                 'name'       => $medium,
-                'creator_id' => 1,
                 'is_active'  => true,
                 'created_at' => now(),
                 'updated_at' => now(),

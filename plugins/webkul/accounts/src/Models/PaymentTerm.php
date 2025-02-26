@@ -42,7 +42,7 @@ class PaymentTerm extends Model
 
     public function dueTerm()
     {
-        return $this->hasMany(PaymentDueTerm::class, 'payment_id');
+        return $this->hasOne(PaymentDueTerm::class, 'payment_id');
     }
 
     protected static function boot()
@@ -56,6 +56,7 @@ class PaymentTerm extends Model
                 'delay_type'      => DelayType::DAYS_AFTER->value,
                 'days_next_month' => 10,
                 'nb_days'         => 0,
+                'payment_id'      => $paymentTerm->id,
             ]);
         });
     }
