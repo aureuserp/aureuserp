@@ -9,6 +9,7 @@ use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Partner\Models\Partner;
 use Webkul\Account\Filament\Resources\CreditNoteResource;
+use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 
 class EditCreditNote extends EditRecord
 {
@@ -32,11 +33,18 @@ class EditCreditNote extends EditRecord
         $predefinedActions = parent::getHeaderActions();
 
         $predefinedActions = collect($predefinedActions)->filter(function ($action) {
-
             return !in_array($action->getName(), [
                 'customers.invoice.set-as-checked',
-                'customers.invoice.credit-note'
+                'customers.invoice.credit-note',
             ]);
+        })->map(function ($action) {
+            if ($action->getName() == 'customers.invoice.preview') {
+                return BaseActions\PreviewAction::make()
+                    ->modalHeading(__('Preview Credit Note'))
+                    ->setTemplate('accounts::credit-note/actions/preview.index');
+            }
+
+            return $action;
         })->toArray();
 
         return [

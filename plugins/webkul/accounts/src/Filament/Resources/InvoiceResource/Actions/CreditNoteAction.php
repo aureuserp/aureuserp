@@ -5,6 +5,7 @@ namespace Webkul\Account\Filament\Resources\InvoiceResource\Actions;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Support\Facades\FilamentView;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\AutoPost;
 use Webkul\Account\Enums\MoveState;
@@ -13,6 +14,7 @@ use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\MoveReversal;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNotesResource;
 use Webkul\Support\Traits\PDFHandler;
 
 class CreditNoteAction extends Action
@@ -50,7 +52,7 @@ class CreditNoteAction extends Action
             }
         );
 
-        $this->action(function (Move $record, array $data) {
+        $this->action(function (Move $record, array $data, $livewire) {
             $user = Auth::user();
 
             $creditNote = MoveReversal::create([
@@ -62,13 +64,15 @@ class CreditNoteAction extends Action
 
             $creditNote->moves()->attach($record);
 
-            $this->createMove($creditNote, $record);
+            $move = $this->createMove($creditNote, $record);
 
-            return $creditNote;
+            $redirectUrl = CreditNotesResource::getUrl('edit', ['record' => $move->id]);
+
+            $livewire->redirect($redirectUrl, navigate: FilamentView::hasSpaMode());
         });
     }
 
-    private function createMove(MoveReversal $creditNote, Move $record): void
+    private function createMove(MoveReversal $creditNote, Move $record): Move
     {
         $moveData = [
             'company_id'                        => $record->company_id,
@@ -81,6 +85,7 @@ class CreditNoteAction extends Action
             'invoice_user_id'                   => $record->invoice_user_id,
             'reference'                         => "Reversal of: {$record->name}, {$creditNote->reason}",
             'state'                             => MoveState::DRAFT->value,
+            'name'                              => Move::generateNextInvoiceAndCreditNoteNumber('RINV'),
             'move_type'                         => MoveType::OUT_REFUND->value,
             'auto_post'                         => AutoPost::NO->value,
             'payment_state'                     => PaymentState::NOT_PAID->value,
@@ -112,6 +117,8 @@ class CreditNoteAction extends Action
         $this->createPaymentTermLine($newMove, $record);
 
         $this->createTaxLines($newMove, $record);
+
+        return $newMove;
     }
 
     private function createProductsLines(Move $newMove, Move $record): void

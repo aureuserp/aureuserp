@@ -4,7 +4,6 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Webkul\Account\Enums\PaymentStatus;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
@@ -137,7 +136,6 @@ class Move extends Model
 
     protected $casts = [
         'invoice_date_due' => 'datetime',
-        'payment_state'    => PaymentStatus::class,
     ];
 
     public function campaign()

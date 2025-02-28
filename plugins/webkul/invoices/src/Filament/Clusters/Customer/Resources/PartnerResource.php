@@ -2,10 +2,13 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Customer\Resources;
 
+use Filament\Infolists\Infolist;
 use Filament\Tables\Table;
+use Filament\Resources\Pages\Page;
 use Webkul\Invoice\Filament\Clusters\Customer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\PartnerResource\Pages;
-use Webkul\Partner\Filament\Resources\PartnerResource as BasePartnerResource;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource as BasePartnerResource;
+use Webkul\Contact\Filament\Resources\PartnerResource as BaseVendorResource;
 
 class PartnerResource extends BasePartnerResource
 {
@@ -29,21 +32,46 @@ class PartnerResource extends BasePartnerResource
 
     public static function table(Table $table): Table
     {
-        return BasePartnerResource::table($table)
-            ->contentGrid([
-                'sm'  => 1,
-                'md'  => 2,
-                'xl'  => 3,
-            ]);
+        $table = BaseVendorResource::table($table);
+
+        $table->contentGrid([
+            'sm'  => 1,
+            'md'  => 2,
+            'xl'  => 3,
+            '2xl' => 3,
+        ]);
+
+        $table->modifyQueryUsing(fn($query) => $query->where('sub_type', 'customer'));
+
+        return $table;
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return BaseVendorResource::infolist($infolist);
+    }
+
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            Pages\ViewPartner::class,
+            Pages\EditPartner::class,
+            Pages\ManageContacts::class,
+            Pages\ManageAddresses::class,
+            Pages\ManageBankAccounts::class,
+        ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'     => Pages\ListPartners::route('/'),
-            'create'    => Pages\CreatePartner::route('/create'),
-            'view'      => Pages\ViewPartner::route('/{record}'),
-            'edit'      => Pages\EditPartner::route('/{record}/edit'),
+            'index'        => Pages\ListPartners::route('/'),
+            'create'       => Pages\CreatePartner::route('/create'),
+            'view'         => Pages\ViewPartner::route('/{record}'),
+            'edit'         => Pages\EditPartner::route('/{record}/edit'),
+            'contacts'     => Pages\ManageContacts::route('/{record}/contacts'),
+            'addresses'    => Pages\ManageAddresses::route('/{record}/addresses'),
+            'bank-account' => Pages\ManageBankAccounts::route('/{record}/bank-accounts'),
         ];
     }
 }

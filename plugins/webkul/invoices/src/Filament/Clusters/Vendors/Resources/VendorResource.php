@@ -187,6 +187,8 @@ class VendorResource extends BaseVendorResource
             '2xl' => 3,
         ]);
 
+        $table->modifyQueryUsing(fn($query) => $query->where('sub_type', 'supplier'));
+
         return $table;
     }
 

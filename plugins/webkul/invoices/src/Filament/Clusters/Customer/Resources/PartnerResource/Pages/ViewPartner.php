@@ -2,19 +2,16 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Customer\Resources\PartnerResource\Pages;
 
-use Filament\Actions;
-use Filament\Resources\Pages\ViewRecord;
+use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\PartnerResource;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ViewVendor as BaseViewPartner;
 
-class ViewPartner extends ViewRecord
+class ViewPartner extends BaseViewPartner
 {
     protected static string $resource = PartnerResource::class;
 
-    protected function getHeaderActions(): array
+    public function getTitle(): string|Htmlable
     {
-        return [
-            Actions\EditAction::make()
-                ->icon('heroicon-o-plus-circle'),
-        ];
+        return __('Customer');
     }
 }

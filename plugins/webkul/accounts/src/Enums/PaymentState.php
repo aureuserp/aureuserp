@@ -66,7 +66,7 @@ enum PaymentState: string implements HasLabel, HasColor, HasIcon
         return match ($this) {
             self::NOT_PAID         => 'heroicon-o-x-circle',
             self::IN_PAYMENT       => 'heroicon-o-clock',
-            self::PAID             => 'heroicon-o-check-circle',
+            self::PAID             => 'heroicon-o-check-badge',
             self::PARTIAL          => 'heroicon-o-currency-dollar',
             self::REVERSED         => 'heroicon-o-arrow-uturn-left',
             self::BLOCKED          => 'heroicon-o-x-circle',
