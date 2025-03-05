@@ -2,8 +2,6 @@
 
 namespace Webkul\Sale;
 
-use Livewire\Livewire;
-use Webkul\Sale\Livewire\Summary;
 use Webkul\Support\Console\Commands\InstallCommand;
 use Webkul\Support\Console\Commands\UninstallCommand;
 use Webkul\Support\Package;
@@ -28,8 +26,19 @@ class SaleServiceProvider extends PackageServiceProvider
                 '2025_02_05_053212_create_sales_orders_table',
                 '2025_02_05_080609_create_sales_order_template_products_table',
                 '2025_02_05_102851_create_sales_order_lines_table',
+                '2025_03_05_073635_create_sales_order_options_table',
+                '2025_03_05_124300_create_sales_order_line_taxes_table',
+                '2025_03_05_124300_create_sales_tag_table',
+                '2025_03_05_124400_create_sales_order_tags_table',
             ])
             ->runsMigrations()
+            ->hasSettings([
+                '2025_02_05_094022_create_sales_product_settings',
+                '2025_02_05_094025_create_sales_price_settings',
+                '2025_02_05_095000_create_sales_invoice_settings',
+                '2025_02_05_095005_create_sales_quotation_and_order_settings',
+            ])
+            ->runsSettings()
             ->hasDependencies([
                 'invoices',
                 'payments',

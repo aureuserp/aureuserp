@@ -22,6 +22,7 @@ return new class extends Migration
             $table->foreignId('product_id')->nullable()->comment('Product Reference')->constrained('products_products')->nullOnDelete();
             $table->foreignId('product_uom_id')->nullable()->comment('Product UOM Reference')->constrained('unit_of_measures')->nullOnDelete();
             $table->foreignId('linked_sale_order_sale_id')->nullable()->comment('Linked Sale Order Sale Reference')->constrained('sales_order_lines')->nullOnDelete();
+            $table->foreignId('product_packaging_id')->nullable()->comment('Product Packaging Reference')->constrained('products_packagings')->nullOnDelete();
             $table->foreignId('creator_id')->nullable()->comment('Creator Reference')->constrained('users')->nullOnDelete();
             $table->string('state')->nullable()->comment('Order State');
             $table->string('display_type')->nullable()->comment('Display Type');
@@ -32,12 +33,16 @@ return new class extends Migration
             $table->string('analytic_distribution')->nullable()->comment('Analytic Distribution Status');
             $table->string('name')->comment('Name');
             $table->decimal('product_uom_qty', 15, 4)->comment('Product UOM Quantity')->default(0);
+            $table->decimal('product_qty', 15, 4)->comment('Product Quantity')->default(0);
             $table->decimal('price_unit', 15, 4)->comment('Price Unit')->default(0);
             $table->decimal('discount', 15, 4)->nullable()->comment('Discount')->default(0);
             $table->decimal('price_subtotal', 15, 4)->nullable()->comment('Price Subtotal')->default(0);
             $table->decimal('price_total', 15, 4)->nullable()->comment('Price Total')->default(0);
             $table->decimal('price_reduce_taxexcl', 15, 4)->nullable()->comment('Price Reduce Tax excl')->default(0);
             $table->decimal('price_reduce_taxinc', 15, 4)->nullable()->comment('Price Reduce Tax incl')->default(0);
+            $table->decimal('purchase_price', 15, 4)->nullable()->comment('Cost')->default(0);
+            $table->decimal('margin', 15, 4)->nullable()->comment('Margin')->default(0);
+            $table->decimal('margin_percent', 15, 4)->nullable()->comment('Margin (%)')->default(0);
             $table->decimal('qty_delivered', 15, 4)->nullable()->comment('Delivery Quantity')->default(0);
             $table->decimal('qty_invoiced', 15, 4)->nullable()->comment('Invoiced Quantity')->default(0);
             $table->decimal('qty_to_invoice', 15, 4)->nullable()->comment('Quantity To Invoice')->default(0);

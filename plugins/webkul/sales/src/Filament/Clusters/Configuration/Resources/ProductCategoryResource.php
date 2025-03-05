@@ -2,7 +2,7 @@
 
 namespace Webkul\Sale\Filament\Clusters\Configuration\Resources;
 
-use Webkul\Invoice\Filament\Clusters\Configuration\Resources\ProductCategoryResource as BaseProductCategoryResource;
+use Webkul\Product\Filament\Resources\CategoryResource as BaseProductCategoryResource;
 use Webkul\Sale\Filament\Clusters\Configuration;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductCategoryResource\Pages;
 use Webkul\Sale\Models\Category;
@@ -16,6 +16,11 @@ class ProductCategoryResource extends BaseProductCategoryResource
     protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
 
     protected static ?string $cluster = Configuration::class;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('sales::filament/clusters/configurations/resources/product-category.navigation.group');
+    }
 
     public static function getPages(): array
     {

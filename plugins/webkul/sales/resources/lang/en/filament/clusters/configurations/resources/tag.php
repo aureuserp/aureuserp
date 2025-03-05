@@ -1,11 +1,11 @@
 <?php
 
 return [
-    'title' => 'Product Tag',
+    'title' => 'Tag',
 
     'navigation' => [
-        'title' => 'Product Tag',
-        'group' => 'Products',
+        'title' => 'Tag',
+        'group' => 'Sales Orders',
     ],
 
     'global-search' => [

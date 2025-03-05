@@ -24,6 +24,8 @@ class TeamResource extends Resource
 
     protected static ?string $cluster = Configuration::class;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     public static function getModelLabel(): string
     {
         return __('sales::filament/clusters/configurations/resources/team.title');

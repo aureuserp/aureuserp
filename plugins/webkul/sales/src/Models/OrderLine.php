@@ -3,13 +3,16 @@
 namespace Webkul\Sale\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Webkul\Account\Models\Tax;
 use Webkul\Partner\Models\Partner;
+use Webkul\Product\Models\Packaging;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
 
-class SaleOrderLine extends Model
+class OrderLine extends Model
 {
     protected $table = 'sales_order_lines';
 
@@ -50,8 +53,13 @@ class SaleOrderLine extends Model
         'write_date',
         'technical_price_unit',
         'price_tax',
+        'product_qty',
         'product_packaging_qty',
+        'product_packaging_id',
         'customer_lead',
+        'purchase_price',
+        'margin',
+        'margin_percent',
     ];
 
     public function order()
@@ -84,14 +92,24 @@ class SaleOrderLine extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function productUom()
+    public function uom()
     {
         return $this->belongsTo(UOM::class, 'product_uom_id');
     }
 
+    public function taxes(): BelongsToMany
+    {
+        return $this->belongsToMany(Tax::class, 'sales_order_line_taxes', 'order_line_id', 'tax_id');
+    }
+
+    public function productPackaging()
+    {
+        return $this->belongsTo(Packaging::class);
+    }
+
     public function linkedSaleOrderSale()
     {
-        return $this->belongsTo(SaleOrderLine::class, 'linked_sale_order_sale_id');
+        return $this->belongsTo(self::class, 'linked_sale_order_sale_id');
     }
 
     public function createdBy()

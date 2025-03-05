@@ -12,11 +12,11 @@ use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\Partner;
-use Webkul\Sale\Enums\OrderDisplayType;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Models\UtmCampaign;
 use Webkul\Support\Models\UTMMedium;
 use Webkul\Support\Models\UTMSource;
 
@@ -41,6 +41,7 @@ class Order extends Model
         'user_id',
         'team_id',
         'creator_id',
+        'campaign_id',
         'access_token',
         'name',
         'state',
@@ -109,6 +110,11 @@ class Order extends Model
         return $this->belongsTo(Partner::class);
     }
 
+    public function campaign()
+    {
+        return $this->belongsTo(UtmCampaign::class, 'campaign_id');
+    }
+
     public function journal()
     {
         return $this->belongsTo(Journal::class);
@@ -117,6 +123,11 @@ class Order extends Model
     public function partnerInvoice()
     {
         return $this->belongsTo(Partner::class, 'partner_invoice_id');
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'sales_order_tags', 'order_id', 'tag_id');
     }
 
     public function partnerShipping()
@@ -156,7 +167,7 @@ class Order extends Model
 
     public function utmSource()
     {
-        return $this->belongsTo(UTMSource::class);
+        return $this->belongsTo(UTMSource::class, 'utm_source_id');
     }
 
     public function medium()
@@ -164,25 +175,14 @@ class Order extends Model
         return $this->belongsTo(UTMMedium::class);
     }
 
-    public function salesOrderLines()
+    public function lines()
     {
-        return $this
-            ->hasMany(SaleOrderLine::class)
-            ->whereNull('display_type');
+        return $this->hasMany(OrderLine::class);
     }
 
-    public function salesOrderSectionLines()
+    public function optionalLines()
     {
-        return $this
-            ->hasMany(SaleOrderLine::class)
-            ->where('display_type', OrderDisplayType::SECTION->value);
-    }
-
-    public function salesOrderNoteLines()
-    {
-        return $this
-            ->hasMany(SaleOrderLine::class)
-            ->where('display_type', OrderDisplayType::NOTE->value);
+        return $this->hasMany(OrderOption::class);
     }
 
     public function quotationTemplate()
@@ -196,9 +196,9 @@ class Order extends Model
 
         static::creating(function ($order) {
             if ($order->state === 'sale') {
-                $order->name = 'ORD-TMP-'.time();
+                $order->name = 'ORD-TMP-' . time();
             } else {
-                $order->name = 'QT-TMP-'.time();
+                $order->name = 'QT-TMP-' . time();
             }
         });
 
@@ -218,9 +218,9 @@ class Order extends Model
     public function updateName()
     {
         if ($this->state === OrderState::SALE->value) {
-            $this->name = 'ORD-'.$this->id;
+            $this->name = 'ORD-' . $this->id;
         } else {
-            $this->name = 'QT-'.$this->id;
+            $this->name = 'QT-' . $this->id;
         }
     }
 }

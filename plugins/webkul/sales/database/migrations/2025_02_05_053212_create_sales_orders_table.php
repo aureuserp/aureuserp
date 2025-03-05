@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('sales_orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('utm_source_id')->nullable()->comment('UTM source')->constrained('utm_sources')->nullOnDelete();
+            $table->foreignId('campaign_id')->nullable()->comment('Campaign')->constrained('utm_campaigns')->nullOnDelete();
             $table->foreignId('medium_id')->nullable()->comment('Recruitments utm sources')->constrained('utm_mediums')->nullOnDelete();
             $table->foreignId('company_id')->comment('Company')->constrained('companies')->restrictOnDelete();
             $table->foreignId('partner_id')->comment('Partner')->constrained('partners_partners')->restrictOnDelete();
