@@ -5,9 +5,12 @@ namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources;
 use Webkul\Support\Filament\Resources\ActivityTypeResource as BaseActivityTypeResource;
 use Webkul\TimeOff\Filament\Clusters\Configurations;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages;
+use Webkul\TimeOff\Models\ActivityType;
 
 class ActivityTypeResource extends BaseActivityTypeResource
 {
+    protected static ?string $model = ActivityType::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-clock';
 
     protected static bool $shouldRegisterNavigation = true;

@@ -9,9 +9,12 @@ use Filament\Tables\Table;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResource as BaseActivityPlanResource;
 use Webkul\Recruitment\Filament\Clusters\Configurations;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages;
+use Webkul\Recruitment\Models\ActivityPlan;
 
 class ActivityPlanResource extends BaseActivityPlanResource
 {
+    protected static ?string $model = ActivityPlan::class;
+
     protected static ?string $cluster = Configurations::class;
 
     public static function getNavigationGroup(): string
@@ -131,9 +134,9 @@ class ActivityPlanResource extends BaseActivityPlanResource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
-                    ->hidden(fn ($record) => $record->trashed()),
+                    ->hidden(fn($record) => $record->trashed()),
                 Tables\Actions\EditAction::make()
-                    ->hidden(fn ($record) => $record->trashed()),
+                    ->hidden(fn($record) => $record->trashed()),
                 Tables\Actions\RestoreAction::make()
                     ->successNotification(
                         Notification::make()

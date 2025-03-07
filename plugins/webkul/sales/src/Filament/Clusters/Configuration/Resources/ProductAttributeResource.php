@@ -3,7 +3,7 @@
 namespace Webkul\Sale\Filament\Clusters\Configuration\Resources;
 
 use Webkul\Product\Filament\Resources\AttributeResource;
-use Webkul\Product\Models\Attribute;
+use Webkul\Sale\Models\Attribute;
 use Webkul\Sale\Filament\Clusters\Configuration;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductAttributeResource\Pages;
 

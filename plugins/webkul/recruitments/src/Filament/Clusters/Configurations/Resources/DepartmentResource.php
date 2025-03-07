@@ -6,9 +6,12 @@ use Filament\Tables\Table;
 use Webkul\Employee\Filament\Resources\DepartmentResource as BaseDepartmentResource;
 use Webkul\Recruitment\Filament\Clusters\Configurations;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\DepartmentResource\Pages;
+use Webkul\Recruitment\Models\Department;
 
 class DepartmentResource extends BaseDepartmentResource
 {
+    protected static ?string $model = Department::class;
+
     protected static ?string $cluster = Configurations::class;
 
     public static function getNavigationGroup(): string

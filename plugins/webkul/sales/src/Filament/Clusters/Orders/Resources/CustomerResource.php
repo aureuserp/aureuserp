@@ -7,9 +7,12 @@ use Filament\Tables\Table;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\PartnerResource as BaseCustomerResource;
 use Webkul\Sale\Filament\Clusters\Orders;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages;
+use Webkul\Sale\Models\Partner;
 
 class CustomerResource extends BaseCustomerResource
 {
+    protected static ?string $model = Partner::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
     protected static bool $shouldRegisterNavigation = true;

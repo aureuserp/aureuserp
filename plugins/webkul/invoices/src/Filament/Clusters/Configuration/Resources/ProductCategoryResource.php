@@ -10,9 +10,12 @@ use Filament\Tables\Table;
 use Webkul\Invoice\Filament\Clusters\Configuration;
 use Webkul\Invoice\Filament\Clusters\Configuration\Resources\ProductCategoryResource\Pages;
 use Webkul\Product\Filament\Resources\CategoryResource as BaseProductCategoryResource;
+use Webkul\Invoice\Models\Category;
 
 class ProductCategoryResource extends BaseProductCategoryResource
 {
+    protected static ?string $model = Category::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-tag';
 
     protected static ?string $cluster = Configuration::class;

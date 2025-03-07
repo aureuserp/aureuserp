@@ -9,9 +9,12 @@ use Webkul\Contact\Filament\Resources\PartnerResource as BaseVendorResource;
 use Webkul\Invoice\Filament\Clusters\Customer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\PartnerResource\Pages;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource as BasePartnerResource;
+use Webkul\Invoice\Models\Partner;
 
 class PartnerResource extends BasePartnerResource
 {
+    protected static ?string $model = Partner::class;
+
     protected static bool $shouldRegisterNavigation = true;
 
     protected static ?int $navigationSort = 6;
@@ -41,7 +44,7 @@ class PartnerResource extends BasePartnerResource
             '2xl' => 3,
         ]);
 
-        $table->modifyQueryUsing(fn ($query) => $query->where('sub_type', 'customer'));
+        $table->modifyQueryUsing(fn($query) => $query->where('sub_type', 'customer'));
 
         return $table;
     }

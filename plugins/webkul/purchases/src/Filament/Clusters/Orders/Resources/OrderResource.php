@@ -399,6 +399,7 @@ class OrderResource extends Resource
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make()
+                        ->hidden(fn(Model $record) => $record->state == Enums\OrderState::DONE)
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -417,7 +418,7 @@ class OrderResource extends Resource
                     ),
             ])
             ->checkIfRecordIsSelectableUsing(
-                fn(Model $record): bool => static::can('delete', $record) && $record->state !== Enums\RequisitionState::CLOSED,
+                fn(Model $record): bool => static::can('delete', $record) && $record->state !== Enums\OrderState::DONE,
             );
     }
 

@@ -7,9 +7,12 @@ use Filament\Resources\Pages\Page;
 use Webkul\Account\Filament\Resources\InvoiceResource as BaseInvoiceResource;
 use Webkul\Invoice\Filament\Clusters\Customer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages;
+use Webkul\Invoice\Models\Move;
 
 class InvoiceResource extends BaseInvoiceResource
 {
+    protected static ?string $model = Move::class;
+
     protected static bool $shouldRegisterNavigation = true;
 
     protected static ?string $cluster = Customer::class;

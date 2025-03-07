@@ -13,7 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Recruitment\Filament\Clusters\Configurations;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\UTMSourceResource\Pages;
-use Webkul\Support\Models\UTMSource;
+use Webkul\Recruitment\Models\UTMSource;
 
 class UTMSourceResource extends Resource
 {

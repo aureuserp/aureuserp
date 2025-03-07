@@ -3,9 +3,11 @@
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages;
 
 use Filament\Actions;
+use Filament\Notifications\Notification;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
+use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions as BaseActions;
 
@@ -30,7 +32,14 @@ class ViewQuotation extends ViewRecord
             BaseActions\PreviewAction::make(),
             BaseActions\SendByEmailAction::make(),
             BaseActions\LockAndUnlockAction::make(),
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->hidden(fn() => $this->getRecord()->state == OrderState::SALE->value)
+                ->successNotification(
+                    Notification::make()
+                        ->success()
+                        ->title(__('sales::filament/clusters/orders/resources/quotation/pages/view-quotation.header-actions.notification.delete.title'))
+                        ->body(__('sales::filament/clusters/orders/resources/quotation/pages/view-quotation.header-actions.notification.delete.body')),
+                ),
         ];
     }
 }

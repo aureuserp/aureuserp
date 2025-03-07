@@ -6,9 +6,12 @@ use Filament\Tables\Table;
 use Webkul\Account\Filament\Resources\PaymentsResource as BasePaymentsResource;
 use Webkul\Invoice\Filament\Clusters\Vendors;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\PaymentsResource\Pages;
+use Webkul\Invoice\Models\Payment;
 
 class PaymentsResource extends BasePaymentsResource
 {
+    protected static ?string $model = Payment::class;
+
     protected static bool $shouldRegisterNavigation = true;
 
     protected static ?int $navigationSort = 3;

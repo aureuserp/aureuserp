@@ -2,13 +2,14 @@
 
 namespace Webkul\Employee\Policies;
 
-use Illuminate\Auth\Access\HandlesAuthorization;
 use Webkul\Employee\Models\Employee;
 use Webkul\Security\Models\User;
+use Illuminate\Auth\Access\HandlesAuthorization;
+use Webkul\Security\Traits\HasScopedPermissions;
 
 class EmployeePolicy
 {
-    use HandlesAuthorization;
+    use HandlesAuthorization, HasScopedPermissions;
 
     /**
      * Determine whether the user can view any models.
@@ -39,7 +40,11 @@ class EmployeePolicy
      */
     public function update(User $user, Employee $employee): bool
     {
-        return $user->can('update_employee');
+        if (! $user->can('update_employee')) {
+            return false;
+        }
+
+        return $this->hasAccess($user, $employee, 'coach');
     }
 
     /**
@@ -47,7 +52,11 @@ class EmployeePolicy
      */
     public function delete(User $user, Employee $employee): bool
     {
-        return $user->can('delete_employee');
+        if (! $user->can('delete_employee')) {
+            return false;
+        }
+
+        return $this->hasAccess($user, $employee, 'coach');
     }
 
     /**
@@ -63,7 +72,11 @@ class EmployeePolicy
      */
     public function forceDelete(User $user, Employee $employee): bool
     {
-        return $user->can('force_delete_employee');
+        if (! $user->can('force_delete_employee')) {
+            return false;
+        }
+
+        return $this->hasAccess($user, $employee, 'coach');
     }
 
     /**
@@ -79,7 +92,11 @@ class EmployeePolicy
      */
     public function restore(User $user, Employee $employee): bool
     {
-        return $user->can('restore_employee');
+        if (! $user->can('restore_employee')) {
+            return false;
+        }
+
+        return $this->hasAccess($user, $employee, 'coach');
     }
 
     /**
@@ -95,7 +112,11 @@ class EmployeePolicy
      */
     public function replicate(User $user, Employee $employee): bool
     {
-        return $user->can('replicate_employee');
+        if (! $user->can('replicate_employee')) {
+            return false;
+        }
+
+        return $this->hasAccess($user, $employee, 'coach');
     }
 
     /**

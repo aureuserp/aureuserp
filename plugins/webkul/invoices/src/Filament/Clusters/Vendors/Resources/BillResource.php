@@ -6,9 +6,12 @@ use Filament\Resources\Pages\Page;
 use Webkul\Account\Filament\Resources\BillResource as BaseBillResource;
 use Webkul\Invoice\Filament\Clusters\Vendors;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource\Pages;
+use Webkul\Invoice\Models\Move;
 
 class BillResource extends BaseBillResource
 {
+    protected static ?string $model = Move::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
 
     protected static bool $shouldRegisterNavigation = true;

@@ -11,13 +11,13 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
-use Webkul\Employee\Models\CalendarLeaves;
+use Webkul\TimeOff\Models\CalendarLeave;
 use Webkul\TimeOff\Filament\Clusters\Configurations;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\PublicHolidayResource\Pages;
 
 class PublicHolidayResource extends Resource
 {
-    protected static ?string $model = CalendarLeaves::class;
+    protected static ?string $model = CalendarLeave::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-lifebuoy';
 

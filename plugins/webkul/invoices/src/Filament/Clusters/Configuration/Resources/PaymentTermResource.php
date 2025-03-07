@@ -5,9 +5,12 @@ namespace Webkul\Invoice\Filament\Clusters\Configuration\Resources;
 use Webkul\Account\Filament\Resources\PaymentTermResource as BasePaymentTermResource;
 use Webkul\Invoice\Filament\Clusters\Configuration;
 use Webkul\Invoice\Filament\Clusters\Configuration\Resources\PaymentTermResource\Pages;
+use Webkul\Invoice\Models\PaymentTerm;
 
 class PaymentTermResource extends BasePaymentTermResource
 {
+    protected static ?string $model = PaymentTerm::class;
+
     protected static bool $shouldRegisterNavigation = true;
 
     protected static ?string $cluster = Configuration::class;

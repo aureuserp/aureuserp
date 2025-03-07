@@ -5,9 +5,12 @@ namespace Webkul\Invoice\Filament\Clusters\Customer\Resources;
 use Webkul\Account\Filament\Resources\PaymentsResource as BasePaymentsResource;
 use Webkul\Invoice\Filament\Clusters\Customer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\PaymentsResource\Pages;
+use Webkul\Invoice\Models\Payment;
 
 class PaymentsResource extends BasePaymentsResource
 {
+    protected static ?string $model = Payment::class;
+
     protected static bool $shouldRegisterNavigation = true;
 
     protected static ?int $navigationSort = 4;
