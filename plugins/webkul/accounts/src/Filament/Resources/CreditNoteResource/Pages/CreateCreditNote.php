@@ -55,6 +55,10 @@ class CreateCreditNote extends CreateRecord
     {
         $record = $this->getRecord();
 
+        $record->invoice_date_due = CreditNoteResource::calculateDateMaturity($record)->format('Y-m-d');
+
+        $record->save();
+
         $this->getResource()::collectTotals($record);
     }
 }

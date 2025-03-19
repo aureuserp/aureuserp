@@ -53,6 +53,12 @@ class CreateBill extends CreateRecord
 
     protected function afterCreate(): void
     {
-        $this->getResource()::collectTotals($this->getRecord());
+        $record = $this->getRecord();
+
+        $record->invoice_date_due = BillResource::calculateDateMaturity($record)->format('Y-m-d');
+
+        $record->save();
+
+        BillResource::collectTotals($record);
     }
 }

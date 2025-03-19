@@ -55,6 +55,10 @@ class CreateInvoice extends CreateRecord
     {
         $record = $this->getRecord();
 
-        $this->getResource()::collectTotals($record);
+        $record->invoice_date_due = InvoiceResource::calculateDateMaturity($record)->format('Y-m-d');
+
+        $record->save();
+
+        InvoiceResource::collectTotals($record);
     }
 }
