@@ -1025,7 +1025,7 @@ class EmployeeResource extends Resource
                                 ->state(function (Employee $record): array {
                                     return $record->categories->map(fn ($category) => [
                                         'label' => $category->name,
-                                        'color' => $category->color ?? 'primary',
+                                        'color' => $category->color ?? '#808080',
                                     ])->toArray();
                                 })
                                 ->formatStateUsing(fn ($state) => $state['label'])
@@ -1566,7 +1566,7 @@ class EmployeeResource extends Resource
                                     ->state(function (Employee $record): array {
                                         return $record->categories->map(fn ($category) => [
                                             'label' => $category->name,
-                                            'color' => $category->color ?? 'primary',
+                                            'color' => $category->color ?? '#808080',
                                         ])->toArray();
                                     })
                                     ->badge()

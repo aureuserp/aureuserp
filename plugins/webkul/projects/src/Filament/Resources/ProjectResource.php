@@ -248,7 +248,7 @@ class ProjectResource extends Resource
                             ->state(function (Project $record): array {
                                 return $record->tags()->get()->map(fn ($tag) => [
                                     'label' => $tag->name,
-                                    'color' => $tag->color ?? 'primary',
+                                    'color' => $tag->color ?? '#808080',
                                 ])->toArray();
                             })
                             ->badge()
@@ -505,7 +505,7 @@ class ProjectResource extends Resource
                                             ->state(function (Project $record): array {
                                                 return $record->tags()->get()->map(fn ($tag) => [
                                                     'label' => $tag->name,
-                                                    'color' => $tag->color ?? 'primary',
+                                                    'color' => $tag->color ?? '#808080',
                                                 ])->toArray();
                                             })
                                             ->badge()

@@ -24,6 +24,10 @@ class ManageTags extends ManageRecords
                 ->mutateFormDataUsing(function (array $data): array {
                     $data['creator_id'] = Auth::id();
 
+                    if (empty($data['color'])) {
+                        $data['color'] = '#808080';
+                    }
+
                     return $data;
                 })
                 ->successNotification(

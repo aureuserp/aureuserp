@@ -24,6 +24,7 @@ return [
                     'title-placeholder' => 'Task Title...',
                     'tags'              => 'Tags',
                     'name'              => 'Name',
+                    'color'             => 'Color',
                     'description'       => 'Description',
                     'project'           => 'Project',
                     'status'            => 'Status',

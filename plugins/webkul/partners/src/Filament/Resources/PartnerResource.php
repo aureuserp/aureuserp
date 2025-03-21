@@ -245,7 +245,7 @@ class PartnerResource extends Resource
                                 ->state(function (Partner $record): array {
                                     return $record->tags()->get()->map(fn ($tag) => [
                                         'label' => $tag->name,
-                                        'color' => $tag->color ?? 'primary',
+                                        'color' => $tag->color ?? '#808080',
                                     ])->toArray();
                                 })
                                 ->badge()
@@ -519,7 +519,7 @@ class PartnerResource extends Resource
                                     ->state(function (Partner $record): array {
                                         return $record->tags()->get()->map(fn ($tag) => [
                                             'label' => $tag->name,
-                                            'color' => $tag->color ?? 'primary',
+                                            'color' => $tag->color ?? '#808080',
                                         ])->toArray();
                                     })
                                     ->badge()

@@ -183,7 +183,7 @@ class CandidateResource extends Resource
                                 ->state(function (Candidate $record): array {
                                     return $record->categories->map(fn ($category) => [
                                         'label' => $category->name,
-                                        'color' => $category->color ?? 'primary',
+                                        'color' => $category->color ?? '#808080',
                                     ])->toArray();
                                 })
                                 ->formatStateUsing(fn ($state) => $state['label'])
@@ -345,7 +345,7 @@ class CandidateResource extends Resource
                                             ->state(function (Candidate $record): array {
                                                 return $record->categories->map(fn ($category) => [
                                                     'label' => $category->name,
-                                                    'color' => $category->color ?? 'primary',
+                                                    'color' => $category->color ?? '#808080',
                                                 ])->toArray();
                                             })
                                             ->badge()
