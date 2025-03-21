@@ -8,6 +8,7 @@ use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
 use Webkul\Sale\Enums\OrderState;
+use Webkul\Sale\Facades\SaleOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions as BaseActions;
 
@@ -58,8 +59,6 @@ class EditQuotation extends EditRecord
 
     protected function afterSave(): void
     {
-        $record = $this->getRecord();
-
-        QuotationResource::collectTotals($record);
+        SaleOrder::computeSaleOrder($this->getRecord());
     }
 }

@@ -4,6 +4,7 @@ namespace Webkul\Sale\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Tax;
 use Webkul\Partner\Models\Partner;
 use Webkul\Product\Models\Packaging;
@@ -105,6 +106,11 @@ class OrderLine extends Model
     public function taxes(): BelongsToMany
     {
         return $this->belongsToMany(Tax::class, 'sales_order_line_taxes', 'order_line_id', 'tax_id');
+    }
+
+    public function accountMoveLines()
+    {
+        return $this->hasMany(MoveLine::class, 'sale_order_line_id');
     }
 
     public function productPackaging()

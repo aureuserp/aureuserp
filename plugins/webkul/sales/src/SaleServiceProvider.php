@@ -2,7 +2,9 @@
 
 namespace Webkul\Sale;
 
+use Illuminate\Foundation\AliasLoader;
 use Livewire\Livewire;
+use Webkul\Sale\Facades\SaleOrder as SaleOrderFacade;
 use Webkul\Sale\Livewire\Summary;
 use Webkul\Support\Console\Commands\InstallCommand;
 use Webkul\Support\Console\Commands\UninstallCommand;
@@ -61,5 +63,14 @@ class SaleServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         Livewire::component('summary', Summary::class);
+    }
+
+    public function packageRegistered(): void
+    {
+        $loader = AliasLoader::getInstance();
+
+        $loader->alias('sale', SaleOrderFacade::class);
+
+        $this->app->singleton('sale', SaleManager::class);
     }
 }

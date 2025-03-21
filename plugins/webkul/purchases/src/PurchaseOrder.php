@@ -34,9 +34,7 @@ class PurchaseOrder
     public function __construct(
         protected TaxService $taxService,
         protected OrderSettings $orderSettings
-    )
-    {
-    }
+    ) {}
 
     public function sendRFQ(Order $record, array $data): Order
     {
@@ -246,15 +244,15 @@ class PurchaseOrder
             return $order;
         }
 
-        if ($order->operations->isEmpty() || $order->operations->every(function($receipt) {
+        if ($order->operations->isEmpty() || $order->operations->every(function ($receipt) {
             return $receipt->state == InventoryEnums\OperationState::CANCELED;
         })) {
             $order->receipt_status = PurchaseEnums\OrderReceiptStatus::NO;
-        } elseif ($order->operations->every(function($receipt) {
+        } elseif ($order->operations->every(function ($receipt) {
             return in_array($receipt->state, [InventoryEnums\OperationState::DONE, InventoryEnums\OperationState::CANCELED]);
         })) {
             $order->receipt_status = PurchaseEnums\OrderReceiptStatus::FULL;
-        } elseif ($order->operations->contains(function($receipt) {
+        } elseif ($order->operations->contains(function ($receipt) {
             return $receipt->state == InventoryEnums\OperationState::DONE;
         })) {
             $order->receipt_status = PurchaseEnums\OrderReceiptStatus::PARTIAL;
@@ -269,21 +267,21 @@ class PurchaseOrder
     {
         if (! in_array($order->state, [PurchaseEnums\OrderState::PURCHASE, PurchaseEnums\OrderState::DONE])) {
             $order->invoice_status = PurchaseEnums\OrderInvoiceStatus::NO;
-            
+
             return $order;
         }
 
-        $floatIsZero = function($value, $precision) {
+        $floatIsZero = function ($value, $precision) {
             return abs($value) < pow(10, -$precision);
         };
 
         $precision = 4;
 
-        if ($order->lines->contains(function($line) use($floatIsZero, $precision) {
+        if ($order->lines->contains(function ($line) use ($floatIsZero, $precision) {
             return ! $floatIsZero($line->qty_to_invoice, $precision);
         })) {
             $order->invoice_status = PurchaseEnums\OrderInvoiceStatus::TO_INVOICED;
-        } elseif ($order->lines->every(function($line) use($floatIsZero, $precision) {
+        } elseif ($order->lines->every(function ($line) use ($floatIsZero, $precision) {
             return $floatIsZero($line->qty_to_invoice, $precision);
         }) && $order->accountMoves->isNotEmpty()) {
             $order->invoice_status = PurchaseEnums\OrderInvoiceStatus::INVOICED;
@@ -345,9 +343,9 @@ class PurchaseOrder
                 if ($move->isPurchaseReturn()) {
                     if (! $move->originReturnedMove || $move->is_refund) {
                         $total -= $move->uom->computeQuantity(
-                            $move->quantity, 
-                            $line->uom, 
-                            true, 
+                            $move->quantity,
+                            $line->uom,
+                            true,
                             'HALF-UP'
                         );
                     }
@@ -369,9 +367,9 @@ class PurchaseOrder
                     continue;
                 } else {
                     $total += $move->uom->computeQuantity(
-                        $move->quantity, 
-                        $line->uom, 
-                        true, 
+                        $move->quantity,
+                        $line->uom,
+                        true,
                         'HALF-UP'
                     );
                 }
@@ -385,7 +383,7 @@ class PurchaseOrder
 
     public function generateRFQPdf($record)
     {
-        $pdfPath = 'Request for Quotation-'.str_replace('/', '_', $record->name).'.pdf';
+        $pdfPath = 'Request for Quotation-' . str_replace('/', '_', $record->name) . '.pdf';
 
         if (! Storage::exists($pdfPath)) {
             $pdf = PDF::loadView('purchases::filament.admin.clusters.orders.orders.actions.print-quotation', [
@@ -400,7 +398,7 @@ class PurchaseOrder
 
     public function generatePurchaseOrderPdf($record)
     {
-        $pdfPath = 'Purchase Order-'.str_replace('/', '_', $record->name).'.pdf';
+        $pdfPath = 'Purchase Order-' . str_replace('/', '_', $record->name) . '.pdf';
 
         if (! Storage::exists($pdfPath)) {
             $pdf = PDF::loadView('purchases::filament.admin.clusters.orders.orders.actions.print-purchase-order', [
@@ -419,7 +417,7 @@ class PurchaseOrder
             return;
         }
 
-        if (! $record->lines->contains(fn ($line) => $line->product->type === ProductType::GOODS)) {
+        if (! $record->lines->contains(fn($line) => $line->product->type === ProductType::GOODS)) {
             return;
         }
 
@@ -526,11 +524,11 @@ class PurchaseOrder
     protected function getInventoryOperationType(Order $record): ?OperationType
     {
         $operationType = OperationType::where('type', '=', InventoryEnums\OperationType::INCOMING)
-            ->whereHas('warehouse', function($query) use ($record) {
+            ->whereHas('warehouse', function ($query) use ($record) {
                 $query->where('company_id', '=', $record->company_id);
             })
             ->first();
-        
+
         if (! $operationType) {
             $operationType = OperationType::where('type', '=', InventoryEnums\OperationType::INCOMING)
                 ->whereDoesntHave('warehouse')
@@ -549,7 +547,7 @@ class PurchaseOrder
     {
         $accountMove = AccountMove::create([
             'state'                        => AccountEnums\MoveState::DRAFT,
-            'move_type'                    => $record->qty_to_invoice >=0 ? AccountEnums\MoveType::IN_INVOICE : AccountEnums\MoveType::IN_REFUND,
+            'move_type'                    => $record->qty_to_invoice >= 0 ? AccountEnums\MoveType::IN_INVOICE : AccountEnums\MoveType::IN_REFUND,
             'payment_state'                => AccountEnums\PaymentState::NOT_PAID,
             'invoice_partner_display_name' => $record->partner->name,
             'invoice_origin'               => $record->name,
