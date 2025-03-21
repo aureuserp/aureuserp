@@ -22,8 +22,8 @@ return new class extends Migration
             $table->boolean('is_published')->default(0);
             $table->datetime('published_at')->nullable();
             $table->integer('visits')->default(0);
-            $table->string('meta_title')->nullable();
-            $table->string('meta_keywords')->nullable();
+            $table->text('meta_title')->nullable();
+            $table->text('meta_keywords')->nullable();
             $table->text('meta_description')->nullable();
 
             $table->foreignId('category_id')
