@@ -1,88 +1,110 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html lang="en" dir="ltr">
+<!DOCTYPE html>
+<html>
 <head>
-    <meta http-equiv="Cache-control" content="no-cache">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'DejaVu Sans';
-        }
         body {
-            font-size: 12px;
-            color: #091341;
-            font-family: 'DejaVu Sans';
-        }
-        b, th {
-            font-family: 'DejaVu Sans';
-        }
-        .page-content {
-            padding: 12px;
-        }
-        .page-header {
-            border-bottom: 1px solid #E9EFFC;
-            text-align: center;
-            font-size: 24px;
-            text-transform: uppercase;
-            color: #000DBB;
-            padding: 24px 0;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 14px;
+            color: #333333;
+            line-height: 1.6;
             margin: 0;
         }
-        .logo-container {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-        }
-        .logo-container.rtl {
-            left: auto;
-            right: 20px;
-        }
-        .logo-container img {
-            max-width: 100%;
-            height: auto;
-        }
-        .page-header b {
-            display: inline-block;
-            vertical-align: middle;
-        }
-        .small-text {
-            font-size: 7px;
+
+        .agreement {
+            margin-bottom: 50px;
+            page-break-after: always;
         }
 
-        .options {
-            font-size: 16px;
-            font-weight: 600;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            display: block;
+        .agreement:last-child {
+            page-break-after: auto;
         }
 
-        table {
+        .header {
             width: 100%;
-            border-spacing: 1px 0;
-            border-collapse: separate;
-            margin-bottom: 16px;
+            margin-bottom: 30px;
         }
-        table thead th {
-            background-color: #E9EFFC;
-            color: #000DBB;
-            padding: 6px 18px;
-            text-align: left;
+
+        .company-info {
+            width: 50%;
+            float: left;
         }
-        table.rtl thead tr th {
+
+        .vendor-info {
+            width: 45%;
+            float: right;
             text-align: right;
+            border-left: 2px solid #f0f0f0;
+            padding-left: 20px;
         }
-        table tbody td {
-            padding: 9px 18px;
-            border-bottom: 1px solid #E9EFFC;
-            text-align: left;
+
+        .clearfix {
+            clear: both;
+        }
+
+        .agreement-title {
+            font-size: 24px;
+            color: #1a4587;
+            margin: 25px 0;
+            padding: 15px 0;
+            border-bottom: 2px solid #1a4587;
+        }
+
+        .details-table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+
+        .details-table td {
+            padding: 10px;
             vertical-align: top;
         }
-        table.rtl tbody tr td {
-            text-align: right;
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
         }
+
+        .items-table th {
+            background: #1a4587;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .items-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .items-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        .items-table tr:nth-child(odd) {
+            background: #ffffff;
+        }
+
+        /* Dark Mode Support */
+        :is(.dark .items-table th) {
+            background: #0d2b57;
+            color: #ffffff;
+        }
+
+        :is(.dark .items-table td) {
+            border-bottom: 1px solid #444;
+            color: #ddd;
+        }
+
+        :is(.dark .items-table tr:nth-child(even)) {
+            background: #2d2d2d;
+        }
+
+        :is(.dark .items-table tr:nth-child(odd)) {
+            background: #1e1e1e;
+        }
+
         .summary {
             width: 100%;
             display: inline-block;
@@ -92,7 +114,6 @@
             width: 250px;
             padding-top: 5px;
             padding-bottom: 5px;
-            background-color: #E9EFFC;
             white-space: nowrap;
         }
         .summary table.rtl {
@@ -115,220 +136,278 @@
             clear: both;
             margin-top: 20px;
             padding: 20px;
-            background-color: #E9EFFC;
             border-radius: 8px;
-            font-size: 10px;
-            color: #091341;
         }
 
         .payment-info-title {
             font-weight: 600;
             margin-bottom: 10px;
         }
-
-        .payment-info-details {
-            font-weight: 500;
-        }
-
     </style>
 </head>
-<body dir="ltr">
-    <div class="page">
-        <!-- Header -->
-        <div class="page-header">
-            <b>Quotation</b>
-        </div>
-        <div class="page-content">
-            <!-- Invoice Information -->
-            <table class="ltr">
-                <tbody>
-                    <tr>
-                        <td style="width: 50%; padding: 2px 18px;border:none;">
-                            <b>Quotation ID:</b>
-                            <span>{{ $record->name }}</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width: 50%; padding: 2px 18px;border:none;">
-                            <b>Quotation Date:</b>
-                            <span>{{ $record->date_order }}</span>
-                        </td>
-                        <td style="width: 50%; padding: 2px 18px;border:none;">
-                            <b>Expiration Date:</b>
-                            <span>{{ $record->validity_date }}</span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <!-- Billing & Shipping Address -->
-            <table class="ltr">
-                <thead>
-                    <tr>
-                        <th style="width: 50%;">
-                            <b>Bill From</b>
-                        </th>
-                        <th style="width: 50%">
-                            <b>Ship to</b>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="width: 50%">
-                            <div>
-                                <strong>{{ $record->company->name }}</strong><br>
-                                {{ sprintf(
-                                    "%s\n%s%s\n%s, %s %s\n%s",
-                                    $record->company->address->name ?? '',
-                                    $record->company->address->street1 ?? '',
-                                    $record->company->address->street2 ? ', ' . $record->company->address->street2 : '',
-                                    $record->company->address->city ?? '',
-                                    $record->company->address->state ? $record->company->address->state->name : '',
-                                    $record->company->address->zip ?? '',
-                                    $record->company->address->country ? $record->company->address->country->name : ''
-                                ) }}
-                            </div>
-                        </td>
-                        <td style="width: 50%">
-                            <div>
-                                <strong>{{ $record->partner?->name }}</strong><br>
-                                @if ($record->partner?->email)
-                                    {{ $record->partner?->email }}<br>
-                                @endif
-                                @if ($record->partner?->phone)
-                                    {{ $record->partner?->phone }}<br>
-                                @endif
 
-                                @php
-                                    $addressRecord = $record->partner->addresses->where('type', 'present')->first();
-                                    $address = '';
+<body>
+    <div class="agreement">
+        <!-- Header Section -->
+        <div class="header">
+            <!-- Billing Address -->
+            <div class="company-info">
+                <div style="font-size: 28px; color: #1a4587; margin-bottom: 10px;">{{ $record->company->name }}</div>
 
-                                    if ($addressRecord) {
-                                        $address = sprintf(
-                                            "%s\n%s%s\n%s, %s %s\n%s",
-                                            $addressRecord->name ?? '',
-                                            $addressRecord->street1 ?? '',
-                                            $addressRecord->street2 ? ', ' . $addressRecord->street2 : '',
-                                            $addressRecord->city ?? '',
-                                            $addressRecord->state ? $addressRecord->state->name : '',
-                                            $addressRecord->zip ?? '',
-                                            $addressRecord->country ? $addressRecord->country->name : ''
-                                        );
-                                    }
-                                @endphp
-
-                                @if (!empty($address))
-                                    {{ $address }}
-                                @endif
-
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- Products Items -->
-            <div class="items">
-                <table class="ltr">
-                    <thead>
-                        <tr>
-                            <th>SKU</th>
-                            <th>Product Name</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($record->lines as $line)
-                            <tr>
-                                <td>{{ $line?->name ?? '-' }}</td>
-                                <td>{{ $line?->name ?? '-' }}</td>
-                                <td>{{ $record->currency->symbol }}{{ number_format($line->price_unit, 2) }}</td>
-                                <td>{{ $line?->product_uom_qty ?? '-' }}</td>
-                                <td>{{ $record->currency->symbol }}{{ number_format($line->price_total, 2) }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            <div class="summary">
-                <table class="ltr">
-                    <tbody>
-                        <tr>
-                            <td>Subtotal</td>
-                            <td>-</td>
-                            <td>{{ $record->currency->symbol }} {{ number_format($record->amount_untaxed, 2) }}</td>
-                        </tr>
-                        <tr>
-                            <td>Tax</td>
-                            <td>-</td>
-                            <td>{{ $record->currency->symbol }} {{ number_format($record->amount_tax, 2) }}</td>
-                        </tr>
-                        <tr>
-                            <td>Discount</td>
-                            <td>-</td>
-                            <td>-{{ $record->currency->symbol }} {{ number_format($record->total_discount, 2) }}</td>
-                        </tr>
-                        <tr>
-                            <td style="border-top: 1px solid #FFFFFF;">
-                                <b>Grand Total</b>
-                            </td>
-                            <td style="border-top: 1px solid #FFFFFF;">-</td>
-                            <td style="border-top: 1px solid #FFFFFF;">
-                                <b>{{ $record->currency->symbol }} {{ number_format($record->amount_total, 2) }}</b>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Optional Product Items Items -->
-            @if (! $record->optionalLines->isEmpty())
-                <div class="items">
-                    <span class="options">Product Options</span>
-
-                    <table class="ltr">
-                        <thead>
-                            <tr>
-                                <th>SKU</th>
-                                <th>Product Name</th>
-                                <th>Price</th>
-                                <th>Quantity</th>
-                                <th>Subtotal</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($record->optionalLines as $line)
-                                <tr>
-                                    <td>{{ $line?->name ?? '-' }}</td>
-                                    <td>{{ $line?->name ?? '-' }}</td>
-                                    <td>{{ $record->currency->symbol }}{{ number_format($line->price_unit, 2) }}</td>
-                                    <td>{{ $line?->product_uom_qty ?? '-' }}</td>
-                                    <td>{{ $record->currency->symbol }}{{ number_format($line->price_total, 2) }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
-
-            <!-- Payment Information Section -->
-            @if ($record->name)
-                <div class="payment-info">
-                    <div class="payment-info-title">Payment Information</div>
+                @if ($record->company->address)
                     <div>
-                        Payment Communication: {{ $record->name }}
-                        @if ($record?->partnerBank?->bank?->name || $record?->partnerBank?->account_number)
-                            <br>
-                            <span class="payment-info-details">on this account details:</span>
-                            {{ $record?->partnerBank?->bank?->name ?? 'N/A' }}
-                            ({{ $record?->partnerBank?->account_number ?? 'N/A' }})
+                        {{ $record->company->address->street1 }}
+
+                        @if ($record->company->address->street2)
+                            ,{{ $record->company->address->street2 }}
                         @endif
                     </div>
-                </div>
+
+                    <div>
+                        {{ $record->company->address->city }},
+
+                        @if ($record->company->address->state)
+                            {{ $record->company->address->state->name }},
+                        @endif
+
+                        {{ $record->company->address->zip }}
+                    </div>
+
+                    @if ($record->company->address->country)
+                        <div>
+                            {{ $record->company->address->country->name }}
+                        </div>
+                    @endif
+
+                    @if ($record->company->email)
+                        <div>
+                            Email:
+                            {{ $record->company->email }}
+                        </div>
+                    @endif
+
+                    @if ($record->company->phone)
+                        <div>
+                            Phone:
+                            {{ $record->company->phone }}
+                        </div>
+                    @endif
+                @endif
+            </div>
+
+            <!-- Shipping Address -->
+            <div class="vendor-info">
+                <div>{{ $record->partner->name }}</div>
+
+                @if ($record->partner->addresses->count())
+                    <div>
+                        @php
+                            $partnerAddress = $record->partner->addresses->first();
+                        @endphp
+
+                        {{ $partnerAddress->street1 }}
+
+                        @if ($partnerAddress->street2)
+                            ,{{ $partnerAddress->street2 }}
+                        @endif
+                    </div>
+
+                    <div>
+                        {{ $partnerAddress->city }},
+
+                        @if ($partnerAddress->state)
+                            {{ $partnerAddress->state->name }},
+                        @endif
+
+                        {{ $partnerAddress->zip }}
+                    </div>
+
+                    @if ($partnerAddress->country)
+                        <div>
+                            {{ $partnerAddress->country->name }}
+                        </div>
+                    @endif
+
+                    @if ($partnerAddress->email)
+                        <div>
+                            Email:
+                            {{ $partnerAddress->email }}
+                        </div>
+                    @endif
+
+                    @if ($partnerAddress->phone)
+                        <div>
+                            Phone:
+                            {{ $partnerAddress->phone }}
+                        </div>
+                    @endif
+                @endif
+            </div>
+
+            <div class="clearfix"></div>
+        </div>
+
+        <!-- Agreement Title -->
+        <div class="agreement-title">
+            @if ($record->state == \Webkul\Sale\Enums\OrderState::SALE->value)
+                Order ID #{{ $record->name }}
+            @else
+                Quotation ID #{{ $record->name }}
             @endif
         </div>
+
+        <!-- Details Table -->
+        <table class="details-table">
+            <tr>
+                @if ($record->invoice_date)
+                    <td width="33%">
+                        <strong>Invoice Date</strong><br>
+                        {{ $record->invoice_date }}
+                    </td>
+                @endif
+
+                @if ($record->invoice_date_due)
+                    <td width="33%">
+                        <strong>Due Date</strong><br>
+                        {{ $record->invoice_date_due }}
+                    </td>
+                @endif
+
+                @if ($record->date_order)
+                    <td width="33%">
+                        @if ($record->state == \Webkul\Sale\Enums\OrderState::SALE->value)
+                            <strong>Order Date</strong><br>
+                        @else
+                            <strong>Quotation Date</strong><br>
+                        @endif
+
+                        {{ $record->date_order }}
+                    </td>
+                @endif
+
+                @if ($record->validity_date)
+                    <td width="33%">
+                        <strong>Expiration Date</strong><br>
+                        {{ $record->validity_date }}
+                    </td>
+                @endif
+            </tr>
+        </table>
+
+        <!-- Product Items -->
+        @if (! $record->lines->isEmpty())
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+
+                        @if (app(\Webkul\Sale\Settings\ProductSettings::class)->enable_uom)
+                            <th>Unit</th>
+                        @endif
+
+                        <th>Unit Price</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach ($record->lines as $item)
+                        <tr>
+                            <td>{{ $item->product->name }}</td>
+                            <td>{{ number_format($item->product_uom_qty) }}</td>
+
+                            @if (app(\Webkul\Sale\Settings\ProductSettings::class)->enable_uom)
+                                <td>{{ $item->product->uom->name }}</td>
+                            @endif
+
+                            <td>{{ number_format($item->price_unit, 2) }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+
+
+        <div class="summary">
+            <table class="ltr">
+                <tbody>
+                    <tr>
+                        <td>Subtotal</td>
+                        <td>-</td>
+                        <td>{{ $record->currency->symbol }} {{ number_format($record->amount_untaxed, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Tax</td>
+                        <td>-</td>
+                        <td>{{ $record->currency->symbol }} {{ number_format($record->amount_tax, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Discount</td>
+                        <td>-</td>
+                        <td>-{{ $record->currency->symbol }} {{ number_format($record->total_discount, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td style="border-top: 1px solid #FFFFFF;">
+                            <b>Grand Total</b>
+                        </td>
+                        <td style="border-top: 1px solid #FFFFFF;">-</td>
+                        <td style="border-top: 1px solid #FFFFFF;">
+                            <b>{{ $record->currency->symbol }} {{ number_format($record->amount_total, 2) }}</b>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Optional Product Items -->
+        @if (! $record->optionalLines->isEmpty())
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+
+                        @if (app(\Webkul\Sale\Settings\ProductSettings::class)->enable_uom)
+                            <th>Unit</th>
+                        @endif
+
+                        <th>Unit Price</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach ($record->optionalLines as $item)
+                        <tr>
+                            <td>{{ $item->product->name }}</td>
+                            <td>{{ number_format($item->quantity) }}</td>
+
+                            @if (app(\Webkul\Sale\Settings\ProductSettings::class)->enable_uom)
+                                <td>{{ $item->product->uom->name }}</td>
+                            @endif
+
+                            <td>{{ number_format($item->price_unit, 2) }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+
+        <!-- Payment Information Section -->
+        @if ($record->name)
+            <div class="payment-info">
+                <div class="payment-info-title">Payment Information</div>
+                <div>
+                    Payment Communication: {{ $record->name }}
+                    @if ($record?->partnerBank?->bank?->name || $record?->partnerBank?->account_number)
+                        <br>
+                        <span>on this account details:</span>
+                        {{ $record?->partnerBank?->bank?->name ?? 'N/A' }}
+                        ({{ $record?->partnerBank?->account_number ?? 'N/A' }})
+                    @endif
+                </div>
+            </div>
+        @endif
     </div>
 </body>
+
 </html>

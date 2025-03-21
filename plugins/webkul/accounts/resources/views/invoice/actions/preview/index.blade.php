@@ -92,7 +92,6 @@
             width: 250px;
             padding-top: 5px;
             padding-bottom: 5px;
-            background-color: #E9EFFC;
             white-space: nowrap;
         }
         .summary table.rtl {
@@ -115,9 +114,7 @@
             clear: both;
             margin-top: 20px;
             padding: 20px;
-            background-color: #E9EFFC;
             border-radius: 8px;
-            color: #1a4587;
         }
 
         .payment-info-title {
@@ -246,7 +243,7 @@
                 @if ($record->invoice_date_due)
                     <td width="33%">
                         <strong>Due Date</strong><br>
-                        {{ $record->invoice_date_due }}
+                        {{ $record->invoice_date_due?->format('Y-m-d') }}
                     </td>
                 @endif
             </tr>
