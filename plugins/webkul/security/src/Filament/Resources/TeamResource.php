@@ -87,8 +87,8 @@ class TeamResource extends Resource
                     ->successNotification(
                         Notification::make()
                             ->success()
-                            ->title(__('security::filament/resources/team.navigation.table.empty-state-actions.create.notification.title'))
-                            ->body(__('security::filament/resources/team.navigation.table.empty-state-actions.create.notification.body'))
+                            ->title(__('security::filament/resources/team.table.empty-state-actions.create.notification.title'))
+                            ->body(__('security::filament/resources/team.table.empty-state-actions.create.notification.body'))
                     ),
             ]);
     }
