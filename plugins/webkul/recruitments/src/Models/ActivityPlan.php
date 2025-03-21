@@ -2,7 +2,7 @@
 
 namespace Webkul\Recruitment\Models;
 
-use Webkul\Support\Models\ActivityPlan as BaseActivityPlan;
+use Webkul\Employee\Models\ActivityPlan as BaseActivityPlan;
 
 class ActivityPlan extends BaseActivityPlan
 {
