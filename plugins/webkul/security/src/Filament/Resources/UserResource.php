@@ -191,7 +191,8 @@ class UserResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('teams.name')
-                    ->label(__('security::filament/resources/user.table.columns.teams')),
+                    ->label(__('security::filament/resources/user.table.columns.teams'))
+                    ->badge(),
                 Tables\Columns\TextColumn::make('roles.name')
                     ->sortable()
                     ->label(__('security::filament/resources/user.table.columns.role')),
