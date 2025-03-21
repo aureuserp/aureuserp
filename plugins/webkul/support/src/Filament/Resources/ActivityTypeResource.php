@@ -68,7 +68,7 @@ class ActivityTypeResource extends Resource
                                             ->preload(),
                                         Forms\Components\Select::make('default_user_id')
                                             ->label(__('support::filament/resources/activity-type.form.sections.activity-type-details.fields.default-user'))
-                                            ->options(fn () => User::query()->pluck('name', 'id'))
+                                            ->options(fn() => User::query()->pluck('name', 'id'))
                                             ->searchable()
                                             ->preload(),
                                         Forms\Components\Textarea::make('summary')
@@ -123,18 +123,18 @@ class ActivityTypeResource extends Resource
                                             ->live()
                                             ->required()
                                             ->native(false)
-                                            ->hidden(fn (Get $get) => $get('category') === 'upload_file'),
+                                            ->hidden(fn(Get $get) => $get('category') === 'upload_file'),
                                         Forms\Components\Select::make('activity_type_suggestions')
                                             ->multiple()
                                             ->relationship('suggestedActivityTypes', 'name')
                                             ->searchable()
                                             ->preload()
                                             ->label(__('support::filament/resources/activity-type.form.sections.advanced-information.fields.suggest'))
-                                            ->hidden(fn (Get $get) => $get('chaining_type') === 'trigger' || $get('category') === 'upload_file'),
+                                            ->hidden(fn(Get $get) => $get('chaining_type') === 'trigger' || $get('category') === 'upload_file'),
                                         Forms\Components\Select::make('triggered_next_type_id')
                                             ->relationship('activityTypes', 'name')
                                             ->label(__('support::filament/resources/activity-type.form.sections.advanced-information.fields.trigger'))
-                                            ->hidden(fn (Get $get) => $get('chaining_type') === 'suggest' && $get('category') !== 'upload_file'),
+                                            ->hidden(fn(Get $get) => $get('chaining_type') === 'suggest' && $get('category') !== 'upload_file'),
                                     ]),
                                 Forms\Components\Section::make(__('support::filament/resources/activity-type.form.sections.status-and-configuration-information.title'))
                                     ->schema([
@@ -172,14 +172,14 @@ class ActivityTypeResource extends Resource
                     }),
                 Tables\Columns\TextColumn::make('delay_from')
                     ->label(__('support::filament/resources/activity-type.table.columns.type'))
-                    ->formatStateUsing(fn ($state) => ActivityDelayFrom::options()[$state])
+                    ->formatStateUsing(fn($state) => ActivityDelayFrom::options()[$state])
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('category')
                     ->badge()
                     ->label(__('support::filament/resources/activity-type.table.columns.action'))
                     ->searchable()
-                    ->formatStateUsing(fn ($state) => ActivityTypeAction::options()[$state])
+                    ->formatStateUsing(fn($state) => ActivityTypeAction::options()[$state])
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->label(__('support::filament/resources/activity-type.table.columns.status'))
@@ -245,7 +245,7 @@ class ActivityTypeResource extends Resource
                     ->label(__('support::filament/resources/activity-type.table.filters.status')),
                 Tables\Filters\Filter::make('has_delay')
                     ->label(__('support::filament/resources/activity-type.table.filters.has-delay'))
-                    ->query(fn ($query) => $query->whereNotNull('delay_count')),
+                    ->query(fn($query) => $query->whereNotNull('delay_count')),
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
@@ -319,7 +319,7 @@ class ActivityTypeResource extends Resource
                                         Infolists\Components\TextEntry::make('category')
                                             ->icon('heroicon-o-tag')
                                             ->placeholder('—')
-                                            ->formatStateUsing(fn ($state) => ActivityTypeAction::options()[$state])
+                                            ->formatStateUsing(fn($state) => ActivityTypeAction::options()[$state])
                                             ->label(__('support::filament/resources/activity-type.infolist.sections.activity-type-details.entries.action')),
                                         Infolists\Components\TextEntry::make('default_user.name')
                                             ->icon('heroicon-o-user')
@@ -352,12 +352,12 @@ class ActivityTypeResource extends Resource
                                         Infolists\Components\TextEntry::make('delay_unit')
                                             ->icon('heroicon-o-calendar')
                                             ->placeholder('—')
-                                            ->formatStateUsing(fn ($state) => ActivityDelayUnit::options()[$state])
+                                            ->formatStateUsing(fn($state) => ActivityDelayUnit::options()[$state])
                                             ->label(__('support::filament/resources/activity-type.infolist.sections.delay-information.entries.delay-unit')),
                                         Infolists\Components\TextEntry::make('delay_from')
                                             ->icon('heroicon-o-arrow-right')
                                             ->placeholder('—')
-                                            ->formatStateUsing(fn ($state) => ActivityDelayFrom::options()[$state])
+                                            ->formatStateUsing(fn($state) => ActivityDelayFrom::options()[$state])
                                             ->label(__('support::filament/resources/activity-type.infolist.sections.delay-information.entries.delay-form')),
                                     ])->columns(2),
                             ])->columnSpan(2),
@@ -366,17 +366,17 @@ class ActivityTypeResource extends Resource
                                 Infolists\Components\Section::make(__('support::filament/resources/activity-type.infolist.sections.advanced-information.title'))
                                     ->schema([
                                         Infolists\Components\TextEntry::make('icon')
-                                            ->icon(fn ($record) => $record->icon)
+                                            ->icon(fn($record) => $record->icon)
                                             ->placeholder('—')
                                             ->label(__('support::filament/resources/activity-type.infolist.sections.advanced-information.entries.icon')),
                                         Infolists\Components\TextEntry::make('decoration_type')
                                             ->icon('heroicon-o-paint-brush')
-                                            ->formatStateUsing(fn ($state) => ActivityDecorationType::options()[$state])
+                                            ->formatStateUsing(fn($state) => ActivityDecorationType::options()[$state])
                                             ->placeholder('—')
                                             ->label(__('support::filament/resources/activity-type.infolist.sections.advanced-information.entries.decoration-type')),
                                         Infolists\Components\TextEntry::make('chaining_type')
                                             ->icon('heroicon-o-link')
-                                            ->formatStateUsing(fn ($state) => ActivityChainingType::options()[$state])
+                                            ->formatStateUsing(fn($state) => ActivityChainingType::options()[$state])
                                             ->placeholder('—')
                                             ->label(__('support::filament/resources/activity-type.infolist.sections.advanced-information.entries.chaining-type')),
                                         Infolists\Components\TextEntry::make('suggestedActivityTypes.name')
