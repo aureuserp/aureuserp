@@ -41,6 +41,8 @@ class InstallERP extends Command
 
         $this->generateRolesAndPermissions();
 
+        $this->storageLink();
+
         $this->runSeeder();
 
         $this->createAdminUser();
@@ -187,5 +189,18 @@ class InstallERP extends Command
         if (PHP_OS_FAMILY == 'Linux') {
             exec("xdg-open {$repoUrl}");
         }
+    }
+
+    private function storageLink()
+    {
+        if (file_exists(public_path('storage'))) {
+            return;
+        }
+
+        $this->info('🔗 Linking storage directory...');
+
+        Artisan::call('storage:link', [], $this->getOutput());
+
+        $this->info('✅ Storage directory linked successfully.');
     }
 }
