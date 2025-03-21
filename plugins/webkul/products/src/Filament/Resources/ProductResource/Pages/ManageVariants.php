@@ -74,7 +74,14 @@ class ManageVariants extends ManageRelatedRecords
 
         $table->modelLabel(__('products::filament/resources/product/pages/manage-variants.title'));
 
-        return $table;
+        return $table->modifyQueryUsing(function ($query) {
+            $queryBuilder = $query->getQuery();
+
+            $queryBuilder->wheres = collect($queryBuilder->wheres)
+                ->filter(fn($where) => ! ($where['column'] == 'parent_id' && $where['type'] == 'Null'))
+                ->values()
+                ->toArray();
+        });
     }
 
     public function infolist(Infolist $infolist): Infolist
