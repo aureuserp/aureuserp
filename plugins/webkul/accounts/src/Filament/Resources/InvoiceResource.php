@@ -692,7 +692,15 @@ class InvoiceResource extends Resource
             ->addActionLabel(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.add-product'))
             ->collapsible()
             ->defaultItems(0)
-            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+            ->itemLabel(function ($state) {
+                if (! empty($state['name'])) {
+                    return $state['name'];
+                }
+
+                $product = Product::find($state['product_id']);
+
+                return $product->name ?? null;
+            })
             ->deleteAction(fn (Forms\Components\Actions\Action $action) => $action->requiresConfirmation())
             ->schema([
                 Forms\Components\Group::make()
