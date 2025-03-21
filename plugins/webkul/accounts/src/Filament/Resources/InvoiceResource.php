@@ -262,8 +262,7 @@ class InvoiceResource extends Resource
                                 Forms\Components\RichEditor::make('narration')
                                     ->hiddenLabel(),
                             ]),
-                    ])
-                    ->persistTabInQueryString(),
+                    ]),
             ])
             ->columns('full');
     }
