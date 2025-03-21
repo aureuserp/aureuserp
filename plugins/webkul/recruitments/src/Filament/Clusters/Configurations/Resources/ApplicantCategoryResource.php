@@ -61,7 +61,8 @@ class ApplicantCategoryResource extends Resource
                     ->placeholder(__('recruitments::filament/clusters/configurations/resources/applicant-category.form.fields.name-placeholder')),
                 Forms\Components\ColorPicker::make('color')
                     ->label(__('recruitments::filament/clusters/configurations/resources/applicant-category.form.fields.color'))
-                    ->required(),
+                    ->required()
+                    ->regex('/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'),
             ]);
     }
 
