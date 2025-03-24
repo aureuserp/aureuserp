@@ -7,6 +7,7 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums;
 use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Facades\Account;
 use Webkul\Account\Filament\Resources\InvoiceResource;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\Partner;
@@ -53,8 +54,6 @@ class CreateInvoice extends CreateRecord
 
     protected function afterCreate(): void
     {
-        $record = $this->getRecord();
-
-        $this->getResource()::collectTotals($record);
+        Account::computeAccountMove($this->getRecord());
     }
 }

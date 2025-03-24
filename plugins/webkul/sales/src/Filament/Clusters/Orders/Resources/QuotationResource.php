@@ -21,8 +21,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\TypeTaxUse;
+use Webkul\Account\Facades\Tax;
 use Webkul\Account\Models\PaymentTerm;
-use Webkul\Account\Services\TaxService;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Partner\Models\Partner;
 use Webkul\Product\Models\Packaging;
@@ -699,6 +699,7 @@ class QuotationResource extends Resource
                             ]),
                         Infolists\Components\Tabs\Tab::make(__('Optional Products'))
                             ->icon('heroicon-o-arrow-path-rounded-square')
+                            ->hidden(fn (Order $record) => $record->optionalLines->isEmpty())
                             ->schema([
                                 Infolists\Components\RepeatableEntry::make('optionalLines')
                                     ->hiddenLabel()
@@ -871,7 +872,7 @@ class QuotationResource extends Resource
                                     ->numeric()
                                     ->live()
                                     ->dehydrated(),
-                                Forms\Components\Select::make('uom_id')
+                                Forms\Components\Select::make('product_uom_id')
                                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.uom'))
                                     ->relationship(
                                         'uom',
@@ -926,7 +927,7 @@ class QuotationResource extends Resource
                                             $data['sort'] = OrderLine::max('sort') + 1;
                                             $data['company_id'] = $user?->default_company_id;
                                             $data['currency_id'] = $livewire->record->currency_id;
-                                            $data['product_uom_id'] = $state['uom_id'];
+                                            $data['product_uom_id'] = $state['product_uom_id'];
                                             $orderLine = OrderLine::create($data);
 
                                             $record->line_id = $orderLine->id;
@@ -1032,7 +1033,7 @@ class QuotationResource extends Resource
                                     ->disabled(true)
                                     ->disabled()
                                     ->visible(fn ($record): bool => in_array($record?->order->state, [OrderState::SALE])),
-                                Forms\Components\Select::make('uom_id')
+                                Forms\Components\Select::make('product_uom_id')
                                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.uom'))
                                     ->relationship(
                                         'uom',
@@ -1146,17 +1147,15 @@ class QuotationResource extends Resource
     {
         $product = Product::find($data['product_id']);
 
-        $data = [
-            'name'         => $product->name,
-            'uom_id'       => $data['uom_id'] ?? $product->uom_id,
-            'currency_id'  => $record->currency_id,
-            'partner_id'   => $record->partner_id,
-            'creator_id'   => Auth::id(),
-            'company_id'   => Auth::user()->default_company_id,
+        return [
+            'name'                => $product->name,
+            'product_uom_id'      => $data['product_uom_id'] ?? $product->uom_id,
+            'currency_id'         => $record->currency_id,
+            'partner_id'          => $record->partner_id,
+            'creator_id'          => Auth::id(),
+            'company_id'          => Auth::user()->default_company_id,
             ...$data,
         ];
-
-        return $data;
     }
 
     private static function afterProductUpdated(Forms\Set $set, Forms\Get $get): void
@@ -1167,9 +1166,9 @@ class QuotationResource extends Resource
 
         $product = Product::find($get('product_id'));
 
-        $set('uom_id', $product->uom_id);
+        $set('product_uom_id', $product->uom_id);
 
-        $uomQuantity = static::calculateUnitQuantity($get('uom_id'), $get('product_qty'));
+        $uomQuantity = static::calculateUnitQuantity($get('product_uom_id'), $get('product_qty'));
 
         $set('product_uom_qty', round($uomQuantity, 2));
 
@@ -1196,7 +1195,7 @@ class QuotationResource extends Resource
             return;
         }
 
-        $uomQuantity = static::calculateUnitQuantity($get('uom_id'), $get('product_qty'));
+        $uomQuantity = static::calculateUnitQuantity($get('product_uom_id'), $get('product_qty'));
 
         $set('product_uom_qty', round($uomQuantity, 2));
 
@@ -1215,7 +1214,7 @@ class QuotationResource extends Resource
             return;
         }
 
-        $uomQuantity = static::calculateUnitQuantity($get('uom_id'), $get('product_qty'));
+        $uomQuantity = static::calculateUnitQuantity($get('product_uom_id'), $get('product_qty'));
 
         $set('product_uom_qty', round($uomQuantity, 2));
 
@@ -1247,7 +1246,7 @@ class QuotationResource extends Resource
 
             $set('product_uom_qty', round($productUOMQty, 2));
 
-            $uom = Uom::find($get('uom_id'));
+            $uom = Uom::find($get('product_uom_id'));
 
             $productQty = $uom ? $productUOMQty * $uom->factor : $productUOMQty;
 
@@ -1309,11 +1308,11 @@ class QuotationResource extends Resource
             $vendorPrice = $product->price ?? $product->cost;
         }
 
-        if (! $get('uom_id')) {
+        if (! $get('product_uom_id')) {
             return $vendorPrice;
         }
 
-        $uom = Uom::find($get('uom_id'));
+        $uom = Uom::find($get('product_uom_id'));
 
         return (float) ($vendorPrice / $uom->factor);
     }
@@ -1376,7 +1375,7 @@ class QuotationResource extends Resource
 
         $taxIds = $get($prefix.'taxes') ?? [];
 
-        [$subTotal, $taxAmount] = app(TaxService::class)->collectionTaxes($taxIds, $subTotal, $quantity);
+        [$subTotal, $taxAmount] = Tax::collect($taxIds, $subTotal, $quantity);
 
         $total = $subTotal + $taxAmount;
 
@@ -1407,64 +1406,6 @@ class QuotationResource extends Resource
             $totalMargin,
             $marginPercentage,
         ];
-    }
-
-    public static function collectTotals(Order $record): void
-    {
-        $record->amount_untaxed = 0;
-        $record->amount_tax = 0;
-        $record->amount_total = 0;
-
-        foreach ($record->lines as $line) {
-            $line = static::collectLineTotals($line);
-
-            $record->amount_untaxed += $line->price_subtotal;
-            $record->amount_tax += $line->price_tax;
-            $record->amount_total += $line->price_total;
-        }
-
-        $record->save();
-    }
-
-    public static function collectLineTotals(OrderLine $line): OrderLine
-    {
-        $qtyDelivered = $line->qty_delivered ?? 0;
-
-        $line->qty_to_invoice = $qtyDelivered - $line->qty_invoiced;
-
-        $subTotal = $line->price_unit * $line->product_qty;
-
-        $discountAmount = 0;
-
-        if ($line->discount > 0) {
-            $discountAmount = $subTotal * ($line->discount / 100);
-
-            $subTotal = $subTotal - $discountAmount;
-        }
-
-        $taxIds = $line->taxes->pluck('id')->toArray();
-
-        [$subTotal, $taxAmount] = app(TaxService::class)->collectionTaxes($taxIds, $subTotal, $line->product_qty);
-
-        $line->price_subtotal = round($subTotal, 4);
-
-        $line->price_tax = $taxAmount;
-
-        $line->price_total = $subTotal + $taxAmount;
-
-        $line->sort = $line->sort ?? OrderLine::max('sort') + 1;
-
-        $line->technical_price_unit = $line->price_unit;
-
-        $line->price_reduce_taxexcl = $line->price_unit - ($line->price_unit * ($line->discount / 100));
-
-        $line->price_reduce_taxinc = round($line->price_reduce_taxexcl + ($line->price_reduce_taxexcl * ($line->taxes->sum('amount') / 100)), 2);
-
-        $line->state = $line->order->state;
-
-        $line->save();
-
-        return $line;
     }
 
     public static function getRecordSubNavigation(Page $page): array
