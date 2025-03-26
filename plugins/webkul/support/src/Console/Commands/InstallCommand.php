@@ -5,6 +5,7 @@ namespace Webkul\Support\Console\Commands;
 use Closure;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Webkul\Support\Models\Plugin;
 use Webkul\Support\Package;
@@ -39,9 +40,9 @@ class InstallCommand extends Command
 
     public function __construct(Package $package)
     {
-        $this->signature = $package->shortName().':install';
+        $this->signature = $package->shortName() . ':install';
 
-        $this->description = 'Install '.$package->name;
+        $this->description = 'Install ' . $package->name;
 
         $this->package = $package;
 
@@ -67,11 +68,11 @@ class InstallCommand extends Command
                 $this->newLine();
 
                 foreach ($this->package->dependencies as $dependency) {
-                    $this->comment('Installing <info>'.$dependency.'</info>...');
+                    $this->comment('Installing <info>' . $dependency . '</info>...');
 
                     $this->newLine();
 
-                    $this->call($dependency.':install');
+                    $this->call($dependency . ':install');
                 }
 
                 $this->newLine();
@@ -79,7 +80,7 @@ class InstallCommand extends Command
                 $this->info('This package requires the following dependencies:');
 
                 foreach ($this->package->dependencies as $dependency) {
-                    $this->line('- <info>'.$dependency.'</info>');
+                    $this->line('- <info>' . $dependency . '</info>');
                 }
 
                 $this->newLine();
@@ -96,11 +97,11 @@ class InstallCommand extends Command
             $this->newLine();
 
             foreach ($this->package->dependencies as $dependency) {
-                $this->comment('Installing <info>'.$dependency.'</info>...');
+                $this->comment('Installing <info>' . $dependency . '</info>...');
 
                 $this->newLine();
 
-                $this->call($dependency.':install');
+                $this->call($dependency . ':install');
             }
 
             $this->newLine();
@@ -243,17 +244,41 @@ class InstallCommand extends Command
     {
         $migrationsToRun = collect([]);
 
+        // foreach ($this->package->migrationFileNames as $migration) {
+        //     if ($this->hasMigrationAlreadyRun($migration)) {
+        //         continue;
+        //     }
+
+        //     $path = str_replace(base_path().'/', '', $this->package->basePath("/../database/migrations/{$migration}.php"));
+
+        //     $migrationsToRun[] = $path;
+        // }
         foreach ($this->package->migrationFileNames as $migration) {
             if ($this->hasMigrationAlreadyRun($migration)) {
                 continue;
             }
 
-            $path = str_replace(base_path().'/', '', $this->package->basePath("/../database/migrations/{$migration}.php"));
+            // Build the raw path for the migration file
+            $rawPath = $this->package->basePath("/../database/migrations/{$migration}.php");
 
-            $migrationsToRun[] = $path;
+            // If the file doesn't exist, try appending the .stub extension
+            if (!file_exists($rawPath)) {
+                $rawPath .= '.stub';
+            }
+
+            // Normalize the path using realpath (if file exists) or fallback to the raw path
+            $normalizedPath = realpath($rawPath) ?: $rawPath;
+
+            // Remove the base_path prefix to get a relative path for migration
+            $relativePath = str_replace(base_path() . DIRECTORY_SEPARATOR, '', $normalizedPath);
+
+            Log::info('Migration file path: ' . $relativePath);
+
+            $migrationsToRun[] = $relativePath;
         }
 
-        if (! $migrationsToRun->isEmpty()) {
+
+        if (!$migrationsToRun->isEmpty()) {
             $this->info("⚙️ Running <comment>{$this->package->shortName()}</comment> database migrations...");
 
             foreach ($migrationsToRun as $migration) {
@@ -274,12 +299,12 @@ class InstallCommand extends Command
                 continue;
             }
 
-            $path = str_replace(base_path().'/', '', $this->package->basePath("/../database/settings/{$setting}.php"));
+            $path = str_replace(base_path() . '/', '', $this->package->basePath("/../database/settings/{$setting}.php"));
 
             $settingsToRun[] = $path;
         }
 
-        if (! $settingsToRun->isEmpty()) {
+        if (!$settingsToRun->isEmpty()) {
             $this->info("⚙️ Running <comment>{$this->package->shortName()}</comment> settings database migrations...");
 
             foreach ($settingsToRun as $migration) {
@@ -314,7 +339,7 @@ class InstallCommand extends Command
                 $this->info('This package includes the following seeders:');
 
                 foreach ($this->package->seederClasses as $seeder) {
-                    $this->line('- <info>'.$seeder.'</info>');
+                    $this->line('- <info>' . $seeder . '</info>');
                 }
                 $this->newLine();
 
@@ -380,44 +405,44 @@ class InstallCommand extends Command
     {
         $providerName = $this->package->publishableProviderName;
 
-        if (! $providerName) {
+        if (!$providerName) {
             return $this;
         }
 
-        $this->callSilent('vendor:publish', ['--tag' => $this->package->shortName().'-provider']);
+        $this->callSilent('vendor:publish', ['--tag' => $this->package->shortName() . '-provider']);
 
         $namespace = Str::replaceLast('\\', '', $this->laravel->getNamespace());
 
-        if (intval(app()->version()) < 11 || ! file_exists(base_path('bootstrap/providers.php'))) {
+        if (intval(app()->version()) < 11 || !file_exists(base_path('bootstrap/providers.php'))) {
             $appConfig = file_get_contents(config_path('app.php'));
         } else {
             $appConfig = file_get_contents(base_path('bootstrap/providers.php'));
         }
 
-        $class = '\\Providers\\'.Str::replace('/', '\\', $providerName).'::class';
+        $class = '\\Providers\\' . Str::replace('/', '\\', $providerName) . '::class';
 
-        if (Str::contains($appConfig, $namespace.$class)) {
+        if (Str::contains($appConfig, $namespace . $class)) {
             return $this;
         }
 
-        if (intval(app()->version()) < 11 || ! file_exists(base_path('bootstrap/providers.php'))) {
+        if (intval(app()->version()) < 11 || !file_exists(base_path('bootstrap/providers.php'))) {
             file_put_contents(config_path('app.php'), str_replace(
                 "{$namespace}\\Providers\\BroadcastServiceProvider::class,",
-                "{$namespace}\\Providers\\BroadcastServiceProvider::class,".PHP_EOL."        {$namespace}{$class},",
+                "{$namespace}\\Providers\\BroadcastServiceProvider::class," . PHP_EOL . "        {$namespace}{$class},",
                 $appConfig
             ));
         } else {
             file_put_contents(base_path('bootstrap/providers.php'), str_replace(
                 "{$namespace}\\Providers\\AppServiceProvider::class,",
-                "{$namespace}\\Providers\\AppServiceProvider::class,".PHP_EOL."        {$namespace}{$class},",
+                "{$namespace}\\Providers\\AppServiceProvider::class," . PHP_EOL . "        {$namespace}{$class},",
                 $appConfig
             ));
         }
 
-        file_put_contents(app_path('Providers/'.$providerName.'.php'), str_replace(
+        file_put_contents(app_path('Providers/' . $providerName . '.php'), str_replace(
             "namespace App\Providers;",
             "namespace {$namespace}\Providers;",
-            file_get_contents(app_path('Providers/'.$providerName.'.php'))
+            file_get_contents(app_path('Providers/' . $providerName . '.php'))
         ));
 
         return $this;
