@@ -45,7 +45,7 @@ class PurchaseServiceProvider extends PackageServiceProvider
             ])
             ->runsSettings()
             ->hasDependencies([
-                'invoices',
+                'invoices','inventories'
             ])
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
