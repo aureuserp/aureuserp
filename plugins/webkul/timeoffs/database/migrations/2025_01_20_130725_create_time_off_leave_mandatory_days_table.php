@@ -19,8 +19,8 @@ return new class extends Migration
 
             $table->string('color')->nullable()->comment('Color code for the day');
             $table->string('name')->comment('Name of the day');
-            $table->timestamp('start_date')->comment('Start date of the day');
-            $table->timestamp('end_date')->comment('End date of the day');
+            $table->timestamp('start_date')->nullable()->comment('Start date of the day');
+            $table->timestamp('end_date')->nullable()->comment('End date of the day');
 
             $table->timestamps();
         });
