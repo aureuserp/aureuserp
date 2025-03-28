@@ -82,6 +82,7 @@ class TaxResource extends Resource
                                     ->label(__('accounts::filament/resources/tax.form.sections.field-set.advanced-options.fields.invoice-label')),
                                 Forms\Components\Select::make('tax_group_id')
                                     ->relationship('taxGroup', 'name')
+                                    ->required()
                                     ->label(__('accounts::filament/resources/tax.form.sections.field-set.advanced-options.fields.tax-group')),
                                 Forms\Components\Select::make('country_id')
                                     ->relationship('country', 'name')
