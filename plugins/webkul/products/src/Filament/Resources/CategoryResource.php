@@ -10,12 +10,17 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
+use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\Collection;
 use Filament\Tables\Table;
 use Webkul\Product\Models\Category;
+use Illuminate\Database\Eloquent\Model;
 
 class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-folder';
 
     protected static bool $shouldRegisterNavigation = false;
 
@@ -90,6 +95,9 @@ class CategoryResource extends Resource
                 Tables\Grouping\Group::make('parent.full_name')
                     ->label(__('products::filament/resources/category.table.groups.parent'))
                     ->collapsible(),
+                Tables\Grouping\Group::make('creator.name')
+                    ->label(__('products::filament/resources/category.table.groups.creator'))
+                    ->collapsible(),
                 Tables\Grouping\Group::make('created_at')
                     ->label(__('products::filament/resources/category.table.groups.created-at'))
                     ->collapsible(),
@@ -104,25 +112,52 @@ class CategoryResource extends Resource
                     ->relationship('parent', 'full_name')
                     ->searchable()
                     ->preload(),
+                Tables\Filters\SelectFilter::make('creator_id')
+                    ->label(__('products::filament/resources/category.table.filters.creator'))
+                    ->relationship('creator', 'name')
+                    ->searchable()
+                    ->preload(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
+                    ->action(function (Category $record) {
+                        try {
+                            $record->delete();
+                        } catch (QueryException $e) {
+                            Notification::make()
+                                ->danger()
+                                ->title(__('products::filament/resources/category.table.actions.delete.notification.error.title'))
+                                ->body(__('products::filament/resources/category.table.actions.delete.notification.error.body'))
+                                ->send();
+                        }
+                    })
                     ->successNotification(
                         Notification::make()
                             ->success()
-                            ->title(__('products::filament/resources/category.table.actions.delete.notification.title'))
-                            ->body(__('products::filament/resources/category.table.actions.delete.notification.body')),
+                            ->title(__('products::filament/resources/category.table.actions.delete.notification.success.title'))
+                            ->body(__('products::filament/resources/category.table.actions.delete.notification.success.body')),
                     ),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make()
+                    ->action(function (Collection $records) {
+                        try {
+                            $records->each(fn (Model $record) => $record->delete());
+                        } catch (QueryException $e) {
+                            Notification::make()
+                                ->danger()
+                                ->title(__('products::filament/resources/category.table.bulk-actions.delete.notification.error.title'))
+                                ->body(__('products::filament/resources/category.table.bulk-actions.delete.notification.error.body'))
+                                ->send();
+                        }
+                    })
                     ->successNotification(
                         Notification::make()
                             ->success()
-                            ->title(__('products::filament/resources/category.table.bulk-actions.delete.notification.title'))
-                            ->body(__('products::filament/resources/category.table.bulk-actions.delete.notification.body')),
+                            ->title(__('products::filament/resources/category.table.bulk-actions.delete.notification.success.title'))
+                            ->body(__('products::filament/resources/category.table.bulk-actions.delete.notification.success.body')),
                     ),
             ])
             ->emptyStateActions([

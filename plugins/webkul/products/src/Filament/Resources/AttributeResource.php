@@ -12,12 +12,13 @@ use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Webkul\Product\Enums\AttributeType;
-use Webkul\Product\Filament\Resources\AttributeResource\Pages;
 use Webkul\Product\Models\Attribute;
 
 class AttributeResource extends Resource
 {
     protected static ?string $model = Attribute::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-swatch';
 
     protected static bool $shouldRegisterNavigation = false;
 
@@ -51,6 +52,7 @@ class AttributeResource extends Resource
                                     ->maxLength(255),
                                 Forms\Components\ColorPicker::make('color')
                                     ->label(__('products::filament/resources/attribute.form.sections.options.fields.color'))
+                                    ->hexColor()
                                     ->visible(fn (Forms\Get $get): bool => $get('../../type') === AttributeType::COLOR->value),
                                 Forms\Components\TextInput::make('extra_price')
                                     ->label(__('products::filament/resources/attribute.form.sections.options.fields.extra-price'))
@@ -209,15 +211,5 @@ class AttributeResource extends Resource
                     ->columnSpan(['lg' => 1]),
             ])
             ->columns(3);
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index'  => Pages\ListAttributes::route('/'),
-            'create' => Pages\CreateAttribute::route('/create'),
-            'view'   => Pages\ViewAttribute::route('/{record}'),
-            'edit'   => Pages\EditAttribute::route('/{record}/edit'),
-        ];
     }
 }

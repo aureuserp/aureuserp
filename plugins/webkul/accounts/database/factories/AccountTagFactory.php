@@ -16,7 +16,6 @@ class AccountTagFactory extends Factory
             'creator_id'    => User::factory(),
             'applicability' => $this->faker->randomElement(Applicability::options()),
             'name'          => $this->faker->word,
-            'is_active'     => 1,
             'tax_negate'    => 0,
         ];
     }

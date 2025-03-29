@@ -21,7 +21,6 @@ class PaymentTermFactory extends Factory
             'early_pay_discount'  => $this->faker->boolean(),
             'name'                => $this->faker->sentence(3),
             'note'                => $this->faker->optional()->text(200),
-            'is_active'           => $this->faker->boolean(),
             'display_on_invoice'  => $this->faker->boolean(),
             'early_discount'      => $this->faker->boolean(),
             'discount_percentage' => $this->faker->randomFloat(2, 0, 20),

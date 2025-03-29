@@ -98,8 +98,15 @@ return [
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Contact force deleted',
-                    'body'  => 'The contact has been force deleted successfully.',
+                    'success' => [
+                        'title' => 'Contact force deleted',
+                        'body'  => 'The contact has been force deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Contact could not be deleted',
+                        'body'  => 'The contact cannot be deleted because it is currently in use.',
+                    ],
                 ],
             ],
         ],
@@ -121,8 +128,15 @@ return [
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Contacts force deleted',
-                    'body'  => 'The contacts has been force deleted successfully.',
+                    'success' => [
+                        'title' => 'Contacts force deleted',
+                        'body'  => 'The contacts has been force deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Contacts could not be deleted',
+                        'body'  => 'The contacts cannot be deleted because they are currently in use.',
+                    ],
                 ],
             ],
         ],

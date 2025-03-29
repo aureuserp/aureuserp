@@ -32,7 +32,7 @@ class TagResource extends Resource
                     ->unique(ignoreRecord: true),
                 Forms\Components\ColorPicker::make('color')
                     ->label(__('partners::filament/resources/tag.form.color'))
-                    ->required(),
+                    ->hexColor(),
             ]);
     }
 

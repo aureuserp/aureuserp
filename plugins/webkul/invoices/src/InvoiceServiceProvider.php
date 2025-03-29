@@ -11,12 +11,9 @@ class InvoiceServiceProvider extends PackageServiceProvider
 {
     public static string $name = 'invoices';
 
-    public static string $viewNamespace = 'invoices';
-
     public function configureCustomPackage(Package $package): void
     {
         $package->name(static::$name)
-            ->hasViews()
             ->hasTranslations()
             ->hasMigrations([
                 '2025_02_04_082243_alter_products_products_table',

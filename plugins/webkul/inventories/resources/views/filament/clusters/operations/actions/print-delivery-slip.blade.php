@@ -147,93 +147,52 @@
             <!-- Header Section -->
             <div class="header">
                 <div class="left-info">
-                    <div style="font-weight: bold; margin-bottom: 15px;">Vendor Address</div>
-                    
-                    @if ($record->destinationLocation->warehouse->partnerAddress)
-                        <div style="margin-top: 15px;">
-                            <div>{{ $record->partner->name }}</div>
-                            
-                            <div>
-                                {{ $record->partner->addresses->first()->street1 }}
-
-                                @if ($record->partner->addresses->first()->street2)
-                                    ,{{ $record->partner->addresses->first()->street2 }}
-                                @endif
-                            </div>
-                            
-                            <div>
-                                {{ $record->partner->addresses->first()->city }},
-
-                                @if ($record->partner->addresses->first()->state)
-                                    {{ $record->partner->addresses->first()->state->name }},
-                                @endif
-                                
-                                {{ $record->partner->addresses->first()->zip }}
-                            </div>
-                            
-                            @if ($record->partner->addresses->first()->country)
-                                <div>
-                                    {{ $record->partner->addresses->first()->country->name }}
-                                </div>
-                            @endif
-                            
-                            @if ($record->partner->addresses->first()->email)
-                                <div>
-                                    Email: 
-                                    {{ $record->partner->addresses->first()->email }}
-                                </div>
-                            @endif
-                            
-                            @if ($record->partner->addresses->first()->phone)
-                                <div>
-                                    Phone: 
-                                    {{ $record->partner->addresses->first()->phone }}
-                                </div>
-                            @endif
-                        </div>
-                    @endif
                 </div>
 
                 <div class="right-info">
-                    <div style="font-weight: bold; margin-bottom: 15px;">Warehouse Address</div>
+                    <div style="font-weight: bold; margin-bottom: 15px;">Delivery Address</div>
                     
-                    @if($record->partner && $record->partner->addresses->count())
+                    @if($record->partnerAddress)
                         <div style="margin-top: 15px;">
                             <div>
-                                {{ $record->destinationLocation->warehouse->partnerAddress->street1 }}
+                                {{ $record->partnerAddress->name }}
+                            </div>
 
-                                @if ($record->destinationLocation->warehouse->partnerAddress->street2)
-                                    ,{{ $record->destinationLocation->warehouse->partnerAddress->street2 }}
+                            <div>
+                                {{ $record->partnerAddress->street1 }}
+
+                                @if ($record->partnerAddress->street2)
+                                    ,{{ $record->partnerAddress->street2 }}
                                 @endif
                             </div>
                             
                             <div>
-                                {{ $record->destinationLocation->warehouse->partnerAddress->city }},
+                                {{ $record->partnerAddress->city }},
 
-                                @if ($record->destinationLocation->warehouse->partnerAddress->state)
-                                    {{ $record->destinationLocation->warehouse->partnerAddress->state->name }},
+                                @if ($record->partnerAddress->state)
+                                    {{ $record->partnerAddress->state->name }},
                                 @endif
                                 
-                                {{ $record->destinationLocation->warehouse->partnerAddress->zip }}
+                                {{ $record->partnerAddress->zip }}
                             </div>
                             
-                            @if ($record->destinationLocation->warehouse->partnerAddress->country)
+                            @if ($record->partnerAddress->country)
                                 <div>
-                                    {{ $record->destinationLocation->warehouse->partnerAddress->country->name }}
+                                    {{ $record->partnerAddress->country->name }}
                                 </div>
                             @endif
                             
-                            @if ($record->destinationLocation->warehouse->partnerAddress->email)
+                            @if ($record->partnerAddress->email)
                                 <div>
                                     Email: 
-                                    {{ $record->destinationLocation->warehouse->partnerAddress->email }}
+                                    {{ $record->partnerAddress->email }}
                                 </div>
                             @endif
                             
-                            @if ($record->destinationLocation->warehouse->partnerAddress->phone)
+                            @if ($record->partnerAddress->phone)
                                 <div>
                                     Phone: 
-                                    {{ $record->destinationLocation->warehouse->partnerAddress->phone }}
+                                    {{ $record->partnerAddress->phone }}
                                 </div>
                             @endif
                         </div>

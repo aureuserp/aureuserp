@@ -38,8 +38,8 @@ class ActivityType extends Model
     ];
 
     protected $casts = [
-        'is_active'       => 'boolean',
-        'keep_done'       => 'boolean',
+        'is_active' => 'boolean',
+        'keep_done' => 'boolean',
     ];
 
     public function activityPlan(): BelongsTo

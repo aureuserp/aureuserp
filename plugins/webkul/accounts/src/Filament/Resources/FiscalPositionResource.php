@@ -122,10 +122,6 @@ class FiscalPositionResource extends Resource
                     ->placeholder('-')
                     ->sortable()
                     ->label(__('accounts::filament/resources/fiscal-position.table.columns.zip-to')),
-                Tables\Columns\IconColumn::make('is_active')
-                    ->searchable()
-                    ->sortable()
-                    ->label(__('accounts::filament/resources/fiscal-position.table.columns.status')),
                 Tables\Columns\IconColumn::make('auto_reply')
                     ->searchable()
                     ->sortable()

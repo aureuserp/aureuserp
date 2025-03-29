@@ -9,32 +9,117 @@ use Webkul\Inventory\Models\ProductQuantity;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Operation;
+use Webkul\Support\Package;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 
 class InventoryManager
 {
-    public static function calculateProductQuantity($uomId, $uomQuantity)
+    public function checkTransferAvailability(Operation $record): Operation
     {
-        if (! $uomId) {
-            return $uomQuantity;
+        foreach ($record->moves as $move) {
+            $this->updateOrCreateMoveLines($move);
         }
 
-        $uom = Uom::find($uomId);
+        $record = $this->computeTransferState($record);
 
-        return (float) ($uomQuantity ?? 0) / $uom->factor;
+        return $record;
     }
 
-    public static function calculateProductUOMQuantity($uomId, $productQuantity)
+    public function todoTransfer(Operation $record): Operation
     {
-        if (! $uomId) {
-            return $productQuantity;
+        foreach ($record->moves as $move) {
+            $this->updateOrCreateMoveLines($move);
         }
 
-        $uom = Uom::find($uomId);
+        $record = $this->computeTransferState($record);
 
-        return (float) ($productQuantity ?? 0) * $uom->factor;
+        return $record;
     }
 
-    public static function updateOrCreateMoveLines(Move $record)
+    public function validateTransfer(Operation $record): Operation
+    {
+        return $record;
+    }
+
+    public function cancelTransfer(Operation $record): Operation
+    {
+        foreach ($record->moves as $move) {
+            $move->update([
+                'state'        => Enums\MoveState::CANCELED,
+                'quantity'     => 0,
+            ]);
+
+            $move->lines()->delete();
+        }
+
+        $record = $this->computeTransferState($record);
+
+        return $record;
+    }
+
+    public function returnTransfer(Operation $record): Operation
+    {
+        $newOperation = $record->replicate()->fill([
+            'state'                   => Enums\OperationState::DRAFT,
+            'origin'                  => 'Return of '.$record->name,
+            'operation_type_id'       => $record->operationType->returnOperationType?->id ?? $record->operation_type_id,
+            'source_location_id'      => $record->destination_location_id,
+            'destination_location_id' => $record->source_location_id,
+            'user_id'                 => Auth::id(),
+            'creator_id'              => Auth::id(),
+        ]);
+
+        $newOperation->save();
+
+        foreach ($record->moves as $move) {
+            $newMove = $move->replicate()->fill([
+                'operation_id'            => $newOperation->id,
+                'reference'               => $newOperation->name,
+                'state'                   => Enums\MoveState::DRAFT,
+                'is_refund'               => true,
+                'product_qty'             => $move->product_qty,
+                'product_uom_qty'         => $move->product_uom_qty,
+                'source_location_id'      => $move->destination_location_id,
+                'destination_location_id' => $move->source_location_id,
+                'origin_returned_move_id' => $move->id,
+                'operation_type_id'       => $newOperation->operation_type_id,
+            ]);
+
+            $newMove->save();
+        }
+
+        $newOperation->refresh();
+
+        foreach ($newOperation->moves as $move) {
+            $this->updateOrCreateMoveLines($move);
+        }
+
+        $this->computeTransferState($newOperation);
+
+        $record->update(['return_id' => $record->id]);
+
+        if (Package::isPluginInstalled('purchases')) {
+            $newOperation->purchaseOrders()->attach($record->return->purchaseOrders->pluck('id'));
+        }
+
+        $url = OperationResource::getUrl('view', ['record' => $record]);
+
+        $newOperation->addMessage([
+            'body' => "This transfer has been created from <a href=\"{$url}\" target=\"_blank\" class=\"text-primary-600 dark:text-primary-400\">{$record->name}</a>.",
+            'type' => 'comment',
+        ]);
+
+        $url = OperationResource::getUrl('view', ['record' => $newOperation]);
+
+        $record->addMessage([
+            'body' => "The return <a href=\"{$url}\" target=\"_blank\" class=\"text-primary-600 dark:text-primary-400\">{$newOperation->name}</a> has been created.",
+            'type' => 'comment',
+        ]);
+
+        return $newOperation;
+    }
+
+    public function updateOrCreateMoveLines(Move $record)
     {
         $lines = $record->lines()->orderBy('created_at')->get();
 
@@ -218,12 +303,12 @@ class InventoryManager
         return $record;
     }
 
-    public static function updateOperationState(Operation $record)
+    public function computeTransferState(Operation $record): Operation
     {
         $record->refresh();
 
         if (in_array($record->state, [Enums\OperationState::DONE, Enums\OperationState::CANCELED])) {
-            return;
+            return $record;
         }
 
         if ($record->moves->every(fn ($move) => $move->state === Enums\MoveState::CONFIRMED)) {
@@ -237,5 +322,7 @@ class InventoryManager
         )) {
             $record->update(['state' => Enums\OperationState::ASSIGNED]);
         }
+
+        return $record;
     }
 }

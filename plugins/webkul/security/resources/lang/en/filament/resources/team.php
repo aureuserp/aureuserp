@@ -29,8 +29,8 @@ return [
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Team edited',
-                    'body'  => 'The team has been edited successfully.',
+                    'title' => 'Team updated',
+                    'body'  => 'The team has been updated successfully.',
                 ],
             ],
 

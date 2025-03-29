@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('creator_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('name')->comment('Name');
-            $table->boolean('is_active')->default(true)->comment('Status');
             $table->timestamps();
         });
     }

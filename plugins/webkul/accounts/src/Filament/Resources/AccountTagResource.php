@@ -46,7 +46,8 @@ class AccountTagResource extends Resource
                 Forms\Components\Section::make()
                     ->schema([
                         Forms\Components\ColorPicker::make('color')
-                            ->label(__('accounts::filament/resources/account-tag.form.fields.color')),
+                            ->label(__('accounts::filament/resources/account-tag.form.fields.color'))
+                            ->hexColor(),
                         Forms\Components\Select::make('country_id')
                             ->searchable()
                             ->preload()
@@ -63,10 +64,6 @@ class AccountTagResource extends Resource
                             ->maxLength(255),
                         Forms\Components\Group::make()
                             ->schema([
-                                Forms\Components\Toggle::make('is_active')
-                                    ->inline(false)
-                                    ->label(__('accounts::filament/resources/account-tag.form.fields.status'))
-                                    ->required(),
                                 Forms\Components\Toggle::make('tax_negate')
                                     ->inline(false)
                                     ->label(__('accounts::filament/resources/account-tag.form.fields.tax-negate'))
@@ -96,9 +93,6 @@ class AccountTagResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label(__('accounts::filament/resources/account-tag.table.columns.name'))
                     ->searchable(),
-                Tables\Columns\IconColumn::make('is_active')
-                    ->label(__('accounts::filament/resources/account-tag.table.columns.status'))
-                    ->boolean(),
                 Tables\Columns\IconColumn::make('tax_negate')
                     ->label(__('accounts::filament/resources/account-tag.table.columns.tax-negate'))
                     ->boolean(),
@@ -175,9 +169,6 @@ class AccountTagResource extends Resource
                         Infolists\Components\TextEntry::make('country.name')
                             ->label(__('accounts::filament/resources/account-tag.infolist.entries.country'))
                             ->placeholder('—'),
-                        Infolists\Components\IconEntry::make('is_active')
-                            ->label(__('accounts::filament/resources/account-tag.infolist.entries.status'))
-                            ->boolean(),
                         Infolists\Components\IconEntry::make('tax_negate')
                             ->label(__('accounts::filament/resources/account-tag.infolist.entries.tax-negate'))
                             ->boolean(),

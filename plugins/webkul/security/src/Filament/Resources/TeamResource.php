@@ -62,6 +62,7 @@ class TeamResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label(__('security::filament/resources/team.table.columns.name'))
                     ->searchable()
+                    ->limit(50)
                     ->sortable(),
             ])
             ->actions([
@@ -87,8 +88,8 @@ class TeamResource extends Resource
                     ->successNotification(
                         Notification::make()
                             ->success()
-                            ->title(__('security::filament/resources/team.navigation.table.empty-state-actions.create.notification.title'))
-                            ->body(__('security::filament/resources/team.navigation.table.empty-state-actions.create.notification.body'))
+                            ->title(__('security::filament/resources/team.table.empty-state-actions.create.notification.title'))
+                            ->body(__('security::filament/resources/team.table.empty-state-actions.create.notification.body'))
                     ),
             ]);
     }

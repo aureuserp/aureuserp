@@ -9,7 +9,7 @@ class UTMMedium extends Model
 {
     protected $table = 'utm_mediums';
 
-    protected $fillable = ['name', 'creator_id', 'is_active'];
+    protected $fillable = ['name', 'creator_id'];
 
     public function createdBy()
     {

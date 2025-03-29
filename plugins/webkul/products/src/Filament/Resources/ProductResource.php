@@ -18,6 +18,9 @@ use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Models\Category;
 use Webkul\Product\Models\Product;
 use Webkul\Support\Models\UOM;
+use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 class ProductResource extends Resource
 {
@@ -342,11 +345,22 @@ class ProductResource extends Resource
                                 ->body(__('products::filament/resources/product.table.actions.delete.notification.body')),
                         ),
                     Tables\Actions\ForceDeleteAction::make()
+                        ->action(function (Product $record) {
+                            try {
+                                $record->forceDelete();
+                            } catch (QueryException $e) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('products::filament/resources/product.table.actions.force-delete.notification.error.title'))
+                                    ->body(__('products::filament/resources/product.table.actions.force-delete.notification.error.body'))
+                                    ->send();
+                            }
+                        })
                         ->successNotification(
                             Notification::make()
                                 ->success()
-                                ->title(__('products::filament/resources/product.table.actions.force-delete.notification.title'))
-                                ->body(__('products::filament/resources/product.table.actions.force-delete.notification.body')),
+                                ->title(__('products::filament/resources/product.table.actions.force-delete.notification.success.title'))
+                                ->body(__('products::filament/resources/product.table.actions.force-delete.notification.success.body')),
                         ),
                 ]),
             ])
@@ -407,11 +421,22 @@ class ProductResource extends Resource
                                 ->body(__('products::filament/resources/product.table.bulk-actions.delete.notification.body')),
                         ),
                     Tables\Actions\ForceDeleteBulkAction::make()
+                        ->action(function (Collection $records) {
+                            try {
+                                $records->each(fn (Model $record) => $record->forceDelete());
+                            } catch (QueryException $e) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('products::filament/resources/product.table.bulk-actions.force-delete.notification.error.title'))
+                                    ->body(__('products::filament/resources/product.table.bulk-actions.force-delete.notification.error.body'))
+                                    ->send();
+                            }
+                        })
                         ->successNotification(
                             Notification::make()
                                 ->success()
-                                ->title(__('products::filament/resources/product.table.bulk-actions.force-delete.notification.title'))
-                                ->body(__('products::filament/resources/product.table.bulk-actions.force-delete.notification.body')),
+                                ->title(__('products::filament/resources/product.table.bulk-actions.force-delete.notification.success.title'))
+                                ->body(__('products::filament/resources/product.table.bulk-actions.force-delete.notification.success.body')),
                         ),
                 ]),
             ]);

@@ -49,4 +49,9 @@ class SavedView extends PresetView
     {
         return $this->model->user_id === auth()->id();
     }
+
+    public function getVisibilityIcon(): string
+    {
+        return $this->isPublic() ? 'heroicon-o-eye' : 'heroicon-o-user';
+    }
 }

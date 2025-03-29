@@ -4,11 +4,11 @@ namespace Webkul\TableViews\Filament\Concerns;
 
 use Closure;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Filament\Support\Enums\MaxWidth;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Url;
-use Webkul\TableViews\Enums\TableViewsLayout;
 use Webkul\TableViews\Filament\Actions\CreateViewAction;
 use Webkul\TableViews\Filament\Actions\EditViewAction;
 use Webkul\TableViews\Filament\Components\PresetView;
@@ -36,8 +36,6 @@ trait HasTableViews
     protected string|Closure|null $tableViewsFormMaxHeight = '500px';
 
     protected MaxWidth|string|Closure|null $tableViewsFormWidth = null;
-
-    protected TableViewsLayout|Closure|null $tableViewsLayout = null;
 
     public function bootedInteractsWithTable(): void
     {
@@ -156,14 +154,6 @@ trait HasTableViews
     /**
      * @return array<string | int, Tab>
      */
-    public function getAllTableViews(): array
-    {
-        return $this->getPresetTableViews() + $this->getCachedTableViews();
-    }
-
-    /**
-     * @return array<string | int, Tab>
-     */
     public function getFavoriteTableViews(): array
     {
         return collect($this->getAllTableViews())
@@ -171,6 +161,14 @@ trait HasTableViews
                 return $presetView->isFavorite($id);
             })
             ->all();
+    }
+
+    /**
+     * @return array<string | int, Tab>
+     */
+    public function getAllTableViews(): array
+    {
+        return $this->getPresetTableViews() + $this->getCachedTableViews();
     }
 
     /**
@@ -249,9 +247,48 @@ trait HasTableViews
         return $tableViews[$this->activeTableView]->modifyQuery($query);
     }
 
-    public function saveFilterAction(): Action
+    public function setTableViewsFormMaxHeight(string|Closure|null $height): static
     {
-        return CreateViewAction::make('saveFilter')
+        $this->tableViewsFormMaxHeight = $height;
+
+        return $this;
+    }
+
+    public function setTableViewsFormWidth(MaxWidth|string|Closure|null $width): static
+    {
+        $this->tableViewsFormWidth = $width;
+
+        return $this;
+    }
+
+    public function getPresetTableViewsFormMaxHeight(): ?string
+    {
+        return $this->evaluate($this->tableViewsFormMaxHeight);
+    }
+
+    public function getPresetTableViewsFormWidth(): MaxWidth|string|null
+    {
+        return $this->evaluate($this->tableViewsFormWidth) ?? MaxWidth::ExtraSmall;
+    }
+
+    public function getActiveTableView()
+    {
+        return $this->activeTableView;
+    }
+
+    public function getTableViewsTriggerAction(): Action
+    {
+        return Action::make('openTableViews')
+            ->label(__('table-views::filament/concerns/has-table-views.title'))
+            ->iconButton()
+            ->icon('heroicon-m-ellipsis-vertical')
+            ->livewireClickHandlerEnabled(false)
+            ->modalSubmitAction(false);
+    }
+
+    public function createTableViewAction(): Action
+    {
+        return CreateViewAction::make('createTableView')
             ->mutateFormDataUsing(function (array $data): array {
                 $data['user_id'] = auth()->id();
 
@@ -283,67 +320,16 @@ trait HasTableViews
             });
     }
 
-    public function setTableViewsFormMaxHeight(string|Closure|null $height): static
+    public function resetTableViewAction(): Action
     {
-        $this->tableViewsFormMaxHeight = $height;
-
-        return $this;
-    }
-
-    public function setTableViewsFormWidth(MaxWidth|string|Closure|null $width): static
-    {
-        $this->tableViewsFormWidth = $width;
-
-        return $this;
-    }
-
-    public function setTableViewsLayout(TableViewsLayout|Closure|null $tableViewsLayout): static
-    {
-        $this->tableViewsLayout = $tableViewsLayout;
-
-        return $this;
-    }
-
-    public function getTableViewsFormMaxHeight(): ?string
-    {
-        return $this->evaluate($this->tableViewsFormMaxHeight);
-    }
-
-    public function getTableViewsFormWidth(): MaxWidth|string|null
-    {
-        return $this->evaluate($this->tableViewsFormWidth) ?? MaxWidth::ExtraSmall;
-    }
-
-    public function getTableViewsLayout(): TableViewsLayout
-    {
-        return $this->evaluate($this->tableViewsLayout) ?? TableViewsLayout::Dropdown;
-    }
-
-    public function getActiveTableView()
-    {
-        return $this->activeTableView;
-    }
-
-    public function getActiveTableViewsCount()
-    {
-        $tableViews = $this->getAllTableViews();
-
-        if (isset($tableViews[$this->activeTableView])) {
-            return 1;
-        }
-
-        return 0;
-    }
-
-    public function getTableViewsTriggerAction(): Action
-    {
-        return Action::make('openTableViews')
-            ->label(__('table-views::filament/concerns/has-table-views.title'))
-            ->iconButton()
-            ->icon('heroicon-m-queue-list')
-            ->color('gray')
-            ->livewireClickHandlerEnabled(false)
-            ->modalSubmitAction(false);
+        return Action::make('resetTableView')
+            ->label('Reset')
+            ->label(__('table-views::filament/concerns/has-table-views.reset'))
+            ->color('danger')
+            ->link()
+            ->action(function () {
+                $this->resetTableViews();
+            });
     }
 
     public function applyTableViewAction(): Action
@@ -459,5 +445,54 @@ trait HasTableViews
                 unset($this->cachedTableViews);
                 unset($this->cachedFavoriteTableViews);
             });
+    }
+
+    public function getTableViewActionGroup(string $key, string $type, mixed $tableView): ActionGroup
+    {
+        return ActionGroup::make([
+            $this->applyTableViewAction()
+                ->arguments([
+                    'view_key' => $key,
+                    'view_type' => $type
+                ])
+                ->visible(fn () => $key != $this->activeTableView),
+            
+            $this->addTableViewToFavoritesAction()
+                ->arguments([
+                    'view_key' => $key,
+                    'view_type' => $type
+                ])
+                ->visible(fn () => ! $tableView->isFavorite($key)),
+            
+            $this->removeTableViewFromFavoritesAction()
+                ->arguments([
+                    'view_key' => $key,
+                    'view_type' => $type
+                ])
+                ->visible(fn () => $tableView->isFavorite($key)),
+            
+            $this->editTableViewAction(['view_model' => $tableView->getModel()])
+                ->arguments([
+                    'view_key' => $key,
+                    'view_type' => $type
+                ])
+                ->visible(fn () => $tableView->isEditable()),
+            
+            ActionGroup::make([
+                $this->replaceTableViewAction()
+                    ->arguments([
+                        'view_key' => $key,
+                        'view_type' => $type
+                    ])
+                    ->visible(fn () => $tableView->isReplaceable() && $key == $this->activeTableView && $this->isActiveTableViewModified()),
+                
+                $this->deleteTableViewAction()
+                    ->arguments([
+                        'view_key' => $key,
+                        'view_type' => $type
+                    ])
+                    ->visible(fn () => $key == $tableView->isDeletable()),
+            ])->dropdown(false)
+        ])->dropdownPlacement('bottom-end');
     }
 }

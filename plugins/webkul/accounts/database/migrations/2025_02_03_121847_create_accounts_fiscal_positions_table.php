@@ -24,7 +24,6 @@ return new class extends Migration
             $table->string('foreign_vat')->nullable()->comment('Foreign VAT');
             $table->string('name')->comment('Name');
             $table->text('notes')->nullable()->comment('Notes');
-            $table->boolean('is_active')->default(false)->comment('Status');
             $table->boolean('auto_reply')->default(false)->comment('Auto Reply');
             $table->boolean('vat_required')->default(false)->comment('VAT Required');
 

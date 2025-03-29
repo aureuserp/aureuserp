@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('early_pay_discount')->nullable()->comment('Cash Discount Tax Reduction');
             $table->string('name')->comment('Name');
             $table->string('note')->nullable()->comment('Note');
-            $table->boolean('is_active')->default(false)->nullable()->comment('Active');
             $table->boolean('display_on_invoice')->default(false)->nullable()->comment('Display on Invoice');
             $table->boolean('early_discount')->default(false)->nullable()->comment('Early Discount');
             $table->decimal('discount_percentage', 15, 4)->nullable()->comment('Discount Percentage')->default(0);

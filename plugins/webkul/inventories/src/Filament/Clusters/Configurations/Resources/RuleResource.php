@@ -19,7 +19,6 @@ use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\Pa
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\RelationManagers\RulesRelationManager;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RuleResource\Pages;
 use Webkul\Inventory\Models\OperationType;
-use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Partner\Filament\Resources\AddressResource;
@@ -170,18 +169,18 @@ class RuleResource extends Resource
                                     ->schema([
                                         Forms\Components\Select::make('route_id')
                                             ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.settings.fieldsets.applicability.fields.route'))
-                                            ->relationship('route', 'name')
+                                            ->relationship(
+                                                'route',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                            )
+                                            ->getOptionLabelFromRecordUsing(function ($record): string {
+                                                return $record->name . ($record->trashed() ? ' (Deleted)' : '');
+                                            })
                                             ->searchable()
                                             ->preload()
                                             ->required()
-                                            ->hiddenOn([ManageRules::class, RulesRelationManager::class])
-                                            ->getOptionLabelUsing(function ($record) {
-                                                if ($record->route) {
-                                                    return $record->route->name;
-                                                }
-
-                                                return Route::withTrashed()->find($record->route_id)->name;
-                                            }),
+                                            ->hiddenOn([ManageRules::class, RulesRelationManager::class]),
                                         Forms\Components\Select::make('company_id')
                                             ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.settings.fieldsets.applicability.fields.company'))
                                             ->relationship('company', 'name')

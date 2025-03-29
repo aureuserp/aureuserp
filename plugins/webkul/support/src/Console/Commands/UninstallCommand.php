@@ -5,6 +5,7 @@ namespace Webkul\Support\Console\Commands;
 use Closure;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Webkul\Support\Package;
 
 class UninstallCommand extends Command
@@ -74,7 +75,9 @@ class UninstallCommand extends Command
         $migrations = array_reverse($this->package->migrationFileNames);
 
         foreach ($migrations as $migration) {
-            $migrationPath = str_replace(base_path().'/', '', $this->package->basePath("/../database/migrations/{$migration}.php"));
+            $fullPath = $this->package->basePath("../database/migrations/{$migration}.php");
+            
+            $migrationPath = Str::after($fullPath, base_path() . DIRECTORY_SEPARATOR);
 
             if (file_exists($migrationPath)) {
                 require_once $migrationPath;
@@ -92,7 +95,9 @@ class UninstallCommand extends Command
         }
 
         foreach ($this->package->settingFileNames as $setting) {
-            $migrationPath = str_replace(base_path().'/', '', $this->package->basePath("/../database/settings/{$setting}.php"));
+            $fullPath = $this->package->basePath("../database/settings/{$setting}.php");
+            
+            $migrationPath = Str::after($fullPath, base_path() . DIRECTORY_SEPARATOR);
 
             if (file_exists($migrationPath)) {
                 require_once $migrationPath;

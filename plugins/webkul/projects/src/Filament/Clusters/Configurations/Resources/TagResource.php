@@ -38,6 +38,7 @@ class TagResource extends Resource
                     ->unique(ignoreRecord: true),
                 Forms\Components\ColorPicker::make('color')
                     ->default('#808080')
+                    ->hexColor()
                     ->label(__('projects::filament/clusters/configurations/resources/tag.form.color')),
             ]);
     }

@@ -18,7 +18,6 @@ return new class extends Migration
             $table->foreignId('creator_id')->nullable()->comment('Creator ID')->constrained('users')->nullOnDelete();
             $table->string('applicability')->comment('Applicability');
             $table->string('name')->comment('Name');
-            $table->boolean('is_active')->default(false)->comment('Status');
             $table->boolean('tax_negate')->default(false)->comment('Tax Negate');
             $table->timestamps();
         });

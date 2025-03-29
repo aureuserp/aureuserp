@@ -11,12 +11,9 @@ class TimeOffServiceProvider extends PackageServiceProvider
 {
     public static string $name = 'time_off';
 
-    public static string $viewNamespace = 'time_off';
-
     public function configureCustomPackage(Package $package): void
     {
         $package->name(static::$name)
-            ->hasViews()
             ->hasTranslations()
             ->hasMigrations([
                 '2025_01_17_080711_create_time_off_leave_types_table',

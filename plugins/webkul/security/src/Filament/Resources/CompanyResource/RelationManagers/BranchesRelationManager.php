@@ -54,7 +54,8 @@ class BranchesRelationManager extends RelationManager
                                             ->unique(ignoreRecord: true)
                                             ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('security::filament/resources/company/relation-managers/manage-branch.form.tabs.general-information.sections.branch-information.fields.tax-id-tooltip')),
                                         Forms\Components\ColorPicker::make('color')
-                                            ->label(__('security::filament/resources/company/relation-managers/manage-branch.form.tabs.general-information.sections.branch-information.fields.color')),
+                                            ->label(__('security::filament/resources/company/relation-managers/manage-branch.form.tabs.general-information.sections.branch-information.fields.color'))
+                                            ->hexColor(),
                                     ])
                                     ->columns(2),
                                 Forms\Components\Section::make(__('security::filament/resources/company/relation-managers/manage-branch.form.tabs.general-information.sections.branding.title'))

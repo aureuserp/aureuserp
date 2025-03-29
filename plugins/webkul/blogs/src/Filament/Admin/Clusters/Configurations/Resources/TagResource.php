@@ -42,7 +42,8 @@ class TagResource extends Resource
                     ->maxLength(255)
                     ->unique(ignoreRecord: true),
                 Forms\Components\ColorPicker::make('color')
-                    ->label(__('blogs::filament/admin/clusters/configurations/resources/tag.form.color')),
+                    ->label(__('blogs::filament/admin/clusters/configurations/resources/tag.form.color'))
+                    ->hexColor(),
             ]);
     }
 

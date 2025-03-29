@@ -36,7 +36,6 @@ class Journal extends Model
         'bank_statements_source',
         'name',
         'order_override_regex',
-        'is_active',
         'auto_check_on_post',
         'restrict_mode_hash_table',
         'refund_order',

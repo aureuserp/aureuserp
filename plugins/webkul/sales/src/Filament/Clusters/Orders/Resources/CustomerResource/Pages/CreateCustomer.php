@@ -20,4 +20,13 @@ class CreateCustomer extends BaseCreateCustomer
     {
         return __('sales::filament/clusters/orders/resources/customer/pages/create-customer.title');
     }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data = parent::mutateFormDataBeforeCreate($data);
+
+        $data['sub_type'] = 'customer';
+
+        return $data;
+    }
 }

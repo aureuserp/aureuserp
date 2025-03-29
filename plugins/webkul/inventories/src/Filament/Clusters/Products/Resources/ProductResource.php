@@ -264,13 +264,6 @@ class ProductResource extends BaseProductResource
         ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
     public static function getPages(): array
     {
         return [

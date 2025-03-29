@@ -8,13 +8,6 @@ return [
         'group' => 'UTMs',
     ],
 
-    'groups' => [
-        'status'     => 'Status',
-        'created-by' => 'Created By',
-        'created-at' => 'Created At',
-        'updated-at' => 'Updated At',
-    ],
-
     'global-search' => [
         'name'        => 'Name',
         'reason-code' => 'Reason Code',
@@ -24,7 +17,6 @@ return [
         'fields' => [
             'name'             => 'Name',
             'name-placeholder' => 'Enter the name of the medium',
-            'status'           => 'Status',
         ],
     ],
 
@@ -32,7 +24,6 @@ return [
         'columns' => [
             'id'         => 'ID',
             'name'       => 'Name',
-            'status'     => 'Status',
             'created-by' => 'Created By',
             'created-at' => 'Created At',
             'updated-at' => 'Updated At',

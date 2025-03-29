@@ -32,7 +32,6 @@ return new class extends Migration
             $table->string('payment_tolerance_type')->comment('Payment Tolerance Type')->nullable();
             $table->string('decimal_separator')->comment('Decimal Separator')->nullable();
             $table->string('name')->comment('Name');
-            $table->boolean('is_active')->comment('Status')->default(false);
             $table->boolean('auto_reconcile')->comment('Auto Validate');
             $table->boolean('to_check')->comment('To Check')->default(false);
             $table->boolean('match_text_location_label')->comment('Match Text Location Label')->default(false);

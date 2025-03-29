@@ -13,7 +13,6 @@ class IncotermFactory extends Factory
             'name'       => $this->faker->word,
             'code'       => $this->faker->word,
             'creator_id' => User::factory(),
-            'is_active'  => $this->faker->boolean,
         ];
     }
 }

@@ -78,19 +78,23 @@ class CompanyResource extends Resource
                                             ->maxLength(255)
                                             ->live(onBlur: true),
                                         Forms\Components\TextInput::make('registration_number')
-                                            ->label(__('security::filament/resources/company.form.sections.company-information.fields.registration-number')),
+                                            ->label(__('security::filament/resources/company.form.sections.company-information.fields.registration-number'))
+                                            ->maxLength(255),
                                         Forms\Components\TextInput::make('company_id')
                                             ->label(__('security::filament/resources/company.form.sections.company-information.fields.company-id'))
                                             ->required()
                                             ->unique(ignoreRecord: true)
+                                            ->maxLength(255)
                                             ->hintIcon('heroicon-o-question-mark-circle', tooltip: 'The Company ID is a unique identifier for your company.'),
                                         Forms\Components\TextInput::make('tax_id')
                                             ->label(__('security::filament/resources/company.form.sections.company-information.fields.tax-id'))
                                             ->unique(ignoreRecord: true)
+                                            ->maxLength(255)
                                             ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('security::filament/resources/company.form.sections.company-information.fields.tax-id-tooltip')),
                                         Forms\Components\TextInput::make('website')
                                             ->url()
                                             ->prefixIcon('heroicon-o-globe-alt')
+                                            ->maxLength(255)
                                             ->label(__('security::filament/resources/company.form.sections.company-information.fields.website'))
                                             ->unique(ignoreRecord: true),
                                     ])
@@ -102,14 +106,17 @@ class CompanyResource extends Resource
                                             ->schema([
                                                 Forms\Components\TextInput::make('street1')
                                                     ->label(__('security::filament/resources/company.form.sections.address-information.fields.street1'))
+                                                    ->maxLength(255)
                                                     ->required(),
                                                 Forms\Components\TextInput::make('street2')
                                                     ->label(__('security::filament/resources/company.form.sections.address-information.fields.street2')),
                                                 Forms\Components\TextInput::make('city')
+                                                    ->maxLength(255)
                                                     ->required(),
                                                 Forms\Components\TextInput::make('zip')
                                                     ->live()
                                                     ->label(__('security::filament/resources/company.form.sections.address-information.fields.zipcode'))
+                                                    ->maxLength(255)
                                                     ->required(fn (Get $get) => Country::find($get('country_id'))?->zip_required),
                                                 Forms\Components\Select::make('country_id')
                                                     ->label(__('security::filament/resources/company.form.sections.address-information.fields.country'))
@@ -124,19 +131,23 @@ class CompanyResource extends Resource
                                                             ->required(),
                                                         Forms\Components\TextInput::make('phone_code')
                                                             ->label(__('security::filament/resources/company.form.sections.address-information.fields.phone-code'))
-                                                            ->required(),
+                                                            ->required()
+                                                            ->maxLength(255),
                                                         Forms\Components\TextInput::make('code')
                                                             ->label(__('security::filament/resources/company.form.sections.address-information.fields.code'))
                                                             ->required()
                                                             ->rules('max:2'),
                                                         Forms\Components\TextInput::make('name')
                                                             ->label(__('security::filament/resources/company.form.sections.address-information.fields.country-name'))
+                                                            ->maxLength(255)
                                                             ->required(),
                                                         Forms\Components\Toggle::make('state_required')
                                                             ->label(__('security::filament/resources/company.form.sections.address-information.fields.state-required'))
+                                                            ->maxLength(255)
                                                             ->required(),
                                                         Forms\Components\Toggle::make('zip_required')
                                                             ->label(__('security::filament/resources/company.form.sections.address-information.fields.zip-required'))
+                                                            ->maxLength(255)
                                                             ->required(),
                                                     ])
                                                     ->createOptionAction(
@@ -203,6 +214,7 @@ class CompanyResource extends Resource
                                                             ->unique('currencies', 'full_name', ignoreRecord: true),
                                                         Forms\Components\TextInput::make('symbol')
                                                             ->label(__('security::filament/resources/company.form.sections.additional-information.fields.currency-symbol'))
+                                                            ->maxLength(255)
                                                             ->required(),
                                                         Forms\Components\TextInput::make('iso_numeric')
                                                             ->label(__('security::filament/resources/company.form.sections.additional-information.fields.currency-iso-numeric'))
@@ -249,17 +261,21 @@ class CompanyResource extends Resource
                                             ->directory('company-logos')
                                             ->visibility('private'),
                                         Forms\Components\ColorPicker::make('color')
-                                            ->label(__('security::filament/resources/company.form.sections.branding.fields.color')),
+                                            ->label(__('security::filament/resources/company.form.sections.branding.fields.color'))
+                                            ->hexColor(),
                                     ]),
                                 Forms\Components\Section::make(__('security::filament/resources/company.form.sections.contact-information.title'))
                                     ->schema([
                                         Forms\Components\TextInput::make('phone')
                                             ->label(__('security::filament/resources/company.form.sections.contact-information.fields.phone'))
+                                            ->maxLength(255)
                                             ->required(),
                                         Forms\Components\TextInput::make('mobile')
-                                            ->label(__('security::filament/resources/company.form.sections.contact-information.fields.mobile')),
+                                            ->label(__('security::filament/resources/company.form.sections.contact-information.fields.mobile'))
+                                            ->maxLength(255),
                                         Forms\Components\TextInput::make('email')
                                             ->label(__('security::filament/resources/company.form.sections.contact-information.fields.email'))
+                                            ->maxLength(255)
                                             ->email(),
                                     ]),
                             ])
@@ -465,6 +481,7 @@ class CompanyResource extends Resource
                                             ->placeholder('—')
                                             ->label(__('security::filament/resources/company.infolist.sections.address-information.entries.street2')),
                                         Infolists\Components\TextEntry::make('address.city')
+                                            ->label(__('security::filament/resources/company.infolist.sections.address-information.entries.city'))
                                             ->icon('heroicon-o-building-library')
                                             ->placeholder('—'),
                                         Infolists\Components\TextEntry::make('address.zip')
@@ -507,11 +524,8 @@ class CompanyResource extends Resource
                                         ->hiddenLabel()
                                         ->circular()
                                         ->placeholder('—'),
-                                    Infolists\Components\TextEntry::make('color')
-                                        ->icon('heroicon-o-swatch')
+                                    Infolists\Components\ColorEntry::make('color')
                                         ->placeholder('—')
-                                        ->badge()
-                                        ->color(fn ($record) => $record->color ?? 'gray')
                                         ->label(__('security::filament/resources/company.infolist.sections.branding.entries.color')),
                                 ]),
 

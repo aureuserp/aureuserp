@@ -19,7 +19,6 @@ class Tag extends Model
         'creator_id',
         'applicability',
         'name',
-        'is_active',
         'tax_negate',
     ];
 

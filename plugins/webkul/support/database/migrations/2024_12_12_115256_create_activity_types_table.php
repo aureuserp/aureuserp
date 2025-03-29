@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Webkul\Support\Enums\ActivityChainingType;
 
 return new class extends Migration
 {
@@ -20,7 +21,7 @@ return new class extends Migration
             $table->string('delay_from')->comment('Delay from');
             $table->string('icon')->nullable()->comment('Icon');
             $table->string('decoration_type')->nullable()->comment('Decoration type');
-            $table->string('chaining_type')->comment('Chaining type');
+            $table->string('chaining_type')->nullable()->default(ActivityChainingType::SUGGEST)->comment('Chaining type');
             $table->string('plugin')->nullable()->comment('Plugin name');
             $table->string('category')->nullable()->comment('Category');
             $table->string('name')->comment('Name');

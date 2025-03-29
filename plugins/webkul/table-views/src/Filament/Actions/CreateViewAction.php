@@ -29,23 +29,6 @@ class CreateViewAction extends Action
                     ->label(__('table-views::filament/actions/create-view.form.name'))
                     ->autofocus()
                     ->required(),
-                Forms\Components\Select::make('color')
-                    ->label(__('table-views::filament/actions/create-view.form.color'))
-                    ->options(function () {
-                        return collect([
-                            'danger'  => __('table-views::filament/actions/create-view.form.options.danger'),
-                            'gray'    => __('table-views::filament/actions/create-view.form.options.gray'),
-                            'info'    => __('table-views::filament/actions/create-view.form.options.info'),
-                            'success' => __('table-views::filament/actions/create-view.form.options.success'),
-                            'warning' => __('table-views::filament/actions/create-view.form.options.warning'),
-                        ])->mapWithKeys(function ($value, $key) {
-                            return [
-                                $key => '<div class="flex items-center gap-4"><span class="flex h-5 w-5 rounded-full" style="background: rgb(var(--'.$key.'-500))"></span> '.$value.'</span>',
-                            ];
-                        });
-                    })
-                    ->native(false)
-                    ->allowHtml(),
                 \Guava\FilamentIconPicker\Forms\IconPicker::make('icon')
                     ->label(__('table-views::filament/actions/create-view.form.icon'))
                     ->sets(['heroicons'])
@@ -82,11 +65,9 @@ class CreateViewAction extends Action
 
                 $this->success();
             })
+            ->label(__('table-views::filament/actions/create-view.label'))
+            ->link()
             ->successNotificationTitle(__('table-views::filament/actions/create-view.form.notification.created'))
-            ->hiddenLabel()
-            ->icon('heroicon-o-plus')
-            ->iconButton()
-            ->slideOver()
             ->modalHeading(__('table-views::filament/actions/create-view.form.modal.title'))
             ->modalWidth(MaxWidth::Medium);
     }

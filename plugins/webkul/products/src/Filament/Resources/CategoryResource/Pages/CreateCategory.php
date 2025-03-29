@@ -16,14 +16,6 @@ class CreateCategory extends CreateRecord
         return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 
-    protected function getCreatedNotification(): Notification
-    {
-        return Notification::make()
-            ->success()
-            ->title(__('products::filament/resources/category/pages/create-category.notification.title'))
-            ->body(__('products::filament/resources/category/pages/create-category.notification.body'));
-    }
-
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['creator_id'] = Auth::id();
@@ -31,5 +23,26 @@ class CreateCategory extends CreateRecord
         $data['company_id'] = Auth::user()->default_company_id;
 
         return $data;
+    }
+
+    public function create(bool $another = false): void
+    {
+        try {
+            parent::create($another);
+        } catch (\Exception $e) {
+            Notification::make()
+                ->danger()
+                ->title(__('products::filament/resources/category/pages/create-category.create.notification.error.title'))
+                ->body($e->getMessage())
+                ->send();
+        }
+    }
+
+    protected function getCreatedNotification(): Notification
+    {
+        return Notification::make()
+            ->success()
+            ->title(__('products::filament/resources/category/pages/create-category.notification.title'))
+            ->body(__('products::filament/resources/category/pages/create-category.notification.body'));
     }
 }

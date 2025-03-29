@@ -9,13 +9,10 @@ class PartnerServiceProvider extends PackageServiceProvider
 {
     public static string $name = 'partners';
 
-    public static string $viewNamespace = 'partners';
-
     public function configureCustomPackage(Package $package): void
     {
         $package->name(static::$name)
             ->isCore()
-            ->hasViews()
             ->hasTranslations()
             ->hasMigrations([
                 '2024_12_11_101127_create_partners_industries_table',
