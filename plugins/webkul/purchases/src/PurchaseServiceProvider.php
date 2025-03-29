@@ -37,6 +37,9 @@ class PurchaseServiceProvider extends PackageServiceProvider
                 '2025_03_17_101814_add_inventories_columns_to_purchases_order_lines_table_from_purchases',
                 '2025_03_17_111610_add_purchases_columns_to_inventories_moves_table_from_purchases',
                 '2025_03_17_115707_create_purchases_order_operations_table_from_purchases',
+
+
+            
             ])
             ->runsMigrations()
             ->hasSettings([
@@ -45,7 +48,7 @@ class PurchaseServiceProvider extends PackageServiceProvider
             ])
             ->runsSettings()
             ->hasDependencies([
-                'invoices','inventories'
+                'invoices'//,'inventories'
             ])
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command

@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use Webkul\Security\Models\User;
-use Spatie\Permission\Models\Role;
+use Webkul\Account\Models\CashRounding;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class RolePolicy
+class CashRoundingPolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class RolePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_role');
+        return $user->can('view_any_cash::rounding');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Role $role): bool
+    public function view(User $user, CashRounding $cashRounding): bool
     {
-        return $user->can('view_role');
+        return $user->can('view_cash::rounding');
     }
 
     /**
@@ -31,23 +31,23 @@ class RolePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_role');
+        return $user->can('create_cash::rounding');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Role $role): bool
+    public function update(User $user, CashRounding $cashRounding): bool
     {
-        return $user->can('update_role');
+        return $user->can('update_cash::rounding');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Role $role): bool
+    public function delete(User $user, CashRounding $cashRounding): bool
     {
-        return $user->can('delete_role');
+        return $user->can('delete_cash::rounding');
     }
 
     /**
@@ -55,15 +55,15 @@ class RolePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_role');
+        return $user->can('delete_any_cash::rounding');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Role $role): bool
+    public function forceDelete(User $user, CashRounding $cashRounding): bool
     {
-        return $user->can('{{ ForceDelete }}');
+        return $user->can('force_delete_cash::rounding');
     }
 
     /**
@@ -71,15 +71,15 @@ class RolePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('{{ ForceDeleteAny }}');
+        return $user->can('force_delete_any_cash::rounding');
     }
 
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Role $role): bool
+    public function restore(User $user, CashRounding $cashRounding): bool
     {
-        return $user->can('{{ Restore }}');
+        return $user->can('restore_cash::rounding');
     }
 
     /**
@@ -87,15 +87,15 @@ class RolePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('{{ RestoreAny }}');
+        return $user->can('restore_any_cash::rounding');
     }
 
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, Role $role): bool
+    public function replicate(User $user, CashRounding $cashRounding): bool
     {
-        return $user->can('{{ Replicate }}');
+        return $user->can('replicate_cash::rounding');
     }
 
     /**
@@ -103,6 +103,6 @@ class RolePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('{{ Reorder }}');
+        return $user->can('reorder_cash::rounding');
     }
 }
