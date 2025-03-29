@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Webkul\Support\Models\Plugin;
 use Webkul\Support\Package;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use BezhanSalleh\FilamentShield\Support\Utils;
+use Illuminate\Support\Facades\Artisan;
 
 class InstallCommand extends Command
 {
@@ -129,6 +133,7 @@ class InstallCommand extends Command
             }
         } elseif ($this->runsSeeders) {
             $this->runSeeders();
+            $this->generateRolesAndPermissions();
         }
 
         if ($this->copyServiceProviderInApp) {
@@ -248,9 +253,15 @@ class InstallCommand extends Command
                 continue;
             }
 
-            $fullPath = $this->package->basePath("../database/migrations/{$migration}.php");
+            //$path = str_replace(base_path().'/', '', $this->package->basePath("/../database/migrations/{$migration}.php"));
+
+
+             // add support for windows file system
+
+             $migrations=strpos($this->package->basePath(""), '/') !== false?str_replace('src/','',$this->package->basePath("")."database/migrations/".$migration.".php"):str_replace("\\src", '', $this->package->basePath("") . "database\\migrations\\" . $migration . ".php");
             
-            $path = Str::after($fullPath, base_path() . DIRECTORY_SEPARATOR);
+            $path = str_replace(base_path().'\\','',str_replace(base_path().'/','',$migrations));
+
 
             $migrationsToRun[] = $path;
         }
@@ -276,9 +287,14 @@ class InstallCommand extends Command
                 continue;
             }
 
-            $fullPath = $this->package->basePath("../database/settings/{$setting}.php");
+            //$path = str_replace(base_path().'/', '', $this->package->basePath("/../database/settings/{$setting}.php"));
+            // add support for windows file system
+
+             $settings=strpos($this->package->basePath(""), '/') !== false?str_replace('src/','',$this->package->basePath("")."database/settings/".$setting.".php"):str_replace("\\src", '', $this->package->basePath("") . "database\\settings\\" . $setting . ".php");
             
-            $path = Str::after($fullPath, base_path() . DIRECTORY_SEPARATOR);
+            $path = str_replace(base_path().'\\','',str_replace(base_path().'/','',$settings));
+
+
 
             $settingsToRun[] = $path;
         }
@@ -379,7 +395,28 @@ class InstallCommand extends Command
             ->where('migration', $migrationName)
             ->exists();
     }
+    /**
+     * Generate roles and permissions using Filament Shield.
+     */
+    protected function generateRolesAndPermissions(): void
+    {
+        $this->info('🛡 Generating roles and permissions...');
 
+        $adminRole = Role::firstOrCreate(['name' => $this->getAdminRoleName()]);
+               $this->info('🛡 Generating roles and permissions for'.$this->getAdminRoleName().'...');
+            
+        $panel=$this->getAdminRoleName()=='admin'?0:1;
+        Artisan::call('shield:generate', ['--all' => true, '--option' => 'permissions','--panel'=>$this->getAdminRoleName()], $this->getOutput());
+
+        $permissions = Permission::all();
+        $adminRole->syncPermissions($permissions);
+
+        $this->info('✅ Roles and permissions generated and assigned successfully.');
+    }
+    protected function getAdminRoleName(): string
+    {
+        return Utils::getPanelUserRoleName();
+    }
     protected function copyServiceProviderInApp(): self
     {
         $providerName = $this->package->publishableProviderName;
