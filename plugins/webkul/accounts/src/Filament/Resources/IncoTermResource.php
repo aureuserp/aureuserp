@@ -48,6 +48,7 @@ class IncoTermResource extends Resource
                     ->required(),
                 Forms\Components\TextInput::make('code')
                     ->label(__('accounts::filament/resources/incoterm.form.fields.code'))
+                    ->maxLength(3)
                     ->required(),
                 Forms\Components\TextInput::make('name')
                     ->label(__('accounts::filament/resources/incoterm.form.fields.name'))

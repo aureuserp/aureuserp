@@ -92,12 +92,6 @@ class PaymentTermResource extends Resource
                             ])->columns(2),
                         Forms\Components\RichEditor::make('note')
                             ->label(__('accounts::filament/resources/payment-term.form.sections.fields.note')),
-                        Forms\Components\Group::make()
-                            ->schema([
-                                Forms\Components\Toggle::make('is_active')
-                                    ->inline(false)
-                                    ->label(__('accounts::filament/resources/payment-term.form.sections.fields.status')),
-                            ])->columns(2),
                     ]),
             ]);
     }
@@ -122,10 +116,6 @@ class PaymentTermResource extends Resource
                     ->label(__('accounts::filament/resources/payment-term.table.columns.early-pay-discount'))
                     ->searchable()
                     ->formatStateUsing(fn ($state) => EarlyPayDiscount::options()[$state])
-                    ->sortable(),
-                Tables\Columns\IconColumn::make('is_active')
-                    ->boolean()
-                    ->label(__('accounts::filament/resources/payment-term.table.columns.status'))
                     ->sortable(),
                 Tables\Columns\IconColumn::make('display_on_invoice')
                     ->boolean()
@@ -251,9 +241,6 @@ class PaymentTermResource extends Resource
                                     ->columnSpanFull()
                                     ->formatStateUsing(fn ($state) => new HtmlString($state))
                                     ->placeholder('—'),
-                                Infolists\Components\IconEntry::make('is_active')
-                                    ->label(__('accounts::filament/resources/payment-term.infolist.sections.entries.status'))
-                                    ->boolean(),
                             ]),
                     ]),
             ]);

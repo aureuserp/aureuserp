@@ -2,16 +2,14 @@
 
 namespace Webkul\Sale\Filament\Clusters\Configuration\Resources;
 
-use Webkul\Product\Filament\Resources\AttributeResource;
+use Webkul\Invoice\Filament\Clusters\Configuration\Resources\ProductAttributeResource as BaseProductAttributeResource;
 use Webkul\Sale\Filament\Clusters\Configuration;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductAttributeResource\Pages;
 use Webkul\Sale\Models\Attribute;
 
-class ProductAttributeResource extends AttributeResource
+class ProductAttributeResource extends BaseProductAttributeResource
 {
     protected static ?string $model = Attribute::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-swatch';
 
     protected static bool $shouldRegisterNavigation = true;
 

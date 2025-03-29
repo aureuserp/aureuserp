@@ -24,7 +24,6 @@ class PaymentTerm extends Model
         'early_pay_discount',
         'name',
         'note',
-        'is_active',
         'display_on_invoice',
         'early_discount',
         'discount_percentage',

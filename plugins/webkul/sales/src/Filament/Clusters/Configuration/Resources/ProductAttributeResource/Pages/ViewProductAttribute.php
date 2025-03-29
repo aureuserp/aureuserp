@@ -2,26 +2,10 @@
 
 namespace Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductAttributeResource\Pages;
 
-use Filament\Actions;
-use Filament\Notifications\Notification;
-use Filament\Resources\Pages\ViewRecord;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductAttributeResource;
+use Webkul\Invoice\Filament\Clusters\Configuration\Resources\ProductAttributeResource\Pages\ViewProductAttribute as BaseViewProductAttribute;
 
-class ViewProductAttribute extends ViewRecord
+class ViewProductAttribute extends BaseViewProductAttribute
 {
     protected static string $resource = ProductAttributeResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\EditAction::make(),
-            Actions\DeleteAction::make()
-                ->successNotification(
-                    Notification::make()
-                        ->success()
-                        ->title(__('sales::filament/clusters/configurations/resources/product-attribute/pages/view-product-attributes.header-actions.delete.notification.title'))
-                        ->body(__('sales::filament/clusters/configurations/resources/product-attribute/pages/view-product-attributes.header-actions.delete.notification.body')),
-                ),
-        ];
-    }
 }

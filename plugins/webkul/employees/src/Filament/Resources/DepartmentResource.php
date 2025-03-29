@@ -92,7 +92,8 @@ class DepartmentResource extends Resource
                                             ->placeholder(__('employees::filament/resources/department.form.sections.general.fields.company-placeholder'))
                                             ->nullable(),
                                         Forms\Components\ColorPicker::make('color')
-                                            ->label(__('employees::filament/resources/department.form.sections.general.fields.color')),
+                                            ->label(__('employees::filament/resources/department.form.sections.general.fields.color'))
+                                            ->hexColor(),
                                     ])
                                     ->columns(2),
                                 Forms\Components\Section::make(__('employees::filament/resources/department.form.sections.additional.title'))

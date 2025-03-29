@@ -51,7 +51,7 @@ class CreateDelivery extends CreateRecord
     {
         $operationType = OperationType::find($data['operation_type_id']);
 
-        $data['company_id'] ??= $operationType->destinationLocation->company_id;
+        $data['company_id'] ??= $operationType->sourceLocation->company_id;
 
         $data['source_location_id'] ??= $operationType->source_location_id;
 

@@ -45,23 +45,6 @@ class EditViewAction extends Action
                     ->label(__('table-views::filament/actions/edit-view.form.name'))
                     ->autofocus()
                     ->required(),
-                Forms\Components\Select::make('color')
-                    ->label(__('table-views::filament/actions/edit-view.form.color'))
-                    ->options(function () {
-                        return collect([
-                            'danger'  => __('table-views::filament/actions/edit-view.form.options.danger'),
-                            'gray'    => __('table-views::filament/actions/edit-view.form.options.gray'),
-                            'info'    => __('table-views::filament/actions/edit-view.form.options.info'),
-                            'success' => __('table-views::filament/actions/edit-view.form.options.success'),
-                            'warning' => __('table-views::filament/actions/edit-view.form.options.warning'),
-                        ])->mapWithKeys(function ($value, $key) {
-                            return [
-                                $key => '<div class="flex items-center gap-4"><span class="flex h-5 w-5 rounded-full" style="background: rgb(var(--'.$key.'-500))"></span> '.$value.'</span>',
-                            ];
-                        });
-                    })
-                    ->native(false)
-                    ->allowHtml(),
                 \Guava\FilamentIconPicker\Forms\IconPicker::make('icon')
                     ->label(__('table-views::filament/actions/edit-view.form.icon'))
                     ->sets(['heroicons'])
@@ -104,7 +87,6 @@ class EditViewAction extends Action
             ->label(__('table-views::filament/actions/edit-view.form.modal.title'))
             ->successNotificationTitle(__('table-views::filament/actions/edit-view.form.notification.created'))
             ->icon('heroicon-s-pencil-square')
-            ->slideOver()
             ->modalHeading(__('table-views::filament/actions/edit-view.form.modal.title'))
             ->modalWidth(MaxWidth::Medium);
     }

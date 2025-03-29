@@ -29,19 +29,28 @@ return [
 
         'groups' => [
             'parent'     => 'Parent',
+            'creator' => 'Creator',
             'created-at' => 'Created At',
             'updated-at' => 'Updated At',
         ],
 
         'filters' => [
             'parent' => 'Parent',
+            'creator' => 'Creator',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Category deleted',
-                    'body'  => 'The Category has been deleted successfully.',
+                    'success' => [
+                        'title' => 'Category deleted',
+                        'body'  => 'The Category has been deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Category could not be deleted',
+                        'body'  => 'The category cannot be deleted because it is currently in use.',
+                    ],
                 ],
             ],
         ],
@@ -49,8 +58,15 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Categories deleted',
-                    'body'  => 'The categories has been deleted successfully.',
+                    'success' => [
+                        'title' => 'Categories deleted',
+                        'body'  => 'The categories has been deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Categories could not be deleted',
+                        'body'  => 'The categories cannot be deleted because they are currently in use.',
+                    ],
                 ],
             ],
         ],

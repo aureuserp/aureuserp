@@ -299,7 +299,8 @@ class EmployeeResource extends Resource
                                                                     ->label(__('employees::filament/resources/employee.form.tabs.work-information.fields.company'))
                                                                     ->createOptionForm(fn(Form $form) => CompanyResource::form($form)),
                                                                 Forms\Components\ColorPicker::make('color')
-                                                                    ->label(__('employees::filament/resources/employee.form.tabs.work-information.fields.color')),
+                                                                    ->label(__('employees::filament/resources/employee.form.tabs.work-information.fields.color'))
+                                                                    ->hexColor(),
                                                             ])->columns(1),
                                                     ])
                                                     ->columnSpan(['lg' => 1]),

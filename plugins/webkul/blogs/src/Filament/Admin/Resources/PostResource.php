@@ -102,7 +102,8 @@ class PostResource extends Resource
                                             ->required()
                                             ->unique('blogs_tags'),
                                         Forms\Components\ColorPicker::make('color')
-                                            ->label(__('blogs::filament/admin/resources/post.form.sections.settings.fields.color')),
+                                            ->label(__('blogs::filament/admin/resources/post.form.sections.settings.fields.color'))
+                                            ->hexColor(),
                                     ]),
                             ]),
                     ]),

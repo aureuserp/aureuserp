@@ -58,6 +58,7 @@ class RefuseReasonResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/refuse-reason.form.fields.name'))
                     ->required()
+                    ->maxLength(255)
                     ->placeholder(__('recruitments::filament/clusters/configurations/resources/refuse-reason.form.fields.name-placeholder')),
                 Forms\Components\Select::make('template')
                     ->label(__('recruitments::filament/clusters/configurations/resources/refuse-reason.form.fields.template.title'))

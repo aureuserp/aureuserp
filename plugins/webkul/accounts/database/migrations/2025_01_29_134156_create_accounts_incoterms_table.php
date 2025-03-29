@@ -14,9 +14,8 @@ return new class extends Migration
         Schema::create('accounts_incoterms', function (Blueprint $table) {
             $table->id();
             $table->foreignId('creator_id')->nullable()->comment('Creator')->constrained('users')->nullOnDelete();
-            $table->string('code')->comment('Code');
+            $table->string('code', 3)->comment('Code');
             $table->string('name')->comment('Name');
-            $table->boolean('is_active')->default(false)->comment('Status');
             $table->softDeletes();
             $table->timestamps();
         });

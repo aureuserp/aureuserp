@@ -13,16 +13,16 @@ enum InvoicePolicy: string implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::ORDER       => __('sales::enums/invoice-policy.order'),
-            self::DELIVERY    => __('sales::enums/invoice-policy.delivery'),
+            self::ORDER       => __('invoices::enums/invoice-policy.order'),
+            self::DELIVERY    => __('invoices::enums/invoice-policy.delivery'),
         };
     }
 
     public function options(): array
     {
         return [
-            self::ORDER->value       => __('sales::enums/invoice-policy.order'),
-            self::DELIVERY->value    => __('sales::enums/invoice-policy.delivery'),
+            self::ORDER->value       => __('invoices::enums/invoice-policy.order'),
+            self::DELIVERY->value    => __('invoices::enums/invoice-policy.delivery'),
         ];
     }
 }

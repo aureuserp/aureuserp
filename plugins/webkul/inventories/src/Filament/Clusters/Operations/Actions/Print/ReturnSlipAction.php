@@ -7,6 +7,7 @@ use Filament\Notifications\Notification;
 use Livewire\Component;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Models\Operation;
+use Webkul\Inventory\Facades\Inventory;
 
 class ReturnSlipAction extends Action
 {
@@ -34,10 +35,10 @@ class ReturnSlipAction extends Action
                 }
 
                 foreach ($record->moves as $move) {
-                    OperationResource::updateOrCreateMoveLines($move);
+                    Inventory::updateOrCreateMoveLines($move);
                 }
 
-                OperationResource::updateOperationState($record);
+                Inventory::computeTransferState($record);
 
                 $livewire->updateForm();
 

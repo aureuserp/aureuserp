@@ -62,7 +62,8 @@ class EmployeeCategoryResource extends Resource
                     ->unique(ignoreRecord: true)
                     ->placeholder('Enter the name of the tag'),
                 Forms\Components\ColorPicker::make('color')
-                    ->label(__('employees::filament/clusters/configurations/resources/employee-category.form.fields.color')),
+                    ->label(__('employees::filament/clusters/configurations/resources/employee-category.form.fields.color'))
+                    ->hexColor(),
                 Forms\Components\Hidden::make('creator_id')
                     ->default(Auth::user()->id),
             ]);

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         if (! Schema::hasTable('purchases_order_operations')) {
             Schema::disableForeignKeyConstraints();
+
             Schema::create('purchases_order_operations', function (Blueprint $table) {
                 $table->foreignId('purchase_order_id')
                     ->constrained('purchases_orders')

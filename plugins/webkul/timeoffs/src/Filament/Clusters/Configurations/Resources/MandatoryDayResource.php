@@ -60,6 +60,7 @@ class MandatoryDayResource extends Resource
                 Forms\Components\ColorPicker::make('color')
                     ->label(__('time_off::filament/clusters/configurations/resources/mandatory-days.form.fields.color'))
                     ->required()
+                    ->hexColor()
                     ->default('#000000'),
                 Forms\Components\TextInput::make('name')
                     ->label(__('time_off::filament/clusters/configurations/resources/mandatory-days.form.fields.name'))

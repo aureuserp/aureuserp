@@ -90,7 +90,8 @@ class TeamResource extends Resource
                                     ->autocomplete(false)
                                     ->suffix(__('sales::filament/clusters/configurations/resources/team.form.sections.fields.fieldset.team-details.fields.invoiced-target-suffix')),
                                 Forms\Components\ColorPicker::make('color')
-                                    ->label(__('sales::filament/clusters/configurations/resources/team.form.sections.fields.fieldset.team-details.fields.color')),
+                                    ->label(__('sales::filament/clusters/configurations/resources/team.form.sections.fields.fieldset.team-details.fields.color'))
+                                    ->hexColor(),
                                 Forms\Components\Select::make('sales_team_members')
                                     ->relationship('members', 'name')
                                     ->multiple()

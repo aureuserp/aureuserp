@@ -2,7 +2,7 @@
 
 namespace Webkul\Purchase\Observers;
  
-use Webkul\Invoice\Models\Move;
+use Webkul\Account\Models\Move;
 use Webkul\Purchase\Models\AccountMove;
  
 class AccountMoveObserver

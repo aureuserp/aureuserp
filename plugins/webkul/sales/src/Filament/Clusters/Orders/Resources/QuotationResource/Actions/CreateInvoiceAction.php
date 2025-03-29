@@ -122,7 +122,7 @@ class CreateInvoiceAction extends Action
         $accountMove = Move::create([
             'state'                        => AccountEnums\MoveState::DRAFT,
             'move_type'                    => AccountEnums\MoveType::OUT_INVOICE,
-            'payment_state'                => AccountEnums\PaymentStatus::NOT_PAID,
+            'payment_state'                => AccountEnums\PaymentState::NOT_PAID,
             'invoice_partner_display_name' => $record->partner->name,
             'invoice_origin'               => $record->name,
             'date'                         => now(),

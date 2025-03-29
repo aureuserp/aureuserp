@@ -115,6 +115,7 @@ class TaskResource extends Resource
                                                     ->unique('projects_tags'),
                                                 Forms\Components\ColorPicker::make('color')
                                                     ->default('#808080')
+                                                    ->hexColor()
                                                     ->label(__('projects::filament/resources/task.form.sections.general.fields.color')),
                                             ])->columns(2),
                                     ]),

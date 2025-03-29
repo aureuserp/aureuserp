@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('partners_bank_accounts', function (Blueprint $table) {
             $table->id();
-            $table->string('account_number');
+            $table->string('account_number')->unique();
             $table->string('account_holder_name');
             $table->boolean('is_active')->default(1);
             $table->boolean('can_send_money')->default(0);

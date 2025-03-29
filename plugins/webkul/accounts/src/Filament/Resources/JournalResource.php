@@ -78,7 +78,8 @@ class JournalResource extends Resource
                                                                     ->preload()
                                                                     ->searchable(),
                                                                 Forms\Components\ColorPicker::make('color')
-                                                                    ->label(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.accounting-information.fields.color')),
+                                                                    ->label(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.accounting-information.fields.color'))
+                                                                    ->hexColor(),
                                                             ]),
                                                     ]),
                                                 Forms\Components\Fieldset::make(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.bank-account-number.title'))
@@ -210,10 +211,6 @@ class JournalResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->label(__('accounts::filament/resources/journal.table.columns.created-by')),
-                Tables\Columns\IconColumn::make('is_active')
-                    ->sortable()
-                    ->boolean()
-                    ->label(__('accounts::filament/resources/journal.table.columns.status')),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

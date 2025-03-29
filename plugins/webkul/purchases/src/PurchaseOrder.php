@@ -489,7 +489,7 @@ class PurchaseOrder
             OperationResource::updateOrCreateMoveLines($move);
         }
 
-        OperationResource::updateOperationState($operation);
+        OperationResource::computeTransferState($operation);
 
         $url = PurchaseOrderResource::getUrl('view', ['record' => $record]);
 
@@ -519,7 +519,7 @@ class PurchaseOrder
                 $move->lines()->delete();
             }
 
-            OperationResource::updateOperationState($operation);
+            OperationResource::computeTransferState($operation);
         });
     }
 

@@ -185,13 +185,15 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label(__('security::filament/resources/user.table.columns.name'))
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->limit(50),
                 Tables\Columns\TextColumn::make('email')
                     ->label(__('security::filament/resources/user.table.columns.email'))
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('teams.name')
-                    ->label(__('security::filament/resources/user.table.columns.teams')),
+                    ->label(__('security::filament/resources/user.table.columns.teams'))
+                    ->badge(),
                 Tables\Columns\TextColumn::make('roles.name')
                     ->sortable()
                     ->label(__('security::filament/resources/user.table.columns.role')),
@@ -331,6 +333,9 @@ class UserResource extends Resource
                                         Infolists\Components\TextEntry::make('name')
                                             ->icon('heroicon-o-user')
                                             ->placeholder('—')
+                                            ->extraAttributes([
+                                                'style' => 'word-break: break-all;',
+                                            ])
                                             ->label(__('security::filament/resources/user.infolist.sections.general-information.entries.name')),
                                         Infolists\Components\TextEntry::make('email')
                                             ->icon('heroicon-o-envelope')

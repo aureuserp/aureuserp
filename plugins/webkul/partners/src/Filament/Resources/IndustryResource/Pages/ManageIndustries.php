@@ -8,7 +8,7 @@ use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ManageRecords;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Partner\Filament\Resources\IndustryResource;
-use Webkul\Partner\Models\Tag;
+use Webkul\Partner\Models\Industry;
 
 class ManageIndustries extends ManageRecords
 {
@@ -38,9 +38,9 @@ class ManageIndustries extends ManageRecords
     {
         return [
             'all' => Tab::make(__('partners::filament/resources/industry/pages/manage-industries.tabs.all'))
-                ->badge(Tag::count()),
+                ->badge(Industry::count()),
             'archived' => Tab::make(__('partners::filament/resources/industry/pages/manage-industries.tabs.archived'))
-                ->badge(Tag::onlyTrashed()->count())
+                ->badge(Industry::onlyTrashed()->count())
                 ->modifyQueryUsing(function ($query) {
                     return $query->onlyTrashed();
                 }),

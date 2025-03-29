@@ -77,6 +77,10 @@ class EditCreditNote extends EditRecord
     {
         $record = $this->getRecord();
 
-        $this->getResource()::collectTotals($record);
+        $record->invoice_date_due = CreditNoteResource::calculateDateMaturity($record)->format('Y-m-d');
+
+        $record->save();
+
+        CreditNoteResource::collectTotals($record);
     }
 }

@@ -64,7 +64,6 @@ return new class extends Migration
             $table->string('bank_statements_source')->nullable()->comment('Bank Statements Source');
             $table->string('name')->comment('Name');
             $table->text('order_override_regex')->nullable()->comment('Sequence Override Regex');
-            $table->boolean('is_active')->nullable()->default(false)->comment('Is Active');
             $table->boolean('auto_check_on_post')->nullable()->default(false)->comment('Auto Check on Post');
             $table->boolean('restrict_mode_hash_table')->nullable()->default(false)->comment('Restrict Mode Hash Table');
             $table->boolean('refund_order')->nullable()->default(false)->comment('Refund Order');

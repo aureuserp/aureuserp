@@ -15,12 +15,17 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Oper
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Partner\Enums\AccountType;
 use Webkul\Partner\Models\Partner;
 
 class PartnerResource extends Resource
 {
     protected static ?string $model = Partner::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-users';
 
     protected static bool $shouldRegisterNavigation = false;
 
@@ -144,7 +149,7 @@ class PartnerResource extends Resource
                                                     ->unique('partners_tags'),
                                                 Forms\Components\ColorPicker::make('color')
                                                     ->label(__('partners::filament/resources/partner.form.sections.general.fields.color'))
-                                                    ->required(),
+                                                    ->hexColor(),
                                             ])
                                             ->columns(2),
                                     ]),
@@ -401,11 +406,22 @@ class PartnerResource extends Resource
                             ->body(__('partners::filament/resources/partner.table.actions.delete.notification.body')),
                     ),
                 Tables\Actions\ForceDeleteAction::make()
+                    ->action(function (Partner $record) {
+                        try {
+                            $record->forceDelete();
+                        } catch (QueryException $e) {
+                            Notification::make()
+                                ->danger()
+                                ->title(__('partners::filament/resources/partner.table.actions.force-delete.notification.error.title'))
+                                ->body(__('partners::filament/resources/partner.table.actions.force-delete.notification.error.body'))
+                                ->send();
+                        }
+                    })
                     ->successNotification(
                         Notification::make()
                             ->success()
-                            ->title(__('partners::filament/resources/partner.table.actions.force-delete.notification.title'))
-                            ->body(__('partners::filament/resources/partner.table.actions.force-delete.notification.body')),
+                            ->title(__('partners::filament/resources/partner.table.actions.force-delete.notification.success.title'))
+                            ->body(__('partners::filament/resources/partner.table.actions.force-delete.notification.success.body')),
                     ),
             ])
             ->bulkActions([
@@ -425,11 +441,22 @@ class PartnerResource extends Resource
                                 ->body(__('partners::filament/resources/partner.table.bulk-actions.delete.notification.body')),
                         ),
                     Tables\Actions\ForceDeleteBulkAction::make()
+                        ->action(function (Collection $records) {
+                            try {
+                                $records->each(fn (Model $record) => $record->forceDelete());
+                            } catch (QueryException $e) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('partners::filament/resources/partner.table.bulk-actions.force-delete.notification.error.title'))
+                                    ->body(__('partners::filament/resources/partner.table.bulk-actions.force-delete.notification.error.body'))
+                                    ->send();
+                            }
+                        })
                         ->successNotification(
                             Notification::make()
                                 ->success()
-                                ->title(__('partners::filament/resources/partner.table.bulk-actions.force-delete.notification.title'))
-                                ->body(__('partners::filament/resources/partner.table.bulk-actions.force-delete.notification.body')),
+                                ->title(__('partners::filament/resources/partner.table.bulk-actions.force-delete.notification.success.title'))
+                                ->body(__('partners::filament/resources/partner.table.bulk-actions.force-delete.notification.success.body')),
                         ),
                 ]),
             ])

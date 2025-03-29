@@ -62,7 +62,7 @@ class TagResource extends Resource
                     ->placeholder(__('Name')),
                 Forms\Components\ColorPicker::make('color')
                     ->label(__('sales::filament/clusters/configurations/resources/tag.form.fields.color'))
-                    ->required(),
+                    ->hexColor(),
             ]);
     }
 

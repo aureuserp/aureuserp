@@ -71,6 +71,10 @@ class EditRefund extends EditRecord
     {
         $record = $this->getRecord();
 
-        $this->getResource()::collectTotals($record);
+        $record->invoice_date_due = RefundResource::calculateDateMaturity($record)->format('Y-m-d');
+
+        $record->save();
+
+        RefundResource::collectTotals($record);
     }
 }

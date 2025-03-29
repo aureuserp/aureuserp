@@ -52,6 +52,7 @@ return [
                     'date-to'            => 'Date To',
                     'expected-skills'    => 'Expected Skills',
                     'employment-type'    => 'Employment Type',
+                    'status'             => 'Status',
                 ],
             ],
 

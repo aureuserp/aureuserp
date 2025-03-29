@@ -544,8 +544,8 @@ class QuotationResource extends Resource
                         ->successNotification(
                             Notification::make()
                                 ->success()
-                                ->title(__('sales::filament/clusters/orders/resources/quotation.table.bulk-actions.restore.notification.title'))
-                                ->body(__('sales::filament/clusters/orders/resources/quotation.table.bulk-actions.restore.notification.body'))
+                                ->title(__('sales::filament/clusters/orders/resources/quotation.table.bulk-actions.delete.notification.title'))
+                                ->body(__('sales::filament/clusters/orders/resources/quotation.table.bulk-actions.delete.notification.body'))
                         ),
                     Tables\Actions\ForceDeleteBulkAction::make()
                         ->successNotification(

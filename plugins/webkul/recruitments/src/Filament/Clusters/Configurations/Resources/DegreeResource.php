@@ -57,6 +57,7 @@ class DegreeResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/degree.form.fields.name'))
                     ->required()
+                    ->maxLength(255)
                     ->placeholder(__('recruitments::filament/clusters/configurations/resources/degree.form.fields.name-placeholder')),
             ]);
     }

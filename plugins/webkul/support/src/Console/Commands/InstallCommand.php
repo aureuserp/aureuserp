@@ -262,6 +262,7 @@ class InstallCommand extends Command
             
             $path = str_replace(base_path().'\\','',str_replace(base_path().'/','',$migrations));
 
+
             $migrationsToRun[] = $path;
         }
 
@@ -292,6 +293,7 @@ class InstallCommand extends Command
              $settings=strpos($this->package->basePath(""), '/') !== false?str_replace('src/','',$this->package->basePath("")."database/settings/".$setting.".php"):str_replace("\\src", '', $this->package->basePath("") . "database\\settings\\" . $setting . ".php");
             
             $path = str_replace(base_path().'\\','',str_replace(base_path().'/','',$settings));
+
 
 
             $settingsToRun[] = $path;

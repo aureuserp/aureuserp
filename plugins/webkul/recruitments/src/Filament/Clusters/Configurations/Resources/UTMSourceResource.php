@@ -57,6 +57,7 @@ class UTMSourceResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/utm-source.form.fields.name'))
                     ->required()
+                    ->maxLength(255)
                     ->placeholder(__('recruitments::filament/clusters/configurations/resources/utm-source.form.fields.name-placeholder')),
             ]);
     }

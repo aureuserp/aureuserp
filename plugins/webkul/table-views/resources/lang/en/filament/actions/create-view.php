@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'label' => 'Add New',
+
     'form' => [
         'name'                  => 'Name',
         'color'                 => 'Color',

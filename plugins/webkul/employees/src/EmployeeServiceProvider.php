@@ -11,12 +11,9 @@ class EmployeeServiceProvider extends PackageServiceProvider
 {
     public static string $name = 'employees';
 
-    public static string $viewNamespace = 'employees';
-
     public function configureCustomPackage(Package $package): void
     {
         $package->name(static::$name)
-            ->hasViews()
             ->hasTranslations()
             ->hasMigrations([
                 '2024_12_11_045350_create_employees_work_locations_table',

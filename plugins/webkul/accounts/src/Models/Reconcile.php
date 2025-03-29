@@ -32,7 +32,6 @@ class Reconcile extends Model
         'payment_tolerance_type',
         'decimal_separator',
         'name',
-        'is_active',
         'auto_reconcile',
         'to_check',
         'match_text_location_label',
