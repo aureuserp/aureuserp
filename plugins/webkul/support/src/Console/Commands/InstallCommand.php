@@ -248,9 +248,16 @@ class InstallCommand extends Command
                 continue;
             }
 
-            $fullPath = $this->package->basePath("../database/migrations/{$migration}.php");
+
+            //$path = str_replace(base_path().'/', '', $this->package->basePath("/../database/migrations/{$migration}.php"));
+
+
+             // add support for windows file system
+
+             $migrations=strpos($this->package->basePath(""), '/') !== false?str_replace('src/','',$this->package->basePath("")."database/migrations/".$migration.".php"):str_replace("\\src", '', $this->package->basePath("") . "database\\migrations\\" . $migration . ".php");
             
-            $path = Str::after($fullPath, base_path() . DIRECTORY_SEPARATOR);
+            $path = str_replace(base_path().'\\','',str_replace(base_path().'/','',$migrations));
+
 
             $migrationsToRun[] = $path;
         }
@@ -276,9 +283,15 @@ class InstallCommand extends Command
                 continue;
             }
 
-            $fullPath = $this->package->basePath("../database/settings/{$setting}.php");
+
+            //$path = str_replace(base_path().'/', '', $this->package->basePath("/../database/settings/{$setting}.php"));
+            // add support for windows file system
+
+             $settings=strpos($this->package->basePath(""), '/') !== false?str_replace('src/','',$this->package->basePath("")."database/settings/".$setting.".php"):str_replace("\\src", '', $this->package->basePath("") . "database\\settings\\" . $setting . ".php");
             
-            $path = Str::after($fullPath, base_path() . DIRECTORY_SEPARATOR);
+            $path = str_replace(base_path().'\\','',str_replace(base_path().'/','',$settings));
+
+
 
             $settingsToRun[] = $path;
         }

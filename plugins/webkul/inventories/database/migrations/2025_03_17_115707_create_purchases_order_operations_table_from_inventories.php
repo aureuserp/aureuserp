@@ -11,7 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (! Schema::hasTable('purchases_order_operations') && Schema::hasTable('purchases_orders')) {
+
+        if (! Schema::hasTable('purchases_order_operations')) {
+            Schema::disableForeignKeyConstraints();
+
             Schema::create('purchases_order_operations', function (Blueprint $table) {
                 $table->foreignId('purchase_order_id')
                     ->constrained('purchases_orders')
@@ -21,6 +24,7 @@ return new class extends Migration
                     ->constrained('inventories_operations')
                     ->cascadeOnDelete();
             });
+            Schema::enableForeignKeyConstraints();
         }
     }
 
