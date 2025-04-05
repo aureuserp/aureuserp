@@ -6,12 +6,9 @@ use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Partner\Models\Partner;
-use Webkul\Sale\Enums\InvoiceStatus;
 use Webkul\Sale\Enums\OrderState;
-use Webkul\Sale\Mail\SaleOrderCancelQuotation;
-use Webkul\Support\Services\EmailService;
+use Webkul\Sale\Facades\SaleOrder;
 
 class CancelQuotationAction extends Action
 {
@@ -36,20 +33,8 @@ class CancelQuotationAction extends Action
                         ->label(__('sales::filament/clusters/orders/resources/quotation/actions/cancel-quotation.footer-actions.send-and-cancel.title'))
                         ->icon('heroicon-o-envelope')
                         ->modalIcon('heroicon-s-envelope')
-                        ->action(function () use ($record, $livewire) {
-                            $record->update([
-                                'state'          => OrderState::CANCEL,
-                                'invoice_status' => InvoiceStatus::NO,
-                            ]);
-
-                            $record->lines->each(function ($line) {
-                                $line->state = OrderState::CANCEL;
-                                $line->save();
-                            });
-
-                            if ($livewire?->mountedActionsData[0]) {
-                                $this->handleCancelAndSendEmail($record, $livewire?->mountedActionsData[0]);
-                            }
+                        ->action(function ($data) use ($record, $livewire) {
+                            SaleOrder::cancelSaleOrder($record, $livewire->mountedActionsData[0] ?? []);
 
                             $livewire->refreshFormData(['state']);
 
@@ -65,15 +50,7 @@ class CancelQuotationAction extends Action
                         ->icon('heroicon-o-x-circle')
                         ->modalIcon('heroicon-s-x-circle')
                         ->action(function () use ($record, $livewire) {
-                            $record->update([
-                                'state'          => OrderState::CANCEL,
-                                'invoice_status' => InvoiceStatus::NO,
-                            ]);
-
-                            $record->lines->each(function ($line) {
-                                $line->state = OrderState::CANCEL;
-                                $line->save();
-                            });
+                            SaleOrder::cancelSaleOrder($record);
 
                             $livewire->refreshFormData(['state']);
 
@@ -121,44 +98,5 @@ class CancelQuotationAction extends Action
                 }
             )
             ->hidden(fn ($record) => ! in_array($record->state, [OrderState::DRAFT, OrderState::SENT, OrderState::SALE]));
-    }
-
-    private function preparePayloadForCancelAndSendEmail($record, $partner, $data): array
-    {
-        return [
-            'record_name'    => $record->name,
-            'model_name'     => 'Quotation',
-            'subject'        => $data['subject'],
-            'description'    => $data['description'],
-            'to'             => [
-                'address' => $partner?->email,
-                'name'    => $partner?->name,
-            ],
-        ];
-    }
-
-    private function handleCancelAndSendEmail($record, $data)
-    {
-        $partners = Partner::whereIn('id', $data['partners'])->get();
-
-        foreach ($partners as $key => $partner) {
-            app(EmailService::class)->send(
-                mailClass: SaleOrderCancelQuotation::class,
-                view: $viewName = 'sales::mails.sale-order-cancel-quotation',
-                payload: $this->preparePayloadForCancelAndSendEmail($record, $partner, $data),
-            );
-        }
-
-        $messageData = [
-            'from' => [
-                'company' => Auth::user()->defaultCompany->toArray(),
-            ],
-            'body' => view($viewName, [
-                'payload' => $this->preparePayloadForCancelAndSendEmail($record, $partner, $data),
-            ])->render(),
-            'type' => 'comment',
-        ];
-
-        $record->addMessage($messageData, Auth::user()->id);
     }
 }

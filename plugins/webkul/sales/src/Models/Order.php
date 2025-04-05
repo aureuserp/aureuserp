@@ -123,11 +123,6 @@ class Order extends Model
         return $this->lines->sum('qty_to_invoice');
     }
 
-    public function accountMoves(): BelongsToMany
-    {
-        return $this->belongsToMany(Move::class, 'sales_order_line_invoices', 'order_id', 'move_id');
-    }
-
     public function campaign()
     {
         return $this->belongsTo(UtmCampaign::class, 'campaign_id');
@@ -136,6 +131,11 @@ class Order extends Model
     public function journal()
     {
         return $this->belongsTo(Journal::class);
+    }
+
+    public function accountMoves(): BelongsToMany
+    {
+        return $this->belongsToMany(Move::class, 'sales_order_invoices', 'order_id', 'move_id');
     }
 
     public function partnerInvoice()

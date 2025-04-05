@@ -7,6 +7,7 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums;
 use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Facades\Account;
 use Webkul\Account\Filament\Resources\BillResource;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\Partner;
@@ -57,8 +58,6 @@ class CreateBill extends CreateRecord
 
         $record->invoice_date_due = BillResource::calculateDateMaturity($record)->format('Y-m-d');
 
-        $record->save();
-
-        BillResource::collectTotals($record);
+        Account::computeAccountMove($this->getRecord());
     }
 }

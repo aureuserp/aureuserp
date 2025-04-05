@@ -6,6 +6,7 @@ use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums;
 use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Facades\Account;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\CreateInvoice as CreateBaseRefund;
 use Webkul\Account\Filament\Resources\RefundResource;
 use Webkul\Account\Models\Move;
@@ -57,8 +58,6 @@ class CreateRefund extends CreateBaseRefund
 
         $record->invoice_date_due = RefundResource::calculateDateMaturity($record)->format('Y-m-d');
 
-        $record->save();
-
-        RefundResource::collectTotals($record);
+        Account::computeAccountMove($this->getRecord());
     }
 }

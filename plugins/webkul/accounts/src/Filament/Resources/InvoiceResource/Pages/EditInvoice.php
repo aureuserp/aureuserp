@@ -6,6 +6,7 @@ use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Account\Facades\Account;
 use Webkul\Account\Filament\Resources\InvoiceResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
@@ -73,12 +74,6 @@ class EditInvoice extends EditRecord
 
     protected function afterSave(): void
     {
-        $record = $this->getRecord();
-
-        $record->invoice_date_due = InvoiceResource::calculateDateMaturity($record)->format('Y-m-d');
-
-        $record->save();
-
-        InvoiceResource::collectTotals($record);
+        Account::computeAccountMove($this->getRecord());
     }
 }

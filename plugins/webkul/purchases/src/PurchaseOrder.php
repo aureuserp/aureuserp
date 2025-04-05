@@ -383,7 +383,7 @@ class PurchaseOrder
 
     public function generateRFQPdf($record)
     {
-        $pdfPath = 'Request for Quotation-'.str_replace('/', '_', $record->name).'.pdf';
+        $pdfPath = 'Request for Quotation-' . str_replace('/', '_', $record->name) . '.pdf';
 
         if (! Storage::exists($pdfPath)) {
             $pdf = PDF::loadView('purchases::filament.admin.clusters.orders.orders.actions.print-quotation', [
@@ -398,7 +398,7 @@ class PurchaseOrder
 
     public function generatePurchaseOrderPdf($record)
     {
-        $pdfPath = 'Purchase Order-'.str_replace('/', '_', $record->name).'.pdf';
+        $pdfPath = 'Purchase Order-' . str_replace('/', '_', $record->name) . '.pdf';
 
         if (! Storage::exists($pdfPath)) {
             $pdf = PDF::loadView('purchases::filament.admin.clusters.orders.orders.actions.print-purchase-order', [
@@ -417,7 +417,7 @@ class PurchaseOrder
             return;
         }
 
-        if (! $record->lines->contains(fn ($line) => $line->product->type === ProductType::GOODS)) {
+        if (! $record->lines->contains(fn($line) => $line->product->type === ProductType::GOODS)) {
             return;
         }
 

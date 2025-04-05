@@ -4,6 +4,7 @@ namespace Webkul\Account\Filament\Resources\CreditNoteResource\Pages;
 
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Account\Facades\Account;
 use Webkul\Account\Filament\Resources\CreditNoteResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\EditInvoice as EditRecord;
@@ -79,8 +80,6 @@ class EditCreditNote extends EditRecord
 
         $record->invoice_date_due = CreditNoteResource::calculateDateMaturity($record)->format('Y-m-d');
 
-        $record->save();
-
-        CreditNoteResource::collectTotals($record);
+        Account::computeAccountMove($this->getRecord());
     }
 }

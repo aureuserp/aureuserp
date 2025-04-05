@@ -4,6 +4,7 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Invoice\Models\Product;
 use Webkul\Partner\Models\Partner;
@@ -72,6 +73,7 @@ class MoveLine extends Model
 
     protected $casts = [
         'parent_state' => MoveState::class,
+        'display_type' => DisplayType::class,
     ];
 
     public function move()
@@ -136,7 +138,7 @@ class MoveLine extends Model
 
     public function uom()
     {
-        return $this->belongsTo(UOM::class);
+        return $this->belongsTo(UOM::class, 'uom_id');
     }
 
     public function createdBy()

@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sales_order_line_invoices', function (Blueprint $table) {
-            $table->foreignId('order_line_id')
-                ->constrained('sales_order_lines')
+        Schema::create('sales_order_invoices', function (Blueprint $table) {
+            $table->foreignId('order_id')
+                ->constrained('sales_orders')
                 ->cascadeOnDelete();
 
-            $table->foreignId('invoice_line_id')
-                ->constrained('accounts_account_move_lines')
+            $table->foreignId('move_id')
+                ->constrained('accounts_account_moves')
                 ->cascadeOnDelete();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sales_order_line_invoices');
+        Schema::dropIfExists('sales_order_invoices');
     }
 };

@@ -6,6 +6,7 @@ use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums;
 use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Facades\Account;
 use Webkul\Account\Filament\Resources\CreditNoteResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\CreateInvoice as CreateRecord;
 use Webkul\Account\Models\Move;
@@ -57,8 +58,6 @@ class CreateCreditNote extends CreateRecord
 
         $record->invoice_date_due = CreditNoteResource::calculateDateMaturity($record)->format('Y-m-d');
 
-        $record->save();
-
-        $this->getResource()::collectTotals($record);
+        Account::computeAccountMove($this->getRecord());
     }
 }
