@@ -6,6 +6,7 @@ use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Account\Facades\Account;
 use Webkul\Account\Filament\Resources\BillResource;
 use Webkul\Account\Filament\Resources\BillResource\Actions\CreditNoteAction;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
@@ -76,8 +77,6 @@ class EditBill extends EditRecord
 
         $record->invoice_date_due = BillResource::calculateDateMaturity($record)->format('Y-m-d');
 
-        $record->save();
-
-        BillResource::collectTotals($record);
+        Account::computeAccountMove($this->getRecord());
     }
 }

@@ -6,6 +6,7 @@ use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Account\Facades\Account;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Account\Filament\Resources\RefundResource;
 use Webkul\Account\Models\Partner;
@@ -73,8 +74,6 @@ class EditRefund extends EditRecord
 
         $record->invoice_date_due = RefundResource::calculateDateMaturity($record)->format('Y-m-d');
 
-        $record->save();
-
-        RefundResource::collectTotals($record);
+        Account::computeAccountMove($this->getRecord());
     }
 }

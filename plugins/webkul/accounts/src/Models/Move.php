@@ -274,6 +274,37 @@ class Move extends Model
             ->where('display_type', 'payment_term');
     }
 
+    public function isInvoice($includeReceipts = false)
+    {
+        return $this->isSaleDocument($includeReceipts) || $this->isPurchaseDocument($includeReceipts);
+    }
+
+    public function isEntry()
+    {
+        return $this->move_type === MoveType::ENTRY;
+    }
+
+    public function getSaleTypes($includeReceipts = false)
+    {
+        return $includeReceipts
+            ? [MoveType::OUT_INVOICE, MoveType::OUT_REFUND, MoveType::OUT_RECEIPT]
+            : [MoveType::OUT_INVOICE, MoveType::OUT_REFUND];
+    }
+
+    public function isSaleDocument($includeReceipts = false)
+    {
+        return in_array($this->move_type, $this->getSaleTypes($includeReceipts));
+    }
+
+    public function isPurchaseDocument($includeReceipts = false)
+    {
+        return in_array($this->move_type, $includeReceipts ? [
+            MoveType::IN_INVOICE,
+            MoveType::IN_REFUND,
+            MoveType::IN_RECEIPT,
+        ] : [MoveType::IN_INVOICE, MoveType::IN_REFUND]);
+    }
+
     /**
      * Bootstrap any application services.
      */

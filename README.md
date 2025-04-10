@@ -8,7 +8,7 @@
 <a href="https://packagist.org/packages/aureuserp/aureuserp"><img src="https://poser.pugx.org/aureuserp/aureuserp/license.svg" alt="License"></a>
 </p>
 
-## Topics
+## Topic
 
 1. [Introduction](#introduction)
 2. [Requirements](#requirements)
