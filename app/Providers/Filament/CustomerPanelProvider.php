@@ -30,11 +30,11 @@ class CustomerPanelProvider extends PanelProvider
             ->registration()
             ->profile(isSimple: false)
             ->favicon(asset('images/favicon.ico'))
-            ->brandLogo(asset('images/logo-light.svg'))
+            ->brandLogo(asset('logo-unihairvn-1.webp'))
             ->darkMode(false)
-            ->brandLogoHeight('2rem')
+            ->brandLogoHeight('2.5trem')
             ->colors([
-                'primary' => Color::Blue,
+                'primary' => Color::hex('#c22d56'),
             ])
             ->topNavigation()
             ->plugins([

@@ -32,14 +32,14 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->favicon(asset('images/favicon.ico'))
-            ->brandLogo(asset('images/logo-light.svg'))
-            ->darkModeBrandLogo(asset('images/logo-dark.svg'))
-            ->brandLogoHeight('2rem')
+            ->brandLogo(asset('images/logo-unihairvn-1.webp'))
+            ->darkModeBrandLogo(asset('images/logo-unihairvn-1.webp'))
+            ->brandLogoHeight('2.5rem')
             ->passwordReset()
             ->emailVerification()
             ->profile()
             ->colors([
-                'primary' => Color::Blue,
+                'primary' => Color::hex('#c22d56'),
             ])
             ->unsavedChangesAlerts()
             ->spa()
