@@ -35,8 +35,15 @@ return [
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Tax Group deleted',
-                    'body'  => 'The Tax Group has been deleted successfully.',
+                    'success' => [
+                        'title' => 'Tax Group deleted',
+                        'body'  => 'The tax group has been deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Tax Group could not be deleted',
+                        'body'  => 'The tax group cannot be deleted because it is currently in use.',
+                    ],
                 ],
             ],
         ],
@@ -44,8 +51,15 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Tax Groups deleted',
-                    'body'  => 'The tax Groups has been deleted successfully.',
+                    'success' => [
+                        'title' => 'Tax Groups deleted',
+                        'body'  => 'The tax groups has been deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Tax Groups could not be deleted',
+                        'body'  => 'The tax groups cannot be deleted because they are currently in use.',
+                    ],
                 ],
             ],
         ],

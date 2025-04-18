@@ -7,6 +7,9 @@ use Filament\Forms\Form;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -102,6 +105,17 @@ class TaxGroupResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
+                    ->action(function (TaxGroup $record) {
+                        try {
+                            $record->delete();
+                        } catch (QueryException $e) {
+                            Notification::make()
+                                ->danger()
+                                ->title(__('accounts::filament/resources/tax-group.table.actions.delete.notification.error.title'))
+                                ->body(__('accounts::filament/resources/tax-group.table.actions.delete.notification.error.body'))
+                                ->send();
+                        }
+                    })
                     ->successNotification(
                         Notification::make()
                             ->title(__('accounts::filament/resources/tax-group.table.actions.delete.notification.title'))
@@ -111,10 +125,21 @@ class TaxGroupResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
+                        ->action(function (Collection $records) {
+                            try {
+                                $records->each(fn (Model $record) => $record->delete());
+                            } catch (QueryException $e) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('accounts::filament/resources/tax-group.table.bulk-actions.delete.notification.error.title'))
+                                    ->body(__('accounts::filament/resources/tax-group.table.bulk-actions.delete.notification.error.body'))
+                                    ->send();
+                            }
+                        })
                         ->successNotification(
                             Notification::make()
-                                ->title(__('accounts::filament/resources/tax-group.table.bulk-actions.delete.notification.title'))
-                                ->body(__('accounts::filament/resources/tax-group.table.bulk-actions.delete.notification.body'))
+                                ->title(__('accounts::filament/resources/tax-group.table.bulk-actions.delete.notification.success.title'))
+                                ->body(__('accounts::filament/resources/tax-group.table.bulk-actions.delete.notification.success.body'))
                         ),
                 ]),
             ]);

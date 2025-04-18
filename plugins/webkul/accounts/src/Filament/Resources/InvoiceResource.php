@@ -118,7 +118,17 @@ class InvoiceResource extends Resource
                                     ->hidden(fn (Get $get) => $get('invoice_payment_term_id') !== null)
                                     ->label(__('accounts::filament/resources/invoice.form.section.general.fields.due-date')),
                                 Forms\Components\Select::make('invoice_payment_term_id')
-                                    ->relationship('invoicePaymentTerm', 'name')
+                                    ->relationship(
+                                        'invoicePaymentTerm',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                    )
+                                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                    })
+                                    ->disableOptionWhen(function ($label) {
+                                        return str_contains($label, ' (Deleted)');
+                                    })
                                     ->required(fn (Get $get) => $get('invoice_date_due') === null)
                                     ->live()
                                     ->searchable()

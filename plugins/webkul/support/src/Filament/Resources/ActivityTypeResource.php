@@ -73,7 +73,7 @@ class ActivityTypeResource extends Resource
                                             ->required()
                                             ->default(0)
                                             ->minValue(0)
-                                            ->maxValue(99999999999),
+                                            ->maxValue(999999999),
                                         Forms\Components\Select::make('delay_unit')
                                             ->label(__('support::filament/resources/activity-type.form.sections.delay-information.fields.delay-unit'))
                                             ->required()
@@ -202,9 +202,6 @@ class ActivityTypeResource extends Resource
                     ->collapsible(),
                 Tables\Grouping\Group::make('delay_from')
                     ->label(__('support::filament/resources/activity-type.table.groups.delay-source'))
-                    ->collapsible(),
-                Tables\Grouping\Group::make('model_type')
-                    ->label(__('support::filament/resources/activity-type.table.groups.associated-model'))
                     ->collapsible(),
                 Tables\Grouping\Group::make('chaining_type')
                     ->label(__('support::filament/resources/activity-type.table.groups.chaining-type'))

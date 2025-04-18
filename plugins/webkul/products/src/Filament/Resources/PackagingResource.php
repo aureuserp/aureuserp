@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
@@ -37,7 +38,17 @@ class PackagingResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Select::make('product_id')
                     ->label(__('products::filament/resources/packaging.form.product'))
-                    ->relationship('product', 'name')
+                    ->relationship(
+                        'product',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                    )
+                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                    })
+                    ->disableOptionWhen(function ($label) {
+                        return str_contains($label, ' (Deleted)');
+                    })
                     ->required()
                     ->searchable()
                     ->preload(),

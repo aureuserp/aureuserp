@@ -178,7 +178,7 @@ class Move extends Model implements Sortable
 
     public function invoicePaymentTerm()
     {
-        return $this->belongsTo(PaymentTerm::class, 'invoice_payment_term_id');
+        return $this->belongsTo(PaymentTerm::class, 'invoice_payment_term_id')->withTrashed();
     }
 
     public function partner()
@@ -198,7 +198,7 @@ class Move extends Model implements Sortable
 
     public function partnerBank()
     {
-        return $this->belongsTo(BankAccount::class, 'partner_bank_id');
+        return $this->belongsTo(BankAccount::class, 'partner_bank_id')->withTrashed();
     }
 
     public function fiscalPosition()

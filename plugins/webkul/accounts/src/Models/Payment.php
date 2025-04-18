@@ -84,7 +84,7 @@ class Payment extends Model
 
     public function partnerBank()
     {
-        return $this->belongsTo(BankAccount::class, 'partner_bank_id');
+        return $this->belongsTo(BankAccount::class, 'partner_bank_id')->withTrashed();
     }
 
     public function pairedInternalTransferPayment()

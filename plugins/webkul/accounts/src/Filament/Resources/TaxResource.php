@@ -7,10 +7,13 @@ use Filament\Forms\Form;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
+use Illuminate\Database\QueryException;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Enums;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Filament\Resources\TaxResource\Pages;
@@ -103,7 +106,6 @@ class TaxResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('company.name')
                     ->label(__('accounts::filament/resources/tax.table.columns.company'))
-                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('taxGroup.name')
                     ->label(__('Tax Group'))
@@ -112,54 +114,51 @@ class TaxResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('country.name')
                     ->label(__('accounts::filament/resources/tax.table.columns.country'))
-                    ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('type_tax_use')
-                    ->label(__('accounts::filament/resources/tax.table.columns.type-tax-use'))
-                    ->searchable()
+                    ->label(__('accounts::filament/resources/tax.table.columns.tax-type'))
                     ->formatStateUsing(fn ($state) => Enums\TypeTaxUse::options()[$state])
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tax_scope')
                     ->label(__('accounts::filament/resources/tax.table.columns.tax-scope'))
-                    ->searchable()
                     ->formatStateUsing(fn ($state) => Enums\TaxScope::options()[$state])
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('amount_type')
                     ->label(__('accounts::filament/resources/tax.table.columns.amount-type'))
-                    ->searchable()
                     ->formatStateUsing(fn ($state) => Enums\AmountType::options()[$state])
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('invoice_label')
                     ->label(__('accounts::filament/resources/tax.table.columns.invoice-label'))
-                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tax_exigibility')
                     ->label(__('accounts::filament/resources/tax.table.columns.tax-exigibility'))
-                    ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('price_include_override')
                     ->label(__('accounts::filament/resources/tax.table.columns.price-include-override'))
-                    ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('amount')
                     ->label(__('accounts::filament/resources/tax.table.columns.amount'))
-                    ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean()
                     ->label(__('accounts::filament/resources/tax.table.columns.status'))
-                    ->searchable()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('include_base_amount')
                     ->boolean()
                     ->label(__('accounts::filament/resources/tax.table.columns.include-base-amount'))
-                    ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\IconColumn::make('is_base_affected')
                     ->boolean()
                     ->label(__('accounts::filament/resources/tax.table.columns.is-base-affected'))
-                    ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->groups([
                 Tables\Grouping\Group::make('name')
@@ -192,22 +191,44 @@ class TaxResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\DeleteAction::make()
+                        ->action(function (Tax $record) {
+                            try {
+                                $record->delete();
+                            } catch (QueryException $e) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('accounts::filament/resources/tax.table.actions.delete.notification.error.title'))
+                                    ->body(__('accounts::filament/resources/tax.table.actions.delete.notification.error.body'))
+                                    ->send();
+                            }
+                        })
                         ->successNotification(
                             Notification::make()
                                 ->success()
-                                ->title(__('accounts::filament/resources/tax.table.actions.delete.notification.title'))
-                                ->body(__('accounts::filament/resources/tax.table.actions.delete.notification.body'))
+                                ->title(__('accounts::filament/resources/tax.table.actions.delete.notification.success.title'))
+                                ->body(__('accounts::filament/resources/tax.table.actions.delete.notification.success.body'))
                         ),
                 ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
+                        ->action(function (Collection $records) {
+                            try {
+                                $records->each(fn (Model $record) => $record->delete());
+                            } catch (QueryException $e) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('accounts::filament/resources/tax.table.bulk-actions.delete.notification.error.title'))
+                                    ->body(__('accounts::filament/resources/tax.table.bulk-actions.delete.notification.error.body'))
+                                    ->send();
+                            }
+                        })
                         ->successNotification(
                             Notification::make()
                                 ->success()
-                                ->title(__('accounts::filament/resources/tax.table.bulk-actions.delete.notification.title'))
-                                ->body(__('accounts::filament/resources/tax.table.bulk-actions.delete.notification.body'))
+                                ->title(__('accounts::filament/resources/tax.table.bulk-actions.delete.notification.success.title'))
+                                ->body(__('accounts::filament/resources/tax.table.bulk-actions.delete.notification.success.body'))
                         ),
                 ]),
             ])

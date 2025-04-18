@@ -8,6 +8,7 @@ use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
 use Filament\Tables\Table;
@@ -55,7 +56,14 @@ class PaymentsResource extends Resource
                                     ->relationship(
                                         'partnerBank',
                                         'account_number',
+                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
                                     )
+                                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                                        return $record->account_number.($record->trashed() ? ' (Deleted)' : '');
+                                    })
+                                    ->disableOptionWhen(function ($label) {
+                                        return str_contains($label, ' (Deleted)');
+                                    })
                                     ->searchable()
                                     ->preload()
                                     ->required(),
@@ -107,7 +115,6 @@ class PaymentsResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('company.name')
                     ->label(__('accounts::filament/resources/payment.table.columns.company'))
-                    ->searchable()
                     ->placeholder('-')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('partnerBank.account_holder_name')
@@ -118,50 +125,41 @@ class PaymentsResource extends Resource
                 Tables\Columns\TextColumn::make('pairedInternalTransferPayment.name')
                     ->label(__('accounts::filament/resources/payment.table.columns.paired-internal-transfer-payment'))
                     ->placeholder('-')
-                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('paymentMethodLine.name')
-                    ->searchable()
                     ->placeholder('-')
                     ->label(__('accounts::filament/resources/payment.table.columns.payment-method-line'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('paymentMethod.name')
                     ->label(__('accounts::filament/resources/payment.table.columns.payment-method'))
-                    ->searchable()
                     ->placeholder('-')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('currency.name')
                     ->label(__('accounts::filament/resources/payment.table.columns.currency'))
-                    ->searchable()
                     ->placeholder('-')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('partner.name')
                     ->label(__('accounts::filament/resources/payment.table.columns.partner'))
-                    ->searchable()
                     ->sortable()
                     ->placeholder('-')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('outstandingAccount.name')
                     ->label(__('accounts::filament/resources/payment.table.columns.outstanding-amount'))
-                    ->searchable()
                     ->sortable()
                     ->placeholder('-')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('destinationAccount.name')
                     ->label(__('accounts::filament/resources/payment.table.columns.destination-account'))
-                    ->searchable()
                     ->sortable()
                     ->placeholder('-')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('createdBy.name')
                     ->label(__('accounts::filament/resources/payment.table.columns.created-by'))
-                    ->searchable()
                     ->sortable()
                     ->placeholder('-')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('paymentTransaction.name')
                     ->label(__('accounts::filament/resources/payment.table.columns.payment-transaction'))
-                    ->searchable()
                     ->sortable()
                     ->placeholder('-')
                     ->toggleable(isToggledHiddenByDefault: true),

@@ -260,7 +260,9 @@ class LotResource extends Resource
                                     ]),
 
                                 Infolists\Components\TextEntry::make('description')
-                                    ->label(__('inventories::filament/clusters/products/resources/lot.infolist.sections.general.entries.description')),
+                                    ->label(__('inventories::filament/clusters/products/resources/lot.infolist.sections.general.entries.description'))
+                                    ->html()
+                                    ->placeholder('—'),
 
                                 Infolists\Components\Grid::make(2)
                                     ->schema([

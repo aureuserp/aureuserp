@@ -44,7 +44,7 @@ class Packaging extends Model implements Sortable
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     public function company(): BelongsTo

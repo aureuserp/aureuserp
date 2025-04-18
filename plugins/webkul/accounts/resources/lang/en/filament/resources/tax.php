@@ -36,21 +36,21 @@ return [
 
     'table' => [
         'columns' => [
-            'name'                    => 'Name',
-            'amount-type'             => 'Amount Type',
-            'company'                 => 'Company',
-            'tax-group'               => 'Tax Group',
-            'country'                 => 'Country',
-            'type-tax-use'            => 'Type Tax Use',
-            'tax-scope'               => 'Tax Scope',
-            'amount-type'             => 'Amount Type',
-            'invoice-label'           => 'Invoice Label',
-            'tax-exigibility'         => 'Tax Exigibility',
-            'price-include-override'  => 'Price Include Override',
-            'amount'                  => 'Amount',
-            'status'                  => 'Status',
-            'include-base-amount'     => 'Include Base Amount',
-            'is-base-affected'        => 'Is Base Affected',
+            'name'                   => 'Name',
+            'amount-type'            => 'Amount Type',
+            'company'                => 'Company',
+            'tax-group'              => 'Tax Group',
+            'country'                => 'Country',
+            'tax-type'               => 'Tax Type',
+            'tax-scope'              => 'Tax Scope',
+            'amount-type'            => 'Amount Type',
+            'invoice-label'          => 'Invoice Label',
+            'tax-exigibility'        => 'Tax Exigibility',
+            'price-include-override' => 'Price Include Override',
+            'amount'                 => 'Amount',
+            'status'                 => 'Status',
+            'include-base-amount'    => 'Include Base Amount',
+            'is-base-affected'       => 'Is Base Affected',
         ],
 
         'groups' => [
@@ -67,8 +67,15 @@ return [
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Tax deleted',
-                    'body'  => 'The Tax has been deleted successfully.',
+                    'success' => [
+                        'title' => 'Tax deleted',
+                        'body'  => 'The Tax has been deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Tax could not be deleted',
+                        'body'  => 'The tax cannot be deleted because it is currently in use.',
+                    ],
                 ],
             ],
         ],
@@ -76,8 +83,15 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Taxes deleted',
-                    'body'  => 'The taxes has been deleted successfully.',
+                    'success' => [
+                        'title' => 'Taxes deleted',
+                        'body'  => 'The taxes has been deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Taxes could not be deleted',
+                        'body'  => 'The taxes cannot be deleted because they are currently in use.',
+                    ],
                 ],
             ],
         ],

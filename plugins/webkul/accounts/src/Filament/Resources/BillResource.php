@@ -121,7 +121,17 @@ class BillResource extends Resource
                                     ->label(__('accounts::filament/resources/bill.form.section.general.fields.payment-reference'))
                                     ->disabled(fn ($record) => $record && in_array($record->state, [MoveState::POSTED, MoveState::CANCEL])),
                                 Forms\Components\Select::make('partner_bank_id')
-                                    ->relationship('partnerBank', 'account_number')
+                                    ->relationship(
+                                        'partnerBank',
+                                        'account_number',
+                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                    )
+                                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                                        return $record->account_number.($record->trashed() ? ' (Deleted)' : '');
+                                    })
+                                    ->disableOptionWhen(function ($label) {
+                                        return str_contains($label, ' (Deleted)');
+                                    })
                                     ->searchable()
                                     ->preload()
                                     ->label(__('accounts::filament/resources/bill.form.section.general.fields.recipient-bank'))

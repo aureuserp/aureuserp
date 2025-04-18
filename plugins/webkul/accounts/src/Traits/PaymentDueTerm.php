@@ -74,15 +74,15 @@ trait PaymentDueTerm
                     ->successNotification(
                         Notification::make()
                             ->success()
-                            ->title('accounts::traits/payment-due-term.table.actions.edit.notification.title')
-                            ->body('accounts::traits/payment-due-term.table.actions.edit.notification.body')
+                            ->title(__('accounts::traits/payment-due-term.table.actions.edit.notification.title'))
+                            ->body(__('accounts::traits/payment-due-term.table.actions.edit.notification.body'))
                     ),
                 Tables\Actions\DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
-                            ->title('accounts::traits/payment-due-term.table.actions.delete.notification.title')
-                            ->body('accounts::traits/payment-due-term.table.actions.delete.notification.body')
+                            ->title(__('accounts::traits/payment-due-term.table.actions.delete.notification.title'))
+                            ->body(__('accounts::traits/payment-due-term.table.actions.delete.notification.body'))
                     ),
             ])
             ->headerActions([
@@ -90,8 +90,8 @@ trait PaymentDueTerm
                     ->successNotification(
                         Notification::make()
                             ->success()
-                            ->title('accounts::traits/payment-due-term.table.actions.delete.notification.title')
-                            ->body('accounts::traits/payment-due-term.table.actions.delete.notification.body')
+                            ->title(__('accounts::traits/payment-due-term.table.actions.delete.notification.title'))
+                            ->body(__('accounts::traits/payment-due-term.table.actions.delete.notification.body'))
                     )
                     ->icon('heroicon-o-plus-circle'),
             ]);

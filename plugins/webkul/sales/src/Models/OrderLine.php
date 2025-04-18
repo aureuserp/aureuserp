@@ -103,7 +103,7 @@ class OrderLine extends Model implements Sortable
 
     public function product()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class)->withTrashed();
     }
 
     public function uom()
