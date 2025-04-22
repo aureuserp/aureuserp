@@ -1033,6 +1033,7 @@ class QuotationResource extends Resource
                                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.packaging-qty'))
                                     ->live()
                                     ->numeric()
+                                    ->minValue(0)
                                     ->maxValue(99999999999)
                                     ->default(0)
                                     ->afterStateUpdated(fn (Forms\Set $set, Forms\Get $get) => static::afterProductPackagingQtyUpdated($set, $get))
