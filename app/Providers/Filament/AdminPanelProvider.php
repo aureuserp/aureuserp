@@ -26,7 +26,7 @@ class AdminPanelProvider extends PanelProvider
     {
         set_time_limit(300);
 
-        return $panel
+        $panel
             ->default()
             ->id('admin')
             ->path('admin')
@@ -86,5 +86,8 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ]);
+
+        // dd($panel->resources($panel->getResources()));
+        return $panel;
     }
 }

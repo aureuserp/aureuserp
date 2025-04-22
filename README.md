@@ -184,3 +184,6 @@ Aureus ERP is a truly opensource ERP framework which will always be free under t
 ### Security Vulnerabilities
 
 Please don't disclose security vulnerabilities publicly. If you find any security vulnerability in Aureus ERP then please email us: support@webkul.com.
+
+
+- Need to run add manual product category by auto increment is error

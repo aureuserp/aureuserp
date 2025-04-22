@@ -1,0 +1,27 @@
+{
+    "name": "custom/security",
+    "description": "",
+    "authors": [
+        {
+            "name": "Aureus ERP",
+            "email": "support@aureuserp.in"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Custom\\Security\\CustomSecurityServiceProvider"
+            ]
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Custom\\Security\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Custom\\Security\\Tests\\": "tests/"
+        }
+    }
+}
