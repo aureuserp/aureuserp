@@ -7,7 +7,7 @@ use Filament\Infolists\Infolist;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Webkul\Field\Filament\Traits\HasCustomFields;
-use Webkul\Product\Filament\Resources\ProductResource as BaseProductResource;
+use Webkul\Product\Filament\Resources\CustomProductResource as BaseProductResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Products;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages;
 use Webkul\Purchase\Models\Product;

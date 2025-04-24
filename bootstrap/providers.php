@@ -22,7 +22,7 @@ return [
     Webkul\TableViews\TableViewsServiceProvider::class,
     Webkul\Recruitment\RecruitmentServiceProvider::class,
     Webkul\Sale\SaleServiceProvider::class,
-    // Webkul\Security\SecurityServiceProvider::class,
+    Webkul\Security\SecurityServiceProvider::class,
     Custom\Security\CustomSecurityServiceProvider::class,
     Webkul\TimeOff\TimeOffServiceProvider::class,
     Webkul\Timesheet\TimesheetServiceProvider::class,

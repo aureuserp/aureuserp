@@ -22,13 +22,13 @@ use Webkul\Product\Models\Category;
 use Webkul\Product\Models\Product;
 use Webkul\Support\Models\UOM;
 
-class ProductResource extends Resource
+class CustomProductResource extends ProductResource
 {
     protected static ?string $model = Product::class;
 
     protected static bool $shouldRegisterNavigation = false;
 
-    protected static bool $isDiscovered = false;
+    protected static bool $isDiscovered = true;
 
     public static function form(Form $form): Form
     {
@@ -243,6 +243,33 @@ class ProductResource extends Resource
             ->reorderable('sort')
             ->defaultSort('sort', 'desc')
             ->filters([
+                \Filament\Tables\Filters\SelectFilter::make('attribute_values')
+                    ->multiple()
+                    ->relationship('attribute_values', 'attribute_option_id')
+                    ->searchable()
+                    ->columnSpanFull()
+                    ->preload()
+                    ->indicateUsing(function ($filter, array $state) {
+                        if (count($state['values']) === 0) return null;
+
+                        $indicators = "Attributes: ";
+                        $attributeOption = \Webkul\Product\Models\ProductAttributeValue::with('attributeOption')
+                            ->whereIn('attribute_option_id', $state['values'])
+                            ->get();
+
+                        $indicators .= $attributeOption
+                            ->map(function ($item) {
+                                return $item->attributeOption->attribute->name . ': ' . $item->attributeOption->name;
+                            });
+
+                        return [$indicators];
+                    })
+                    ->visible(fn() => \Illuminate\Support\Str::contains($table->getModelLabel(), ['product', 'Products']))
+                    ->getOptionLabelFromRecordUsing(function (Model $record) use ($table) {
+                        $attribute = \Webkul\Product\Models\Attribute::find($record->attribute_id)->name;
+                        $attributeOption = \Webkul\Product\Models\AttributeOption::find($record->attribute_option_id)->name;
+                        return $attribute . ': ' . $attributeOption;
+                    }),
                 Tables\Filters\QueryBuilder::make()
                     ->constraints(collect([
                         Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('name')

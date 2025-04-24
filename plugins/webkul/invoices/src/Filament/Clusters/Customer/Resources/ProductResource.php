@@ -7,7 +7,7 @@ use Filament\Resources\Pages\Page;
 use Webkul\Invoice\Filament\Clusters\Customer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource\Pages;
 use Webkul\Invoice\Models\Product;
-use Webkul\Product\Filament\Resources\ProductResource as BaseProductResource;
+use Webkul\Product\Filament\Resources\CustomProductResource as BaseProductResource;
 
 class ProductResource extends BaseProductResource
 {

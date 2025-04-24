@@ -18,7 +18,7 @@ use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Product\Enums\ProductType;
-use Webkul\Product\Filament\Resources\ProductResource as BaseProductResource;
+use Webkul\Product\Filament\Resources\CustomProductResource as BaseProductResource;
 
 class ProductResource extends BaseProductResource
 {
