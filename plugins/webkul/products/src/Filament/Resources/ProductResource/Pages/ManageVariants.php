@@ -10,7 +10,7 @@ use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Arr;
-use Webkul\Product\Filament\Resources\ProductResource;
+use Webkul\Product\Filament\Resources\CustomProductResource as ProductResource;
 
 class ManageVariants extends ManageRelatedRecords
 {

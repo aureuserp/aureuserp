@@ -272,6 +272,19 @@ class CustomProductResource extends ProductResource
                                         $query->whereIn('attribute_option_id', $data['values']);
                                     }
                                 );
+                            } else {
+                                $query->whereHas(
+                                    'combinations',
+                                    // fn (\Illuminate\Database\Eloquent\Builder $query) => $query->whereIn('product_attribute_value_id', $data['values'])
+                                    function (\Illuminate\Database\Eloquent\Builder $query) use ($data) {
+                                        $query->whereHas(
+                                            'productAttributeValue',
+                                            function (\Illuminate\Database\Eloquent\Builder $query) use ($data) {
+                                                $query->whereIn('attribute_option_id', $data['values']);
+                                            }
+                                        );
+                                    }
+                                );
                             }
                         }
                     })
@@ -294,7 +307,7 @@ class CustomProductResource extends ProductResource
 
                         return [$indicators];
                     })
-                    ->visible(fn() => \Illuminate\Support\Str::contains($table->getModelLabel(), ['product', 'Products']))
+                    // ->visible(fn() => \Illuminate\Support\Str::contains($table->getModelLabel(), ['product', 'Products']))
                     ->getOptionLabelFromRecordUsing(function (Model $record) use ($table) {
                         $attribute = \Webkul\Product\Models\Attribute::find($record->attribute_id)->name;
                         $attributeOption = \Webkul\Product\Models\AttributeOption::find($record->attribute_option_id)->name;
