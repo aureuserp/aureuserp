@@ -3,6 +3,7 @@
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions;
 
 use Filament\Actions\Action;
+use Webkul\Sale\Facades\SaleOrder;
 use Webkul\Sale\Models\Order;
 use Webkul\Sale\Settings\QuotationAndOrderSettings;
 
@@ -22,7 +23,7 @@ class LockAndUnlockAction extends Action
             ->color(fn ($record) => $record->locked ? 'primary' : 'gray')
             ->icon(fn ($record) => ! $record->locked ? 'heroicon-o-lock-closed' : 'heroicon-o-lock-open')
             ->action(function (Order $record): void {
-                $record->update(['locked' => ! $record->locked]);
+                SaleOrder::lockAndUnlock($record);
             })
             ->visible(fn (QuotationAndOrderSettings $quotationAndOrderSettings) => $quotationAndOrderSettings?->enable_lock_confirm_sales);
     }

@@ -6,9 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
-use Webkul\Account\Enums\MoveState;
-use Webkul\Account\Enums\MoveType;
-use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Enums;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
@@ -141,9 +139,9 @@ class Move extends Model implements Sortable
 
     protected $casts = [
         'invoice_date_due' => 'datetime',
-        'state'            => MoveState::class,
-        'payment_state'    => PaymentState::class,
-        'move_type'        => MoveType::class,
+        'state'            => Enums\MoveState::class,
+        'payment_state'    => Enums\PaymentState::class,
+        'move_type'        => Enums\MoveType::class,
     ];
 
     public $sortable = [
@@ -258,6 +256,38 @@ class Move extends Model implements Sortable
             ->sum('discount');
     }
 
+    public function isInbound($includeReceipts = true)
+    {
+        return in_array($this->move_type, $this->getInboundTypes($includeReceipts));
+    }
+
+    public function getInboundTypes($includeReceipts = true): array
+    {
+        $types = [Enums\MoveType::OUT_INVOICE, Enums\MoveType::IN_REFUND];
+
+        if ($includeReceipts) {
+            $types[] = Enums\MoveType::OUT_RECEIPT;
+        }
+
+        return $types;
+    }
+
+    public function isOutbound($includeReceipts = true)
+    {
+        return in_array($this->move_type, $this->getOutboundTypes($includeReceipts));
+    }
+
+    public function getOutboundTypes($includeReceipts = true): array
+    {
+        $types = [Enums\MoveType::IN_INVOICE, Enums\MoveType::OUT_REFUND];
+
+        if ($includeReceipts) {
+            $types[] = Enums\MoveType::IN_RECEIPT;
+        }
+
+        return $types;
+    }
+
     public function lines()
     {
         return $this->hasMany(MoveLine::class, 'move_id')
@@ -281,12 +311,60 @@ class Move extends Model implements Sortable
             ->where('display_type', 'payment_term');
     }
 
+    public function isInvoice($includeReceipts = false)
+    {
+        return $this->isSaleDocument($includeReceipts) || $this->isPurchaseDocument($includeReceipts);
+    }
+
+    public function isEntry()
+    {
+        return $this->move_type === Enums\MoveType::ENTRY;
+    }
+
+    public function getSaleTypes($includeReceipts = false)
+    {
+        return $includeReceipts
+            ? [Enums\MoveType::OUT_INVOICE, Enums\MoveType::OUT_REFUND, Enums\MoveType::OUT_RECEIPT]
+            : [Enums\MoveType::OUT_INVOICE, Enums\MoveType::OUT_REFUND];
+    }
+
+    public function isSaleDocument($includeReceipts = false)
+    {
+        return in_array($this->move_type, $this->getSaleTypes($includeReceipts));
+    }
+
+    public function isPurchaseDocument($includeReceipts = false)
+    {
+        return in_array($this->move_type, $includeReceipts ? [
+            Enums\MoveType::IN_INVOICE,
+            Enums\MoveType::IN_REFUND,
+            Enums\MoveType::IN_RECEIPT,
+        ] : [Enums\MoveType::IN_INVOICE, Enums\MoveType::IN_REFUND]);
+    }
+
+    public function getValidJournalTypes()
+    {
+        if ($this->isSaleDocument(true)) {
+            return [Enums\JournalType::SALE];
+        } elseif ($this->isPurchaseDocument(true)) {
+            return [Enums\JournalType::PURCHASE];
+        } elseif ($this->origin_payment_id || $this->statement_line_id) {
+            return [Enums\JournalType::BANK, Enums\JournalType::CASH, Enums\JournalType::CREDIT_CARD];
+        } else {
+            return [Enums\JournalType::GENERAL];
+        }
+    }
+
     /**
      * Bootstrap any application services.
      */
     protected static function boot()
     {
         parent::boot();
+
+        static::creating(function ($model) {
+            $model->creator_id = auth()->id();
+        });
 
         static::created(function ($model) {
             $model->updateSequencePrefix();
@@ -305,19 +383,19 @@ class Move extends Model implements Sortable
         $suffix = date('Y').'/'.date('m');
 
         switch ($this->move_type) {
-            case MoveType::OUT_INVOICE:
+            case Enums\MoveType::OUT_INVOICE:
                 $this->sequence_prefix = 'INV/'.$suffix;
 
                 break;
-            case MoveType::OUT_REFUND:
+            case Enums\MoveType::OUT_REFUND:
                 $this->sequence_prefix = 'RINV/'.$suffix;
 
                 break;
-            case MoveType::IN_INVOICE:
+            case Enums\MoveType::IN_INVOICE:
                 $this->sequence_prefix = 'BILL/'.$suffix;
 
                 break;
-            case MoveType::IN_REFUND:
+            case Enums\MoveType::IN_REFUND:
                 $this->sequence_prefix = 'RBILL/'.$suffix;
 
                 break;

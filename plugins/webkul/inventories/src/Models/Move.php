@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Webkul\Inventory\Database\Factories\MoveFactory;
 use Webkul\Inventory\Enums;
 use Webkul\Partner\Models\Partner;
-use Webkul\Purchase\Models\OrderLine;
+use Webkul\Purchase\Models\OrderLine as PurchaseOrderLine;
+use Webkul\Sale\Models\OrderLine as SaleOrderLine;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\UOM;
@@ -68,6 +69,7 @@ class Move extends Model
         'company_id',
         'creator_id',
         'purchase_order_line_id',
+        'sale_order_line_id',
     ];
 
     /**
@@ -238,7 +240,12 @@ class Move extends Model
 
     public function purchaseOrderLine(): BelongsTo
     {
-        return $this->belongsTo(OrderLine::class, 'purchase_order_line_id');
+        return $this->belongsTo(PurchaseOrderLine::class, 'purchase_order_line_id');
+    }
+
+    public function saleOrderLine(): BelongsTo
+    {
+        return $this->belongsTo(SaleOrderLine::class, 'sale_order_line_id');
     }
 
     protected static function newFactory(): MoveFactory

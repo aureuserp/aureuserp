@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\CommunicationStandard;
 use Webkul\Account\Enums\CommunicationType;
 use Webkul\Account\Filament\Resources\JournalResource;
-use Webkul\Account\Models\Journal;
 
 class CreateJournal extends CreateRecord
 {

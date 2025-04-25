@@ -15,7 +15,7 @@ use Filament\Tables;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
-use Webkul\Contact\Filament\Clusters\Configurations\Resources\IndustryResource;
+use Webkul\Partner\Filament\Resources\IndustryResource;
 use Webkul\Employee\Filament\Resources\DepartmentResource;
 use Webkul\Employee\Models\Department;
 use Webkul\Recruitment\Filament\Clusters\Configurations;

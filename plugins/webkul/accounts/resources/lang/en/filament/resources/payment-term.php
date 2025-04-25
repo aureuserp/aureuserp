@@ -17,27 +17,10 @@ return [
 
     'table' => [
         'columns' => [
-            'payment-term'       => 'Payment Term',
-            'company'            => 'Company',
-            'discount-days'      => 'Discount Days',
-            'early-pay-discount' => 'Early Pay Discount',
-            'status'             => 'Status',
-            'early-discount'     => 'Early Discount',
-            'display-on-invoice' => 'Display on Invoice',
-            'created-by'         => 'Created By',
-            'created-at'         => 'Created At',
-            'updated-at'         => 'Updated At',
-        ],
-
-        'groups' => [
-            'payment-term'        => 'Payment Term',
-            'company-name'        => 'Company Name',
-            'discount-days'       => 'Discount Days',
-            'early-pay-discount'  => 'Early Pay Discount',
-            'payment-term'        => 'Payment Term',
-            'display-on-invoice'  => 'Display on Invoice',
-            'early-discount'      => 'Early Discount',
-            'discount-percentage' => 'Discount Percentage',
+            'payment-term' => 'Payment Term',
+            'company'      => 'Company',
+            'created-at'   => 'Created At',
+            'updated-at'   => 'Updated At',
         ],
 
         'actions' => [

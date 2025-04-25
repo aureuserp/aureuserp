@@ -5,7 +5,7 @@ namespace Webkul\Account\Filament\Resources\InvoiceResource\Actions;
 use Filament\Actions\Action;
 use Livewire\Component;
 use Webkul\Account\Enums\MoveState;
-use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Facades\Account;
 use Webkul\Account\Models\Move;
 
 class ResetToDraftAction extends Action
@@ -24,13 +24,7 @@ class ResetToDraftAction extends Action
             ->color('gray')
             ->icon('heroicon-o-arrow-path')
             ->action(function (Move $record, Component $livewire): void {
-                $record->state = MoveState::DRAFT;
-                $record->payment_state = PaymentState::NOT_PAID;
-
-                $record->lines->each(function ($moveLine) {
-                    $moveLine->parent_state = MoveState::DRAFT;
-                    $moveLine->save();
-                });
+                $record = Account::resetToDraft($record);
 
                 $record->save();
 
