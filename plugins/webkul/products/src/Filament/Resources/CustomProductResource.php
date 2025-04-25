@@ -245,21 +245,51 @@ class CustomProductResource extends ProductResource
             ->filters([
                 \Filament\Tables\Filters\SelectFilter::make('attribute_values')
                     ->multiple()
-                    ->relationship('attribute_values', 'attribute_option_id')
+                    // ->relationship('attribute_values', 'attribute_option_id')
                     ->searchable()
+                    ->options(
+                        function () {
+                            $attribute = collect(\Webkul\Product\Models\Attribute::all());
+                            $options = collect(\Webkul\Product\Models\AttributeOption::all())
+                                ->map(function ($item) use ($attribute) {
+                                    $attributeName = $attribute->where('id', $item->attribute_id)->first()['name'];
+                                    $item['name'] = $attributeName . ": " . $item['name'];
+                                    return $item;
+                                });
+                            return $options->pluck('name', 'id')->toArray();
+                        }
+                    )
+                    ->query(function (\Illuminate\Database\Eloquent\Builder $query, array $data) use ($table) {
+                        if (count($data['values']) > 0) {
+                            if (\Illuminate\Support\Str::contains($table->getModelLabel(), ['product', 'Products'])) {
+                                $query->whereHas(
+                                    'attribute_values',
+                                    function (\Illuminate\Database\Eloquent\Builder $query) use ($data) {
+                                        // collect($data['values'])
+                                        //     ->each(function ($value, $key) use ($query) {
+                                        //     $query->where('attribute_option_id', '=', $value);
+                                        // });
+                                        $query->whereIn('attribute_option_id', $data['values']);
+                                    }
+                                );
+                            }
+                        }
+                    })
                     ->columnSpanFull()
                     ->preload()
                     ->indicateUsing(function ($filter, array $state) {
                         if (count($state['values']) === 0) return null;
 
                         $indicators = "Attributes: ";
-                        $attributeOption = \Webkul\Product\Models\ProductAttributeValue::with('attributeOption')
-                            ->whereIn('attribute_option_id', $state['values'])
+
+                        $attribute = collect(\Webkul\Product\Models\Attribute::all());
+                        $attributeOption = \Webkul\Product\Models\AttributeOption::whereIn('id', $state['values'])
                             ->get();
 
                         $indicators .= $attributeOption
-                            ->map(function ($item) {
-                                return $item->attributeOption->attribute->name . ': ' . $item->attributeOption->name;
+                            ->map(function ($item) use ($attribute) {
+                                $attributeName = $attribute->where('id', $item->attribute_id)->first()['name'];
+                                return  $attributeName . ": " . $item['name'];
                             });
 
                         return [$indicators];
