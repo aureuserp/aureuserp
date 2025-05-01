@@ -228,52 +228,6 @@ trait HasLogActivity
     }
 
     /**
-     * Get updated attributes
-     */
-    protected function getUpdatedAttributes(): array
-    {
-        $original = $this->getOriginal();
-        $current = $this->getDirty();
-        $logAttributes = $this->getLogAttributes();
-        $changes = [];
-
-        foreach ($logAttributes as $key) {
-            if ($parsed = $this->parseRelationAttribute($key)) {
-                [$relation, $attribute] = $parsed;
-                $foreignKey = $this->$relation()->getForeignKeyName();
-
-                if (array_key_exists($foreignKey, $current)) {
-                    $oldValue = $this->getRelatedValue($relation, $original[$foreignKey] ?? null, $attribute);
-                    $newValue = $this->getRelatedValue($relation, $current[$foreignKey], $attribute);
-
-                    if ($oldValue !== $newValue) {
-                        $changes[$key] = [
-                            'type'      => 'modified',
-                            'old_value' => $oldValue,
-                            'new_value' => $newValue,
-                        ];
-                    }
-                }
-            } else {
-                if (array_key_exists($key, $current)) {
-                    $oldValue = $this->formatAttributeValue($key, $original[$key] ?? null);
-                    $newValue = $this->formatAttributeValue($key, $current[$key]);
-
-                    if ($oldValue !== $newValue) {
-                        $changes[$key] = [
-                            'type'      => array_key_exists($key, $original) ? 'modified' : 'added',
-                            'old_value' => $oldValue,
-                            'new_value' => $newValue,
-                        ];
-                    }
-                }
-            }
-        }
-
-        return $changes;
-    }
-
-    /**
      * Format attribute value
      */
     protected function formatAttributeValue(string $key, $value): mixed
@@ -312,7 +266,8 @@ trait HasLogActivity
         }
 
         if (
-            ! is_array($value)
+            is_string($value) // Ensure $value is a string
+            && ! is_array($value)
             && json_decode($value, true)
         ) {
             $value = json_decode($value, true);

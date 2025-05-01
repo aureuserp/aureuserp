@@ -42,28 +42,28 @@ class Dashboard extends BaseDashboard
                             ->multiple()
                             ->searchable()
                             ->preload()
-                            ->options(fn () => Project::pluck('name', 'id'))
+                            ->options(Project::all()->pluck('name', 'id')) // Modified here
                             ->reactive(),
                         Select::make('selectedAssignees')
                             ->label(__('projects::filament/pages/dashboard.filters-form.assignees'))
                             ->multiple()
                             ->searchable()
                             ->preload()
-                            ->options(fn () => User::pluck('name', 'id'))
+                            ->options(User::all()->pluck('name', 'id')) // Modified here
                             ->reactive(),
                         Select::make('selectedTags')
                             ->label(__('projects::filament/pages/dashboard.filters-form.tags'))
                             ->multiple()
                             ->searchable()
                             ->preload()
-                            ->options(fn () => Tag::pluck('name', 'id'))
+                            ->options(Tag::all()->pluck('name', 'id')) // Modified here
                             ->reactive(),
                         Select::make('selectedPartners')
                             ->label(__('projects::filament/pages/dashboard.filters-form.customer'))
                             ->multiple()
                             ->searchable()
                             ->preload()
-                            ->options(fn () => Partner::pluck('name', 'id'))
+                            ->options(Partner::all()->pluck('name', 'id')) // Modified here
                             ->reactive(),
                         DatePicker::make('startDate')
                             ->label(__('projects::filament/pages/dashboard.filters-form.start-date'))
