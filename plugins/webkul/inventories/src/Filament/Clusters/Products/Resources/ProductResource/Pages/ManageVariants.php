@@ -4,7 +4,7 @@ namespace Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\
 
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource;
 use Webkul\Inventory\Settings\ProductSettings;
-use Webkul\Product\Filament\Resources\ProductResource\Pages\ManageVariants as BaseManageVariants;
+use Webkul\Product\Filament\Resources\ProductResource\Pages\CustomManageVariants as BaseManageVariants;
 
 class ManageVariants extends BaseManageVariants
 {
