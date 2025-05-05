@@ -44,8 +44,8 @@ class CustomManageVariants extends ManageVariants
                         return $attributeName && $optionName ? "{$attributeName}: {$optionName}" : $optionName;
                     });
                 })
-                ->badge()
-                ->sortable(),
+                ->badge(),
+                // ->sortable(),
             ...$table->getColumns(),
         ]);
 
