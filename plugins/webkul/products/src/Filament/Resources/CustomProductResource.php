@@ -174,16 +174,16 @@ class CustomProductResource extends ProductResource
                     ->placeholder('—')
                     ->counts('variants')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('reference')
-                    ->label(__('products::filament/resources/product.table.columns.reference'))
-                    ->placeholder('—')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('tags.name')
-                    ->label(__('products::filament/resources/product.table.columns.tags'))
-                    ->placeholder('—')
-                    ->badge()
-                    ->toggleable(),
+                // Tables\Columns\TextColumn::make('reference')
+                //     ->label(__('products::filament/resources/product.table.columns.reference'))
+                //     ->placeholder('—')
+                //     ->searchable()
+                //     ->sortable(),
+                // Tables\Columns\TextColumn::make('tags.name')
+                //     ->label(__('products::filament/resources/product.table.columns.tags'))
+                //     ->placeholder('—')
+                //     ->badge()
+                //     ->toggleable(),
                 Tables\Columns\TextColumn::make('responsible.name')
                     ->label(__('products::filament/resources/product.table.columns.responsible'))
                     ->placeholder('—')
