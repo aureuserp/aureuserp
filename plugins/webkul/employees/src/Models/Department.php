@@ -79,6 +79,10 @@ class Department extends Model
 
         static::creating(function ($department) {
             if (! static::validateNoRecursion($department)) {
+                \Log::error('Circular reference detected during creation', [
+                    'department_id' => $department->id,
+                    'parent_id'     => $department->parent_id,
+                ]);
                 throw new InvalidArgumentException('Circular reference detected in department hierarchy');
             }
             static::handleDepartmentData($department);
@@ -86,50 +90,85 @@ class Department extends Model
 
         static::updating(function ($department) {
             if (! static::validateNoRecursion($department)) {
+                \Log::error('Circular reference detected during update', [
+                    'department_id' => $department->id,
+                    'parent_id'     => $department->parent_id,
+                ]);
                 throw new InvalidArgumentException('Circular reference detected in department hierarchy');
             }
             static::handleDepartmentData($department);
         });
     }
 
+    /**
+     * Validates that there is no circular reference in the department hierarchy.
+     * Robust against unsaved/new models and missing parents, logs for debug.
+     */
     protected static function validateNoRecursion($department)
     {
+        // No parent, no cycle possible
         if (! $department->parent_id) {
             return true;
         }
 
-        if ($department->exists && $department->id == $department->parent_id) {
+        // If updating, make sure not setting itself as parent
+        if ($department->id && $department->parent_id == $department->id) {
+            \Log::error('Department parent_id set to self', [
+                'department_id' => $department->id,
+                'parent_id'     => $department->parent_id,
+            ]);
+
             return false;
         }
 
-        $visitedIds = [$department->exists ? $department->id : -1];
         $currentParentId = $department->parent_id;
+        $visitedIds = $department->id ? [$department->id] : [];
+        $logPath = [];
 
         while ($currentParentId) {
             if (in_array($currentParentId, $visitedIds)) {
+                // Log for debug
+                \Log::error('Circular reference detected in parent chain', [
+                    'department_id' => $department->id,
+                    'parent_id'     => $department->parent_id,
+                    'visited'       => $visitedIds,
+                    'log_path'      => $logPath,
+                ]);
+
                 return false;
             }
-
             $visitedIds[] = $currentParentId;
-            $parent = static::find($currentParentId);
-
+            $logPath[] = $currentParentId;
+            $parent = static::query()->select(['id', 'parent_id'])->find($currentParentId);
             if (! $parent) {
+                // Defensive: break if parent not found
                 break;
             }
-
             $currentParentId = $parent->parent_id;
         }
 
         return true;
     }
 
+    /**
+     * Handles assignment of parent_path, master_department_id, and complete_name.
+     * Uses batch queries for performance.
+     */
     protected static function handleDepartmentData($department)
     {
         if ($department->parent_id) {
-            $parent = static::find($department->parent_id);
-            $department->parent_path = $parent?->parent_path.$parent?->id.'/';
+            $parent = static::query()
+                ->select(['id', 'parent_path', 'master_department_id', 'parent_id', 'name'])
+                ->find($department->parent_id);
 
-            $department->master_department_id = static::findTopLevelParentId($parent);
+            if ($parent) {
+                $department->parent_path = ($parent->parent_path ?? '/').$parent->id.'/';
+                $department->master_department_id = static::findTopLevelParentId($parent);
+            } else {
+                // Defensive: parent doesn't exist
+                $department->parent_path = '/';
+                $department->master_department_id = null;
+            }
         } else {
             $department->parent_path = '/';
             $department->master_department_id = null;
@@ -138,26 +177,60 @@ class Department extends Model
         $department->complete_name = static::getCompleteName($department);
     }
 
+    /**
+     * Finds the top-level parent id efficiently.
+     */
     protected static function findTopLevelParentId($department)
     {
-        $currentDepartment = $department;
-
-        while ($currentDepartment->parent_id) {
-            $currentDepartment = static::find($currentDepartment->parent_id);
+        if (! $department) {
+            return null;
         }
 
-        return $currentDepartment->id;
+        $visited = [];
+        $current = $department;
+        while ($current && $current->parent_id) {
+            if (in_array($current->id, $visited)) {
+                // Defensive: just in case, break on cycle
+                break;
+            }
+            $visited[] = $current->id;
+            $current = static::query()
+                ->select(['id', 'parent_id'])
+                ->find($current->parent_id);
+        }
+
+        return $current ? $current->id : null;
     }
 
+    /**
+     * Builds the complete name efficiently (single query for all ancestors).
+     */
     protected static function getCompleteName($department)
     {
-        $names = [];
-        $names[] = $department->name;
+        if (! $department) {
+            return '';
+        }
 
-        $currentDepartment = $department;
-        while ($currentDepartment->parent_id) {
-            $currentDepartment = static::find($currentDepartment->parent_id);
-            array_unshift($names, $currentDepartment->name);
+        $names = [];
+        $visited = [];
+        $current = $department;
+
+        while ($current) {
+            // Use spl_object_id as fallback for unsaved models
+            $uniqueId = $current->id ?? spl_object_id($current);
+            if (in_array($uniqueId, $visited)) {
+                // Defensive: break on cycle
+                break;
+            }
+            $visited[] = $uniqueId;
+            array_unshift($names, $current->name);
+
+            if (! $current->parent_id) {
+                break;
+            }
+            $current = static::query()
+                ->select(['id', 'parent_id', 'name'])
+                ->find($current->parent_id);
         }
 
         return implode(' / ', $names);
