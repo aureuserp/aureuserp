@@ -34,10 +34,10 @@ class SalePlugin implements Plugin
                     ->discoverWidgets(in: $this->getPluginBasePath('/Filament/Widgets'), for: 'Webkul\\Sale\\Filament\\Widgets')
                     ->navigationItems([
                         NavigationItem::make('settings')
-                            ->label(fn() => __('sales::sale-plugin.navigation.label'))
+                            ->label(fn() => __('sales::app.navigation.label'))
                             ->url(fn () => ManageProducts::getUrl())
                             ->icon('heroicon-o-wrench')
-                            ->group(fn() => __('sales::sale-plugin.navigation.group'))
+                            ->group(fn() => __('sales::app.navigation.group'))
                             ->sort(4),
                     ]);
             });
