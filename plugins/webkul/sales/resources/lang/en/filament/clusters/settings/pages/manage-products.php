@@ -7,6 +7,7 @@ return [
 
     'navigation' => [
         'title' => 'Manage Products',
+        'group' => 'Sales',
     ],
 
     'form' => [
