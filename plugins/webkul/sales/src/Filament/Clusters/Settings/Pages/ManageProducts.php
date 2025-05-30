@@ -37,6 +37,11 @@ class ManageProducts extends SettingsPage
         return __('sales::filament/clusters/settings/pages/manage-products.title');
     }
 
+    public static function getNavigationGroup(): string
+    {
+        return __('sales::filament/clusters/settings/pages/manage-products.navigation.group');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('sales::filament/clusters/settings/pages/manage-products.navigation.title');
