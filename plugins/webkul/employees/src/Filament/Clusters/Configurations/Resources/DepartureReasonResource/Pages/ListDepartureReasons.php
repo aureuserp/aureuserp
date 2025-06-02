@@ -6,7 +6,6 @@ use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\DepartureReasonResource;
-use Webkul\Employee\Models\DepartureReason;
 
 class ListDepartureReasons extends ListRecords
 {

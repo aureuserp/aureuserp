@@ -17,9 +17,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\TypeTaxUse;
+use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Filament\Resources\IncoTermResource;
 use Webkul\Account\Models\Partner;
-use Webkul\Account\Services\TaxService;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Product\Enums\ProductType;
@@ -30,6 +30,7 @@ use Webkul\Purchase\Models\Order;
 use Webkul\Purchase\Models\Product;
 use Webkul\Purchase\Settings;
 use Webkul\Purchase\Settings\OrderSettings;
+use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
 use Webkul\Support\Package;
 
@@ -168,6 +169,7 @@ class OrderResource extends Resource
                                 static::getProductRepeater(),
                                 Forms\Components\Livewire::make(Summary::class, function (Forms\Get $get) {
                                     return [
+                                        'currency' => Currency::find($get('currency_id')),
                                         'products' => $get('products'),
                                     ];
                                 })
@@ -1037,7 +1039,7 @@ class OrderResource extends Resource
 
         $taxIds = $get($prefix.'taxes') ?? [];
 
-        [$subTotal, $taxAmount] = app(TaxService::class)->collectionTaxes($taxIds, $subTotal, $quantity);
+        [$subTotal, $taxAmount] = TaxFacade::collect($taxIds, $subTotal, $quantity);
 
         $set($prefix.'price_subtotal', round($subTotal, 4));
 

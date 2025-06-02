@@ -42,7 +42,7 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Blue,
             ])
             ->unsavedChangesAlerts()
-            ->spa()
+            // ->spa()
             ->sidebarCollapsibleOnDesktop()
             ->maxContentWidth(MaxWidth::Full)
             ->navigationGroups([

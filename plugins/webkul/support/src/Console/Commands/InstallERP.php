@@ -6,6 +6,7 @@ use BezhanSalleh\FilamentShield\Support\Utils;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -46,6 +47,8 @@ class InstallERP extends Command
         $this->runSeeder();
 
         $this->createAdminUser();
+
+        Event::dispatch('aureus.installed');
 
         $this->info('🎉 ERP System installation completed successfully!');
     }

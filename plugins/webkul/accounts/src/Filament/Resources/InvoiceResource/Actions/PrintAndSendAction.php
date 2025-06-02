@@ -5,13 +5,10 @@ namespace Webkul\Account\Filament\Resources\InvoiceResource\Actions;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Notifications\Notification;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\MoveState;
-use Webkul\Account\Mail\Invoice\Actions\InvoiceEmail;
+use Webkul\Account\Facades\Account;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\Partner;
-use Webkul\Support\Services\EmailService;
 use Webkul\Support\Traits\PDFHandler;
 
 class PrintAndSendAction extends Action
@@ -82,7 +79,9 @@ class PrintAndSendAction extends Action
         $this->modalSubmitActionLabel(__('accounts::filament/resources/invoice/actions/print-and-send.modal.action.submit.title'));
         $this->modalIcon('heroicon-m-paper-airplane');
         $this->icon('heroicon-o-envelope');
-        $this->action(fn ($record, array $data) => $this->handleSendByEmail($record, $data));
+        $this->action(function (Move $record, array $data) {
+            Account::printAndSend($record, $data);
+        });
         $this->modalSubmitAction(function ($action) {
             $action->label(__('accounts::filament/resources/invoice/actions/print-and-send.modal.action.submit.title'));
             $action->icon('heroicon-m-paper-airplane');
@@ -95,66 +94,5 @@ class PrintAndSendAction extends Action
             view('accounts::invoice/actions/preview.index', compact('record'))->render(),
             'invoice-'.$record->created_at->format('d-m-Y')
         );
-    }
-
-    private function preparePayloadForSendByEmail($record, $partner, $data)
-    {
-        return [
-            'record_name'    => $record->name,
-            'model_name'     => class_basename($record),
-            'subject'        => $data['subject'],
-            'description'    => $data['description'],
-            'to'             => [
-                'address' => $partner?->email,
-                'name'    => $partner?->name,
-            ],
-        ];
-    }
-
-    private function handleSendByEmail(Move $record, array $data): void
-    {
-        $partners = Partner::whereIn('id', $data['partners'])->get();
-
-        $viewTemplate = 'accounts::mail/invoice/actions/invoice';
-
-        foreach ($partners as $partner) {
-            if (! $partner->email) {
-                continue;
-            }
-
-            $attachments = [];
-
-            foreach ($data['files'] as $file) {
-                $attachments[] = [
-                    'path' => asset('storage/'.$file),
-                    'name' => basename($file),
-                ];
-            }
-
-            app(EmailService::class)->send(
-                mailClass: InvoiceEmail::class,
-                view: $viewTemplate,
-                payload: $this->preparePayloadForSendByEmail($record, $partner, $data),
-                attachments: $attachments,
-            );
-        }
-
-        $messageData = [
-            'from' => [
-                'company' => Auth::user()->defaultCompany->toArray(),
-            ],
-            'body' => view($viewTemplate, [
-                'payload' => $this->preparePayloadForSendByEmail($record, $partner, $data),
-            ])->render(),
-            'type' => 'comment',
-        ];
-
-        $record->addMessage($messageData, Auth::user()->id);
-
-        Notification::make()
-            ->success()
-            ->title(__('accounts::filament/resources/invoice/actions/print-and-send.modal.notification.invoice-sent.title'))
-            ->body(__('accounts::filament/resources/invoice/actions/print-and-send.modal.notification.invoice-sent.body'))
-            ->send();
     }
 }

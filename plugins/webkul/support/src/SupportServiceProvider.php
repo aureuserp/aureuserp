@@ -2,6 +2,10 @@
 
 namespace Webkul\Support;
 
+use Filament\Support\Facades\FilamentView;
+use Filament\View\PanelsRenderHook;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
@@ -55,13 +59,46 @@ class SupportServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        include __DIR__.'/helpers.php';
+
         Livewire::component('accept-invitation', AcceptInvitation::class);
 
         Gate::policy(Role::class, RolePolicy::class);
+
+        Event::listen('aureus.installed', 'Webkul\Support\Listeners\Installer@installed');
+
+        /**
+         * Route to access template applied image file
+         */
+        $this->app['router']->get('cache/{filename}', [
+            'uses' => 'Webkul\Support\Http\Controllers\ImageCacheController@getImage',
+            'as'   => 'image_cache',
+        ])->where(['filename' => '[ \w\\.\\/\\-\\@\(\)\=]+']);
     }
 
     public function packageRegistered(): void
     {
-        //
+        $version = '1.0.0-alpha1';
+
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::USER_MENU_PROFILE_BEFORE,
+            fn (): string => Blade::render(<<<'BLADE'
+                <x-filament::dropdown.list>
+                    <x-filament::dropdown.list.item>
+                        <div class="flex items-center gap-2">
+                            <img
+                                src="{{ url('cache/logo.png') }}"
+                                width="24"
+                                height="24"
+                            />
+
+                            Version {{$version}}
+                        </div>
+                    </x-filament::dropdown.list.item>
+                </x-filament::dropdown.list>
+            BLADE, [
+                'version' => $version,
+            ]),
+        );
     }
 }

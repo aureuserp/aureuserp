@@ -16,7 +16,6 @@ use Spatie\Permission\Models\Role;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Filament\Resources\UserResource\Pages;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
 
 class UserResource extends Resource
 {

@@ -7,7 +7,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\EmploymentTypeResource;
-use Webkul\Employee\Models\EmploymentType;
 
 class ListEmploymentTypes extends ListRecords
 {

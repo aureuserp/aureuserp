@@ -17,6 +17,8 @@ class BankAccountResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
+    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
+
     public static function getNavigationGroup(): string
     {
         return __('partners::filament/resources/bank-account.navigation.group');

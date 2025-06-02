@@ -7,7 +7,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\LeaveTypeResource;
-use Webkul\TimeOff\Models\LeaveType;
 
 class EditLeaveType extends EditRecord
 {

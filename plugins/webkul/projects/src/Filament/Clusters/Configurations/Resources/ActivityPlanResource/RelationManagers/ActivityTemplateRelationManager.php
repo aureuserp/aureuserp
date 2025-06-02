@@ -16,7 +16,6 @@ use Webkul\Support\Enums\ActivityDelayInterval;
 use Webkul\Support\Enums\ActivityDelayUnit;
 use Webkul\Support\Enums\ActivityResponsibleType;
 use Webkul\Support\Filament\Resources\ActivityTypeResource;
-use Webkul\Support\Models\ActivityPlanTemplate;
 use Webkul\Support\Models\ActivityType;
 
 class ActivityTemplateRelationManager extends RelationManager

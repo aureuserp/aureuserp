@@ -4,9 +4,9 @@ namespace Webkul\Account\Filament\Resources\TaxResource\Pages;
 
 use Filament\Actions;
 use Filament\Notifications\Notification;
-use Illuminate\Database\QueryException;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Pages\ViewRecord;
+use Illuminate\Database\QueryException;
 use Webkul\Account\Filament\Resources\TaxResource;
 use Webkul\Account\Models\Tax;
 

@@ -250,7 +250,7 @@ class TimeOffResource extends Resource
                                 ->title(__('time-off::filament/clusters/management/resources/time-off.table.actions.delete.notification.title'))
                                 ->body(__('time-off::filament/clusters/management/resources/time-off.table.actions.delete.notification.body'))
                         ),
-                ])
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

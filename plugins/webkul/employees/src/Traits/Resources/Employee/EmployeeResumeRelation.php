@@ -12,7 +12,6 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Enums;
-use Webkul\Employee\Models\EmployeeResumeLineType;
 
 trait EmployeeResumeRelation
 {

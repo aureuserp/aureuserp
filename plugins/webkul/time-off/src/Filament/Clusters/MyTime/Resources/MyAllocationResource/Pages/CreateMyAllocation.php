@@ -5,8 +5,8 @@ namespace Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyAllocationResource
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
-use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyAllocationResource;
 use Webkul\Employee\Models\Employee;
+use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyAllocationResource;
 
 class CreateMyAllocation extends CreateRecord
 {

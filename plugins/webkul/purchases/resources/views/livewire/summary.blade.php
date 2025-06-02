@@ -73,21 +73,21 @@
 
                 <div class="invoice-item">
                     <span>Untaxed Amount</span>
-                    <span>{{ number_format($subTotal, 2) }}</span>
+                    <span>{{ money($subTotal, $currency?->name) }}</span>
                 </div>
 
                 @if ($totalTax > 0)
                     <div class="invoice-item">
                         <span>Tax</span>
-                        <span>{{ number_format($totalTax, 2) }}</span>
+                        <span>{{ money($totalTax, $currency?->name) }}</span>
                     </div>
                 @endif
 
                 <div class="divider"></div>
 
-                <div class="font-bold invoice-item" style="color: #000">
+                <div class="invoice-item font-bold" style="color: #000">
                     <span>Total</span>
-                    <span>{{ number_format($grandTotal, 2) }}</span>
+                    <span>{{ money($grandTotal, $currency?->name) }}</span>
                 </div>
             </div>
         </div>

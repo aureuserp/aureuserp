@@ -1,11 +1,11 @@
 <?php
 
-namespace Webkul\Sale\Filament\Clusters\Orders\Resources\OrdersResource\Pages;
+namespace Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Sale\Enums\InvoiceStatus;
-use Webkul\Sale\Filament\Clusters\Orders\Resources\OrdersResource;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ListQuotations as BaseListOrders;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
@@ -14,7 +14,7 @@ class ListOrders extends BaseListOrders
 {
     use HasTableViews;
 
-    protected static string $resource = OrdersResource::class;
+    protected static string $resource = OrderResource::class;
 
     public function getPresetTableViews(): array
     {

@@ -3,13 +3,19 @@
 namespace Webkul\Sale\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Tax;
+use Webkul\Inventory\Models\Move as InventoryMove;
+use Webkul\Inventory\Models\Route;
+use Webkul\Inventory\Models\Warehouse;
 use Webkul\Partner\Models\Partner;
 use Webkul\Product\Models\Packaging;
-use Webkul\Sale\Enums\OrderState;
+use Webkul\Sale\Enums;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
@@ -65,10 +71,12 @@ class OrderLine extends Model implements Sortable
         'purchase_price',
         'margin',
         'margin_percent',
+        'warehouse_id',
     ];
 
     protected $casts = [
-        'cast' => OrderState::class,
+        'cast'                 => Enums\OrderState::class,
+        'qty_delivered_method' => Enums\QtyDeliveredMethod::class,
     ];
 
     public $sortable = [
@@ -116,6 +124,16 @@ class OrderLine extends Model implements Sortable
         return $this->belongsToMany(Tax::class, 'sales_order_line_taxes', 'order_line_id', 'tax_id');
     }
 
+    public function accountMoveLines()
+    {
+        return $this->belongsToMany(MoveLine::class, 'sales_order_line_invoices', 'order_line_id', 'invoice_line_id');
+    }
+
+    public function inventoryMoves(): HasMany
+    {
+        return $this->hasMany(InventoryMove::class, 'sale_order_line_id');
+    }
+
     public function productPackaging()
     {
         return $this->belongsTo(Packaging::class);
@@ -129,5 +147,15 @@ class OrderLine extends Model implements Sortable
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    public function warehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
+    }
+
+    public function route(): BelongsTo
+    {
+        return $this->belongsTo(Route::class, 'route_id');
     }
 }

@@ -6,7 +6,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Filament\Resources\CompanyResource;
-use Webkul\Support\Models\Company;
 
 class CreateCompany extends CreateRecord
 {

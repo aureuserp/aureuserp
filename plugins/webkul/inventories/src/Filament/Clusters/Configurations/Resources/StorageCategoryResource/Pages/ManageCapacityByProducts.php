@@ -8,8 +8,8 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Unique;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource;
 

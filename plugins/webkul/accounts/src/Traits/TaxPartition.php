@@ -10,7 +10,6 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums;
-use Webkul\Account\Models\TaxPartition as TaxPartitionModel;
 
 trait TaxPartition
 {

@@ -7,6 +7,7 @@ use Filament\Notifications\Notification;
 use Livewire\Component;
 use Webkul\Account\Enums\AutoPost;
 use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Facades\Account;
 use Webkul\Account\Models\Move;
 
 class ConfirmAction extends Action
@@ -28,13 +29,7 @@ class ConfirmAction extends Action
                     return;
                 }
 
-                $record->state = MoveState::POSTED;
-                $record->save();
-
-                $record->allLines->each(function ($moveLine) {
-                    $moveLine->parent_state = MoveState::POSTED;
-                    $moveLine->save();
-                });
+                $record = Account::confirm($record);
 
                 $livewire->refreshFormData(['state', 'parent_state']);
             })

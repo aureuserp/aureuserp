@@ -2,15 +2,14 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Customer\Resources;
 
-use Filament\Infolists\Infolist;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Tables\Table;
-use Webkul\Contact\Filament\Resources\PartnerResource as BaseVendorResource;
 use Webkul\Invoice\Filament\Clusters\Customer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\PartnerResource\Pages;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource as BasePartnerResource;
 use Webkul\Invoice\Models\Partner;
+use Webkul\Partner\Filament\Resources\PartnerResource as BaseVendorResource;
 
 class PartnerResource extends BasePartnerResource
 {
@@ -50,11 +49,6 @@ class PartnerResource extends BasePartnerResource
         $table->modifyQueryUsing(fn ($query) => $query->where('sub_type', 'customer'));
 
         return $table;
-    }
-
-    public static function infolist(Infolist $infolist): Infolist
-    {
-        return BaseVendorResource::infolist($infolist);
     }
 
     public static function getRecordSubNavigation(Page $page): array

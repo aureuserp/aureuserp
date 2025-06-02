@@ -11,7 +11,6 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Employee\Models\Skill;
 
 class SkillsRelationManager extends RelationManager
 {

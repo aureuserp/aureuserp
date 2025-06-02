@@ -59,7 +59,6 @@
             <div class="invoice-container">
                 @php
                     $subTotal = 0;
-                    $totalDiscount = 0;
                     $totalTax = 0;
                     $grandTotal = 0;
 
@@ -75,36 +74,27 @@
                             $totalTax += $product['price_tax'] ?? 0;
                         }
 
-                        $totalDiscount += floatval($product['discount']);
-
                         $grandTotal += floatval($product['price_total']);
                     }
                 @endphp
 
                <div class="invoice-item">
-                    <span>Subtotal</span>
-                    <span>{{ $currency->symbol }} {{ number_format($subTotal, 2) }}</span>
+                    <span>Untaxed Amount</span>
+                    <span>{{ money($subTotal, $currency?->name) }}</span>
                 </div>
-
-                @if ($totalDiscount > 0)
-                    <div class="invoice-item">
-                        <span>Discount</span>
-                        <span>- {{ $currency->symbol }} {{ number_format($totalDiscount, 2) }}</span>
-                    </div>
-                @endif
 
                 @if ($totalTax > 0)
                     <div class="invoice-item">
-                        <span>Tax Amount</span>
-                        <span>{{ $currency->symbol }} {{ number_format($totalTax, 2) }}</span>
+                        <span>Tax</span>
+                        <span>{{ money($totalTax, $currency?->name) }}</span>
                     </div>
                 @endif
 
                 <div class="divider"></div>
 
-                <div class="font-bold invoice-item">
-                    <span>Grand Total</span>
-                    <span>{{ $currency->symbol }} {{ number_format($grandTotal, 2) }}</span>
+                <div class="invoice-item font-bold">
+                    <span>Total</span>
+                    <span>{{ money($grandTotal, $currency?->name) }}</span>
                 </div>
             </div>
         </div>

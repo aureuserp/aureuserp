@@ -7,7 +7,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\TeamResource;
-use Webkul\Sale\Models\Team;
 
 class EditTeam extends EditRecord
 {

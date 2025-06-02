@@ -10,7 +10,8 @@ use Webkul\Inventory\Models\MoveLine;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Rule;
-use Webkul\Purchase\Facades\PurchaseOrder;
+use Webkul\Purchase\Facades\PurchaseOrder as PurchaseOrderFacade;
+use Webkul\Sale\Facades\SaleOrder as SaleFacade;
 use Webkul\Support\Package;
 
 class InventoryManager
@@ -40,7 +41,13 @@ class InventoryManager
 
         if (Package::isPluginInstalled('purchases')) {
             foreach ($record->purchaseOrders as $purchaseOrder) {
-                PurchaseOrder::computePurchaseOrder($purchaseOrder);
+                PurchaseOrderFacade::computePurchaseOrder($purchaseOrder);
+            }
+        }
+
+        if (Package::isPluginInstalled('sales')) {
+            if ($record->saleOrder) {
+                SaleFacade::computeSaleOrder($record->saleOrder);
             }
         }
 
@@ -272,7 +279,7 @@ class InventoryManager
             $newOperation->purchaseOrders()->attach($record->purchaseOrders->pluck('id'));
 
             foreach ($record->purchaseOrders as $purchaseOrder) {
-                PurchaseOrder::computePurchaseOrder($purchaseOrder);
+                PurchaseOrderFacade::computePurchaseOrder($purchaseOrder);
             }
         }
 
@@ -600,33 +607,6 @@ class InventoryManager
     }
 
     /**
-     * Traverse up the location tree to find a matching push rule.
-     */
-    public function getPushRule(Move $move, array $filters = [])
-    {
-        $foundRule = null;
-
-        $location = $move->destinationLocation;
-
-        $filters['action'] = [Enums\RuleAction::PUSH, Enums\RuleAction::PULL_PUSH];
-
-        while (! $foundRule && $location) {
-            $filters['source_location_id'] = $location->id;
-
-            $foundRule = $this->searchPushRule(
-                $move->productPackaging,
-                $move->product,
-                $move->warehouse,
-                $filters
-            );
-
-            $location = $location->parent;
-        }
-
-        return $foundRule;
-    }
-
-    /**
      * Run a push rule on a move.
      */
     public function runPushRule(Rule $rule, Move $move)
@@ -667,6 +647,33 @@ class InventoryManager
         }
 
         return $newMove;
+    }
+
+    /**
+     * Traverse up the location tree to find a matching push rule.
+     */
+    public function getPushRule(Move $move, array $filters = [])
+    {
+        $foundRule = null;
+
+        $location = $move->destinationLocation;
+
+        $filters['action'] = [Enums\RuleAction::PUSH, Enums\RuleAction::PULL_PUSH];
+
+        while (! $foundRule && $location) {
+            $filters['source_location_id'] = $location->id;
+
+            $foundRule = $this->searchPushRule(
+                $move->productPackaging,
+                $move->product,
+                $move->warehouse,
+                $filters
+            );
+
+            $location = $location->parent;
+        }
+
+        return $foundRule;
     }
 
     /**

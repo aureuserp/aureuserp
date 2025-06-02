@@ -1,10 +1,10 @@
 <?php
 
-namespace Webkul\Account\Services;
+namespace Webkul\Account;
 
 use Webkul\Account\Models\Tax;
 
-class TaxService
+class TaxManager
 {
     /**
      * Calculate taxes.
@@ -14,7 +14,7 @@ class TaxService
      * @param  float  $quantity
      * @return array
      */
-    public static function collectionTaxes($taxIds, $subTotal, $quantity)
+    public static function collect($taxIds, $subTotal, $quantity)
     {
         if (empty($taxIds)) {
             return [$subTotal, 0, []];

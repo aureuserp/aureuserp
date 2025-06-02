@@ -6,9 +6,9 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Employee\Models\Employee;
 use Webkul\TimeOff\Enums\State;
 use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOffResource;
-use Webkul\Employee\Models\Employee;
 
 class CreateMyTimeOff extends CreateRecord
 {
@@ -84,7 +84,7 @@ class CreateMyTimeOff extends CreateRecord
         $data['state'] = State::CONFIRM->value;
 
         $data['date_from'] = $data['request_date_from'];
-        
+
         $data['date_to'] = $data['request_date_to'];
 
         return $data;
