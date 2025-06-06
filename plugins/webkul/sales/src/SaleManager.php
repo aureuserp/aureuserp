@@ -14,6 +14,7 @@ use Webkul\Inventory\Facades\Inventory as InventoryFacade;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Move as InventoryMove;
 use Webkul\Inventory\Models\Operation as InventoryOperation;
+use Webkul\Inventory\Models\Product as InventoryProduct;
 use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Invoice\Enums as InvoiceEnums;
@@ -776,7 +777,7 @@ class SaleManager
 
             $foundRule = $this->searchPullRule(
                 $line->productPackaging,
-                $line->product,
+                InventoryProduct::find($line->product_id),
                 $line->warehouse,
                 $filters
             );
