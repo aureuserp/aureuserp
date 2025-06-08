@@ -4,7 +4,9 @@ namespace Webkul\Sale\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\Journal;
@@ -13,6 +15,8 @@ use Webkul\Account\Models\PaymentTerm;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
+use Webkul\Inventory\Models\Operation;
+use Webkul\Inventory\Models\Warehouse;
 use Webkul\Partner\Models\Partner;
 use Webkul\Sale\Enums\InvoiceStatus;
 use Webkul\Sale\Enums\OrderState;
@@ -66,6 +70,7 @@ class Order extends Model
         'amount_untaxed',
         'amount_tax',
         'amount_total',
+        'warehouse_id',
     ];
 
     protected array $logAttributes = [
@@ -123,11 +128,6 @@ class Order extends Model
         return $this->lines->sum('qty_to_invoice');
     }
 
-    public function accountMoves(): BelongsToMany
-    {
-        return $this->belongsToMany(Move::class, 'sales_order_line_invoices', 'order_id', 'move_id');
-    }
-
     public function campaign()
     {
         return $this->belongsTo(UtmCampaign::class, 'campaign_id');
@@ -136,6 +136,11 @@ class Order extends Model
     public function journal()
     {
         return $this->belongsTo(Journal::class);
+    }
+
+    public function accountMoves(): BelongsToMany
+    {
+        return $this->belongsToMany(Move::class, 'sales_order_invoices', 'order_id', 'move_id');
     }
 
     public function partnerInvoice()
@@ -208,25 +213,26 @@ class Order extends Model
         return $this->belongsTo(OrderTemplate::class, 'sale_order_template_id');
     }
 
+    public function warehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
+    }
+
+    public function operations(): HasMany
+    {
+        return $this->hasMany(Operation::class, 'sale_order_id');
+    }
+
     protected static function boot()
     {
         parent::boot();
 
-        static::creating(function ($order) {
-            if ($order->state === 'sale') {
-                $order->name = 'ORD-TMP-'.time();
-            } else {
-                $order->name = 'QT-TMP-'.time();
-            }
+        static::saving(function ($order) {
+            $order->updateName();
         });
 
         static::created(function ($order) {
-            $order->updateName();
-            $order->saveQuietly();
-        });
-
-        static::updating(function ($order) {
-            $order->updateName();
+            $order->update(['name' => $order->name]);
         });
     }
 
@@ -235,10 +241,6 @@ class Order extends Model
      */
     public function updateName()
     {
-        if ($this->state === OrderState::SALE->value) {
-            $this->name = 'ORD-'.$this->id;
-        } else {
-            $this->name = 'QT-'.$this->id;
-        }
+        $this->name = 'SO/'.$this->id;
     }
 }

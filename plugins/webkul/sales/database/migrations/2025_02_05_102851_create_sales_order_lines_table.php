@@ -48,8 +48,8 @@ return new class extends Migration
             $table->decimal('qty_to_invoice', 15, 4)->nullable()->comment('Quantity To Invoice')->default(0);
             $table->decimal('untaxed_amount_invoiced', 15, 4)->nullable()->comment('Untaxed Invoiced Amount')->default(0);
             $table->decimal('untaxed_amount_to_invoice', 15, 4)->nullable()->comment('Untaxed Amount To Invoice')->default(0);
-            $table->boolean('is_downpayment')->nullable()->comment('Is a down payment');
-            $table->boolean('is_expense')->nullable()->comment('Is expense');
+            $table->boolean('is_downpayment')->default(false)->nullable()->comment('Is a down payment');
+            $table->boolean('is_expense')->default(false)->nullable()->comment('Is expense');
             $table->timestamp('create_date')->nullable()->comment('Created on');
             $table->timestamp('write_date')->nullable()->comment('Last Updated on');
             $table->decimal('technical_price_unit', 15, 4)->nullable()->comment('Technical Price Unit')->default(0);

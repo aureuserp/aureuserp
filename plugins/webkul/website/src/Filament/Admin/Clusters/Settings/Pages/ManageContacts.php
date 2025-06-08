@@ -15,7 +15,7 @@ class ManageContacts extends SettingsPage
 
     protected static ?string $navigationIcon = 'heroicon-o-truck';
 
-    protected static ?string $slug = 'inventory/manage-logistics';
+    protected static ?string $slug = 'website/manage-contacts';
 
     protected static ?string $navigationGroup = 'Website';
 

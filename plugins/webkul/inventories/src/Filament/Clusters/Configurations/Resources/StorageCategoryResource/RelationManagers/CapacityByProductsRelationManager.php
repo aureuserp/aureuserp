@@ -5,10 +5,10 @@ namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCat
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Unique;

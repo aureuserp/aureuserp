@@ -1,6 +1,11 @@
 <?php
 
 return [
+    'navigation' => [
+        'group' => 'Banks',
+        'title' => 'Bank Accounts',
+    ],
+
     'form' => [
         'account-number'     => 'Account Number',
         'bank'               => 'Bank',

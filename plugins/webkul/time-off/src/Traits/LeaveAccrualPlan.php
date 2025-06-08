@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Support\Enums\Week;
 use Webkul\TimeOff\Enums;
-use Webkul\TimeOff\Models\LeaveAccrualLevel;
 
 trait LeaveAccrualPlan
 {

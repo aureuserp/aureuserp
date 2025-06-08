@@ -14,7 +14,8 @@ use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\OperationFactory;
 use Webkul\Inventory\Enums;
 use Webkul\Partner\Models\Partner;
-use Webkul\Purchase\Models\Order;
+use Webkul\Purchase\Models\Order as PurchaseOrder;
+use Webkul\Sale\Models\Order as SaleOrder;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
@@ -57,6 +58,7 @@ class Operation extends Model
         'partner_id',
         'company_id',
         'creator_id',
+        'sale_order_id',
     ];
 
     /**
@@ -168,7 +170,12 @@ class Operation extends Model
 
     public function purchaseOrders(): BelongsToMany
     {
-        return $this->belongsToMany(Order::class, 'purchases_order_operations', 'inventory_operation_id', 'purchase_order_id');
+        return $this->belongsToMany(PurchaseOrder::class, 'purchases_order_operations', 'inventory_operation_id', 'purchase_order_id');
+    }
+
+    public function saleOrder(): BelongsTo
+    {
+        return $this->belongsTo(SaleOrder::class, 'sale_order_id');
     }
 
     /**

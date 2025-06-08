@@ -8,7 +8,6 @@ use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Filament\Resources\FiscalPositionResource;
-use Webkul\Account\Models\FiscalPosition;
 
 class EditFiscalPosition extends EditRecord
 {

@@ -4,8 +4,8 @@ namespace Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actio
 
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
-use Webkul\Sale\Enums\InvoiceStatus;
 use Webkul\Sale\Enums\OrderState;
+use Webkul\Sale\Facades\SaleOrder;
 
 class BackToQuotationAction extends Action
 {
@@ -23,15 +23,7 @@ class BackToQuotationAction extends Action
             ->color('gray')
             ->hidden(fn ($record) => $record->state != OrderState::CANCEL)
             ->action(function ($record, $livewire) {
-                $record->update([
-                    'state'          => OrderState::DRAFT,
-                    'invoice_status' => InvoiceStatus::NO,
-                ]);
-
-                $record->lines->each(function ($line) {
-                    $line->state = OrderState::DRAFT;
-                    $line->save();
-                });
+                SaleOrder::backToQuotation($record);
 
                 $livewire->refreshFormData(['state']);
 

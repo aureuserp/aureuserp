@@ -10,7 +10,6 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rules\Unique;
 use Webkul\Inventory\Settings\OperationSettings;
 

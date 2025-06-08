@@ -2,7 +2,6 @@
 
 namespace Webkul\Purchase\Observers;
 
-use Webkul\Account\Models\Move;
 use Webkul\Purchase\Models\AccountMove;
 
 class AccountMoveObserver
@@ -10,7 +9,7 @@ class AccountMoveObserver
     /**
      * Handle the User "updated" event.
      */
-    public function updated(Move $move): void
+    public function updated($move): void
     {
         if ($move->isDirty('state')) {
             $accountMove = AccountMove::find($move->id);

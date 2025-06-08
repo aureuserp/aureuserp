@@ -11,11 +11,6 @@ class EditByEmployee extends EditRecord
 {
     protected static string $resource = ByEmployeeResource::class;
 
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
-    }
-
     protected function getHeaderActions(): array
     {
         return [

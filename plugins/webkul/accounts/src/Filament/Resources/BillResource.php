@@ -15,15 +15,13 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Account\Enums\DelayType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\TypeTaxUse;
+use Webkul\Account\Facades\Tax;
 use Webkul\Account\Filament\Resources\BillResource\Pages;
 use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\Move as AccountMove;
-use Webkul\Account\Models\MoveLine;
-use Webkul\Account\Services\TaxService;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource;
 use Webkul\Invoice\Models\Product;
@@ -542,43 +540,13 @@ class BillResource extends Resource
                     ])
                     ->columns(2),
             ])
-            ->mutateRelationshipDataBeforeCreateUsing(fn (array $data, $record, $livewire) => static::mutateProductRelationship($data, $record, $livewire))
-            ->mutateRelationshipDataBeforeSaveUsing(fn (array $data, $record, $livewire) => static::mutateProductRelationship($data, $record, $livewire));
+            ->mutateRelationshipDataBeforeCreateUsing(fn (array $data, $record) => static::mutateProductRelationship($data, $record))
+            ->mutateRelationshipDataBeforeSaveUsing(fn (array $data, $record) => static::mutateProductRelationship($data, $record));
     }
 
-    public static function mutateProductRelationship(array $data, $record, $livewire): array
+    public static function mutateProductRelationship(array $data, $record): array
     {
-        $data['product_id'] ??= $record->product_id;
-        $data['quantity'] ??= $record->quantity;
-        $data['uom_id'] ??= $record->uom_id;
-        $data['price_subtotal'] ??= $record->price_subtotal;
-        $data['discount'] ??= $record->discount;
-        $data['discount_date'] ??= $record->discount_date;
-
-        $product = Product::find($data['product_id']);
-
-        $user = Auth::user();
-
-        $data = array_merge($data, [
-            'name'                  => $product->name,
-            'quantity'              => $data['quantity'],
-            'uom_id'                => $data['uom_id'] ?? $product->uom_id,
-            'currency_id'           => ($livewire->data['currency_id'] ?? $record->currency_id) ?? $user->defaultCompany->currency_id,
-            'partner_id'            => $record->partner_id,
-            'creator_id'            => $user->id,
-            'company_id'            => $user->default_company_id,
-            'company_currency_id'   => $user->defaultCompany->currency_id ?? $record->currency_id,
-            'commercial_partner_id' => $livewire->record->partner_id,
-            'display_type'          => 'product',
-            'parent_state'          => $livewire->record->state ?? MoveState::DRAFT,
-            'move_name'             => $livewire->record->name,
-        ]);
-
-        if ($data['discount'] > 0) {
-            $data['discount_date'] = now();
-        } else {
-            $data['discount_date'] = null;
-        }
+        $data['currency_id'] = $record->currency_id;
 
         return $data;
     }
@@ -692,213 +660,12 @@ class BillResource extends Resource
 
         $taxIds = $get('taxes') ?? [];
 
-        [$subTotal, $taxAmount] = app(TaxService::class)->collectionTaxes($taxIds, $subTotal, $quantity);
+        [$subTotal, $taxAmount] = Tax::collect($taxIds, $subTotal, $quantity);
 
         $set('price_subtotal', round($subTotal, 4));
 
         $set('price_tax', $taxAmount);
 
         $set('price_total', $subTotal + $taxAmount);
-    }
-
-    public static function collectTotals(AccountMove $record): void
-    {
-        $record->amount_untaxed = 0;
-        $record->amount_tax = 0;
-        $record->amount_total = 0;
-        $record->amount_residual = 0;
-        $record->amount_untaxed_signed = 0;
-        $record->amount_untaxed_in_currency_signed = 0;
-        $record->amount_tax_signed = 0;
-        $record->amount_total_signed = 0;
-        $record->amount_total_in_currency_signed = 0;
-        $record->amount_residual_signed = 0;
-        $newTaxEntries = [];
-
-        foreach ($record->lines as $line) {
-            [$line, $amountTax] = static::collectLineTotals($line, $newTaxEntries);
-
-            $record->amount_untaxed += floatval($line->price_subtotal);
-            $record->amount_tax += floatval($amountTax);
-            $record->amount_total += floatval($line->price_total);
-
-            $record->amount_untaxed_signed += -floatval($line->price_subtotal);
-            $record->amount_untaxed_in_currency_signed += -floatval($line->price_subtotal);
-            $record->amount_tax_signed += -floatval($amountTax);
-            $record->amount_total_signed += -floatval($line->price_total);
-            $record->amount_total_in_currency_signed += -floatval($line->price_total);
-
-            $record->amount_residual += floatval($line->price_total);
-            $record->amount_residual_signed += -floatval($line->price_total);
-        }
-
-        $record->save();
-
-        static::updateOrCreatePaymentTermLine($record);
-    }
-
-    public static function collectLineTotals(MoveLine $line, &$newTaxEntries): array
-    {
-        $subTotal = $line->price_unit * $line->quantity;
-
-        $discountAmount = 0;
-
-        if ($line->discount > 0) {
-            $discountAmount = $subTotal * ($line->discount / 100);
-
-            $subTotal = $subTotal - $discountAmount;
-        }
-
-        $taxIds = $line->taxes->pluck('id')->toArray();
-
-        [$subTotal, $taxAmount, $taxesComputed] = app(TaxService::class)->collectionTaxes($taxIds, $subTotal, $line->quantity);
-
-        if ($taxAmount > 0) {
-            static::updateOrCreateTaxLine($line, $subTotal, $taxesComputed, $newTaxEntries);
-        }
-
-        $line->price_subtotal = round($subTotal, 4);
-
-        $line->price_total = $subTotal + $taxAmount;
-
-        $line->debit = round($subTotal, 4);
-
-        $line->credit = 0.00;
-
-        $line->balance = round($subTotal, 4);
-
-        $line->amount_currency = round($subTotal, 4);
-
-        $line->save();
-
-        return [
-            $line,
-            $taxAmount,
-        ];
-    }
-
-    public static function updateOrCreatePaymentTermLine($move): void
-    {
-        $data = [
-            'currency_id'              => $move->currency_id,
-            'partner_id'               => $move->partner_id,
-            'date_maturity'            => static::calculateDateMaturity($move),
-            'company_id'               => $move->company_id,
-            'company_currency_id'      => $move->company_currency_id,
-            'commercial_partner_id'    => $move->partner_id,
-            'parent_state'             => $move->state,
-            'debit'                    => 0.00,
-            'credit'                   => $move->amount_total,
-            'balance'                  => -$move->amount_total,
-            'amount_currency'          => -$move->amount_total,
-            'amount_residual'          => -$move->amount_total,
-            'amount_residual_currency' => -$move->amount_total,
-            'created_by'               => Auth::id(),
-        ];
-
-        MoveLine::updateOrCreate([
-            'move_id'      => $move->id,
-            'display_type' => 'payment_term',
-        ], $data);
-    }
-
-    private static function updateOrCreateTaxLine($line, $subTotal, $taxesComputed, &$newTaxEntries): void
-    {
-        $taxes = $line
-            ->taxes()
-            ->orderBy('sort')
-            ->get();
-
-        $existingTaxLines = MoveLine::where('move_id', $line->move->id)
-            ->where('display_type', 'tax')
-            ->get()
-            ->keyBy('tax_line_id');
-
-        foreach ($taxes as $tax) {
-            $move = $line->move;
-
-            $computedTax = collect($taxesComputed)->firstWhere('tax_id', $tax->id);
-
-            $currentTaxAmount = $computedTax['tax_amount'];
-
-            if (isset($newTaxEntries[$tax->id])) {
-                $newTaxEntries[$tax->id]['debit'] += $currentTaxAmount;
-                $newTaxEntries[$tax->id]['credit'] += 0;
-                $newTaxEntries[$tax->id]['balance'] += $currentTaxAmount;
-                $newTaxEntries[$tax->id]['amount_currency'] += $currentTaxAmount;
-                $newTaxEntries[$tax->id]['tax_base_amount'] += $subTotal;
-            } else {
-                $newTaxEntries[$tax->id] = [
-                    'name'                  => $tax->name,
-                    'move_id'               => $move->id,
-                    'move_name'             => $move->name,
-                    'display_type'          => 'tax',
-                    'currency_id'           => $move->currency_id,
-                    'partner_id'            => $move->partner_id,
-                    'company_id'            => $move->company_id,
-                    'company_currency_id'   => $move->company_currency_id,
-                    'commercial_partner_id' => $move->partner_id,
-                    'parent_state'          => $move->state,
-                    'date'                  => now(),
-                    'creator_id'            => $move->creator_id,
-                    'debit'                 => $currentTaxAmount,
-                    'credit'                => 0,
-                    'balance'               => $currentTaxAmount,
-                    'amount_currency'       => $currentTaxAmount,
-                    'tax_base_amount'       => $subTotal,
-                    'tax_line_id'           => $tax->id,
-                    'tax_group_id'          => $tax->tax_group_id,
-                ];
-            }
-        }
-
-        foreach ($newTaxEntries as $taxId => $taxData) {
-            if (isset($existingTaxLines[$taxId])) {
-                $existingTaxLines[$taxId]->update($taxData);
-
-                unset($existingTaxLines[$taxId]);
-            } else {
-                MoveLine::create($taxData);
-            }
-        }
-
-        $existingTaxLines->each->delete();
-    }
-
-    public static function calculateDateMaturity($move)
-    {
-        $dateMaturity = $move->invoice_date_due ?? now();
-
-        if (
-            $move->invoice_payment_term_id
-            && $move->invoicePaymentTerm
-        ) {
-            $dueTerm = $move->invoicePaymentTerm->dueTerm;
-
-            if ($dueTerm) {
-                switch ($dueTerm->delay_type) {
-                    case DelayType::DAYS_AFTER->value:
-                        $dateMaturity = $dateMaturity->addDays($dueTerm->nb_days);
-
-                        break;
-
-                    case DelayType::DAYS_AFTER_END_OF_MONTH->value:
-                        $dateMaturity = $dateMaturity->endOfMonth()->addDays($dueTerm->nb_days);
-                        break;
-
-                    case DelayType::DAYS_AFTER_END_OF_NEXT_MONTH->value:
-                        $dateMaturity = $dateMaturity->addMonth()->endOfMonth()->addDays($dueTerm->days_next_month);
-
-                        break;
-
-                    case DelayType::DAYS_END_OF_MONTH_NO_THE->value:
-                        $dateMaturity = $dateMaturity->endOfMonth();
-
-                        break;
-                }
-            }
-        }
-
-        return $dateMaturity;
     }
 }

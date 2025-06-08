@@ -5,7 +5,7 @@ namespace Webkul\Account\Filament\Resources;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Webkul\Account\Filament\Resources\BankAccountResource\Pages;
-use Webkul\Contact\Filament\Clusters\Configurations\Resources\BankAccountResource as BaseBankAccountResource;
+use Webkul\Partner\Filament\Resources\BankAccountResource as BaseBankAccountResource;
 
 class BankAccountResource extends BaseBankAccountResource
 {

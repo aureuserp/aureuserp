@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Invoice\Models\Product;
 use Webkul\Partner\Models\Partner;
@@ -74,6 +75,7 @@ class MoveLine extends Model implements Sortable
 
     protected $casts = [
         'parent_state' => MoveState::class,
+        'display_type' => DisplayType::class,
     ];
 
     public $sortable = [
@@ -143,7 +145,7 @@ class MoveLine extends Model implements Sortable
 
     public function uom()
     {
-        return $this->belongsTo(UOM::class);
+        return $this->belongsTo(UOM::class, 'uom_id');
     }
 
     public function createdBy()

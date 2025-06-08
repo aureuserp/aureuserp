@@ -82,6 +82,10 @@
         .items-table tr:nth-child(even) {
             background: #f8f9fa;
         }
+
+        .items-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
         .items-table tr:nth-child(odd) {
             background: #ffffff;
         }
@@ -137,6 +141,7 @@
             margin-top: 20px;
             padding: 20px;
             border-radius: 8px;
+            color: #1a4587;
         }
 
         .payment-info-title {
@@ -150,32 +155,32 @@
     <div class="agreement">
         <!-- Header Section -->
         <div class="header">
-            <!-- Billing Address -->
+            <!-- Company Address -->
             <div class="company-info">
                 <div style="font-size: 28px; color: #1a4587; margin-bottom: 10px;">{{ $record->company->name }}</div>
 
-                @if ($record->company->partner)
+                @if ($record->company->address)
                     <div>
-                        {{ $record->company->partner->street1 }}
+                        {{ $record->company->address->street1 }}
 
-                        @if ($record->company->partner->street2)
-                            ,{{ $record->company->partner->street2 }}
+                        @if ($record->company->address->street2)
+                            ,{{ $record->company->address->street2 }}
                         @endif
                     </div>
 
                     <div>
-                        {{ $record->company->partner->city }},
+                        {{ $record->company->address->city }},
 
-                        @if ($record->company->partner->state)
-                            {{ $record->company->partner->state->name }},
+                        @if ($record->company->address->state)
+                            {{ $record->company->address->state->name }},
                         @endif
 
-                        {{ $record->company->partner->zip }}
+                        {{ $record->company->address->zip }}
                     </div>
 
-                    @if ($record->company->partner->country)
+                    @if ($record->company->address->country)
                         <div>
-                            {{ $record->company->partner->country->name }}
+                            {{ $record->company->address->country->name }}
                         </div>
                     @endif
 
@@ -195,46 +200,52 @@
                 @endif
             </div>
 
-            <!-- Shipping Address -->
+            <!-- Customer Address -->
             <div class="vendor-info">
                 <div>{{ $record->partner->name }}</div>
 
-                <div>
-                    {{ $record->partner->street1 }}
+                @if ($record->partner->addresses->count())
+                    <div>
+                        @php
+                            $partnerAddress = $record->partner->addresses->first();
+                        @endphp
 
-                    @if ($record->partner->street2)
-                        ,{{ $record->partner->street2 }}
+                        {{ $partnerAddress->street1 }}
+
+                        @if ($partnerAddress->street2)
+                            ,{{ $partnerAddress->street2 }}
+                        @endif
+                    </div>
+
+                    <div>
+                        {{ $partnerAddress->city }},
+
+                        @if ($partnerAddress->state)
+                            {{ $partnerAddress->state->name }},
+                        @endif
+
+                        {{ $partnerAddress->zip }}
+                    </div>
+
+                    @if ($partnerAddress->country)
+                        <div>
+                            {{ $partnerAddress->country->name }}
+                        </div>
                     @endif
-                </div>
 
-                <div>
-                    {{ $record->partner->city }},
-
-                    @if ($record->partner->state)
-                        {{ $record->partner->state->name }},
+                    @if ($partnerAddress->email)
+                        <div>
+                            Email:
+                            {{ $partnerAddress->email }}
+                        </div>
                     @endif
 
-                    {{ $record->partner->zip }}
-                </div>
-
-                @if ($record->partner->country)
-                    <div>
-                        {{ $record->partner->country->name }}
-                    </div>
-                @endif
-
-                @if ($record->partner->email)
-                    <div>
-                        Email:
-                        {{ $record->partner->email }}
-                    </div>
-                @endif
-
-                @if ($record->partner->phone)
-                    <div>
-                        Phone:
-                        {{ $record->partner->phone }}
-                    </div>
+                    @if ($partnerAddress->phone)
+                        <div>
+                            Phone:
+                            {{ $partnerAddress->phone }}
+                        </div>
+                    @endif
                 @endif
             </div>
 
@@ -243,38 +254,23 @@
 
         <!-- Agreement Title -->
         <div class="agreement-title">
-            @if ($record->state == \Webkul\Sale\Enums\OrderState::SALE->value)
-                Order ID #{{ $record->name }}
+            @php
+                $title = $record->state == \Webkul\Sale\Enums\OrderState::SALE ? 'Order' : 'Quotation';
+            @endphp
+
+            @if ($record->state == \Webkul\Sale\Enums\OrderState::SALE)
+                {{ $title }} ID #{{ $record->name }}
             @else
-                Quotation ID #{{ $record->name }}
+                {{ $title }} ID #{{ $record->name }}
             @endif
         </div>
 
         <!-- Details Table -->
         <table class="details-table">
             <tr>
-                @if ($record->invoice_date)
-                    <td width="33%">
-                        <strong>Invoice Date</strong><br>
-                        {{ $record->invoice_date }}
-                    </td>
-                @endif
-
-                @if ($record->invoice_date_due)
-                    <td width="33%">
-                        <strong>Due Date</strong><br>
-                        {{ $record->invoice_date_due }}
-                    </td>
-                @endif
-
                 @if ($record->date_order)
                     <td width="33%">
-                        @if ($record->state == \Webkul\Sale\Enums\OrderState::SALE->value)
-                            <strong>Order Date</strong><br>
-                        @else
-                            <strong>Quotation Date</strong><br>
-                        @endif
-
+                        <strong>{{ $title }} Date</strong><br>
                         {{ $record->date_order }}
                     </td>
                 @endif
@@ -288,7 +284,7 @@
             </tr>
         </table>
 
-        <!-- Product Items -->
+        <!-- Items Table -->
         @if (! $record->lines->isEmpty())
             <table class="items-table">
                 <thead>
@@ -306,21 +302,20 @@
 
                 <tbody>
                     @foreach ($record->lines as $item)
-                        <tr>
-                            <td>{{ $item->product->name }}</td>
-                            <td>{{ number_format($item->product_uom_qty) }}</td>
+                    <tr>
+                        <td>{{ $item->product->name }}</td>
+                        <td>{{ number_format($item->product_uom_qty) }}</td>
 
-                            @if (app(\Webkul\Sale\Settings\ProductSettings::class)->enable_uom)
-                                <td>{{ $item->product->uom->name }}</td>
-                            @endif
+                        @if (app(\Webkul\Sale\Settings\ProductSettings::class)->enable_uom)
+                            <td>{{ $item->product->uom->name }}</td>
+                        @endif
 
-                            <td>{{ number_format($item->price_unit, 2) }}</td>
-                        </tr>
+                        <td>{{ number_format($item->price_unit, 2) }}</td>
+                    </tr>
                     @endforeach
                 </tbody>
             </table>
         @endif
-
 
         <div class="summary">
             <table class="ltr">
@@ -353,39 +348,6 @@
             </table>
         </div>
 
-        <!-- Optional Product Items -->
-        @if (! $record->optionalLines->isEmpty())
-            <table class="items-table">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Quantity</th>
-
-                        @if (app(\Webkul\Sale\Settings\ProductSettings::class)->enable_uom)
-                            <th>Unit</th>
-                        @endif
-
-                        <th>Unit Price</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @foreach ($record->optionalLines as $item)
-                        <tr>
-                            <td>{{ $item->product->name }}</td>
-                            <td>{{ number_format($item->quantity) }}</td>
-
-                            @if (app(\Webkul\Sale\Settings\ProductSettings::class)->enable_uom)
-                                <td>{{ $item->product->uom->name }}</td>
-                            @endif
-
-                            <td>{{ number_format($item->price_unit, 2) }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @endif
-
         <!-- Payment Information Section -->
         @if ($record->name)
             <div class="payment-info">
@@ -394,7 +356,7 @@
                     Payment Communication: {{ $record->name }}
                     @if ($record?->partnerBank?->bank?->name || $record?->partnerBank?->account_number)
                         <br>
-                        <span>on this account details:</span>
+                        <span class="payment-info-details">on this account details:</span>
                         {{ $record?->partnerBank?->bank?->name ?? 'N/A' }}
                         ({{ $record?->partnerBank?->account_number ?? 'N/A' }})
                     @endif
