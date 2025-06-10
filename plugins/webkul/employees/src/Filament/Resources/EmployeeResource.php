@@ -616,6 +616,10 @@ class EmployeeResource extends Resource
                                                             ->label(__('employees::filament/resources/employee.form.tabs.private-information.fields.work-permit'))
                                                             ->panelAspectRatio('4:1')
                                                             ->panelLayout('integrated')
+                                                            ->acceptedFileTypes([
+                                                                'image/*',
+                                                                'application/pdf',
+                                                            ])
                                                             ->directory('employees/work-permit')
                                                             ->visibility('private'),
                                                     ])->columns(1),

@@ -63,6 +63,7 @@ class ProductResource extends Resource
                         Forms\Components\Section::make(__('products::filament/resources/product.form.sections.images.title'))
                             ->schema([
                                 Forms\Components\FileUpload::make('images')
+                                    ->image()
                                     ->multiple()
                                     ->storeFileNamesIn('products'),
                             ]),
