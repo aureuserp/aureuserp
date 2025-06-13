@@ -10,6 +10,9 @@ class Summary extends Component
     #[Reactive]
     public $products = [];
 
+    #[Reactive]
+    public $currency = null;
+
     public $subtotal = 0;
 
     public $totalDiscount = 0;
