@@ -48,16 +48,26 @@ export function generateCategory() {
 
 export function generateProductName() {
     const products = [
-        "Wireless Earbuds",
-        "Smartphone Case",
-        "Running Shoes",
-        "Gaming Laptop",
-        "Organic Green Tea",
-        "Fitness Tracker",
-        "Leather Wallet",
+        "Classic White Sneakers",
+        "Red Leather Handbag",
+        "Smartwatch Pro Series",
+        "Noise Cancelling Headphones",
+        "Casual Denim Jacket",
+        "Stainless Steel Water Bottle",
+        "Modern Desk Lamp",
         "Bluetooth Speaker",
-        "Scented Candles",
-        "Electric Kettle",
+        "Gaming Mouse",
+        "Cotton Crew Neck Tshirt",
+        "Ergonomic Office Chair",
+        "DSLR Camera",
+        "Mountain Trekking Backpack",
+        "Wireless Keyboard",
+        "Minimalist Wall Clock",
+        "LED Monitor",
+        "Fitness Resistance Bands",
+        "Luxury Perfume Bottle",
+        "Reusable Grocery Tote",
+        "Foldable Laptop Stand"
     ];
 
     return products[Math.floor(Math.random() * products.length)];

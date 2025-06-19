@@ -160,7 +160,6 @@ async function createCustomer(adminPage) {
     const bankEmailName = bankName.replace(/\s/g, '-').toLowerCase();
     await adminPage.getByRole('textbox', { name: 'Email' }).fill(`${bankEmailName}@demo.com`);
     await adminPage.getByRole('textbox', { name: 'Phone' }).fill(generatePhoneNumber());
-
     await adminPage.getByRole('textbox', { name: 'Street 1' }).fill(generateAddress().street)
     await adminPage.getByRole('textbox', { name: 'City' }).fill(generateAddress().city);
     await adminPage.getByRole('textbox', { name: 'ZIP' }).fill(generateAddress().zip);
@@ -181,7 +180,6 @@ async function createCustomer(adminPage) {
      * Clicking on create button
      */
     await adminPage.getByRole('button', { name: 'Create' }).nth(1).click();
-
 }
 
 async function createProduct(adminPage) {
@@ -205,11 +203,18 @@ async function createProduct(adminPage) {
     /**
      * Filling up the required fields
      */
-    await adminPage.getByRole('textbox', { name: 'Name*' }).fill(generateProductName());
+    const productName = generateProductName();
+    await adminPage.getByRole('textbox', { name: 'Name*' }).fill(productName);
+
+    /**
+     * Uploading an image for the product
+     */
+    const productSlug = productName.replace(/\s/g, '-').toLowerCase();
+    const productImagePath = path.resolve(__dirname, `../../../utils/images/products/${productSlug}.jpg`);
+    await adminPage.locator('input[type="file"]').setInputFiles(productImagePath);
 
     await adminPage.locator('[id="data\\.description"]').fill(generateDescription());
-    //await adminPage.getByRole('textbox', { name: 'Description' }).fill(generateDescription());
-    await adminPage.getByRole('spinbutton', { name: 'Price*' }).fill('100');
+    await adminPage.getByRole('spinbutton', { name: 'Price*' }).fill('1000');
 
     /**
      * Adding a Category
@@ -248,7 +253,7 @@ async function createProduct(adminPage) {
     await adminPage.getByRole('spinbutton', { name: 'Extra Price*' }).fill('100');
     await adminPage.getByRole('button', { name: 'Add to options' }).click();
     await adminPage.getByRole('textbox', { name: 'Name*' }).nth(2).fill('BLUE');
-    await adminPage.getByRole('spinbutton', { name: 'Extra Price*' }).nth(1).fill('2000');
+    await adminPage.getByRole('spinbutton', { name: 'Extra Price*' }).nth(1).fill('200');
 
     /**
      * Clicking on Create button
@@ -271,7 +276,7 @@ async function createProduct(adminPage) {
     /**
      * Waiting for success message
      */
-    //await expect(adminPage.getByRole('heading', { name: 'Attribute created' })).toBeVisible();
+    await expect(adminPage.getByRole('heading', { name: 'Attribute created' })).toBeVisible();
 
     /**
      * Clicking on Generate Variants 
