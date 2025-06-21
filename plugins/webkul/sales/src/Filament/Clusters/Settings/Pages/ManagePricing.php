@@ -42,6 +42,11 @@ class ManagePricing extends SettingsPage
         return __('sales::filament/clusters/settings/pages/manage-pricing.navigation.title');
     }
 
+    public static function getNavigationGroup(): string
+    {
+        return __('sales::filament/clusters/settings/pages/manage-pricing.navigation.group');
+    }
+
     public function form(Form $form): Form
     {
         return $form
