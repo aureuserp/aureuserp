@@ -4,37 +4,37 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'code'          => 'Code',
-                'account-name'  => 'Account Name',
-                'accounting'    => 'Accounting',
-                'account-type'  => 'Account Type',
-                'default-taxes' => 'Default Taxes',
-                'tags'          => 'Tags',
-                'journals'      => 'Journals',
-                'currency'      => 'Currency',
-                'deprecated'    => 'Deprecated',
-                'reconcile'     => 'Reconcile',
-                'non-trade'     => 'Non Trade',
+                'code'          => 'Código',
+                'account-name'  => 'Nombre de Cuenta',
+                'accounting'    => 'Contabilidad',
+                'account-type'  => 'Tipo de Cuenta',
+                'default-taxes' => 'Impuestos Predeterminados',
+                'tags'          => 'Etiquetas',
+                'journals'      => 'Diarios',
+                'currency'      => 'Moneda',
+                'deprecated'    => 'Obsoleto',
+                'reconcile'     => 'Conciliar',
+                'non-trade'     => 'No Comercial',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'code'         => 'Code',
-            'account-name' => 'Account Name',
-            'account-type' => 'Account Type',
-            'currency'     => 'Currency',
-            'deprecated'   => 'Deprecated',
-            'reconcile'    => 'Reconcile',
-            'non-trade'    => 'Non Trade',
+            'code'         => 'Código',
+            'account-name' => 'Nombre de Cuenta',
+            'account-type' => 'Tipo de Cuenta',
+            'currency'     => 'Moneda',
+            'deprecated'   => 'Obsoleto',
+            'reconcile'    => 'Conciliar',
+            'non-trade'    => 'No Comercial',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Account deleted',
-                    'body'  => 'The account has been deleted successfully.',
+                    'title' => 'Cuenta eliminada',
+                    'body'  => 'La cuenta ha sido eliminada exitosamente.',
                 ],
             ],
         ],
@@ -42,8 +42,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Accounts deleted',
-                    'body'  => 'The accounts has been deleted successfully.',
+                    'title' => 'Cuentas eliminadas',
+                    'body'  => 'Las cuentas han sido eliminadas exitosamente.',
                 ],
             ],
         ],
@@ -52,33 +52,33 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'name'            => 'Name',
-                'tax-type'        => 'Tax Type',
-                'tax-computation' => 'Tax Computation',
-                'tax-scope'       => 'Tax Scope',
-                'status'          => 'Status',
-                'amount'          => 'Amount',
+                'name'            => 'Nombre',
+                'tax-type'        => 'Tipo de Impuesto',
+                'tax-computation' => 'Cálculo de Impuestos',
+                'tax-scope'       => 'Ámbito Fiscal',
+                'status'          => 'Estado',
+                'amount'          => 'Monto',
             ],
 
             'field-set' => [
                 'advanced-options' => [
-                    'title' => 'Advanced Options',
+                    'title' => 'Opciones Avanzadas',
 
                     'entries' => [
-                        'invoice-label'       => 'Invoice label',
-                        'tax-group'           => 'Tax Group',
-                        'country'             => 'Country',
-                        'include-in-price'    => 'Include in price',
-                        'include-base-amount' => 'Include base amount',
-                        'is-base-affected'    => 'Is base affected',
+                        'invoice-label'       => 'Etiqueta de Factura',
+                        'tax-group'           => 'Grupo de Impuestos',
+                        'country'             => 'País',
+                        'include-in-price'    => 'Incluir en el precio',
+                        'include-base-amount' => 'Incluir monto base',
+                        'is-base-affected'    => 'Afecta la base',
                     ],
                 ],
 
                 'description-and-legal-notes' => [
-                    'title'   => 'Description & Invoice Legal Notes',
+                    'title'   => 'Descripción y Notas Legales de Factura',
                     'entries' => [
-                        'description' => 'Description',
-                        'legal-notes' => 'Legal Notes',
+                        'description' => 'Descripción',
+                        'legal-notes' => 'Notas Legales',
                     ],
                 ],
             ],
@@ -88,17 +88,17 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'code'          => 'Code',
-                'account-name'  => 'Account Name',
-                'accounting'    => 'Accounting',
-                'account-type'  => 'Account Type',
-                'default-taxes' => 'Default Taxes',
-                'tags'          => 'Tags',
-                'journals'      => 'Journals',
-                'currency'      => 'Currency',
-                'deprecated'    => 'Deprecated',
-                'reconcile'     => 'Reconcile',
-                'non-trade'     => 'Non Trade',
+                'code'          => 'Código',
+                'account-name'  => 'Nombre de Cuenta',
+                'accounting'    => 'Contabilidad',
+                'account-type'  => 'Tipo de Cuenta',
+                'default-taxes' => 'Impuestos Predeterminados',
+                'tags'          => 'Etiquetas',
+                'journals'      => 'Diarios',
+                'currency'      => 'Moneda',
+                'deprecated'    => 'Obsoleto',
+                'reconcile'     => 'Conciliar',
+                'non-trade'     => 'No Comercial',
             ],
         ],
     ],

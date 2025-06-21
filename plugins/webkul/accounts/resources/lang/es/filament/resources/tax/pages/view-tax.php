@@ -5,13 +5,13 @@ return [
         'delete' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Tax deleted',
-                    'body'  => 'The tax has been deleted successfully.',
+                    'title' => 'Impuesto eliminado',
+                    'body'  => 'El impuesto ha sido eliminado exitosamente.',
                 ],
 
                 'error' => [
-                    'title' => 'Tax could not be deleted',
-                    'body'  => 'The tax cannot be deleted because it is currently in use.',
+                    'title' => 'No se pudo eliminar el impuesto',
+                    'body'  => 'El impuesto no puede ser eliminado porque está en uso actualmente.',
                 ],
             ],
         ],

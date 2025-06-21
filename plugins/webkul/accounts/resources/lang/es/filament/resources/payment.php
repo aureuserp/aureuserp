@@ -1,73 +1,73 @@
 <?php
 
 return [
-    'title' => 'Payment',
+    'title' => 'Pago',
 
     'navigation' => [
-        'title' => 'Payments',
-        'group' => 'Invoices',
+        'title' => 'Pagos',
+        'group' => 'Facturas',
     ],
 
     'form' => [
         'sections' => [
             'fields' => [
-                'payment-type'          => 'Payment Type',
+                'payment-type'          => 'Tipo de Pago',
                 'memo'                  => 'Memo',
-                'date'                  => 'Date',
-                'amount'                => 'Amount',
-                'payment-method'        => 'Payment Method',
-                'customer'              => 'Customer',
-                'journal'               => 'Journal',
-                'customer-bank-account' => 'Customer Bank Account',
+                'date'                  => 'Fecha',
+                'amount'                => 'Monto',
+                'payment-method'        => 'Método de Pago',
+                'customer'              => 'Cliente',
+                'journal'               => 'Diario',
+                'customer-bank-account' => 'Cuenta Bancaria del Cliente',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'                             => 'Name',
-            'company'                          => 'Company',
-            'bank-account-holder'              => 'Bank Account Holder',
-            'paired-internal-transfer-payment' => 'Paired Internal Transfer Payment',
-            'payment-method-line'              => 'Payment Method Line',
-            'payment-method'                   => 'Payment Method',
-            'currency'                         => 'Currency',
-            'partner'                          => 'Partner',
-            'outstanding-amount'               => 'Outstanding Amount',
-            'destination-account'              => 'Destination Account',
-            'created-by'                       => 'Created By',
-            'payment-transaction'              => 'Payment Transaction',
+            'name'                             => 'Nombre',
+            'company'                          => 'Empresa',
+            'bank-account-holder'              => 'Titular de la Cuenta Bancaria',
+            'paired-internal-transfer-payment' => 'Pago de Transferencia Interna Emparejado',
+            'payment-method-line'              => 'Línea de Método de Pago',
+            'payment-method'                   => 'Método de Pago',
+            'currency'                         => 'Moneda',
+            'partner'                          => 'Socio',
+            'outstanding-amount'               => 'Monto Pendiente',
+            'destination-account'              => 'Cuenta de Destino',
+            'created-by'                       => 'Creado Por',
+            'payment-transaction'              => 'Transacción de Pago',
         ],
 
         'groups' => [
-            'name'                             => 'Name',
-            'company'                          => 'Company',
-            'partner'                          => 'Partner',
-            'payment-method-line'              => 'Payment Method Line',
-            'payment-method'                   => 'Payment Method',
-            'partner-bank-account'             => 'Partner Bank Account',
-            'paired-internal-transfer-payment' => 'Paired Internal Transfer Payment',
-            'created-at'                       => 'Created At',
-            'updated-at'                       => 'Updated At',
+            'name'                             => 'Nombre',
+            'company'                          => 'Empresa',
+            'partner'                          => 'Socio',
+            'payment-method-line'              => 'Línea de Método de Pago',
+            'payment-method'                   => 'Método de Pago',
+            'partner-bank-account'             => 'Cuenta Bancaria del Socio',
+            'paired-internal-transfer-payment' => 'Pago de Transferencia Interna Emparejado',
+            'created-at'                       => 'Creado El',
+            'updated-at'                       => 'Actualizado El',
         ],
 
         'filters' => [
-            'company'                          => 'Company',
-            'customer-bank-account'            => 'Customer Bank Account',
-            'paired-internal-transfer-payment' => 'Paired Internal Transfer Payment',
-            'payment-method'                   => 'Payment Method',
-            'currency'                         => 'Currency',
-            'partner'                          => 'Partner',
-            'partner-method-line'              => 'Partner Method Line',
-            'created-at'                       => 'Created At',
-            'updated-at'                       => 'Updated At',
+            'company'                          => 'Empresa',
+            'customer-bank-account'            => 'Cuenta Bancaria del Cliente',
+            'paired-internal-transfer-payment' => 'Pago de Transferencia Interna Emparejado',
+            'payment-method'                   => 'Método de Pago',
+            'currency'                         => 'Moneda',
+            'partner'                          => 'Socio',
+            'partner-method-line'              => 'Línea de Método del Socio',
+            'created-at'                       => 'Creado El',
+            'updated-at'                       => 'Actualizado El',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Payment deleted',
-                    'body'  => 'The payment has been deleted successfully.',
+                    'title' => 'Pago eliminado',
+                    'body'  => 'El pago ha sido eliminado exitosamente.',
                 ],
             ],
         ],
@@ -75,8 +75,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Payments deleted',
-                    'body'  => 'The payments has been deleted successfully.',
+                    'title' => 'Pagos eliminados',
+                    'body'  => 'Los pagos han sido eliminados exitosamente.',
                 ],
             ],
         ],
@@ -85,29 +85,29 @@ return [
     'infolist' => [
         'sections' => [
             'payment-information' => [
-                'title'   => 'Payment Information',
+                'title'   => 'Información de Pago',
                 'entries' => [
-                    'state'                 => 'State',
-                    'payment-type'          => 'Payment Type',
-                    'journal'               => 'Journal',
-                    'customer-bank-account' => 'Customer Bank Account',
-                    'customer'              => 'Customer',
+                    'state'                 => 'Estado',
+                    'payment-type'          => 'Tipo de Pago',
+                    'journal'               => 'Diario',
+                    'customer-bank-account' => 'Cuenta Bancaria del Cliente',
+                    'customer'              => 'Cliente',
                 ],
             ],
 
             'payment-details' => [
-                'title'   => 'Payment Details',
+                'title'   => 'Detalles del Pago',
                 'entries' => [
-                    'amount' => 'Amount',
-                    'date'   => 'Date',
+                    'amount' => 'Monto',
+                    'date'   => 'Fecha',
                     'memo'   => 'Memo',
                 ],
             ],
 
             'payment-method' => [
-                'title'   => 'Payment Method',
+                'title'   => 'Método de Pago',
                 'entries' => [
-                    'payment-method' => 'Payment Method',
+                    'payment-method' => 'Método de Pago',
                 ],
             ],
         ],

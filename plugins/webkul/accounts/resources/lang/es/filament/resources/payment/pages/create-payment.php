@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Payment created',
-        'body'  => 'The payment has been created successfully.',
+        'title' => 'Pago creado',
+        'body'  => 'El pago ha sido creado exitosamente.',
     ],
 ];

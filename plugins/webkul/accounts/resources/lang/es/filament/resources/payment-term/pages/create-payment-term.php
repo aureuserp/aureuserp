@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Payment term created',
-        'body'  => 'The payment term has been created successfully.',
+        'title' => 'Condición de pago creada',
+        'body'  => 'La condición de pago ha sido creada exitosamente.',
     ],
 ];

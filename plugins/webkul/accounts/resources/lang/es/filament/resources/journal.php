@@ -4,80 +4,80 @@ return [
     'form' => [
         'tabs' => [
             'journal-entries' => [
-                'title' => 'Journal Entries',
+                'title' => 'Asientos Contables',
 
                 'field-set' => [
                     'accounting-information' => [
-                        'title'  => 'Accounting Information',
+                        'title'  => 'Información Contable',
                         'fields' => [
-                            'dedicated-credit-note-sequence' => 'Dedicated Credit Note Sequence',
-                            'dedicated-payment-sequence'     => 'Dedicated Payment Sequence',
-                            'sort-code-placeholder'          => 'Enter the journal code',
-                            'sort-code'                      => 'Sort',
-                            'currency'                       => 'Currency',
+                            'dedicated-credit-note-sequence' => 'Secuencia Dedicada de Nota de Crédito',
+                            'dedicated-payment-sequence'     => 'Secuencia Dedicada de Pago',
+                            'sort-code-placeholder'          => 'Ingrese el código del diario',
+                            'sort-code'                      => 'Código de Clasificación',
+                            'currency'                       => 'Moneda',
                             'color'                          => 'Color',
                         ],
                     ],
                     'bank-account-number' => [
-                        'title' => 'Bank Account Number',
+                        'title' => 'Número de Cuenta Bancaria',
                     ],
                 ],
             ],
             'incoming-payments' => [
-                'title' => 'Incoming Payments',
+                'title' => 'Pagos Entrantes',
 
                 'fields' => [
-                    'relation-notes'             => 'Relation Notes',
-                    'relation-notes-placeholder' => 'Enter any relation details',
+                    'relation-notes'             => 'Notas de Relación',
+                    'relation-notes-placeholder' => 'Ingrese cualquier detalle de relación',
                 ],
             ],
             'outgoing-payments' => [
-                'title' => 'Outgoing Payments',
+                'title' => 'Pagos Salientes',
 
                 'fields' => [
-                    'relation-notes'             => 'Relation Notes',
-                    'relation-notes-placeholder' => 'Enter any relation details',
+                    'relation-notes'             => 'Notas de Relación',
+                    'relation-notes-placeholder' => 'Ingrese cualquier detalle de relación',
                 ],
             ],
             'advanced-settings' => [
-                'title'  => 'Advanced Settings',
+                'title'  => 'Configuración Avanzada',
                 'fields' => [
-                    'allowed-accounts'       => 'Allowed Accounts',
-                    'control-access'         => 'Control Access',
-                    'payment-communication'  => 'Payment Communication',
-                    'auto-check-on-post'     => 'Auto Check on Post',
-                    'communication-type'     => 'Communication Type',
-                    'communication-standard' => 'Communication Standard',
+                    'allowed-accounts'       => 'Cuentas Permitidas',
+                    'control-access'         => 'Control de Acceso',
+                    'payment-communication'  => 'Comunicación de Pago',
+                    'auto-check-on-post'     => 'Verificación Automática al Publicar',
+                    'communication-type'     => 'Tipo de Comunicación',
+                    'communication-standard' => 'Estándar de Comunicación',
                 ],
             ],
         ],
 
         'general' => [
-            'title' => 'General Information',
+            'title' => 'Información General',
 
             'fields' => [
-                'name'    => 'Name',
-                'type'    => 'Type',
-                'company' => 'Company',
+                'name'    => 'Nombre',
+                'type'    => 'Tipo',
+                'company' => 'Empresa',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'type'       => 'Type',
-            'code'       => 'Code',
-            'currency'   => 'Currency',
-            'created-by' => 'Created By',
-            'status'     => 'Status',
+            'name'       => 'Nombre',
+            'type'       => 'Tipo',
+            'code'       => 'Código',
+            'currency'   => 'Moneda',
+            'created-by' => 'Creado Por',
+            'status'     => 'Estado',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Incoterm deleted',
-                    'body'  => 'The incoterm has been deleted successfully.',
+                    'title' => 'Asiento contable eliminado',
+                    'body'  => 'El asiento contable ha sido eliminado exitosamente.',
                 ],
             ],
         ],
@@ -85,8 +85,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Journal deleted',
-                    'body'  => 'The journal has been deleted successfully.',
+                    'title' => 'Asientos contables eliminados',
+                    'body'  => 'Los asientos contables han sido eliminados exitosamente.',
                 ],
             ],
         ],
@@ -95,61 +95,61 @@ return [
     'infolist' => [
         'tabs' => [
             'journal-entries' => [
-                'title' => 'Journal Entries',
+                'title' => 'Asientos Contables',
 
                 'field-set' => [
                     'accounting-information' => [
-                        'title'   => 'Accounting Information',
+                        'title'   => 'Información Contable',
                         'entries' => [
-                            'dedicated-credit-note-sequence' => 'Dedicated Credit Note Sequence',
-                            'dedicated-payment-sequence'     => 'Dedicated Payment Sequence',
-                            'sort-code-placeholder'          => 'Enter the journal code',
-                            'sort-code'                      => 'Sort',
-                            'currency'                       => 'Currency',
+                            'dedicated-credit-note-sequence' => 'Secuencia Dedicada de Nota de Crédito',
+                            'dedicated-payment-sequence'     => 'Secuencia Dedicada de Pago',
+                            'sort-code-placeholder'          => 'Ingrese el código del diario',
+                            'sort-code'                      => 'Código de Clasificación',
+                            'currency'                       => 'Moneda',
                             'color'                          => 'Color',
                         ],
                     ],
                     'bank-account-number' => [
-                        'title' => 'Bank Account Number',
+                        'title' => 'Número de Cuenta Bancaria',
                     ],
                 ],
             ],
             'incoming-payments' => [
-                'title' => 'Incoming Payments',
+                'title' => 'Pagos Entrantes',
 
                 'entries' => [
-                    'relation-notes'             => 'Relation Notes',
-                    'relation-notes-placeholder' => 'Enter any relation details',
+                    'relation-notes'             => 'Notas de Relación',
+                    'relation-notes-placeholder' => 'Ingrese cualquier detalle de relación',
                 ],
             ],
             'outgoing-payments' => [
-                'title' => 'Outgoing Payments',
+                'title' => 'Pagos Salientes',
 
                 'entries' => [
-                    'relation-notes'             => 'Relation Notes',
-                    'relation-notes-placeholder' => 'Enter any relation details',
+                    'relation-notes'             => 'Notas de Relación',
+                    'relation-notes-placeholder' => 'Ingrese cualquier detalle de relación',
                 ],
             ],
             'advanced-settings' => [
-                'title'   => 'Advanced Settings',
+                'title'   => 'Configuración Avanzada',
                 'entries' => [
-                    'allowed-accounts'       => 'Allowed Accounts',
-                    'control-access'         => 'Control Access',
-                    'payment-communication'  => 'Payment Communication',
-                    'auto-check-on-post'     => 'Auto Check on Post',
-                    'communication-type'     => 'Communication Type',
-                    'communication-standard' => 'Communication Standard',
+                    'allowed-accounts'       => 'Cuentas Permitidas',
+                    'control-access'         => 'Control de Acceso',
+                    'payment-communication'  => 'Comunicación de Pago',
+                    'auto-check-on-post'     => 'Verificación Automática al Publicar',
+                    'communication-type'     => 'Tipo de Comunicación',
+                    'communication-standard' => 'Estándar de Comunicación',
                 ],
             ],
         ],
 
         'general' => [
-            'title' => 'General Information',
+            'title' => 'Información General',
 
             'entries' => [
-                'name'    => 'Name',
-                'type'    => 'Type',
-                'company' => 'Company',
+                'name'    => 'Nombre',
+                'type'    => 'Tipo',
+                'company' => 'Empresa',
             ],
         ],
     ],

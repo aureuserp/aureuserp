@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Payment term updated',
-        'body'  => 'The payment term has been updated successfully.',
+        'title' => 'Condición de pago actualizada',
+        'body'  => 'La condición de pago ha sido actualizada exitosamente.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Payment term deleted',
-                'body'  => 'The payment term has been deleted successfully.',
+                'title' => 'Condición de pago eliminada',
+                'body'  => 'La condición de pago ha sido eliminada exitosamente.',
             ],
         ],
     ],

@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'mark-as-sent'   => 'Mark as Sent',
-    'unmark-as-sent' => 'Unmark as Sent',
+    'mark-as-sent'   => 'Marcar como Enviado',
+    'unmark-as-sent' => 'Desmarcar como Enviado',
 ];

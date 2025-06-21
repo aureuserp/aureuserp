@@ -1,18 +1,18 @@
 <?php
 
 return [
-    'title' => 'Invoice',
+    'title' => 'Factura',
 
     'navigation' => [
-        'title' => 'Invoices',
-        'group' => 'Invoices',
+        'title' => 'Facturas',
+        'group' => 'Facturas',
     ],
 
     'global-search' => [
-        'number'           => 'Number',
-        'customer'         => 'Customer',
-        'invoice-date'     => 'Invoice Date',
-        'invoice-due-date' => 'Invoice Due Date',
+        'number'           => 'Número',
+        'customer'         => 'Cliente',
+        'invoice-date'     => 'Fecha de Factura',
+        'invoice-due-date' => 'Fecha de Vencimiento de Factura',
     ],
 
     'form' => [
@@ -20,84 +20,84 @@ return [
             'general' => [
                 'title'  => 'General',
                 'fields' => [
-                    'customer-invoice' => 'Customer Invoice',
-                    'customer'         => 'Customer',
-                    'invoice-date'     => 'Invoice Date',
-                    'due-date'         => 'Due Date',
-                    'payment-term'     => 'Payment Term',
+                    'customer-invoice' => 'Factura de Cliente',
+                    'customer'         => 'Cliente',
+                    'invoice-date'     => 'Fecha de Factura',
+                    'due-date'         => 'Fecha de Vencimiento',
+                    'payment-term'     => 'Condición de Pago',
                 ],
             ],
         ],
 
         'tabs' => [
             'invoice-lines' => [
-                'title' => 'Invoice Lines',
+                'title' => 'Líneas de Factura',
 
                 'repeater' => [
                     'products' => [
-                        'title'       => 'Products',
-                        'add-product' => 'Add Product',
+                        'title'       => 'Productos',
+                        'add-product' => 'Agregar Producto',
 
                         'fields' => [
-                            'product'             => 'Product',
-                            'quantity'            => 'Quantity',
-                            'unit'                => 'Unit',
-                            'taxes'               => 'Taxes',
-                            'discount-percentage' => 'Discount Percentage',
-                            'unit-price'          => 'Unit Price',
-                            'sub-total'           => 'Sub Total',
+                            'product'             => 'Producto',
+                            'quantity'            => 'Cantidad',
+                            'unit'                => 'Unidad',
+                            'taxes'               => 'Impuestos',
+                            'discount-percentage' => 'Porcentaje de Descuento',
+                            'unit-price'          => 'Precio Unitario',
+                            'sub-total'           => 'Subtotal',
                         ],
                     ],
                 ],
             ],
 
             'other-information' => [
-                'title'    => 'Other Information',
+                'title'    => 'Otra Información',
                 'fieldset' => [
                     'invoice' => [
-                        'title'  => 'Invoice',
+                        'title'  => 'Factura',
                         'fields' => [
-                            'customer-reference' => 'Customer Reference',
-                            'sales-person'       => 'Sales Person',
-                            'payment-reference'  => 'Payment Reference',
-                            'recipient-bank'     => 'Recipient Bank',
-                            'delivery-date'      => 'Delivery Date',
+                            'customer-reference' => 'Referencia del Cliente',
+                            'sales-person'       => 'Vendedor',
+                            'payment-reference'  => 'Referencia de Pago',
+                            'recipient-bank'     => 'Banco del Receptor',
+                            'delivery-date'      => 'Fecha de Entrega',
                         ],
                     ],
 
                     'accounting' => [
-                        'title' => 'Accounting',
+                        'title' => 'Contabilidad',
 
                         'fieldset' => [
                             'incoterm'          => 'Incoterm',
-                            'incoterm-location' => 'Incoterm Location',
-                            'payment-method'    => 'Payment Method',
-                            'auto-post'         => 'Auto Post',
-                            'checked'           => 'Checked',
+                            'incoterm-location' => 'Ubicación Incoterm',
+                            'payment-method'    => 'Método de Pago',
+                            'auto-post'         => 'Publicación Automática',
+                            'checked'           => 'Verificado',
                         ],
                     ],
 
                     'additional-information' => [
-                        'title'  => 'Additional Information',
+                        'title'  => 'Información Adicional',
                         'fields' => [
-                            'company'  => 'Company',
-                            'currency' => 'Currency',
+                            'company'  => 'Empresa',
+                            'currency' => 'Moneda',
                         ],
                     ],
 
                     'marketing' => [
                         'title'  => 'Marketing',
                         'fields' => [
-                            'campaign' => 'Campaign',
-                            'medium'   => 'Medium',
-                            'source'   => 'Source',
+                            'campaign' => 'Campaña',
+                            'medium'   => 'Medio',
+                            'source'   => 'Origen',
                         ],
                     ],
                 ],
             ],
 
             'term-and-conditions' => [
-                'title' => 'Term & Conditions',
+                'title' => 'Términos y Condiciones',
             ],
         ],
     ],
@@ -105,53 +105,53 @@ return [
     'table' => [
         'total'   => 'Total',
         'columns' => [
-            'number'           => 'Number',
-            'state'            => 'State',
-            'customer'         => 'Customer',
-            'invoice-date'     => 'Invoice Date',
-            'checked'          => 'Checked',
-            'accounting-date'  => 'Accounting',
-            'due-date'         => 'Due Date',
-            'source-document'  => 'Source Document',
-            'reference'        => 'Reference',
-            'sales-person'     => 'Sales Person',
-            'tax-excluded'     => 'Tax Excluded',
-            'tax'              => 'Tax',
+            'number'           => 'Número',
+            'state'            => 'Estado',
+            'customer'         => 'Cliente',
+            'invoice-date'     => 'Fecha de Factura',
+            'checked'          => 'Verificado',
+            'accounting-date'  => 'Fecha Contable',
+            'due-date'         => 'Fecha de Vencimiento',
+            'source-document'  => 'Documento de Origen',
+            'reference'        => 'Referencia',
+            'sales-person'     => 'Vendedor',
+            'tax-excluded'     => 'Impuestos Excluidos',
+            'tax'              => 'Impuesto',
             'total'            => 'Total',
-            'amount-due'       => 'Amount Due',
-            'invoice-currency' => 'Invoice Currency',
+            'amount-due'       => 'Monto Adeudado',
+            'invoice-currency' => 'Moneda de la Factura',
         ],
 
         'groups' => [
-            'name'                         => 'Name',
-            'invoice-partner-display-name' => 'Invoice Partner Display Name',
-            'invoice-date'                 => 'Invoice Date',
-            'checked'                      => 'Checked',
-            'date'                         => 'Date',
-            'invoice-due-date'             => 'Invoice Due Date',
-            'invoice-origin'               => 'Invoice Origin',
-            'sales-person'                 => 'Sales Person',
-            'currency'                     => 'Currency',
-            'created-at'                   => 'Created At',
-            'updated-at'                   => 'Updated At',
+            'name'                         => 'Nombre',
+            'invoice-partner-display-name' => 'Nombre Visible del Socio de la Factura',
+            'invoice-date'                 => 'Fecha de Factura',
+            'checked'                      => 'Verificado',
+            'date'                         => 'Fecha',
+            'invoice-due-date'             => 'Fecha de Vencimiento de Factura',
+            'invoice-origin'               => 'Origen de la Factura',
+            'sales-person'                 => 'Vendedor',
+            'currency'                     => 'Moneda',
+            'created-at'                   => 'Creado El',
+            'updated-at'                   => 'Actualizado El',
         ],
 
         'filters' => [
-            'number'                       => 'Number',
-            'invoice-partner-display-name' => 'Invoice Partner Display Name',
-            'invoice-date'                 => 'Invoice Date',
-            'invoice-due-date'             => 'Invoice Due Date',
-            'invoice-origin'               => 'Invoice Origin',
-            'reference'                    => 'Reference',
-            'created-at'                   => 'Created At',
-            'updated-at'                   => 'Updated At',
+            'number'                       => 'Número',
+            'invoice-partner-display-name' => 'Nombre Visible del Socio de la Factura',
+            'invoice-date'                 => 'Fecha de Factura',
+            'invoice-due-date'             => 'Fecha de Vencimiento de Factura',
+            'invoice-origin'               => 'Origen de la Factura',
+            'reference'                    => 'Referencia',
+            'created-at'                   => 'Creado El',
+            'updated-at'                   => 'Actualizado El',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Payment deleted',
-                    'body'  => 'The payment has been deleted successfully.',
+                    'title' => 'Factura eliminada',
+                    'body'  => 'La factura ha sido eliminada exitosamente.',
                 ],
             ],
         ],
@@ -159,8 +159,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Payments deleted',
-                    'body'  => 'The payments has been deleted successfully.',
+                    'title' => 'Facturas eliminadas',
+                    'body'  => 'Las facturas han sido eliminadas exitosamente.',
                 ],
             ],
         ],
@@ -171,29 +171,29 @@ return [
             'general' => [
                 'title'   => 'General',
                 'entries' => [
-                    'customer-invoice' => 'Customer Invoice',
-                    'customer'         => 'Customer',
-                    'invoice-date'     => 'Invoice Date',
-                    'due-date'         => 'Due Date',
-                    'payment-term'     => 'Payment Term',
+                    'customer-invoice' => 'Factura de Cliente',
+                    'customer'         => 'Cliente',
+                    'invoice-date'     => 'Fecha de Factura',
+                    'due-date'         => 'Fecha de Vencimiento',
+                    'payment-term'     => 'Condición de Pago',
                 ],
             ],
         ],
 
         'tabs' => [
             'invoice-lines' => [
-                'title' => 'Invoice Lines',
+                'title' => 'Líneas de Factura',
 
                 'repeater' => [
                     'products' => [
                         'entries' => [
-                            'product'             => 'Product',
-                            'quantity'            => 'Quantity',
-                            'unit'                => 'Unit Of Measure',
-                            'taxes'               => 'Taxes',
-                            'discount-percentage' => 'Discount Percentage',
-                            'unit-price'          => 'Unit Price',
-                            'sub-total'           => 'Sub Total',
+                            'product'             => 'Producto',
+                            'quantity'            => 'Cantidad',
+                            'unit'                => 'Unidad de Medida',
+                            'taxes'               => 'Impuestos',
+                            'discount-percentage' => 'Porcentaje de Descuento',
+                            'unit-price'          => 'Precio Unitario',
+                            'sub-total'           => 'Subtotal',
                             'total'               => 'Total',
                         ],
                     ],
@@ -201,52 +201,52 @@ return [
             ],
 
             'other-information' => [
-                'title'    => 'Other Information',
+                'title'    => 'Otra Información',
                 'fieldset' => [
                     'invoice' => [
-                        'title'   => 'Invoice',
+                        'title'   => 'Factura',
                         'entries' => [
-                            'customer-reference' => 'Customer Reference',
-                            'sales-person'       => 'Sales Person',
-                            'payment-reference'  => 'Payment Reference',
-                            'recipient-bank'     => 'Recipient Bank',
-                            'delivery-date'      => 'Delivery Date',
+                            'customer-reference' => 'Referencia del Cliente',
+                            'sales-person'       => 'Vendedor',
+                            'payment-reference'  => 'Referencia de Pago',
+                            'recipient-bank'     => 'Banco del Receptor',
+                            'delivery-date'      => 'Fecha de Entrega',
                         ],
                     ],
 
                     'accounting' => [
-                        'title' => 'Accounting',
+                        'title' => 'Contabilidad',
 
                         'fieldset' => [
                             'incoterm'          => 'Incoterm',
-                            'incoterm-location' => 'Incoterm Location',
-                            'payment-method'    => 'Payment Method',
-                            'auto-post'         => 'Auto Post',
-                            'checked'           => 'Checked',
+                            'incoterm-location' => 'Ubicación Incoterm',
+                            'payment-method'    => 'Método de Pago',
+                            'auto-post'         => 'Publicación Automática',
+                            'checked'           => 'Verificado',
                         ],
                     ],
 
                     'additional-information' => [
-                        'title'   => 'Additional Information',
+                        'title'   => 'Información Adicional',
                         'entries' => [
-                            'company'  => 'Company',
-                            'currency' => 'Currency',
+                            'company'  => 'Empresa',
+                            'currency' => 'Moneda',
                         ],
                     ],
 
                     'marketing' => [
                         'title'   => 'Marketing',
                         'entries' => [
-                            'campaign' => 'Campaign',
-                            'medium'   => 'Medium',
-                            'source'   => 'Source',
+                            'campaign' => 'Campaña',
+                            'medium'   => 'Medio',
+                            'source'   => 'Origen',
                         ],
                     ],
                 ],
             ],
 
             'term-and-conditions' => [
-                'title' => 'Term & Conditions',
+                'title' => 'Términos y Condiciones',
             ],
         ],
     ],

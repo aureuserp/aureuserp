@@ -2,38 +2,38 @@
 
 return [
     'form' => [
-        'factor-percent'    => 'Factor Percent',
-        'factor-ratio'      => 'Factor Ratio',
-        'repartition-type'  => 'Repartition Type',
-        'document-type'     => 'Document Type',
-        'account'           => 'Account',
-        'tax'               => 'Tax',
-        'tax-closing-entry' => 'Tax Closing Entry',
+        'factor-percent'    => 'Factor Porcentual',
+        'factor-ratio'      => 'Factor de Ratio',
+        'repartition-type'  => 'Tipo de Repartición',
+        'document-type'     => 'Tipo de Documento',
+        'account'           => 'Cuenta',
+        'tax'               => 'Impuesto',
+        'tax-closing-entry' => 'Asiento de Cierre de Impuesto',
     ],
 
     'table' => [
         'columns' => [
-            'factor-percent'    => 'Factor Percent(%)',
-            'account'           => 'Account',
-            'tax'               => 'Tax',
-            'company'           => 'Company',
-            'repartition-type'  => 'Repartition Type',
-            'document-type'     => 'Document Type',
-            'tax-closing-entry' => 'Tax Closing Entry',
+            'factor-percent'    => 'Factor Porcentual (%)',
+            'account'           => 'Cuenta',
+            'tax'               => 'Impuesto',
+            'company'           => 'Empresa',
+            'repartition-type'  => 'Tipo de Repartición',
+            'document-type'     => 'Tipo de Documento',
+            'tax-closing-entry' => 'Asiento de Cierre de Impuesto',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Tax Partition updated',
-                    'body'  => 'The tax partition has been updated successfully.',
+                    'title' => 'Partición de Impuestos actualizada',
+                    'body'  => 'La partición de impuestos ha sido actualizada exitosamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Tax Partition Term deleted',
-                    'body'  => 'The tax Partition term has been deleted successfully.',
+                    'title' => 'Término de Partición de Impuestos eliminado',
+                    'body'  => 'El término de partición de impuestos ha sido eliminado exitosamente.',
                 ],
             ],
         ],
@@ -41,8 +41,8 @@ return [
         'header-actions' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Tax Partition Term created',
-                    'body'  => 'The tax Partition term has been created successfully.',
+                    'title' => 'Término de Partición de Impuestos creado',
+                    'body'  => 'El término de partición de impuestos ha sido creado exitosamente.',
                 ],
             ],
         ],

@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'title' => 'Reset to Draft',
+    'title' => 'Restablecer a Borrador',
 ];

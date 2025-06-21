@@ -2,42 +2,42 @@
 
 return [
     'global-search' => [
-        'zip-from' => 'Zip From',
-        'zip-to'   => 'Zip To',
-        'name'     => 'Name',
+        'zip-from' => 'Código Postal Desde',
+        'zip-to'   => 'Código Postal Hasta',
+        'name'     => 'Nombre',
     ],
 
     'form' => [
         'fields' => [
-            'name'                 => 'Name',
-            'foreign-vat'          => 'Foreign VAT',
-            'country'              => 'Country',
-            'country-group'        => 'Country Group',
-            'zip-from'             => 'Zip From',
-            'zip-to'               => 'Zip To',
-            'detect-automatically' => 'Detect Automatically',
-            'notes'                => 'Notes',
+            'name'                 => 'Nombre',
+            'foreign-vat'          => 'IVA Extranjero',
+            'country'              => 'País',
+            'country-group'        => 'Grupo de Países',
+            'zip-from'             => 'Código Postal Desde',
+            'zip-to'               => 'Código Postal Hasta',
+            'detect-automatically' => 'Detectar Automáticamente',
+            'notes'                => 'Notas',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'                 => 'Name',
-            'company'              => 'Company',
-            'country'              => 'Country',
-            'country-group'        => 'Country Group',
-            'created-by'           => 'Created By',
-            'zip-from'             => 'Zip From',
-            'zip-to'               => 'Zip To',
-            'status'               => 'Status',
-            'detect-automatically' => 'Detect Automatically',
+            'name'                 => 'Nombre',
+            'company'              => 'Empresa',
+            'country'              => 'País',
+            'country-group'        => 'Grupo de Países',
+            'created-by'           => 'Creado Por',
+            'zip-from'             => 'Código Postal Desde',
+            'zip-to'               => 'Código Postal Hasta',
+            'status'               => 'Estado',
+            'detect-automatically' => 'Detectar Automáticamente',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Payment Term deleted',
-                    'body'  => 'The payment term has been deleted successfully.',
+                    'title' => 'Posición fiscal eliminada',
+                    'body'  => 'La posición fiscal ha sido eliminada exitosamente.',
                 ],
             ],
         ],
@@ -45,8 +45,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Fiscal Position deleted',
-                    'body'  => 'The fiscal Position has been deleted successfully.',
+                    'title' => 'Posiciones fiscales eliminadas',
+                    'body'  => 'Las posiciones fiscales han sido eliminadas exitosamente.',
                 ],
             ],
         ],
@@ -54,14 +54,14 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name'                 => 'Name',
-            'foreign-vat'          => 'Foreign VAT',
-            'country'              => 'Country',
-            'country-group'        => 'Country Group',
-            'zip-from'             => 'Zip From',
-            'zip-to'               => 'Zip To',
-            'detect-automatically' => 'Detect Automatically',
-            'notes'                => 'Notes',
+            'name'                 => 'Nombre',
+            'foreign-vat'          => 'IVA Extranjero',
+            'country'              => 'País',
+            'country-group'        => 'Grupo de Países',
+            'zip-from'             => 'Código Postal Desde',
+            'zip-to'               => 'Código Postal Hasta',
+            'detect-automatically' => 'Detectar Automáticamente',
+            'notes'                => 'Notas',
         ],
     ],
 ];

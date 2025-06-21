@@ -4,54 +4,54 @@ return [
     'form' => [
         'fields' => [
             'color'         => 'Color',
-            'country'       => 'Country',
-            'applicability' => 'Applicability',
-            'name'          => 'Name',
-            'status'        => 'Status',
-            'tax-negate'    => 'Tax Negate',
+            'country'       => 'País',
+            'applicability' => 'Aplicabilidad',
+            'name'          => 'Nombre',
+            'status'        => 'Estado',
+            'tax-negate'    => 'Anular Impuesto',
         ],
     ],
 
     'table' => [
         'columns' => [
             'color'         => 'Color',
-            'country'       => 'Country',
-            'created-by'    => 'Created By',
-            'applicability' => 'Applicability',
-            'name'          => 'Name',
-            'status'        => 'Status',
-            'tax-negate'    => 'Tax Negate',
-            'created-at'    => 'Created At',
-            'updated-at'    => 'Updated At',
-            'deleted-at'    => 'Deleted At',
+            'country'       => 'País',
+            'created-by'    => 'Creado Por',
+            'applicability' => 'Aplicabilidad',
+            'name'          => 'Nombre',
+            'status'        => 'Estado',
+            'tax-negate'    => 'Anular Impuesto',
+            'created-at'    => 'Creado El',
+            'updated-at'    => 'Actualizado El',
+            'deleted-at'    => 'Eliminado El',
         ],
 
         'filters' => [
-            'bank'           => 'Bank',
-            'account-holder' => 'Account Holder',
-            'creator'        => 'Creator',
-            'can-send-money' => 'Can Send Money',
+            'bank'           => 'Banco',
+            'account-holder' => 'Titular de la Cuenta',
+            'creator'        => 'Creador',
+            'can-send-money' => 'Puede Enviar Dinero',
         ],
 
         'groups' => [
-            'country'       => 'Country',
-            'created-by'    => 'Created By',
-            'applicability' => 'Applicability',
-            'name'          => 'Name',
+            'country'       => 'País',
+            'created-by'    => 'Creado Por',
+            'applicability' => 'Aplicabilidad',
+            'name'          => 'Nombre',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Account Tag updated',
-                    'body'  => 'The account Tag has been updated successfully.',
+                    'title' => 'Etiqueta de cuenta actualizada',
+                    'body'  => 'La etiqueta de cuenta ha sido actualizada exitosamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Account Tag deleted',
-                    'body'  => 'The account Tag has been deleted successfully.',
+                    'title' => 'Etiqueta de cuenta eliminada',
+                    'body'  => 'La etiqueta de cuenta ha sido eliminada exitosamente.',
                 ],
             ],
         ],
@@ -59,8 +59,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Account Tags deleted',
-                    'body'  => 'The account Tags has been deleted successfully.',
+                    'title' => 'Etiquetas de cuenta eliminadas',
+                    'body'  => 'Las etiquetas de cuenta han sido eliminadas exitosamente.',
                 ],
             ],
         ],
@@ -69,11 +69,11 @@ return [
     'infolist' => [
         'entries' => [
             'color'         => 'Color',
-            'country'       => 'Country',
-            'applicability' => 'Applicability',
-            'name'          => 'Name',
-            'status'        => 'Status',
-            'tax-negate'    => 'Tax Negate',
+            'country'       => 'País',
+            'applicability' => 'Aplicabilidad',
+            'name'          => 'Nombre',
+            'status'        => 'Estado',
+            'tax-negate'    => 'Anular Impuesto',
         ],
     ],
 ];

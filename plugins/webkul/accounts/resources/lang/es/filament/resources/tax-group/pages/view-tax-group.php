@@ -5,13 +5,13 @@ return [
         'delete' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Tax group deleted',
-                    'body'  => 'The tax group has been deleted successfully.',
+                    'title' => 'Grupo de impuestos eliminado',
+                    'body'  => 'El grupo de impuestos ha sido eliminado exitosamente.',
                 ],
 
                 'error' => [
-                    'title' => 'Tax Group could not be deleted',
-                    'body'  => 'The tax group cannot be deleted because it is currently in use.',
+                    'title' => 'No se pudo eliminar el grupo de impuestos',
+                    'body'  => 'El grupo de impuestos no puede ser eliminado porque está en uso actualmente.',
                 ],
             ],
         ],

@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'title' => 'Manage Distribution For Refund',
+        'title' => 'Gestionar Distribución de Reembolso',
     ],
 ];

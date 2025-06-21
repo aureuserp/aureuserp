@@ -2,13 +2,13 @@
 
 return [
     'notification' => [
-        'title' => 'Refund updated',
-        'body'  => 'The refund has been updated successfully.',
+        'title' => 'Reembolso actualizado',
+        'body'  => 'El reembolso ha sido actualizado exitosamente.',
     ],
 
     'header-actions' => [
         'preview' => [
-            'modal-heading' => 'Preview Refund',
+            'modal-heading' => 'Previsualizar Reembolso',
         ],
     ],
 ];

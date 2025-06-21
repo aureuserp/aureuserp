@@ -1,18 +1,18 @@
 <?php
 
 return [
-    'title' => 'Invoice',
+    'title' => 'Factura',
 
     'navigation' => [
-        'title' => 'Invoices',
-        'group' => 'Invoices',
+        'title' => 'Facturas',
+        'group' => 'Facturas',
     ],
 
     'global-search' => [
-        'number'           => 'Number',
-        'customer'         => 'Customer',
-        'invoice-date'     => 'Invoice Date',
-        'invoice-due-date' => 'Invoice Due Date',
+        'number'           => 'Número',
+        'customer'         => 'Cliente',
+        'invoice-date'     => 'Fecha de Factura',
+        'invoice-due-date' => 'Fecha de Vencimiento de Factura',
     ],
 
     'form' => [
@@ -20,74 +20,74 @@ return [
             'general' => [
                 'title'  => 'General',
                 'fields' => [
-                    'vendor-bill'       => 'Vendor Bill',
-                    'vendor'            => 'Vendor',
-                    'bill-date'         => 'Bill Date',
-                    'bill-reference'    => 'Bill Reference',
-                    'accounting-date'   => 'Accounting Date',
-                    'payment-reference' => 'Payment Reference',
-                    'recipient-bank'    => 'Recipient Bank',
-                    'due-date'          => 'Due Date',
-                    'payment-term'      => 'Payment Term',
+                    'vendor-bill'       => 'Factura de Proveedor',
+                    'vendor'            => 'Proveedor',
+                    'bill-date'         => 'Fecha de Factura',
+                    'bill-reference'    => 'Referencia de Factura',
+                    'accounting-date'   => 'Fecha Contable',
+                    'payment-reference' => 'Referencia de Pago',
+                    'recipient-bank'    => 'Banco del Receptor',
+                    'due-date'          => 'Fecha de Vencimiento',
+                    'payment-term'      => 'Condición de Pago',
                 ],
             ],
         ],
 
         'tabs' => [
             'invoice-lines' => [
-                'title' => 'Invoice Lines',
+                'title' => 'Líneas de Factura',
 
                 'repeater' => [
                     'products' => [
-                        'title'       => 'Products',
-                        'add-product' => 'Add Product',
+                        'title'       => 'Productos',
+                        'add-product' => 'Agregar Producto',
 
                         'fields' => [
-                            'product'             => 'Product',
-                            'quantity'            => 'Quantity',
-                            'unit'                => 'Unit',
-                            'taxes'               => 'Taxes',
-                            'discount-percentage' => 'Discount Percentage',
-                            'unit-price'          => 'Unit Price',
-                            'sub-total'           => 'Sub Total',
+                            'product'             => 'Producto',
+                            'quantity'            => 'Cantidad',
+                            'unit'                => 'Unidad',
+                            'taxes'               => 'Impuestos',
+                            'discount-percentage' => 'Porcentaje de Descuento',
+                            'unit-price'          => 'Precio Unitario',
+                            'sub-total'           => 'Subtotal',
                         ],
                     ],
                 ],
             ],
 
             'other-information' => [
-                'title'    => 'Other Information',
+                'title'    => 'Otra Información',
                 'fieldset' => [
                     'accounting' => [
-                        'title' => 'Accounting',
+                        'title' => 'Contabilidad',
 
                         'fields' => [
                             'incoterm'          => 'Incoterm',
-                            'incoterm-location' => 'Incoterm Location',
+                            'incoterm-location' => 'Ubicación Incoterm',
                         ],
                     ],
 
                     'secured' => [
-                        'title'  => 'Secured',
+                        'title'  => 'Asegurado',
                         'fields' => [
-                            'payment-method' => 'Payment Method',
-                            'auto-post'      => 'Auto Post',
-                            'checked'        => 'Checked',
+                            'payment-method' => 'Método de Pago',
+                            'auto-post'      => 'Publicación Automática',
+                            'checked'        => 'Verificado',
                         ],
                     ],
 
                     'additional-information' => [
-                        'title'  => 'Additional Information',
+                        'title'  => 'Información Adicional',
                         'fields' => [
-                            'company'  => 'Company',
-                            'currency' => 'Currency',
+                            'company'  => 'Empresa',
+                            'currency' => 'Moneda',
                         ],
                     ],
                 ],
             ],
 
             'term-and-conditions' => [
-                'title' => 'Term & Conditions',
+                'title' => 'Términos y Condiciones',
             ],
         ],
     ],
@@ -97,74 +97,74 @@ return [
             'general' => [
                 'title'   => 'General',
                 'entries' => [
-                    'vendor-invoice'    => 'Vendor Invoice',
-                    'vendor'            => 'Vendor',
-                    'bill-date'         => 'Bill Date',
-                    'bill-reference'    => 'Bill Reference',
-                    'accounting-date'   => 'Accounting Date',
-                    'payment-reference' => 'Payment Reference',
-                    'recipient-bank'    => 'Recipient Bank',
-                    'due-date'          => 'Due Date',
-                    'payment-term'      => 'Payment Term',
+                    'vendor-invoice'    => 'Factura de Proveedor',
+                    'vendor'            => 'Proveedor',
+                    'bill-date'         => 'Fecha de Factura',
+                    'bill-reference'    => 'Referencia de Factura',
+                    'accounting-date'   => 'Fecha Contable',
+                    'payment-reference' => 'Referencia de Pago',
+                    'recipient-bank'    => 'Banco del Receptor',
+                    'due-date'          => 'Fecha de Vencimiento',
+                    'payment-term'      => 'Condición de Pago',
                 ],
             ],
         ],
 
         'tabs' => [
             'invoice-lines' => [
-                'title' => 'Invoice Lines',
+                'title' => 'Líneas de Factura',
 
                 'repeater' => [
                     'products' => [
-                        'title'       => 'Products',
-                        'add-product' => 'Add Product',
+                        'title'       => 'Productos',
+                        'add-product' => 'Agregar Producto',
 
                         'entries' => [
-                            'product'             => 'Product',
-                            'quantity'            => 'Quantity',
-                            'unit'                => 'Unit',
-                            'taxes'               => 'Taxes',
-                            'discount-percentage' => 'Discount Percentage',
-                            'unit-price'          => 'Unit Price',
-                            'sub-total'           => 'Sub Total',
+                            'product'             => 'Producto',
+                            'quantity'            => 'Cantidad',
+                            'unit'                => 'Unidad',
+                            'taxes'               => 'Impuestos',
+                            'discount-percentage' => 'Porcentaje de Descuento',
+                            'unit-price'          => 'Precio Unitario',
+                            'sub-total'           => 'Subtotal',
                         ],
                     ],
                 ],
             ],
 
             'other-information' => [
-                'title'    => 'Other Information',
+                'title'    => 'Otra Información',
                 'fieldset' => [
                     'accounting' => [
-                        'title' => 'Accounting',
+                        'title' => 'Contabilidad',
 
                         'entries' => [
                             'incoterm'          => 'Incoterm',
-                            'incoterm-location' => 'Incoterm Location',
+                            'incoterm-location' => 'Ubicación Incoterm',
                         ],
                     ],
 
                     'secured' => [
-                        'title'   => 'Secured',
+                        'title'   => 'Asegurado',
                         'entries' => [
-                            'payment-method' => 'Payment Method',
-                            'auto-post'      => 'Auto Post',
-                            'checked'        => 'Checked',
+                            'payment-method' => 'Método de Pago',
+                            'auto-post'      => 'Publicación Automática',
+                            'checked'        => 'Verificado',
                         ],
                     ],
 
                     'additional-information' => [
-                        'title'   => 'Additional Information',
+                        'title'   => 'Información Adicional',
                         'entries' => [
-                            'company'  => 'Company',
-                            'currency' => 'Currency',
+                            'company'  => 'Empresa',
+                            'currency' => 'Moneda',
                         ],
                     ],
                 ],
             ],
 
             'term-and-conditions' => [
-                'title' => 'Term & Conditions',
+                'title' => 'Términos y Condiciones',
             ],
         ],
     ],

@@ -4,31 +4,31 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'name'            => 'Name',
-                'tax-type'        => 'Tax Type',
-                'tax-computation' => 'Tax Computation',
-                'tax-scope'       => 'Tax Scope',
-                'status'          => 'Status',
-                'amount'          => 'Amount',
+                'name'            => 'Nombre',
+                'tax-type'        => 'Tipo de Impuesto',
+                'tax-computation' => 'Cálculo del Impuesto',
+                'tax-scope'       => 'Ámbito del Impuesto',
+                'status'          => 'Estado',
+                'amount'          => 'Monto',
             ],
 
             'field-set' => [
                 'advanced-options' => [
-                    'title' => 'Advanced Options',
+                    'title' => 'Opciones Avanzadas',
 
                     'fields' => [
-                        'invoice-label'       => 'Invoice label',
-                        'tax-group'           => 'Tax Group',
-                        'country'             => 'Country',
-                        'include-in-price'    => 'Included in Price',
-                        'include-base-amount' => 'Affect Base of Subsequent Taxes',
-                        'is-base-affected'    => 'Base Affected by Previous Taxes',
+                        'invoice-label'       => 'Etiqueta de Factura',
+                        'tax-group'           => 'Grupo de Impuestos',
+                        'country'             => 'País',
+                        'include-in-price'    => 'Incluido en Precio',
+                        'include-base-amount' => 'Afectar Base de Impuestos Posteriores',
+                        'is-base-affected'    => 'Base Afectada por Impuestos Anteriores',
                     ],
                 ],
 
                 'fields' => [
-                    'description' => 'Description',
-                    'legal-notes' => 'Legal Notes',
+                    'description' => 'Descripción',
+                    'legal-notes' => 'Notas Legales',
                 ],
             ],
         ],
@@ -36,45 +36,44 @@ return [
 
     'table' => [
         'columns' => [
-            'name'                   => 'Name',
-            'amount-type'            => 'Amount Type',
-            'company'                => 'Company',
-            'tax-group'              => 'Tax Group',
-            'country'                => 'Country',
-            'tax-type'               => 'Tax Type',
-            'tax-scope'              => 'Tax Scope',
-            'amount-type'            => 'Amount Type',
-            'invoice-label'          => 'Invoice Label',
-            'tax-exigibility'        => 'Tax Exigibility',
-            'price-include-override' => 'Price Include Override',
-            'amount'                 => 'Amount',
-            'status'                 => 'Status',
-            'include-base-amount'    => 'Include Base Amount',
-            'is-base-affected'       => 'Is Base Affected',
+            'name'                   => 'Nombre',
+            'amount-type'            => 'Tipo de Monto',
+            'company'                => 'Empresa',
+            'tax-group'              => 'Grupo de Impuestos',
+            'country'                => 'País',
+            'tax-type'               => 'Tipo de Impuesto',
+            'tax-scope'              => 'Ámbito del Impuesto',
+            'invoice-label'          => 'Etiqueta de Factura',
+            'tax-exigibility'        => 'Exigibilidad del Impuesto',
+            'price-include-override' => 'Anulación de Inclusión de Precio',
+            'amount'                 => 'Monto',
+            'status'                 => 'Estado',
+            'include-base-amount'    => 'Incluir Monto Base',
+            'is-base-affected'       => 'Base Afectada',
         ],
 
         'groups' => [
-            'name'         => 'Name',
-            'company'      => 'Company',
-            'tax-group'    => 'Tax Group',
-            'country'      => 'Country',
-            'created-by'   => 'Created By',
-            'type-tax-use' => 'Type Tax Use',
-            'tax-scope'    => 'Tax Scope',
-            'amount-type'  => 'Amount Type',
+            'name'         => 'Nombre',
+            'company'      => 'Empresa',
+            'tax-group'    => 'Grupo de Impuestos',
+            'country'      => 'País',
+            'created-by'   => 'Creado Por',
+            'type-tax-use' => 'Tipo de Uso del Impuesto',
+            'tax-scope'    => 'Ámbito del Impuesto',
+            'amount-type'  => 'Tipo de Monto',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Tax deleted',
-                        'body'  => 'The Tax has been deleted successfully.',
+                        'title' => 'Impuesto eliminado',
+                        'body'  => 'El impuesto ha sido eliminado exitosamente.',
                     ],
 
                     'error' => [
-                        'title' => 'Tax could not be deleted',
-                        'body'  => 'The tax cannot be deleted because it is currently in use.',
+                        'title' => 'No se pudo eliminar el Impuesto',
+                        'body'  => 'El impuesto no puede ser eliminado porque está en uso actualmente.',
                     ],
                 ],
             ],
@@ -84,13 +83,13 @@ return [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Taxes deleted',
-                        'body'  => 'The taxes has been deleted successfully.',
+                        'title' => 'Impuestos eliminados',
+                        'body'  => 'Los impuestos han sido eliminados exitosamente.',
                     ],
 
                     'error' => [
-                        'title' => 'Taxes could not be deleted',
-                        'body'  => 'The taxes cannot be deleted because they are currently in use.',
+                        'title' => 'No se pudieron eliminar los Impuestos',
+                        'body'  => 'Los impuestos no pueden ser eliminados porque están en uso actualmente.',
                     ],
                 ],
             ],
@@ -100,33 +99,33 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'name'            => 'Name',
-                'tax-type'        => 'Tax Type',
-                'tax-computation' => 'Tax Computation',
-                'tax-scope'       => 'Tax Scope',
-                'status'          => 'Status',
-                'amount'          => 'Amount',
+                'name'            => 'Nombre',
+                'tax-type'        => 'Tipo de Impuesto',
+                'tax-computation' => 'Cálculo del Impuesto',
+                'tax-scope'       => 'Ámbito del Impuesto',
+                'status'          => 'Estado',
+                'amount'          => 'Monto',
             ],
 
             'field-set' => [
                 'advanced-options' => [
-                    'title' => 'Advanced Options',
+                    'title' => 'Opciones Avanzadas',
 
                     'entries' => [
-                        'invoice-label'       => 'Invoice label',
-                        'tax-group'           => 'Tax Group',
-                        'country'             => 'Country',
-                        'include-in-price'    => 'Include in price',
-                        'include-base-amount' => 'Include base amount',
-                        'is-base-affected'    => 'Is base affected',
+                        'invoice-label'       => 'Etiqueta de Factura',
+                        'tax-group'           => 'Grupo de Impuestos',
+                        'country'             => 'País',
+                        'include-in-price'    => 'Incluido en precio',
+                        'include-base-amount' => 'Incluir monto base',
+                        'is-base-affected'    => 'Base afectada',
                     ],
                 ],
 
                 'description-and-legal-notes' => [
-                    'title'   => 'Description & Invoice Legal Notes',
+                    'title'   => 'Descripción y Notas Legales de Factura',
                     'entries' => [
-                        'description' => 'Description',
-                        'legal-notes' => 'Legal Notes',
+                        'description' => 'Descripción',
+                        'legal-notes' => 'Notas Legales',
                     ],
                 ],
             ],

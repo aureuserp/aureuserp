@@ -4,8 +4,8 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Payment term deleted',
-                'body'  => 'The payment term has been deleted successfully.',
+                'title' => 'Condición de pago eliminada',
+                'body'  => 'La condición de pago ha sido eliminada exitosamente.',
             ],
         ],
     ],

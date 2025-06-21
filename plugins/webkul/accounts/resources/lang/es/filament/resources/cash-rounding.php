@@ -3,39 +3,39 @@
 return [
     'form' => [
         'fields' => [
-            'name'               => 'Name',
-            'rounding-precision' => 'Rounding Precision',
-            'rounding-strategy'  => 'Rounding Strategy',
-            'profit-account'     => 'Profit Account',
-            'loss-account'       => 'Loss Account',
-            'rounding-method'    => 'Rounding Method',
+            'name'               => 'Nombre',
+            'rounding-precision' => 'Precisión de Redondeo',
+            'rounding-strategy'  => 'Estrategia de Redondeo',
+            'profit-account'     => 'Cuenta de Ganancias',
+            'loss-account'       => 'Cuenta de Pérdidas',
+            'rounding-method'    => 'Método de Redondeo',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'                 => 'Name',
-            'rounding-strategy'    => 'Rounding Strategy',
-            'rounding-method'      => 'Rounding Method',
-            'created-by'           => 'Created By',
-            'profit-account'       => 'Profit Account',
-            'loss-account'         => 'Loss Account',
+            'name'                 => 'Nombre',
+            'rounding-strategy'    => 'Estrategia de Redondeo',
+            'rounding-method'      => 'Método de Redondeo',
+            'created-by'           => 'Creado Por',
+            'profit-account'       => 'Cuenta de Ganancias',
+            'loss-account'         => 'Cuenta de Pérdidas',
         ],
 
         'groups' => [
-            'name'              => 'Name',
-            'rounding-strategy' => 'Rounding Strategy',
-            'rounding-method'   => 'Rounding Method',
-            'created-by'        => 'Created By',
-            'profit-account'    => 'Profit Account',
-            'loss-account'      => 'Loss Account',
+            'name'              => 'Nombre',
+            'rounding-strategy' => 'Estrategia de Redondeo',
+            'rounding-method'   => 'Método de Redondeo',
+            'created-by'        => 'Creado Por',
+            'profit-account'    => 'Cuenta de Ganancias',
+            'loss-account'      => 'Cuenta de Pérdidas',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Cash Rounding deleted',
-                    'body'  => 'The cash rounding has been deleted successfully.',
+                    'title' => 'Redondeo de efectivo eliminado',
+                    'body'  => 'El redondeo de efectivo ha sido eliminado exitosamente.',
                 ],
             ],
         ],
@@ -43,8 +43,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Cash Rounding deleted',
-                    'body'  => 'The cash rounding has been deleted successfully.',
+                    'title' => 'Redondeos de efectivo eliminados',
+                    'body'  => 'Los redondeos de efectivo han sido eliminados exitosamente.',
                 ],
             ],
         ],
@@ -52,12 +52,12 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name'               => 'Name',
-            'rounding-precision' => 'Rounding Precision',
-            'rounding-strategy'  => 'Rounding Strategy',
-            'profit-account'     => 'Profit Account',
-            'loss-account'       => 'Loss Account',
-            'rounding-method'    => 'Rounding Method',
+            'name'               => 'Nombre',
+            'rounding-precision' => 'Precisión de Redondeo',
+            'rounding-strategy'  => 'Estrategia de Redondeo',
+            'profit-account'     => 'Cuenta de Ganancias',
+            'loss-account'       => 'Cuenta de Pérdidas',
+            'rounding-method'    => 'Método de Redondeo',
         ],
     ],
 ];

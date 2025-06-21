@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Tax group created',
-        'body'  => 'The tax group has been created successfully.',
+        'title' => 'Grupo de impuestos creado',
+        'body'  => 'El grupo de impuestos ha sido creado exitosamente.',
     ],
 ];

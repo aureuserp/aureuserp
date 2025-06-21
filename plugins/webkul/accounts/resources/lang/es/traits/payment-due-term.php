@@ -2,36 +2,36 @@
 
 return [
     'form' => [
-        'value'                  => 'Value',
-        'due'                    => 'Due',
-        'delay-due'              => 'Delay Due',
-        'delay-type'             => 'Delay Type',
-        'days-on-the-next-month' => 'Days on the next month',
-        'days'                   => 'Days',
-        'payment-term'           => 'Payment Term',
+        'value'                  => 'Valor',
+        'due'                    => 'Vencimiento',
+        'delay-due'              => 'Retraso de Vencimiento',
+        'delay-type'             => 'Tipo de Retraso',
+        'days-on-the-next-month' => 'Días del próximo mes',
+        'days'                   => 'Días',
+        'payment-term'           => 'Condición de Pago',
     ],
 
     'table' => [
         'columns' => [
-            'due'          => 'Due',
-            'value'        => 'Value',
-            'value-amount' => 'Value Amount',
-            'after'        => 'After',
-            'delay-type'   => 'Delay Type',
+            'due'          => 'Vencimiento',
+            'value'        => 'Valor',
+            'value-amount' => 'Monto del Valor',
+            'after'        => 'Después de',
+            'delay-type'   => 'Tipo de Retraso',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Payment Due Term updated',
-                    'body'  => 'The payment due term has been updated successfully.',
+                    'title' => 'Término de vencimiento de pago actualizado',
+                    'body'  => 'El término de vencimiento de pago ha sido actualizado exitosamente.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Payment Due Term deleted',
-                    'body'  => 'The payment due term has been deleted successfully.',
+                    'title' => 'Término de vencimiento de pago eliminado',
+                    'body'  => 'El término de vencimiento de pago ha sido eliminado exitosamente.',
                 ],
             ],
         ],
@@ -39,8 +39,8 @@ return [
         'header-actions' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Payment Due Term created',
-                    'body'  => 'The payment due term has been created successfully.',
+                    'title' => 'Término de vencimiento de pago creado',
+                    'body'  => 'El término de vencimiento de pago ha sido creado exitosamente.',
                 ],
             ],
         ],
