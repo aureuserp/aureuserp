@@ -117,6 +117,7 @@ class UserResource extends Resource
                                         Forms\Components\FileUpload::make('avatar')
                                             ->hiddenLabel()
                                             ->imageResizeMode('cover')
+                                            ->image()
                                             ->imageEditor()
                                             ->directory('users/avatars')
                                             ->visibility('private'),
