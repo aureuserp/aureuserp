@@ -151,8 +151,8 @@ return [
             'fiscal-position'  => 'Posición Fiscal',
             'payment-term'     => 'Término de Pago',
             'currency'         => 'Moneda',
-            'created-at'       => 'Creado En',
-            'updated-at'       => 'Actualizado En',
+            'created-at'       => 'Creado El',
+            'updated-at'       => 'Actualizado El',
         ],
 
         'groups' => [

@@ -152,7 +152,7 @@ return [
                 'title'   => 'Información del Registro',
                 'entries' => [
                     'created-by'   => 'Creado Por',
-                    'created-at'   => 'Creado En',
+                    'created-at'   => 'Creado El',
                     'last-updated' => 'Última Actualización',
                 ],
             ],

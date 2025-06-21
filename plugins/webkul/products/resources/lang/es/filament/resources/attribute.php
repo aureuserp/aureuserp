@@ -28,15 +28,15 @@ return [
         'columns' => [
             'name'       => 'Nombre',
             'type'       => 'Tipo',
-            'deleted-at' => 'Eliminado En',
-            'created-at' => 'Creado En',
-            'updated-at' => 'Actualizado En',
+            'deleted-at' => 'Eliminado El',
+            'created-at' => 'Creado El',
+            'updated-at' => 'Actualizado El',
         ],
 
         'groups' => [
             'type'       => 'Tipo',
-            'created-at' => 'Creado En',
-            'updated-at' => 'Actualizado En',
+            'created-at' => 'Creado El',
+            'updated-at' => 'Actualizado El',
         ],
 
         'filters' => [
@@ -120,8 +120,8 @@ return [
 
                 'entries' => [
                     'creator'    => 'Creado Por',
-                    'created_at' => 'Creado En',
-                    'updated_at' => 'Última Actualización En',
+                    'created_at' => 'Creado El',
+                    'updated_at' => 'Última Actualización El',
                 ],
             ],
         ],

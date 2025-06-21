@@ -45,8 +45,8 @@ return [
             'delay-unit'    => 'Unidad de Retraso',
             'delay-from'    => 'Retraso Desde',
             'created-by'    => 'Creado Por',
-            'created-at'    => 'Creado En',
-            'updated-at'    => 'Actualizado En',
+            'created-at'    => 'Creado El',
+            'updated-at'    => 'Actualizado El',
         ],
 
         'groups' => [
@@ -57,8 +57,8 @@ return [
             'delay-unit'    => 'Unidad de Retraso',
             'delay-from'    => 'Retraso Desde',
             'created-by'    => 'Creado Por',
-            'created-at'    => 'Creado En',
-            'updated-at'    => 'Actualizado En',
+            'created-at'    => 'Creado El',
+            'updated-at'    => 'Actualizado El',
         ],
 
         'filters' => [

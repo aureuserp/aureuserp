@@ -65,9 +65,9 @@ return [
             'company'               => 'Empresa',
             'quantity'              => 'Cantidad',
             'creator'               => 'Creador',
-            'closed-at'             => 'Cerrado En',
-            'created-at'            => 'Creado En',
-            'updated-at'            => 'Actualizado En',
+            'closed-at'             => 'Cerrado El',
+            'created-at'            => 'Creado El',
+            'updated-at'            => 'Actualizado El',
         ],
 
         'actions' => [
@@ -127,7 +127,7 @@ return [
 
                 'entries' => [
                     'created-by'    => 'Creado Por',
-                    'created-at'    => 'Creado En',
+                    'created-at'    => 'Creado El',
                     'last-updated'  => 'Última Actualización',
                 ],
             ],

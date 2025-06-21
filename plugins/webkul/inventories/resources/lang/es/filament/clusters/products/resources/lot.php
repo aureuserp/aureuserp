@@ -30,14 +30,14 @@ return [
             'product'       => 'Producto',
             'on-hand-qty'   => 'Cantidad En Existencia',
             'reference'     => 'Referencia Interna',
-            'created-at'    => 'Creado En',
-            'updated-at'    => 'Actualizado En',
+            'created-at'    => 'Creado El',
+            'updated-at'    => 'Actualizado El',
         ],
 
         'groups' => [
             'product'     => 'Producto',
             'location'    => 'Ubicación',
-            'created-at'  => 'Creado En',
+            'created-at'  => 'Creado El',
         ],
 
         'filters' => [
@@ -96,7 +96,7 @@ return [
                     'description' => 'Descripción',
                     'on-hand-qty' => 'Cantidad En Existencia',
                     'company'     => 'Empresa',
-                    'created-at'  => 'Creado En',
+                    'created-at'  => 'Creado El',
                     'updated-at'  => 'Última Actualización',
                 ],
             ],
@@ -106,7 +106,7 @@ return [
 
                 'entries' => [
                     'created-by'    => 'Creado Por',
-                    'created-at'    => 'Creado En',
+                    'created-at'    => 'Creado El',
                     'last-updated'  => 'Última Actualización',
                 ],
             ],

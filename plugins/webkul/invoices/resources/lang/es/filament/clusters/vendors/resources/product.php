@@ -76,15 +76,15 @@ return [
             'price'       => 'Precio',
             'cost'        => 'Costo',
             'tags'        => 'Etiquetas',
-            'deleted-at'  => 'Eliminado En',
-            'created-at'  => 'Creado En',
-            'updated-at'  => 'Actualizado En',
+            'deleted-at'  => 'Eliminado El',
+            'created-at'  => 'Creado El',
+            'updated-at'  => 'Actualizado El',
         ],
 
         'groups' => [
             'type'       => 'Tipo',
             'category'   => 'Categoría',
-            'created-at' => 'Creado En',
+            'created-at' => 'Creado El',
         ],
 
         'filters' => [
@@ -101,8 +101,8 @@ return [
             'volume'      => 'Volumen',
             'tags'        => 'Etiquetas',
             'responsible' => 'Responsable',
-            'created-at'  => 'Creado En',
-            'updated-at'  => 'Actualizado En',
+            'created-at'  => 'Creado El',
+            'updated-at'  => 'Actualizado El',
             'creator'     => 'Creador',
         ],
 
@@ -234,9 +234,9 @@ return [
             'record-information' => [
                 'title'   => 'Información del Registro',
                 'entries' => [
-                    'created-at' => 'Creado En',
+                    'created-at' => 'Creado El',
                     'created-by' => 'Creado Por',
-                    'updated-at' => 'Actualizado En',
+                    'updated-at' => 'Actualizado El',
                 ],
             ],
         ],

@@ -37,8 +37,8 @@ return [
             'early-discount'      => 'Descuento por Pronto Pago',
             'display-on-invoice'  => 'Mostrar en Factura',
             'created-by'          => 'Creado Por',
-            'created-at'          => 'Creado En',
-            'updated-at'          => 'Actualizado En',
+            'created-at'          => 'Creado El',
+            'updated-at'          => 'Actualizado El',
         ],
 
         'groups' => [

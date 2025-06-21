@@ -37,8 +37,8 @@ return [
             'display-type'   => 'Tipo de Visualización',
             'name'           => 'Nombre',
             'quantity'       => 'Cantidad',
-            'created-at'     => 'Creado En',
-            'updated-at'     => 'Actualizado En',
+            'created-at'     => 'Creado El',
+            'updated-at'     => 'Actualizado El',
         ],
         'actions' => [
             'edit' => [

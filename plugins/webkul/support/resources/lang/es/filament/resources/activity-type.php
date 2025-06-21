@@ -65,8 +65,8 @@ return [
             'type'       => 'Tipo',
             'action'     => 'Acción',
             'status'     => 'Estado',
-            'created-at' => 'Creado En',
-            'updated-at' => 'Actualizado En',
+            'created-at' => 'Creado El',
+            'updated-at' => 'Actualizado El',
         ],
 
         'groups' => [

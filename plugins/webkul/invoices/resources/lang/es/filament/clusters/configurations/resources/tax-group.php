@@ -31,8 +31,8 @@ return [
             'created-by'         => 'Creado Por',
             'name'               => 'Nombre',
             'preceding-subtotal' => 'Subtotal Precedente',
-            'created-at'         => 'Creado En',
-            'updated-at'         => 'Actualizado En',
+            'created-at'         => 'Creado El',
+            'updated-at'         => 'Actualizado El',
         ],
 
         'groups' => [
@@ -40,8 +40,8 @@ return [
             'company'            => 'Empresa',
             'country'            => 'País',
             'created-by'         => 'Creado Por',
-            'created-at'         => 'Creado En',
-            'updated-at'         => 'Actualizado En',
+            'created-at'         => 'Creado El',
+            'updated-at'         => 'Actualizado El',
         ],
 
         'actions' => [

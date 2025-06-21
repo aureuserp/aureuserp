@@ -33,9 +33,9 @@ return [
             'name'          => 'Nombre',
             'status'        => 'Estado',
             'tax-negate'    => 'Negar Impuesto',
-            'created-at'    => 'Creado En',
-            'updated-at'    => 'Actualizado En',
-            'deleted-at'    => 'Eliminado En',
+            'created-at'    => 'Creado El',
+            'updated-at'    => 'Actualizado El',
+            'deleted-at'    => 'Eliminado El',
         ],
 
         'filters' => [

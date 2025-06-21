@@ -39,8 +39,8 @@ return [
             'invoiced-target' => 'Objetivo de Facturación',
             'color'           => 'Color',
             'created-by'      => 'Creado Por',
-            'created-at'      => 'Creado En',
-            'updated-at'      => 'Actualizado En',
+            'created-at'      => 'Creado El',
+            'updated-at'      => 'Actualizado El',
         ],
 
         'filters' => [
@@ -48,16 +48,16 @@ return [
             'team-leader' => 'Líder del Equipo',
             'company'     => 'Empresa',
             'created-by'  => 'Creado Por',
-            'updated-at'  => 'Actualizado En',
-            'created-at'  => 'Creado En',
+            'updated-at'  => 'Actualizado El',
+            'created-at'  => 'Creado El',
         ],
 
         'groups' => [
             'name'        => 'Nombre',
             'company'     => ' Empresa',
             'team-leader' => 'Líder del Equipo',
-            'created-at'  => 'Creado En',
-            'updated-at'  => 'Actualizado En',
+            'created-at'  => 'Creado El',
+            'updated-at'  => 'Actualizado El',
         ],
 
         'actions' => [

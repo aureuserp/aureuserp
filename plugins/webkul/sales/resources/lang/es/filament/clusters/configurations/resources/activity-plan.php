@@ -28,8 +28,8 @@ return [
             'company'    => 'Empresa',
             'manager'    => 'Gerente',
             'created-by' => 'Creado Por',
-            'created-at' => 'Creado En',
-            'updated-at' => 'Actualizado En',
+            'created-at' => 'Creado El',
+            'updated-at' => 'Actualizado El',
         ],
 
         'filters' => [
@@ -39,16 +39,16 @@ return [
             'company'        => 'Empresa',
             'department'     => 'Departamento',
             'is-active'      => 'Estado',
-            'updated-at'     => 'Actualizado En',
-            'created-at'     => 'Creado En',
+            'updated-at'     => 'Actualizado El',
+            'created-at'     => 'Creado El',
         ],
 
         'groups' => [
             'status'     => 'Estado',
             'name'       => 'Nombre',
             'created-by' => 'Creado Por',
-            'created-at' => 'Creado En',
-            'updated-at' => 'Actualizado En',
+            'created-at' => 'Creado El',
+            'updated-at' => 'Actualizado El',
         ],
 
         'actions' => [

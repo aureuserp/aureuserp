@@ -70,8 +70,8 @@ return [
             'created-by' => 'Creado Por',
             'company'    => 'Empresa',
             'name'       => 'Nombre',
-            'created-at' => 'Creado En',
-            'updated-at' => 'Actualizado En',
+            'created-at' => 'Creado El',
+            'updated-at' => 'Actualizado El',
         ],
         'actions' => [
             'delete' => [

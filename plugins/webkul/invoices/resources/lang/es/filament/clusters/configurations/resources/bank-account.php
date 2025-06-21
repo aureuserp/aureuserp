@@ -45,9 +45,9 @@ return [
             'bank'           => 'Banco',
             'account-holder' => 'Titular de la Cuenta',
             'send-money'     => 'Puede Enviar Dinero',
-            'created-at'     => 'Creado En',
-            'updated-at'     => 'Actualizado En',
-            'deleted-at'     => 'Eliminado En',
+            'created-at'     => 'Creado El',
+            'updated-at'     => 'Actualizado El',
+            'deleted-at'     => 'Eliminado El',
         ],
 
         'filters' => [
@@ -60,7 +60,7 @@ return [
         'groups' => [
             'bank'           => 'Banco',
             'can-send-money' => 'Puede Enviar Dinero',
-            'created-at'     => 'Creado En',
+            'created-at'     => 'Creado El',
         ],
 
         'actions' => [

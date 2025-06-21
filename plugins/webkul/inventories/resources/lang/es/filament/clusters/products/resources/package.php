@@ -28,14 +28,14 @@ return [
             'package-type' => 'Tipo de Paquete',
             'location'     => 'Ubicación',
             'company'      => 'Empresa',
-            'created-at'   => 'Creado En',
-            'updated-at'   => 'Actualizado En',
+            'created-at'   => 'Creado El',
+            'updated-at'   => 'Actualizado El',
         ],
 
         'groups' => [
             'package-type' => 'Tipo de Paquete',
             'location'     => 'Ubicación',
-            'created-at'   => 'Creado En',
+            'created-at'   => 'Creado El',
         ],
 
         'filters' => [
@@ -97,7 +97,7 @@ return [
                     'pack-date'    => 'Fecha de Empaquetado',
                     'location'     => 'Ubicación',
                     'company'      => 'Empresa',
-                    'created-at'   => 'Creado En',
+                    'created-at'   => 'Creado El',
                     'updated-at'   => 'Última Actualización',
                 ],
             ],
@@ -107,7 +107,7 @@ return [
 
                 'entries' => [
                     'created-by'    => 'Creado Por',
-                    'created-at'    => 'Creado En',
+                    'created-at'    => 'Creado El',
                     'last-updated'  => 'Última Actualización',
                 ],
             ],
