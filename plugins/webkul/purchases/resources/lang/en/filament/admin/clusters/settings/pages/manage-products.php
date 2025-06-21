@@ -1,7 +1,10 @@
 <?php
 
 return [
-    'title' => 'Manage Products',
+    'navigation' => [
+        'title' => 'Manage Products',
+        'group' => 'Purchase'
+    ],
 
     'form' => [
         'enable-variants'               => 'Variants',
