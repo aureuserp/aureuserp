@@ -42,6 +42,11 @@ class ManageInvoice extends SettingsPage
     {
         return __('sales::filament/clusters/settings/pages/manage-invoice.navigation.title');
     }
+    
+    public static function getNavigationGroup(): string
+    {
+        return __('sales::filament/clusters/settings/pages/manage-invoice.navigation.group');
+    }
 
     public function form(Form $form): Form
     {
