@@ -312,10 +312,10 @@ trait HasLogActivity
         }
 
         if (
-            ! is_array($value)
-            && json_decode($value, true)
+            is_string($value)
+            && $decoded = json_decode($value, true)
         ) {
-            $value = json_decode($value, true);
+            $value = $decoded;
         }
 
         if (is_array($value)) {
