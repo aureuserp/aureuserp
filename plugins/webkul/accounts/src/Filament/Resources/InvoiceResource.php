@@ -93,6 +93,7 @@ class InvoiceResource extends Resource
                                 Forms\Components\Group::make()
                                     ->schema([
                                         Forms\Components\Select::make('partner_id')
+                                            ->required()
                                             ->label(__('accounts::filament/resources/invoice.form.section.general.fields.customer'))
                                             ->relationship(
                                                 'partner',
