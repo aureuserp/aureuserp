@@ -2,16 +2,33 @@
 
 namespace Webkul\TimeOff;
 
+use Webkul\Employee\Models\Employee;
 use Webkul\Support\Console\Commands\InstallCommand;
 use Webkul\Support\Console\Commands\UninstallCommand;
 use Webkul\Support\Package;
 use Webkul\Support\PackageServiceProvider;
+use Webkul\TimeOff\Models\Leave as TimeOffLeave;
+use Webkul\Employee\Filament\Resources\EmployeeResource as BaseEmployeeResource;
+use Webkul\TimeOff\Filament\Resources\EmployeeResource;
 
 class TimeOffServiceProvider extends PackageServiceProvider
 {
     public static string $name = 'time-off';
 
     public static string $viewNamespace = 'time-off';
+
+    public function boot()
+    {
+        parent::boot();
+
+        // Add timeOffLeaves relation
+        Employee::resolveRelationUsing('timeOffLeaves', function ($employee) {
+            return $employee->hasMany(TimeOffLeave::class, 'employee_id');
+        });
+
+        $this->app->bind(BaseEmployeeResource::class, EmployeeResource::class);
+    }
+    
 
     public function configureCustomPackage(Package $package): void
     {
