@@ -22,6 +22,7 @@ use Filament\Tables;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Enums\DistanceUnit;
@@ -1264,6 +1265,11 @@ class EmployeeResource extends Resource
                                 ->body(__('employees::filament/resources/employee.table.bulk-actions.delete.notification.body'))
                         ),
                     Tables\Actions\ForceDeleteBulkAction::make()
+                        ->before(function (Collection $records) {
+                            foreach ($records as $record) {
+                                $record?->timeOffLeaves()?->delete();
+                            }
+                        })
                         ->successNotification(
                             Notification::make()
                                 ->success()

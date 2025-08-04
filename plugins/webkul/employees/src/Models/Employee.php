@@ -18,6 +18,7 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
 use Webkul\Support\Models\State;
+use Webkul\TimeOff\Models\Leave as TimeOffLeave;
 
 class Employee extends Model
 {
@@ -310,5 +311,10 @@ class Employee extends Model
             $employee->partner_id = $partner->id;
             $employee->save();
         }
+    }
+
+    public function timeOffLeaves()
+    {
+        return $this->hasMany(TimeOffLeave::class, 'employee_id');
     }
 }
