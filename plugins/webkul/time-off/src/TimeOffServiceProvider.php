@@ -8,8 +8,6 @@ use Webkul\Support\Console\Commands\UninstallCommand;
 use Webkul\Support\Package;
 use Webkul\Support\PackageServiceProvider;
 use Webkul\TimeOff\Models\Leave as TimeOffLeave;
-use Webkul\Employee\Filament\Resources\EmployeeResource as BaseEmployeeResource;
-use Webkul\TimeOff\Filament\Resources\EmployeeResource;
 
 class TimeOffServiceProvider extends PackageServiceProvider
 {
@@ -26,7 +24,7 @@ class TimeOffServiceProvider extends PackageServiceProvider
             return $employee->hasMany(TimeOffLeave::class, 'employee_id');
         });
 
-        $this->app->bind(BaseEmployeeResource::class, EmployeeResource::class);
+        $this->app->bind(\Webkul\Employee\Filament\Resources\EmployeeResource\Pages\ListEmployees::class, \Webkul\TimeOff\Filament\Resources\EmployeeResource\Pages\ListEmployees::class);
     }
     
 
