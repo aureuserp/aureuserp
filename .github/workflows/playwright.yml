@@ -63,21 +63,18 @@ jobs:
       - name: Setup Environment File
         run: |
           cp .env.example .env
-          sed -i "s|^DB_CONNECTION=.*|DB_CONNECTION=mysql|" .env
-          sed -i "s|^DB_HOST=.*|DB_HOST=127.0.0.1|" .env
-          sed -i "s|^DB_PORT=.*|DB_PORT=${{ job.services.mysql.ports['3306'] }}|" .env
-          sed -i "s|^DB_DATABASE=.*|DB_DATABASE=aureuserp|" .env
-          sed -i "s|^DB_USERNAME=.*|DB_USERNAME=root|" .env
-          sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=root|" .env
-          sed -i "s|^APP_DEBUG=.*|APP_DEBUG=false|" .env
-          sed -i "s|^APP_URL=.*|APP_URL=http://127.0.0.1:8000|" .env
-          cat .env
+          sed -i "s|^#\?DB_CONNECTION=.*|DB_CONNECTION=mysql|" .env
+          sed -i "s|^#\?DB_HOST=.*|DB_HOST=127.0.0.1|" .env
+          sed -i "s|^#\?DB_PORT=.*|DB_PORT=${{ job.services.mysql.ports['3306'] }}|" .env
+          sed -i "s|^#\?DB_DATABASE=.*|DB_DATABASE=aureuserp|" .env
+          sed -i "s|^#\?DB_USERNAME=.*|DB_USERNAME=root|" .env
+          sed -i "s|^#\?DB_PASSWORD=.*|DB_PASSWORD=root|" .env
+          sed -i "s|^#\?APP_DEBUG=.*|APP_DEBUG=false|" .env
+          sed -i "s|^#\?APP_URL=.*|APP_URL=http://127.0.0.1:8000|" .env
+          
 
       - name: Install Composer Dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
-
-      - name: Run Migrations
-        run: php artisan migrate --force
+        run: composer create-project
 
       - name: Install Aureus ERP
         run: php artisan erp:install
