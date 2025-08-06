@@ -73,8 +73,21 @@ jobs:
           sed -i "s|^\(APP_URL=\s*\).*$|\1http://127.0.0.1:8000|" .env
           cat .env
 
+      # ✅ Wait for MySQL before composer install
+      - name: Wait for MySQL to be ready
+        run: |
+          echo "Waiting for MySQL..."
+          for i in {1..30}; do
+            if mysqladmin ping -h"mysql" -uroot -proot --silent; then
+              echo "MySQL is ready!"
+              break
+            fi
+            sleep 2
+          done
+
+      # ✅ Correct composer install
       - name: Install Composer Dependencies
-        run: composer create-project
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Running Aureus Installer
         run: php artisan erp:install
