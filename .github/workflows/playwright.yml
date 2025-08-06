@@ -71,11 +71,14 @@ jobs:
           sed -i "s|^#\?DB_PASSWORD=.*|DB_PASSWORD=root|" .env
           sed -i "s|^#\?APP_DEBUG=.*|APP_DEBUG=false|" .env
           sed -i "s|^#\?APP_URL=.*|APP_URL=http://127.0.0.1:8000|" .env
-          
+          cat .env
 
       - name: Install Composer Dependencies
         run: composer create-project
 
+      - name: Seed the tables
+        run: php artisan db:seed
+          
       - name: Install Aureus ERP
         run: php artisan erp:install
 
