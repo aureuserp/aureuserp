@@ -52,7 +52,7 @@ jobs:
 
       - name: Install Node.js Dependencies
         run: npm install
-        working-directory: tests/e2e-pw
+        working-directory: .
 
       - name: Install Playwright Browsers
         run: |
@@ -60,42 +60,36 @@ jobs:
           npx playwright install --with-deps chromium
         working-directory: tests/e2e-pw
 
-      - name: Setting Environment mysql
+      - name: Setup Environment File
         run: |
           cp .env.example .env
-          sed -i "s|^\(DB_CONNECTION=\s*\).*$|\1mysql|" .env
-          sed -i "s|^\(DB_HOST=\s*\).*$|\1127.0.0.1|" .env
-          sed -i "s|^\(DB_PORT=\s*\).*$|\1${{ job.services.mysql.ports['3306'] }}|" .env
-          sed -i "s|^#\?\s*DB_DATABASE=.*|DB_DATABASE=/1aureuserp|" .env
-          sed -i "s|^#\?\s*DB_USERNAME=.*|DB_USERNAME=/1root|" .env
-          sed -i "s|^#\?\s*DB_PASSWORD=.*|DB_PASSWORD=/1root|" .env
-          sed -i "s|^\(APP_DEBUG=\s*\).*$|\1false|" .env
-          sed -i "s|^\(APP_URL=\s*\).*$|\1http://127.0.0.1:8000|" .env
+          sed -i "s|^DB_CONNECTION=.*|DB_CONNECTION=mysql|" .env
+          sed -i "s|^DB_HOST=.*|DB_HOST=127.0.0.1|" .env
+          sed -i "s|^DB_PORT=.*|DB_PORT=${{ job.services.mysql.ports['3306'] }}|" .env
+          sed -i "s|^DB_DATABASE=.*|DB_DATABASE=aureuserp|" .env
+          sed -i "s|^DB_USERNAME=.*|DB_USERNAME=root|" .env
+          sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=root|" .env
+          sed -i "s|^APP_DEBUG=.*|APP_DEBUG=false|" .env
+          sed -i "s|^APP_URL=.*|APP_URL=http://127.0.0.1:8000|" .env
           cat .env
 
-      # ✅ Wait for MySQL before composer install
-      - name: Wait for MySQL to be ready
-        run: |
-          echo "Waiting for MySQL..."
-          for i in {1..30}; do
-            if mysqladmin ping -h"mysql" -uroot -proot --silent; then
-              echo "MySQL is ready!"
-              break
-            fi
-            sleep 2
-          done
-
-      # ✅ Correct composer install
       - name: Install Composer Dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Running Aureus Installer
+      - name: Run Migrations
+        run: php artisan migrate --force
+
+      - name: Install Aureus ERP
         run: php artisan erp:install
 
-      - name: Start Laravel server
+      - name: Build Assets (Vite - Filament)
+        run: npm run build
+        working-directory: .
+
+      - name: Start Laravel Server
         run: |
           php artisan serve --host=0.0.0.0 --port=8000 > server.log 2>&1 &
-          echo "Waiting for server to start..."
+          echo "Waiting for Laravel server to start..."
           timeout 30 bash -c 'until curl -s http://127.0.0.1:8000 > /dev/null; do sleep 1; done'
 
       - name: Run All Playwright Tests
@@ -111,6 +105,6 @@ jobs:
         with:
           name: test-results-${{ matrix.shard-index }}-${{ github.run_id }}-${{ github.run_number }}
           path: |
-            plugins/webkul/playwright/tests/e2e-pw/test-results
+            tests/e2e-pw/test-results
             storage/logs/laravel.log
           retention-days: 1
