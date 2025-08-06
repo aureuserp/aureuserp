@@ -25,7 +25,7 @@ class SetAsCheckedAction extends Action
             ->action(function (Move $record, $livewire): void {
                 $record = Account::setAsChecked($record);
 
-                $livewire->refreshFormData(['checked']);
+                $livewire->refreshFormData(['state', 'parent_state', 'checked']);
             })
             ->hidden(function (Move $record) {
                 return
