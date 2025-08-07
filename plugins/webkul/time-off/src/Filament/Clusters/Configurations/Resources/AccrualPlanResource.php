@@ -2,6 +2,7 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources;
 
+use Closure;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -16,6 +17,7 @@ use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\Rule;
 use Webkul\TimeOff\Enums\AccruedGainTime;
 use Webkul\TimeOff\Enums\CarryoverDate;
 use Webkul\TimeOff\Enums\CarryoverDay;
@@ -96,7 +98,11 @@ class AccrualPlanResource extends Resource
                                             ->options(CarryoverDay::class)
                                             ->maxWidth(MaxWidth::ExtraSmall)
                                             ->default(CarryoverDay::DAY_1->value)
-                                            ->required(),
+                                            ->required()
+                                            ->rule(function (Get $get) {
+                                                return self::validateCarryoverDay($get('carryover_day'), $get('carryover_month'));
+                                            })
+                                            ->live(),
                                         Forms\Components\Select::make('carryover_month')
                                             ->hiddenLabel()
                                             ->options(CarryoverMonth::class)
@@ -110,6 +116,28 @@ class AccrualPlanResource extends Resource
                             ]),
                     ])->columns(2),
             ]);
+    }
+
+    public static function validateCarryoverDay(string $day, string $month): ?Closure
+    {
+        $month = strtolower($month);
+        $monthLimits = [
+            CarryoverMonth::FEB => 29,
+            CarryoverMonth::APR => 30,
+            CarryoverMonth::JUN => 30,
+            CarryoverMonth::SEP => 30,
+            CarryoverMonth::NOV => 30,
+        ];
+
+        $options = CarryoverMonth::options();
+
+        if (isset($monthLimits[$month]) && (int)$day > $monthLimits[$month]) {
+            return function (string $attribute, mixed $value, Closure $fail) use ($month, $options) {
+                $fail("The selected day is not valid for the month of " . $options[$month] . ".");
+            };
+        }
+
+        return null; 
     }
 
     public static function table(Table $table): Table
