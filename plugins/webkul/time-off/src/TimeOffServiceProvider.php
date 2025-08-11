@@ -2,16 +2,30 @@
 
 namespace Webkul\TimeOff;
 
+use Webkul\Employee\Models\Employee;
 use Webkul\Support\Console\Commands\InstallCommand;
 use Webkul\Support\Console\Commands\UninstallCommand;
 use Webkul\Support\Package;
 use Webkul\Support\PackageServiceProvider;
+use Webkul\TimeOff\Models\Leave;
 
 class TimeOffServiceProvider extends PackageServiceProvider
 {
     public static string $name = 'time-off';
 
     public static string $viewNamespace = 'time-off';
+
+    public function boot()
+    {
+        $this->handleDynamicRelations();
+
+        $this->app->bind(
+            \Webkul\Employee\Filament\Resources\EmployeeResource::class,
+            \Webkul\TimeOff\Filament\Resources\EmployeeResource::class
+        );
+
+        parent::boot();
+    }
 
     public function configureCustomPackage(Package $package): void
     {
@@ -37,5 +51,12 @@ class TimeOffServiceProvider extends PackageServiceProvider
                     ->runsSeeders();
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {});
+    }
+
+    protected function handleDynamicRelations(): void
+    {
+        Employee::resolveRelationUsing('leaves', function (Employee $employee) {
+            return $employee->hasMany(Leave::class, 'employee_id');
+        });
     }
 }
