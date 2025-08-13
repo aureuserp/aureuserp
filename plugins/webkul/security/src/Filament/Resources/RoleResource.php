@@ -109,24 +109,18 @@ class RoleResource extends Resource implements HasShieldPermissions
                     ->dateTime(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->hidden(fn (Model $record) => $record->name == config('filament-shield.panel_user.name')),
                 Tables\Actions\DeleteAction::make()
                     ->hidden(fn(Model $record) => $record->name == config('filament-shield.panel_user.name')),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ])
+            ->defaultSort('created_at', 'asc')
             ->checkIfRecordIsSelectableUsing(
-                fn (Model $record): bool => ! ($record->name == config('filament-shield.panel_user.name'))
-            )
-            ->defaultSort('created_at', 'asc');
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
+                fn (Model $record): bool => $record->name != config('filament-shield.panel_user.name'),
+            );
     }
 
     public static function getPages(): array

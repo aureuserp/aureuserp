@@ -197,8 +197,6 @@ class CalendarWidget extends FullCalendarWidget
                         ->success()
                         ->title(__('time-off::filament/widgets/calendar-widget.modal-actions.edit.notification.title'))
                         ->body(__('time-off::filament/widgets/calendar-widget.modal-actions.edit.notification.body'))
-                        ->icon('heroicon-o-check-circle')
-                        ->iconColor('success')
                         ->send();
                 })
                 ->mountUsing(
@@ -288,10 +286,8 @@ class CalendarWidget extends FullCalendarWidget
 
                     Notification::make()
                         ->success()
-                        ->title(__('time-off::filament/widgets/calendar-widget.header-actions.create.success.notification.title'))
-                        ->body(__('time-off::filament/widgets/calendar-widget.header-actions.create.success.notification.body'))
-                        ->icon('heroicon-o-check-circle')
-                        ->iconColor('success')
+                        ->title(__('time-off::filament/widgets/calendar-widget.header-actions.create.notification.title'))
+                        ->body(__('time-off::filament/widgets/calendar-widget.header-actions.create.notification.body'))
                         ->send();
                 })
                 ->mountUsing(

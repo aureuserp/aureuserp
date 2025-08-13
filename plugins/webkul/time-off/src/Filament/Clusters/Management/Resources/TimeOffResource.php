@@ -94,12 +94,27 @@ class TimeOffResource extends Resource
                                             ->native(false)
                                             ->label(__('time-off::filament/clusters/management/resources/time-off.form.fields.request-date-from'))
                                             ->default(now())
+                                            ->minDate(now()->toDateString())
+                                            ->live()
+                                            ->afterStateUpdated(fn (callable $set) => $set('request_date_to', null))
+                                            ->rules([
+                                                'required',
+                                                'date',
+                                                'after_or_equal:today',
+                                            ])
                                             ->required(),
                                         Forms\Components\DatePicker::make('request_date_to')
                                             ->native(false)
                                             ->default(now())
                                             ->label(__('time-off::filament/clusters/management/resources/time-off.form.fields.request-date-to'))
                                             ->hidden(fn (Get $get) => $get('request_unit_half'))
+                                            ->minDate(fn (callable $get) => $get('request_date_from') ?: now()->toDateString())
+                                            ->live()
+                                            ->rules([
+                                                'required',
+                                                'date',
+                                                'after_or_equal:request_date_from',
+                                            ])
                                             ->required(),
                                         Forms\Components\Select::make('request_date_from_period')
                                             ->label(__('time-off::filament/clusters/management/resources/time-off.form.fields.period'))
@@ -126,7 +141,18 @@ class TimeOffResource extends Resource
                                         $startDate = Carbon::parse($get('request_date_from'));
                                         $endDate = $get('request_date_to') ? Carbon::parse($get('request_date_to')) : $startDate;
 
-                                        return __('time-off::filament/clusters/management/resources/time-off.form.fields.days', ['days' => $startDate->diffInDays($endDate) + 1]);
+                                        $businessDays = 0;
+                                        $currentDate = $startDate->copy();
+
+                                        while ($currentDate->lte($endDate)) {
+                                            if (! in_array($currentDate->dayOfWeek, [0, 6])) {
+                                                $businessDays++;
+                                            }
+
+                                            $currentDate->addDay();
+                                        }
+
+                                        return __('time-off::filament/clusters/management/resources/time-off.form.fields.days', ['days' => $businessDays]);
                                     }),
                                 Forms\Components\Textarea::make('private_name')
                                     ->label(__('time-off::filament/clusters/management/resources/time-off.form.fields.description'))
@@ -340,7 +366,19 @@ class TimeOffResource extends Resource
                                         $startDate = Carbon::parse($record->request_date_from);
                                         $endDate = $record->request_date_to ? Carbon::parse($record->request_date_to) : $startDate;
 
-                                        return __('time-off::filament/clusters/my-time/resources/my-time-off.infolist.entries.days', ['days' => ($startDate->diffInDays($endDate) + 1)]);
+                                        // Calculate business days (excluding weekends)
+                                        $businessDays = 0;
+                                        $currentDate = $startDate->copy();
+
+                                        while ($currentDate->lte($endDate)) {
+                                            // Check if the current date is not Saturday (6) or Sunday (0)
+                                            if (! in_array($currentDate->dayOfWeek, [0, 6])) {
+                                                $businessDays++;
+                                            }
+                                            $currentDate->addDay();
+                                        }
+
+                                        return __('time-off::filament/clusters/my-time/resources/my-time-off.infolist.entries.days', ['days' => $businessDays]);
                                     })
                                     ->icon('heroicon-o-calendar-days'),
                             ]),

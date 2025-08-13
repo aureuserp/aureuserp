@@ -13,7 +13,8 @@ class ViewRole extends ViewRecord
     protected function getActions(): array
     {
         return [
-            Actions\EditAction::make(),
+            Actions\EditAction::make()
+                ->hidden(fn ($record) => $record->name == config('filament-shield.panel_user.name')),
         ];
     }
 }

@@ -2,13 +2,11 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Reporting\Resources;
 
-use Filament\Forms\Form;
-use Filament\Infolists\Infolist;
-use Filament\Resources\Resource;
 use Filament\Tables\Table;
 use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource as BaseByEmployeeResource;
 use Webkul\TimeOff\Filament\Clusters\Reporting;
 use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Pages;
+
 
 class ByEmployeeResource extends BaseByEmployeeResource
 {
@@ -30,11 +28,6 @@ class ByEmployeeResource extends BaseByEmployeeResource
     {
         return parent::table($table)
             ->defaultGroup('employee.name');
-    }
-
-    public static function infolist(Infolist $infolist): Infolist
-    {
-        return parent::infolist($infolist);
     }
 
     public static function getPages(): array

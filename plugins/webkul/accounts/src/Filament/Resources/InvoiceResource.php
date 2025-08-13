@@ -209,6 +209,8 @@ class InvoiceResource extends Resource
                                             ->relationship('company', 'name')
                                             ->searchable()
                                             ->preload()
+                                            ->reactive()
+                                            ->afterStateUpdated(fn (callable $set, $state) => $set('currency_id', Company::find($state)?->currency_id))
                                             ->default(Auth::user()->default_company_id)
                                             ->live()
                                             ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
