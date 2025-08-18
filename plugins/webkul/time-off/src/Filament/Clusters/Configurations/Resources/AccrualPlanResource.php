@@ -2,18 +2,30 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
-use Filament\Support\Enums\MaxWidth;
-use Filament\Tables;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
+use Filament\Support\Enums\Width;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Route;
 use Webkul\TimeOff\Enums\AccruedGainTime;
@@ -21,15 +33,19 @@ use Webkul\TimeOff\Enums\CarryoverDate;
 use Webkul\TimeOff\Enums\CarryoverDay;
 use Webkul\TimeOff\Enums\CarryoverMonth;
 use Webkul\TimeOff\Filament\Clusters\Configurations;
-use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource\Pages;
-use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource\RelationManagers;
+use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource\Pages\CreateAccrualPlan;
+use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource\Pages\EditAccrualPlan;
+use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource\Pages\ListAccrualPlans;
+use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource\Pages\ManageMilestone;
+use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource\Pages\ViewAccrualPlan;
+use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource\RelationManagers\MilestoneRelationManager;
 use Webkul\TimeOff\Models\LeaveAccrualPlan;
 
 class AccrualPlanResource extends Resource
 {
     protected static ?string $model = LeaveAccrualPlan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-paper-airplane';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-paper-airplane';
 
     protected static ?string $cluster = Configurations::class;
 
@@ -54,36 +70,36 @@ class AccrualPlanResource extends Resource
         return __('time-off::filament/clusters/configurations/resources/accrual-plan.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make()
+        return $schema
+            ->components([
+                Section::make()
                     ->schema([
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\TextInput::make('name')
+                                TextInput::make('name')
                                     ->label(__('Name'))
                                     ->label(__('time-off::filament/clusters/configurations/resources/accrual-plan.form.fields.name'))
                                     ->required(),
-                                Forms\Components\Toggle::make('is_based_on_worked_time')
+                                Toggle::make('is_based_on_worked_time')
                                     ->inline(false)
                                     ->label(__('Is Based On Worked Time'))
                                     ->label(__('time-off::filament/clusters/configurations/resources/accrual-plan.form.fields.is-based-on-worked-time')),
-                                Forms\Components\Radio::make('accrued_gain_time')
+                                Radio::make('accrued_gain_time')
                                     ->label(__('Accrued Gain Time'))
                                     ->label(__('time-off::filament/clusters/configurations/resources/accrual-plan.form.fields.accrued-gain-time'))
                                     ->options(AccruedGainTime::class)
                                     ->default(AccruedGainTime::END->value)
                                     ->required(),
-                                Forms\Components\Radio::make('carryover_date')
+                                Radio::make('carryover_date')
                                     ->label(__('Carry-Over Time'))
                                     ->label(__('time-off::filament/clusters/configurations/resources/accrual-plan.form.fields.carry-over-time'))
                                     ->options(CarryoverDate::class)
                                     ->default(CarryoverDate::OTHER->value)
                                     ->live()
                                     ->required(),
-                                Forms\Components\Fieldset::make()
+                                Fieldset::make()
                                     ->label('Carry-Over Date')
                                     ->label(__('time-off::filament/clusters/configurations/resources/accrual-plan.form.fields.carry-over-date'))
                                     ->live()
@@ -91,19 +107,19 @@ class AccrualPlanResource extends Resource
                                         return $get('carryover_date') === CarryoverDate::OTHER->value;
                                     })
                                     ->schema([
-                                        Forms\Components\Select::make('carryover_day')
+                                        Select::make('carryover_day')
                                             ->hiddenLabel()
                                             ->options(CarryoverDay::class)
-                                            ->maxWidth(MaxWidth::ExtraSmall)
+                                            ->maxWidth(Width::ExtraSmall)
                                             ->default(CarryoverDay::DAY_1->value)
                                             ->required(),
-                                        Forms\Components\Select::make('carryover_month')
+                                        Select::make('carryover_month')
                                             ->hiddenLabel()
                                             ->options(CarryoverMonth::class)
                                             ->default(CarryoverMonth::JAN->value)
                                             ->required(),
                                     ])->columns(2),
-                                Forms\Components\Toggle::make('is_active')
+                                Toggle::make('is_active')
                                     ->inline(false)
                                     ->label(__('Status'))
                                     ->label(__('time-off::filament/clusters/configurations/resources/accrual-plan.form.fields.status')),
@@ -116,27 +132,27 @@ class AccrualPlanResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable()
                     ->label(__('time-off::filament/clusters/configurations/resources/accrual-plan.table.columns.name')),
-                Tables\Columns\TextColumn::make('leaveAccrualLevels')
+                TextColumn::make('leaveAccrualLevels')
                     ->searchable()
                     ->formatStateUsing(fn ($record) => $record->leaveAccrualLevels?->count())
                     ->label(__('time-off::filament/clusters/configurations/resources/accrual-plan.table.columns.levels')),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->title(__('time-off::filament/clusters/configurations/resources/accrual-plan.table.actions.delete.notification.title'))
                             ->body(__('time-off::filament/clusters/configurations/resources/accrual-plan.table.actions.delete.notification.body'))
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->title(__('time-off::filament/clusters/configurations/resources/accrual-plan.table.bulk-actions.delete.notification.title'))
@@ -146,40 +162,40 @@ class AccrualPlanResource extends Resource
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Grid::make(['default' => 2])
+        return $schema
+            ->components([
+                Grid::make(['default' => 2])
                     ->schema([
-                        Infolists\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Infolists\Components\Section::make(__('Basic Information'))
+                                Section::make(__('Basic Information'))
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('name')
+                                        TextEntry::make('name')
                                             ->icon('heroicon-o-user')
                                             ->placeholder('—')
                                             ->label(__('time-off::filament/clusters/configurations/resources/accrual-plan.infolist.entries.name')),
-                                        Infolists\Components\IconEntry::make('is_based_on_worked_time')
+                                        IconEntry::make('is_based_on_worked_time')
                                             ->boolean()
                                             ->label(__('time-off::filament/clusters/configurations/resources/accrual-plan.infolist.entries.is-based-on-worked-time')),
-                                        Infolists\Components\TextEntry::make('accrued_gain_time')
+                                        TextEntry::make('accrued_gain_time')
                                             ->icon('heroicon-o-clock')
                                             ->placeholder('—')
                                             ->formatStateUsing(fn ($state) => AccruedGainTime::options()[$state])
                                             ->label(__('time-off::filament/clusters/configurations/resources/accrual-plan.infolist.entries.accrued-gain-time')),
-                                        Infolists\Components\TextEntry::make('carryover_date')
+                                        TextEntry::make('carryover_date')
                                             ->icon('heroicon-o-calendar')
                                             ->placeholder('—')
                                             ->formatStateUsing(fn ($state) => CarryoverDate::options()[$state])
                                             ->label(__('time-off::filament/clusters/configurations/resources/accrual-plan.infolist.entries.carry-over-time')),
-                                        Infolists\Components\TextEntry::make('carryover_day')
+                                        TextEntry::make('carryover_day')
                                             ->icon('heroicon-o-calendar')
                                             ->placeholder('—')
                                             ->formatStateUsing(fn ($state) => CarryoverDay::options()[$state])
                                             ->label(__('Carryover Day'))
                                             ->label(__('time-off::filament/clusters/configurations/resources/accrual-plan.infolist.entries.carry-over-day')),
-                                        Infolists\Components\TextEntry::make('carryover_month')
+                                        TextEntry::make('carryover_month')
                                             ->icon('heroicon-o-calendar')
                                             ->placeholder('—')
                                             ->formatStateUsing(fn ($state) => CarryoverMonth::options()[$state])
@@ -195,9 +211,9 @@ class AccrualPlanResource extends Resource
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewAccrualPlan::class,
-            Pages\EditAccrualPlan::class,
-            Pages\ManageMilestone::class,
+            ViewAccrualPlan::class,
+            EditAccrualPlan::class,
+            ManageMilestone::class,
         ]);
     }
 
@@ -205,7 +221,7 @@ class AccrualPlanResource extends Resource
     {
         return [
             RelationGroup::make('Manage Milestones', [
-                RelationManagers\MilestoneRelationManager::class,
+                MilestoneRelationManager::class,
             ])
                 ->icon('heroicon-o-clipboard-list'),
         ];
@@ -214,11 +230,11 @@ class AccrualPlanResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'      => Pages\ListAccrualPlans::route('/'),
-            'create'     => Pages\CreateAccrualPlan::route('/create'),
-            'view'       => Pages\ViewAccrualPlan::route('/{record}'),
-            'edit'       => Pages\EditAccrualPlan::route('/{record}/edit'),
-            'milestones' => Pages\ManageMilestone::route('/{record}/milestones'),
+            'index'      => ListAccrualPlans::route('/'),
+            'create'     => CreateAccrualPlan::route('/create'),
+            'view'       => ViewAccrualPlan::route('/{record}'),
+            'edit'       => EditAccrualPlan::route('/{record}/edit'),
+            'milestones' => ManageMilestone::route('/{record}/milestones'),
         ];
     }
 }

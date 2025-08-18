@@ -1,12 +1,19 @@
 <?php
 
-namespace Webkul\Project\Filament\Resources\ProjectResource\Pages;
 
-use Filament\Actions;
-use Filament\Infolists\Infolist;
+namespace Webkul\Project\Filament\Resources\ProjectResource\Pages;
+use BackedEnum;
+
+use Filament\Actions\ActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +32,7 @@ class ManageTasks extends ManageRelatedRecords
 
     protected static string $relationship = 'tasks';
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     public static function getNavigationLabel(): string
     {
@@ -35,7 +42,7 @@ class ManageTasks extends ManageRelatedRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label(__('projects::filament/resources/project/pages/manage-tasks.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
                 ->url(TaskResource::getUrl('create')),
@@ -45,29 +52,29 @@ class ManageTasks extends ManageRelatedRecords
     public function table(Table $table): Table
     {
         return TaskResource::table($table)
-            ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ActionGroup::make([
+                    ViewAction::make()
                         ->url(fn (Task $record): string => TaskResource::getUrl('view', ['record' => $record]))
                         ->hidden(fn ($record) => $record->trashed()),
-                    Tables\Actions\EditAction::make()
+                    EditAction::make()
                         ->url(fn (Task $record): string => TaskResource::getUrl('edit', ['record' => $record]))
                         ->hidden(fn ($record) => $record->trashed()),
-                    Tables\Actions\RestoreAction::make()
+                    RestoreAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('projects::filament/resources/project/pages/manage-tasks.table.actions.restore.notification.title'))
                                 ->body(__('projects::filament/resources/project/pages/manage-tasks.table.actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteAction::make()
+                    DeleteAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('projects::filament/resources/project/pages/manage-tasks.table.actions.delete.notification.title'))
                                 ->body(__('projects::filament/resources/project/pages/manage-tasks.table.actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteAction::make()
+                    ForceDeleteAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -81,9 +88,9 @@ class ManageTasks extends ManageRelatedRecords
             });
     }
 
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $schema): Schema
     {
-        return TaskResource::infolist($infolist);
+        return TaskResource::infolist($schema);
     }
 
     public function getPresetTableViews(): array

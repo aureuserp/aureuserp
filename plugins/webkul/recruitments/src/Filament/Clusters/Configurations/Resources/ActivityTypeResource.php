@@ -4,7 +4,10 @@ namespace Webkul\Recruitment\Filament\Clusters\Configurations\Resources;
 
 use Filament\Tables\Table;
 use Webkul\Recruitment\Filament\Clusters\Configurations;
-use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages;
+use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages\CreateActivityType;
+use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages\EditActivityType;
+use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages\ListActivityTypes;
+use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages\ViewActivityType;
 use Webkul\Recruitment\Models\ActivityType;
 use Webkul\Support\Filament\Resources\ActivityTypeResource as BaseActivityTypeResource;
 
@@ -12,7 +15,7 @@ class ActivityTypeResource extends BaseActivityTypeResource
 {
     protected static ?string $model = ActivityType::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $cluster = Configurations::class;
 
@@ -34,10 +37,10 @@ class ActivityTypeResource extends BaseActivityTypeResource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListActivityTypes::route('/'),
-            'create' => Pages\CreateActivityType::route('/create'),
-            'edit'   => Pages\EditActivityType::route('/{record}/edit'),
-            'view'   => Pages\ViewActivityType::route('/{record}'),
+            'index'  => ListActivityTypes::route('/'),
+            'create' => CreateActivityType::route('/create'),
+            'edit'   => EditActivityType::route('/{record}/edit'),
+            'view'   => ViewActivityType::route('/{record}'),
         ];
     }
 }

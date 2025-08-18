@@ -2,12 +2,13 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources\InternalResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\QueryException;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\InternalResource;
 use Webkul\Inventory\Models\InternalTransfer;
@@ -39,7 +40,7 @@ class EditInternal extends EditRecord
             OperationActions\ValidateAction::make(),
             OperationActions\CancelAction::make(),
             OperationActions\ReturnAction::make(),
-            Actions\ActionGroup::make([
+            ActionGroup::make([
                 OperationActions\Print\PickingOperationAction::make(),
                 OperationActions\Print\DeliverySlipAction::make(),
                 OperationActions\Print\PackageAction::make(),
@@ -49,9 +50,9 @@ class EditInternal extends EditRecord
                 ->icon('heroicon-o-printer')
                 ->color('gray')
                 ->button(),
-            Actions\DeleteAction::make()
-                ->hidden(fn () => $this->getRecord()->state == Enums\OperationState::DONE)
-                ->action(function (Actions\DeleteAction $action, InternalTransfer $record) {
+            DeleteAction::make()
+                ->hidden(fn () => $this->getRecord()->state == OperationState::DONE)
+                ->action(function (DeleteAction $action, InternalTransfer $record) {
                     try {
                         $record->delete();
 

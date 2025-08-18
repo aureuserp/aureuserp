@@ -2,7 +2,7 @@
 
 namespace Webkul\Employee\Filament\Clusters\Configurations\Resources\JobPositionResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\JobPositionResource;
 
@@ -13,7 +13,7 @@ class ViewJobPosition extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
+            EditAction::make(),
         ];
     }
 }

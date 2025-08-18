@@ -2,19 +2,21 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Reporting\Resources;
 
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource;
 use Webkul\TimeOff\Filament\Clusters\Reporting;
-use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Pages;
+use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Pages\CreateByEmployee;
+use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Pages\EditByEmployee;
+use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Pages\ListByEmployees;
 use Webkul\TimeOff\Models\Leave;
 
 class ByEmployeeResource extends Resource
 {
     protected static ?string $model = Leave::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
     protected static ?string $cluster = Reporting::class;
 
@@ -28,9 +30,9 @@ class ByEmployeeResource extends Resource
         return __('time-off::filament/clusters/reporting/resources/by-employee.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return TimeOffResource::form($form);
+        return TimeOffResource::form($schema);
     }
 
     public static function table(Table $table): Table
@@ -42,9 +44,9 @@ class ByEmployeeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListByEmployees::route('/'),
-            'create' => Pages\CreateByEmployee::route('/create'),
-            'edit'   => Pages\EditByEmployee::route('/{record}/edit'),
+            'index'  => ListByEmployees::route('/'),
+            'create' => CreateByEmployee::route('/create'),
+            'edit'   => EditByEmployee::route('/{record}/edit'),
         ];
     }
 }

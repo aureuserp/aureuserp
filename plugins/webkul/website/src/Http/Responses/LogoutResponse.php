@@ -2,11 +2,11 @@
 
 namespace Webkul\Website\Http\Responses;
 
-use Filament\Http\Responses\Auth\Contracts\LogoutResponse as Responsable;
+use Filament\Auth\Http\Responses\Contracts\LogoutResponse as BaseLogoutResponse;
 use Illuminate\Http\RedirectResponse;
 use Webkul\Website\Filament\Customer\Pages\Homepage;
 
-class LogoutResponse implements Responsable
+class LogoutResponse implements BaseLogoutResponse
 {
     public function toResponse($request): RedirectResponse
     {

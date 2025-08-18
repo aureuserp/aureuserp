@@ -2,10 +2,9 @@
 
 namespace Webkul\Account\Filament\Resources\AccountTagResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Filament\Resources\AccountTagResource;
 
 class ListAccountTags extends ListRecords
@@ -15,10 +14,10 @@ class ListAccountTags extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->icon('heroicon-o-plus-circle')
-                ->mutateFormDataUsing(function (array $data): array {
-                    $data['creator_id'] = Auth::user()->id;
+                ->mutateDataUsing(function (array $data): array {
+                    $data['creator_id'] = filament()->auth()->user()->id;
 
                     return $data;
                 })

@@ -2,16 +2,18 @@
 
 namespace Webkul\Recruitment\Filament\Clusters\Applications\Resources\ApplicantResource\Pages;
 
-use Filament\Actions;
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Actions\CreateAction;
+use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Recruitment\Enums\RecruitmentState;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\ApplicantResource;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource;
+use Webkul\Recruitment\Filament\Widgets\JobPositionStatsWidget;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
 
@@ -24,7 +26,7 @@ class ListApplicants extends ListRecords
     public function getHeaderWidgets(): array
     {
         return [
-            \Webkul\Recruitment\Filament\Widgets\JobPositionStatsWidget::make(),
+            JobPositionStatsWidget::make(),
         ];
     }
 
@@ -127,24 +129,24 @@ class ListApplicants extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->icon('heroicon-o-plus-circle')
                 ->label(__('recruitments::filament/clusters/applications/resources/applicant/pages/list-applicant.header-actions.create-applicant.label'))
                 ->modalHeading(__('recruitments::filament/clusters/applications/resources/applicant/pages/list-applicant.header-actions.create-applicant.modal-title'))
                 ->modalIcon('heroicon-s-user')
-                ->form([
-                    Forms\Components\Group::make()
+                ->schema([
+                    Group::make()
                         ->schema([
-                            Forms\Components\Select::make('candidate_id')
+                            Select::make('candidate_id')
                                 ->relationship('candidate', 'name')
                                 ->required()
                                 ->searchable()
                                 ->preload()
                                 ->label('Candidate')
-                                ->createOptionForm(fn (Form $form) => CandidateResource::form($form)),
+                                ->createOptionForm(fn (Schema $schema) => CandidateResource::form($schema)),
                         ])->columns(2),
                 ])
-                ->mutateFormDataUsing(function (array $data): array {
+                ->mutateDataUsing(function (array $data): array {
                     $data['creator_id'] = Auth::id();
                     $data['company_id'] = Auth::user()->default_company_id;
                     $data['create_date'] = now();

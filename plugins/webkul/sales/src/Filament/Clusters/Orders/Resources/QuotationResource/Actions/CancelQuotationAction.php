@@ -3,9 +3,11 @@
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions;
 
 use Filament\Actions\Action;
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Schema;
 use Webkul\Partner\Models\Partner;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Facades\SaleOrder;
@@ -67,17 +69,17 @@ class CancelQuotationAction extends Action
                         ->cancelParentActions(),
                 ];
             })
-            ->form(
-                function (Form $form, $record) {
-                    return $form->schema([
-                        Forms\Components\Select::make('partners')
+            ->schema(
+                function (Schema $schema, $record) {
+                    return $schema->components([
+                        Select::make('partners')
                             ->options(Partner::all()->pluck('name', 'id'))
                             ->multiple()
                             ->default([$record->partner_id])
                             ->searchable()
                             ->label(__('sales::filament/clusters/orders/resources/quotation/actions/cancel-quotation.form.fields.partner'))
                             ->preload(),
-                        Forms\Components\TextInput::make('subject')
+                        TextInput::make('subject')
                             ->default(fn () => __('sales::filament/clusters/orders/resources/quotation/actions/cancel-quotation.form.fields.subject-default', [
                                 'name' => $record->name,
                                 'id'   => $record->id,
@@ -85,7 +87,7 @@ class CancelQuotationAction extends Action
                             ->placeholder(__('sales::filament/clusters/orders/resources/quotation/actions/cancel-quotation.form.fields.subject-placeholder'))
                             ->label(__('sales::filament/clusters/orders/resources/quotation/actions/cancel-quotation.form.fields.subject'))
                             ->hiddenLabel(),
-                        Forms\Components\RichEditor::make('description')
+                        RichEditor::make('description')
                             ->label(__('sales::filament/clusters/orders/resources/quotation/actions/cancel-quotation.form.fields.description'))
                             ->default(function () use ($record) {
                                 return __('sales::filament/clusters/orders/resources/quotation/actions/cancel-quotation.form.fields.description-default', [

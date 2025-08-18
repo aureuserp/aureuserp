@@ -2,8 +2,8 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Management\Resources\AllocationResource\Pages;
 
-use Filament\Actions;
 use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
@@ -77,7 +77,7 @@ class EditAllocation extends EditRecord
                         ->body(__('time-off::filament/clusters/management/resources/allocation/pages/edit-allocation.header-actions.mark-as-ready-to-confirm.notification.body'))
                         ->send();
                 }),
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()

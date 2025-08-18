@@ -7,6 +7,7 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\InternalResource;
 use Webkul\Inventory\Models\OperationType;
 
@@ -57,7 +58,7 @@ class CreateInternal extends CreateRecord
 
         $data['destination_location_id'] ??= $operationType->destination_location_id;
 
-        $data['state'] ??= Enums\OperationState::DRAFT;
+        $data['state'] ??= OperationState::DRAFT;
 
         $data['creator_id'] = Auth::id();
 

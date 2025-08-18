@@ -15,7 +15,7 @@ class ViewCategory extends ViewRecord
 {
     protected static string $resource = CategoryResource::class;
 
-    protected static string $view = 'blogs::filament.customer.resources.category.pages.view-record';
+    protected string $view = 'blogs::filament.customer.resources.category.pages.view-record';
 
     public function getBreadcrumbs(): array
     {

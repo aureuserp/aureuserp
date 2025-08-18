@@ -9,7 +9,7 @@ class Overview extends BaseDashboard
 {
     protected static string $routePath = 'time-off';
 
-    protected static ?string $navigationIcon = 'heroicon-o-calendar';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-calendar';
 
     protected static ?int $navigationSort = 2;
 

@@ -2,14 +2,35 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\Action;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
+use Filament\Tables\Filters\QueryBuilder\Constraints\SelectConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -17,8 +38,13 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\LocationType;
+use Webkul\Inventory\Enums\MoveState;
+use Webkul\Inventory\Enums\MoveType;
+use Webkul\Inventory\Enums\OperationState;
+use Webkul\Inventory\Enums\ProcureMethod;
+use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Facades\Inventory;
-use Webkul\Inventory\Filament\Clusters\Operations\Resources;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource;
 use Webkul\Inventory\Models\Move;
@@ -27,7 +53,10 @@ use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\Packaging;
 use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Models\ProductQuantity;
-use Webkul\Inventory\Settings;
+use Webkul\Inventory\Settings\OperationSettings;
+use Webkul\Inventory\Settings\ProductSettings;
+use Webkul\Inventory\Settings\TraceabilitySettings;
+use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Partner\Filament\Resources\PartnerResource;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Support\Models\UOM;
@@ -41,52 +70,52 @@ class OperationResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 ProgressStepper::make('state')
                     ->hiddenLabel()
                     ->inline()
-                    ->options(Enums\OperationState::options())
+                    ->options(OperationState::options())
                     ->options(function ($record) {
-                        $options = Enums\OperationState::options();
+                        $options = OperationState::options();
 
-                        if ($record && $record->state !== Enums\OperationState::CANCELED) {
-                            unset($options[Enums\OperationState::CANCELED->value]);
+                        if ($record && $record->state !== OperationState::CANCELED) {
+                            unset($options[OperationState::CANCELED->value]);
                         }
 
                         return $options;
                     })
-                    ->default(Enums\OperationState::DRAFT)
+                    ->default(OperationState::DRAFT)
                     ->disabled(),
-                Forms\Components\Section::make(__('inventories::filament/clusters/operations/resources/operation.form.sections.general.title'))
+                Section::make(__('inventories::filament/clusters/operations/resources/operation.form.sections.general.title'))
                     ->schema([
-                        Forms\Components\Select::make('partner_id')
+                        Select::make('partner_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.sections.general.fields.receive-from'))
                             ->relationship('partner', 'name')
                             ->searchable()
                             ->preload()
-                            ->createOptionForm(fn (Form $form): Form => PartnerResource::form($form))
-                            ->visible(fn (Forms\Get $get): bool => OperationType::withTrashed()->find($get('operation_type_id'))?->type == Enums\OperationType::INCOMING)
-                            ->disabled(fn ($record): bool => in_array($record?->state, [Enums\OperationState::DONE, Enums\OperationState::CANCELED])),
-                        Forms\Components\Select::make('partner_id')
+                            ->createOptionForm(fn (Schema $schema): Schema => PartnerResource::form($schema))
+                            ->visible(fn (Get $get): bool => OperationType::withTrashed()->find($get('operation_type_id'))?->type == Enums\OperationType::INCOMING)
+                            ->disabled(fn ($record): bool => in_array($record?->state, [OperationState::DONE, OperationState::CANCELED])),
+                        Select::make('partner_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.sections.general.fields.contact'))
                             ->relationship('partner', 'name')
                             ->searchable()
                             ->preload()
-                            ->createOptionForm(fn (Form $form): Form => PartnerResource::form($form))
-                            ->visible(fn (Forms\Get $get): bool => OperationType::withTrashed()->find($get('operation_type_id'))?->type == Enums\OperationType::INTERNAL)
-                            ->disabled(fn ($record): bool => in_array($record?->state, [Enums\OperationState::DONE, Enums\OperationState::CANCELED])),
-                        Forms\Components\Select::make('partner_id')
+                            ->createOptionForm(fn (Schema $schema): Schema => PartnerResource::form($schema))
+                            ->visible(fn (Get $get): bool => OperationType::withTrashed()->find($get('operation_type_id'))?->type == Enums\OperationType::INTERNAL)
+                            ->disabled(fn ($record): bool => in_array($record?->state, [OperationState::DONE, OperationState::CANCELED])),
+                        Select::make('partner_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.sections.general.fields.delivery-address'))
                             ->relationship('partner', 'name')
                             ->searchable()
                             ->preload()
-                            ->createOptionForm(fn (Form $form): Form => PartnerResource::form($form))
-                            ->visible(fn (Forms\Get $get): bool => OperationType::withTrashed()->find($get('operation_type_id'))?->type == Enums\OperationType::OUTGOING)
-                            ->disabled(fn ($record): bool => in_array($record?->state, [Enums\OperationState::DONE, Enums\OperationState::CANCELED])),
-                        Forms\Components\Select::make('operation_type_id')
+                            ->createOptionForm(fn (Schema $schema): Schema => PartnerResource::form($schema))
+                            ->visible(fn (Get $get): bool => OperationType::withTrashed()->find($get('operation_type_id'))?->type == Enums\OperationType::OUTGOING)
+                            ->disabled(fn ($record): bool => in_array($record?->state, [OperationState::DONE, OperationState::CANCELED])),
+                        Select::make('operation_type_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.sections.general.fields.operation-type'))
                             ->relationship(
                                 name: 'operationType',
@@ -107,14 +136,14 @@ class OperationResource extends Resource
                             ->disableOptionWhen(function ($label) {
                                 return str_contains($label, ' (Deleted)');
                             })
-                            ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get) {
+                            ->afterStateUpdated(function (Set $set, Get $get) {
                                 $operationType = OperationType::withTrashed()->find($get('operation_type_id'));
 
                                 $set('source_location_id', $operationType?->source_location_id);
                                 $set('destination_location_id', $operationType?->destination_location_id);
                             })
-                            ->disabled(fn ($record): bool => in_array($record?->state, [Enums\OperationState::DONE, Enums\OperationState::CANCELED])),
-                        Forms\Components\Select::make('source_location_id')
+                            ->disabled(fn ($record): bool => in_array($record?->state, [OperationState::DONE, OperationState::CANCELED])),
+                        Select::make('source_location_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.sections.general.fields.source-location'))
                             ->relationship(
                                 'sourceLocation',
@@ -130,9 +159,9 @@ class OperationResource extends Resource
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->visible(fn (Settings\WarehouseSettings $settings, Forms\Get $get): bool => $settings->enable_locations && OperationType::withTrashed()->find($get('operation_type_id'))?->type != Enums\OperationType::INCOMING)
-                            ->disabled(fn ($record): bool => in_array($record?->state, [Enums\OperationState::DONE, Enums\OperationState::CANCELED])),
-                        Forms\Components\Select::make('destination_location_id')
+                            ->visible(fn (WarehouseSettings $settings, Get $get): bool => $settings->enable_locations && OperationType::withTrashed()->find($get('operation_type_id'))?->type != Enums\OperationType::INCOMING)
+                            ->disabled(fn ($record): bool => in_array($record?->state, [OperationState::DONE, OperationState::CANCELED])),
+                        Select::make('destination_location_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.sections.general.fields.destination-location'))
                             ->relationship(
                                 'destinationLocation',
@@ -148,51 +177,51 @@ class OperationResource extends Resource
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->visible(fn (Settings\WarehouseSettings $settings, Forms\Get $get): bool => $settings->enable_locations && OperationType::withTrashed()->find($get('operation_type_id'))?->type != Enums\OperationType::OUTGOING)
-                            ->disabled(fn ($record): bool => in_array($record?->state, [Enums\OperationState::DONE, Enums\OperationState::CANCELED])),
+                            ->visible(fn (WarehouseSettings $settings, Get $get): bool => $settings->enable_locations && OperationType::withTrashed()->find($get('operation_type_id'))?->type != Enums\OperationType::OUTGOING)
+                            ->disabled(fn ($record): bool => in_array($record?->state, [OperationState::DONE, OperationState::CANCELED])),
                     ])
                     ->columns(2),
 
-                Forms\Components\Tabs::make()
+                Tabs::make()
                     ->schema([
-                        Forms\Components\Tabs\Tab::make(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.title'))
+                        Tab::make(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.title'))
                             ->schema([
                                 static::getMovesRepeater(),
                             ]),
 
-                        Forms\Components\Tabs\Tab::make(__('inventories::filament/clusters/operations/resources/operation.form.tabs.additional.title'))
+                        Tab::make(__('inventories::filament/clusters/operations/resources/operation.form.tabs.additional.title'))
                             ->schema([
-                                Forms\Components\Select::make('user_id')
+                                Select::make('user_id')
                                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.additional.fields.responsible'))
                                     ->relationship('user', 'name')
                                     ->searchable()
                                     ->preload()
                                     ->default(Auth::id())
-                                    ->disabled(fn ($record): bool => in_array($record?->state, [Enums\OperationState::DONE, Enums\OperationState::CANCELED])),
-                                Forms\Components\Select::make('move_type')
+                                    ->disabled(fn ($record): bool => in_array($record?->state, [OperationState::DONE, OperationState::CANCELED])),
+                                Select::make('move_type')
                                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.additional.fields.shipping-policy'))
-                                    ->options(Enums\MoveType::class)
-                                    ->default(Enums\MoveType::DIRECT)
+                                    ->options(MoveType::class)
+                                    ->default(MoveType::DIRECT)
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/operations/resources/operation.form.tabs.additional.fields.shipping-policy-hint-tooltip'))
-                                    ->visible(fn (Forms\Get $get): bool => OperationType::withTrashed()->find($get('operation_type_id'))?->type != Enums\OperationType::INCOMING)
-                                    ->disabled(fn ($record): bool => in_array($record?->state, [Enums\OperationState::DONE, Enums\OperationState::CANCELED])),
-                                Forms\Components\DateTimePicker::make('scheduled_at')
+                                    ->visible(fn (Get $get): bool => OperationType::withTrashed()->find($get('operation_type_id'))?->type != Enums\OperationType::INCOMING)
+                                    ->disabled(fn ($record): bool => in_array($record?->state, [OperationState::DONE, OperationState::CANCELED])),
+                                DateTimePicker::make('scheduled_at')
                                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.additional.fields.scheduled-at'))
                                     ->native(false)
                                     ->default(now()->format('Y-m-d H:i:s'))
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/operations/resources/operation.form.tabs.additional.fields.scheduled-at-hint-tooltip'))
-                                    ->disabled(fn ($record): bool => in_array($record?->state, [Enums\OperationState::DONE, Enums\OperationState::CANCELED])),
-                                Forms\Components\TextInput::make('origin')
+                                    ->disabled(fn ($record): bool => in_array($record?->state, [OperationState::DONE, OperationState::CANCELED])),
+                                TextInput::make('origin')
                                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.additional.fields.source-document'))
                                     ->maxLength(255)
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/operations/resources/operation.form.tabs.additional.fields.source-document-hint-tooltip'))
-                                    ->disabled(fn ($record): bool => in_array($record?->state, [Enums\OperationState::DONE, Enums\OperationState::CANCELED])),
+                                    ->disabled(fn ($record): bool => in_array($record?->state, [OperationState::DONE, OperationState::CANCELED])),
                             ])
                             ->columns(2),
 
-                        Forms\Components\Tabs\Tab::make(__('inventories::filament/clusters/operations/resources/operation.form.tabs.note.title'))
+                        Tab::make(__('inventories::filament/clusters/operations/resources/operation.form.tabs.note.title'))
                             ->schema([
-                                Forms\Components\RichEditor::make('description')
+                                RichEditor::make('description')
                                     ->hiddenLabel(),
                             ]),
                     ]),
@@ -204,7 +233,7 @@ class OperationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\IconColumn::make('is_favorite')
+                IconColumn::make('is_favorite')
                     ->label('')
                     ->icon(fn (Operation $record): string => $record->is_favorite ? 'heroicon-s-star' : 'heroicon-o-star')
                     ->color(fn (Operation $record): string => $record->is_favorite ? 'warning' : 'gray')
@@ -213,90 +242,90 @@ class OperationResource extends Resource
                             'is_favorite' => ! $record->is_favorite,
                         ]);
                     }),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.columns.reference'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('sourceLocation.full_name')
+                TextColumn::make('sourceLocation.full_name')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.columns.from'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->visible(fn (Settings\WarehouseSettings $settings): bool => $settings->enable_locations),
-                Tables\Columns\TextColumn::make('destinationLocation.full_name')
+                    ->visible(fn (WarehouseSettings $settings): bool => $settings->enable_locations),
+                TextColumn::make('destinationLocation.full_name')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.columns.to'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->visible(fn (Settings\WarehouseSettings $settings): bool => $settings->enable_locations),
-                Tables\Columns\TextColumn::make('partner.name')
+                    ->visible(fn (WarehouseSettings $settings): bool => $settings->enable_locations),
+                TextColumn::make('partner.name')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.columns.contact'))
                     ->placeholder('—')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.columns.responsible'))
                     ->placeholder('—')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('scheduled_at')
+                TextColumn::make('scheduled_at')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.columns.scheduled-at'))
                     ->placeholder('—')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('deadline')
+                TextColumn::make('deadline')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.columns.deadline'))
                     ->placeholder('—')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('closed_at')
+                TextColumn::make('closed_at')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.columns.closed-at'))
                     ->placeholder('—')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('origin')
+                TextColumn::make('origin')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.columns.source-document'))
                     ->placeholder('—')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('operationType.name')
+                TextColumn::make('operationType.name')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.columns.operation-type'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('company.name')
+                TextColumn::make('company.name')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.columns.company'))
                     ->placeholder('—')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('state')
+                TextColumn::make('state')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.columns.state'))
                     ->sortable()
                     ->badge(),
             ])
             ->groups([
-                Tables\Grouping\Group::make('state')
+                Group::make('state')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.groups.state')),
-                Tables\Grouping\Group::make('origin')
+                Group::make('origin')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.groups.source-document')),
-                Tables\Grouping\Group::make('operationType.name')
+                Group::make('operationType.name')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.groups.operation-type')),
-                Tables\Grouping\Group::make('schedule_at')
+                Group::make('schedule_at')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.groups.schedule-at'))
                     ->date(),
-                Tables\Grouping\Group::make('created_at')
+                Group::make('created_at')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.groups.created-at'))
                     ->date(),
             ])
             ->filters([
-                Tables\Filters\QueryBuilder::make()
+                QueryBuilder::make()
                     ->constraints(collect(static::mergeCustomTableQueryBuilderConstraints([
-                        Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('name')
+                        TextConstraint::make('name')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.table.filters.name')),
-                        Tables\Filters\QueryBuilder\Constraints\SelectConstraint::make('state')
+                        SelectConstraint::make('state')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.table.filters.state'))
                             ->multiple()
-                            ->options(Enums\OperationState::class)
+                            ->options(OperationState::class)
                             ->icon('heroicon-o-bars-2'),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('partner')
+                        RelationshipConstraint::make('partner')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.table.filters.partner'))
                             ->multiple()
                             ->selectable(
@@ -307,7 +336,7 @@ class OperationResource extends Resource
                                     ->preload(),
                             )
                             ->icon('heroicon-o-user'),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('user')
+                        RelationshipConstraint::make('user')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.table.filters.responsible'))
                             ->multiple()
                             ->selectable(
@@ -318,7 +347,7 @@ class OperationResource extends Resource
                                     ->preload(),
                             )
                             ->icon('heroicon-o-user'),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('owner')
+                        RelationshipConstraint::make('owner')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.table.filters.owner'))
                             ->multiple()
                             ->selectable(
@@ -329,8 +358,8 @@ class OperationResource extends Resource
                                     ->preload(),
                             )
                             ->icon('heroicon-o-user'),
-                        app(Settings\WarehouseSettings::class)->enable_locations
-                            ? Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('sourceLocation')
+                        app(WarehouseSettings::class)->enable_locations
+                            ? RelationshipConstraint::make('sourceLocation')
                                 ->label(__('inventories::filament/clusters/operations/resources/operation.table.filters.source-location'))
                                 ->multiple()
                                 ->selectable(
@@ -342,8 +371,8 @@ class OperationResource extends Resource
                                 )
                                 ->icon('heroicon-o-map-pin')
                             : null,
-                        app(Settings\WarehouseSettings::class)->enable_locations
-                            ? Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('destinationLocation')
+                        app(WarehouseSettings::class)->enable_locations
+                            ? RelationshipConstraint::make('destinationLocation')
                                 ->label(__('inventories::filament/clusters/operations/resources/operation.table.filters.destination-location'))
                                 ->multiple()
                                 ->selectable(
@@ -355,18 +384,18 @@ class OperationResource extends Resource
                                 )
                                 ->icon('heroicon-o-map-pin')
                             : null,
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('deadline')
+                        DateConstraint::make('deadline')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.table.filters.deadline'))
                             ->icon('heroicon-o-calendar'),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('scheduled_at')
+                        DateConstraint::make('scheduled_at')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.table.filters.scheduled-at')),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('closed_at')
+                        DateConstraint::make('closed_at')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.table.filters.closed-at')),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('created_at')
+                        DateConstraint::make('created_at')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.table.filters.created-at')),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('updated_at')
+                        DateConstraint::make('updated_at')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.table.filters.updated-at')),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('company')
+                        RelationshipConstraint::make('company')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.table.filters.company'))
                             ->multiple()
                             ->selectable(
@@ -377,7 +406,7 @@ class OperationResource extends Resource
                                     ->preload(),
                             )
                             ->icon('heroicon-o-building-office'),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('creator')
+                        RelationshipConstraint::make('creator')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.table.filters.creator'))
                             ->multiple()
                             ->selectable(
@@ -389,115 +418,115 @@ class OperationResource extends Resource
                             )
                             ->icon('heroicon-o-user'),
                     ]))->filter()->values()->all()),
-            ], layout: \Filament\Tables\Enums\FiltersLayout::Modal)
+            ], layout: FiltersLayout::Modal)
             ->filtersTriggerAction(
-                fn (Tables\Actions\Action $action) => $action
+                fn (Action $action) => $action
                     ->slideOver(),
             )
             ->filtersTriggerAction(
-                fn (Tables\Actions\Action $action) => $action
+                fn (Action $action) => $action
                     ->slideOver(),
             )
             ->filtersFormColumns(2)
             ->checkIfRecordIsSelectableUsing(
-                fn (Model $record): bool => static::can('delete', $record) && $record->state !== Enums\OperationState::DONE,
+                fn (Model $record): bool => static::can('delete', $record) && $record->state !== OperationState::DONE,
             );
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Section::make()
+        return $schema
+            ->components([
+                Section::make()
                     ->schema([
-                        Infolists\Components\TextEntry::make('state')
+                        TextEntry::make('state')
                             ->badge(),
                     ])
                     ->compact(),
 
-                Infolists\Components\Section::make(__('inventories::filament/clusters/operations/resources/operation.infolist.sections.general.title'))
+                Section::make(__('inventories::filament/clusters/operations/resources/operation.infolist.sections.general.title'))
                     ->schema([
-                        Infolists\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Infolists\Components\TextEntry::make('partner.name')
+                                TextEntry::make('partner.name')
                                     ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.sections.general.entries.contact'))
                                     ->icon('heroicon-o-user-group')
                                     ->placeholder('—'),
 
-                                Infolists\Components\TextEntry::make('operationType.name')
+                                TextEntry::make('operationType.name')
                                     ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.sections.general.entries.operation-type'))
                                     ->icon('heroicon-o-clipboard-document-list'),
 
-                                Infolists\Components\TextEntry::make('sourceLocation.full_name')
+                                TextEntry::make('sourceLocation.full_name')
                                     ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.sections.general.entries.source-location'))
                                     ->icon('heroicon-o-arrow-up-tray')
-                                    ->visible(fn (Settings\WarehouseSettings $settings): bool => $settings->enable_locations),
+                                    ->visible(fn (WarehouseSettings $settings): bool => $settings->enable_locations),
 
-                                Infolists\Components\TextEntry::make('destinationLocation.full_name')
+                                TextEntry::make('destinationLocation.full_name')
                                     ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.sections.general.entries.destination-location'))
                                     ->icon('heroicon-o-arrow-down-tray')
-                                    ->visible(fn (Settings\WarehouseSettings $settings): bool => $settings->enable_locations),
+                                    ->visible(fn (WarehouseSettings $settings): bool => $settings->enable_locations),
                             ]),
                     ]),
 
                 // Tabs Section
-                Infolists\Components\Tabs::make('Details')
+                Tabs::make('Details')
                     ->tabs([
                         // Operations Tab
-                        Infolists\Components\Tabs\Tab::make(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.title'))
+                        Tab::make(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.title'))
                             ->schema([
-                                Infolists\Components\RepeatableEntry::make('moves')
+                                RepeatableEntry::make('moves')
                                     ->schema([
-                                        Infolists\Components\Grid::make(5)
+                                        Grid::make(5)
                                             ->schema([
-                                                Infolists\Components\TextEntry::make('product.name')
+                                                TextEntry::make('product.name')
                                                     ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.product'))
                                                     ->icon('heroicon-o-cube'),
 
-                                                Infolists\Components\TextEntry::make('finalLocation.full_name')
+                                                TextEntry::make('finalLocation.full_name')
                                                     ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.final-location'))
                                                     ->icon('heroicon-o-map-pin')
                                                     ->placeholder('—')
-                                                    ->visible(fn (Settings\WarehouseSettings $settings) => $settings->enable_locations),
+                                                    ->visible(fn (WarehouseSettings $settings) => $settings->enable_locations),
 
-                                                Infolists\Components\TextEntry::make('description_picking')
+                                                TextEntry::make('description_picking')
                                                     ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.description'))
                                                     ->icon('heroicon-o-document-text')
                                                     ->placeholder('—'),
 
-                                                Infolists\Components\TextEntry::make('scheduled_at')
+                                                TextEntry::make('scheduled_at')
                                                     ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.scheduled-at'))
                                                     ->dateTime()
                                                     ->icon('heroicon-o-calendar')
                                                     ->placeholder('—'),
 
-                                                Infolists\Components\TextEntry::make('deadline')
+                                                TextEntry::make('deadline')
                                                     ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.deadline'))
                                                     ->dateTime()
                                                     ->icon('heroicon-o-clock')
                                                     ->placeholder('—'),
 
-                                                Infolists\Components\TextEntry::make('productPackaging.name')
+                                                TextEntry::make('productPackaging.name')
                                                     ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.packaging'))
                                                     ->icon('heroicon-o-gift')
-                                                    ->visible(fn (Settings\ProductSettings $settings) => $settings->enable_packagings)
+                                                    ->visible(fn (ProductSettings $settings) => $settings->enable_packagings)
                                                     ->placeholder('—'),
 
-                                                Infolists\Components\TextEntry::make('product_qty')
+                                                TextEntry::make('product_qty')
                                                     ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.demand'))
                                                     ->icon('heroicon-o-calculator'),
 
-                                                Infolists\Components\TextEntry::make('quantity')
+                                                TextEntry::make('quantity')
                                                     ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.quantity'))
                                                     ->icon('heroicon-o-scale')
                                                     ->placeholder('—'),
 
-                                                Infolists\Components\TextEntry::make('uom.name')
+                                                TextEntry::make('uom.name')
                                                     ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.unit'))
                                                     ->icon('heroicon-o-beaker')
-                                                    ->visible(fn (Settings\ProductSettings $settings) => $settings->enable_uom),
+                                                    ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
 
-                                                Infolists\Components\IconEntry::make('is_picked')
+                                                IconEntry::make('is_picked')
                                                     ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.picked'))
                                                     ->icon(fn (bool $state): string => $state ? 'heroicon-o-check-circle' : 'heroicon-o-x-circle')
                                                     ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
@@ -505,36 +534,36 @@ class OperationResource extends Resource
                                     ]),
                             ]),
 
-                        Infolists\Components\Tabs\Tab::make(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.additional.title'))
+                        Tab::make(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.additional.title'))
                             ->schema([
-                                Infolists\Components\Grid::make(2)
+                                Grid::make(2)
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('user.name')
+                                        TextEntry::make('user.name')
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.additional.entries.responsible'))
                                             ->icon('heroicon-o-user')
                                             ->placeholder('—'),
 
-                                        Infolists\Components\TextEntry::make('move_type')
+                                        TextEntry::make('move_type')
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.additional.entries.shipping-policy'))
                                             ->icon('heroicon-o-truck')
                                             ->placeholder('—'),
 
-                                        Infolists\Components\TextEntry::make('scheduled_at')
+                                        TextEntry::make('scheduled_at')
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.additional.entries.scheduled-at'))
                                             ->dateTime()
                                             ->icon('heroicon-o-calendar')
                                             ->placeholder('—'),
 
-                                        Infolists\Components\TextEntry::make('origin')
+                                        TextEntry::make('origin')
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.additional.entries.source-document'))
                                             ->icon('heroicon-o-document-text')
                                             ->placeholder('—'),
                                     ]),
                             ]),
 
-                        Infolists\Components\Tabs\Tab::make(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.note.title'))
+                        Tab::make(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.note.title'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('description')
+                                TextEntry::make('description')
                                     ->markdown()
                                     ->hiddenLabel()
                                     ->placeholder('—'),
@@ -550,20 +579,20 @@ class OperationResource extends Resource
     public static function getUrl(string $name = 'index', array $parameters = [], bool $isAbsolute = true, ?string $panel = null, ?Model $tenant = null): string
     {
         return match ($parameters['record']?->operationType->type) {
-            Enums\OperationType::INCOMING => Resources\ReceiptResource::getUrl('view', $parameters, $isAbsolute, $panel, $tenant),
-            Enums\OperationType::INTERNAL => Resources\InternalResource::getUrl('view', $parameters, $isAbsolute, $panel, $tenant),
-            Enums\OperationType::OUTGOING => Resources\DeliveryResource::getUrl('view', $parameters, $isAbsolute, $panel, $tenant),
+            Enums\OperationType::INCOMING => ReceiptResource::getUrl('view', $parameters, $isAbsolute, $panel, $tenant),
+            Enums\OperationType::INTERNAL => InternalResource::getUrl('view', $parameters, $isAbsolute, $panel, $tenant),
+            Enums\OperationType::OUTGOING => DeliveryResource::getUrl('view', $parameters, $isAbsolute, $panel, $tenant),
             default                       => parent::getUrl('view', $parameters, $isAbsolute, $panel, $tenant),
         };
     }
 
-    public static function getMovesRepeater(): Forms\Components\Repeater
+    public static function getMovesRepeater(): Repeater
     {
-        return Forms\Components\Repeater::make('moves')
+        return Repeater::make('moves')
             ->hiddenLabel()
             ->relationship()
             ->schema([
-                Forms\Components\Select::make('product_id')
+                Select::make('product_id')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.product'))
                     ->relationship('product', 'name')
                     ->relationship(
@@ -577,11 +606,11 @@ class OperationResource extends Resource
                     ->distinct()
                     ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                     ->live()
-                    ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get) {
+                    ->afterStateUpdated(function (Set $set, Get $get) {
                         static::afterProductUpdated($set, $get);
                     })
-                    ->disabled(fn (Move $move): bool => $move->id && $move->state !== Enums\MoveState::DRAFT),
-                Forms\Components\Select::make('final_location_id')
+                    ->disabled(fn (Move $move): bool => $move->id && $move->state !== MoveState::DRAFT),
+                Select::make('final_location_id')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.final-location'))
                     ->relationship(
                         'finalLocation',
@@ -596,29 +625,29 @@ class OperationResource extends Resource
                     })
                     ->searchable()
                     ->preload()
-                    ->visible(fn (Settings\WarehouseSettings $settings) => $settings->enable_locations)
-                    ->disabled(fn ($record): bool => in_array($record?->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED])),
-                Forms\Components\TextInput::make('description_picking')
+                    ->visible(fn (WarehouseSettings $settings) => $settings->enable_locations)
+                    ->disabled(fn ($record): bool => in_array($record?->state, [MoveState::DONE, MoveState::CANCELED])),
+                TextInput::make('description_picking')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.description'))
                     ->maxLength(255)
-                    ->disabled(fn ($record): bool => in_array($record?->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED])),
-                Forms\Components\DateTimePicker::make('scheduled_at')
+                    ->disabled(fn ($record): bool => in_array($record?->state, [MoveState::DONE, MoveState::CANCELED])),
+                DateTimePicker::make('scheduled_at')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.scheduled-at'))
                     ->default(now())
                     ->native(false)
-                    ->disabled(fn ($record): bool => in_array($record?->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED])),
-                Forms\Components\DateTimePicker::make('deadline')
+                    ->disabled(fn ($record): bool => in_array($record?->state, [MoveState::DONE, MoveState::CANCELED])),
+                DateTimePicker::make('deadline')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.deadline'))
                     ->native(false)
-                    ->disabled(fn ($record): bool => in_array($record?->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED])),
-                Forms\Components\Select::make('product_packaging_id')
+                    ->disabled(fn ($record): bool => in_array($record?->state, [MoveState::DONE, MoveState::CANCELED])),
+                Select::make('product_packaging_id')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.packaging'))
                     ->relationship('productPackaging', 'name')
                     ->searchable()
                     ->preload()
-                    ->visible(fn (Settings\ProductSettings $settings) => $settings->enable_packagings)
-                    ->disabled(fn ($record): bool => in_array($record?->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED])),
-                Forms\Components\TextInput::make('product_uom_qty')
+                    ->visible(fn (ProductSettings $settings) => $settings->enable_packagings)
+                    ->disabled(fn ($record): bool => in_array($record?->state, [MoveState::DONE, MoveState::CANCELED])),
+                TextInput::make('product_uom_qty')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.demand'))
                     ->numeric()
                     ->minValue(0)
@@ -626,21 +655,21 @@ class OperationResource extends Resource
                     ->default(0)
                     ->required()
                     ->live()
-                    ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get) {
+                    ->afterStateUpdated(function (Set $set, Get $get) {
                         static::afterProductUOMQtyUpdated($set, $get);
                     })
-                    ->disabled(fn (Move $move): bool => $move->id && $move->state !== Enums\MoveState::DRAFT),
-                Forms\Components\TextInput::make('quantity')
+                    ->disabled(fn (Move $move): bool => $move->id && $move->state !== MoveState::DRAFT),
+                TextInput::make('quantity')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.quantity'))
                     ->numeric()
                     ->minValue(0)
                     ->maxValue(99999999999)
                     ->default(0)
                     ->required()
-                    ->visible(fn (Move $move): bool => $move->id && $move->state !== Enums\MoveState::DRAFT)
-                    ->disabled(fn ($record): bool => in_array($record?->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED]))
+                    ->visible(fn (Move $move): bool => $move->id && $move->state !== MoveState::DRAFT)
+                    ->disabled(fn ($record): bool => in_array($record?->state, [MoveState::DONE, MoveState::CANCELED]))
                     ->suffixAction(fn ($record) => static::getMoveLinesAction($record)),
-                Forms\Components\Select::make('uom_id')
+                Select::make('uom_id')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.unit'))
                     ->relationship(
                         'uom',
@@ -651,17 +680,17 @@ class OperationResource extends Resource
                     ->preload()
                     ->required()
                     ->live()
-                    ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get) {
+                    ->afterStateUpdated(function (Set $set, Get $get) {
                         static::afterUOMUpdated($set, $get);
                     })
-                    ->visible(fn (Settings\ProductSettings $settings): bool => $settings->enable_uom)
-                    ->disabled(fn ($record): bool => in_array($record?->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED])),
-                Forms\Components\Toggle::make('is_picked')
+                    ->visible(fn (ProductSettings $settings): bool => $settings->enable_uom)
+                    ->disabled(fn ($record): bool => in_array($record?->state, [MoveState::DONE, MoveState::CANCELED])),
+                Toggle::make('is_picked')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.picked'))
                     ->default(0)
                     ->inline(false)
-                    ->disabled(fn ($record): bool => in_array($record?->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED])),
-                Forms\Components\Hidden::make('product_qty')
+                    ->disabled(fn ($record): bool => in_array($record?->state, [MoveState::DONE, MoveState::CANCELED])),
+                Hidden::make('product_qty')
                     ->default(0),
             ])
             ->columns(4)
@@ -674,7 +703,7 @@ class OperationResource extends Resource
                     'warehouse_id'            => $record->destinationLocation->warehouse_id,
                     'state'                   => $record->state->value,
                     'name'                    => $product->name,
-                    'procure_method'          => Enums\ProcureMethod::MAKE_TO_STOCK,
+                    'procure_method'          => ProcureMethod::MAKE_TO_STOCK,
                     'uom_id'                  => $data['uom_id'] ?? $product->uom_id,
                     'operation_type_id'       => $record->operation_type_id,
                     'quantity'                => null,
@@ -699,51 +728,51 @@ class OperationResource extends Resource
 
                 return $data;
             })
-            ->deletable(fn ($record): bool => ! in_array($record?->state, [Enums\OperationState::DONE, Enums\OperationState::CANCELED]))
-            ->addable(fn ($record): bool => ! in_array($record?->state, [Enums\OperationState::DONE, Enums\OperationState::CANCELED]));
+            ->deletable(fn ($record): bool => ! in_array($record?->state, [OperationState::DONE, OperationState::CANCELED]))
+            ->addable(fn ($record): bool => ! in_array($record?->state, [OperationState::DONE, OperationState::CANCELED]));
     }
 
-    public static function getMoveLinesAction($move): Forms\Components\Actions\Action
+    public static function getMoveLinesAction($move): Action
     {
         $columns = 2;
 
         if (
-            app(Settings\TraceabilitySettings::class)->enable_lots_serial_numbers
+            app(TraceabilitySettings::class)->enable_lots_serial_numbers
             && (
-                $move->product->tracking == Enums\ProductTracking::LOT
-                || $move->product->tracking == Enums\ProductTracking::SERIAL
+                $move->product->tracking == ProductTracking::LOT
+                || $move->product->tracking == ProductTracking::SERIAL
             )
-            && $move->sourceLocation->type == Enums\LocationType::SUPPLIER
+            && $move->sourceLocation->type == LocationType::SUPPLIER
         ) {
             $columns++;
         }
 
-        if ($move->sourceLocation->type == Enums\LocationType::INTERNAL) {
+        if ($move->sourceLocation->type == LocationType::INTERNAL) {
             $columns++;
         }
 
-        if ($move->destinationLocation->type != Enums\LocationType::INTERNAL) {
+        if ($move->destinationLocation->type != LocationType::INTERNAL) {
             $columns--;
         }
 
-        if (app(Settings\OperationSettings::class)->enable_packages) {
+        if (app(OperationSettings::class)->enable_packages) {
             $columns++;
         }
 
-        return Forms\Components\Actions\Action::make('manageLines')
+        return Action::make('manageLines')
             ->icon('heroicon-m-bars-4')
             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.modal-heading'))
             ->modalSubmitActionLabel('Save')
-            ->visible(app(Settings\WarehouseSettings::class)->enable_locations)
-            ->form([
-                Forms\Components\Repeater::make('lines')
+            ->visible(app(WarehouseSettings::class)->enable_locations)
+            ->schema([
+                Repeater::make('lines')
                     ->hiddenLabel()
                     ->relationship('lines')
                     ->schema([
-                        Forms\Components\Select::make('quantity_id')
+                        Select::make('quantity_id')
                             ->label(__(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.pick-from')))
                             ->options(function ($record) use ($move) {
-                                if (in_array($record?->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED])) {
+                                if (in_array($record?->state, [MoveState::DONE, MoveState::CANCELED])) {
                                     $nameParts = array_filter([
                                         $record->sourceLocation->full_name,
                                         $record->lot?->name,
@@ -777,8 +806,8 @@ class OperationResource extends Resource
                             ->preload()
                             ->required()
                             ->live()
-                            ->afterStateHydrated(function (Forms\Components\Select $component, $record) {
-                                if (in_array($record?->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED])) {
+                            ->afterStateHydrated(function (Select $component, $record) {
+                                if (in_array($record?->state, [MoveState::DONE, MoveState::CANCELED])) {
                                     $component->state($record->id);
 
                                     return;
@@ -793,7 +822,7 @@ class OperationResource extends Resource
 
                                 $component->state($productQuantity?->id);
                             })
-                            ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get) use ($move) {
+                            ->afterStateUpdated(function (Set $set, Get $get) use ($move) {
                                 $productQuantity = ProductQuantity::find($get('quantity_id'));
 
                                 $set('lot_id', $productQuantity?->lot_id);
@@ -808,9 +837,9 @@ class OperationResource extends Resource
                                     }
                                 }
                             })
-                            ->visible($move->sourceLocation->type == Enums\LocationType::INTERNAL)
-                            ->disabled(fn (): bool => in_array($move->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED])),
-                        Forms\Components\Select::make('lot_id')
+                            ->visible($move->sourceLocation->type == LocationType::INTERNAL)
+                            ->disabled(fn (): bool => in_array($move->state, [MoveState::DONE, MoveState::CANCELED])),
+                        Select::make('lot_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.lot'))
                             ->relationship(
                                 name: 'lot',
@@ -820,9 +849,9 @@ class OperationResource extends Resource
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->disabled(fn (): bool => in_array($move->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED]))
+                            ->disabled(fn (): bool => in_array($move->state, [MoveState::DONE, MoveState::CANCELED]))
                             ->disableOptionWhen(fn () => ! $move->operationType->use_existing_lots)
-                            ->createOptionForm(fn (Form $form): Form => LotResource::form($form))
+                            ->createOptionForm(fn (Schema $schema): Schema => LotResource::form($schema))
                             ->createOptionAction(function (Action $action) use ($move) {
                                 $action->visible($move->operationType->use_create_lots)
                                     ->mutateFormDataUsing(function (array $data) use ($move) {
@@ -831,21 +860,21 @@ class OperationResource extends Resource
                                         return $data;
                                     });
                             })
-                            ->visible(fn (Settings\TraceabilitySettings $settings): bool => $settings->enable_lots_serial_numbers
+                            ->visible(fn (TraceabilitySettings $settings): bool => $settings->enable_lots_serial_numbers
                                 && (
-                                    $move->product->tracking == Enums\ProductTracking::LOT
-                                    || $move->product->tracking == Enums\ProductTracking::SERIAL
+                                    $move->product->tracking == ProductTracking::LOT
+                                    || $move->product->tracking == ProductTracking::SERIAL
                                 )
-                                && $move->sourceLocation->type == Enums\LocationType::SUPPLIER
+                                && $move->sourceLocation->type == LocationType::SUPPLIER
                             ),
-                        Forms\Components\Select::make('destination_location_id')
+                        Select::make('destination_location_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.location'))
                             ->relationship(
                                 name: 'destinationLocation',
                                 titleAttribute: 'full_name',
                                 modifyQueryUsing: fn (Builder $query) => $query
                                     ->withTrashed()
-                                    ->where('type', '<>', Enums\LocationType::VIEW)
+                                    ->where('type', '<>', LocationType::VIEW)
                                     ->where(function ($query) use ($move) {
                                         $query->where('id', $move->destination_location_id)
                                             ->orWhere('parent_id', $move->destination_location_id);
@@ -862,17 +891,17 @@ class OperationResource extends Resource
                             ->required()
                             ->live()
                             ->default($move->destination_location_id)
-                            ->afterStateUpdated(function (Forms\Set $set) {
+                            ->afterStateUpdated(function (Set $set) {
                                 $set('result_package_id', null);
                             })
-                            ->visible($move->destinationLocation->type == Enums\LocationType::INTERNAL)
-                            ->disabled(fn (): bool => in_array($move->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED])),
-                        Forms\Components\Select::make('result_package_id')
+                            ->visible($move->destinationLocation->type == LocationType::INTERNAL)
+                            ->disabled(fn (): bool => in_array($move->state, [MoveState::DONE, MoveState::CANCELED])),
+                        Select::make('result_package_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.package'))
                             ->relationship(
                                 name: 'resultPackage',
                                 titleAttribute: 'name',
-                                modifyQueryUsing: fn (Builder $query, Forms\Get $get, $record) => $query
+                                modifyQueryUsing: fn (Builder $query, Get $get, $record) => $query
                                     ->where(function ($query) use ($get, $record) {
                                         $query->where('location_id', $get('destination_location_id'))
                                             ->orWhere('id', $record?->result_package_id ?? $get('result_package_id'))
@@ -881,31 +910,31 @@ class OperationResource extends Resource
                             )
                             ->searchable()
                             ->preload()
-                            ->createOptionForm(fn (Form $form): Form => PackageResource::form($form))
+                            ->createOptionForm(fn (Schema $schema): Schema => PackageResource::form($schema))
                             ->createOptionAction(function (Action $action) use ($move) {
-                                $action->mutateFormDataUsing(function (array $data) use ($move) {
+                                $action->mutateDataUsing(function (array $data) use ($move) {
                                     $data['company_id'] = $move->company_id;
 
                                     return $data;
                                 });
                             })
-                            ->disabled(fn (): bool => in_array($move->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED]))
-                            ->visible(fn (Settings\OperationSettings $settings) => $settings->enable_packages),
-                        Forms\Components\TextInput::make('qty')
+                            ->disabled(fn (): bool => in_array($move->state, [MoveState::DONE, MoveState::CANCELED]))
+                            ->visible(fn (OperationSettings $settings) => $settings->enable_packages),
+                        TextInput::make('qty')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.quantity'))
                             ->numeric()
                             ->minValue(0)
                             ->maxValue(99999999999)
-                            ->maxValue(fn () => $move->product->tracking == Enums\ProductTracking::SERIAL ? 1 : 999999999)
+                            ->maxValue(fn () => $move->product->tracking == ProductTracking::SERIAL ? 1 : 999999999)
                             ->required()
                             ->suffix(function () use ($move) {
-                                if (! app(Settings\ProductSettings::class)->enable_uom) {
+                                if (! app(ProductSettings::class)->enable_uom) {
                                     return false;
                                 }
 
                                 return $move->uom->name;
                             })
-                            ->disabled(fn (): bool => in_array($move->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED])),
+                            ->disabled(fn (): bool => in_array($move->state, [MoveState::DONE, MoveState::CANCELED])),
                     ])
                     ->defaultItems(0)
                     ->addActionLabel(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.add-line'))
@@ -944,18 +973,18 @@ class OperationResource extends Resource
 
                         return $data;
                     })
-                    ->deletable(fn (): bool => ! in_array($move->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED]))
-                    ->addable(fn (): bool => ! in_array($move->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED])),
+                    ->deletable(fn (): bool => ! in_array($move->state, [MoveState::DONE, MoveState::CANCELED]))
+                    ->addable(fn (): bool => ! in_array($move->state, [MoveState::DONE, MoveState::CANCELED])),
             ])
             ->modalWidth('6xl')
-            ->mountUsing(function (Forms\ComponentContainer $form, Move $record) {
-                $form->fill([]);
+            ->mountUsing(function (Schema $schema, Move $record) {
+                $schema->fill([]);
             })
             ->modalSubmitAction(
                 fn ($action, Move $record) => $action
-                    ->visible(! in_array($move->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED]))
+                    ->visible(! in_array($move->state, [MoveState::DONE, MoveState::CANCELED]))
             )
-            ->action(function (Forms\Set $set, array $data, Move $record): void {
+            ->action(function (Set $set, array $data, Move $record): void {
                 $totalQty = $record->lines()->sum('qty');
 
                 $record->fill([
@@ -974,7 +1003,7 @@ class OperationResource extends Resource
             'todo_receipts' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.todo'))
                 ->favorite()
                 ->icon('heroicon-s-clipboard-document-list')
-                ->modifyQueryUsing(fn (Builder $query) => $query->whereNotIn('state', [Enums\OperationState::DONE, Enums\OperationState::CANCELED])),
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereNotIn('state', [OperationState::DONE, OperationState::CANCELED])),
             'my_receipts' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.my'))
                 ->favorite()
                 ->icon('heroicon-s-user')
@@ -986,26 +1015,26 @@ class OperationResource extends Resource
             'draft_receipts' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.draft'))
                 ->favorite()
                 ->icon('heroicon-s-pencil-square')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('state', Enums\OperationState::DRAFT)),
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('state', OperationState::DRAFT)),
             'waiting_receipts' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.waiting'))
                 ->favorite()
                 ->icon('heroicon-s-clock')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('state', Enums\OperationState::CONFIRMED)),
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('state', OperationState::CONFIRMED)),
             'ready_receipts' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.ready'))
                 ->favorite()
                 ->icon('heroicon-s-play-circle')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('state', Enums\OperationState::ASSIGNED)),
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('state', OperationState::ASSIGNED)),
             'done_receipts' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.done'))
                 ->favorite()
                 ->icon('heroicon-s-check-circle')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('state', Enums\OperationState::DONE)),
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('state', OperationState::DONE)),
             'canceled_receipts' => PresetView::make(__('inventories::filament/clusters/operations/resources/operation.tabs.canceled'))
                 ->icon('heroicon-s-x-circle')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('state', Enums\OperationState::CANCELED)),
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('state', OperationState::CANCELED)),
         ];
     }
 
-    private static function afterProductUpdated(Forms\Set $set, Forms\Get $get): void
+    private static function afterProductUpdated(Set $set, Get $get): void
     {
         if (! $get('product_id')) {
             return;
@@ -1024,7 +1053,7 @@ class OperationResource extends Resource
         $set('product_packaging_id', $packaging['packaging_id'] ?? null);
     }
 
-    private static function afterProductUOMQtyUpdated(Forms\Set $set, Forms\Get $get): void
+    private static function afterProductUOMQtyUpdated(Set $set, Get $get): void
     {
         if (! $get('product_id')) {
             return;
@@ -1039,7 +1068,7 @@ class OperationResource extends Resource
         $set('product_packaging_id', $packaging['packaging_id'] ?? null);
     }
 
-    private static function afterUOMUpdated(Forms\Set $set, Forms\Get $get): void
+    private static function afterUOMUpdated(Set $set, Get $get): void
     {
         if (! $get('product_id')) {
             return;

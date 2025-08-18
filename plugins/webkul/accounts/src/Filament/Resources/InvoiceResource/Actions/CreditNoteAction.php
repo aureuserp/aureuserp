@@ -3,12 +3,16 @@
 namespace Webkul\Account\Filament\Resources\InvoiceResource\Actions;
 
 use Filament\Actions\Action;
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Textarea;
+use Filament\Schemas\Schema;
 use Filament\Support\Facades\FilamentView;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Webkul\Account\Enums;
+use Webkul\Account\Enums\DisplayType;
+use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\MoveType;
+use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\MoveLine;
@@ -32,18 +36,18 @@ class CreditNoteAction extends Action
         $this
             ->label(__('accounts::filament/resources/invoice/actions/credit-note.title'))
             ->color('gray')
-            ->visible(fn (Move $record) => $record->state == Enums\MoveState::POSTED)
+            ->visible(fn (Move $record) => $record->state == MoveState::POSTED)
             ->icon('heroicon-o-receipt-refund')
             ->modalHeading(__('accounts::filament/resources/invoice/actions/credit-note.modal.heading'));
 
-        $this->form(
-            function (Form $form) {
-                return $form->schema([
-                    Forms\Components\Textarea::make('reason')
+        $this->schema(
+            function (Schema $schema) {
+                return $schema->components([
+                    Textarea::make('reason')
                         ->label(__('accounts::filament/resources/invoice/actions/credit-note.modal.form.reason'))
                         ->maxLength(245)
                         ->required(),
-                    Forms\Components\DatePicker::make('date')
+                    DatePicker::make('date')
                         ->label(__('accounts::filament/resources/invoice/actions/credit-note.modal.form.date'))
                         ->default(now())
                         ->native(false)
@@ -82,9 +86,9 @@ class CreditNoteAction extends Action
                 250
             ),
             'reversed_entry_id' => $record->id,
-            'state'             => Enums\MoveState::DRAFT,
-            'move_type'         => Enums\MoveType::OUT_REFUND,
-            'payment_state'     => Enums\PaymentState::NOT_PAID,
+            'state'             => MoveState::DRAFT,
+            'move_type'         => MoveType::OUT_REFUND,
+            'payment_state'     => PaymentState::NOT_PAID,
             'auto_post'         => 0,
         ]);
 
@@ -100,7 +104,7 @@ class CreditNoteAction extends Action
     private function createMoveLines(Move $newMove, Move $record): void
     {
         $record->lines->each(function (MoveLine $line) use ($newMove, $record) {
-            if ($line->display_type == Enums\DisplayType::PRODUCT) {
+            if ($line->display_type == DisplayType::PRODUCT) {
                 $newMoveLine = $line->replicate()->fill([
                     'state'     => $newMove->state,
                     'reference' => $record->reference,

@@ -2,13 +2,14 @@
 
 namespace Webkul\Project\Filament\Resources\TaskResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Project\Enums\TaskState;
 use Webkul\Project\Filament\Resources\TaskResource;
+use Webkul\Project\Filament\Widgets\StatsOverviewWidget;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
 
@@ -21,7 +22,7 @@ class ListTasks extends ListRecords
     public function getHeaderWidgets(): array
     {
         return [
-            \Webkul\Project\Filament\Widgets\StatsOverviewWidget::make(),
+            StatsOverviewWidget::make(),
         ];
     }
 
@@ -101,7 +102,7 @@ class ListTasks extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label(__('projects::filament/resources/task/pages/list-tasks.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle'),
         ];

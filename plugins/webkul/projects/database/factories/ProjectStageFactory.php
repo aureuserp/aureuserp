@@ -8,7 +8,7 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Project\Models\ProjectStage>
+ * @extends Factory<ProjectStage>
  */
 class ProjectStageFactory extends Factory
 {

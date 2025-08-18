@@ -5,7 +5,7 @@ namespace Webkul\Blog\Filament\Customer\Resources;
 use Filament\Resources\Resource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Webkul\Blog\Filament\Customer\Resources\PostResource\Pages;
+use Webkul\Blog\Filament\Customer\Resources\PostResource\Pages\ViewPost;
 use Webkul\Blog\Models\Post;
 
 class PostResource extends Resource
@@ -47,7 +47,7 @@ class PostResource extends Resource
     public static function getPages(): array
     {
         return [
-            'view' => Pages\ViewPost::route('/{record}'),
+            'view' => ViewPost::route('/{record}'),
         ];
     }
 }

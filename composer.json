@@ -12,16 +12,14 @@
         "php": "^8.2",
         "barryvdh/laravel-debugbar": "^3.15",
         "barryvdh/laravel-dompdf": "^3.1",
-        "bezhansalleh/filament-shield": "^3.2",
-        "filament/filament": "^3.2",
-        "filament/spatie-laravel-settings-plugin": "^3.2",
-        "flowframe/laravel-trend": "^0.3.0",
-        "guava/filament-icon-picker": "^2.0",
-        "hugomyb/filament-media-action": "v3.1.1.5",
+        "bezhansalleh/filament-shield": "^3.3.9",
+        "filament/filament": "^4.0",
+        "filament/spatie-laravel-settings-plugin": "^4.0",
+        "flowframe/laravel-trend": "^0.4.0",
+        "hugomyb/filament-media-action": "^4.0",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "milon/barcode": "^11.0",
-        "saade/filament-fullcalendar": "^3.0",
         "spatie/eloquent-sortable": "^4.4",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
@@ -75,10 +73,8 @@
             "include": [
                 "plugins/*/*/composer.json"
             ]
-        }
-    },
-    "config": {
-        "optimize-autoloader": true,
+        },
+    "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
@@ -87,12 +83,17 @@
             "wikimedia/composer-merge-plugin": true
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true,
     "support": {
         "issues": "https://github.com/aureuserp/aureuserp/issues",
         "forum": "https://forums.aureuserp.com",
         "source": "https://github.com/aureuserp/aureuserp",
         "docs": "https://devdocs.aureuserp.com"
+    },
+    "config": {
+        "allow-plugins": {
+            "wikimedia/composer-merge-plugin": true
+        }
     }
 }

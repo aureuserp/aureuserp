@@ -5,7 +5,9 @@ namespace Webkul\Inventory\Filament\Clusters\Operations\Actions;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Livewire\Component;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\CreateBackorder;
+use Webkul\Inventory\Enums\OperationState;
+use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\ProductQuantity;
@@ -23,14 +25,14 @@ class ValidateAction extends Action
 
         $this->label(__('inventories::filament/clusters/operations/actions/validate.label'))
             ->color(function ($record) {
-                if (in_array($record->state, [Enums\OperationState::DRAFT, Enums\OperationState::CONFIRMED])) {
+                if (in_array($record->state, [OperationState::DRAFT, OperationState::CONFIRMED])) {
                     return 'gray';
                 }
 
                 return 'primary';
             })
             ->requiresConfirmation(function (Operation $record) {
-                return $record->operationType->create_backorder === Enums\CreateBackorder::ASK
+                return $record->operationType->create_backorder === CreateBackorder::ASK
                     && Inventory::canCreateBackOrder($record);
             })
             ->configureModal($this->getRecord())
@@ -46,15 +48,15 @@ class ValidateAction extends Action
                 $livewire->updateForm();
             })
             ->hidden(fn () => in_array($this->getRecord()->state, [
-                Enums\OperationState::DONE,
-                Enums\OperationState::CANCELED,
+                OperationState::DONE,
+                OperationState::CANCELED,
             ]));
     }
 
     protected function configureModal(Operation $record): self
     {
         if (
-            $record->operationType->create_backorder === Enums\CreateBackorder::ASK
+            $record->operationType->create_backorder === CreateBackorder::ASK
             && Inventory::canCreateBackOrder($record)
         ) {
             $this->modalHeading(__('inventories::filament/clusters/operations/actions/validate.modal-heading'))
@@ -129,7 +131,7 @@ class ValidateAction extends Action
             }
         }
 
-        $isLotTracking = $move->product->tracking == Enums\ProductTracking::LOT || $move->product->tracking == Enums\ProductTracking::SERIAL;
+        $isLotTracking = $move->product->tracking == ProductTracking::LOT || $move->product->tracking == ProductTracking::SERIAL;
 
         if ($isLotTracking && $move->lines->contains(fn ($line) => ! $line->lot_id)) {
             $this->sendNotification(
@@ -141,7 +143,7 @@ class ValidateAction extends Action
             return true;
         }
 
-        $isSerialTracking = $move->product->tracking == Enums\ProductTracking::SERIAL;
+        $isSerialTracking = $move->product->tracking == ProductTracking::SERIAL;
 
         if ($isSerialTracking) {
             if ($move->lines->contains(fn ($line) => $line->qty != 1)) {

@@ -3,7 +3,7 @@
 namespace Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource\RelationManagers;
 
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class ProductsRelationManager extends RelationManager
@@ -14,13 +14,13 @@ class ProductsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('product.name')
+                TextColumn::make('product.name')
                     ->label(__('inventories::filament/clusters/products/resources/package/relation-managers/products.table.columns.product')),
-                Tables\Columns\TextColumn::make('lot.name')
+                TextColumn::make('lot.name')
                     ->label(__('inventories::filament/clusters/products/resources/package/relation-managers/products.table.columns.lot')),
-                Tables\Columns\TextColumn::make('quantity')
+                TextColumn::make('quantity')
                     ->label(__('inventories::filament/clusters/products/resources/package/relation-managers/products.table.columns.quantity')),
-                Tables\Columns\TextColumn::make('product.uom.name')
+                TextColumn::make('product.uom.name')
                     ->label(__('inventories::filament/clusters/products/resources/package/relation-managers/products.table.columns.unit-of-measure')),
             ])
             ->paginated(false);

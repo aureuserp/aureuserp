@@ -4,6 +4,7 @@ namespace Webkul\Support\Filament\Clusters;
 
 use Filament\Clusters\Cluster;
 use Filament\Facades\Filament;
+use Filament\Panel;
 use Filament\Widgets\Widget;
 
 class Dashboard extends Cluster
@@ -12,16 +13,16 @@ class Dashboard extends Cluster
 
     protected static string $routePath = '/';
 
-    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
 
     protected static ?int $navigationSort = 0;
 
     /**
      * @var view-string
      */
-    protected static string $view = 'filament-panels::pages.dashboard';
+    protected string $view = 'filament-panels::pages.dashboard';
 
-    public static function getRoutePath(): string
+    public static function getRoutePath(Panel $panel): string
     {
         return static::$routePath;
     }

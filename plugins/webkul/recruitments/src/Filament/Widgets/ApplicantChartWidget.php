@@ -18,38 +18,38 @@ class ApplicantChartWidget extends ChartWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    protected static ?string $maxHeight = '400px';
+    protected ?string $maxHeight = '400px';
 
     protected function getData(): array
     {
         $query = Applicant::query();
 
-        if ($this->filters['selectedJobs'] ?? null) {
-            $query->whereIn('job_id', $this->filters['selectedJobs']);
+        if ($this->pageFilters['selectedJobs'] ?? null) {
+            $query->whereIn('job_id', $this->pageFilters['selectedJobs']);
         }
 
-        if ($this->filters['selectedDepartments'] ?? null) {
-            $query->whereIn('department_id', $this->filters['selectedDepartments']);
+        if ($this->pageFilters['selectedDepartments'] ?? null) {
+            $query->whereIn('department_id', $this->pageFilters['selectedDepartments']);
         }
 
-        if ($this->filters['selectedCompanies'] ?? null) {
-            $query->whereIn('company_id', $this->filters['selectedCompanies']);
+        if ($this->pageFilters['selectedCompanies'] ?? null) {
+            $query->whereIn('company_id', $this->pageFilters['selectedCompanies']);
         }
 
-        if ($this->filters['selectedStages'] ?? null) {
-            $query->whereIn('stage_id', $this->filters['selectedStages']);
+        if ($this->pageFilters['selectedStages'] ?? null) {
+            $query->whereIn('stage_id', $this->pageFilters['selectedStages']);
         }
 
-        if ($this->filters['selectedRecruiters'] ?? null) {
-            $query->whereIn('recruiter_id', $this->filters['selectedRecruiters']);
+        if ($this->pageFilters['selectedRecruiters'] ?? null) {
+            $query->whereIn('recruiter_id', $this->pageFilters['selectedRecruiters']);
         }
 
-        if ($this->filters['startDate'] ?? null) {
-            $query->where('created_at', '>=', Carbon::parse($this->filters['startDate'])->startOfDay());
+        if ($this->pageFilters['startDate'] ?? null) {
+            $query->where('created_at', '>=', Carbon::parse($this->pageFilters['startDate'])->startOfDay());
         }
 
-        if ($this->filters['endDate'] ?? null) {
-            $query->where('created_at', '<=', Carbon::parse($this->filters['endDate'])->endOfDay());
+        if ($this->pageFilters['endDate'] ?? null) {
+            $query->where('created_at', '<=', Carbon::parse($this->pageFilters['endDate'])->endOfDay());
         }
 
         $stats = $query->selectRaw('
@@ -66,7 +66,7 @@ class ApplicantChartWidget extends ChartWidget
             END) as ongoing
         ')->first();
 
-        $data = match ($this->filters['status'] ?? 'all') {
+        $data = match ($this->pageFilters['status'] ?? 'all') {
             'ongoing'  => ['Ongoing' => $stats->ongoing ?? 0],
             'hired'    => ['Hired' => $stats->hired ?? 0],
             'refused'  => ['Refused' => $stats->refused ?? 0],

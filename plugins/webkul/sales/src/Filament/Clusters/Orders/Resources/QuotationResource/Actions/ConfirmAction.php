@@ -2,6 +2,7 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions;
 
+use Exception;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Support\Facades\FilamentView;
@@ -27,7 +28,7 @@ class ConfirmAction extends Action
             ->action(function ($record, $livewire) {
                 try {
                     $record = SaleOrder::confirmSaleOrder($record);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     Notification::make()
                         ->danger()
                         ->title(__('sales::filament/clusters/orders/resources/quotation/actions/confirm.notification.error.title'))

@@ -8,7 +8,7 @@ class Products extends Cluster
 {
     protected static ?string $slug = 'sale/products';
 
-    protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
     protected static ?int $navigationSort = 0;
 

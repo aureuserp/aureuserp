@@ -11,7 +11,7 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Project\Models\Task>
+ * @extends Factory<Task>
  */
 class TaskFactory extends Factory
 {

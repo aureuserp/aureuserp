@@ -2,7 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources\InvoiceResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
@@ -43,7 +43,7 @@ class EditInvoice extends EditRecord
                 ->setTemplate('accounts::invoice/actions/preview.index'),
             BaseActions\PrintAndSendAction::make(),
             BaseActions\CreditNoteAction::make(),
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 

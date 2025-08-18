@@ -7,21 +7,21 @@ use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use Filament\Auth\Notifications\ResetPassword;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Notifications\Auth\ResetPassword as ResetPasswordNotification;
 use Filament\Notifications\Notification;
 use Filament\Pages\Concerns\InteractsWithFormActions;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Component;
+use Filament\Schemas\Schema;
 use Filament\Support\Facades\FilamentIcon;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Password;
 
 /**
- * @property Form $form
+ * @property \Filament\Schemas\Schema $form
  */
 class RequestPasswordReset extends Page
 {
@@ -31,7 +31,7 @@ class RequestPasswordReset extends Page
     /**
      * @var view-string
      */
-    protected static string $view = 'website::filament.customer.pages.auth.password-reset.request-password-reset';
+    protected string $view = 'website::filament.customer.pages.auth.password-reset.request-password-reset';
 
     /**
      * @var array<string, mixed> | null
@@ -68,7 +68,7 @@ class RequestPasswordReset extends Page
                     throw new Exception("Model [{$userClass}] does not have a [notify()] method.");
                 }
 
-                $notification = app(ResetPasswordNotification::class, ['token' => $token]);
+                $notification = app(ResetPassword::class, ['token' => $token]);
                 $notification->url = Filament::getResetPasswordUrl($token, $user);
 
                 $user->notify($notification);
@@ -106,13 +106,13 @@ class RequestPasswordReset extends Page
             ->danger();
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form;
+        return $schema;
     }
 
     /**
-     * @return array<int | string, string | Form>
+     * @return array<int|string, string|\Filament\Schemas\Schema>
      */
     protected function getForms(): array
     {

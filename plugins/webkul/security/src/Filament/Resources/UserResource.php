@@ -2,26 +2,49 @@
 
 namespace Webkul\Security\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 use Webkul\Security\Enums\PermissionType;
-use Webkul\Security\Filament\Resources\UserResource\Pages;
+use Webkul\Security\Filament\Resources\UserResource\Pages\CreateUser;
+use Webkul\Security\Filament\Resources\UserResource\Pages\EditUser;
+use Webkul\Security\Filament\Resources\UserResource\Pages\ListUsers;
+use Webkul\Security\Filament\Resources\UserResource\Pages\ViewUsers;
 use Webkul\Security\Models\User;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
 
     protected static ?int $navigationSort = 4;
 
@@ -48,35 +71,35 @@ class UserResource extends Resource
         ];
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Section::make(__('security::filament/resources/user.form.sections.general-information.title'))
+                                Section::make(__('security::filament/resources/user.form.sections.general-information.title'))
                                     ->schema([
-                                        Forms\Components\TextInput::make('name')
+                                        TextInput::make('name')
                                             ->label(__('security::filament/resources/user.form.sections.general-information.fields.name'))
                                             ->required()
                                             ->maxLength(255)
                                             ->live(onBlur: true),
-                                        Forms\Components\TextInput::make('email')
+                                        TextInput::make('email')
                                             ->label(__('security::filament/resources/user.form.sections.general-information.fields.email'))
                                             ->email()
                                             ->required()
                                             ->unique(ignoreRecord: true)
                                             ->maxLength(255),
-                                        Forms\Components\TextInput::make('password')
+                                        TextInput::make('password')
                                             ->label(__('security::filament/resources/user.form.sections.general-information.fields.password'))
                                             ->password()
                                             ->required()
                                             ->hiddenOn('edit')
                                             ->maxLength(255)
                                             ->rule('min:8'),
-                                        Forms\Components\TextInput::make('password_confirmation')
+                                        TextInput::make('password_confirmation')
                                             ->label(__('security::filament/resources/user.form.sections.general-information.fields.password-confirmation'))
                                             ->password()
                                             ->hiddenOn('edit')
@@ -85,21 +108,21 @@ class UserResource extends Resource
                                     ])
                                     ->columns(2),
 
-                                Forms\Components\Section::make(__('security::filament/resources/user.form.sections.permissions.title'))
+                                Section::make(__('security::filament/resources/user.form.sections.permissions.title'))
                                     ->schema([
-                                        Forms\Components\Select::make('roles')
+                                        Select::make('roles')
                                             ->label(__('security::filament/resources/user.form.sections.permissions.fields.roles'))
                                             ->relationship('roles', 'name')
                                             ->multiple()
                                             ->preload()
                                             ->searchable(),
-                                        Forms\Components\Select::make('resource_permission')
+                                        Select::make('resource_permission')
                                             ->label(__('security::filament/resources/user.form.sections.permissions.fields.resource-permission'))
                                             ->options(PermissionType::options())
                                             ->required()
                                             ->preload()
                                             ->searchable(),
-                                        Forms\Components\Select::make('teams')
+                                        Select::make('teams')
                                             ->label(__('security::filament/resources/user.form.sections.permissions.fields.teams'))
                                             ->relationship('teams', 'name')
                                             ->multiple()
@@ -109,12 +132,12 @@ class UserResource extends Resource
                                     ->columns(2),
                             ])
                             ->columnSpan(['lg' => 2]),
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Section::make(__('security::filament/resources/user.form.sections.avatar.title'))
+                                Section::make(__('security::filament/resources/user.form.sections.avatar.title'))
                                     ->relationship('partner', 'avatar')
                                     ->schema([
-                                        Forms\Components\FileUpload::make('avatar')
+                                        FileUpload::make('avatar')
                                             ->hiddenLabel()
                                             ->imageResizeMode('cover')
                                             ->image()
@@ -123,34 +146,34 @@ class UserResource extends Resource
                                             ->visibility('private'),
                                     ])
                                     ->columns(1),
-                                Forms\Components\Section::make(__('security::filament/resources/user.form.sections.lang-and-status.title'))
+                                Section::make(__('security::filament/resources/user.form.sections.lang-and-status.title'))
                                     ->schema([
-                                        Forms\Components\Select::make('language')
+                                        Select::make('language')
                                             ->label(__('security::filament/resources/user.form.sections.lang-and-status.fields.language'))
                                             ->options([
                                                 'en' => __('English'),
                                             ])
                                             ->searchable(),
-                                        Forms\Components\Toggle::make('is_active')
+                                        Toggle::make('is_active')
                                             ->label(__('security::filament/resources/user.form.sections.lang-and-status.fields.status'))
                                             ->default(true),
                                     ])
                                     ->columns(1),
-                                Forms\Components\Section::make(__('security::filament/resources/user.form.sections.multi-company.title'))
+                                Section::make(__('security::filament/resources/user.form.sections.multi-company.title'))
                                     ->schema([
-                                        Forms\Components\Select::make('allowed_companies')
+                                        Select::make('allowed_companies')
                                             ->label(__('security::filament/resources/user.form.sections.multi-company.allowed-companies'))
                                             ->relationship('allowedCompanies', 'name')
                                             ->multiple()
                                             ->preload()
                                             ->searchable(),
-                                        Forms\Components\Select::make('default_company_id')
+                                        Select::make('default_company_id')
                                             ->label(__('security::filament/resources/user.form.sections.multi-company.default-company'))
                                             ->relationship('defaultCompany', 'name')
                                             ->required()
                                             ->searchable()
-                                            ->createOptionForm(fn (Form $form) => CompanyResource::form($form))
-                                            ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                                            ->createOptionForm(fn (Schema $schema) => CompanyResource::form($schema))
+                                            ->createOptionAction(function (Action $action) {
                                                 $action
                                                     ->fillForm(function (array $arguments): array {
                                                         return [
@@ -177,70 +200,70 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('partner.avatar')
+                ImageColumn::make('partner.avatar')
                     ->size(50)
                     ->label(__('security::filament/resources/user.table.columns.avatar')),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('security::filament/resources/user.table.columns.name'))
                     ->searchable()
                     ->sortable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('email')
+                TextColumn::make('email')
                     ->label(__('security::filament/resources/user.table.columns.email'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('teams.name')
+                TextColumn::make('teams.name')
                     ->label(__('security::filament/resources/user.table.columns.teams'))
                     ->badge(),
-                Tables\Columns\TextColumn::make('roles.name')
+                TextColumn::make('roles.name')
                     ->sortable()
                     ->label(__('security::filament/resources/user.table.columns.role')),
-                Tables\Columns\TextColumn::make('resource_permission')
+                TextColumn::make('resource_permission')
                     ->label(__('security::filament/resources/user.table.columns.resource-permission'))
                     ->formatStateUsing(fn ($state) => PermissionType::options()[$state] ?? $state)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('defaultCompany.name')
+                TextColumn::make('defaultCompany.name')
                     ->label(__('security::filament/resources/user.table.columns.default-company'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('allowedCompanies.name')
+                TextColumn::make('allowedCompanies.name')
                     ->label(__('security::filament/resources/user.table.columns.allowed-company'))
                     ->badge(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('security::filament/resources/user.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('security::filament/resources/user.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('resource_permission')
+                SelectFilter::make('resource_permission')
                     ->label(__('security::filament/resources/user.table.filters.resource-permission'))
                     ->searchable()
                     ->options(PermissionType::options())
                     ->preload(),
-                Tables\Filters\SelectFilter::make('default_company')
+                SelectFilter::make('default_company')
                     ->relationship('defaultCompany', 'name')
                     ->label(__('security::filament/resources/user.table.filters.default-company'))
                     ->searchable()
                     ->preload(),
-                Tables\Filters\SelectFilter::make('allowed_companies')
+                SelectFilter::make('allowed_companies')
                     ->relationship('allowedCompanies', 'name')
                     ->label(__('security::filament/resources/user.table.filters.allowed-companies'))
                     ->multiple()
                     ->searchable()
                     ->preload(),
-                Tables\Filters\SelectFilter::make('teams')
+                SelectFilter::make('teams')
                     ->relationship('teams', 'name')
                     ->label(__('security::filament/resources/user.table.filters.teams'))
                     ->options(fn (): array => Role::query()->pluck('name', 'id')->all())
                     ->multiple()
                     ->searchable()
                     ->preload(),
-                Tables\Filters\SelectFilter::make('roles')
+                SelectFilter::make('roles')
                     ->label(__('security::filament/resources/user.table.filters.roles'))
                     ->relationship('roles', 'name')
                     ->options(fn (): array => Role::query()->pluck('name', 'id')->all())
@@ -249,11 +272,11 @@ class UserResource extends Resource
                     ->preload(),
             ])
             ->filtersFormColumns(2)
-            ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ActionGroup::make([
+                    ViewAction::make()
                         ->hidden(fn ($record) => $record->trashed()),
-                    Tables\Actions\EditAction::make()
+                    EditAction::make()
                         ->hidden(fn ($record) => $record->trashed())
                         ->successNotification(
                             Notification::make()
@@ -261,14 +284,14 @@ class UserResource extends Resource
                                 ->title(__('security::filament/resources/user.table.actions.edit.notification.title'))
                                 ->body(__('security::filament/resources/user.table.actions.edit.notification.body')),
                         ),
-                    Tables\Actions\DeleteAction::make()
+                    DeleteAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('security::filament/resources/user.table.actions.delete.notification.title'))
                                 ->body(__('security::filament/resources/user.table.actions.delete.notification.body')),
                         ),
-                    Tables\Actions\RestoreAction::make()
+                    RestoreAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -277,23 +300,23 @@ class UserResource extends Resource
                         ),
                 ]),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('security::filament/resources/user.table.bulk-actions.delete.notification.title'))
                                 ->body(__('security::filament/resources/user.table.bulk-actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteBulkAction::make()
+                    ForceDeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('security::filament/resources/user.table.bulk-actions.force-delete.notification.title'))
                                 ->body(__('security::filament/resources/user.table.bulk-actions.force-delete.notification.body')),
                         ),
-                    Tables\Actions\RestoreBulkAction::make()
+                    RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -307,7 +330,7 @@ class UserResource extends Resource
                 $query->with('roles', 'teams', 'defaultCompany', 'allowedCompanies');
             })
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->icon('heroicon-o-plus-circle')
                     ->successNotification(
                         Notification::make()
@@ -318,50 +341,50 @@ class UserResource extends Resource
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Grid::make(['default' => 3])
+        return $schema
+            ->components([
+                Grid::make(['default' => 3])
                     ->schema([
-                        Infolists\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Infolists\Components\Section::make(__('security::filament/resources/user.infolist.sections.general-information.title'))
+                                Section::make(__('security::filament/resources/user.infolist.sections.general-information.title'))
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('name')
+                                        TextEntry::make('name')
                                             ->icon('heroicon-o-user')
                                             ->placeholder('—')
                                             ->extraAttributes([
                                                 'style' => 'word-break: break-all;',
                                             ])
                                             ->label(__('security::filament/resources/user.infolist.sections.general-information.entries.name')),
-                                        Infolists\Components\TextEntry::make('email')
+                                        TextEntry::make('email')
                                             ->icon('heroicon-o-envelope')
                                             ->placeholder('—')
                                             ->label(__('security::filament/resources/user.infolist.sections.general-information.entries.email')),
-                                        Infolists\Components\TextEntry::make('language')
+                                        TextEntry::make('language')
                                             ->icon('heroicon-o-language')
                                             ->placeholder('—')
                                             ->label(__('security::filament/resources/user.infolist.sections.lang-and-status.entries.language')),
                                     ])
                                     ->columns(2),
 
-                                Infolists\Components\Section::make(__('security::filament/resources/user.infolist.sections.permissions.title'))
+                                Section::make(__('security::filament/resources/user.infolist.sections.permissions.title'))
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('roles.name')
+                                        TextEntry::make('roles.name')
                                             ->icon('heroicon-o-key')
                                             ->placeholder('—')
                                             ->label(__('security::filament/resources/user.infolist.sections.permissions.entries.roles'))
                                             ->listWithLineBreaks()
                                             ->formatStateUsing(fn ($state) => ucfirst($state))
                                             ->bulleted(),
-                                        Infolists\Components\TextEntry::make('teams.name')
+                                        TextEntry::make('teams.name')
                                             ->icon('heroicon-o-user-group')
                                             ->placeholder('—')
                                             ->label(__('security::filament/resources/user.infolist.sections.permissions.entries.teams'))
                                             ->listWithLineBreaks()
                                             ->bulleted(),
-                                        Infolists\Components\TextEntry::make('resource_permission')
+                                        TextEntry::make('resource_permission')
                                             ->icon(function ($record) {
                                                 return [
                                                     PermissionType::GLOBAL->value     => 'heroicon-o-globe-alt',
@@ -377,32 +400,32 @@ class UserResource extends Resource
                             ])
                             ->columnSpan(2),
 
-                        Infolists\Components\Group::make([
-                            Infolists\Components\Section::make(__('security::filament/resources/user.infolist.sections.avatar.title'))
+                        Group::make([
+                            Section::make(__('security::filament/resources/user.infolist.sections.avatar.title'))
                                 ->schema([
-                                    Infolists\Components\ImageEntry::make('partner.avatar')
+                                    ImageEntry::make('partner.avatar')
                                         ->hiddenLabel()
                                         ->circular()
                                         ->placeholder('—'),
                                 ]),
 
-                            Infolists\Components\Section::make(__('security::filament/resources/user.infolist.sections.multi-company.title'))
+                            Section::make(__('security::filament/resources/user.infolist.sections.multi-company.title'))
                                 ->schema([
-                                    Infolists\Components\TextEntry::make('allowedCompanies.name')
+                                    TextEntry::make('allowedCompanies.name')
                                         ->icon('heroicon-o-building-office')
                                         ->placeholder('—')
                                         ->label(__('security::filament/resources/user.infolist.sections.multi-company.allowed-companies'))
                                         ->listWithLineBreaks()
                                         ->bulleted(),
-                                    Infolists\Components\TextEntry::make('defaultCompany.name')
+                                    TextEntry::make('defaultCompany.name')
                                         ->icon('heroicon-o-building-office-2')
                                         ->placeholder('—')
                                         ->label(__('security::filament/resources/user.infolist.sections.multi-company.default-company')),
                                 ]),
 
-                            Infolists\Components\Section::make(__('security::filament/resources/user.infolist.sections.lang-and-status.title'))
+                            Section::make(__('security::filament/resources/user.infolist.sections.lang-and-status.title'))
                                 ->schema([
-                                    Infolists\Components\IconEntry::make('is_active')
+                                    IconEntry::make('is_active')
                                         ->label(__('security::filament/resources/user.infolist.sections.lang-and-status.entries.status'))
                                         ->boolean(),
                                 ]),
@@ -421,10 +444,10 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit'   => Pages\EditUser::route('/{record}/edit'),
-            'view'   => Pages\ViewUsers::route('/{record}'),
+            'index'  => ListUsers::route('/'),
+            'create' => CreateUser::route('/create'),
+            'edit'   => EditUser::route('/{record}/edit'),
+            'view'   => ViewUsers::route('/{record}'),
         ];
     }
 }

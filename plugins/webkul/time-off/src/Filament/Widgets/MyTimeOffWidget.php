@@ -27,7 +27,7 @@ class MyTimeOffWidget extends BaseWidget
 
             $stats[] = Stat::make(__($leaveType->name), $availableDays['days'])
                 ->description(__('time-off::filament/widgets/my-time-off-widget.stats.valid-until', ['date' => $endOfYear->format('Y-m-d')]))
-                ->color(Color::hex($leaveType->color));
+                ->color(Color::generateV3Palette($leaveType->color));
         }
 
         $pendingRequests = $this->calculatePendingRequests($employeeId);

@@ -15,38 +15,38 @@ class StatsOverviewWidget extends BaseWidget
 {
     use HasWidgetShield, InteractsWithPageFilters;
 
-    protected static ?string $pollingInterval = '15s';
+    protected ?string $pollingInterval = '15s';
 
     protected function getData(): array
     {
         $query = Task::query();
 
-        if (! empty($this->filters['selectedProjects'])) {
-            $query->whereIn('project_id', $this->filters['selectedProjects']);
+        if (! empty($this->pageFilters['selectedProjects'])) {
+            $query->whereIn('project_id', $this->pageFilters['selectedProjects']);
         }
 
-        if (! empty($this->filters['selectedAssignees'])) {
+        if (! empty($this->pageFilters['selectedAssignees'])) {
             $query->whereHas('users', function ($q) {
-                $q->whereIn('users.id', $this->filters['selectedAssignees']);
+                $q->whereIn('users.id', $this->pageFilters['selectedAssignees']);
             });
         }
 
-        if (! empty($this->filters['selectedTags'])) {
+        if (! empty($this->pageFilters['selectedTags'])) {
             $query->whereHas('tags', function ($q) {
-                $q->whereIn('projects_task_tag.tag_id', $this->filters['selectedTags']);
+                $q->whereIn('projects_task_tag.tag_id', $this->pageFilters['selectedTags']);
             });
         }
 
-        if (! empty($this->filters['selectedPartners'])) {
-            $query->whereIn('parent_id', $this->filters['selectedPartners']);
+        if (! empty($this->pageFilters['selectedPartners'])) {
+            $query->whereIn('parent_id', $this->pageFilters['selectedPartners']);
         }
 
-        $currentPeriodStart = ! is_null($this->filters['startDate'] ?? null) ?
-            Carbon::parse($this->filters['startDate']) :
+        $currentPeriodStart = ! is_null($this->pageFilters['startDate'] ?? null) ?
+            Carbon::parse($this->pageFilters['startDate']) :
             now()->subMonth();
 
-        $currentPeriodEnd = ! is_null($this->filters['endDate'] ?? null) ?
-            Carbon::parse($this->filters['endDate']) :
+        $currentPeriodEnd = ! is_null($this->pageFilters['endDate'] ?? null) ?
+            Carbon::parse($this->pageFilters['endDate']) :
             now();
 
         $daysDifference = $currentPeriodEnd->diffInDays($currentPeriodStart);

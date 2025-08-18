@@ -2,10 +2,11 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\Pages;
 
-use Filament\Forms\Form;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource;
@@ -17,31 +18,31 @@ class ManageRules extends ManageRelatedRecords
 
     protected static string $relationship = 'rules';
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-check';
 
     public static function getNavigationLabel(): string
     {
         return __('inventories::filament/clusters/configurations/resources/route/pages/manage-rules.title');
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return RuleResource::form($form);
+        return RuleResource::form($schema);
     }
 
     public function table(Table $table): Table
     {
         return RuleResource::table($table)
             ->columns([
-                Tables\Columns\TextColumn::make('action')
+                TextColumn::make('action')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('sourceLocation.full_name')
+                TextColumn::make('sourceLocation.full_name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('destinationLocation.full_name')
+                TextColumn::make('destinationLocation.full_name')
                     ->searchable(),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label(__('inventories::filament/clusters/configurations/resources/route/pages/manage-rules.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
                     ->fillForm(function (array $arguments): array {
@@ -49,7 +50,7 @@ class ManageRules extends ManageRelatedRecords
                             'route_id' => $this->getOwnerRecord()->id,
                         ];
                     })
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
                         $data['creator_id'] = Auth::id();
 
                         $data['company_id'] = $data['company_id'] ?? Auth::user()->default_company_id;

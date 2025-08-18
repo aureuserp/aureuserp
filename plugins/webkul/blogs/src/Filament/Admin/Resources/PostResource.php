@@ -2,18 +2,46 @@
 
 namespace Webkul\Blog\Filament\Admin\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
+use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
-use Webkul\Blog\Filament\Admin\Resources\PostResource\Pages;
+use Webkul\Blog\Filament\Admin\Resources\PostResource\Pages\CreatePost;
+use Webkul\Blog\Filament\Admin\Resources\PostResource\Pages\EditPost;
+use Webkul\Blog\Filament\Admin\Resources\PostResource\Pages\ListPosts;
+use Webkul\Blog\Filament\Admin\Resources\PostResource\Pages\ViewPost;
 use Webkul\Blog\Models\Post;
 
 class PostResource extends Resource
@@ -22,9 +50,9 @@ class PostResource extends Resource
 
     protected static ?string $slug = 'website/posts';
 
-    protected static ?string $navigationIcon = 'heroicon-o-newspaper';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-newspaper';
 
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     protected static ?string $recordTitleAttribute = 'title';
 
@@ -38,74 +66,74 @@ class PostResource extends Resource
         return __('blogs::filament/admin/resources/post.navigation.group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Forms\Components\Section::make(__('blogs::filament/admin/resources/post.form.sections.general.title'))
+                        Section::make(__('blogs::filament/admin/resources/post.form.sections.general.title'))
                             ->schema([
-                                Forms\Components\TextInput::make('title')
+                                TextInput::make('title')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.general.fields.title'))
                                     ->required()
                                     ->live(onBlur: true)
                                     ->maxLength(255)
                                     ->placeholder(__('blogs::filament/admin/resources/post.form.sections.general.fields.title-placeholder'))
                                     ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;'])
-                                    ->afterStateUpdated(fn (string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
-                                Forms\Components\TextInput::make('slug')
+                                    ->afterStateUpdated(fn (string $operation, $state, Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
+                                TextInput::make('slug')
                                     ->disabled()
                                     ->dehydrated()
                                     ->required()
                                     ->maxLength(255)
                                     ->unique(Post::class, 'slug', ignoreRecord: true),
-                                Forms\Components\Textarea::make('sub_title')
+                                Textarea::make('sub_title')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.general.fields.sub-title')),
-                                Forms\Components\RichEditor::make('content')
+                                RichEditor::make('content')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.general.fields.content'))
                                     ->required(),
-                                Forms\Components\FileUpload::make('image')
+                                FileUpload::make('image')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.general.fields.banner'))
                                     ->image(),
                             ]),
 
-                        Forms\Components\Section::make(__('blogs::filament/admin/resources/post.form.sections.seo.title'))
+                        Section::make(__('blogs::filament/admin/resources/post.form.sections.seo.title'))
                             ->schema([
-                                Forms\Components\TextInput::make('meta_title')
+                                TextInput::make('meta_title')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.seo.fields.meta-title'))
                                     ->maxLength(255),
-                                Forms\Components\TextInput::make('meta_keywords')
+                                TextInput::make('meta_keywords')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.seo.fields.meta-keywords'))
                                     ->maxLength(255),
-                                Forms\Components\Textarea::make('meta_description')
+                                Textarea::make('meta_description')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.seo.fields.meta-description')),
                             ]),
                     ])
                     ->columnSpan(['lg' => 2]),
-                Forms\Components\Group::make()
+                Group::make()
                     ->schema([
-                        Forms\Components\Section::make(__('blogs::filament/admin/resources/post.form.sections.settings.title'))
+                        Section::make(__('blogs::filament/admin/resources/post.form.sections.settings.title'))
                             ->schema([
-                                Forms\Components\Select::make('category_id')
+                                Select::make('category_id')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.settings.fields.category'))
                                     ->relationship('category', 'name')
                                     ->searchable()
                                     ->preload()
                                     ->required(),
-                                Forms\Components\Select::make('tags')
+                                Select::make('tags')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.settings.fields.tags'))
                                     ->relationship('tags', 'name')
                                     ->searchable()
                                     ->preload()
                                     ->multiple()
                                     ->createOptionForm([
-                                        Forms\Components\TextInput::make('name')
+                                        TextInput::make('name')
                                             ->label(__('blogs::filament/admin/resources/post.form.sections.settings.fields.name'))
                                             ->required()
                                             ->maxLength(255)
                                             ->unique('blogs_tags'),
-                                        Forms\Components\ColorPicker::make('color')
+                                        ColorPicker::make('color')
                                             ->label(__('blogs::filament/admin/resources/post.form.sections.settings.fields.color'))
                                             ->hexColor(),
                                     ]),
@@ -119,34 +147,34 @@ class PostResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')
+                TextColumn::make('title')
                     ->label(__('blogs::filament/admin/resources/post.table.columns.title'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('slug')
+                TextColumn::make('slug')
                     ->label(__('blogs::filament/admin/resources/post.table.columns.slug'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('author.name')
+                TextColumn::make('author.name')
                     ->label(__('blogs::filament/admin/resources/post.table.columns.author'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('category.name')
+                TextColumn::make('category.name')
                     ->label(__('blogs::filament/admin/resources/post.table.columns.category'))
                     ->sortable()
                     ->placeholder('—')
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('creator.name')
+                TextColumn::make('creator.name')
                     ->label(__('blogs::filament/admin/resources/post.table.columns.creator'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\IconColumn::make('is_published')
+                IconColumn::make('is_published')
                     ->label(__('blogs::filament/admin/resources/post.table.columns.is-published'))
                     ->boolean()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('blogs::filament/admin/resources/post.table.columns.updated-at'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('blogs::filament/admin/resources/post.table.columns.created-at'))
                     ->sortable(),
             ])
@@ -160,51 +188,51 @@ class PostResource extends Resource
                     ->date(),
             ])
             ->filters([
-                Tables\Filters\Filter::make('is_published')
+                Filter::make('is_published')
                     ->label(__('blogs::filament/admin/resources/post.table.filters.is-published')),
-                Tables\Filters\SelectFilter::make('author_id')
+                SelectFilter::make('author_id')
                     ->label(__('blogs::filament/admin/resources/post.table.filters.author'))
                     ->relationship('author', 'name')
                     ->searchable()
                     ->preload(),
-                Tables\Filters\SelectFilter::make('creator_id')
+                SelectFilter::make('creator_id')
                     ->label(__('blogs::filament/admin/resources/post.table.filters.creator'))
                     ->relationship('creator', 'name')
                     ->searchable()
                     ->preload(),
-                Tables\Filters\SelectFilter::make('category_id')
+                SelectFilter::make('category_id')
                     ->label(__('blogs::filament/admin/resources/post.table.filters.category'))
                     ->relationship('category', 'name')
                     ->searchable()
                     ->preload(),
-                Tables\Filters\SelectFilter::make('tags')
+                SelectFilter::make('tags')
                     ->label(__('blogs::filament/admin/resources/post.table.filters.tags'))
                     ->relationship('tags', 'name')
                     ->searchable()
                     ->multiple()
                     ->preload(),
             ])
-            ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ActionGroup::make([
+                    ViewAction::make()
                         ->hidden(fn ($record) => $record->trashed()),
-                    Tables\Actions\EditAction::make()
+                    EditAction::make()
                         ->hidden(fn ($record) => $record->trashed()),
-                    Tables\Actions\RestoreAction::make()
+                    RestoreAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('blogs::filament/admin/resources/post.table.actions.restore.notification.title'))
                                 ->body(__('blogs::filament/admin/resources/post.table.actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteAction::make()
+                    DeleteAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('blogs::filament/admin/resources/post.table.actions.delete.notification.title'))
                                 ->body(__('blogs::filament/admin/resources/post.table.actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteAction::make()
+                    ForceDeleteAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -213,23 +241,23 @@ class PostResource extends Resource
                         ),
                 ]),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\RestoreBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('blogs::filament/admin/resources/post.table.bulk-actions.restore.notification.title'))
                                 ->body(__('blogs::filament/admin/resources/post.table.bulk-actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteBulkAction::make()
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('blogs::filament/admin/resources/post.table.bulk-actions.delete.notification.title'))
                                 ->body(__('blogs::filament/admin/resources/post.table.bulk-actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteBulkAction::make()
+                    ForceDeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -240,40 +268,40 @@ class PostResource extends Resource
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Infolists\Components\Section::make(__('blogs::filament/admin/resources/post.form.sections.general.title'))
+                        Section::make(__('blogs::filament/admin/resources/post.form.sections.general.title'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('title')
+                                TextEntry::make('title')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.general.fields.title'))
-                                    ->size(Infolists\Components\TextEntry\TextEntrySize::Large)
-                                    ->weight(\Filament\Support\Enums\FontWeight::Bold),
+                                    ->size(TextSize::Large)
+                                    ->weight(FontWeight::Bold),
 
-                                Infolists\Components\TextEntry::make('content')
+                                TextEntry::make('content')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.general.fields.content'))
                                     ->markdown(),
 
-                                Infolists\Components\ImageEntry::make('image')
+                                ImageEntry::make('image')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.general.fields.banner')),
                             ]),
 
-                        Infolists\Components\Section::make(__('blogs::filament/admin/resources/post.form.sections.seo.title'))
+                        Section::make(__('blogs::filament/admin/resources/post.form.sections.seo.title'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('meta_title')
+                                TextEntry::make('meta_title')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.seo.fields.meta-title'))
                                     ->icon('heroicon-o-document-text')
                                     ->placeholder('—'),
 
-                                Infolists\Components\TextEntry::make('meta_keywords')
+                                TextEntry::make('meta_keywords')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.seo.fields.meta-keywords'))
                                     ->icon('heroicon-o-hashtag')
                                     ->placeholder('—'),
 
-                                Infolists\Components\TextEntry::make('meta_description')
+                                TextEntry::make('meta_description')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.seo.fields.meta-description'))
                                     ->markdown()
                                     ->placeholder('—'),
@@ -281,48 +309,48 @@ class PostResource extends Resource
                     ])
                     ->columnSpan(['lg' => 2]),
 
-                Infolists\Components\Group::make()
+                Group::make()
                     ->schema([
-                        Infolists\Components\Section::make(__('blogs::filament/admin/resources/post.infolist.sections.record-information.title'))
+                        Section::make(__('blogs::filament/admin/resources/post.infolist.sections.record-information.title'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('author.name')
+                                TextEntry::make('author.name')
                                     ->label(__('blogs::filament/admin/resources/post.infolist.sections.record-information.entries.author'))
                                     ->icon('heroicon-m-user'),
 
-                                Infolists\Components\TextEntry::make('creator.name')
+                                TextEntry::make('creator.name')
                                     ->label(__('blogs::filament/admin/resources/post.infolist.sections.record-information.entries.created-by'))
                                     ->icon('heroicon-m-user'),
 
-                                Infolists\Components\TextEntry::make('published_at')
+                                TextEntry::make('published_at')
                                     ->label(__('blogs::filament/admin/resources/post.infolist.sections.record-information.entries.published-at'))
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar-days')
                                     ->placeholder('—'),
 
-                                Infolists\Components\TextEntry::make('created_at')
+                                TextEntry::make('created_at')
                                     ->label(__('blogs::filament/admin/resources/post.infolist.sections.record-information.entries.created-at'))
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar'),
 
-                                Infolists\Components\TextEntry::make('updated_at')
+                                TextEntry::make('updated_at')
                                     ->label(__('blogs::filament/admin/resources/post.infolist.sections.record-information.entries.last-updated'))
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar-days'),
                             ]),
 
-                        Infolists\Components\Section::make(__('blogs::filament/admin/resources/post.form.sections.settings.title'))
+                        Section::make(__('blogs::filament/admin/resources/post.form.sections.settings.title'))
                             ->schema([
-                                Infolists\Components\IconEntry::make('is_published')
+                                IconEntry::make('is_published')
                                     ->label(__('blogs::filament/admin/resources/post.table.columns.is-published'))
                                     ->boolean(),
 
-                                Infolists\Components\TextEntry::make('category.name')
+                                TextEntry::make('category.name')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.settings.fields.category'))
                                     ->icon('heroicon-o-rectangle-stack')
                                     ->badge()
                                     ->color('warning'),
 
-                                Infolists\Components\TextEntry::make('tags.name')
+                                TextEntry::make('tags.name')
                                     ->label(__('blogs::filament/admin/resources/post.form.sections.settings.fields.tags'))
                                     ->separator(', ')
                                     ->icon('heroicon-o-tag')
@@ -338,18 +366,18 @@ class PostResource extends Resource
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewPost::class,
-            Pages\EditPost::class,
+            ViewPost::class,
+            EditPost::class,
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListPosts::route('/'),
-            'create' => Pages\CreatePost::route('/create'),
-            'view'   => Pages\ViewPost::route('/{record}'),
-            'edit'   => Pages\EditPost::route('/{record}/edit'),
+            'index'  => ListPosts::route('/'),
+            'create' => CreatePost::route('/create'),
+            'view'   => ViewPost::route('/{record}'),
+            'edit'   => EditPost::route('/{record}/edit'),
         ];
     }
 }

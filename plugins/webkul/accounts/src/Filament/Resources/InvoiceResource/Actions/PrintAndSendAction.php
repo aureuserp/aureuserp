@@ -3,8 +3,11 @@
 namespace Webkul\Account\Filament\Resources\InvoiceResource\Actions;
 
 use Filament\Actions\Action;
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Schema;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Facades\Account;
 use Webkul\Account\Models\Move;
@@ -50,22 +53,22 @@ class PrintAndSendAction extends Action
             ]);
         });
 
-        $this->form(
-            function (Form $form) {
-                return $form->schema([
-                    Forms\Components\Select::make('partners')
+        $this->schema(
+            function (Schema $schema) {
+                return $schema->components([
+                    Select::make('partners')
                         ->options(Partner::all()->pluck('name', 'id'))
                         ->multiple()
                         ->label(__('accounts::filament/resources/invoice/actions/print-and-send.modal.form.partners'))
                         ->searchable()
                         ->preload(),
-                    Forms\Components\TextInput::make('subject')
+                    TextInput::make('subject')
                         ->label(__('accounts::filament/resources/invoice/actions/print-and-send.modal.form.subject'))
                         ->hiddenLabel(),
-                    Forms\Components\RichEditor::make('description')
+                    RichEditor::make('description')
                         ->label(__('accounts::filament/resources/invoice/actions/print-and-send.modal.form.description'))
                         ->hiddenLabel(),
-                    Forms\Components\FileUpload::make('files')
+                    FileUpload::make('files')
                         ->label(__('accounts::filament/resources/invoice/actions/print-and-send.modal.form.files'))
                         ->downloadable()
                         ->openable()

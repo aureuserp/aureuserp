@@ -3,6 +3,7 @@
 namespace Webkul\Account\Filament\Resources\InvoiceResource\Actions;
 
 use Filament\Actions\Action;
+use InvalidArgumentException;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Models\Move;
 use Webkul\Support\Traits\PDFHandler;
@@ -26,7 +27,7 @@ class PreviewAction extends Action
     public function setTemplate(string $template): static
     {
         if (! view()->exists($template)) {
-            throw new \InvalidArgumentException("The view [{$template}] does not exist.");
+            throw new InvalidArgumentException("The view [{$template}] does not exist.");
         }
 
         $this->template = $template;

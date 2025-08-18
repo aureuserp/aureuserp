@@ -5,7 +5,7 @@ namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Purchase\Enums;
+use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Facades\PurchaseOrder;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
 
@@ -32,7 +32,7 @@ class CreateOrder extends CreateRecord
 
         $data['calendar_start_at'] = $data['ordered_at'];
 
-        $data['state'] ??= Enums\OrderState::DRAFT;
+        $data['state'] ??= OrderState::DRAFT;
 
         return $data;
     }

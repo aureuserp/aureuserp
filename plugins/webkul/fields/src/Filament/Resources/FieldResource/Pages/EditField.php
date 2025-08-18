@@ -2,7 +2,7 @@
 
 namespace Webkul\Field\Filament\Resources\FieldResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Field\FieldsColumnManager;
@@ -23,7 +23,7 @@ class EditField extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 

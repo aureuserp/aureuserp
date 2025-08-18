@@ -4,8 +4,10 @@ namespace Webkul\TableViews\Filament\Actions;
 
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\CanCustomizeProcess;
-use Filament\Forms;
-use Filament\Support\Enums\MaxWidth;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Support\Enums\Width;
+use Guava\FilamentIconPicker\Forms\IconPicker;
 use Webkul\TableViews\Models\TableView;
 use Webkul\TableViews\Models\TableViewFavorite;
 
@@ -40,21 +42,21 @@ class EditViewAction extends Action
                     'is_public'   => $arguments['view_model']['is_public'],
                 ];
             })
-            ->form([
-                Forms\Components\TextInput::make('name')
+            ->schema([
+                TextInput::make('name')
                     ->label(__('table-views::filament/actions/edit-view.form.name'))
                     ->autofocus()
                     ->required(),
-                \Guava\FilamentIconPicker\Forms\IconPicker::make('icon')
+                IconPicker::make('icon')
                     ->label(__('table-views::filament/actions/edit-view.form.icon'))
                     ->sets(['heroicons'])
                     ->columns(4)
                     ->preload()
                     ->optionsLimit(50),
-                Forms\Components\Toggle::make('is_favorite')
+                Toggle::make('is_favorite')
                     ->label(__('table-views::filament/actions/edit-view.form.add-to-favorites'))
                     ->helperText(__('table-views::filament/actions/edit-view.form.add-to-favorites-help')),
-                Forms\Components\Toggle::make('is_public')
+                Toggle::make('is_public')
                     ->label(__('table-views::filament/actions/edit-view.form.make-public'))
                     ->helperText(__('table-views::filament/actions/edit-view.form.make-public-help')),
             ])->action(function (array $arguments): void {
@@ -88,6 +90,6 @@ class EditViewAction extends Action
             ->successNotificationTitle(__('table-views::filament/actions/edit-view.form.notification.created'))
             ->icon('heroicon-s-pencil-square')
             ->modalHeading(__('table-views::filament/actions/edit-view.form.modal.title'))
-            ->modalWidth(MaxWidth::Medium);
+            ->modalWidth(Width::Medium);
     }
 }

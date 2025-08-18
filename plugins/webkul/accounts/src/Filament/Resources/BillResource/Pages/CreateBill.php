@@ -4,7 +4,7 @@ namespace Webkul\Account\Filament\Resources\BillResource\Pages;
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Webkul\Account\Enums;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account;
 use Webkul\Account\Filament\Resources\BillResource;
 
@@ -27,7 +27,7 @@ class CreateBill extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['move_type'] ??= Enums\MoveType::IN_INVOICE;
+        $data['move_type'] ??= MoveType::IN_INVOICE;
 
         $data['date'] = now();
 

@@ -10,7 +10,7 @@ class ByType extends BaseDashboard
 {
     protected static string $routePath = 'reporting/by-type';
 
-    protected static ?string $navigationIcon = 'heroicon-o-folder';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-folder';
 
     protected static ?int $navigationSort = 2;
 

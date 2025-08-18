@@ -2,11 +2,14 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource\Pages;
 
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\LocationType;
+use Webkul\Inventory\Enums\MoveState;
+use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Models\MoveLine;
 use Webkul\Inventory\Settings\OperationSettings;
@@ -19,7 +22,7 @@ class ManageMoves extends ManageRelatedRecords
 
     protected static string $relationship = 'moveLines';
 
-    protected static ?string $navigationIcon = 'heroicon-o-arrows-right-left';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrows-right-left';
 
     public static function getNavigationLabel(): string
     {
@@ -30,46 +33,46 @@ class ManageMoves extends ManageRelatedRecords
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('scheduled_at')
+                TextColumn::make('scheduled_at')
                     ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.date'))
                     ->sortable()
                     ->dateTime(),
-                Tables\Columns\TextColumn::make('reference')
+                TextColumn::make('reference')
                     ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.reference'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('lot.name')
+                TextColumn::make('lot.name')
                     ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.lot'))
                     ->sortable()
                     ->placeholder('—')
-                    ->visible(fn (TraceabilitySettings $settings) => $settings->enable_lots_serial_numbers && $this->getOwnerRecord()->tracking != Enums\ProductTracking::QTY),
-                Tables\Columns\TextColumn::make('package.name')
+                    ->visible(fn (TraceabilitySettings $settings) => $settings->enable_lots_serial_numbers && $this->getOwnerRecord()->tracking != ProductTracking::QTY),
+                TextColumn::make('package.name')
                     ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.package'))
                     ->sortable()
                     ->placeholder('—')
                     ->visible(fn (OperationSettings $settings) => $settings->enable_packages),
-                Tables\Columns\TextColumn::make('sourceLocation.full_name')
+                TextColumn::make('sourceLocation.full_name')
                     ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.source-location'))
                     ->visible(fn (WarehouseSettings $settings) => $settings->enable_locations),
-                Tables\Columns\TextColumn::make('destinationLocation.full_name')
+                TextColumn::make('destinationLocation.full_name')
                     ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.destination-location'))
                     ->visible(fn (WarehouseSettings $settings) => $settings->enable_locations),
-                Tables\Columns\TextColumn::make('uom_qty')
+                TextColumn::make('uom_qty')
                     ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.quantity'))
                     ->sortable()
-                    ->color(fn ($record) => $record->destinationLocation->type == Enums\LocationType::INTERNAL ? 'success' : 'danger'),
-                Tables\Columns\TextColumn::make('state')
+                    ->color(fn ($record) => $record->destinationLocation->type == LocationType::INTERNAL ? 'success' : 'danger'),
+                TextColumn::make('state')
                     ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.state'))
                     ->sortable()
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('creator.name')
+                TextColumn::make('creator.name')
                     ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.done-by'))
                     ->sortable(),
             ])
-            ->actions([
-                Tables\Actions\DeleteAction::make()
-                    ->hidden(fn (MoveLine $record): bool => $record->state == Enums\MoveState::DONE)
+            ->recordActions([
+                DeleteAction::make()
+                    ->hidden(fn (MoveLine $record): bool => $record->state == MoveState::DONE)
                     ->successNotification(
                         Notification::make()
                             ->success()

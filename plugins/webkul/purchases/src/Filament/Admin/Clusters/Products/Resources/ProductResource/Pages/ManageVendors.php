@@ -2,11 +2,11 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages;
 
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Actions\CreateAction;
+use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -20,25 +20,25 @@ class ManageVendors extends ManageRelatedRecords
 
     protected static string $relationship = 'supplierInformation';
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
     public static function getNavigationLabel(): string
     {
         return __('purchases::filament/admin/clusters/products/resources/product/pages/manage-vendors.title');
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        $form = VendorPriceResource::form($form);
+        $schema = VendorPriceResource::form($schema);
 
         if ($this->getRecord()->is_configurable) {
-            $components = $form->getComponents();
+            $components = $schema->getComponents();
 
             $secondGroupChildComponents = $components[1]->getChildComponents();
 
             $secondGroupFirstSectionChildComponents = $secondGroupChildComponents[0]->getChildComponents();
 
-            array_unshift($secondGroupFirstSectionChildComponents, Forms\Components\Select::make('product_id')
+            array_unshift($secondGroupFirstSectionChildComponents, Select::make('product_id')
                 ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.fields.product'))
                 ->relationship(
                     'product',
@@ -54,20 +54,20 @@ class ManageVendors extends ManageRelatedRecords
 
             $components[1]->childComponents($secondGroupChildComponents);
 
-            $form->components($components);
+            $schema->components($components);
         }
 
-        return $form;
+        return $schema;
     }
 
     public function table(Table $table): Table
     {
         return VendorPriceResource::table($table)
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label(__('purchases::filament/admin/clusters/products/resources/product/pages/manage-vendors.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
                         $data['product_id'] ??= $this->getOwnerRecord()->id;
 
                         $data['creator_id'] = Auth::id();

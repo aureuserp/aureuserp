@@ -2,10 +2,10 @@
 
 namespace Webkul\Product\Filament\Resources\CategoryResource\Pages;
 
-use Filament\Forms\Form;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Product\Enums\ProductType;
@@ -19,23 +19,23 @@ class ManageProducts extends ManageRelatedRecords
 
     protected static string $relationship = 'products';
 
-    protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
     public static function getNavigationLabel(): string
     {
         return __('products::filament/resources/category/pages/manage-products.title');
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return ProductResource::form($form);
+        return ProductResource::form($schema);
     }
 
     public function table(Table $table): Table
     {
         return ProductResource::table($table)
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label(__('products::filament/resources/category/pages/manage-products.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
                     ->fillForm(function (array $arguments): array {
@@ -48,7 +48,7 @@ class ManageProducts extends ManageRelatedRecords
                             'category_id' => $this->getOwnerRecord()->id,
                         ];
                     })
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
                         $data['creator_id'] = Auth::id();
 
                         return $data;

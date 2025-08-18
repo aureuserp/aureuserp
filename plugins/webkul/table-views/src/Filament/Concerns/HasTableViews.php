@@ -6,7 +6,7 @@ use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Filament\Support\Enums\MaxWidth;
+use Filament\Support\Enums\Width;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Url;
 use Webkul\TableViews\Filament\Actions\CreateViewAction;
@@ -35,7 +35,7 @@ trait HasTableViews
 
     protected string|Closure|null $tableViewsFormMaxHeight = '500px';
 
-    protected MaxWidth|string|Closure|null $tableViewsFormWidth = null;
+    protected Width|string|Closure|null $tableViewsFormWidth = null;
 
     public function bootedInteractsWithTable(): void
     {
@@ -254,7 +254,7 @@ trait HasTableViews
         return $this;
     }
 
-    public function setTableViewsFormWidth(MaxWidth|string|Closure|null $width): static
+    public function setTableViewsFormWidth(Width|string|Closure|null $width): static
     {
         $this->tableViewsFormWidth = $width;
 
@@ -266,9 +266,9 @@ trait HasTableViews
         return $this->evaluate($this->tableViewsFormMaxHeight);
     }
 
-    public function getPresetTableViewsFormWidth(): MaxWidth|string|null
+    public function getPresetTableViewsFormWidth(): Width|string|null
     {
-        return $this->evaluate($this->tableViewsFormWidth) ?? MaxWidth::ExtraSmall;
+        return $this->evaluate($this->tableViewsFormWidth) ?? Width::ExtraSmall;
     }
 
     public function getActiveTableView()
@@ -289,7 +289,7 @@ trait HasTableViews
     public function createTableViewAction(): Action
     {
         return CreateViewAction::make('createTableView')
-            ->mutateFormDataUsing(function (array $data): array {
+            ->mutateDataUsing(function (array $data): array {
                 $data['user_id'] = auth()->id();
 
                 $data['filterable_type'] = static::class;

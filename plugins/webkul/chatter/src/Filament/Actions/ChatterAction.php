@@ -4,9 +4,10 @@ namespace Webkul\Chatter\Filament\Actions;
 
 use Closure;
 use Filament\Actions\Action;
-use Filament\Support\Enums\MaxWidth;
+use Filament\Support\Enums\Width;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
 
 class ChatterAction extends Action
 {
@@ -33,11 +34,11 @@ class ChatterAction extends Action
     public function setResource(string $resource): static
     {
         if (empty($resource)) {
-            throw new \InvalidArgumentException('The resource parameter must be provided and cannot be empty.');
+            throw new InvalidArgumentException('The resource parameter must be provided and cannot be empty.');
         }
 
         if (! class_exists($resource)) {
-            throw new \InvalidArgumentException("The resource class [{$resource}] does not exist.");
+            throw new InvalidArgumentException("The resource class [{$resource}] does not exist.");
         }
 
         $this->resource = $resource;
@@ -98,7 +99,7 @@ class ChatterAction extends Action
             ->modalHeading(__('chatter::filament/resources/actions/chatter-action.title'))
             ->modalDescription(__('chatter::filament/resources/actions/chatter-action.description'))
             ->badge(fn (Model $record): int => $record->unRead()->count())
-            ->modalWidth(MaxWidth::TwoExtraLarge)
+            ->modalWidth(Width::TwoExtraLarge)
             ->modalSubmitAction(false)
             ->modalCancelAction(false);
     }

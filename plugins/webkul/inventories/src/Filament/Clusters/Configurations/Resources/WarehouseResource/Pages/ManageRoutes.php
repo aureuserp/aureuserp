@@ -2,10 +2,10 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\WarehouseResource\Pages;
 
-use Filament\Forms\Form;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource;
@@ -17,23 +17,23 @@ class ManageRoutes extends ManageRelatedRecords
 
     protected static string $relationship = 'routes';
 
-    protected static ?string $navigationIcon = 'heroicon-o-arrow-path';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path';
 
     public static function getNavigationLabel(): string
     {
         return __('inventories::filament/clusters/configurations/resources/warehouse/pages/manage-routes.title');
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return RouteResource::form($form);
+        return RouteResource::form($schema);
     }
 
     public function table(Table $table): Table
     {
         return RouteResource::table($table)
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label(__('inventories::filament/clusters/configurations/resources/warehouse/pages/manage-routes.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
                     ->fillForm(function (array $arguments): array {
@@ -42,7 +42,7 @@ class ManageRoutes extends ManageRelatedRecords
                             'warehouses'           => [$this->getOwnerRecord()->id],
                         ];
                     })
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
                         $data['warehouse_selectable'] = true;
 
                         $data['creator_id'] = Auth::id();

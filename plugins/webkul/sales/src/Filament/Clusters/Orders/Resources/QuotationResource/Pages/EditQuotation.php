@@ -2,9 +2,9 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
 use Webkul\Sale\Enums\OrderState;
@@ -21,7 +21,7 @@ class EditQuotation extends EditRecord
         return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()]);
     }
 
-    public function getSubNavigationPosition(): SubNavigationPosition
+    public static function getSubNavigationPosition(): SubNavigationPosition
     {
         return SubNavigationPosition::Top;
     }
@@ -46,7 +46,7 @@ class EditQuotation extends EditRecord
             BaseActions\PreviewAction::make(),
             BaseActions\SendByEmailAction::make(),
             BaseActions\LockAndUnlockAction::make(),
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->hidden(fn () => $this->getRecord()->state == OrderState::SALE)
                 ->successNotification(
                     Notification::make()

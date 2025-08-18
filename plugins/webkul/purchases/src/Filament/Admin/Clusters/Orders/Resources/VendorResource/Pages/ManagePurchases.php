@@ -2,8 +2,9 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\VendorResource\Pages;
 
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables;
 use Filament\Tables\Table;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\VendorResource;
@@ -14,7 +15,7 @@ class ManagePurchases extends ManageRelatedRecords
 
     protected static string $relationship = 'orders';
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-check';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-check';
 
     public static function getNavigationLabel(): string
     {
@@ -25,12 +26,12 @@ class ManagePurchases extends ManageRelatedRecords
     {
         return QuotationResource::table($table)
             ->modifyQueryUsing(fn ($query) => $query->where('partner_id', $this->record->getKey()))
-            ->actions([
-                Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ViewAction::make()
                     ->url(fn ($record) => QuotationResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(false),
 
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->url(fn ($record) => QuotationResource::getUrl('edit', ['record' => $record]))
                     ->openUrlInNewTab(false),
             ]);

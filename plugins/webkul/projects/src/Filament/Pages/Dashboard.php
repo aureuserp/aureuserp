@@ -3,14 +3,19 @@
 namespace Webkul\Project\Filament\Pages;
 
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Pages\Dashboard as BaseDashboard;
+use BackedEnum;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
 use Filament\View\LegacyComponents\Widget;
 use Webkul\Partner\Models\Partner;
-use Webkul\Project\Filament\Widgets;
+use Webkul\Project\Filament\Widgets\StatsOverviewWidget;
+use Webkul\Project\Filament\Widgets\TaskByStageChart;
+use Webkul\Project\Filament\Widgets\TaskByStateChart;
+use Webkul\Project\Filament\Widgets\TopAssigneesWidget;
+use Webkul\Project\Filament\Widgets\TopProjectsWidget;
 use Webkul\Project\Models\Project;
 use Webkul\Project\Models\Tag;
 use Webkul\Security\Models\User;
@@ -22,7 +27,7 @@ class Dashboard extends BaseDashboard
 
     protected static string $routePath = 'project';
 
-    protected static ?string $navigationIcon = 'heroicon-o-folder';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-folder';
 
     protected static ?string $cluster = DashboardCluster::class;
 
@@ -31,10 +36,10 @@ class Dashboard extends BaseDashboard
         return __('projects::filament/pages/dashboard.navigation.title');
     }
 
-    public function filtersForm(Form $form): Form
+    public function filtersForm(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make()
                     ->schema([
                         Select::make('selectedProjects')
@@ -87,11 +92,11 @@ class Dashboard extends BaseDashboard
     public function getWidgets(): array
     {
         return [
-            Widgets\StatsOverviewWidget::class,
-            Widgets\TaskByStageChart::class,
-            Widgets\TaskByStateChart::class,
-            Widgets\TopAssigneesWidget::class,
-            Widgets\TopProjectsWidget::class,
+            StatsOverviewWidget::class,
+            TaskByStageChart::class,
+            TaskByStateChart::class,
+            TopAssigneesWidget::class,
+            TopProjectsWidget::class,
         ];
     }
 }

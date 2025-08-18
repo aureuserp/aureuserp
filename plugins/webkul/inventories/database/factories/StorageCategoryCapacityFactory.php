@@ -7,7 +7,7 @@ use Webkul\Inventory\Models\StorageCategoryCapacity;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Inventory\Models\StorageCategoryCapacity>
+ * @extends Factory<StorageCategoryCapacity>
  */
 class StorageCategoryCapacityFactory extends Factory
 {

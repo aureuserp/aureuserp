@@ -2,11 +2,14 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource\Pages;
 
+use Filament\Actions\ActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables;
 use Filament\Tables\Table;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource;
 use Webkul\Inventory\Models\Operation;
@@ -20,7 +23,7 @@ class ManageOperations extends ManageRelatedRecords
 
     protected static string $relationship = 'operations';
 
-    protected static ?string $navigationIcon = 'heroicon-o-arrows-right-left';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrows-right-left';
 
     public static function getNavigationLabel(): string
     {
@@ -35,14 +38,14 @@ class ManageOperations extends ManageRelatedRecords
     public function table(Table $table): Table
     {
         return OperationResource::table($table)
-            ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ActionGroup::make([
+                    ViewAction::make()
                         ->url(fn ($record): string => OperationResource::getUrl('view', ['record' => $record])),
-                    Tables\Actions\EditAction::make()
+                    EditAction::make()
                         ->url(fn ($record): string => OperationResource::getUrl('edit', ['record' => $record])),
-                    Tables\Actions\DeleteAction::make()
-                        ->hidden(fn (Operation $record): bool => $record->state == Enums\OperationState::DONE)
+                    DeleteAction::make()
+                        ->hidden(fn (Operation $record): bool => $record->state == OperationState::DONE)
                         ->successNotification(
                             Notification::make()
                                 ->success()

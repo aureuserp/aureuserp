@@ -15,7 +15,7 @@ class ListCategories extends ListRecords
 {
     protected static string $resource = CategoryResource::class;
 
-    protected static string $view = 'blogs::filament.customer.resources.category.pages.list-records';
+    protected string $view = 'blogs::filament.customer.resources.category.pages.list-records';
 
     public function getTitle(): string|Htmlable
     {

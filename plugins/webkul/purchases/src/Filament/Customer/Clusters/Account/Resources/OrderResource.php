@@ -3,11 +3,19 @@
 namespace Webkul\Purchase\Filament\Customer\Clusters\Account\Resources;
 
 use Barryvdh\DomPDF\Facade\Pdf;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\Action;
+use Filament\Actions\ViewAction;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ViewEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Actions;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Livewire;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Support\Enums\FontWeight;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -29,20 +37,20 @@ class OrderResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('purchases::filament/customer/clusters/account/resources/order.table.columns.reference'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('approved_at')
+                TextColumn::make('approved_at')
                     ->label(__('purchases::filament/customer/clusters/account/resources/order.table.columns.confirmation-date'))
                     ->sortable()
                     ->placeholder('—'),
-                Tables\Columns\TextColumn::make('invoice_status')
+                TextColumn::make('invoice_status')
                     ->label(__('purchases::filament/customer/clusters/account/resources/order.table.columns.status'))
                     ->sortable()
                     ->badge()
                     ->toggleable(),
-                Tables\Columns\TextColumn::make('total_amount')
+                TextColumn::make('total_amount')
                     ->label(__('purchases::filament/customer/clusters/account/resources/order.table.columns.total-amount'))
                     ->sortable()
                     ->money(fn (Order $record) => $record->currency->code),
@@ -50,30 +58,30 @@ class OrderResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
+            ->recordActions([
+                ViewAction::make(),
             ])
             ->modifyQueryUsing(function (Builder $query) {
                 $query->where('partner_id', Auth::guard('customer')->id());
             });
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Infolists\Components\Section::make()
+                        Section::make()
                             ->schema([
-                                Infolists\Components\TextEntry::make('total_amount')
+                                TextEntry::make('total_amount')
                                     ->hiddenLabel()
                                     ->size('text-3xl')
-                                    ->weight(\Filament\Support\Enums\FontWeight::Bold)
+                                    ->weight(FontWeight::Bold)
                                     ->money(fn (Order $record) => $record->currency->code),
 
-                                Infolists\Components\Actions::make([
-                                    Infolists\Components\Actions\Action::make('accept')
+                                Actions::make([
+                                    Action::make('accept')
                                         ->label(__('purchases::filament/customer/clusters/account/resources/order.infolist.settings.actions.accept.label'))
                                         ->color('success')
                                         ->icon('heroicon-o-check-circle')
@@ -94,7 +102,7 @@ class OrderResource extends Resource
                                                 ->success()
                                                 ->send();
                                         }),
-                                    Infolists\Components\Actions\Action::make('decline')
+                                    Action::make('decline')
                                         ->label(__('purchases::filament/customer/clusters/account/resources/order.infolist.settings.actions.decline.label'))
                                         ->color('danger')
                                         ->icon('heroicon-o-x-circle')
@@ -119,8 +127,8 @@ class OrderResource extends Resource
                                     ->visible(fn (Order $record): bool => $record->state === OrderState::SENT)
                                     ->fullWidth(),
 
-                                Infolists\Components\Actions::make([
-                                    Infolists\Components\Actions\Action::make('print')
+                                Actions::make([
+                                    Action::make('print')
                                         ->label(__('purchases::filament/customer/clusters/account/resources/order.infolist.settings.actions.print.label'))
                                         ->icon('heroicon-o-printer')
                                         ->action(function (Order $record) {
@@ -149,7 +157,7 @@ class OrderResource extends Resource
                                 ])
                                     ->fullWidth(),
 
-                                Infolists\Components\ViewEntry::make('user')
+                                ViewEntry::make('user')
                                     ->label(__('purchases::filament/customer/clusters/account/resources/order.infolist.settings.entries.buyer'))
                                     ->view('purchases::filament.customer.clusters.account.order.pages.view-record.buyer-card')
                                     ->visible(fn (Order $record): bool => (bool) $record->user_id),
@@ -157,19 +165,19 @@ class OrderResource extends Resource
                     ])
                     ->columnSpan(['lg' => 1]),
 
-                Infolists\Components\Group::make()
+                Group::make()
                     ->schema([
-                        Infolists\Components\Section::make()
+                        Section::make()
                             ->schema([
                                 /**
                                  * Order details
                                  */
-                                Infolists\Components\Group::make()
+                                Group::make()
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('name')
+                                        TextEntry::make('name')
                                             ->hiddenLabel()
                                             ->size('text-3xl')
-                                            ->weight(\Filament\Support\Enums\FontWeight::Bold)
+                                            ->weight(FontWeight::Bold)
                                             ->formatStateUsing(function (Order $record) {
                                                 if ($record->state == OrderState::SENT) {
                                                     return __('purchases::filament/customer/clusters/account/resources/order.infolist.general.entries.quotation', ['id' => $record->name]);
@@ -177,15 +185,15 @@ class OrderResource extends Resource
 
                                                 return __('purchases::filament/customer/clusters/account/resources/order.infolist.general.entries.purchase-order', ['id' => $record->name]);
                                             }),
-                                        Infolists\Components\TextEntry::make('ordered_at')
+                                        TextEntry::make('ordered_at')
                                             ->label(__('purchases::filament/customer/clusters/account/resources/order.infolist.general.entries.quotation')),
-                                        Infolists\Components\ViewEntry::make('company')
+                                        ViewEntry::make('company')
                                             ->label(__('purchases::filament/customer/clusters/account/resources/order.infolist.general.entries.from'))
                                             ->view('purchases::filament.customer.clusters.account.order.pages.view-record.from'),
-                                        Infolists\Components\TextEntry::make('approved_at')
+                                        TextEntry::make('approved_at')
                                             ->label(__('purchases::filament/customer/clusters/account/resources/order.infolist.general.entries.confirmation-date'))
                                             ->visible(fn (Order $record): bool => (bool) $record->approved_at),
-                                        Infolists\Components\TextEntry::make('ordered_at')
+                                        TextEntry::make('ordered_at')
                                             ->label(__('purchases::filament/customer/clusters/account/resources/order.infolist.general.entries.receipt-date'))
                                             ->visible(fn (Order $record): bool => (bool) $record->ordered_at),
                                     ]),
@@ -193,18 +201,18 @@ class OrderResource extends Resource
                                 /**
                                  * Order items
                                  */
-                                Infolists\Components\Group::make()
+                                Group::make()
                                     ->extraAttributes(['class' => 'mt-8'])
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('name')
+                                        TextEntry::make('name')
                                             ->hiddenLabel()
                                             ->size('text-2xl')
-                                            ->weight(\Filament\Support\Enums\FontWeight::Bold)
+                                            ->weight(FontWeight::Bold)
                                             ->formatStateUsing(function (Order $record) {
                                                 return __('purchases::filament/customer/clusters/account/resources/order.infolist.general.entries.products');
                                             }),
 
-                                        Infolists\Components\Livewire::make('list-products', function (Order $record) {
+                                        Livewire::make('list-products', function (Order $record) {
                                             return [
                                                 'record' => $record,
                                             ];
@@ -213,25 +221,25 @@ class OrderResource extends Resource
                                         /**
                                          * Order totals
                                          */
-                                        Infolists\Components\Group::make()
+                                        Group::make()
                                             ->extraAttributes(['class' => 'flex justify-end'])
                                             ->schema([
-                                                Infolists\Components\TextEntry::make('untaxed_amount')
+                                                TextEntry::make('untaxed_amount')
                                                     ->label(__('purchases::filament/customer/clusters/account/resources/order.infolist.general.entries.untaxed-amount'))
                                                     ->extraAttributes(['class' => 'flex justify-end'])
                                                     ->inlineLabel()
                                                     ->money(fn ($record) => $record->currency->code),
 
-                                                Infolists\Components\TextEntry::make('tax_amount')
+                                                TextEntry::make('tax_amount')
                                                     ->label(__('purchases::filament/customer/clusters/account/resources/order.infolist.general.entries.tax-amount'))
                                                     ->extraAttributes(['class' => 'flex justify-end'])
                                                     ->inlineLabel()
                                                     ->money(fn ($record) => $record->currency->code),
 
-                                                Infolists\Components\Group::make()
+                                                Group::make()
                                                     ->extraAttributes(['class' => 'border-t pt-4 font-bold'])
                                                     ->schema([
-                                                        Infolists\Components\TextEntry::make('total_amount')
+                                                        TextEntry::make('total_amount')
                                                             ->label(__('purchases::filament/customer/clusters/account/resources/order.infolist.general.entries.total'))
                                                             ->extraAttributes(['class' => 'flex justify-end'])
                                                             ->inlineLabel()
@@ -244,18 +252,18 @@ class OrderResource extends Resource
                                 /**
                                  * Communication history
                                  */
-                                Infolists\Components\Group::make()
+                                Group::make()
                                     ->extraAttributes(['class' => 'mt-8'])
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('name')
+                                        TextEntry::make('name')
                                             ->hiddenLabel()
                                             ->size('text-2xl')
-                                            ->weight(\Filament\Support\Enums\FontWeight::Bold)
+                                            ->weight(FontWeight::Bold)
                                             ->formatStateUsing(function (Order $record) {
                                                 return __('purchases::filament/customer/clusters/account/resources/order.infolist.general.entries.communication-history');
                                             }),
 
-                                        Infolists\Components\Livewire::make('chatter-panel', function (Order $record) {
+                                        Livewire::make('chatter-panel', function (Order $record) {
                                             $record = Order::findOrFail($record->id);
 
                                             return [

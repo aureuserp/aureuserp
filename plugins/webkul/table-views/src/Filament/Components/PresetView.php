@@ -3,7 +3,7 @@
 namespace Webkul\TableViews\Filament\Components;
 
 use Closure;
-use Filament\Resources\Components\Tab;
+use Filament\Schemas\Components\Tabs\Tab;
 use Webkul\TableViews\Models\TableViewFavorite;
 
 class PresetView extends Tab
@@ -25,7 +25,7 @@ class PresetView extends Tab
     protected static mixed $cachedFavoriteTableViews;
 
     /**
-     * @return array<string | int, Tab>
+     * @return array<string|int, Tab>
      */
     public function getFavoriteTableViews(): mixed
     {
