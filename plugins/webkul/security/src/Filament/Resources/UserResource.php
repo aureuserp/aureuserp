@@ -176,8 +176,6 @@ class UserResource extends Resource
 
     public static function table(Table $table): Table
     {
-        $getRole = $user = filament()->auth()->user()->getRoleNames()->first();
-
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('partner.avatar')
@@ -265,7 +263,7 @@ class UserResource extends Resource
                                 ->body(__('security::filament/resources/user.table.actions.edit.notification.body')),
                         ),
                     Tables\Actions\DeleteAction::make()
-                        ->hidden(fn($record) => $record->trashed() || $record->role === 'admin')
+                        ->hidden(fn($record) => $record->trashed() || $record->hasRole('admin'))
                         ->successNotification(
                             Notification::make()
                                 ->success()
