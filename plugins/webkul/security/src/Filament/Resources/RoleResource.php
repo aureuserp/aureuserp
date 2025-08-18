@@ -57,6 +57,7 @@ class RoleResource extends Resource implements HasShieldPermissions
                                     ->label(__('filament-shield::filament-shield.field.guard_name'))
                                     ->default(Utils::getFilamentAuthGuard())
                                     ->nullable()
+                                    ->disabled()
                                     ->maxLength(255),
 
                                 ShieldSelectAllToggle::make('select_all')
