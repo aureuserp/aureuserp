@@ -646,7 +646,12 @@ class EmployeeResource extends Resource
                                                         Forms\Components\Toggle::make('work_permit_scheduled_activity')
                                                             ->label(__('employees::filament/resources/employee.form.tabs.settings.fields.work-permit-scheduled-activity')),
                                                         Forms\Components\Select::make('user_id')
-                                                            ->relationship(name: 'user', titleAttribute: 'name')
+                                                            ->relationship(name: 'user', titleAttribute: 'name', modifyQueryUsing: fn ($query) => $query->withTrashed())
+                                                            ->getOptionLabelFromRecordUsing(function ($record) {
+                                                                return $record->trashed()
+                                                                    ? $record->name.' (Deleted)'
+                                                                    : $record->name;
+                                                            })
                                                             ->searchable()
                                                             ->preload()
                                                             ->label(__('employees::filament/resources/employee.form.tabs.settings.fields.related-user'))
@@ -1648,7 +1653,6 @@ class EmployeeResource extends Resource
                                             ->columnSpan(['lg' => 1]),
                                     ])
                                     ->columns(3),
-
                             ]),
                     ])
                     ->persistTabInQueryString()

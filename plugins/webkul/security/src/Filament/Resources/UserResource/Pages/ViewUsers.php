@@ -15,11 +15,10 @@ class ViewUsers extends ViewRecord
     {
         $getRecord = $this->record->role;
 
-
         return [
             Actions\EditAction::make(),
             Actions\DeleteAction::make()
-                ->hidden(fn($record) => $record->trashed() || $record->hasRole('admin'))
+                ->hidden(fn ($record) => $record->trashed() || $record->hasRole('admin'))
                 ->successNotification(
                     Notification::make()
                         ->success()
