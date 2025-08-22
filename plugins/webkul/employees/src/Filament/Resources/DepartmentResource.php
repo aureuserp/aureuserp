@@ -87,7 +87,7 @@ class DepartmentResource extends Resource
                                             )
                                             ->searchable()
                                             ->preload()
-                                            ->live(),
+                                            ->live(onBlur: true),
                                         Forms\Components\Select::make('manager_id')
                                             ->label(__('employees::filament/resources/department.form.sections.general.fields.manager'))
                                             ->relationship('manager', 'name')
