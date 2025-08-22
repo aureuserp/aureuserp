@@ -21,7 +21,8 @@
         "laravel/tinker": "^2.9",
         "milon/barcode": "^11.0",
         "spatie/eloquent-sortable": "^4.4",
-        "wikimedia/composer-merge-plugin": "^2.1"
+        "wikimedia/composer-merge-plugin": "^2.1",
+        "awcodes/filament-badgeable-column": "^3.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
