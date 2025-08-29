@@ -14,7 +14,7 @@ use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlans\Rela
 use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlans\Schemas\ActivityPlanForm;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlans\Schemas\ActivityPlanInfolist;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlans\Tables\ActivityPlansTable;
-use Webkul\Support\Models\ActivityPlan;
+use Webkul\Project\Models\ActivityPlan;
 
 class ActivityPlanResource extends Resource
 {
