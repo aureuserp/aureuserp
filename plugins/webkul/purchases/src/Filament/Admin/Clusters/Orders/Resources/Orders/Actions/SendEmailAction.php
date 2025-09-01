@@ -28,44 +28,51 @@ class SendEmailAction extends Action
     {
         parent::setUp();
 
-        $userName = Auth::user()->name;
-
-        $acceptRespondUrl = URL::signedRoute('purchases.quotations.respond', [
-            'order'  => $this->getRecord()->id,
-            'action' => 'accept',
-        ]);
-
-        $declineRespondUrl = URL::signedRoute('purchases.quotations.respond', [
-            'order'  => $this->getRecord()->id,
-            'action' => 'decline',
-        ]);
-
         $this
-            ->label(__('purchases::filament/admin/clusters/orders/resources/order/actions/send-email.label'))
-            ->label(fn () => $this->getRecord()->state === OrderState::DRAFT ? __('purchases::filament/admin/clusters/orders/resources/order/actions/send-email.label') : __('purchases::filament/admin/clusters/orders/resources/order/actions/send-email.resend-label'))
-            ->schema([
+            ->label(fn () => $this->getRecord()->state === OrderState::DRAFT
+                ? __('purchases::filament/admin/clusters/orders/resources/order/actions/send-email.label')
+                : __('purchases::filament/admin/clusters/orders/resources/order/actions/send-email.resend-label'))
+            ->schema(fn () => [
                 Select::make('vendors')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order/actions/send-email.form.fields.to'))
-                    ->options(Partner::get()->mapWithKeys(fn ($partner) => [
-                        $partner->id => $partner->email
-                            ? "{$partner->name} <{$partner->email}>"
-                            : $partner->name,
-                    ])->toArray())
+                    ->options(function () {
+                        return Partner::get()->mapWithKeys(fn ($partner) => [
+                            $partner->id => $partner->email
+                                ? "{$partner->name} <{$partner->email}>"
+                                : $partner->name,
+                        ])->toArray();
+                    })
                     ->multiple()
                     ->searchable()
                     ->preload()
                     ->default(fn () => [$this->getRecord()->partner_id]),
+
                 TextInput::make('subject')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order/actions/send-email.form.fields.subject'))
                     ->required()
-                    ->default("Purchase Order #{$this->getRecord()->name}"),
+                    ->default(fn () => "Purchase Order #{$this->getRecord()->name}"),
+
                 MarkdownEditor::make('message')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order/actions/send-email.form.fields.message'))
                     ->required()
-                    ->default(<<<MD
-Dear {$this->getRecord()->partner->name}  
+                    ->default(function () {
+                        $record = $this->getRecord();
+                        $userName = Auth::user()->name;
 
-Here is in attachment a request for quotation **{$this->getRecord()->name}**.  
+                        $acceptRespondUrl = URL::signedRoute('purchases.quotations.respond', [
+                            'order'  => $record->id,
+                            'action' => 'accept',
+                        ]);
+
+                        $declineRespondUrl = URL::signedRoute('purchases.quotations.respond', [
+                            'order'  => $record->id,
+                            'action' => 'decline',
+                        ]);
+
+                        return <<<MD
+Dear {$record->partner->name}  
+
+Here is in attachment a request for quotation **{$record->name}**.  
 
 If you have any questions, please do not hesitate to contact us.  
 
@@ -75,13 +82,13 @@ Best regards,
 
 --  
 {$userName}  
-MD),
+MD;
+                    }),
+
                 FileUpload::make('attachment')
                     ->hiddenLabel()
                     ->disk('public')
-                    ->default(function () {
-                        return PurchaseOrder::generateRFQPdf($this->getRecord());
-                    })
+                    ->default(fn () => PurchaseOrder::generateRFQPdf($this->getRecord()))
                     ->downloadable()
                     ->openable(),
             ])

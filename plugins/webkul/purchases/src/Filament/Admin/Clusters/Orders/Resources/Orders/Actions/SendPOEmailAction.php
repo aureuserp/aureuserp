@@ -27,35 +27,45 @@ class SendPOEmailAction extends Action
     {
         parent::setUp();
 
-        $userName = Auth::user()->name;
-
         $this
             ->label(__('purchases::filament/admin/clusters/orders/resources/order/actions/send-po-email.label'))
-            ->schema([
+            ->schema(fn () => [
                 Select::make('vendors')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order/actions/send-po-email.form.fields.to'))
-                    ->options(Partner::get()->mapWithKeys(fn ($partner) => [
-                        $partner->id => $partner->email
-                            ? "{$partner->name} <{$partner->email}>"
-                            : $partner->name,
-                    ])->toArray())
+                    ->options(function () {
+                        return Partner::get()->mapWithKeys(fn ($partner) => [
+                            $partner->id => $partner->email
+                                ? "{$partner->name} <{$partner->email}>"
+                                : $partner->name,
+                        ])->toArray();
+                    })
                     ->multiple()
                     ->searchable()
                     ->preload()
-                    ->default(fn () => [$this->getRecord()->partner_id]),
+                    ->default(fn () => [$this->getRecord()?->partner_id]),
+
                 TextInput::make('subject')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order/actions/send-po-email.form.fields.subject'))
                     ->required()
-                    ->default("Purchase Order #{$this->getRecord()->name}"),
+                    ->default(fn () => "Purchase Order #{$this->getRecord()?->name}"),
+
                 MarkdownEditor::make('message')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order/actions/send-po-email.form.fields.message'))
                     ->required()
-                    ->default(<<<MD
-Dear **{$this->getRecord()->partner->name}**  
+                    ->default(function () {
+                        $record = $this->getRecord();
+                        if (! $record) {
+                            return '';
+                        }
 
-Here is in attachment a purchase order **{$this->getRecord()->name}** amounting to **{$this->getRecord()->total_amount}**.  
+                        $userName = Auth::user()->name;
 
-The receipt is expected for **{$this->getRecord()->planned_at}**.  
+                        return <<<MD
+Dear **{$record->partner->name}**  
+
+Here is in attachment a purchase order **{$record->name}** amounting to **{$record->total_amount}**.  
+
+The receipt is expected for **{$record->planned_at}**.  
 
 Could you please acknowledge the receipt of this order?  
 
@@ -63,13 +73,13 @@ Best regards,
 
 --  
 {$userName}  
-MD),
+MD;
+                    }),
+
                 FileUpload::make('attachment')
                     ->hiddenLabel()
                     ->disk('public')
-                    ->default(function () {
-                        return PurchaseOrder::generatePurchaseOrderPdf($this->getRecord());
-                    })
+                    ->default(fn () => PurchaseOrder::generatePurchaseOrderPdf($this->getRecord()))
                     ->downloadable()
                     ->openable(),
             ])
@@ -93,7 +103,7 @@ MD),
                     ->success()
                     ->send();
             })
-            ->color(fn (): string => $this->getRecord()->state === OrderState::DRAFT ? 'primary' : 'gray')
-            ->visible(fn () => $this->getRecord()->state == OrderState::PURCHASE);
+            ->color(fn (): string => $this->getRecord()?->state === OrderState::DRAFT ? 'primary' : 'gray')
+            ->visible(fn () => $this->getRecord()?->state === OrderState::PURCHASE);
     }
 }
