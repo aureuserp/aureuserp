@@ -97,6 +97,7 @@ class InvoiceResource extends Resource
                                             ->relationship(
                                                 'partner',
                                                 'name',
+                                                fn ($query) => $query->where('sub_type', 'customer')->orderBy('id'),
                                             )
                                             ->searchable()
                                             ->preload()
@@ -146,6 +147,7 @@ class InvoiceResource extends Resource
                                         'products' => $get('products'),
                                     ];
                                 })
+                                    ->visible(fn (Forms\Get $get) => $get('currency_id') && $get('products'))
                                     ->live()
                                     ->reactive(),
                             ]),

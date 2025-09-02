@@ -4,12 +4,18 @@ namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanR
 
 use Filament\Actions;
 use Filament\Notifications\Notification;
+use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource;
 
 class ViewAccrualPlan extends ViewRecord
 {
     protected static string $resource = AccrualPlanResource::class;
+
+    public function getSubNavigationPosition(): SubNavigationPosition
+    {
+        return SubNavigationPosition::Top;
+    }
 
     protected function getHeaderActions(): array
     {

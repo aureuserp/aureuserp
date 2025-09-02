@@ -34,6 +34,7 @@ use Webkul\Employee\Filament\Clusters\Configurations\Resources\WorkLocationResou
 use Webkul\Employee\Filament\Resources\EmployeeResource\Pages;
 use Webkul\Employee\Filament\Resources\EmployeeResource\RelationManagers;
 use Webkul\Employee\Models\Calendar;
+use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\Employee;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Security\Filament\Resources\CompanyResource;
@@ -141,7 +142,15 @@ class EmployeeResource extends Resource
                                     ->email(),
                                 Forms\Components\Select::make('department_id')
                                     ->label(__('employees::filament/resources/employee.form.sections.fields.department'))
-                                    ->relationship(name: 'department', titleAttribute: 'complete_name')
+                                    ->relationship(
+                                        name: 'department',
+                                        titleAttribute: 'complete_name',
+                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                    )
+                                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                    })
+                                    ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                     ->searchable()
                                     ->preload()
                                     ->createOptionForm(fn (Form $form) => DepartmentResource::form($form)),
@@ -616,6 +625,10 @@ class EmployeeResource extends Resource
                                                             ->label(__('employees::filament/resources/employee.form.tabs.private-information.fields.work-permit'))
                                                             ->panelAspectRatio('4:1')
                                                             ->panelLayout('integrated')
+                                                            ->acceptedFileTypes([
+                                                                'image/*',
+                                                                'application/pdf',
+                                                            ])
                                                             ->directory('employees/work-permit')
                                                             ->visibility('private'),
                                                     ])->columns(1),

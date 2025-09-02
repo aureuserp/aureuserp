@@ -3,6 +3,7 @@
 namespace Webkul\Employee\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Webkul\Security\Models\User;
 
 class EmployeeResume extends Model
 {
@@ -19,6 +20,11 @@ class EmployeeResume extends Model
         'name',
         'description',
     ];
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'creator_id');
+    }
 
     public function employee()
     {

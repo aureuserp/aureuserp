@@ -85,6 +85,19 @@ class PartnerResource extends Resource
 
                                                         return $data;
                                                     });
+                                            })
+                                            ->afterStateHydrated(function (Forms\Components\Select $component, $state) {
+                                                if (empty($state)) {
+                                                    $component->state(null);
+
+                                                    return;
+                                                }
+
+                                                $parent = Partner::find($state);
+
+                                                if (! $parent) {
+                                                    $component->state(null);
+                                                }
                                             }),
                                     ]),
                                 Forms\Components\Group::make()

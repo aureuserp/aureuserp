@@ -95,13 +95,19 @@ class QuotationResource extends Resource
                                     ->schema([
                                         Forms\Components\Select::make('partner_id')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.form.section.general.fields.customer'))
-                                            ->relationship('partner', 'name')
+                                            ->relationship(
+                                                'partner',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed()
+                                            )
                                             ->searchable()
                                             ->preload()
                                             ->required()
                                             ->live()
                                             ->disabled(fn ($record): bool => $record?->locked || in_array($record?->state, [Enums\OrderState::CANCEL]))
-                                            ->columnSpan(1),
+                                            ->columnSpan(1)
+                                            ->getOptionLabelFromRecordUsing(fn ($record): string => $record->name.($record->trashed() ? ' (Deleted)' : ''))
+                                            ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)')),
                                     ]),
                                 Forms\Components\DatePicker::make('validity_date')
                                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.section.general.fields.expiration'))
@@ -796,7 +802,15 @@ class QuotationResource extends Resource
             ->addActionLabel(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.add-product'))
             ->collapsible()
             ->defaultItems(0)
-            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+            ->itemLabel(function ($state) {
+                if (! empty($state['name'])) {
+                    return $state['name'];
+                }
+
+                $product = Product::find($state['product_id']);
+
+                return $product->name ?? null;
+            })
             ->deleteAction(fn (Forms\Components\Actions\Action $action) => $action->requiresConfirmation())
             ->schema([
                 Forms\Components\Group::make()
@@ -815,7 +829,7 @@ class QuotationResource extends Resource
                                     ->live()
                                     ->dehydrated()
                                     ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get) {
-                                        $product = Product::find($get('product_id'));
+                                        $product = Product::withTrashed()->find($get('product_id'));
 
                                         $set('name', $product->name);
 
@@ -936,9 +950,17 @@ class QuotationResource extends Resource
             ->addActionLabel(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.add-product'))
             ->collapsible()
             ->defaultItems(0)
-            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+            ->itemLabel(function ($state) {
+                if (! empty($state['name'])) {
+                    return $state['name'];
+                }
+
+                $product = Product::find($state['product_id']);
+
+                return $product->name ?? null;
+            })
             ->deleteAction(fn (Forms\Components\Actions\Action $action) => $action->requiresConfirmation())
-            ->deletable(fn ($record): bool => ! in_array($record?->state, [Enums\OrderState::CANCEL]))
+            ->deletable(fn ($record): bool => ! in_array($record?->state, [Enums\OrderState::CANCEL]) && $record->state !== Enums\OrderState::SALE)
             ->addable(fn ($record): bool => ! in_array($record?->state, [Enums\OrderState::CANCEL]))
             ->schema([
                 Forms\Components\Group::make()
@@ -1127,7 +1149,7 @@ class QuotationResource extends Resource
 
     public static function mutateProductRelationship(array $data, $record): array
     {
-        $product = Product::find($data['product_id']);
+        $product = Product::withTrashed()->find($data['product_id']);
 
         $qtyDeliveredMethod = Enums\QtyDeliveredMethod::MANUAL;
 
@@ -1153,7 +1175,7 @@ class QuotationResource extends Resource
             return;
         }
 
-        $product = Product::find($get('product_id'));
+        $product = Product::withTrashed()->find($get('product_id'));
 
         $set('product_uom_id', $product->uom_id);
 
@@ -1281,7 +1303,7 @@ class QuotationResource extends Resource
 
     private static function calculateUnitPrice($get)
     {
-        $product = Product::find($get('product_id'));
+        $product = Product::withTrashed()->find($get('product_id'));
 
         $vendorPrices = $product->supplierInformation->sortByDesc('sort');
 
