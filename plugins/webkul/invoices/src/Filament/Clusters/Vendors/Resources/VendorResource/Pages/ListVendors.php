@@ -16,6 +16,27 @@ class ListVendors extends BaseListVendors
         return __('invoices::filament/clusters/vendors/resources/vendor/pages/list-vendor.title');
     }
 
+    public function getBreadcrumbs(): array
+    {
+        $resource = static::getResource();
+
+        $breadcrumbs = [
+            $resource::getUrl() => $resource::getBreadcrumb(),
+            ...(filled($breadcrumb = $this->getBreadcrumb()) ? [$breadcrumb] : []),
+        ];
+
+        $cluster = static::getCluster();
+
+        if (filled($cluster)) {
+            return [
+                $cluster::getUrl() => $cluster::getClusterBreadcrumb(),
+                ...$breadcrumbs,
+            ];
+        }
+
+        return $breadcrumbs;
+    }
+
     protected function getHeaderActions(): array
     {
         return [
