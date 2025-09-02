@@ -57,6 +57,15 @@ return [
                     'body'  => 'The category has been force deleted successfully.',
                 ],
             ],
+
+            'force-delete-error' => [
+                'notification' => [
+                    'title' => 'Cannot delete category',
+                    'body' => 'You cannot delete this category as it is associated with some posts.',
+                ],
+
+                'exception' => 'You cannot force delete this category as it is associated with some posts.'
+            ],
         ],
 
         'bulk-actions' => [
@@ -78,6 +87,13 @@ return [
                 'notification' => [
                     'title' => 'Categories force deleted',
                     'body'  => 'The categories has been force deleted successfully.',
+                ],
+            ],
+            
+            'force-delete-error' => [
+                'notification' => [
+                    'title' => 'Cannot delete category',
+                    'body' => 'You cannot delete this category as it is associated with some posts.',
                 ],
             ],
         ],
