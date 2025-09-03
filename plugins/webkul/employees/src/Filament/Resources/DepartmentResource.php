@@ -423,18 +423,11 @@ class DepartmentResource extends Resource
     public static function getPages(): array
     {
         return [
-<<<<<<< HEAD
-            'index' => Pages\ListDepartments::route('/'),
-            'create' => Pages\CreateDepartment::route('/create'),
-            'view' => Pages\ViewDepartment::route('/{record}'),
-            'edit' => Pages\EditDepartment::route('/{record}/edit'),
-=======
             'index'      => Pages\ListDepartments::route('/'),
             'create'     => Pages\CreateDepartment::route('/create'),
             'view'       => Pages\ViewDepartment::route('/{record}'),
             'edit'       => Pages\EditDepartment::route('/{record}/edit'),
             'employees'  => Pages\ManageEmployee::route('/{record}/employees'),
->>>>>>> dfdae34a1ded507e18fde53af1a16ca304d25205
         ];
     }
 }
