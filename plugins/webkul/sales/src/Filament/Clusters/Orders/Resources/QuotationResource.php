@@ -963,8 +963,8 @@ class QuotationResource extends Resource
                 return $product->name ?? null;
             })
             ->deleteAction(fn (Forms\Components\Actions\Action $action) => $action->requiresConfirmation())
-            ->deletable(fn ($record): bool => ! in_array($record?->state, [Enums\OrderState::CANCEL]) && $record->state !== Enums\OrderState::SALE)
-            ->addable(fn ($record): bool => ! in_array($record?->state, [Enums\OrderState::CANCEL]))
+            ->deletable(fn ($record): bool => $record && ! in_array($record->state, [Enums\OrderState::CANCEL]) && $record->state !== Enums\OrderState::SALE)
+            ->addable(fn ($record): bool => $record && ! in_array($record->state, [Enums\OrderState::CANCEL]))
             ->schema([
                 Forms\Components\Group::make()
                     ->schema([

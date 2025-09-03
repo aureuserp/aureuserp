@@ -86,6 +86,11 @@ class PartnerResource extends Resource
                                                         return $data;
                                                     });
                                             })
+                                            ->getOptionLabelFromRecordUsing(function (Partner $record): string {
+                                                return $record->trashed()
+                                                    ? "{$record->name} (disabled)"
+                                                    : $record->name;
+                                            })
                                             ->afterStateHydrated(function (Forms\Components\Select $component, $state) {
                                                 if (empty($state)) {
                                                     $component->state(null);
