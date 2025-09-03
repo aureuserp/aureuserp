@@ -242,9 +242,9 @@ class TaskResource extends Resource
                     ->label(__('projects::filament/resources/task.table.columns.state'))
                     ->sortable()
                     ->toggleable()
-                    ->icon(fn (string $state): string => TaskState::icons()[$state])
-                    ->color(fn (string $state): string => TaskState::colors()[$state])
-                    ->tooltip(fn (string $state): string => TaskState::options()[$state])
+                    ->icon(fn (TaskState $state): string => $state->getIcon())
+                    ->color(fn (TaskState $state): string => $state->getColor())
+                    ->tooltip(fn (TaskState $state): string => $state->getLabel())
                     ->action(
                         Tables\Actions\Action::make('updateState')
                             ->modalHeading('Update Task State')
@@ -253,10 +253,8 @@ class TaskResource extends Resource
                                     ->label(__('projects::filament/resources/task.table.columns.new-state'))
                                     ->required()
                                     ->default($record->state)
-                                    ->inline()
-                                    ->options(TaskState::options())
-                                    ->colors(TaskState::colors())
-                                    ->icons(TaskState::icons()),
+                                    ->options(TaskState::class)
+                                    ->inline(),
                             ])
                             ->modalSubmitActionLabel(__('projects::filament/resources/task.table.columns.update-state'))
                             ->action(function (Task $record, array $data): void {
@@ -629,9 +627,9 @@ class TaskResource extends Resource
                                 Infolists\Components\TextEntry::make('state')
                                     ->label(__('projects::filament/resources/task.infolist.sections.general.entries.state'))
                                     ->badge()
-                                    ->icon(fn (string $state): string => TaskState::icons()[$state])
-                                    ->color(fn (string $state): string => TaskState::colors()[$state])
-                                    ->formatStateUsing(fn (string $state): string => TaskState::options()[$state]),
+                                    ->icon(fn (TaskState $state): string => $state->getIcon())
+                                    ->color(fn (TaskState $state): string => $state->getColor())
+                                    ->formatStateUsing(fn (TaskState $state): string => $state->getLabel()),
 
                                 Infolists\Components\IconEntry::make('priority')
                                     ->label(__('projects::filament/resources/task.infolist.sections.general.entries.priority'))

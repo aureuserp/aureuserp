@@ -54,7 +54,7 @@ class TimeOffResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->live()
-                                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
+                                    ->afterStateUpdated(function (Set $set, $state) {
                                         if ($state) {
                                             $employee = Employee::find($state);
 
@@ -118,7 +118,7 @@ class TimeOffResource extends Resource
                                     ->live()
                                     ->inlineLabel()
                                     ->reactive()
-                                    ->content(function ($state, Get $get): string {
+                                    ->content(function (Get $get): string {
                                         if ($get('request_unit_half')) {
                                             return __('time-off::filament/clusters/management/resources/time-off.form.fields.day', ['day' => '0.5']);
                                         }
@@ -133,11 +133,15 @@ class TimeOffResource extends Resource
                                     ->live(),
                                 Forms\Components\FileUpload::make('attachment')
                                     ->label(__('time-off::filament/clusters/management/resources/time-off.form.fields.attachment'))
-                                        ->acceptedFileTypes([
-                                            'image/*',
-                                            'application/pdf',
-                                        ])                                     
-                                        ->visible(function (Get $get) {
+                                    ->downloadable()
+                                    ->deletable()
+                                    ->previewable()
+                                    ->openable()
+                                    ->acceptedFileTypes([
+                                        'image/*',
+                                        'application/pdf',
+                                    ])
+                                    ->visible(function (Get $get) {
                                         $leaveType = LeaveType::find($get('holiday_status_id'));
 
                                         if ($leaveType) {
@@ -168,11 +172,11 @@ class TimeOffResource extends Resource
                     ->label(__('time-off::filament/clusters/management/resources/time-off.table.columns.description'))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('date_from')
+                Tables\Columns\TextColumn::make('request_date_from')
                     ->label(__('time-off::filament/clusters/management/resources/time-off.table.columns.date-from'))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('date_to')
+                Tables\Columns\TextColumn::make('request_date_to')
                     ->label(__('time-off::filament/clusters/management/resources/time-off.table.columns.date-to'))
                     ->sortable()
                     ->searchable(),
@@ -183,7 +187,7 @@ class TimeOffResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('state')
                     ->label(__('time-off::filament/clusters/management/resources/time-off.table.columns.status'))
-                    ->formatStateUsing(fn ($state) => State::options()[$state])
+                    ->formatStateUsing(fn (State $state) => $state->getLabel())
                     ->sortable()
                     ->badge()
                     ->searchable(),
@@ -269,16 +273,6 @@ class TimeOffResource extends Resource
             ]);
     }
 
-    public static function getPages(): array
-    {
-        return [
-            'index'  => Pages\ListTimeOffs::route('/'),
-            'create' => Pages\CreateTimeOff::route('/create'),
-            'edit'   => Pages\EditTimeOff::route('/{record}/edit'),
-            'view'   => Pages\ViewTimeOff::route('/{record}'),
-        ];
-    }
-
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
@@ -287,6 +281,26 @@ class TimeOffResource extends Resource
                     ->schema([
                         Infolists\Components\Group::make()
                             ->schema([
+                                Infolists\Components\TextEntry::make('employee.name')
+                                    ->label(__('time-off::filament/clusters/management/resources/time-off.infolist.entries.employee-name')),
+
+                                Infolists\Components\TextEntry::make('department.name')
+                                    ->label(__('time-off::filament/clusters/management/resources/time-off.infolist.entries.department-name')),
+
+                                Infolists\Components\TextEntry::make('date_from')
+                                    ->label(__('time-off::filament/clusters/management/resources/time-off.infolist.entries.date-from')),
+
+                                Infolists\Components\TextEntry::make('date_to')
+                                    ->label(__('time-off::filament/clusters/management/resources/time-off.infolist.entries.date-to')),
+
+                                Infolists\Components\TextEntry::make('state')
+                                    ->label(__('time-off::filament/clusters/management/resources/time-off.infolist.entries.status'))
+                                    ->badge(),
+
+                                Infolists\Components\ImageEntry::make('attachment')
+                                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.infolist.entries.attachment'))
+                                    ->visible(fn ($record) => $record->holidayStatus?->support_document),
+
                                 Infolists\Components\TextEntry::make('holidayStatus.name')
                                     ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.infolist.entries.time-off-type'))
                                     ->icon('heroicon-o-calendar'),
@@ -329,12 +343,18 @@ class TimeOffResource extends Resource
                                         return __('time-off::filament/clusters/my-time/resources/my-time-off.infolist.entries.days', ['days' => ($startDate->diffInDays($endDate) + 1)]);
                                     })
                                     ->icon('heroicon-o-calendar-days'),
-
-                                Infolists\Components\ImageEntry::make('attachment')
-                                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.infolist.entries.attachment'))
-                                    ->visible(fn ($record) => $record->holidayStatus?->support_document),
                             ]),
                     ]),
             ]);
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index'  => Pages\ListTimeOff::route('/'),
+            'create' => Pages\CreateTimeOff::route('/create'),
+            'edit'   => Pages\EditTimeOff::route('/{record}/edit'),
+            'view'   => Pages\ViewTimeOff::route('/{record}'),
+        ];
     }
 }
