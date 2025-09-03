@@ -91,19 +91,6 @@ class PartnerResource extends Resource
                                                     ? "{$record->name} (disabled)"
                                                     : $record->name;
                                             })
-                                            ->afterStateHydrated(function (Forms\Components\Select $component, $state) {
-                                                if (empty($state)) {
-                                                    $component->state(null);
-
-                                                    return;
-                                                }
-
-                                                $parent = Partner::find($state);
-
-                                                if (! $parent) {
-                                                    $component->state(null);
-                                                }
-                                            }),
                                     ]),
                                 Forms\Components\Group::make()
                                     ->schema([
