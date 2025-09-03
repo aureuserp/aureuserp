@@ -62,6 +62,7 @@ class InventoryServiceProvider extends PackageServiceProvider
                 '2025_04_07_111610_add_sales_columns_to_inventories_moves_table_from_inventories',
                 '2025_04_09_101755_add_inventories_columns_to_sales_orders_table_from_inventories',
                 '2025_04_09_101814_add_inventories_columns_to_sales_order_lines_table_from_inventories',
+                '2025_08_13_120000_alter_description_column_in_inventories_locations_table',
             ])
             ->runsMigrations()
             ->hasSettings([

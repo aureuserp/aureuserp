@@ -33,6 +33,7 @@ use Webkul\Sale\Models\Order;
 use Webkul\Sale\Models\OrderLine;
 use Webkul\Sale\Models\Product;
 use Webkul\Sale\Settings;
+use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
 use Webkul\Support\Package;
@@ -214,6 +215,16 @@ class QuotationResource extends Resource
                                             ->relationship('company', 'name')
                                             ->searchable()
                                             ->preload()
+                                            ->live()
+                                            ->afterStateUpdated(function (Set $set, Get $get) {
+                                                $company = $get('company_id') ? \Webkul\Support\Models\Company::find($get('company_id')) : null;
+
+                                                if ($company) {
+                                                    $set('currency_id', $company->currency_id);
+                                                }
+                                            })
+                                            ->reactive()
+                                            ->afterStateUpdated(fn (callable $set, $state) => $set('currency_id', Company::find($state)?->currency_id))
                                             ->default(Auth::user()->default_company_id),
                                         Forms\Components\Select::make('currency_id')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.other-information.fieldset.additional-information.fields.currency'))
@@ -787,6 +798,7 @@ class QuotationResource extends Resource
                             ->schema([
                                 Infolists\Components\TextEntry::make('note')
                                     ->html()
+                                    ->placeholder('-')
                                     ->hiddenLabel(),
                             ]),
                     ]),

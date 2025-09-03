@@ -144,6 +144,8 @@ class InstallERP extends Command
             $adminUser->assignRole($adminRoleName);
         }
 
+        $this->backfillMissingCreatorIds($adminUser);
+
         $this->syncDefaultSettings($adminUser);
 
         $this->info("✅ Admin user '{$adminUser->name}' created and assigned the '{$this->getAdminRoleName()}' role successfully.");
@@ -219,6 +221,23 @@ class InstallERP extends Command
         Artisan::call('storage:link', [], $this->getOutput());
 
         $this->info('✅ Storage directory linked successfully.');
+    }
+
+    public function backfillMissingCreatorIds($user)
+    {
+        $mappings = [
+            'activity_plans'              => 'creator_id',
+            'partners_partners'           => 'creator_id',
+            'unit_of_measure_categories'  => 'creator_id',
+            'unit_of_measures'            => 'creator_id',
+            'utm_campaigns'               => 'created_by',
+            'utm_mediums'                 => 'creator_id',
+            'utm_stages'                  => 'created_by',
+        ];
+
+        collect($mappings)
+            ->filter(fn ($column) => ! is_null($column))
+            ->each(fn ($column, $table) => DB::table($table)->whereNull($column)->update([$column => $user->id]));
     }
 
     /**

@@ -8,6 +8,7 @@ use Filament\Forms;
 use Filament\Forms\Get;
 use Filament\Infolists;
 use Filament\Notifications\Notification;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Saade\FilamentFullCalendar\Actions;
@@ -20,6 +21,11 @@ use Webkul\TimeOff\Models\Leave;
 class CalendarWidget extends FullCalendarWidget
 {
     public Model|string|null $model = Leave::class;
+
+    public function getHeading(): string|Htmlable|null
+    {
+        return __('time-off::filament/widgets/calendar-widget.heading.title');
+    }
 
     public function config(): array
     {
@@ -191,8 +197,6 @@ class CalendarWidget extends FullCalendarWidget
                         ->success()
                         ->title(__('time-off::filament/widgets/calendar-widget.modal-actions.edit.notification.title'))
                         ->body(__('time-off::filament/widgets/calendar-widget.modal-actions.edit.notification.body'))
-                        ->icon('heroicon-o-check-circle')
-                        ->iconColor('success')
                         ->send();
                 })
                 ->mountUsing(
@@ -282,10 +286,8 @@ class CalendarWidget extends FullCalendarWidget
 
                     Notification::make()
                         ->success()
-                        ->title(__('time-off::filament/widgets/calendar-widget.header-actions.create.success.notification.title'))
-                        ->body(__('time-off::filament/widgets/calendar-widget.header-actions.create.success.notification.body'))
-                        ->icon('heroicon-o-check-circle')
-                        ->iconColor('success')
+                        ->title(__('time-off::filament/widgets/calendar-widget.header-actions.create.notification.title'))
+                        ->body(__('time-off::filament/widgets/calendar-widget.header-actions.create.notification.body'))
                         ->send();
                 })
                 ->mountUsing(

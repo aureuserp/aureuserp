@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'heading' => [
+        'title' => 'Time Off Requests',
+    ],
+
     'modal-actions' => [
         'edit' => [
             'title'                         => 'Edit',
@@ -27,6 +31,11 @@ return [
         'create' => [
             'title'       => 'New Time Off',
             'description' => 'Create Time Off Request',
+
+            'notification' => [
+                'title' => 'Time Off Created',
+                'body'  => 'Time off request has been created successfully.',
+            ],
 
             'employee-not-found' => [
                 'notification' => [

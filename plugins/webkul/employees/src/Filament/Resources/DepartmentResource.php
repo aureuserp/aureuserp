@@ -7,6 +7,8 @@ use Filament\Forms\Form;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
+use Filament\Pages\SubNavigationPosition;
+use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
@@ -27,6 +29,8 @@ class DepartmentResource extends Resource
     protected static ?string $model = Department::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
+
+    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getNavigationLabel(): string
     {
@@ -407,13 +411,30 @@ class DepartmentResource extends Resource
         return 'employees/departments';
     }
 
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            Pages\ViewDepartment::class,
+            Pages\EditDepartment::class,
+            Pages\ManageEmployee::class,
+        ]);
+    }
+
     public static function getPages(): array
     {
         return [
+<<<<<<< HEAD
             'index' => Pages\ListDepartments::route('/'),
             'create' => Pages\CreateDepartment::route('/create'),
             'view' => Pages\ViewDepartment::route('/{record}'),
             'edit' => Pages\EditDepartment::route('/{record}/edit'),
+=======
+            'index'      => Pages\ListDepartments::route('/'),
+            'create'     => Pages\CreateDepartment::route('/create'),
+            'view'       => Pages\ViewDepartment::route('/{record}'),
+            'edit'       => Pages\EditDepartment::route('/{record}/edit'),
+            'employees'  => Pages\ManageEmployee::route('/{record}/employees'),
+>>>>>>> dfdae34a1ded507e18fde53af1a16ca304d25205
         ];
     }
 }

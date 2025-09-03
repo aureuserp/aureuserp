@@ -22,7 +22,7 @@ class TaskByStageChart extends ChartWidget
 
     public function getHeading(): string|Htmlable|null
     {
-        return __('projects::filament/widgets/task-by-stage.heading');
+        return __('projects::filament/widgets/task-by-stage.heading.title');
     }
 
     protected function getData(): array
