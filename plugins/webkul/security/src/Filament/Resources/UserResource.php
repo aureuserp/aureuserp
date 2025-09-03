@@ -10,12 +10,14 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Filament\Resources\UserResource\Pages;
 use Webkul\Security\Models\User;
+use Webkul\Support\Models\Company;
 
 class UserResource extends Resource
 {
@@ -146,7 +148,15 @@ class UserResource extends Resource
                                             ->searchable(),
                                         Forms\Components\Select::make('default_company_id')
                                             ->label(__('security::filament/resources/user.form.sections.multi-company.default-company'))
-                                            ->relationship('defaultCompany', 'name')
+                                            ->relationship(
+                                                'defaultCompany',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                            )
+                                            ->getOptionLabelFromRecordUsing(function ($record): string {
+                                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                            })
+                                            ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                             ->required()
                                             ->searchable()
                                             ->createOptionForm(fn (Form $form) => CompanyResource::form($form))
@@ -162,6 +172,19 @@ class UserResource extends Resource
 
                                                         return $data;
                                                     });
+                                            })
+                                            ->afterStateHydrated(function (Forms\Components\Select $component, $state) {
+                                                if (empty($state)) {
+                                                    $component->state(null);
+
+                                                    return;
+                                                }
+
+                                                $company = Company::find($state);
+
+                                                if (! $company) {
+                                                    $component->state(null);
+                                                }
                                             })
                                             ->preload(),
                                     ]),

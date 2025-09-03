@@ -64,7 +64,15 @@ class OperationResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('partner_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.sections.general.fields.receive-from'))
-                            ->relationship('partner', 'name')
+                            ->relationship(
+                                name: 'partner',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed()
+                            )
+                            ->getOptionLabelFromRecordUsing(function ($record): string {
+                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                            })
+                            ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                             ->searchable()
                             ->preload()
                             ->createOptionForm(fn (Form $form): Form => PartnerResource::form($form))
@@ -279,8 +287,8 @@ class OperationResource extends Resource
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.groups.source-document')),
                 Tables\Grouping\Group::make('operationType.name')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.groups.operation-type')),
-                Tables\Grouping\Group::make('schedule_at')
-                    ->label(__('inventories::filament/clusters/operations/resources/operation.table.groups.schedule-at'))
+                Tables\Grouping\Group::make('scheduled_at')
+                    ->label(__('inventories::filament/clusters/operations/resources/operation.table.groups.scheduled-at'))
                     ->date(),
                 Tables\Grouping\Group::make('created_at')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.groups.created-at'))

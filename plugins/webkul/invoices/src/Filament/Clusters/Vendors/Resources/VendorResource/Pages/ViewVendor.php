@@ -14,4 +14,25 @@ class ViewVendor extends BaseViewPartner
     {
         return __('invoices::filament/clusters/vendors/resources/vendor/pages/view-vendor.title');
     }
+
+    public function getBreadcrumbs(): array
+    {
+        $resource = static::getResource();
+
+        $breadcrumbs = [
+            $resource::getUrl() => $resource::getBreadcrumb(),
+            ...(filled($breadcrumb = $this->getBreadcrumb()) ? [$breadcrumb] : []),
+        ];
+
+        $cluster = static::getCluster();
+
+        if (filled($cluster)) {
+            return [
+                $cluster::getUrl() => $cluster::getClusterBreadcrumb(),
+                ...$breadcrumbs,
+            ];
+        }
+
+        return $breadcrumbs;
+    }
 }

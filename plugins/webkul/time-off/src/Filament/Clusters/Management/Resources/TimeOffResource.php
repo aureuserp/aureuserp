@@ -133,7 +133,11 @@ class TimeOffResource extends Resource
                                     ->live(),
                                 Forms\Components\FileUpload::make('attachment')
                                     ->label(__('time-off::filament/clusters/management/resources/time-off.form.fields.attachment'))
-                                    ->visible(function (Get $get) {
+                                        ->acceptedFileTypes([
+                                            'image/*',
+                                            'application/pdf',
+                                        ])                                     
+                                        ->visible(function (Get $get) {
                                         $leaveType = LeaveType::find($get('holiday_status_id'));
 
                                         if ($leaveType) {

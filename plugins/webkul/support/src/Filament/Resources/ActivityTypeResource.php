@@ -30,6 +30,8 @@ class ActivityTypeResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
+    protected static ?string $pluginName = 'support';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -284,6 +286,7 @@ class ActivityTypeResource extends Resource
                         ),
                 ]),
             ])
+            ->modifyQueryUsing(fn ($query) => $query->where('plugin', static::$pluginName))
             ->reorderable('sort');
     }
 

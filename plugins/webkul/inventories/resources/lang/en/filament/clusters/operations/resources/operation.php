@@ -101,7 +101,7 @@ return [
             'state'           => 'State',
             'source-document' => 'Source Document',
             'operation-type'  => 'Operation Type',
-            'schedule-at'     => 'Schedule At',
+            'scheduled-at'    => 'Schedule At',
             'created-at'      => 'Created At',
         ],
 

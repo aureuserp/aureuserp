@@ -69,7 +69,6 @@ class Task extends Model implements Sortable
      * @var string
      */
     protected $casts = [
-        'deadline'            => 'datetime',
         'is_active'           => 'boolean',
         'tags'                => 'array',
         'deadline'            => 'datetime',

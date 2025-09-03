@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
@@ -26,6 +27,8 @@ class ProductResource extends Resource
     protected static ?string $model = Product::class;
 
     protected static bool $shouldRegisterNavigation = false;
+
+    protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
 
     public static function form(Form $form): Form
     {
@@ -63,6 +66,7 @@ class ProductResource extends Resource
                         Forms\Components\Section::make(__('products::filament/resources/product.form.sections.images.title'))
                             ->schema([
                                 Forms\Components\FileUpload::make('images')
+                                    ->image()
                                     ->multiple()
                                     ->storeFileNamesIn('products'),
                             ]),
@@ -112,7 +116,15 @@ class ProductResource extends Resource
                                     ->createOptionForm(fn (Forms\Form $form): Form => CategoryResource::form($form)),
                                 Forms\Components\Select::make('company_id')
                                     ->label(__('products::filament/resources/product.form.sections.settings.fields.company'))
-                                    ->relationship('company', 'name')
+                                    ->relationship(
+                                        'company',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                    )
+                                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                    })
+                                    ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                     ->searchable()
                                     ->preload()
                                     ->default(Auth::user()->default_company_id),

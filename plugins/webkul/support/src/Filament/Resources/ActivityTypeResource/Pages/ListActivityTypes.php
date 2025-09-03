@@ -12,7 +12,7 @@ class ListActivityTypes extends ListRecords
 {
     protected static string $resource = ActivityTypeResource::class;
 
-    protected static ?string $pluginName = 'employees';
+    protected static ?string $pluginName = 'support';
 
     protected static function getPluginName()
     {

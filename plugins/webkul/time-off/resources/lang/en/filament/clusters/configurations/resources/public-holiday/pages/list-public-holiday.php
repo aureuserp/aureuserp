@@ -3,12 +3,12 @@
 return [
     'header-actions' => [
         'create' => [
-            'title' => 'New Mandatory Day',
+            'title' => 'New Public Holiday',
 
             'notification' => [
                 'created' => [
-                    'title' => 'Mandatory day created',
-                    'body'  => 'The mandatory day has been created successfully.',
+                    'title' => 'Public Holiday created',
+                    'body'  => 'The public holiday has been created successfully.',
                 ],
             ],
         ],

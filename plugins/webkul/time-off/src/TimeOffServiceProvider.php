@@ -30,6 +30,7 @@ class TimeOffServiceProvider extends PackageServiceProvider
                 'employees',
             ])
             ->runsMigrations()
+            ->hasSeeder('Webkul\\TimeOff\\Database\\Seeders\\DatabaseSeeder')
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->installDependencies()

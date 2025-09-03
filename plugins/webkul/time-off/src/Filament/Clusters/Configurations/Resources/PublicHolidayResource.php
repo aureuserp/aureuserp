@@ -56,11 +56,30 @@ class PublicHolidayResource extends Resource
                             Forms\Components\DatePicker::make('date_from')
                                 ->label(__('time-off::filament/clusters/configurations/resources/public-holiday.form.fields.date-from'))
                                 ->native(false)
-                                ->required(),
+                                ->required()
+                                ->minDate(now()->toDateString())
+                                ->live()
+                                ->afterStateUpdated(function (callable $set, $state) {
+                                    $set('date_to', null);
+                                })
+                                ->rules([
+                                    'required',
+                                    'date',
+                                    'after_or_equal:today',
+                                ]),
                             Forms\Components\DatePicker::make('date_to')
                                 ->label(__('time-off::filament/clusters/configurations/resources/public-holiday.form.fields.date-to'))
                                 ->required()
-                                ->native(false),
+                                ->native(false)
+                                ->minDate(function (callable $get) {
+                                    return $get('date_from') ?: now()->toDateString();
+                                })
+                                ->live()
+                                ->rules([
+                                    'required',
+                                    'date',
+                                    'after_or_equal:date_from',
+                                ]),
                         ])->columns(2),
                     Forms\Components\Select::make('calendar')
                         ->searchable()

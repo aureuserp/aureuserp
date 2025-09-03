@@ -28,6 +28,7 @@ use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Invoice\Models\Product;
 use Webkul\Invoice\Settings;
+use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
 
@@ -97,6 +98,7 @@ class InvoiceResource extends Resource
                                             ->relationship(
                                                 'partner',
                                                 'name',
+                                                fn ($query) => $query->where('sub_type', 'customer')->orderBy('id'),
                                             )
                                             ->searchable()
                                             ->preload()
@@ -146,6 +148,7 @@ class InvoiceResource extends Resource
                                         'products' => $get('products'),
                                     ];
                                 })
+                                    ->visible(fn (Forms\Get $get) => $get('currency_id') && $get('products'))
                                     ->live()
                                     ->reactive(),
                             ]),
@@ -206,7 +209,15 @@ class InvoiceResource extends Resource
                                             ->relationship('company', 'name')
                                             ->searchable()
                                             ->preload()
-                                            ->default(Auth::user()->default_company_id),
+                                            ->default(Auth::user()->default_company_id)
+                                            ->live()
+                                            ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
+                                                $company = Company::find($get('company_id'));
+
+                                                if ($company?->currency_id) {
+                                                    $set('currency_id', $company->currency_id);
+                                                }
+                                            }),
                                         Forms\Components\Select::make('currency_id')
                                             ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.additional-information.fields.currency'))
                                             ->relationship('currency', 'name')
