@@ -18,6 +18,7 @@ use Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResou
 use Webkul\Employee\Filament\Resources\DepartmentResource;
 use Webkul\Employee\Models\ActivityPlan;
 use Webkul\Security\Filament\Resources\CompanyResource;
+use Webkul\Support\Models\Company;
 
 class ActivityPlanResource extends Resource
 {
@@ -55,7 +56,12 @@ class ActivityPlanResource extends Resource
                             ->searchable()
                             ->preload()
                             ->createOptionForm(fn (Form $form) => CompanyResource::form($form))
-                            ->editOptionForm(fn (Form $form) => CompanyResource::form($form)),
+                            ->editOptionForm(fn (Form $form) => CompanyResource::form($form))
+                            ->getOptionLabelFromRecordUsing(function (Company $record): string {
+                                return $record->trashed()
+                                    ? "{$record->name} ( Deleted )"
+                                    : $record->name;
+                            }),
                         Forms\Components\Toggle::make('is_active')
                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan.form.sections.general.fields.status'))
                             ->default(true)
