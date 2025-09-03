@@ -2,25 +2,15 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Pages;
 
-use Filament\Actions;
-use Filament\Notifications\Notification;
-use Filament\Resources\Pages\EditRecord;
 use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource;
+use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource\Pages\EditTimeOff as BaseEditTimeOff;
 
-class EditByEmployee extends EditRecord
+class EditByEmployee extends BaseEditTimeOff
 {
     protected static string $resource = ByEmployeeResource::class;
 
-    protected function getHeaderActions(): array
+    protected function getRedirectUrl(): string
     {
-        return [
-            Actions\DeleteAction::make()
-                ->successNotification(
-                    Notification::make()
-                        ->success()
-                        ->title(__('time-off::filament/clusters/reporting/resources/by-employee/edit-by-employee.header-actions.delete.notification.title'))
-                        ->body(__('time-off::filament/clusters/reporting/resources/by-employee/edit-by-employee.header-actions.delete.notification.body'))
-                ),
-        ];
+        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 }
