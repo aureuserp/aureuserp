@@ -59,7 +59,7 @@ class ActivityPlanResource extends Resource
                             ->editOptionForm(fn(Form $form) => CompanyResource::form($form))
                             ->getOptionLabelFromRecordUsing(function (Company $record): string {
                                 return $record->trashed()
-                                    ? "{$record->name} (disabled)"
+                                    ? "{$record->name} ( Deleted )"
                                     : $record->name;
                             }),
                         Forms\Components\Toggle::make('is_active')
