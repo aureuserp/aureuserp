@@ -1,7 +1,9 @@
 <?php
 
 return [
-    'heading' => 'Top Assignees',
+    'heading' => [
+        'title' => 'Top Assignees',
+    ],
 
     'table-columns' => [
         'user'        => 'User',

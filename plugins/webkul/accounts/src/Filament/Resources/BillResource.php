@@ -202,6 +202,14 @@ class BillResource extends Resource
                                             ->relationship('company', 'name')
                                             ->searchable()
                                             ->preload()
+                                            ->live()
+                                            ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get) {
+                                                $company = $get('company_id') ? \Webkul\Support\Models\Company::find($get('company_id')) : null;
+
+                                                if ($company) {
+                                                    $set('currency_id', $company->currency_id);
+                                                }
+                                            })
                                             ->default(Auth::user()->default_company_id),
                                         Forms\Components\Select::make('currency_id')
                                             ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.additional-information.fields.currency'))

@@ -34,16 +34,20 @@ class EditRole extends EditRecord
             ->flatten()
             ->unique();
 
-        return Arr::only($data, ['name', 'guard_name']);
+        return [
+            'name'       => $data['name'],
+            'guard_name' => Utils::getFilamentAuthGuard(),
+        ];
     }
 
     protected function afterSave(): void
     {
         $permissionModels = collect();
+
         $this->permissions->each(function ($permission) use ($permissionModels) {
             $permissionModels->push(Utils::getPermissionModel()::firstOrCreate([
                 'name'       => $permission,
-                'guard_name' => $this->data['guard_name'],
+                'guard_name' => Utils::getFilamentAuthGuard(),
             ]));
         });
 

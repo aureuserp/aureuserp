@@ -202,6 +202,7 @@ return [
 
             'other-information' => [
                 'title'    => 'Other Information',
+
                 'fieldset' => [
                     'invoice' => [
                         'title'   => 'Invoice',
@@ -228,6 +229,7 @@ return [
 
                     'additional-information' => [
                         'title'   => 'Additional Information',
+
                         'entries' => [
                             'company'  => 'Company',
                             'currency' => 'Currency',

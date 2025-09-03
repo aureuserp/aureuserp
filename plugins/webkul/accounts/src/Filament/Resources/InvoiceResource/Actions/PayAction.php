@@ -7,9 +7,11 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\DisplayType;
+use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Payment;
@@ -45,8 +47,8 @@ class PayAction extends Action
                                     titleAttribute: 'name',
                                     modifyQueryUsing: function ($query) {
                                         return $query
-                                            ->whereHas('paymentMethod', fn ($q) => $q->where('payment_type', 'inbound'))
-                                            ->whereHas('journal', fn ($q) => $q->where('type', 'bank'));
+                                            ->whereHas('paymentMethod', fn ($q) => $q->where('payment_type', PaymentType::RECEIVE->value))
+                                            ->whereHas('journal', fn ($q) => $q->where('type', JournalType::BANK->value));
                                     }
                                 )
                                 ->required()

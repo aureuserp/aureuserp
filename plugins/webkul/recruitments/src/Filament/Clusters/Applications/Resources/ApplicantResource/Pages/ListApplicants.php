@@ -7,7 +7,9 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Support\Enums\MaxWidth;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Recruitment\Enums\RecruitmentState;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\ApplicantResource;
@@ -78,8 +80,10 @@ class ListApplicants extends ListRecords
 
             'archived' => PresetView::make(__('recruitments::filament/clusters/applications/resources/applicant/pages/list-applicant.tabs.archived'))
                 ->icon('heroicon-s-archive-box')
+                ->favorite()
                 ->modifyQueryUsing(function (Builder $query) {
                     return $query
+                        ->withoutGlobalScope(SoftDeletingScope::class)
                         ->where(function (Builder $subQuery) {
                             $subQuery
                                 ->whereNotNull('deleted_at')
@@ -141,7 +145,12 @@ class ListApplicants extends ListRecords
                                 ->searchable()
                                 ->preload()
                                 ->label('Candidate')
-                                ->createOptionForm(fn (Form $form) => CandidateResource::form($form)),
+                                ->createOptionForm(fn (Form $form) => CandidateResource::form($form))
+                                ->createOptionAction(function (Forms\Components\Actions\Action $action) {
+                                    return $action
+                                        ->modalIcon('heroicon-s-user-plus')
+                                        ->modalWidth(MaxWidth::SixExtraLarge);
+                                }),
                         ])->columns(2),
                 ])
                 ->mutateFormDataUsing(function (array $data): array {
@@ -151,6 +160,27 @@ class ListApplicants extends ListRecords
                     $data['is_active'] = true;
 
                     return $data;
+                })
+                ->using(function (array $data): \Illuminate\Database\Eloquent\Model {
+                    $model = static::$resource::getModel();
+
+                    $existingApplicant = $model::where('candidate_id', $data['candidate_id'])
+                        ->where('company_id', $data['company_id'])
+                        ->first();
+
+                    if ($existingApplicant) {
+                        $existingApplicant->update([
+                            'is_active'        => true,
+                            'deleted_at'       => null,
+                            'refuse_reason_id' => null,
+                            'date_closed'      => null,
+                            'recruiter_id'     => $data['creator_id'],
+                        ]);
+
+                        return $existingApplicant;
+                    }
+
+                    return $model::create($data);
                 })
                 ->createAnother(false)
                 ->after(function ($record) {

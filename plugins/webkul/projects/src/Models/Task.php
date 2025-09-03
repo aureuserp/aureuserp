@@ -15,6 +15,7 @@ use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\Partner;
 use Webkul\Project\Database\Factories\TaskFactory;
+use Webkul\Project\Enums\TaskState;
 use Webkul\Security\Models\Scopes\UserPermissionScope;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -69,7 +70,6 @@ class Task extends Model implements Sortable
      * @var string
      */
     protected $casts = [
-        'deadline'            => 'datetime',
         'is_active'           => 'boolean',
         'tags'                => 'array',
         'deadline'            => 'datetime',
@@ -83,6 +83,7 @@ class Task extends Model implements Sortable
         'effective_hours'     => 'float',
         'total_hours_spent'   => 'float',
         'overtime'            => 'float',
+        'state'               => TaskState::class,
     ];
 
     protected array $logAttributes = [

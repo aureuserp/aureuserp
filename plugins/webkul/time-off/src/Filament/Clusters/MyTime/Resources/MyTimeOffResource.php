@@ -8,6 +8,7 @@ use Filament\Forms\Get;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
+use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -29,6 +30,8 @@ class MyTimeOffResource extends Resource
     protected static ?int $navigationSort = 2;
 
     protected static ?string $cluster = MyTime::class;
+
+    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getModelLabel(): string
     {
@@ -107,6 +110,10 @@ class MyTimeOffResource extends Resource
                                     ->live(),
                                 Forms\Components\FileUpload::make('attachment')
                                     ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.form.fields.attachment'))
+                                    ->acceptedFileTypes([
+                                        'image/*',
+                                        'application/pdf',
+                                    ])   
                                     ->visible(function (Get $get) {
                                         $leaveType = LeaveType::find($get('holiday_status_id'));
 

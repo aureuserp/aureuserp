@@ -4,6 +4,7 @@ namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanR
 
 use Filament\Actions;
 use Filament\Notifications\Notification;
+use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource;
@@ -11,6 +12,11 @@ use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResourc
 class EditAccrualPlan extends EditRecord
 {
     protected static string $resource = AccrualPlanResource::class;
+
+    public function getSubNavigationPosition(): SubNavigationPosition
+    {
+        return SubNavigationPosition::Top;
+    }
 
     protected function getRedirectUrl(): string
     {

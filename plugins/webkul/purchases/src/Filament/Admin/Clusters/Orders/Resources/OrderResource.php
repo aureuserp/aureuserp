@@ -190,7 +190,15 @@ class OrderResource extends Resource
                                             ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [Enums\OrderState::DRAFT, Enums\OrderState::SENT, Enums\OrderState::PURCHASE])),
                                         Forms\Components\Select::make('company_id')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.additional.fields.company'))
-                                            ->relationship('company', 'name')
+                                            ->relationship(
+                                                'company',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                            )
+                                            ->getOptionLabelFromRecordUsing(function ($record): string {
+                                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                            })
+                                            ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                             ->searchable()
                                             ->preload()
                                             ->required()
@@ -289,12 +297,12 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('untaxed_amount')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.columns.untaxed-amount'))
                     ->sortable()
-                    ->money(fn (Order $record) => $record->currency->code)
+                    ->money(fn (Order $record) => $record->currency?->name)
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('total_amount')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.columns.total-amount'))
                     ->sortable()
-                    ->money(fn (Order $record) => $record->currency->code)
+                    ->money(fn (Order $record) => $record->currency?->name)
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('invoice_status')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.columns.billing-status'))
@@ -579,13 +587,13 @@ class OrderResource extends Resource
                                 Infolists\Components\Group::make([
                                     Infolists\Components\TextEntry::make('untaxed_amount')
                                         ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.columns.untaxed-amount'))
-                                        ->money(fn (Order $record) => $record->currency->code),
+                                        ->money(fn (Order $record) => $record->currency?->name),
                                     Infolists\Components\TextEntry::make('tax_amount')
                                         ->label('Tax Amount')
-                                        ->money(fn (Order $record) => $record->currency->code),
+                                        ->money(fn (Order $record) => $record->currency?->name),
                                     Infolists\Components\TextEntry::make('total_amount')
                                         ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.columns.total-amount'))
-                                        ->money(fn (Order $record) => $record->currency->code),
+                                        ->money(fn (Order $record) => $record->currency?->name),
                                     Infolists\Components\TextEntry::make('invoice_status')
                                         ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.columns.billing-status'))
                                         ->badge(),

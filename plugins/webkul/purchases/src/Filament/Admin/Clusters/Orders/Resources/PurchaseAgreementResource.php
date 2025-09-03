@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
@@ -78,8 +79,12 @@ class PurchaseAgreementResource extends Resource
                                     ->relationship(
                                         'partner',
                                         'name',
-                                        fn ($query) => $query->where('sub_type', 'supplier')
+                                        fn (Builder $query) => $query->withTrashed()->where('sub_type', 'supplier')
                                     )
+                                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                    })
+                                    ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                     ->searchable()
                                     ->required()
                                     ->preload()
@@ -112,11 +117,25 @@ class PurchaseAgreementResource extends Resource
                                         Forms\Components\DatePicker::make('starts_at')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.sections.general.fields.valid-from'))
                                             ->native(false)
-                                            ->suffixIcon('heroicon-o-calendar'),
+                                            ->suffixIcon('heroicon-o-calendar')
+                                            ->minDate(now()->toDateString())
+                                            ->live()
+                                            ->afterStateUpdated(fn (Forms\Set $set) => $set('ends_at', null))
+                                            ->rules([
+                                                'date',
+                                                'after_or_equal:today',
+                                            ]),
                                         Forms\Components\DatePicker::make('ends_at')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.sections.general.fields.valid-to'))
                                             ->native(false)
-                                            ->suffixIcon('heroicon-o-calendar'),
+                                            ->suffixIcon('heroicon-o-calendar')
+                                            ->native(false)
+                                            ->minDate(fn (Forms\Get $get) => $get('starts_at') ?: now()->toDateString())
+                                            ->live()
+                                            ->rules([
+                                                'date',
+                                                'after_or_equal:date_from',
+                                            ]),
                                     ])
                                     ->columns(2)
                                     ->hidden(function (Forms\Get $get): bool {
@@ -132,7 +151,7 @@ class PurchaseAgreementResource extends Resource
                                     ->searchable()
                                     ->required()
                                     ->preload()
-                                    ->default(auth()->user()->default_company_id)
+                                    ->default(filament()->auth()?->user()?->default_company_id)
                                     ->disabled(fn ($record): bool => $record && $record?->state != Enums\RequisitionState::DRAFT),
                             ]),
                     ])

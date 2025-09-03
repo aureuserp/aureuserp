@@ -8,9 +8,14 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\Builder;
 use Webkul\Project\Filament\Clusters\Configurations;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\TaskStageResource\Pages;
 use Webkul\Project\Filament\Resources\ProjectResource\RelationManagers\TaskStagesRelationManager;
+use Webkul\Project\Models\Project;
 use Webkul\Project\Models\TaskStage;
 
 class TaskStageResource extends Resource
@@ -38,7 +43,15 @@ class TaskStageResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Select::make('project_id')
                     ->label(__('projects::filament/clusters/configurations/resources/task-stage.form.project'))
-                    ->relationship('project', 'name')
+                    ->relationship(
+                        'project',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                    )
+                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                    })
+                    ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                     ->hiddenOn(TaskStagesRelationManager::class)
                     ->required()
                     ->searchable()
@@ -101,12 +114,22 @@ class TaskStageResource extends Resource
                             ->body(__('projects::filament/clusters/configurations/resources/task-stage.table.actions.delete.notification.body')),
                     ),
                 Tables\Actions\ForceDeleteAction::make()
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('projects::filament/clusters/configurations/resources/task-stage.table.actions.force-delete.notification.title'))
-                            ->body(__('projects::filament/clusters/configurations/resources/task-stage.table.actions.force-delete.notification.body')),
-                    ),
+                    ->action(function (TaskStage $record) {
+                        try {
+                            $record->forceDelete();
+                            Notification::make()
+                                ->success()
+                                ->title(__('projects::filament/clusters/configurations/resources/task-stage.table.actions.force-delete.notification.success.title'))
+                                ->body(__('projects::filament/clusters/configurations/resources/task-stage.table.actions.force-delete.notification.success.body'))
+                                ->send();
+                        } catch (QueryException) {
+                            Notification::make()
+                                ->danger()
+                                ->title(__('projects::filament/clusters/configurations/resources/task-stage.table.actions.force-delete.notification.error.title'))
+                                ->body(__('projects::filament/clusters/configurations/resources/task-stage.table.actions.force-delete.notification.error.body'))
+                                ->send();
+                        }
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -125,12 +148,22 @@ class TaskStageResource extends Resource
                                 ->body(__('projects::filament/clusters/configurations/resources/task-stage.table.bulk-actions.delete.notification.body')),
                         ),
                     Tables\Actions\ForceDeleteBulkAction::make()
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('projects::filament/clusters/configurations/resources/task-stage.table.bulk-actions.force-delete.notification.title'))
-                                ->body(__('projects::filament/clusters/configurations/resources/task-stage.table.bulk-actions.force-delete.notification.body')),
-                        ),
+                        ->action(function (Collection $records) {
+                            try {
+                                $records->each(fn (Model $record) => $record->forceDelete());
+                                Notification::make()
+                                    ->success()
+                                    ->title(__('projects::filament/clusters/configurations/resources/task-stage.table.actions.force-delete.notification.success.title'))
+                                    ->body(__('projects::filament/clusters/configurations/resources/task-stage.table.actions.force-delete.notification.success.body'))
+                                    ->send();
+                            } catch (QueryException) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('projects::filament/clusters/configurations/resources/task-stage.table.actions.force-delete.notification.error.title'))
+                                    ->body(__('projects::filament/clusters/configurations/resources/task-stage.table.actions.force-delete.notification.error.body'))
+                                    ->send();
+                            }
+                        }),
                 ]),
             ]);
     }

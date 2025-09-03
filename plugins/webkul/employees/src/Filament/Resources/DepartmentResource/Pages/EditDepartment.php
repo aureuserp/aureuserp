@@ -2,9 +2,11 @@
 
 namespace Webkul\Employee\Filament\Resources\DepartmentResource\Pages;
 
+use Exception;
 use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
 use Webkul\Employee\Filament\Resources\DepartmentResource;
 
@@ -12,17 +14,27 @@ class EditDepartment extends EditRecord
 {
     protected static string $resource = DepartmentResource::class;
 
-    protected function getRedirectUrl(): string
+    private bool $updateFailed = false;
+
+    protected function getRedirectUrl(): ?string
     {
+        if ($this->updateFailed) {
+            return null;
+        }
+
         return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 
-    protected function getSavedNotification(): Notification
+    protected function getSavedNotification(): ?Notification
     {
+        if ($this->updateFailed) {
+            return null;
+        }
+
         return Notification::make()
             ->success()
-            ->title(__('employees::filament/resources/department/pages/edit-department.notification.title'))
-            ->body(__('employees::filament/resources/department/pages/edit-department.notification.body'));
+            ->title(__('employees::filament/resources/department/pages/edit-department.update.success.notification.title'))
+            ->body(__('employees::filament/resources/department/pages/edit-department.update.success.notification.body'));
     }
 
     protected function getHeaderActions(): array
@@ -30,7 +42,6 @@ class EditDepartment extends EditRecord
         return [
             ChatterActions\ChatterAction::make()
                 ->setResource(static::$resource),
-            Actions\ViewAction::make(),
             Actions\DeleteAction::make()
                 ->successNotification(
                     Notification::make()
@@ -39,5 +50,24 @@ class EditDepartment extends EditRecord
                         ->body(__('employees::filament/resources/department/pages/edit-department.header-actions.delete.notification.body')),
                 ),
         ];
+    }
+
+    protected function handleRecordUpdate(Model $record, array $data): Model
+    {
+        try {
+            $record->update($data);
+
+            return $record;
+        } catch (Exception $e) {
+            $this->updateFailed = true;
+
+            Notification::make()
+                ->danger()
+                ->title(__('employees::filament/resources/department/pages/edit-department.update.error.notification.title'))
+                ->body($e->getMessage())
+                ->send();
+
+            return $record;
+        }
     }
 }

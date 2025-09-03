@@ -48,7 +48,10 @@ class EditPage extends EditRecord
                 ->label(__('website::filament/admin/resources/page/pages/edit-record.header-actions.draft.label'))
                 ->icon('heroicon-o-archive-box')
                 ->action(function (Page $record) {
-                    $record->update(['is_published' => false]);
+                    $record->update([
+                        'is_published' => false,
+                        'published_at' => null,
+                    ]);
 
                     Notification::make()
                         ->success()

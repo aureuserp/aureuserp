@@ -108,9 +108,6 @@ class RoleResource extends Resource implements HasShieldPermissions
                     ->label(__('filament-shield::filament-shield.column.updated_at'))
                     ->dateTime(),
             ])
-            ->filters([
-                //
-            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
@@ -119,6 +116,9 @@ class RoleResource extends Resource implements HasShieldPermissions
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ])
+            ->checkIfRecordIsSelectableUsing(
+                fn (Model $record): bool => ! ($record->name == config('filament-shield.panel_user.name'))
+            )
             ->defaultSort('created_at', 'asc');
     }
 

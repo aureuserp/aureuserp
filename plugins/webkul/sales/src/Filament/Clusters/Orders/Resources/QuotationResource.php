@@ -95,13 +95,19 @@ class QuotationResource extends Resource
                                     ->schema([
                                         Forms\Components\Select::make('partner_id')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.form.section.general.fields.customer'))
-                                            ->relationship('partner', 'name')
+                                            ->relationship(
+                                                'partner',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed()
+                                            )
                                             ->searchable()
                                             ->preload()
                                             ->required()
                                             ->live()
                                             ->disabled(fn ($record): bool => $record?->locked || in_array($record?->state, [Enums\OrderState::CANCEL]))
-                                            ->columnSpan(1),
+                                            ->columnSpan(1)
+                                            ->getOptionLabelFromRecordUsing(fn ($record): string => $record->name.($record->trashed() ? ' (Deleted)' : ''))
+                                            ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)')),
                                     ]),
                                 Forms\Components\DatePicker::make('validity_date')
                                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.section.general.fields.expiration'))
@@ -208,6 +214,14 @@ class QuotationResource extends Resource
                                             ->relationship('company', 'name')
                                             ->searchable()
                                             ->preload()
+                                            ->live()
+                                            ->afterStateUpdated(function (Set $set, Get $get) {
+                                                $company = $get('company_id') ? \Webkul\Support\Models\Company::find($get('company_id')) : null;
+
+                                                if ($company) {
+                                                    $set('currency_id', $company->currency_id);
+                                                }
+                                            })
                                             ->default(Auth::user()->default_company_id),
                                         Forms\Components\Select::make('currency_id')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.other-information.fieldset.additional-information.fields.currency'))
@@ -639,6 +653,7 @@ class QuotationResource extends Resource
                                             ->placeholder('-')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.discount-percentage'))
                                             ->icon('heroicon-o-tag')
+                                            ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount)
                                             ->suffix('%'),
                                         Infolists\Components\TextEntry::make('price_subtotal')
                                             ->placeholder('-')
@@ -683,6 +698,7 @@ class QuotationResource extends Resource
                                             ->placeholder('-')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.discount-percentage'))
                                             ->icon('heroicon-o-tag')
+                                            ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount)
                                             ->suffix('%'),
                                         Infolists\Components\TextEntry::make('price_unit')
                                             ->placeholder('-')
@@ -779,6 +795,7 @@ class QuotationResource extends Resource
                             ->schema([
                                 Infolists\Components\TextEntry::make('note')
                                     ->html()
+                                    ->placeholder('-')
                                     ->hiddenLabel(),
                             ]),
                     ]),
@@ -796,7 +813,15 @@ class QuotationResource extends Resource
             ->addActionLabel(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.add-product'))
             ->collapsible()
             ->defaultItems(0)
-            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+            ->itemLabel(function ($state) {
+                if (! empty($state['name'])) {
+                    return $state['name'];
+                }
+
+                $product = Product::find($state['product_id']);
+
+                return $product->name ?? null;
+            })
             ->deleteAction(fn (Forms\Components\Actions\Action $action) => $action->requiresConfirmation())
             ->schema([
                 Forms\Components\Group::make()
@@ -815,7 +840,7 @@ class QuotationResource extends Resource
                                     ->live()
                                     ->dehydrated()
                                     ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get) {
-                                        $product = Product::find($get('product_id'));
+                                        $product = Product::withTrashed()->find($get('product_id'));
 
                                         $set('name', $product->name);
 
@@ -865,6 +890,7 @@ class QuotationResource extends Resource
                                     ->minValue(0)
                                     ->maxValue(100)
                                     ->live()
+                                    ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount)
                                     ->dehydrated(),
                                 Forms\Components\Actions::make([
                                     Forms\Components\Actions\Action::make('add_order_line')
@@ -936,9 +962,17 @@ class QuotationResource extends Resource
             ->addActionLabel(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.add-product'))
             ->collapsible()
             ->defaultItems(0)
-            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+            ->itemLabel(function ($state) {
+                if (! empty($state['name'])) {
+                    return $state['name'];
+                }
+
+                $product = Product::find($state['product_id']);
+
+                return $product->name ?? null;
+            })
             ->deleteAction(fn (Forms\Components\Actions\Action $action) => $action->requiresConfirmation())
-            ->deletable(fn ($record): bool => ! in_array($record?->state, [Enums\OrderState::CANCEL]))
+            ->deletable(fn ($record): bool => ! in_array($record?->state, [Enums\OrderState::CANCEL]) && $record->state !== Enums\OrderState::SALE)
             ->addable(fn ($record): bool => ! in_array($record?->state, [Enums\OrderState::CANCEL]))
             ->schema([
                 Forms\Components\Group::make()
@@ -1104,6 +1138,7 @@ class QuotationResource extends Resource
                                     ->minValue(0)
                                     ->maxValue(100)
                                     ->live()
+                                    ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount)
                                     ->afterStateUpdated(fn (Forms\Set $set, Forms\Get $get) => self::calculateLineTotals($set, $get))
                                     ->disabled(fn ($record): bool => $record && $record->order?->locked || in_array($record?->order?->state, [Enums\OrderState::CANCEL])),
                                 Forms\Components\TextInput::make('price_subtotal')
@@ -1127,7 +1162,7 @@ class QuotationResource extends Resource
 
     public static function mutateProductRelationship(array $data, $record): array
     {
-        $product = Product::find($data['product_id']);
+        $product = Product::withTrashed()->find($data['product_id']);
 
         $qtyDeliveredMethod = Enums\QtyDeliveredMethod::MANUAL;
 
@@ -1153,7 +1188,7 @@ class QuotationResource extends Resource
             return;
         }
 
-        $product = Product::find($get('product_id'));
+        $product = Product::withTrashed()->find($get('product_id'));
 
         $set('product_uom_id', $product->uom_id);
 
@@ -1281,7 +1316,7 @@ class QuotationResource extends Resource
 
     private static function calculateUnitPrice($get)
     {
-        $product = Product::find($get('product_id'));
+        $product = Product::withTrashed()->find($get('product_id'));
 
         $vendorPrices = $product->supplierInformation->sortByDesc('sort');
 

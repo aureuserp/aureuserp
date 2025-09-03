@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\TimeOff\Enums\AccruedGainTime;
+use Webkul\TimeOff\Enums\CarryoverDate;
+use Webkul\TimeOff\Enums\CarryoverDay;
+use Webkul\TimeOff\Enums\CarryoverMonth;
 
 class LeaveAccrualPlan extends Model
 {
@@ -26,6 +30,13 @@ class LeaveAccrualPlan extends Model
         'added_value_type',
         'is_active',
         'is_based_on_worked_time',
+    ];
+
+    protected $casts = [
+        'accrued_gain_time' => AccruedGainTime::class,
+        'carryover_day'     => CarryoverDay::class,
+        'carryover_month'   => CarryoverMonth::class,
+        'carryover_date'    => CarryoverDate::class,
     ];
 
     public function timeOffType()

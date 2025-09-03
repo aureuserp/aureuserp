@@ -69,12 +69,12 @@ class EmployeeSkillResource extends Resource
                     ->color('secondary')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('creator.name')
+                Tables\Columns\TextColumn::make('createdBy.name')
                     ->label(__('employees::filament/clusters/reportings/resources/employee-skill.table.columns.created-by'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('user.name')
+                Tables\Columns\TextColumn::make('employee.user.name')
                     ->label(__('employees::filament/clusters/reportings/resources/employee-skill.table.columns.user'))
                     ->searchable()
                     ->sortable()
@@ -131,7 +131,7 @@ class EmployeeSkillResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('creator')
+                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('createdBy')
                             ->label(__('employees::filament/clusters/reportings/resources/employee-skill.table.filters.created-by'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -142,7 +142,7 @@ class EmployeeSkillResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('user')
+                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('employee.user')
                             ->label(__('employees::filament/clusters/reportings/resources/employee-skill.table.filters.user'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -191,11 +191,11 @@ class EmployeeSkillResource extends Resource
                     ->columns(2),
                 Infolists\Components\Section::make(__('employees::filament/clusters/reportings/resources/employee-skill.infolist.sections.additional-information.title'))
                     ->schema([
-                        Infolists\Components\TextEntry::make('creator.name')
+                        Infolists\Components\TextEntry::make('createdBy.name')
                             ->icon('heroicon-o-user')
                             ->placeholder('—')
                             ->label(__('employees::filament/clusters/reportings/resources/employee-skill.infolist.sections.additional-information.entries.created-by')),
-                        Infolists\Components\TextEntry::make('user.name')
+                        Infolists\Components\TextEntry::make('employee.user.name')
                             ->placeholder('—')
                             ->icon('heroicon-o-user')
                             ->label(__('employees::filament/clusters/reportings/resources/employee-skill.infolist.sections.additional-information.entries.updated-by')),

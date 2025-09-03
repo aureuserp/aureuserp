@@ -49,17 +49,25 @@ class CreateTimeOff extends CreateRecord
             }
         }
 
-        if (isset($data['request_unit_half'])) {
+        if (isset($data['request_unit_half']) && $data['request_unit_half']) {
             $data['duration_display'] = '0.5 day';
-
             $data['number_of_days'] = 0.5;
         } else {
             $startDate = Carbon::parse($data['request_date_from']);
             $endDate = $data['request_date_to'] ? Carbon::parse($data['request_date_to']) : $startDate;
+            $businessDays = 0;
+            $currentDate = $startDate->copy();
 
-            $data['duration_display'] = $startDate->diffInDays($endDate) + 1 .' day(s)';
+            while ($currentDate->lte($endDate)) {
+                if (! in_array($currentDate->dayOfWeek, [0, 6])) {
+                    $businessDays++;
+                }
 
-            $data['number_of_days'] = $startDate->diffInDays($endDate) + 1;
+                $currentDate->addDay();
+            }
+
+            $data['duration_display'] = $businessDays . ' day(s)';
+            $data['number_of_days'] = $businessDays;
         }
 
         $data['creator_id'] = Auth::user()->id;
