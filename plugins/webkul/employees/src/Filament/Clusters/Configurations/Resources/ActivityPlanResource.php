@@ -48,27 +48,19 @@ class ActivityPlanResource extends Resource
                             ->relationship(name: 'department', titleAttribute: 'name')
                             ->searchable()
                             ->preload()
-                            ->createOptionForm(fn (Form $form) => DepartmentResource::form($form))
-                            ->editOptionForm(fn (Form $form) => DepartmentResource::form($form)),
+                            ->createOptionForm(fn(Form $form) => DepartmentResource::form($form))
+                            ->editOptionForm(fn(Form $form) => DepartmentResource::form($form)),
                         Forms\Components\Select::make('company_id')
                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan.form.sections.general.fields.company'))
                             ->relationship(name: 'company', titleAttribute: 'name')
                             ->searchable()
                             ->preload()
-                            ->createOptionForm(fn (Form $form) => CompanyResource::form($form))
-                            ->editOptionForm(fn (Form $form) => CompanyResource::form($form))
-                            ->afterStateHydrated(function (Forms\Components\Select $component, $state) {
-                                if (empty($state)) {
-                                    $component->state(null);
-
-                                    return;
-                                }
-
-                                $company = Company::find($state);
-
-                                if (! $company) {
-                                    $component->state(null);
-                                }
+                            ->createOptionForm(fn(Form $form) => CompanyResource::form($form))
+                            ->editOptionForm(fn(Form $form) => CompanyResource::form($form))
+                            ->getOptionLabelFromRecordUsing(function (Company $record): string {
+                                return $record->trashed()
+                                    ? "{$record->name} (disabled)"
+                                    : $record->name;
                             }),
                         Forms\Components\Toggle::make('is_active')
                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan.form.sections.general.fields.status'))
@@ -187,9 +179,9 @@ class ActivityPlanResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
-                    ->hidden(fn ($record) => $record->trashed()),
+                    ->hidden(fn($record) => $record->trashed()),
                 Tables\Actions\EditAction::make()
-                    ->hidden(fn ($record) => $record->trashed()),
+                    ->hidden(fn($record) => $record->trashed()),
                 Tables\Actions\RestoreAction::make()
                     ->successNotification(
                         Notification::make()
@@ -303,9 +295,9 @@ class ActivityPlanResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListActivityPlans::route('/'),
-            'view'   => Pages\ViewActivityPlan::route('/{record}'),
-            'edit'   => Pages\EditActivityPlan::route('/{record}/edit'),
+            'index' => Pages\ListActivityPlans::route('/'),
+            'view' => Pages\ViewActivityPlan::route('/{record}'),
+            'edit' => Pages\EditActivityPlan::route('/{record}/edit'),
         ];
     }
 }
