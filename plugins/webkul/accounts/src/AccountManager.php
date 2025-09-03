@@ -166,6 +166,8 @@ class AccountManager
 
         $this->computePaymentTermLine($record);
 
+        $record->refresh();
+
         return $record;
     }
 
@@ -241,6 +243,7 @@ class AccountManager
 
                     case Enums\DelayType::DAYS_AFTER_END_OF_MONTH->value:
                         $dateMaturity = $dateMaturity->endOfMonth()->addDays((int) $dueTerm->nb_days);
+              
                         break;
 
                     case Enums\DelayType::DAYS_AFTER_END_OF_NEXT_MONTH->value:

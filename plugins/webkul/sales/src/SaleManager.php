@@ -151,6 +151,8 @@ class SaleManager
 
         $record->save();
 
+        $record->refresh();
+
         return $record;
     }
 

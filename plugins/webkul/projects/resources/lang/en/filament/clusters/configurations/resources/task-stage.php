@@ -51,8 +51,14 @@ return [
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Task stage force deleted',
-                    'body'  => 'The task stage has been force deleted successfully.',
+                    'success' => [
+                        'title' => 'Task stage force deleted',
+                        'body'  => 'The Task stage has been force deleted successfully.',
+                    ],
+                    'error' => [
+                        'title' => 'Task stage could not be deleted',
+                        'body'  => 'The Task stage cannot be deleted because it is currently in use.',
+                    ],
                 ],
             ],
         ],

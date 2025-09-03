@@ -1,5 +1,7 @@
 <?php
 
 return [
-    'heading' => 'Tasks by State',
+    'heading' => [
+        'title' => 'Tasks By State',
+    ],
 ];

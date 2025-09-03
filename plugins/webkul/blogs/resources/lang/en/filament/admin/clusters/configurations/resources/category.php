@@ -53,8 +53,14 @@ return [
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Category force deleted',
-                    'body'  => 'The category has been force deleted successfully.',
+                    'success' => [
+                        'title' => 'Category force deleted',
+                        'body'  => 'The Category has been force deleted successfully.',
+                    ],
+                    'error' => [
+                        'title' => 'Category  could not be deleted',
+                        'body'  => 'The Category  cannot be deleted because it is currently in use.',
+                    ],
                 ],
             ],
         ],

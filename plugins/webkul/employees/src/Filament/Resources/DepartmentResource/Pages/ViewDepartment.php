@@ -17,7 +17,6 @@ class ViewDepartment extends ViewRecord
         return [
             ChatterActions\ChatterAction::make()
                 ->setResource(static::$resource),
-            Actions\EditAction::make(),
             Actions\DeleteAction::make()
                 ->successNotification(
                     Notification::make()

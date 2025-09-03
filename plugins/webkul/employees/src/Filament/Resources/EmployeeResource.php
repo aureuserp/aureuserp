@@ -22,7 +22,9 @@ use Filament\Tables;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Enums\DistanceUnit;
 use Webkul\Employee\Enums\Gender;
@@ -659,7 +661,19 @@ class EmployeeResource extends Resource
                                                         Forms\Components\Toggle::make('work_permit_scheduled_activity')
                                                             ->label(__('employees::filament/resources/employee.form.tabs.settings.fields.work-permit-scheduled-activity')),
                                                         Forms\Components\Select::make('user_id')
-                                                            ->relationship(name: 'user', titleAttribute: 'name')
+                                                            ->relationship(
+                                                                name: 'user',
+                                                                titleAttribute: 'name',
+                                                                modifyQueryUsing: function ($query, $state) {
+                                                                    return $query->where(function ($query) use ($state) {
+                                                                        $query->whereDoesntHave('employee');
+                                                                        if ($state) {
+                                                                            $query->orWhere('id', $state);
+                                                                        }
+                                                                    });
+                                                                }
+                                                            )
+                                                            ->unique(ignoreRecord: true)
                                                             ->searchable()
                                                             ->preload()
                                                             ->label(__('employees::filament/resources/employee.form.tabs.settings.fields.related-user'))
@@ -1270,6 +1284,17 @@ class EmployeeResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
+                        ->action(function (Collection $records) {
+                            try {
+                                $records->each(fn (Model $record) => $record->delete());
+                            } catch (QueryException $e) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('accounts::filament/resources/tax-group.table.bulk-actions.delete.notification.error.title'))
+                                    ->body(__('accounts::filament/resources/tax-group.table.bulk-actions.delete.notification.error.body'))
+                                    ->send();
+                            }
+                        })
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -1277,11 +1302,22 @@ class EmployeeResource extends Resource
                                 ->body(__('employees::filament/resources/employee.table.bulk-actions.delete.notification.body'))
                         ),
                     Tables\Actions\ForceDeleteBulkAction::make()
+                        ->action(function (Collection $records) {
+                            try {
+                                $records->each(fn (Model $record) => $record->forceDelete());
+                            } catch (QueryException $e) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('employees::filament/resources/employee.table.bulk-actions.force-delete.notification.error.title'))
+                                    ->body(__('employees::filament/resources/employee.table.bulk-actions.force-delete.notification.error.body'))
+                                    ->send();
+                            }
+                        })
                         ->successNotification(
                             Notification::make()
                                 ->success()
-                                ->title(__('employees::filament/resources/employee.table.bulk-actions.force-delete.notification.title'))
-                                ->body(__('employees::filament/resources/employee.table.bulk-actions.force-delete.notification.body'))
+                                ->title(__('employees::filament/resources/employee.table.bulk-actions.force-delete.notification.success.title'))
+                                ->body(__('employees::filament/resources/employee.table.bulk-actions.force-delete.notification.success.body'))
                         ),
                 ]),
             ]);

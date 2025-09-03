@@ -7,11 +7,14 @@ use Filament\Forms\Form;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
+use Filament\Pages\SubNavigationPosition;
+use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Filament\Resources\DepartmentResource\Pages;
@@ -26,6 +29,8 @@ class DepartmentResource extends Resource
     protected static ?string $model = Department::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
+
+    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getNavigationLabel(): string
     {
@@ -73,10 +78,20 @@ class DepartmentResource extends Resource
                                             ->live(onBlur: true),
                                         Forms\Components\Select::make('parent_id')
                                             ->label(__('employees::filament/resources/department.form.sections.general.fields.parent-department'))
-                                            ->relationship('parent', 'complete_name')
+                                            ->relationship(
+                                                name: 'parent',
+                                                titleAttribute: 'complete_name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                            )
+                                            ->getOptionLabelFromRecordUsing(
+                                                fn (Model $record): string => $record->complete_name.($record->trashed() ? ' (Deleted)' : ''),
+                                            )
+                                            ->disableOptionWhen(
+                                                fn (string $label): bool => str_contains($label, ' (Deleted)'),
+                                            )
                                             ->searchable()
                                             ->preload()
-                                            ->live(onBlur: true),
+                                            ->live(),
                                         Forms\Components\Select::make('manager_id')
                                             ->label(__('employees::filament/resources/department.form.sections.general.fields.manager'))
                                             ->relationship('manager', 'name')
@@ -280,6 +295,7 @@ class DepartmentResource extends Resource
                                             ->placeholder('—')
                                             ->label(__('employees::filament/resources/department.infolist.sections.general.entries.color')),
                                         Infolists\Components\Fieldset::make(__('employees::filament/resources/department.infolist.sections.general.entries.hierarchy-title'))
+                                            ->hidden(fn (Department $record): bool => $record->parent === null)
                                             ->schema([
                                                 Infolists\Components\TextEntry::make('hierarchy')
                                                     ->label('')
@@ -304,6 +320,7 @@ class DepartmentResource extends Resource
     protected static function findRootDepartment(Department $department): Department
     {
         $current = $department;
+
         while ($current->parent_id) {
             $current = $current->parent;
         }
@@ -394,13 +411,23 @@ class DepartmentResource extends Resource
         return 'employees/departments';
     }
 
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            Pages\ViewDepartment::class,
+            Pages\EditDepartment::class,
+            Pages\ManageEmployee::class,
+        ]);
+    }
+
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListDepartments::route('/'),
-            'create' => Pages\CreateDepartment::route('/create'),
-            'view'   => Pages\ViewDepartment::route('/{record}'),
-            'edit'   => Pages\EditDepartment::route('/{record}/edit'),
+            'index'      => Pages\ListDepartments::route('/'),
+            'create'     => Pages\CreateDepartment::route('/create'),
+            'view'       => Pages\ViewDepartment::route('/{record}'),
+            'edit'       => Pages\EditDepartment::route('/{record}/edit'),
+            'employees'  => Pages\ManageEmployee::route('/{record}/employees'),
         ];
     }
 }

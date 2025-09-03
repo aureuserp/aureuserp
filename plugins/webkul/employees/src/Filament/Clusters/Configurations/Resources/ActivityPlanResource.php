@@ -11,6 +11,8 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Filament\Clusters\Configurations;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages;
@@ -18,7 +20,6 @@ use Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResou
 use Webkul\Employee\Filament\Resources\DepartmentResource;
 use Webkul\Employee\Models\ActivityPlan;
 use Webkul\Security\Filament\Resources\CompanyResource;
-use Webkul\Support\Models\Company;
 
 class ActivityPlanResource extends Resource
 {
@@ -52,16 +53,16 @@ class ActivityPlanResource extends Resource
                             ->editOptionForm(fn(Form $form) => DepartmentResource::form($form)),
                         Forms\Components\Select::make('company_id')
                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan.form.sections.general.fields.company'))
-                            ->relationship(name: 'company', titleAttribute: 'name')
+                            ->relationship(name: 'company', titleAttribute: 'name', modifyQueryUsing: fn (Builder $query) => $query->withTrashed())
                             ->searchable()
                             ->preload()
-                            ->createOptionForm(fn(Form $form) => CompanyResource::form($form))
-                            ->editOptionForm(fn(Form $form) => CompanyResource::form($form))
-                            ->getOptionLabelFromRecordUsing(function (Company $record): string {
-                                return $record->trashed()
-                                    ? "{$record->name} ( Deleted )"
-                                    : $record->name;
-                            }),
+                            ->createOptionForm(fn (Form $form) => CompanyResource::form($form))
+                            ->getOptionLabelFromRecordUsing(
+                                fn (Model $record): string => $record->name.($record->trashed() ? ' (Deleted)' : ''),
+                            )
+                            ->disableOptionWhen(
+                                fn (string $label): bool => str_contains($label, ' (Deleted)'),
+                            ),
                         Forms\Components\Toggle::make('is_active')
                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan.form.sections.general.fields.status'))
                             ->default(true)

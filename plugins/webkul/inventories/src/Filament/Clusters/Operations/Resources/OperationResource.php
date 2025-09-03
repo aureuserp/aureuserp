@@ -13,6 +13,7 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Oper
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
@@ -569,21 +570,54 @@ class OperationResource extends Resource
     {
         return Forms\Components\Repeater::make('moves')
             ->hiddenLabel()
-            ->relationship()
+            ->relationship(
+                modifyQueryUsing: fn (Builder $query) => $query->with([
+                    'product' => fn ($q) => $q->withTrashed(),
+                    'finalLocation',
+                    'uom',
+                    'productPackaging',
+                ])
+            )
             ->schema([
                 Forms\Components\Select::make('product_id')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.product'))
-                    ->relationship('product', 'name')
                     ->relationship(
-                        'product',
-                        'name',
-                        fn ($query) => $query->where('type', ProductType::GOODS)->whereNull('is_configurable'),
+                        name: 'product',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn (Builder $query) => $query
+                            ->withTrashed()
+                            ->where('type', ProductType::GOODS)
+                            ->whereNull('is_configurable'),
                     )
                     ->required()
                     ->searchable()
                     ->preload()
+                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                    })
+                    ->disableOptionWhen(function ($value, $state, $component, $label) {
+                        if (str_contains($label, ' (Deleted)')) {
+                            return true;
+                        }
+
+                        $repeater = $component->getParentRepeater();
+
+                        if (! $repeater) {
+                            return false;
+                        }
+
+                        return collect($repeater->getState())
+                            ->pluck(
+                                (string) str($component->getStatePath())
+                                    ->after("{$repeater->getStatePath()}.")
+                                    ->after('.'),
+                            )
+                            ->flatten()
+                            ->diff(Arr::wrap($state))
+                            ->filter(fn (mixed $siblingItemState): bool => filled($siblingItemState))
+                            ->contains($value);
+                    })
                     ->distinct()
-                    ->disableOptionsWhenSelectedInSiblingRepeaterItems()
                     ->live()
                     ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get) {
                         static::afterProductUpdated($set, $get);
@@ -853,7 +887,6 @@ class OperationResource extends Resource
                                 titleAttribute: 'full_name',
                                 modifyQueryUsing: fn (Builder $query) => $query
                                     ->withTrashed()
-                                    ->where('type', '<>', Enums\LocationType::VIEW)
                                     ->where(function ($query) use ($move) {
                                         $query->where('id', $move->destination_location_id)
                                             ->orWhere('parent_id', $move->destination_location_id);
@@ -869,11 +902,11 @@ class OperationResource extends Resource
                             ->preload()
                             ->required()
                             ->live()
-                            ->default($move->destination_location_id)
+                            // ->default($move->destination_location_id)
                             ->afterStateUpdated(function (Forms\Set $set) {
                                 $set('result_package_id', null);
                             })
-                            ->visible($move->destinationLocation->type == Enums\LocationType::INTERNAL)
+                            // ->visible($move->destinationLocation->type == Enums\LocationType::INTERNAL)
                             ->disabled(fn (): bool => in_array($move->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED])),
                         Forms\Components\Select::make('result_package_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.package'))
@@ -938,6 +971,7 @@ class OperationResource extends Resource
                         $data['creator_id'] = Auth::id();
                         $data['product_id'] = $move->product_id;
                         $data['company_id'] = $move->company_id;
+                        $data['destination_location_id'] = $data['destination_location_id'] ?? $move->destination_location_id;
 
                         return $data;
                     })
