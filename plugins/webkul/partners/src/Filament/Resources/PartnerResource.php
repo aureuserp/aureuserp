@@ -88,9 +88,9 @@ class PartnerResource extends Resource
                                             })
                                             ->getOptionLabelFromRecordUsing(function (Partner $record): string {
                                                 return $record->trashed()
-                                                    ? "{$record->name} (disabled)"
+                                                    ? "{$record->name} ( Deleted )"
                                                     : $record->name;
-                                            })
+                                            }),
                                     ]),
                                 Forms\Components\Group::make()
                                     ->schema([
