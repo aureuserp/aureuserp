@@ -292,7 +292,7 @@ class InvoiceResource extends Resource
                     ->searchable()
                     ->placeholder('-')
                     ->sortable()
-                    ->money(fn ($record) => $record->currency->code)
+                    ->money(fn ($record) => $record->currency?->name)
                     ->summarize(Sum::make()->label(__('accounts::filament/resources/invoice.table.total')))
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('amount_tax_signed')
@@ -300,7 +300,7 @@ class InvoiceResource extends Resource
                     ->searchable()
                     ->placeholder('-')
                     ->sortable()
-                    ->money(fn ($record) => $record->currency->code)
+                    ->money(fn ($record) => $record->currency?->name)
                     ->summarize(Sum::make()->label(__('accounts::filament/resources/invoice.table.total')))
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('amount_total_in_currency_signed')
@@ -309,7 +309,7 @@ class InvoiceResource extends Resource
                     ->placeholder('-')
                     ->sortable()
                     ->summarize(Sum::make()->label(__('accounts::filament/resources/invoice.table.total')))
-                    ->money(fn ($record) => $record->currency->code)
+                    ->money(fn ($record) => $record->currency?->name)
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('amount_residual_signed')
                     ->label(__('accounts::filament/resources/invoice.table.columns.amount-due'))
@@ -317,7 +317,7 @@ class InvoiceResource extends Resource
                     ->placeholder('-')
                     ->sortable()
                     ->summarize(Sum::make()->label('Total'))
-                    ->money(fn ($record) => $record->currency->code)
+                    ->money(fn ($record) => $record->currency?->name)
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('payment_state')
                     ->label(__('Payment State'))
@@ -533,8 +533,8 @@ class InvoiceResource extends Resource
                                         Infolists\Components\TextEntry::make('price_unit')
                                             ->placeholder('-')
                                             ->label(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.repeater.products.entries.unit-price'))
-                                            ->icon('heroicon-o-currency-dollar')
-                                            ->money(fn ($record) => $record->currency->code),
+                                            ->icon('heroicon-o-banknotes')
+                                            ->money(fn ($record) => $record->currency?->name),
                                         Infolists\Components\TextEntry::make('discount')
                                             ->placeholder('-')
                                             ->label(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.repeater.products.entries.discount-percentage'))
@@ -556,7 +556,7 @@ class InvoiceResource extends Resource
                                             ->placeholder('-')
                                             ->label(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.repeater.products.entries.sub-total'))
                                             ->icon('heroicon-o-calculator')
-                                            ->money(fn ($record) => $record->currency->code),
+                                            ->money(fn ($record) => $record->currency?->name),
                                     ])->columns(5),
                                 Infolists\Components\Livewire::make(InvoiceSummary::class, function ($record) {
                                     return [
@@ -628,6 +628,21 @@ class InvoiceResource extends Resource
                                                     ->label(__('accounts::filament/resources/invoice.infolist.tabs.other-information.fieldset.accounting.fieldset.checked'))
                                                     ->icon('heroicon-o-check-circle')
                                                     ->boolean(),
+                                            ])->columns(2),
+                                    ]),
+                                Infolists\Components\Section::make(__('accounts::filament/resources/invoice.infolist.tabs.other-information.fieldset.additional-information.title'))
+                                    ->icon('heroicon-o-document')
+                                    ->schema([
+                                        Infolists\Components\Grid::make()
+                                            ->schema([
+                                                Infolists\Components\TextEntry::make('company.name')
+                                                    ->placeholder('-')
+                                                    ->label(__('accounts::filament/resources/invoice.infolist.tabs.other-information.fieldset.additional-information.entries.company'))
+                                                    ->icon('heroicon-o-building-office'),
+                                                Infolists\Components\TextEntry::make('currency.name')
+                                                    ->placeholder('-')
+                                                    ->label(__('accounts::filament/resources/invoice.infolist.tabs.other-information.fieldset.additional-information.entries.currency'))
+                                                    ->icon('heroicon-o-banknotes'),
                                             ])->columns(2),
                                     ]),
                                 Infolists\Components\Section::make(__('accounts::filament/resources/invoice.infolist.tabs.other-information.fieldset.marketing.title'))

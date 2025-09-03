@@ -24,7 +24,10 @@ class CreateRole extends CreateRecord
             ->flatten()
             ->unique();
 
-        return Arr::only($data, ['name', 'guard_name']);
+        return [
+            'name'       => $data['name'],
+            'guard_name' => Utils::getFilamentAuthGuard(),
+        ];
     }
 
     protected function afterCreate(): void

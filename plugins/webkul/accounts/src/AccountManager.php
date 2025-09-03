@@ -166,6 +166,8 @@ class AccountManager
 
         $this->computePaymentTermLine($record);
 
+        $record->refresh();
+
         return $record;
     }
 

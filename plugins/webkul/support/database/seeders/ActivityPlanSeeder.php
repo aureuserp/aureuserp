@@ -17,7 +17,7 @@ class ActivityPlanSeeder extends Seeder
 
         $activityPlans = [
             [
-                'creator_id' => $user->id ?? null,
+                'creator_id' => $user?->id,
                 'name'       => 'Offboarding',
                 'plugin'     => 'employees',
                 'is_active'  => true,
@@ -25,7 +25,7 @@ class ActivityPlanSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'creator_id' => $user->id ?? null,
+                'creator_id' => $user?->id,
                 'name'       => 'Onboarding',
                 'plugin'     => 'employees',
                 'is_active'  => true,

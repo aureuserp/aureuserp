@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'heading' => [
+        'title' => 'Time Off Overview',
+    ],
+
     'modal-actions' => [
         'edit' => [
             'title' => 'Edit',
@@ -41,6 +45,7 @@ return [
             'description'       => 'Description',
         ],
     ],
+
     'infolist' => [
         'entries' => [
             'time-off-type'           => 'Time Off Type',

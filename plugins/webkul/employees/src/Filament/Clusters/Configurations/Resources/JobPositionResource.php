@@ -367,10 +367,12 @@ class JobPositionResource extends Resource
                                         Infolists\Components\TextEntry::make('description')
                                             ->label(__('employees::filament/clusters/configurations/resources/job-position.infolist.sections.job-description.entries.job-description'))
                                             ->placeholder('—')
+                                            ->html()
                                             ->columnSpanFull(),
                                         Infolists\Components\TextEntry::make('requirements')
                                             ->label(__('employees::filament/clusters/configurations/resources/job-position.infolist.sections.job-description.entries.job-requirements'))
                                             ->placeholder('—')
+                                            ->html()
                                             ->columnSpanFull(),
                                     ]),
                             ])->columnSpan(2),

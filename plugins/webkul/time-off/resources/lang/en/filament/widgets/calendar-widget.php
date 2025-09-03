@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'heading' => [
+        'title' => 'Time Off Requests',
+    ],
+
     'modal-actions' => [
         'edit' => [
             'title'                         => 'Edit',

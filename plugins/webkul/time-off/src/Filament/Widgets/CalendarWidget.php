@@ -8,6 +8,7 @@ use Filament\Forms;
 use Filament\Forms\Get;
 use Filament\Infolists;
 use Filament\Notifications\Notification;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Saade\FilamentFullCalendar\Actions;
@@ -20,6 +21,11 @@ use Webkul\TimeOff\Models\Leave;
 class CalendarWidget extends FullCalendarWidget
 {
     public Model|string|null $model = Leave::class;
+
+    public function getHeading(): string|Htmlable|null
+    {
+        return __('time-off::filament/widgets/calendar-widget.heading.title');
+    }
 
     public function config(): array
     {

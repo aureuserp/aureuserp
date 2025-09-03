@@ -214,6 +214,14 @@ class QuotationResource extends Resource
                                             ->relationship('company', 'name')
                                             ->searchable()
                                             ->preload()
+                                            ->live()
+                                            ->afterStateUpdated(function (Set $set, Get $get) {
+                                                $company = $get('company_id') ? \Webkul\Support\Models\Company::find($get('company_id')) : null;
+
+                                                if ($company) {
+                                                    $set('currency_id', $company->currency_id);
+                                                }
+                                            })
                                             ->default(Auth::user()->default_company_id),
                                         Forms\Components\Select::make('currency_id')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.other-information.fieldset.additional-information.fields.currency'))
@@ -787,6 +795,7 @@ class QuotationResource extends Resource
                             ->schema([
                                 Infolists\Components\TextEntry::make('note')
                                     ->html()
+                                    ->placeholder('-')
                                     ->hiddenLabel(),
                             ]),
                     ]),

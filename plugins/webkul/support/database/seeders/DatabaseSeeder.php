@@ -3,6 +3,7 @@
 namespace Webkul\Support\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,19 +15,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run($parameters = [])
     {
-        $this->call([
-            CurrencySeeder::class,
-            CountrySeeder::class,
-            StateSeeder::class,
-            CompanySeeder::class,
-            ActivityTypeSeeder::class,
-            ActivityPlanSeeder::class,
-            UOMCategorySeeder::class,
-            UOMSeeder::class,
-            UtmStageSeeder::class,
-            UtmCampaignSeeder::class,
-            UTMMediumSeeder::class,
-            UTMSourceSeeder::class,
-        ]);
+        DB::transaction(function () {
+            $this->call([
+                CurrencySeeder::class,
+                CountrySeeder::class,
+                StateSeeder::class,
+                CompanySeeder::class,
+                ActivityTypeSeeder::class,
+                ActivityPlanSeeder::class,
+                UOMCategorySeeder::class,
+                UOMSeeder::class,
+                UtmStageSeeder::class,
+                UtmCampaignSeeder::class,
+                UTMMediumSeeder::class,
+                UTMSourceSeeder::class,
+            ]);
+        });
     }
 }
