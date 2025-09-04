@@ -2,6 +2,7 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources\Vendors;
 
+use BackedEnum;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -33,7 +34,6 @@ use Webkul\Invoice\Filament\Clusters\Vendors\Resources\Vendors\Pages\ViewVendor;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\Vendors\RelationManagers\BankAccountsRelationManager;
 use Webkul\Invoice\Models\Partner;
 use Webkul\Partner\Filament\Resources\Partners\PartnerResource as BaseVendorResource;
-use BackedEnum;
 
 class VendorResource extends BaseVendorResource
 {
@@ -156,12 +156,12 @@ class VendorResource extends BaseVendorResource
                                 Select::make('peppol_eas')
                                     ->label(__('invoices::filament/clusters/vendors/resources/vendor.form.tabs.invoicing.fields.peppol-eas'))
                                     ->live()
-                                    ->visible(fn(Get $get) => $get('invoice_edi_format_store') !== InvoiceFormat::FACTURX_X_CII->value && !empty($get('invoice_edi_format_store')))
+                                    ->visible(fn (Get $get) => $get('invoice_edi_format_store') !== InvoiceFormat::FACTURX_X_CII->value && ! empty($get('invoice_edi_format_store')))
                                     ->options(PartyIdentificationScheme::class),
                                 TextInput::make('peppol_endpoint')
                                     ->label(__('invoices::filament/clusters/vendors/resources/vendor.form.tabs.invoicing.fields.endpoint'))
                                     ->live()
-                                    ->visible(fn(Get $get) => $get('invoice_edi_format_store') !== InvoiceFormat::FACTURX_X_CII->value && !empty($get('invoice_edi_format_store'))),
+                                    ->visible(fn (Get $get) => $get('invoice_edi_format_store') !== InvoiceFormat::FACTURX_X_CII->value && ! empty($get('invoice_edi_format_store'))),
                             ])->columns(2),
                     ]),
 
@@ -201,13 +201,13 @@ class VendorResource extends BaseVendorResource
         $table = parent::table($table);
 
         $table->contentGrid([
-            'sm' => 1,
-            'md' => 2,
-            'xl' => 3,
+            'sm'  => 1,
+            'md'  => 2,
+            'xl'  => 3,
             '2xl' => 3,
         ]);
 
-        $table->modifyQueryUsing(fn($query) => $query->where('sub_type', 'supplier'));
+        $table->modifyQueryUsing(fn ($query) => $query->where('sub_type', 'supplier'));
 
         return $table;
     }
@@ -365,12 +365,12 @@ class VendorResource extends BaseVendorResource
     public static function getPages(): array
     {
         return [
-            'index' => ListVendors::route('/'),
-            'create' => CreateVendor::route('/create'),
-            'edit' => EditVendor::route('/{record}/edit'),
-            'view' => ViewVendor::route('/{record}'),
-            'contacts' => ManageContacts::route('/{record}/contacts'),
-            'addresses' => ManageAddresses::route('/{record}/addresses'),
+            'index'        => ListVendors::route('/'),
+            'create'       => CreateVendor::route('/create'),
+            'edit'         => EditVendor::route('/{record}/edit'),
+            'view'         => ViewVendor::route('/{record}'),
+            'contacts'     => ManageContacts::route('/{record}/contacts'),
+            'addresses'    => ManageAddresses::route('/{record}/addresses'),
             'bank-account' => ManageBankAccounts::route('/{record}/bank-accounts'),
         ];
     }

@@ -76,7 +76,16 @@ class PublicHolidayResource extends Resource
                             DatePicker::make('date_to')
                                 ->label(__('time-off::filament/clusters/configurations/resources/public-holiday.form.fields.date-to'))
                                 ->required()
-                                ->native(false),
+                                ->native(false)
+                                ->minDate(function (callable $get) {
+                                    return $get('date_from') ?: now()->toDateString();
+                                })
+                                ->live()
+                                ->rules([
+                                    'required',
+                                    'date',
+                                    'after_or_equal:date_from',
+                                ]),
                         ])->columns(2),
                     Select::make('calendar')
                         ->searchable()

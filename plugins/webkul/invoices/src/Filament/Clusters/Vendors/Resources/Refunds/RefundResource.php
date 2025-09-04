@@ -50,10 +50,10 @@ class RefundResource extends BaseRefundResource
     public static function getPages(): array
     {
         return [
-            'index' => ListRefunds::route('/'),
+            'index'  => ListRefunds::route('/'),
             'create' => CreateRefund::route('/create'),
-            'edit' => EditRefund::route('/{record}/edit'),
-            'view' => ViewRefund::route('/{record}'),
+            'edit'   => EditRefund::route('/{record}/edit'),
+            'view'   => ViewRefund::route('/{record}'),
         ];
     }
 }

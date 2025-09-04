@@ -135,7 +135,7 @@ trait EmployeeResumeRelation
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->groups([
-                Tables\Grouping\Group::make('type.name')
+                Tables\Grouping\Group::make('resumeType.name')
                     ->label(__('employees::filament/resources/employee/relation-manager/resume.table.groups.group-by-type'))
                     ->collapsible(),
 

@@ -2,6 +2,7 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources\Bills;
 
+use BackedEnum;
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Webkul\Account\Filament\Resources\Bills\BillResource as BaseBillResource;
@@ -9,7 +10,6 @@ use Webkul\Invoice\Filament\Clusters\Vendors;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\Bills\Pages\CreateBill;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\Bills\Pages\EditBill;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\Bills\Pages\ListBills;
-use BackedEnum;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\Bills\Pages\ViewBill;
 use Webkul\Invoice\Models\Bill;
 
@@ -53,10 +53,10 @@ class BillResource extends BaseBillResource
     public static function getPages(): array
     {
         return [
-            'index' => ListBills::route('/'),
+            'index'  => ListBills::route('/'),
             'create' => CreateBill::route('/create'),
-            'edit' => EditBill::route('/{record}/edit'),
-            'view' => ViewBill::route('/{record}'),
+            'edit'   => EditBill::route('/{record}/edit'),
+            'view'   => ViewBill::route('/{record}'),
         ];
     }
 }

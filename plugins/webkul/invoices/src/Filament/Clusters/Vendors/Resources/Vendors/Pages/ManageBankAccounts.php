@@ -2,10 +2,10 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources\Vendors\Pages;
 
+use BackedEnum;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Schemas\Schema;
-use BackedEnum;
 use Filament\Tables\Table;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\Vendors\VendorResource;
 use Webkul\Partner\Filament\Resources\BankAccounts\BankAccountResource;
@@ -39,5 +39,26 @@ class ManageBankAccounts extends ManageRelatedRecords
                         return $data;
                     }),
             ]);
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        $resource = static::getResource();
+
+        $breadcrumbs = [
+            $resource::getUrl() => $resource::getBreadcrumb(),
+            ...(filled($breadcrumb = $this->getBreadcrumb()) ? [$breadcrumb] : []),
+        ];
+
+        $cluster = static::getCluster();
+
+        if (filled($cluster)) {
+            return [
+                $cluster::getUrl() => $cluster::getClusterBreadcrumb(),
+                ...$breadcrumbs,
+            ];
+        }
+
+        return $breadcrumbs;
     }
 }

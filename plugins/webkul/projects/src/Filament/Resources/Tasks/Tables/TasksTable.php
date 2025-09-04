@@ -61,24 +61,24 @@ class TasksTable
                     ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('priority')
                     ->label(__('projects::filament/resources/task.table.columns.priority'))
-                    ->icon(fn(Task $record): string => $record->priority ? 'heroicon-s-star' : 'heroicon-o-star')
-                    ->color(fn(Task $record): string => $record->priority ? 'warning' : 'gray')
+                    ->icon(fn (Task $record): string => $record->priority ? 'heroicon-s-star' : 'heroicon-o-star')
+                    ->color(fn (Task $record): string => $record->priority ? 'warning' : 'gray')
                     ->action(function (Task $record): void {
                         $record->update([
-                            'priority' => !$record->priority,
+                            'priority' => ! $record->priority,
                         ]);
                     }),
                 IconColumn::make('state')
                     ->label(__('projects::filament/resources/task.table.columns.state'))
                     ->sortable()
                     ->toggleable()
-                    ->icon(fn(string $state): string => TaskState::icons()[$state])
-                    ->color(fn(string $state): string => TaskState::colors()[$state])
-                    ->tooltip(fn(string $state): string => TaskState::options()[$state])
+                    ->icon(fn (string $state): string => TaskState::icons()[$state])
+                    ->color(fn (string $state): string => TaskState::colors()[$state])
+                    ->tooltip(fn (string $state): string => TaskState::options()[$state])
                     ->action(
                         Action::make('updateState')
                             ->modalHeading('Update Task State')
-                            ->schema(fn(Task $record): array => [
+                            ->schema(fn (Task $record): array => [
                                 ToggleButtons::make('state')
                                     ->label(__('projects::filament/resources/task.table.columns.new-state'))
                                     ->required()
@@ -112,7 +112,7 @@ class TasksTable
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->visible(fn(TaskSettings $taskSettings) => $taskSettings->enable_milestones),
+                    ->visible(fn (TaskSettings $taskSettings) => $taskSettings->enable_milestones),
                 TextColumn::make('partner.name')
                     ->label(__('projects::filament/resources/task.table.columns.customer'))
                     ->searchable()
@@ -131,7 +131,7 @@ class TasksTable
                         $hours = floor($state);
                         $minutes = ($state - $hours) * 60;
 
-                        return $hours . ':' . $minutes;
+                        return $hours.':'.$minutes;
                     })
                     ->summarize(
                         Sum::make()
@@ -141,10 +141,10 @@ class TasksTable
                                 $hours = floor($state);
                                 $minutes = ($state - $hours) * 60;
 
-                                return $hours . ':' . $minutes;
+                                return $hours.':'.$minutes;
                             })
                     )
-                    ->visible(fn(TimeSettings $timeSettings) => $timeSettings->enable_timesheets),
+                    ->visible(fn (TimeSettings $timeSettings) => $timeSettings->enable_timesheets),
                 TextColumn::make('total_hours_spent')
                     ->label(__('projects::filament/resources/task.table.columns.time-spent'))
                     ->sortable()
@@ -154,7 +154,7 @@ class TasksTable
                         $hours = floor($state);
                         $minutes = ($state - $hours) * 60;
 
-                        return $hours . ':' . $minutes;
+                        return $hours.':'.$minutes;
                     })
                     ->summarize(
                         Sum::make()
@@ -164,10 +164,10 @@ class TasksTable
                                 $hours = floor($state);
                                 $minutes = ($state - $hours) * 60;
 
-                                return $hours . ':' . $minutes;
+                                return $hours.':'.$minutes;
                             })
                     )
-                    ->visible(fn(TimeSettings $timeSettings) => $timeSettings->enable_timesheets),
+                    ->visible(fn (TimeSettings $timeSettings) => $timeSettings->enable_timesheets),
                 TextColumn::make('remaining_hours')
                     ->label(__('projects::filament/resources/task.table.columns.time-remaining'))
                     ->sortable()
@@ -176,7 +176,7 @@ class TasksTable
                         $hours = floor($state);
                         $minutes = ($state - $hours) * 60;
 
-                        return $hours . ':' . $minutes;
+                        return $hours.':'.$minutes;
                     })
                     ->summarize(
                         Sum::make()
@@ -187,16 +187,16 @@ class TasksTable
                                 $hours = floor($state);
                                 $minutes = ($state - $hours) * 60;
 
-                                return $hours . ':' . $minutes;
+                                return $hours.':'.$minutes;
                             })
                     )
-                    ->visible(fn(TimeSettings $timeSettings) => $timeSettings->enable_timesheets),
+                    ->visible(fn (TimeSettings $timeSettings) => $timeSettings->enable_timesheets),
                 ProgressBarEntry::make('progress')
                     ->label(__('projects::filament/resources/task.table.columns.progress'))
                     ->sortable()
                     ->toggleable()
-                    ->color(fn(Task $record): string => $record->progress > 100 ? 'danger' : ($record->progress < 100 ? 'warning' : 'success'))
-                    ->visible(fn(TimeSettings $timeSettings) => $timeSettings->enable_timesheets),
+                    ->color(fn (Task $record): string => $record->progress > 100 ? 'danger' : ($record->progress < 100 ? 'warning' : 'success'))
+                    ->visible(fn (TimeSettings $timeSettings) => $timeSettings->enable_timesheets),
                 TextColumn::make('deadline')
                     ->label(__('projects::filament/resources/task.table.columns.deadline'))
                     ->sortable()
@@ -205,14 +205,14 @@ class TasksTable
                     ->label(__('projects::filament/resources/task.table.columns.tags'))
                     ->badge()
                     ->state(function (Task $record): array {
-                        return $record->tags()->get()->map(fn($tag) => [
+                        return $record->tags()->get()->map(fn ($tag) => [
                             'label' => $tag->name,
                             'color' => $tag->color ?? '#808080',
                         ])->toArray();
                     })
                     ->badge()
-                    ->formatStateUsing(fn($state) => $state['label'])
-                    ->color(fn($state) => Color::generateV3Palette($state['color']))
+                    ->formatStateUsing(fn ($state) => $state['label'])
+                    ->color(fn ($state) => Color::generateV3Palette($state['color']))
                     ->toggleable(),
                 TextColumn::make('stage.name')
                     ->label(__('projects::filament/resources/task.table.columns.stage'))
@@ -222,7 +222,7 @@ class TasksTable
             ->groups([
                 Tables\Grouping\Group::make('state')
                     ->label(__('projects::filament/resources/task.table.groups.state'))
-                    ->getTitleFromRecordUsing(fn(Task $record): string => TaskState::options()[$record->state]),
+                    ->getTitleFromRecordUsing(fn (Task $record): string => TaskState::options()[$record->state]),
                 Tables\Grouping\Group::make('project.name')
                     ->label(__('projects::filament/resources/task.table.groups.project')),
                 Tables\Grouping\Group::make('deadline')
@@ -380,16 +380,16 @@ class TasksTable
                     ]))->filter()->values()->all()),
             ], layout: FiltersLayout::Modal)
             ->filtersTriggerAction(
-                fn(Action $action) => $action
+                fn (Action $action) => $action
                     ->slideOver(),
             )
             ->filtersFormColumns(2)
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make()
-                        ->hidden(fn($record) => $record->trashed()),
+                        ->hidden(fn ($record) => $record->trashed()),
                     EditAction::make()
-                        ->hidden(fn($record) => $record->trashed()),
+                        ->hidden(fn ($record) => $record->trashed()),
                     RestoreAction::make()
                         ->successNotification(
                             Notification::make()
@@ -439,7 +439,7 @@ class TasksTable
                 ]),
             ])
             ->checkIfRecordIsSelectableUsing(
-                fn(Model $record): bool => TaskResource::can('delete', $record) || TaskResource::can('forceDelete', $record) || TaskResource::can('restore', $record),
+                fn (Model $record): bool => TaskResource::can('delete', $record) || TaskResource::can('forceDelete', $record) || TaskResource::can('restore', $record),
             );
     }
 }

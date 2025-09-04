@@ -5,8 +5,10 @@ namespace Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources\Categorie
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRecords;
+use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources\Categories\CategoryResource;
+use Webkul\Blog\Models\Category;
 
 class ManageCategories extends ManageRecords
 {
@@ -29,6 +31,17 @@ class ManageCategories extends ManageRecords
                         ->title(__('blogs::filament/admin/clusters/configurations/resources/category/pages/manage-categories.header-actions.create.notification.title'))
                         ->body(__('blogs::filament/admin/clusters/configurations/resources/category/pages/manage-categories.header-actions.create.notification.body')),
                 ),
+        ];
+    }
+
+    public function getTabs(): array
+    {
+        return [
+            'all' => Tab::make(__('blogs::filament/admin/clusters/configurations/resources/category/pages/manage-categories.tabs.all'))
+                ->badge(Category::count()),
+            'archived' => Tab::make(__('blogs::filament/admin/clusters/configurations/resources/category/pages/manage-categories.tabs.archived'))
+                ->badge(Category::onlyTrashed()->count())
+                ->modifyQueryUsing(fn ($query) => $query->onlyTrashed()),
         ];
     }
 }

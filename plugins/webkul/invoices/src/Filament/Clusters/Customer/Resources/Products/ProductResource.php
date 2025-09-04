@@ -49,12 +49,12 @@ class ProductResource extends BaseProductResource
     public static function getPages(): array
     {
         return [
-            'index' => ListProducts::route('/'),
-            'create' => CreateProduct::route('/create'),
-            'view' => ViewProduct::route('/{record}'),
-            'edit' => EditProduct::route('/{record}/edit'),
+            'index'      => ListProducts::route('/'),
+            'create'     => CreateProduct::route('/create'),
+            'view'       => ViewProduct::route('/{record}'),
+            'edit'       => EditProduct::route('/{record}/edit'),
             'attributes' => ManageAttributes::route('/{record}/attributes'),
-            'variants' => ManageVariants::route('/{record}/variants'),
+            'variants'   => ManageVariants::route('/{record}/variants'),
         ];
     }
 }

@@ -27,8 +27,8 @@ use Illuminate\Validation\ValidationException;
  */
 class Login extends Page
 {
-    use InteractsWithForms;
     use InteractsWithFormActions;
+    use InteractsWithForms;
     use WithRateLimiting;
 
     /**

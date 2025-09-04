@@ -60,7 +60,7 @@ class ManageUsers extends SettingsPage
                 Select::make('default_role_id')
                     ->label(__('security::filament/clusters/manage-users.form.default-role.label'))
                     ->helperText(__('security::filament/clusters/manage-users.form.default-role.helper-text'))
-                    ->options(Role::all()->pluck('name', 'id'))
+                    ->options(Role::all()->pluck('name', 'id')->map(fn ($name) => ucfirst($name)))
                     ->searchable(),
                 Select::make('default_company_id')
                     ->label(__('security::filament/clusters/manage-users.form.default-company.label'))

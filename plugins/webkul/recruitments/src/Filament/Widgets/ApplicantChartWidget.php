@@ -9,16 +9,16 @@ use Webkul\Recruitment\Models\Applicant;
 
 class ApplicantChartWidget extends ChartWidget
 {
-    public function getHeading(): string|Htmlable|null
-    {
-        return __('recruitments::filament/widgets/applicant.overview.label');
-    }
-
     protected static ?int $sort = 2;
 
     protected int|string|array $columnSpan = 'full';
 
     protected ?string $maxHeight = '400px';
+
+    public function getHeading(): string|Htmlable|null
+    {
+        return __('recruitments::filament/widgets/applicant.heading.title');
+    }
 
     protected function getData(): array
     {

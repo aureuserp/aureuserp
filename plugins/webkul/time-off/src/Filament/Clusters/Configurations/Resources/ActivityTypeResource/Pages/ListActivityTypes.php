@@ -8,4 +8,6 @@ use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\ActivityTypeResour
 class ListActivityTypes extends BaseListActivityTypes
 {
     protected static string $resource = ActivityTypeResource::class;
+
+    protected static ?string $pluginName = 'time-off';
 }

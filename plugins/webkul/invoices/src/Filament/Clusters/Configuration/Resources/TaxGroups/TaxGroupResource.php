@@ -36,10 +36,10 @@ class TaxGroupResource extends BaseTaxGroupResource
     public static function getPages(): array
     {
         return [
-            'index' => ListTaxGroups::route('/'),
+            'index'  => ListTaxGroups::route('/'),
             'create' => CreateTaxGroup::route('/create'),
-            'view' => ViewTaxGroup::route('/{record}'),
-            'edit' => EditTaxGroup::route('/{record}/edit'),
+            'view'   => ViewTaxGroup::route('/{record}'),
+            'edit'   => EditTaxGroup::route('/{record}/edit'),
         ];
     }
 }

@@ -70,18 +70,18 @@ class SendEmailAction extends Action
                         ]);
 
                         return <<<MD
-Dear {$record->partner->name}  
+Dear {$record->partner->name}
 
-Here is in attachment a request for quotation **{$record->name}**.  
+Here is in attachment a request for quotation **{$record->name}**.
 
-If you have any questions, please do not hesitate to contact us.  
+If you have any questions, please do not hesitate to contact us.
 
-[Accept]({$acceptRespondUrl}) | [Decline]({$declineRespondUrl})  
+[Accept]({$acceptRespondUrl}) | [Decline]({$declineRespondUrl})
 
-Best regards,  
+Best regards,
 
---  
-{$userName}  
+--
+{$userName}
 MD;
                     }),
 

@@ -26,8 +26,8 @@ use Illuminate\Support\Facades\Password;
  */
 class RequestPasswordReset extends Page
 {
-    use InteractsWithForms;
     use InteractsWithFormActions;
+    use InteractsWithForms;
     use WithRateLimiting;
 
     /**

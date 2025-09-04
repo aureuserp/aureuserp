@@ -61,18 +61,18 @@ class SendPOEmailAction extends Action
                         $userName = Auth::user()->name;
 
                         return <<<MD
-Dear **{$record->partner->name}**  
+Dear **{$record->partner->name}**
 
-Here is in attachment a purchase order **{$record->name}** amounting to **{$record->total_amount}**.  
+Here is in attachment a purchase order **{$record->name}** amounting to **{$record->total_amount}**.
 
-The receipt is expected for **{$record->planned_at}**.  
+The receipt is expected for **{$record->planned_at}**.
 
-Could you please acknowledge the receipt of this order?  
+Could you please acknowledge the receipt of this order?
 
-Best regards,  
+Best regards,
 
---  
-{$userName}  
+--
+{$userName}
 MD;
                     }),
 

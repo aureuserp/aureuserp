@@ -2,6 +2,7 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources\Products;
 
+use BackedEnum;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
@@ -24,7 +25,6 @@ use Webkul\Invoice\Filament\Clusters\Vendors\Resources\Products\Pages\ViewProduc
 use Webkul\Invoice\Models\Product;
 use Webkul\Product\Filament\Resources\Products\ProductResource as BaseProductResource;
 use Webkul\Support\Models\UOM;
-use BackedEnum;
 
 class ProductResource extends BaseProductResource
 {
@@ -60,7 +60,7 @@ class ProductResource extends BaseProductResource
                 ->relationship(
                     'productTaxes',
                     'name',
-                    fn($query) => $query->where('type_tax_use', TypeTaxUse::SALE->value),
+                    fn ($query) => $query->where('type_tax_use', TypeTaxUse::SALE->value),
                 )
                 ->multiple()
                 ->live()
@@ -73,7 +73,7 @@ class ProductResource extends BaseProductResource
                     $price = floatval($get('price'));
                     $selectedTaxIds = $get('accounts_product_taxes');
 
-                    if (!$price || empty($selectedTaxIds)) {
+                    if (! $price || empty($selectedTaxIds)) {
                         return '';
                     }
 
@@ -82,7 +82,7 @@ class ProductResource extends BaseProductResource
                     $result = [
                         'total_excluded' => $price,
                         'total_included' => $price,
-                        'taxes' => [],
+                        'taxes'          => [],
                     ];
 
                     $totalTaxAmount = 0;
@@ -97,8 +97,8 @@ class ProductResource extends BaseProductResource
                         }
 
                         $result['taxes'][] = [
-                            'tax' => $tax,
-                            'base' => $price,
+                            'tax'    => $tax,
+                            'base'   => $price,
                             'amount' => $taxAmount,
                         ];
                     }
@@ -122,14 +122,14 @@ class ProductResource extends BaseProductResource
                         );
                     }
 
-                    return !empty($parts) ? '(= ' . implode(', ', $parts) . ')' : ' ';
+                    return ! empty($parts) ? '(= '.implode(', ', $parts).')' : ' ';
                 }),
 
             Select::make('accounts_product_supplier_taxes')
                 ->relationship(
                     'supplierTaxes',
                     'name',
-                    fn($query) => $query->where('type_tax_use', TypeTaxUse::PURCHASE->value),
+                    fn ($query) => $query->where('type_tax_use', TypeTaxUse::PURCHASE->value),
                 )
                 ->multiple()
                 ->live()
@@ -145,7 +145,7 @@ class ProductResource extends BaseProductResource
 
         $policyComponent = [
             Section::make()
-                ->visible(fn(Get $get) => $get('sales_ok'))
+                ->visible(fn (Get $get) => $get('sales_ok'))
                 ->schema([
                     Select::make('invoice_policy')
                         ->label(__('invoices::filament/clusters/vendors/resources/product.form.sections.invoice-policy.title'))
@@ -156,9 +156,9 @@ class ProductResource extends BaseProductResource
                         ->hiddenLabel()
                         ->content(function (Get $get) {
                             return match ($get('invoice_policy')) {
-                                InvoicePolicy::ORDER->value => __('invoices::filament/clusters/vendors/resources/product.form.sections.invoice-policy.ordered-policy'),
+                                InvoicePolicy::ORDER->value    => __('invoices::filament/clusters/vendors/resources/product.form.sections.invoice-policy.ordered-policy'),
                                 InvoicePolicy::DELIVERY->value => __('invoices::filament/clusters/vendors/resources/product.form.sections.invoice-policy.delivered-policy'),
-                                default => '',
+                                default                        => '',
                             };
                         }),
                 ]),
@@ -194,12 +194,12 @@ class ProductResource extends BaseProductResource
     public static function getPages(): array
     {
         return [
-            'index' => ListProducts::route('/'),
-            'create' => CreateProduct::route('/create'),
-            'view' => ViewProduct::route('/{record}'),
-            'edit' => EditProduct::route('/{record}/edit'),
+            'index'      => ListProducts::route('/'),
+            'create'     => CreateProduct::route('/create'),
+            'view'       => ViewProduct::route('/{record}'),
+            'edit'       => EditProduct::route('/{record}/edit'),
             'attributes' => ManageAttributes::route('/{record}/attributes'),
-            'variants' => ManageVariants::route('/{record}/variants'),
+            'variants'   => ManageVariants::route('/{record}/variants'),
         ];
     }
 }

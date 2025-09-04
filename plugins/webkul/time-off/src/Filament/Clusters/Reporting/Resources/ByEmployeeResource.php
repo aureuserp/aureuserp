@@ -3,17 +3,16 @@
 namespace Webkul\TimeOff\Filament\Clusters\Reporting\Resources;
 
 use BackedEnum;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource;
+use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource as BaseByEmployeeResource;
 use Webkul\TimeOff\Filament\Clusters\Reporting;
 use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Pages\CreateByEmployee;
 use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Pages\EditByEmployee;
 use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Pages\ListByEmployees;
 use Webkul\TimeOff\Models\Leave;
 
-class ByEmployeeResource extends Resource
+class ByEmployeeResource extends BaseByEmployeeResource
 {
     protected static ?string $model = Leave::class;
 
@@ -33,12 +32,12 @@ class ByEmployeeResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return TimeOffResource::form($schema);
+        return BaseByEmployeeResource::form($schema);
     }
 
     public static function table(Table $table): Table
     {
-        return TimeOffResource::table($table)
+        return parent::table($table)
             ->defaultGroup('employee.name');
     }
 

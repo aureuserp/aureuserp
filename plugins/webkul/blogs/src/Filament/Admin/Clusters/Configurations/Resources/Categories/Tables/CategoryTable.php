@@ -28,9 +28,6 @@ class CategoryTable
                     ->label(__('blogs::filament/admin/clusters/configurations/resources/category.table.columns.created-at'))
                     ->sortable(),
             ])
-            ->filters([
-                //
-            ])
             ->recordActions([
                 EditAction::make()
                     ->hidden(fn ($record) => $record->trashed())

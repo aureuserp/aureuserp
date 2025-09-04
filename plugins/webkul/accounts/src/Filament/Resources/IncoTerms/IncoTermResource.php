@@ -2,15 +2,15 @@
 
 namespace Webkul\Account\Filament\Resources\IncoTerms;
 
+use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Webkul\Account\Filament\Resources\IncoTerms\Pages\ListIncoTerms;
+use Webkul\Account\Filament\Resources\IncoTerms\Schemas\IncotermForm;
 use Webkul\Account\Filament\Resources\IncoTerms\Schemas\IncotermInfolist;
 use Webkul\Account\Filament\Resources\IncoTerms\Tables\IncotermsTable;
 use Webkul\Account\Models\Incoterm;
-use Webkul\Account\Filament\Resources\IncoTerms\Schemas\IncotermForm;
-use BackedEnum;
 
 class IncoTermResource extends Resource
 {

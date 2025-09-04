@@ -55,10 +55,10 @@ class InvoiceResource extends BaseInvoiceResource
     public static function getPages(): array
     {
         return [
-            'index' => ListInvoices::route('/'),
+            'index'  => ListInvoices::route('/'),
             'create' => CreateInvoice::route('/create'),
-            'view' => ViewInvoice::route('/{record}'),
-            'edit' => EditInvoice::route('/{record}/edit'),
+            'view'   => ViewInvoice::route('/{record}'),
+            'edit'   => EditInvoice::route('/{record}/edit'),
         ];
     }
 }

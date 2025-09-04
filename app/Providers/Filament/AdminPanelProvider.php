@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -18,6 +19,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Webkul\Support\Filament\Pages\Profile;
 use Webkul\Support\PluginManager;
 
 class AdminPanelProvider extends PanelProvider
@@ -50,6 +52,11 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Dashboard'),
                 NavigationGroup::make()
                     ->label('Settings'),
+            ])
+            ->userMenuItems([
+                'profile' => Action::make('profile')
+                    ->label(fn () => filament()->auth()->user()?->name)
+                    ->url(fn (): string => Profile::getUrl()),
             ])
             ->plugins([
                 FilamentShieldPlugin::make()

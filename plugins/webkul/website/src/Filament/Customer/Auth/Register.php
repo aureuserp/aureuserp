@@ -32,9 +32,9 @@ use Illuminate\Validation\Rules\Password;
  */
 class Register extends Page
 {
-    use InteractsWithForms;
     use CanUseDatabaseTransactions;
     use InteractsWithFormActions;
+    use InteractsWithForms;
     use WithRateLimiting;
 
     protected string $view = 'website::filament.customer.pages.auth.register';

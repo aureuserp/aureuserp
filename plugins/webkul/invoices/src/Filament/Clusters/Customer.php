@@ -2,8 +2,8 @@
 
 namespace Webkul\Invoice\Filament\Clusters;
 
-use Filament\Clusters\Cluster;
 use BackedEnum;
+use Filament\Clusters\Cluster;
 
 class Customer extends Cluster
 {

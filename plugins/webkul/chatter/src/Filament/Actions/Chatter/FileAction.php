@@ -40,7 +40,6 @@ class FileAction extends Action
                     ->reorderable()
                     ->previewable(true)
                     ->deletable()
-                    ->panelLayout('grid')
                     ->imagePreviewHeight('100')
                     ->deleteUploadedFileUsing(function ($file, ?Model $record) {
                         if (! $record) {

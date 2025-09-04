@@ -13,7 +13,6 @@ class ViewEmployee extends ViewRecord
 {
     protected static string $resource = EmployeeResource::class;
 
-
     public static function getNavigationLabel(): string
     {
         return __('employees::filament/resources/employee/pages/view-employee.sub-navigation.view-employee');

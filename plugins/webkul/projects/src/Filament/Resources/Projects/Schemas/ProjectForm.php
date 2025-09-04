@@ -43,8 +43,8 @@ class ProjectForm
                             ->hiddenLabel()
                             ->inline()
                             ->required()
-                            ->visible(fn(TaskSettings $taskSettings) => $taskSettings->enable_project_stages)
-                            ->options(fn() => ProjectStage::orderBy('sort')->get()->mapWithKeys(fn($stage) => [$stage->id => $stage->name]))
+                            ->visible(fn (TaskSettings $taskSettings) => $taskSettings->enable_project_stages)
+                            ->options(fn () => ProjectStage::orderBy('sort')->get()->mapWithKeys(fn ($stage) => [$stage->id => $stage->name]))
                             ->default(ProjectStage::first()?->id),
                         Section::make(__('projects::filament/resources/project.form.sections.general.title'))
                             ->schema([
@@ -66,14 +66,14 @@ class ProjectForm
                                     ->relationship('user', 'name')
                                     ->searchable()
                                     ->preload()
-                                    ->createOptionForm(fn(Schema $schema) => UserResource::form($schema)),
+                                    ->createOptionForm(fn (Schema $schema) => UserResource::form($schema)),
                                 Select::make('partner_id')
                                     ->label(__('projects::filament/resources/project.form.sections.additional.fields.customer'))
                                     ->relationship('partner', 'name')
                                     ->searchable()
                                     ->preload()
-                                    ->createOptionForm(fn(Schema $schema) => PartnerResource::form($schema))
-                                    ->editOptionForm(fn(Schema $schema) => PartnerResource::form($schema)),
+                                    ->createOptionForm(fn (Schema $schema) => PartnerResource::form($schema))
+                                    ->editOptionForm(fn (Schema $schema) => PartnerResource::form($schema)),
                                 DatePicker::make('start_date')
                                     ->label(__('projects::filament/resources/project.form.sections.additional.fields.start-date'))
                                     ->native(false)
@@ -91,20 +91,20 @@ class ProjectForm
                                     ->suffixIcon('heroicon-o-clock')
                                     ->minValue(0)
                                     ->helperText(__('projects::filament/resources/project.form.sections.additional.fields.allocated-hours-helper-text'))
-                                    ->visible(fn(TimeSettings $timeSettings) => $timeSettings->enable_timesheets),
+                                    ->visible(fn (TimeSettings $timeSettings) => $timeSettings->enable_timesheets),
                                 Select::make('tags')
                                     ->label(__('projects::filament/resources/project.form.sections.additional.fields.tags'))
                                     ->relationship(name: 'tags', titleAttribute: 'name')
                                     ->multiple()
                                     ->searchable()
                                     ->preload()
-                                    ->createOptionForm(fn(Schema $schema) => TagResource::form($schema)),
+                                    ->createOptionForm(fn (Schema $schema) => TagResource::form($schema)),
                                 Select::make('company_id')
                                     ->relationship('company', 'name')
                                     ->searchable()
                                     ->preload()
                                     ->label(__('projects::filament/resources/project.form.sections.additional.fields.company'))
-                                    ->createOptionForm(fn(Schema $schema) => CompanyResource::form($schema)),
+                                    ->createOptionForm(fn (Schema $schema) => CompanyResource::form($schema)),
                             ]))
                             ->columns(2),
                     ])
@@ -119,9 +119,9 @@ class ProjectForm
                                     ->default('internal')
                                     ->options(ProjectVisibility::options())
                                     ->descriptions([
-                                        'private' => __('projects::filament/resources/project.form.sections.settings.fields.private-description'),
+                                        'private'  => __('projects::filament/resources/project.form.sections.settings.fields.private-description'),
                                         'internal' => __('projects::filament/resources/project.form.sections.settings.fields.internal-description'),
-                                        'public' => __('projects::filament/resources/project.form.sections.settings.fields.public-description'),
+                                        'public'   => __('projects::filament/resources/project.form.sections.settings.fields.public-description'),
                                     ])
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('projects::filament/resources/project.form.sections.settings.fields.visibility-hint-tooltip')),
 
@@ -130,22 +130,22 @@ class ProjectForm
                                         Toggle::make('allow_timesheets')
                                             ->label(__('projects::filament/resources/project.form.sections.settings.fields.allow-timesheets'))
                                             ->helperText(__('projects::filament/resources/project.form.sections.settings.fields.allow-timesheets-helper-text'))
-                                            ->visible(fn(TimeSettings $timeSettings) => $timeSettings->enable_timesheets),
+                                            ->visible(fn (TimeSettings $timeSettings) => $timeSettings->enable_timesheets),
                                     ])
                                     ->columns(1)
-                                    ->visible(fn(TimeSettings $timeSettings) => $timeSettings->enable_timesheets)
-                                    ->default(fn(TimeSettings $timeSettings) => $timeSettings->enable_timesheets),
+                                    ->visible(fn (TimeSettings $timeSettings) => $timeSettings->enable_timesheets)
+                                    ->default(fn (TimeSettings $timeSettings) => $timeSettings->enable_timesheets),
 
                                 Fieldset::make(__('projects::filament/resources/project.form.sections.settings.fields.task-management'))
                                     ->schema([
                                         Toggle::make('allow_milestones')
                                             ->label(__('projects::filament/resources/project.form.sections.settings.fields.allow-milestones'))
                                             ->helperText(__('projects::filament/resources/project.form.sections.settings.fields.allow-milestones-helper-text'))
-                                            ->visible(fn(TaskSettings $taskSettings) => $taskSettings->enable_milestones)
-                                            ->default(fn(TaskSettings $taskSettings) => $taskSettings->enable_milestones),
+                                            ->visible(fn (TaskSettings $taskSettings) => $taskSettings->enable_milestones)
+                                            ->default(fn (TaskSettings $taskSettings) => $taskSettings->enable_milestones),
                                     ])
                                     ->columns(1)
-                                    ->visible(fn(TaskSettings $taskSettings) => $taskSettings->enable_milestones),
+                                    ->visible(fn (TaskSettings $taskSettings) => $taskSettings->enable_milestones),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),

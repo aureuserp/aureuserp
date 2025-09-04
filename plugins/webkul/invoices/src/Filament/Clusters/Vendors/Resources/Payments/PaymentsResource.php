@@ -41,10 +41,10 @@ class PaymentsResource extends BasePaymentsResource
     public static function getPages(): array
     {
         return [
-            'index' => ListPayments::route('/'),
+            'index'  => ListPayments::route('/'),
             'create' => CreatePayments::route('/create'),
-            'view' => ViewPayments::route('/{record}'),
-            'edit' => EditPayments::route('/{record}/edit'),
+            'view'   => ViewPayments::route('/{record}'),
+            'edit'   => EditPayments::route('/{record}/edit'),
         ];
     }
 }

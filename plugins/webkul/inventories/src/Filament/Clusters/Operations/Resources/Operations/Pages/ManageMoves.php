@@ -40,7 +40,7 @@ class ManageMoves extends ManageRelatedRecords
                     ->dateTime(),
                 TextColumn::make('reference')
                     ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.reference'))
-                    ->searchable()
+                    ->searchable(['inventories_moves.reference'])
                     ->sortable(),
                 TextColumn::make('lot.name')
                     ->label(__('inventories::filament/clusters/operations/resources/operation/pages/manage-moves.table.columns.lot'))

@@ -1,12 +1,12 @@
 <?php
 
 return [
-    'title' => 'Register',
-    'heading' => 'Register',
+    'title'         => 'Register',
+    'heading'       => 'Register',
     'notifications' => [
         'throttled' => [
             'title' => 'Too many attempts. Try again in :seconds seconds.',
-            'body' => 'Please wait :seconds seconds (:minutes minutes) before trying again.',
+            'body'  => 'Please wait :seconds seconds (:minutes minutes) before trying again.',
         ],
     ],
     'form' => [
@@ -17,7 +17,7 @@ return [
             'label' => 'Email address',
         ],
         'password' => [
-            'label' => 'Password',
+            'label'                => 'Password',
             'validation_attribute' => 'password',
         ],
         'password_confirmation' => [
@@ -32,7 +32,7 @@ return [
     'actions' => [
         'login' => [
             'before' => 'Already have an account?',
-            'label' => 'Log in',
+            'label'  => 'Log in',
         ],
     ],
 ];

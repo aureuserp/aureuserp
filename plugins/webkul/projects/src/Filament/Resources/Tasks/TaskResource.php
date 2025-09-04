@@ -56,8 +56,8 @@ class TaskResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            __('projects::filament/resources/task.global-search.project') => $record->project?->name ?? '—',
-            __('projects::filament/resources/task.global-search.customer') => $record->partner?->name ?? '—',
+            __('projects::filament/resources/task.global-search.project')   => $record->project?->name ?? '—',
+            __('projects::filament/resources/task.global-search.customer')  => $record->partner?->name ?? '—',
             __('projects::filament/resources/task.global-search.milestone') => $record->milestone?->name ?? '—',
         ];
     }
@@ -105,12 +105,12 @@ class TaskResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListTasks::route('/'),
-            'create' => CreateTask::route('/create'),
-            'edit' => EditTask::route('/{record}/edit'),
-            'view' => ViewTask::route('/{record}'),
+            'index'      => ListTasks::route('/'),
+            'create'     => CreateTask::route('/create'),
+            'edit'       => EditTask::route('/{record}/edit'),
+            'view'       => ViewTask::route('/{record}'),
             'timesheets' => ManageTimesheets::route('/{record}/timesheets'),
-            'sub-tasks' => ManageSubTasks::route('/{record}/sub-tasks'),
+            'sub-tasks'  => ManageSubTasks::route('/{record}/sub-tasks'),
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource\Pages;
 
 use BackedEnum;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource;
 use Webkul\TimeOff\Traits\LeaveAccrualPlan;
@@ -16,6 +17,11 @@ class ManageMilestone extends ManageRelatedRecords
     protected static string $relationship = 'leaveAccrualLevels';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-bolt';
+
+    public static function getSubNavigationPosition(): SubNavigationPosition
+    {
+        return SubNavigationPosition::Top;
+    }
 
     public static function getNavigationLabel(): string
     {

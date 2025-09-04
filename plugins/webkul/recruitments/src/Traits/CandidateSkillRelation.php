@@ -119,7 +119,13 @@ trait CandidateSkillRelation
                     )
                     ->mutateDataUsing(function ($data, $livewire) {
                         if (empty($data['candidate_id'])) {
-                            $data['candidate_id'] = $this->getOwnerRecord()->id;
+                            $owner = $this->getOwnerRecord();
+
+                            if ($owner instanceof \Webkul\Recruitment\Models\Applicant) {
+                                $data['candidate_id'] = $owner->candidate_id;
+                            } else {
+                                $data['candidate_id'] = $owner->id;
+                            }
                         }
 
                         return $data;

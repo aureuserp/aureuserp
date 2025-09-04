@@ -14,7 +14,7 @@ use Webkul\Security\Models\User;
 
 class Category extends Model
 {
-    use HasChatter, HasFactory, HasLogActivity ;
+    use HasChatter, HasFactory, HasLogActivity;
 
     /**
      * Table name.

@@ -2,6 +2,7 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Configuration\Resources\PaymentTerms;
 
+use Filament\Resources\Pages\Page;
 use Webkul\Account\Filament\Resources\PaymentTerms\PaymentTermResource as BasePaymentTermResource;
 use Webkul\Invoice\Filament\Clusters\Configuration;
 use Webkul\Invoice\Filament\Clusters\Configuration\Resources\PaymentTerms\Pages\CreatePaymentTerm;
@@ -32,6 +33,15 @@ class PaymentTermResource extends BasePaymentTermResource
     public static function getNavigationGroup(): ?string
     {
         return __('invoices::filament/clusters/configurations/resources/payment-term.navigation.group');
+    }
+
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            Pages\ViewPaymentTerm::class,
+            Pages\EditPaymentTerm::class,
+            Pages\ManagePaymentDueTerm::class,
+        ]);
     }
 
     public static function getPages(): array

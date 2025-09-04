@@ -23,6 +23,16 @@ return [
             'updated-at'   => 'Updated At',
         ],
 
+        'groups' => [
+            'company-name'        => 'Company Name',
+            'discount-days'       => 'Discount Days',
+            'early-pay-discount'  => 'Early Pay Discount',
+            'payment-term'        => 'Payment Term',
+            'display-on-invoice'  => 'Display on Invoice',
+            'early-discount'      => 'Early Discount',
+            'discount-percentage' => 'Discount Percentage',
+        ],
+
         'actions' => [
             'restore' => [
                 'notification' => [
