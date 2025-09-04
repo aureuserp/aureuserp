@@ -8,7 +8,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Schema;
-use Spatie\Permission\Models\Role;
+use Webkul\Security\Models\Role;
 use Webkul\Security\Settings\UserSettings;
 use Webkul\Support\Filament\Clusters\Settings;
 use Webkul\Support\Models\Company;

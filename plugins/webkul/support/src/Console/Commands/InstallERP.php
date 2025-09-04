@@ -86,7 +86,10 @@ class InstallERP extends Command
     {
         $this->info('🛡 Generating roles and permissions...');
 
-        $adminRole = Role::firstOrCreate(['name' => $this->getAdminRoleName()]);
+        $adminRole = Role::firstOrCreate([
+            'name'       => $this->getAdminRoleName(),
+            'is_default' => true,
+        ]);
 
         Artisan::call('shield:generate', [
             '--all'    => true,
@@ -133,6 +136,8 @@ class InstallERP extends Command
             'resource_permission' => 'global',
             'default_company_id'  => $defaultCompany->id,
         ];
+
+        $adminData['is_default'] = true;
 
         $adminUser = $userModel::updateOrCreate(['email' => $adminData['email']], $adminData);
 

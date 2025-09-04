@@ -186,10 +186,10 @@ class ManageQuantities extends ManageRelatedRecords
                     ->createOptionForm(fn (Schema $schema): Schema => PackageResource::form($schema))
                     ->createOptionAction(function (Action $action) {
                         $action->mutateDataUsing(function (array $data) {
-                                $data['company_id'] = $this->getOwnerRecord()->company_id;
+                            $data['company_id'] = $this->getOwnerRecord()->company_id;
 
-                                return $data;
-                            })
+                            return $data;
+                        })
                             ->after(fn (Set $set) => $set('package_id', null));
                     })
                     ->visible(fn (OperationSettings $settings) => $settings->enable_packages),

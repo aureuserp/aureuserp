@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
-use Spatie\Permission\Models\Role;
 use Webkul\Security\Livewire\AcceptInvitation;
+use Webkul\Security\Models\Role;
 use Webkul\Security\Policies\RolePolicy;
 use Webkul\Support\Console\Commands\InstallERP;
 
