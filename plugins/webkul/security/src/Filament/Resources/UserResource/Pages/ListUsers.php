@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Mail;
 use Webkul\Security\Filament\Resources\UserResource;
 use Webkul\Security\Mail\UserInvitationMail;
 use Webkul\Security\Models\Invitation;
-use Webkul\Security\Models\User;
 use Webkul\Security\Settings\UserSettings;
 
 class ListUsers extends ListRecords
@@ -20,11 +19,13 @@ class ListUsers extends ListRecords
 
     public function getTabs(): array
     {
+        $query = static::getResource()::getEloquentQuery();
+
         return [
             'all' => Tab::make(__('security::filament/resources/user/pages/list-user.tabs.all'))
-                ->badge(User::count()),
+                ->badge($query->count()),
             'archived' => Tab::make(__('security::filament/resources/user/pages/list-user.tabs.archived'))
-                ->badge(User::onlyTrashed()->count())
+                ->badge($query->onlyTrashed()->count())
                 ->modifyQueryUsing(function ($query) {
                     return $query->onlyTrashed();
                 }),

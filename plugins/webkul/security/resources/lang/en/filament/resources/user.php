@@ -65,6 +65,7 @@ return [
             'resource-permission' => 'Resource Permission',
             'default-company'     => 'Default Company',
             'allowed-company'     => 'Allowed Company',
+            'created-by'          => 'Created By',
             'created-at'          => 'Created At',
             'updated-at'          => 'Updated At',
         ],

@@ -8,9 +8,12 @@ use Webkul\Account\Filament\Resources\CreditNoteResource as BaseCreditNoteResour
 use Webkul\Invoice\Filament\Clusters\Customer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNotesResource\Pages;
 use Webkul\Invoice\Models\CreditNote;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class CreditNotesResource extends BaseCreditNoteResource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = CreditNote::class;
 
     protected static bool $shouldRegisterNavigation = true;

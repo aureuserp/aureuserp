@@ -19,7 +19,7 @@ class Reconcile extends Model implements Sortable
         'sort',
         'company_id',
         'past_months_limit',
-        'created_by',
+        'creator_id',
         'rule_type',
         'matching_order',
         'counter_part_type',
@@ -59,6 +59,6 @@ class Reconcile extends Model implements Sortable
 
     public function createdBy()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'creator_id');
     }
 }

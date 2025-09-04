@@ -210,7 +210,7 @@ class LeaveTypeResource extends Resource
                         Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('request_unit')
                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.filters.request-unit'))
                             ->icon('heroicon-o-clock'),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('created_by')
+                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('creator_Id')
                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.filters.created-by'))
                             ->icon('heroicon-o-user')
                             ->multiple()

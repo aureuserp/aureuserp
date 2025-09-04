@@ -8,9 +8,12 @@ use Webkul\Account\Filament\Resources\InvoiceResource as BaseInvoiceResource;
 use Webkul\Invoice\Filament\Clusters\Customer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages;
 use Webkul\Invoice\Models\Invoice;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class InvoiceResource extends BaseInvoiceResource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = Invoice::class;
 
     protected static bool $shouldRegisterNavigation = true;

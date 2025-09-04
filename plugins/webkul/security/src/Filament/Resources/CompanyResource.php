@@ -20,6 +20,7 @@ use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Security\Enums\CompanyStatus;
 use Webkul\Security\Filament\Resources\CompanyResource\Pages;
 use Webkul\Security\Filament\Resources\CompanyResource\RelationManagers;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Security\Settings\UserSettings;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
@@ -27,7 +28,7 @@ use Webkul\Support\Models\Currency;
 
 class CompanyResource extends Resource
 {
-    use HasCustomFields;
+    use HasCustomFields, HasResourcePermissionQuery;
 
     protected static ?string $model = Company::class;
 
@@ -290,6 +291,11 @@ class CompanyResource extends Resource
                     ->sortable()
                     ->label(__('security::filament/resources/company.table.columns.status'))
                     ->boolean(),
+                Tables\Columns\TextColumn::make('createdBy.name')
+                    ->label(__('security::filament/resources/company.table.columns.created-by'))
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label(__('security::filament/resources/company.table.columns.created-at'))
                     ->dateTime()
@@ -323,6 +329,9 @@ class CompanyResource extends Resource
                     ->collapsible(),
                 Tables\Grouping\Group::make('currency_id')
                     ->label(__('security::filament/resources/company.table.groups.currency'))
+                    ->collapsible(),
+                Tables\Grouping\Group::make('createdBy.name')
+                    ->label(__('security::filament/resources/company.table.groups.created-by'))
                     ->collapsible(),
                 Tables\Grouping\Group::make('created_at')
                     ->label(__('security::filament/resources/company.table.groups.created-at'))
@@ -401,10 +410,7 @@ class CompanyResource extends Resource
                     ->where('creator_id', Auth::user()->id)
                     ->whereNull('parent_id');
             })
-            ->checkIfRecordIsSelectableUsing(
-                fn (Model $record, UserSettings $userSettings): bool => ! ($record->id === $userSettings->default_company_id)
-            )
-            ->reorderable('sequence');
+            ->reorderable('sort');
     }
 
     public static function infolist(Infolist $infolist): Infolist
@@ -535,13 +541,5 @@ class CompanyResource extends Resource
             'view'   => Pages\ViewCompany::route('/{record}'),
             'edit'   => Pages\EditCompany::route('/{record}/edit'),
         ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
     }
 }

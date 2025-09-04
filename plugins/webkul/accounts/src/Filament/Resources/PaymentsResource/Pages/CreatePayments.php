@@ -28,7 +28,7 @@ class CreatePayments extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['state'] = PaymentStatus::DRAFT->value;
-        $data['created_by'] = Auth::user()->id;
+        $data['creator_id'] = Auth::user()->id;
 
         return $data;
     }
