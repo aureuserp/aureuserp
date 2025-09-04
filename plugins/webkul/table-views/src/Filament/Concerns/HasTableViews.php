@@ -76,16 +76,12 @@ trait HasTableViews
 
         $this->resetTableGrouping();
 
-        $this->resetToggledTableColumns();
-
         $this->activeTableView = $this->getDefaultActiveTableView();
     }
 
     public function resetTableSort(): void
     {
-        $this->tableSortColumn = null;
-
-        $this->tableSortDirection = null;
+        $this->tableSort = null;
     }
 
     public function resetTableGrouping(): void
@@ -93,11 +89,6 @@ trait HasTableViews
         $this->tableGrouping = null;
 
         $this->tableGroupingDirection = null;
-    }
-
-    public function resetToggledTableColumns(): void
-    {
-        $this->toggledTableColumns = $this->getDefaultTableColumnState();
     }
 
     public function applyTableViewFilters(): void
@@ -112,7 +103,7 @@ trait HasTableViews
             return;
         }
 
-        foreach ($tableViews[$this->activeTableView]->getModel()->filters as $key => $filter) {
+        foreach ($tableViews[$this->activeTableView]->getRecord()->filters as $key => $filter) {
             if (! $filter) {
                 continue;
             }
@@ -136,7 +127,7 @@ trait HasTableViews
     {
         return TableViewModel::where('filterable_type', static::class)
             ->where(function ($query) {
-                $query->where('user_id', auth()->id())
+                $query->where('user_id', filament()->auth()->id())
                     ->orWhere('is_public', true);
             })
             ->get()
@@ -225,11 +216,9 @@ trait HasTableViews
             'tableGrouping'       => $this->tableGrouping,
             'tableSearch'         => $this->tableSearch,
             'tableColumnSearches' => $this->tableColumnSearches,
-            'tableSortColumn'     => $this->tableSortColumn,
-            'tableSortDirection'  => $this->tableSortDirection,
+            'tableSort'           => $this->tableSort,
             'tableRecordsPerPage' => $this->tableRecordsPerPage,
-            'toggledTableColumns' => $this->toggledTableColumns,
-        ] != $tableViews[$this->activeTableView]->getModel()->filters;
+        ] != $tableViews[$this->activeTableView]->getRecord()->filters;
     }
 
     protected function modifyQueryWithActiveTab(Builder $query): Builder
@@ -290,7 +279,7 @@ trait HasTableViews
     {
         return CreateViewAction::make('createTableView')
             ->mutateDataUsing(function (array $data): array {
-                $data['user_id'] = auth()->id();
+                $data['user_id'] = filament()->auth()->id();
 
                 $data['filterable_type'] = static::class;
 
@@ -299,10 +288,8 @@ trait HasTableViews
                     'tableGrouping'       => $this->tableGrouping,
                     'tableSearch'         => $this->tableSearch,
                     'tableColumnSearches' => $this->tableColumnSearches,
-                    'tableSortColumn'     => $this->tableSortColumn,
-                    'tableSortDirection'  => $this->tableSortDirection,
+                    'tableSort'           => $this->tableSort,
                     'tableRecordsPerPage' => $this->tableRecordsPerPage,
-                    'toggledTableColumns' => $this->toggledTableColumns,
                 ];
 
                 return $data;
@@ -357,7 +344,7 @@ trait HasTableViews
                         'view_type'       => $arguments['view_type'],
                         'view_key'        => $arguments['view_key'],
                         'filterable_type' => static::class,
-                        'user_id'         => auth()->id(),
+                        'user_id'         => filament()->auth()->id(),
                     ],
                     [
                         'is_favorite' => true,
@@ -380,7 +367,7 @@ trait HasTableViews
                         'view_type'       => $arguments['view_type'],
                         'view_key'        => $arguments['view_key'],
                         'filterable_type' => static::class,
-                        'user_id'         => auth()->id(),
+                        'user_id'         => filament()->auth()->id(),
                     ],
                     [
                         'is_favorite' => false,
@@ -437,10 +424,8 @@ trait HasTableViews
                         'tableGrouping'       => $this->tableGrouping,
                         'tableSearch'         => $this->tableSearch,
                         'tableColumnSearches' => $this->tableColumnSearches,
-                        'tableSortColumn'     => $this->tableSortColumn,
-                        'tableSortDirection'  => $this->tableSortDirection,
+                        'tableSort'           => $this->tableSort,
                         'tableRecordsPerPage' => $this->tableRecordsPerPage,
-                        'toggledTableColumns' => $this->toggledTableColumns,
                     ],
                 ]);
 

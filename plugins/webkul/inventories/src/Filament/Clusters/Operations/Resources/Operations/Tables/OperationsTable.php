@@ -102,7 +102,7 @@ class OperationsTable
                 Group::make('operationType.name')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.groups.operation-type')),
                 Group::make('schedule_at')
-                    ->label(__('inventories::filament/clusters/operations/resources/operation.table.groups.schedule-at'))
+                    ->label(__('inventories::filament/clusters/operations/resources/operation.table.groups.scheduled-at'))
                     ->date(),
                 Group::make('created_at')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.table.groups.created-at'))
