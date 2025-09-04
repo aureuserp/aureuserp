@@ -1,0 +1,41 @@
+name: 💡 Feature Request
+description: Have a new idea or improvement in mind for AureusERP? Share it with us!
+labels: ['Feature Request']
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: 🧩 Problem Description
+      description: Is your feature request related to a problem? Please explain clearly.  
+        _Example: "I'm always frustrated when I have to manually enter data for every invoice..."_
+      placeholder: Describe the problem or limitation you're facing.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 🌟 Proposed Solution
+      description: A clear and concise description of what you'd like to see happen.
+      placeholder: Describe your feature or improvement idea in detail.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 🔁 Alternatives Considered
+      description: Have you considered other approaches or features? Share them here.
+      placeholder: Share any other solutions or ideas you’ve thought of.
+    validations:
+      required: false
+
+  - type: textarea
+    id: extrainfo
+    attributes:
+      label: 💬 Additional Context
+      description: Add any extra context, screenshots, diagrams, or examples that help explain your request.
+      placeholder: Optional — feel free to attach anything that helps clarify your idea.
+    validations:
+      required: false
