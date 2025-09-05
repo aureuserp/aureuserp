@@ -277,8 +277,10 @@ class CalendarWidget extends FullCalendarWidget
                         $data['employee_company_id'] = $user->default_company_id;
                     }
 
-                    $durationInfo = $this->getDurationInfo($data);
-                    $data = array_merge($data, $durationInfo);
+                    $data = [
+                        ...$data,
+                        ...$this->getDurationInfo($data),
+                    ];
 
                     $data['creator_id'] = Auth::user()->id;
                     $data['state'] = State::CONFIRM->value;
