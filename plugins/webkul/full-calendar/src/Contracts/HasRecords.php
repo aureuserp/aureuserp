@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 interface HasRecords
 {
-    public function getModel(): ?string;
+    // public function getModel(): ?string;
 
-    public function getRecord(): ?Model;
+    // public function getRecord(): ?Model;
 }

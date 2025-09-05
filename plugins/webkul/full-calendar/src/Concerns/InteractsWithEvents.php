@@ -73,7 +73,6 @@ trait InteractsWithEvents
     {
         $this->records = null;
 
-        // TODO: Check this for refresh the UI.
         $this->dispatch('full-calendar--refresh');
     }
 

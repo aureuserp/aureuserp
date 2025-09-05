@@ -5,7 +5,7 @@ namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanR
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource;
 
@@ -13,7 +13,7 @@ class ViewAccrualPlan extends ViewRecord
 {
     protected static string $resource = AccrualPlanResource::class;
 
-    public function getSubNavigationPosition(): SubNavigationPosition
+    public static function getSubNavigationPosition(): SubNavigationPosition
     {
         return SubNavigationPosition::Top;
     }

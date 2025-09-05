@@ -14,9 +14,12 @@ class FullCalendarServiceProvider extends PackageServiceProvider
 {
     public static string $name = 'full-calendar';
 
+    public static string $viewNamespace = 'full-calendar';
+
     public function configureCustomPackage(Package $package): void
     {
         $package->name(static::$name)
+            ->hasViews()
             ->hasTranslations()
             ->hasInstallCommand(function (InstallCommand $command) {})
             ->hasUninstallCommand(function (UninstallCommand $command) {});

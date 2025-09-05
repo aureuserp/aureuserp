@@ -17,11 +17,11 @@ use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Saade\FilamentFullCalendar\Actions\CreateAction;
-use Saade\FilamentFullCalendar\Actions\DeleteAction;
-use Saade\FilamentFullCalendar\Actions\EditAction;
-use Saade\FilamentFullCalendar\Actions\ViewAction;
-use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
+use Webkul\FullCalendar\Filament\Actions\CreateAction;
+use Webkul\FullCalendar\Filament\Actions\DeleteAction;
+use Webkul\FullCalendar\Filament\Actions\EditAction;
+use Webkul\FullCalendar\Filament\Actions\ViewAction;
+use Webkul\FullCalendar\Filament\Widgets\FullCalendarWidget;
 use Webkul\TimeOff\Enums\RequestDateFromPeriod;
 use Webkul\TimeOff\Enums\State;
 use Webkul\TimeOff\Filament\Actions\HolidayAction;
@@ -456,48 +456,6 @@ class CalendarWidget extends FullCalendarWidget
             State::CONFIRM->value      => 'high',
             State::VALIDATE_TWO->value => 'highest',
             default                    => 'normal'
-        };
-    }
-
-    private function getStateLabel(string $state): string
-    {
-        return match ($state) {
-            State::VALIDATE_ONE->value => State::VALIDATE_ONE->getLabel(),
-            State::VALIDATE_TWO->value => State::VALIDATE_TWO->getLabel(),
-            State::CONFIRM->value      => State::CONFIRM->getLabel(),
-            State::REFUSE->value       => State::REFUSE->getLabel(),
-        };
-    }
-
-    private function getStateIcon(string $state): string
-    {
-        return match ($state) {
-            State::VALIDATE_ONE->value => 'heroicon-o-magnifying-glass',
-            State::VALIDATE_TWO->value => 'heroicon-o-check-circle',
-            State::CONFIRM->value      => 'heroicon-o-clock',
-            State::REFUSE->value       => 'heroicon-o-x-circle',
-            default                    => 'heroicon-o-document',
-        };
-    }
-
-    private function getStateColor($state, $isFilament = false): string
-    {
-        if ($isFilament) {
-            return match ($state) {
-                State::VALIDATE_ONE->value => 'info',
-                State::VALIDATE_TWO->value => 'success',
-                State::CONFIRM->value      => 'warning',
-                State::REFUSE->value       => 'danger',
-                default                    => 'gray',
-            };
-        }
-
-        return match ($state) {
-            State::VALIDATE_ONE->value => '#3B82F6',
-            State::VALIDATE_TWO->value => '#10B981',
-            State::CONFIRM->value      => '#F59E0B',
-            State::REFUSE->value       => '#EF4444',
-            default                    => '#6B7280',
         };
     }
 

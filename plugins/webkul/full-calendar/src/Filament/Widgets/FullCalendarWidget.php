@@ -36,7 +36,7 @@ class FullCalendarWidget extends Widget implements HasForms, HasActions, HasEven
     use InteractsWithRawJS;
     use CanBeConfigured;
 
-    protected string $view = 'full-calendar::full-calendar';
+    protected string $view = 'full-calendar::filament.full-calendar';
 
     protected int | string | array $columnSpan = 'full';
 
@@ -49,10 +49,14 @@ class FullCalendarWidget extends Widget implements HasForms, HasActions, HasEven
 
     protected function modalActions(): array
     {
-        return [
-            EditAction::make(),
-            DeleteAction::make(),
-        ];
+        $actions = [];
+
+        if ($this->hasRecord()) {
+            $actions[] = EditAction::make();
+            $actions[] = DeleteAction::make();
+        }
+
+        return $actions;
     }
 
     protected function viewAction(): Action

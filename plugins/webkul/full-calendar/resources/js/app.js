@@ -31,7 +31,6 @@ export default function fullcalendar({
 }) {
     return {
         init() {
-            /** @type Calendar */
             const calendar = new Calendar(this.$el, {
                 headerToolbar: {
                     'left': 'prev,next today',
@@ -53,49 +52,56 @@ export default function fullcalendar({
                 events: (info, successCallback, failureCallback) => {
                     this.$wire.fetchEvents({ start: info.startStr, end: info.endStr, timezone: info.timeZone })
                         .then(successCallback)
-                        .catch(failureCallback)
+                        .catch(failureCallback);
                 },
                 eventClick: ({ event, jsEvent }) => {
-                    jsEvent.preventDefault()
+                    jsEvent.preventDefault();
 
                     if (event.url) {
-                        const isNotPlainLeftClick = e => (e.which > 1) || (e.altKey) || (e.ctrlKey) || (e.metaKey) || (e.shiftKey)
-                        return window.open(event.url, (event.extendedProps.shouldOpenUrlInNewTab || isNotPlainLeftClick(jsEvent)) ? '_blank' : '_self')
+                        const isNotPlainLeftClick = e => (e.which > 1) || (e.altKey) || (e.ctrlKey) || (e.metaKey) || (e.shiftKey);
+
+                        return window.open(event.url, (event.extendedProps.shouldOpenUrlInNewTab || isNotPlainLeftClick(jsEvent)) ? '_blank' : '_self');
                     }
 
-                    this.$wire.onEventClick(event)
+                    this.$wire.onEventClick(event);
                 },
                 eventDrop: async ({ event, oldEvent, relatedEvents, delta, oldResource, newResource, revert }) => {
-                    const shouldRevert = await this.$wire.onEventDrop(event, oldEvent, relatedEvents, delta, oldResource, newResource)
+                    const shouldRevert = await this.$wire.onEventDrop(event, oldEvent, relatedEvents, delta, oldResource, newResource);
 
                     if (typeof shouldRevert === 'boolean' && shouldRevert) {
                         revert()
                     }
                 },
                 eventResize: async ({ event, oldEvent, relatedEvents, startDelta, endDelta, revert }) => {
-                    const shouldRevert = await this.$wire.onEventResize(event, oldEvent, relatedEvents, startDelta, endDelta)
+                    const shouldRevert = await this.$wire.onEventResize(event, oldEvent, relatedEvents, startDelta, endDelta);
 
                     if (typeof shouldRevert === 'boolean' && shouldRevert) {
                         revert()
                     }
                 },
                 dateClick: ({ dateStr, allDay, view, resource }) => {
-                    if (!selectable) return;
-                    this.$wire.onDateSelect(dateStr, null, allDay, view, resource)
+                    if (! selectable) {
+                        return;
+                    }
+
+                    this.$wire.onDateSelect(dateStr, null, allDay, view, resource);
                 },
                 select: ({ startStr, endStr, allDay, view, resource }) => {
-                    if (!selectable) return;
-                    this.$wire.onDateSelect(startStr, endStr, allDay, view, resource)
+                    if (! selectable) {
+                        return;
+                    }
+
+                    this.$wire.onDateSelect(startStr, endStr, allDay, view, resource);
                 },
-            })
+            });
 
-            calendar.render()
+            calendar.render();
 
-            window.addEventListener('filament-fullcalendar--refresh', () => calendar.refetchEvents())
-            window.addEventListener('filament-fullcalendar--prev', () => calendar.prev())
-            window.addEventListener('filament-fullcalendar--next', () => calendar.next())
-            window.addEventListener('filament-fullcalendar--today', () => calendar.today())
-            window.addEventListener('filament-fullcalendar--goto', (event) => calendar.gotoDate(event.detail.date))
+            window.addEventListener('full-calendar--refresh', () => calendar.refetchEvents());
+            window.addEventListener('full-calendar--prev', () => calendar.prev());
+            window.addEventListener('full-calendar--next', () => calendar.next());
+            window.addEventListener('full-calendar--today', () => calendar.today());
+            window.addEventListener('full-calendar--goto', (event) => calendar.gotoDate(event.detail.date));
         },
     }
 }
@@ -116,4 +122,4 @@ const availablePlugins = {
     'rrule': rrulePlugin,
     'moment': momentPlugin,
     'momentTimezone': momentTimezonePlugin,
-}
+};
