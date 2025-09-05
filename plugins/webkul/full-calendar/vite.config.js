@@ -4,8 +4,8 @@ import laravel from 'laravel-vite-plugin';
 export default defineConfig({
     plugins: [
         laravel({
-            publicDirectory: "publishable",
-            buildDirectory: "build",
+            publicDirectory: "resources",
+            buildDirectory: "dist",
             input: [
                 'resources/js/app.js',
                 'resources/css/app.css',
@@ -14,7 +14,14 @@ export default defineConfig({
         }),
     ],
     build: {
-        outDir: '',
+        manifest: false,
+        outDir: 'resources/dist',
         emptyOutDir: true,
+        rollupOptions: {
+            output: {
+                entryFileNames: 'app.js',
+                assetFileNames: 'app.css',
+            },
+        },
     },
 });
