@@ -21,7 +21,6 @@
                     <span class="relative z-10 transition-colors duration-200">
                         {{ $item->getLabel() }}
                     </span>
-                    <div class="absolute inset-0 transition-transform duration-300 origin-left scale-x-0 bg-gradient-to-r from-primary-500/10 to-primary-600/10 group-hover:scale-x-100"></div>
                 </x-filament-panels::topbar.item>
             </li>
         @endforeach
