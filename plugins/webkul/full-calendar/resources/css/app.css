@@ -1,0 +1,97 @@
+@import '../../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../resources/views';
+
+.filament-fullcalendar {
+    --fc-small-font-size: 0.85em;
+    --fc-page-bg-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+    --fc-neutral-bg-color: rgba(var(--gray-50), var(--tw-bg-opacity));
+    --fc-neutral-text-color: #808080;
+    --fc-border-color: rgba(var(--gray-200));
+
+    --fc-button-text-color: #fff;
+    --fc-button-bg-color: rgba(var(--primary-600));
+    --fc-button-border-color: rgba(var(--primary-600));
+    --fc-button-hover-bg-color: rgba(var(--primary-500));
+    --fc-button-hover-border-color: rgba(var(--primary-500));
+    --fc-button-active-bg-color: rgba(var(--primary-500));
+    --fc-button-active-border-color: rgba(var(--primary-500));
+
+    --fc-event-bg-color: rgba(var(--primary-600));
+    --fc-event-border-color: rgba(var(--primary-600));
+    --fc-event-text-color: #fff;
+    --fc-event-selected-overlay-color: rgba(0, 0, 0, 0.25);
+
+    --fc-more-link-bg-color: #d0d0d0;
+    --fc-more-link-text-color: inherit;
+
+    --fc-event-resizer-thickness: 8px;
+    --fc-event-resizer-dot-total-width: 8px;
+    --fc-event-resizer-dot-border-width: 1px;
+
+    --fc-non-business-color: rgba(215, 215, 215, 0.3);
+    --fc-bg-event-color: rgb(143, 223, 130);
+    --fc-bg-event-opacity: 0.3;
+    --fc-highlight-color: rgba(var(--primary-500), 0.1);
+    --fc-today-bg-color: rgba(var(--primary-500), 0.2);
+    --fc-now-indicator-color: red;
+
+    --fc-list-event-hover-bg-color: rgba(var(--gray-50), var(--tw-bg-opacity));
+}
+
+html.dark .filament-fullcalendar {
+    --fc-page-bg-color: rgba(var(--gray-900), var(--tw-bg-opacity, 1));
+    --fc-neutral-bg-color: rgba(var(--gray-800), 0.8);
+    --fc-border-color: rgba(var(--gray-700), 0.5);
+
+    --fc-button-bg-color: rgba(var(--primary-500));
+    --fc-button-border-color: rgba(var(--primary-600));
+    --fc-button-hover-bg-color: rgba(var(--primary-400));
+    --fc-button-hover-border-color: rgba(var(--primary-500));
+    --fc-button-active-bg-color: rgba(var(--primary-400));
+    --fc-button-active-border-color: rgba(var(--primary-500));
+
+    --fc-event-bg-color: rgba(var(--primary-500));
+    --fc-event-border-color: rgba(var(--primary-600));
+
+    --fc-list-event-hover-bg-color: rgba(var(--gray-800), 0.8);
+}
+
+.filament-fullcalendar .fc-toolbar-chunk {
+    @apply space-y-1;
+}
+
+.filament-fullcalendar .fc-toolbar-title {
+    @apply !text-lg leading-5 md:!text-3xl;
+}
+
+.filament-fullcalendar.fc .fc-button {
+    @apply min-h-[2.25rem] rounded-lg px-[6px] py-1 text-sm font-medium shadow outline-none transition-colors md:px-4;
+}
+
+.filament-fullcalendar.fc .fc-button-primary:disabled {
+    @apply opacity-70;
+}
+
+.filament-fullcalendar.fc .fc-button-primary:not(:disabled).fc-button-active,
+.filament-fullcalendar.fc .fc-button-primary:not(:disabled):active {
+    @apply shadow-none;
+}
+
+.filament-fullcalendar .fc-view table,
+.filament-fullcalendar .fc-view:not(.fc-list) table th,
+.filament-fullcalendar .fc-list {
+    @apply rounded-t-xl;
+}
+
+.filament-fullcalendar .fc-list {
+    @apply overflow-hidden;
+}
+
+.filament-fullcalendar .fc-list .fc-list-event-title a {
+    @apply cursor-pointer;
+}
+
+.filament-fullcalendar .fc-list-sticky .fc-list-day th {
+    @apply bg-inherit;
+}
