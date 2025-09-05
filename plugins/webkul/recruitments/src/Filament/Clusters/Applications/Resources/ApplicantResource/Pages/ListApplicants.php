@@ -23,6 +23,11 @@ class ListApplicants extends ListRecords
 
     protected static string $resource = ApplicantResource::class;
 
+    public function getPresetTableViewsFormMaxHeight(): ?string
+    {
+        return '300px';
+    }
+
     public function getHeaderWidgets(): array
     {
         return [
@@ -62,6 +67,7 @@ class ListApplicants extends ListRecords
 
             'hired' => PresetView::make(__('recruitments::filament/clusters/applications/resources/applicant/pages/list-applicant.tabs.hired'))
                 ->icon('heroicon-s-check-badge')
+                ->favorite()
                 ->modifyQueryUsing(function (Builder $query) {
                     return $query
                         ->whereNull('deleted_at')
@@ -71,6 +77,7 @@ class ListApplicants extends ListRecords
 
             'refused' => PresetView::make(__('recruitments::filament/clusters/applications/resources/applicant/pages/list-applicant.tabs.refused'))
                 ->icon('heroicon-s-no-symbol')
+                ->favorite()
                 ->modifyQueryUsing(function (Builder $query) {
                     return $query
                         ->whereNull('deleted_at')

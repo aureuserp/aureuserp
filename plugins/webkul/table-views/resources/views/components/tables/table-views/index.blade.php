@@ -13,7 +13,7 @@
 
     <div class="flex gap-x-4">
         {{ $this->createTableViewAction }}
-        
+
         {{ $this->resetTableViewAction }}
     </div>
 </div>
@@ -28,12 +28,12 @@
             <x-filament::dropdown.header class="font-semibold">
                 {{ $label }}
             </x-filament::dropdown.header>
-            
+
             @foreach ($views as $key => $tableView)
                 @php
                     $type = $tableView instanceof \Webkul\TableViews\Filament\Components\SavedView ? 'saved' : 'preset';
                 @endphp
-                
+
                 <x-filament::dropdown.list.item
                     tag="a"
                     class="p-3"
@@ -43,7 +43,7 @@
                         <div
                             class="w-full cursor-pointer select-none"
                             wire:click="mountAction('applyTableView', {{ json_encode([
-                                'view_key' => $key, 
+                                'view_key' => $key,
                                 'view_type' => $type
                             ]) }})"
                         >
@@ -59,12 +59,12 @@
                                     'hidden' => $key != $activeTableView,
                                 ])
                             />
-                            
+
                             <x-filament::icon
                                 :icon="$tableView->getVisibilityIcon()"
-                                class="h-4 w-4 text-gray-400 dark:text-gray-200"
+                                class="w-4 h-4 text-gray-400 dark:text-gray-200"
                             />
-                            
+
                             {{ $this->getTableViewActionGroup($key, $type, $tableView) }}
                         </div>
                     </div>
