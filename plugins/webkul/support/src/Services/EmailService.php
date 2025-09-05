@@ -2,6 +2,7 @@
 
 namespace Webkul\Support\Services;
 
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Webkul\Support\Models\EmailLog;
@@ -26,7 +27,7 @@ class EmailService
             $this->logEmail($payload['to']['address'], $payload['to']['name'], $payload['subject'], 'sent');
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logEmail($payload['to']['address'], $payload['to']['name'], $payload['subject'], 'failed', $e->getMessage());
 
             throw $e;

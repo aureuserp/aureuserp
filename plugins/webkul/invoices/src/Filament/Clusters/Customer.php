@@ -2,11 +2,12 @@
 
 namespace Webkul\Invoice\Filament\Clusters;
 
+use BackedEnum;
 use Filament\Clusters\Cluster;
 
 class Customer extends Cluster
 {
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
     public static function getNavigationLabel(): string
     {

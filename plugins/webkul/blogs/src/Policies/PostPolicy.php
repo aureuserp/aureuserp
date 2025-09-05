@@ -15,7 +15,7 @@ class PostPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_post');
+        return $user->can('view_any_post::post');
     }
 
     /**
@@ -23,7 +23,7 @@ class PostPolicy
      */
     public function view(User $user, Post $post): bool
     {
-        return $user->can('view_post');
+        return $user->can('view_post::post');
     }
 
     /**
@@ -31,7 +31,7 @@ class PostPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_post');
+        return $user->can('create_post::post');
     }
 
     /**
@@ -39,7 +39,7 @@ class PostPolicy
      */
     public function update(User $user, Post $post): bool
     {
-        return $user->can('update_post');
+        return $user->can('update_post::post');
     }
 
     /**
@@ -47,7 +47,7 @@ class PostPolicy
      */
     public function delete(User $user, Post $post): bool
     {
-        return $user->can('delete_post');
+        return $user->can('delete_post::post');
     }
 
     /**
@@ -55,7 +55,7 @@ class PostPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_post');
+        return $user->can('delete_any_post::post');
     }
 
     /**
@@ -63,7 +63,7 @@ class PostPolicy
      */
     public function forceDelete(User $user, Post $post): bool
     {
-        return $user->can('force_delete_post');
+        return $user->can('force_delete_post::post');
     }
 
     /**
@@ -71,7 +71,7 @@ class PostPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_post');
+        return $user->can('force_delete_any_post::post');
     }
 
     /**
@@ -79,7 +79,7 @@ class PostPolicy
      */
     public function restore(User $user, Post $post): bool
     {
-        return $user->can('restore_post');
+        return $user->can('restore_post::post');
     }
 
     /**
@@ -87,7 +87,7 @@ class PostPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_post');
+        return $user->can('restore_any_post::post');
     }
 
     /**
@@ -95,7 +95,7 @@ class PostPolicy
      */
     public function replicate(User $user, Post $post): bool
     {
-        return $user->can('replicate_post');
+        return $user->can('replicate_post::post');
     }
 
     /**
@@ -103,6 +103,6 @@ class PostPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_post');
+        return $user->can('reorder_post::post');
     }
 }

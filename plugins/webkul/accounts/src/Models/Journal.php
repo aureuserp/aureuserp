@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Partner\Models\BankAccount;
@@ -104,7 +105,7 @@ class Journal extends Model implements Sortable
         return match ($paymentType) {
             'inbound'  => $this->inboundPaymentMethodLines,
             'outbound' => $this->outboundPaymentMethodLines,
-            default    => throw new \InvalidArgumentException('Invalid payment type'),
+            default    => throw new InvalidArgumentException('Invalid payment type'),
         };
     }
 

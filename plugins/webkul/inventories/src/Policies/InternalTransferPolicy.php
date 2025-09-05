@@ -16,7 +16,7 @@ class InternalTransferPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_internal');
+        return $user->can('view_any_internals::internal');
     }
 
     /**
@@ -24,7 +24,7 @@ class InternalTransferPolicy
      */
     public function view(User $user, InternalTransfer $internalTransfer): bool
     {
-        return $user->can('view_internal');
+        return $user->can('view_internals::internal');
     }
 
     /**
@@ -32,7 +32,7 @@ class InternalTransferPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_internal');
+        return $user->can('create_internals::internal');
     }
 
     /**
@@ -40,7 +40,7 @@ class InternalTransferPolicy
      */
     public function update(User $user, InternalTransfer $internalTransfer): bool
     {
-        if (! $user->can('update_internal')) {
+        if (! $user->can('update_internals::internal')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class InternalTransferPolicy
      */
     public function delete(User $user, InternalTransfer $internalTransfer): bool
     {
-        if (! $user->can('delete_internal')) {
+        if (! $user->can('delete_internals::internal')) {
             return false;
         }
 
@@ -64,7 +64,7 @@ class InternalTransferPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_internal');
+        return $user->can('delete_any_internals::internal');
     }
 
     /**
@@ -72,7 +72,7 @@ class InternalTransferPolicy
      */
     public function forceDelete(User $user, InternalTransfer $internalTransfer): bool
     {
-        if (! $user->can('force_delete_internal')) {
+        if (! $user->can('force_delete_internals::internal')) {
             return false;
         }
 
@@ -84,7 +84,7 @@ class InternalTransferPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_internal');
+        return $user->can('force_delete_any_internals::internal');
     }
 
     /**
@@ -92,7 +92,7 @@ class InternalTransferPolicy
      */
     public function restore(User $user, InternalTransfer $internalTransfer): bool
     {
-        if (! $user->can('restore_internal')) {
+        if (! $user->can('restore_internals::internal')) {
             return false;
         }
 
@@ -104,7 +104,7 @@ class InternalTransferPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_internal');
+        return $user->can('restore_any_internals::internal');
     }
 
     /**
@@ -112,7 +112,7 @@ class InternalTransferPolicy
      */
     public function replicate(User $user, InternalTransfer $internalTransfer): bool
     {
-        if (! $user->can('replicate_internal')) {
+        if (! $user->can('replicate_internals::internal')) {
             return false;
         }
 
@@ -124,6 +124,6 @@ class InternalTransferPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_internal');
+        return $user->can('reorder_internals::internal');
     }
 }

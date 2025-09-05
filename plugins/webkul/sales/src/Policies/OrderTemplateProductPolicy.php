@@ -15,7 +15,7 @@ class OrderTemplateProductPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_order::template::product');
+        return $user->can('view_any_order::template::products::order::template::product');
     }
 
     /**
@@ -23,7 +23,7 @@ class OrderTemplateProductPolicy
      */
     public function view(User $user, OrderTemplateProduct $orderTemplateProduct): bool
     {
-        return $user->can('view_order::template::product');
+        return $user->can('view_order::template::products::order::template::product');
     }
 
     /**
@@ -31,7 +31,7 @@ class OrderTemplateProductPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_order::template::product');
+        return $user->can('create_order::template::products::order::template::product');
     }
 
     /**
@@ -39,7 +39,7 @@ class OrderTemplateProductPolicy
      */
     public function update(User $user, OrderTemplateProduct $orderTemplateProduct): bool
     {
-        return $user->can('update_order::template::product');
+        return $user->can('update_order::template::products::order::template::product');
     }
 
     /**
@@ -47,7 +47,7 @@ class OrderTemplateProductPolicy
      */
     public function delete(User $user, OrderTemplateProduct $orderTemplateProduct): bool
     {
-        return $user->can('delete_order::template::product');
+        return $user->can('delete_order::template::products::order::template::product');
     }
 
     /**
@@ -55,7 +55,7 @@ class OrderTemplateProductPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_order::template::product');
+        return $user->can('delete_any_order::template::products::order::template::product');
     }
 
     /**
@@ -63,7 +63,7 @@ class OrderTemplateProductPolicy
      */
     public function forceDelete(User $user, OrderTemplateProduct $orderTemplateProduct): bool
     {
-        return $user->can('force_delete_order::template::product');
+        return $user->can('force_delete_order::template::products::order::template::product');
     }
 
     /**
@@ -71,7 +71,7 @@ class OrderTemplateProductPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_order::template::product');
+        return $user->can('force_delete_any_order::template::products::order::template::product');
     }
 
     /**
@@ -79,7 +79,7 @@ class OrderTemplateProductPolicy
      */
     public function restore(User $user, OrderTemplateProduct $orderTemplateProduct): bool
     {
-        return $user->can('restore_order::template::product');
+        return $user->can('restore_order::template::products::order::template::product');
     }
 
     /**
@@ -87,7 +87,7 @@ class OrderTemplateProductPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_order::template::product');
+        return $user->can('restore_any_order::template::products::order::template::product');
     }
 
     /**
@@ -95,7 +95,7 @@ class OrderTemplateProductPolicy
      */
     public function replicate(User $user, OrderTemplateProduct $orderTemplateProduct): bool
     {
-        return $user->can('replicate_order::template::product');
+        return $user->can('replicate_order::template::products::order::template::product');
     }
 
     /**
@@ -103,6 +103,6 @@ class OrderTemplateProductPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_order::template::product');
+        return $user->can('reorder_order::template::products::order::template::product');
     }
 }

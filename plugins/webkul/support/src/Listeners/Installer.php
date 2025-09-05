@@ -2,6 +2,7 @@
 
 namespace Webkul\Support\Listeners;
 
+use Exception;
 use GuzzleHttp\Client;
 use Webkul\Security\Models\User;
 
@@ -32,11 +33,11 @@ class Installer
                 ],
                 'json'    => [
                     'domain' => config('app.url'),
-                    'email' => $user?->email,
-                    'name' => $user?->name,
+                    'email'  => $user?->email,
+                    'name'   => $user?->name,
                 ],
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             /**
              * Skip the error
              */

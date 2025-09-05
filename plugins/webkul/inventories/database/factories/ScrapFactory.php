@@ -7,7 +7,7 @@ use Webkul\Inventory\Models\Scrap;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Inventory\Models\Scrap>
+ * @extends Factory<Scrap>
  */
 class ScrapFactory extends Factory
 {

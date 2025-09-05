@@ -15,7 +15,7 @@ class EmployeeCategoryPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_employee::category');
+        return $user->can('view_any_employee::categories::employee::category');
     }
 
     /**
@@ -23,7 +23,7 @@ class EmployeeCategoryPolicy
      */
     public function view(User $user, EmployeeCategory $employeeCategory): bool
     {
-        return $user->can('view_employee::category');
+        return $user->can('view_employee::categories::employee::category');
     }
 
     /**
@@ -31,7 +31,7 @@ class EmployeeCategoryPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_employee::category');
+        return $user->can('create_employee::categories::employee::category');
     }
 
     /**
@@ -39,7 +39,7 @@ class EmployeeCategoryPolicy
      */
     public function update(User $user, EmployeeCategory $employeeCategory): bool
     {
-        return $user->can('update_employee::category');
+        return $user->can('update_employee::categories::employee::category');
     }
 
     /**
@@ -47,7 +47,7 @@ class EmployeeCategoryPolicy
      */
     public function delete(User $user, EmployeeCategory $employeeCategory): bool
     {
-        return $user->can('delete_employee::category');
+        return $user->can('delete_employee::categories::employee::category');
     }
 
     /**
@@ -55,7 +55,7 @@ class EmployeeCategoryPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_employee::category');
+        return $user->can('delete_any_employee::categories::employee::category');
     }
 
     /**
@@ -63,7 +63,7 @@ class EmployeeCategoryPolicy
      */
     public function forceDelete(User $user, EmployeeCategory $employeeCategory): bool
     {
-        return $user->can('force_delete_employee::category');
+        return $user->can('force_delete_employee::categories::employee::category');
     }
 
     /**
@@ -71,7 +71,7 @@ class EmployeeCategoryPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_employee::category');
+        return $user->can('force_delete_any_employee::categories::employee::category');
     }
 
     /**
@@ -79,7 +79,7 @@ class EmployeeCategoryPolicy
      */
     public function restore(User $user, EmployeeCategory $employeeCategory): bool
     {
-        return $user->can('restore_employee::category');
+        return $user->can('restore_employee::categories::employee::category');
     }
 
     /**
@@ -87,7 +87,7 @@ class EmployeeCategoryPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_employee::category');
+        return $user->can('restore_any_employee::categories::employee::category');
     }
 
     /**
@@ -95,7 +95,7 @@ class EmployeeCategoryPolicy
      */
     public function replicate(User $user, EmployeeCategory $employeeCategory): bool
     {
-        return $user->can('replicate_employee::category');
+        return $user->can('replicate_employee::categories::employee::category');
     }
 
     /**
@@ -103,6 +103,6 @@ class EmployeeCategoryPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_employee::category');
+        return $user->can('reorder_employee::categories::employee::category');
     }
 }

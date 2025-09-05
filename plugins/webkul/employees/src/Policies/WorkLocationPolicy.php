@@ -15,7 +15,7 @@ class WorkLocationPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_work::location');
+        return $user->can('view_any_work::locations::work::location');
     }
 
     /**
@@ -23,7 +23,7 @@ class WorkLocationPolicy
      */
     public function view(User $user, WorkLocation $workLocation): bool
     {
-        return $user->can('view_work::location');
+        return $user->can('view_work::locations::work::location');
     }
 
     /**
@@ -31,7 +31,7 @@ class WorkLocationPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_work::location');
+        return $user->can('create_work::locations::work::location');
     }
 
     /**
@@ -39,7 +39,7 @@ class WorkLocationPolicy
      */
     public function update(User $user, WorkLocation $workLocation): bool
     {
-        return $user->can('update_work::location');
+        return $user->can('update_work::locations::work::location');
     }
 
     /**
@@ -47,7 +47,7 @@ class WorkLocationPolicy
      */
     public function delete(User $user, WorkLocation $workLocation): bool
     {
-        return $user->can('delete_work::location');
+        return $user->can('delete_work::locations::work::location');
     }
 
     /**
@@ -55,7 +55,7 @@ class WorkLocationPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_work::location');
+        return $user->can('delete_any_work::locations::work::location');
     }
 
     /**
@@ -63,7 +63,7 @@ class WorkLocationPolicy
      */
     public function forceDelete(User $user, WorkLocation $workLocation): bool
     {
-        return $user->can('force_delete_work::location');
+        return $user->can('force_delete_work::locations::work::location');
     }
 
     /**
@@ -71,7 +71,7 @@ class WorkLocationPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_work::location');
+        return $user->can('force_delete_any_work::locations::work::location');
     }
 
     /**
@@ -79,7 +79,7 @@ class WorkLocationPolicy
      */
     public function restore(User $user, WorkLocation $workLocation): bool
     {
-        return $user->can('restore_work::location');
+        return $user->can('restore_work::locations::work::location');
     }
 
     /**
@@ -87,7 +87,7 @@ class WorkLocationPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_work::location');
+        return $user->can('restore_any_work::locations::work::location');
     }
 
     /**
@@ -95,7 +95,7 @@ class WorkLocationPolicy
      */
     public function replicate(User $user, WorkLocation $workLocation): bool
     {
-        return $user->can('replicate_work::location');
+        return $user->can('replicate_work::locations::work::location');
     }
 
     /**
@@ -103,6 +103,6 @@ class WorkLocationPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_work::location');
+        return $user->can('reorder_work::locations::work::location');
     }
 }

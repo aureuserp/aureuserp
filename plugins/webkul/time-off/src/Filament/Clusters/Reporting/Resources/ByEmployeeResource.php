@@ -2,15 +2,21 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Reporting\Resources;
 
+use BackedEnum;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource as BaseByEmployeeResource;
 use Webkul\TimeOff\Filament\Clusters\Reporting;
-use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Pages;
-
+use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Pages\CreateByEmployee;
+use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Pages\EditByEmployee;
+use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Pages\ListByEmployees;
+use Webkul\TimeOff\Models\Leave;
 
 class ByEmployeeResource extends BaseByEmployeeResource
 {
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?string $model = Leave::class;
+
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
     protected static ?string $cluster = Reporting::class;
 
@@ -24,6 +30,11 @@ class ByEmployeeResource extends BaseByEmployeeResource
         return __('time-off::filament/clusters/reporting/resources/by-employee.navigation.title');
     }
 
+    public static function form(Schema $schema): Schema
+    {
+        return BaseByEmployeeResource::form($schema);
+    }
+
     public static function table(Table $table): Table
     {
         return parent::table($table)
@@ -33,10 +44,9 @@ class ByEmployeeResource extends BaseByEmployeeResource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListByEmployees::route('/'),
-            'create' => Pages\CreateByEmployee::route('/create'),
-            'edit'   => Pages\EditByEmployee::route('/{record}/edit'),
-            'view'   => Pages\ViewByEmployee::route('/{record}'),
+            'index'  => ListByEmployees::route('/'),
+            'create' => CreateByEmployee::route('/create'),
+            'edit'   => EditByEmployee::route('/{record}/edit'),
         ];
     }
 }

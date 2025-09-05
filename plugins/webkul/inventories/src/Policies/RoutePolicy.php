@@ -15,7 +15,7 @@ class RoutePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_route');
+        return $user->can('view_any_routes::route');
     }
 
     /**
@@ -23,7 +23,7 @@ class RoutePolicy
      */
     public function view(User $user, Route $route): bool
     {
-        return $user->can('view_route');
+        return $user->can('view_routes::route');
     }
 
     /**
@@ -31,7 +31,7 @@ class RoutePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_route');
+        return $user->can('create_routes::route');
     }
 
     /**
@@ -39,7 +39,7 @@ class RoutePolicy
      */
     public function update(User $user, Route $route): bool
     {
-        return $user->can('update_route');
+        return $user->can('update_routes::route');
     }
 
     /**
@@ -47,7 +47,7 @@ class RoutePolicy
      */
     public function delete(User $user, Route $route): bool
     {
-        return $user->can('delete_route');
+        return $user->can('delete_routes::route');
     }
 
     /**
@@ -55,7 +55,7 @@ class RoutePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_route');
+        return $user->can('delete_any_routes::route');
     }
 
     /**
@@ -63,7 +63,7 @@ class RoutePolicy
      */
     public function forceDelete(User $user, Route $route): bool
     {
-        return $user->can('force_delete_route');
+        return $user->can('force_delete_routes::route');
     }
 
     /**
@@ -71,7 +71,7 @@ class RoutePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_route');
+        return $user->can('force_delete_any_routes::route');
     }
 
     /**
@@ -79,7 +79,7 @@ class RoutePolicy
      */
     public function restore(User $user, Route $route): bool
     {
-        return $user->can('restore_route');
+        return $user->can('restore_routes::route');
     }
 
     /**
@@ -87,7 +87,7 @@ class RoutePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_route');
+        return $user->can('restore_any_routes::route');
     }
 
     /**
@@ -95,7 +95,7 @@ class RoutePolicy
      */
     public function replicate(User $user, Route $route): bool
     {
-        return $user->can('replicate_route');
+        return $user->can('replicate_routes::route');
     }
 
     /**
@@ -103,6 +103,6 @@ class RoutePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_route');
+        return $user->can('reorder_routes::route');
     }
 }

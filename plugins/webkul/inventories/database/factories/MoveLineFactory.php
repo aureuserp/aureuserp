@@ -7,7 +7,7 @@ use Webkul\Inventory\Models\MoveLine;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Inventory\Models\MoveLine>
+ * @extends Factory<MoveLine>
  */
 class MoveLineFactory extends Factory
 {

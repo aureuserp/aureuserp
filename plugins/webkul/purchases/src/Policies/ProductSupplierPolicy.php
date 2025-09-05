@@ -15,7 +15,7 @@ class ProductSupplierPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_vendor::price');
+        return $user->can('view_any_vendor::prices::vendor::price');
     }
 
     /**
@@ -23,7 +23,7 @@ class ProductSupplierPolicy
      */
     public function view(User $user, ProductSupplier $productSupplier): bool
     {
-        return $user->can('view_vendor::price');
+        return $user->can('view_vendor::prices::vendor::price');
     }
 
     /**
@@ -31,7 +31,7 @@ class ProductSupplierPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_vendor::price');
+        return $user->can('create_vendor::prices::vendor::price');
     }
 
     /**
@@ -39,7 +39,7 @@ class ProductSupplierPolicy
      */
     public function update(User $user, ProductSupplier $productSupplier): bool
     {
-        return $user->can('update_vendor::price');
+        return $user->can('update_vendor::prices::vendor::price');
     }
 
     /**
@@ -47,7 +47,7 @@ class ProductSupplierPolicy
      */
     public function delete(User $user, ProductSupplier $productSupplier): bool
     {
-        return $user->can('delete_vendor::price');
+        return $user->can('delete_vendor::prices::vendor::price');
     }
 
     /**
@@ -55,7 +55,7 @@ class ProductSupplierPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_vendor::price');
+        return $user->can('delete_any_vendor::prices::vendor::price');
     }
 
     /**
@@ -63,7 +63,7 @@ class ProductSupplierPolicy
      */
     public function forceDelete(User $user, ProductSupplier $productSupplier): bool
     {
-        return $user->can('force_delete_vendor::price');
+        return $user->can('force_delete_vendor::prices::vendor::price');
     }
 
     /**
@@ -71,7 +71,7 @@ class ProductSupplierPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_vendor::price');
+        return $user->can('force_delete_any_vendor::prices::vendor::price');
     }
 
     /**
@@ -79,7 +79,7 @@ class ProductSupplierPolicy
      */
     public function restore(User $user, ProductSupplier $productSupplier): bool
     {
-        return $user->can('restore_vendor::price');
+        return $user->can('restore_vendor::prices::vendor::price');
     }
 
     /**
@@ -87,7 +87,7 @@ class ProductSupplierPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_vendor::price');
+        return $user->can('restore_any_vendor::prices::vendor::price');
     }
 
     /**
@@ -95,7 +95,7 @@ class ProductSupplierPolicy
      */
     public function replicate(User $user, ProductSupplier $productSupplier): bool
     {
-        return $user->can('replicate_vendor::price');
+        return $user->can('replicate_vendor::prices::vendor::price');
     }
 
     /**
@@ -103,6 +103,6 @@ class ProductSupplierPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_vendor::price');
+        return $user->can('reorder_vendor::prices::vendor::price');
     }
 }

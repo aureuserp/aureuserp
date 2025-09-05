@@ -2,20 +2,21 @@
 
 namespace Webkul\TableViews\Filament\Components;
 
-use Webkul\TableViews\Models\TableView;
+use Closure;
+use Illuminate\Database\Eloquent\Model;
 
 class SavedView extends PresetView
 {
-    protected TableView $model;
+    protected Model|array|string|Closure|null $model = null;
 
-    public function model(TableView $model): static
+    public function model(Model|array|string|Closure|null $model = null): static
     {
         $this->model = $model;
 
         return $this;
     }
 
-    public function getModel(): TableView
+    public function getModel(): ?string
     {
         return $this->model;
     }
@@ -32,22 +33,22 @@ class SavedView extends PresetView
 
     public function isPublic(): bool
     {
-        return $this->model->is_public;
+        return $this->getRecord()->is_public;
     }
 
     public function isEditable(): bool
     {
-        return $this->model->user_id === auth()->id();
+        return $this->getRecord()->user_id === filament()->auth()->id();
     }
 
     public function isReplaceable(): bool
     {
-        return $this->model->user_id === auth()->id();
+        return $this->getRecord()->user_id === filament()->auth()->id();
     }
 
     public function isDeletable(): bool
     {
-        return $this->model->user_id === auth()->id();
+        return $this->getRecord()->user_id === filament()->auth()->id();
     }
 
     public function getVisibilityIcon(): string

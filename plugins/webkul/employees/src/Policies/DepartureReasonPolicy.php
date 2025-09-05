@@ -15,7 +15,7 @@ class DepartureReasonPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_departure::reason');
+        return $user->can('view_any_departure::reasons::departure::reason');
     }
 
     /**
@@ -23,7 +23,7 @@ class DepartureReasonPolicy
      */
     public function view(User $user, DepartureReason $departureReason): bool
     {
-        return $user->can('view_departure::reason');
+        return $user->can('view_departure::reasons::departure::reason');
     }
 
     /**
@@ -31,7 +31,7 @@ class DepartureReasonPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_departure::reason');
+        return $user->can('create_departure::reasons::departure::reason');
     }
 
     /**
@@ -39,7 +39,7 @@ class DepartureReasonPolicy
      */
     public function update(User $user, DepartureReason $departureReason): bool
     {
-        return $user->can('update_departure::reason');
+        return $user->can('update_departure::reasons::departure::reason');
     }
 
     /**
@@ -47,7 +47,7 @@ class DepartureReasonPolicy
      */
     public function delete(User $user, DepartureReason $departureReason): bool
     {
-        return $user->can('delete_departure::reason');
+        return $user->can('delete_departure::reasons::departure::reason');
     }
 
     /**
@@ -55,7 +55,7 @@ class DepartureReasonPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_departure::reason');
+        return $user->can('delete_any_departure::reasons::departure::reason');
     }
 
     /**
@@ -63,7 +63,7 @@ class DepartureReasonPolicy
      */
     public function forceDelete(User $user, DepartureReason $departureReason): bool
     {
-        return $user->can('force_delete_departure::reason');
+        return $user->can('force_delete_departure::reasons::departure::reason');
     }
 
     /**
@@ -71,7 +71,7 @@ class DepartureReasonPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_departure::reason');
+        return $user->can('force_delete_any_departure::reasons::departure::reason');
     }
 
     /**
@@ -79,7 +79,7 @@ class DepartureReasonPolicy
      */
     public function restore(User $user, DepartureReason $departureReason): bool
     {
-        return $user->can('restore_departure::reason');
+        return $user->can('restore_departure::reasons::departure::reason');
     }
 
     /**
@@ -87,7 +87,7 @@ class DepartureReasonPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_departure::reason');
+        return $user->can('restore_any_departure::reasons::departure::reason');
     }
 
     /**
@@ -95,7 +95,7 @@ class DepartureReasonPolicy
      */
     public function replicate(User $user, DepartureReason $departureReason): bool
     {
-        return $user->can('replicate_departure::reason');
+        return $user->can('replicate_departure::reasons::departure::reason');
     }
 
     /**
@@ -103,6 +103,6 @@ class DepartureReasonPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_departure::reason');
+        return $user->can('reorder_departure::reasons::departure::reason');
     }
 }

@@ -5,7 +5,7 @@ namespace Webkul\Inventory\Filament\Clusters\Operations\Actions;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Livewire\Component;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\Operation;
 
@@ -44,6 +44,6 @@ class TodoAction extends Action
                     ->success()
                     ->send();
             })
-            ->hidden(fn () => $this->getRecord()->state !== Enums\OperationState::DRAFT);
+            ->hidden(fn () => $this->getRecord()->state !== OperationState::DRAFT);
     }
 }

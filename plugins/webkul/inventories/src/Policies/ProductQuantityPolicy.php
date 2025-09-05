@@ -15,7 +15,7 @@ class ProductQuantityPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_quantity');
+        return $user->can('view_any_quantities::quantity');
     }
 
     /**
@@ -23,7 +23,7 @@ class ProductQuantityPolicy
      */
     public function view(User $user, ProductQuantity $productQuantity): bool
     {
-        return $user->can('view_quantity');
+        return $user->can('view_quantities::quantity');
     }
 
     /**
@@ -31,7 +31,7 @@ class ProductQuantityPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_quantity');
+        return $user->can('create_quantities::quantity');
     }
 
     /**
@@ -39,7 +39,7 @@ class ProductQuantityPolicy
      */
     public function update(User $user, ProductQuantity $productQuantity): bool
     {
-        return $user->can('update_quantity');
+        return $user->can('update_quantities::quantity');
     }
 
     /**
@@ -47,7 +47,7 @@ class ProductQuantityPolicy
      */
     public function delete(User $user, ProductQuantity $productQuantity): bool
     {
-        return $user->can('delete_quantity');
+        return $user->can('delete_quantities::quantity');
     }
 
     /**
@@ -55,7 +55,7 @@ class ProductQuantityPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_quantity');
+        return $user->can('delete_any_quantities::quantity');
     }
 
     /**
@@ -63,7 +63,7 @@ class ProductQuantityPolicy
      */
     public function forceDelete(User $user, ProductQuantity $productQuantity): bool
     {
-        return $user->can('force_delete_quantity');
+        return $user->can('force_delete_quantities::quantity');
     }
 
     /**
@@ -71,7 +71,7 @@ class ProductQuantityPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_quantity');
+        return $user->can('force_delete_any_quantities::quantity');
     }
 
     /**
@@ -79,7 +79,7 @@ class ProductQuantityPolicy
      */
     public function restore(User $user, ProductQuantity $productQuantity): bool
     {
-        return $user->can('restore_quantity');
+        return $user->can('restore_quantities::quantity');
     }
 
     /**
@@ -87,7 +87,7 @@ class ProductQuantityPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_quantity');
+        return $user->can('restore_any_quantities::quantity');
     }
 
     /**
@@ -95,7 +95,7 @@ class ProductQuantityPolicy
      */
     public function replicate(User $user, ProductQuantity $productQuantity): bool
     {
-        return $user->can('replicate_quantity');
+        return $user->can('replicate_quantities::quantity');
     }
 
     /**
@@ -103,6 +103,6 @@ class ProductQuantityPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_quantity');
+        return $user->can('reorder_quantities::quantity');
     }
 }

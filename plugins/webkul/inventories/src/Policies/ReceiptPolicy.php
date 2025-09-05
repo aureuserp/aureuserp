@@ -16,7 +16,7 @@ class ReceiptPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_receipt');
+        return $user->can('view_any_receipts::receipt');
     }
 
     /**
@@ -24,7 +24,7 @@ class ReceiptPolicy
      */
     public function view(User $user, Receipt $receipt): bool
     {
-        return $user->can('view_receipt');
+        return $user->can('view_receipts::receipt');
     }
 
     /**
@@ -32,7 +32,7 @@ class ReceiptPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_receipt');
+        return $user->can('create_receipts::receipt');
     }
 
     /**
@@ -40,7 +40,7 @@ class ReceiptPolicy
      */
     public function update(User $user, Receipt $receipt): bool
     {
-        if (! $user->can('update_receipt')) {
+        if (! $user->can('update_receipts::receipt')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class ReceiptPolicy
      */
     public function delete(User $user, Receipt $receipt): bool
     {
-        if (! $user->can('delete_receipt')) {
+        if (! $user->can('delete_receipts::receipt')) {
             return false;
         }
 
@@ -64,7 +64,7 @@ class ReceiptPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_receipt');
+        return $user->can('delete_any_receipts::receipt');
     }
 
     /**
@@ -72,7 +72,7 @@ class ReceiptPolicy
      */
     public function forceDelete(User $user, Receipt $receipt): bool
     {
-        if (! $user->can('force_delete_receipt')) {
+        if (! $user->can('force_delete_receipts::receipt')) {
             return false;
         }
 
@@ -84,7 +84,7 @@ class ReceiptPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_receipt');
+        return $user->can('force_delete_any_receipts::receipt');
     }
 
     /**
@@ -92,7 +92,7 @@ class ReceiptPolicy
      */
     public function restore(User $user, Receipt $receipt): bool
     {
-        if (! $user->can('restore_receipt')) {
+        if (! $user->can('restore_receipts::receipt')) {
             return false;
         }
 
@@ -104,7 +104,7 @@ class ReceiptPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_receipt');
+        return $user->can('restore_any_receipts::receipt');
     }
 
     /**
@@ -112,7 +112,7 @@ class ReceiptPolicy
      */
     public function replicate(User $user, Receipt $receipt): bool
     {
-        if (! $user->can('replicate_receipt')) {
+        if (! $user->can('replicate_receipts::receipt')) {
             return false;
         }
 
@@ -124,6 +124,6 @@ class ReceiptPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_receipt');
+        return $user->can('reorder_receipts::receipt');
     }
 }

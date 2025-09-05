@@ -2,12 +2,22 @@
 
 namespace Webkul\Recruitment\Traits;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Select;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Models\SkillType;
@@ -15,23 +25,23 @@ use Webkul\Support\Filament\Tables as CustomTables;
 
 trait CandidateSkillRelation
 {
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make([
-                    Forms\Components\Hidden::make('creator_id')
+        return $schema
+            ->components([
+                Section::make([
+                    Hidden::make('creator_id')
                         ->default(fn () => Auth::user()->id),
-                    Forms\Components\Radio::make('skill_type_id')
+                    Radio::make('skill_type_id')
                         ->label(__('recruitments::filament/clusters/applications/resources/candidate/relation-manager/skill.form.sections.fields.skill-type'))
                         ->options(SkillType::pluck('name', 'id'))
                         ->default(fn () => SkillType::first()?->id)
                         ->required()
                         ->reactive()
                         ->afterStateUpdated(fn (callable $set) => $set('skill_id', null)),
-                    Forms\Components\Group::make()
+                    Group::make()
                         ->schema([
-                            Forms\Components\Select::make('skill_id')
+                            Select::make('skill_id')
                                 ->label(__('recruitments::filament/clusters/applications/resources/candidate/relation-manager/skill.form.sections.fields.skill'))
                                 ->options(
                                     fn (callable $get) => SkillType::find($get('skill_type_id'))?->skills->pluck('name', 'id') ?? []
@@ -39,7 +49,7 @@ trait CandidateSkillRelation
                                 ->required()
                                 ->reactive()
                                 ->afterStateUpdated(fn (callable $set) => $set('skill_level_id', null)),
-                            Forms\Components\Select::make('skill_level_id')
+                            Select::make('skill_level_id')
                                 ->label(__('recruitments::filament/clusters/applications/resources/candidate/relation-manager/skill.form.sections.fields.skill-level'))
                                 ->options(
                                     fn (callable $get) => SkillType::find($get('skill_type_id'))?->skillLevels->pluck('name', 'id') ?? []
@@ -54,13 +64,13 @@ trait CandidateSkillRelation
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('skillType.name')
+                TextColumn::make('skillType.name')
                     ->label(__('recruitments::filament/clusters/applications/resources/candidate/relation-manager/skill.table.columns.skill-type'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('skill.name')
+                TextColumn::make('skill.name')
                     ->label(__('recruitments::filament/clusters/applications/resources/candidate/relation-manager/skill.table.columns.skill'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('skillLevel.name')
+                TextColumn::make('skillLevel.name')
                     ->label(__('recruitments::filament/clusters/applications/resources/candidate/relation-manager/skill.table.columns.skill-level'))
                     ->badge()
                     ->color(fn ($record) => $record->skillType?->color),
@@ -78,14 +88,14 @@ trait CandidateSkillRelation
                         }
                     })
                     ->label(__('recruitments::filament/clusters/applications/resources/candidate/relation-manager/skill.table.columns.level-percent')),
-                Tables\Columns\TextColumn::make('creator.name')
+                TextColumn::make('creator.name')
                     ->label(__('recruitments::filament/clusters/applications/resources/candidate/relation-manager/skill.table.columns.created-by'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->label(__('recruitments::filament/clusters/applications/resources/candidate/relation-manager/skill.table.columns.user'))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('recruitments::filament/clusters/applications/resources/candidate/relation-manager/skill.table.columns.created-at'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -98,7 +108,7 @@ trait CandidateSkillRelation
             ])
             ->filters([])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label(__('recruitments::filament/clusters/applications/resources/candidate/relation-manager/skill.table.header-actions.add-skill'))
                     ->icon('heroicon-o-plus-circle')
                     ->successNotification(
@@ -107,7 +117,7 @@ trait CandidateSkillRelation
                             ->title(__('recruitments::filament/clusters/applications/resources/candidate/relation-manager/skill.table.actions.create.notification.title'))
                             ->body(__('recruitments::filament/clusters/applications/resources/candidate/relation-manager/skill.table.actions.create.notification.body'))
                     )
-                    ->mutateFormDataUsing(function ($data, $livewire) {
+                    ->mutateDataUsing(function ($data, $livewire) {
                         if (empty($data['candidate_id'])) {
                             $owner = $this->getOwnerRecord();
 
@@ -121,16 +131,16 @@ trait CandidateSkillRelation
                         return $data;
                     }),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('recruitments::filament/clusters/applications/resources/candidate/relation-manager/skill.table.actions.edit.notification.title'))
                             ->body(__('recruitments::filament/clusters/applications/resources/candidate/relation-manager/skill.table.actions.edit.notification.body'))
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -138,9 +148,9 @@ trait CandidateSkillRelation
                             ->body(__('recruitments::filament/clusters/applications/resources/candidate/relation-manager/skill.table.actions.delete.notification.body'))
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -151,21 +161,21 @@ trait CandidateSkillRelation
             ]);
     }
 
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Infolists\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Infolists\Components\TextEntry::make('skillType.name')
+                                TextEntry::make('skillType.name')
                                     ->placeholder('—')
                                     ->label(__('recruitments::filament/clusters/applications/resources/candidate/relation-manager/skill.infolist.entries.skill-type')),
-                                Infolists\Components\TextEntry::make('skill.name')
+                                TextEntry::make('skill.name')
                                     ->placeholder('—')
                                     ->label(__('recruitments::filament/clusters/applications/resources/candidate/relation-manager/skill.infolist.entries.skill')),
-                                Infolists\Components\TextEntry::make('skillLevel.name')
+                                TextEntry::make('skillLevel.name')
                                     ->placeholder('—')
                                     ->badge()
                                     ->color(fn ($record) => $record->skillType?->color)

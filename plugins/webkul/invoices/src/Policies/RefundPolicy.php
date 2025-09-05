@@ -15,7 +15,7 @@ class RefundPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_refund');
+        return $user->can('view_any_refunds::refund');
     }
 
     /**
@@ -23,7 +23,7 @@ class RefundPolicy
      */
     public function view(User $user, Refund $refund): bool
     {
-        return $user->can('view_refund');
+        return $user->can('view_refunds::refund');
     }
 
     /**
@@ -31,7 +31,7 @@ class RefundPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_refund');
+        return $user->can('create_refunds::refund');
     }
 
     /**
@@ -39,7 +39,7 @@ class RefundPolicy
      */
     public function update(User $user, Refund $refund): bool
     {
-        return $user->can('update_refund');
+        return $user->can('update_refunds::refund');
     }
 
     /**
@@ -47,7 +47,7 @@ class RefundPolicy
      */
     public function delete(User $user, Refund $refund): bool
     {
-        return $user->can('delete_refund');
+        return $user->can('delete_refunds::refund');
     }
 
     /**
@@ -55,7 +55,7 @@ class RefundPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_refund');
+        return $user->can('delete_any_refunds::refund');
     }
 
     /**
@@ -63,7 +63,7 @@ class RefundPolicy
      */
     public function forceDelete(User $user, Refund $refund): bool
     {
-        return $user->can('force_delete_refund');
+        return $user->can('force_delete_refunds::refund');
     }
 
     /**
@@ -71,7 +71,7 @@ class RefundPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_refund');
+        return $user->can('force_delete_any_refunds::refund');
     }
 
     /**
@@ -79,7 +79,7 @@ class RefundPolicy
      */
     public function restore(User $user, Refund $refund): bool
     {
-        return $user->can('restore_refund');
+        return $user->can('restore_refunds::refund');
     }
 
     /**
@@ -87,7 +87,7 @@ class RefundPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_refund');
+        return $user->can('restore_any_refunds::refund');
     }
 
     /**
@@ -95,7 +95,7 @@ class RefundPolicy
      */
     public function replicate(User $user, Refund $refund): bool
     {
-        return $user->can('replicate_refund');
+        return $user->can('replicate_refunds::refund');
     }
 
     /**
@@ -103,6 +103,6 @@ class RefundPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_refund');
+        return $user->can('reorder_refunds::refund');
     }
 }

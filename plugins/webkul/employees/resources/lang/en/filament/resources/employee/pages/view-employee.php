@@ -9,4 +9,7 @@ return [
             ],
         ],
     ],
+    'sub-navigation' => [
+        'view-employee' => 'View Employee',
+    ],
 ];

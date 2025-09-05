@@ -8,7 +8,7 @@ use Webkul\Product\Models\Attribute;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Product\Models\Attribute>
+ * @extends Factory<Attribute>
  */
 class AttributeFactory extends Factory
 {

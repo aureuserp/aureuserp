@@ -14,4 +14,7 @@ return [
             ],
         ],
     ],
+    'sub-navigation' => [
+        'edit-quotation' => 'Edit Quotation',
+    ],
 ];

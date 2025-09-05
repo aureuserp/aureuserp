@@ -17,26 +17,26 @@ class LeaveTypeWidget extends ChartWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    protected static ?string $maxHeight = '400px';
+    protected ?string $maxHeight = '400px';
 
     protected function getData(): array
     {
         $query = Leave::query();
 
-        if ($this->filters['selectedCompanies'] ?? null) {
-            $query->whereIn('company_id', $this->filters['selectedCompanies']);
+        if ($this->pageFilters['selectedCompanies'] ?? null) {
+            $query->whereIn('company_id', $this->pageFilters['selectedCompanies']);
         }
 
-        if ($this->filters['selectedDepartments'] ?? null) {
-            $query->whereIn('department_id', $this->filters['selectedDepartments']);
+        if ($this->pageFilters['selectedDepartments'] ?? null) {
+            $query->whereIn('department_id', $this->pageFilters['selectedDepartments']);
         }
 
-        if ($this->filters['startDate'] ?? null) {
-            $query->where('request_date_from', '>=', Carbon::parse($this->filters['startDate'])->startOfDay());
+        if ($this->pageFilters['startDate'] ?? null) {
+            $query->where('request_date_from', '>=', Carbon::parse($this->pageFilters['startDate'])->startOfDay());
         }
 
-        if ($this->filters['endDate'] ?? null) {
-            $query->where('request_date_to', '<=', Carbon::parse($this->filters['endDate'])->endOfDay());
+        if ($this->pageFilters['endDate'] ?? null) {
+            $query->where('request_date_to', '<=', Carbon::parse($this->pageFilters['endDate'])->endOfDay());
         }
 
         $stats = $query->selectRaw('
@@ -48,7 +48,7 @@ class LeaveTypeWidget extends ChartWidget
             SUM(CASE WHEN state = "cancel" THEN 1 ELSE 0 END) as cancelled
         ')->first();
 
-        $data = match ($this->filters['status'] ?? 'all') {
+        $data = match ($this->pageFilters['status'] ?? 'all') {
             'draft'     => ['Draft' => $stats->draft ?? 0],
             'confirmed' => ['Confirmed' => $stats->confirmed ?? 0],
             'validated' => ['Validated' => $stats->validated ?? 0],

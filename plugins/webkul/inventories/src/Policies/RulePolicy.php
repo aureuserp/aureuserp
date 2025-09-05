@@ -15,7 +15,7 @@ class RulePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_rule');
+        return $user->can('view_any_rules::rule');
     }
 
     /**
@@ -23,7 +23,7 @@ class RulePolicy
      */
     public function view(User $user, Rule $rule): bool
     {
-        return $user->can('view_rule');
+        return $user->can('view_rules::rule');
     }
 
     /**
@@ -31,7 +31,7 @@ class RulePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_rule');
+        return $user->can('create_rules::rule');
     }
 
     /**
@@ -39,7 +39,7 @@ class RulePolicy
      */
     public function update(User $user, Rule $rule): bool
     {
-        return $user->can('update_rule');
+        return $user->can('update_rules::rule');
     }
 
     /**
@@ -47,7 +47,7 @@ class RulePolicy
      */
     public function delete(User $user, Rule $rule): bool
     {
-        return $user->can('delete_rule');
+        return $user->can('delete_rules::rule');
     }
 
     /**
@@ -55,7 +55,7 @@ class RulePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_rule');
+        return $user->can('delete_any_rules::rule');
     }
 
     /**
@@ -63,7 +63,7 @@ class RulePolicy
      */
     public function forceDelete(User $user, Rule $rule): bool
     {
-        return $user->can('force_delete_rule');
+        return $user->can('force_delete_rules::rule');
     }
 
     /**
@@ -71,7 +71,7 @@ class RulePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_rule');
+        return $user->can('force_delete_any_rules::rule');
     }
 
     /**
@@ -79,7 +79,7 @@ class RulePolicy
      */
     public function restore(User $user, Rule $rule): bool
     {
-        return $user->can('restore_rule');
+        return $user->can('restore_rules::rule');
     }
 
     /**
@@ -87,7 +87,7 @@ class RulePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_rule');
+        return $user->can('restore_any_rules::rule');
     }
 
     /**
@@ -95,7 +95,7 @@ class RulePolicy
      */
     public function replicate(User $user, Rule $rule): bool
     {
-        return $user->can('replicate_rule');
+        return $user->can('replicate_rules::rule');
     }
 
     /**
@@ -103,6 +103,6 @@ class RulePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_rule');
+        return $user->can('reorder_rules::rule');
     }
 }

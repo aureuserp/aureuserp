@@ -7,7 +7,7 @@ use Webkul\Product\Models\PriceRuleItem;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Product\Models\PriceRuleItem>
+ * @extends Factory<PriceRuleItem>
  */
 class PriceRuleItemFactory extends Factory
 {

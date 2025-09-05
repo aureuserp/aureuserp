@@ -2,22 +2,30 @@
 
 namespace Webkul\Account\Traits;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Set;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
-use Filament\Tables;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Account\Enums;
+use Webkul\Account\Enums\DocumentType;
+use Webkul\Account\Enums\RepartitionType;
 
 trait TaxPartition
 {
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('factor_percent')
+        return $schema
+            ->components([
+                TextInput::make('factor_percent')
                     ->suffix('%')
                     ->numeric()
                     ->minValue(0)
@@ -25,28 +33,28 @@ trait TaxPartition
                     ->label(__('accounts::traits/tax-partition.form.factor-percent'))
                     ->live()
                     ->afterStateUpdated(fn (Set $set, $state) => $set('factor', (float) $state / 100)),
-                Forms\Components\TextInput::make('factor')
+                TextInput::make('factor')
                     ->readOnly()
                     ->label(__('accounts::traits/tax-partition.form.factor-ratio')),
-                Forms\Components\Select::make('repartition_type')
-                    ->options(Enums\RepartitionType::options())
+                Select::make('repartition_type')
+                    ->options(RepartitionType::options())
                     ->required()
                     ->label(__('accounts::traits/tax-partition.form.repartition-type')),
-                Forms\Components\Select::make('document_type')
-                    ->options(Enums\DocumentType::options())
+                Select::make('document_type')
+                    ->options(DocumentType::options())
                     ->required()
                     ->label(__('accounts::traits/tax-partition.form.document-type')),
-                Forms\Components\Select::make('account_id')
+                Select::make('account_id')
                     ->relationship('account', 'name')
                     ->searchable()
                     ->preload()
                     ->label(__('accounts::traits/tax-partition.form.account')),
-                Forms\Components\Select::make('tax_id')
+                Select::make('tax_id')
                     ->relationship('tax', 'name')
                     ->searchable()
                     ->preload()
                     ->label(__('accounts::traits/tax-partition.form.tax')),
-                Forms\Components\Toggle::make('use_in_tax_closing')
+                Toggle::make('use_in_tax_closing')
                     ->label(__('accounts::traits/tax-partition.form.tax-closing-entry')),
             ]);
     }
@@ -55,33 +63,33 @@ trait TaxPartition
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('factor_percent')
+                TextColumn::make('factor_percent')
                     ->label(__('accounts::traits/tax-partition.table.columns.factor-percent')),
-                Tables\Columns\TextColumn::make('account.name')
+                TextColumn::make('account.name')
                     ->label(__('accounts::traits/tax-partition.table.columns.account')),
-                Tables\Columns\TextColumn::make('tax.name')
+                TextColumn::make('tax.name')
                     ->label(__('accounts::traits/tax-partition.table.columns.tax')),
-                Tables\Columns\TextColumn::make('company.name')
+                TextColumn::make('company.name')
                     ->label(__('accounts::traits/tax-partition.table.columns.company')),
-                Tables\Columns\TextColumn::make('repartition_type')
-                    ->formatStateUsing(fn ($state) => Enums\RepartitionType::options()[$state])
+                TextColumn::make('repartition_type')
+                    ->formatStateUsing(fn ($state) => RepartitionType::options()[$state])
                     ->label(__('accounts::traits/tax-partition.table.columns.repartition-type')),
-                Tables\Columns\TextColumn::make('document_type')
-                    ->formatStateUsing(fn ($state) => Enums\DocumentType::options()[$state])
+                TextColumn::make('document_type')
+                    ->formatStateUsing(fn ($state) => DocumentType::options()[$state])
                     ->label(__('accounts::traits/tax-partition.table.columns.document-type')),
-                Tables\Columns\IconColumn::make('use_in_tax_closing')
+                IconColumn::make('use_in_tax_closing')
                     ->boolean()
                     ->label(__('accounts::traits/tax-partition.table.columns.tax-closing-entry')),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make()
                     ->successNotification(
                         Notification::make()
                             ->title(__('accounts::traits/tax-partition.table.actions.edit.notification.title'))
                             ->body(__('accounts::traits/tax-partition.table.actions.edit.notification.body'))
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->title(__('accounts::traits/tax-partition.table.actions.delete.notification.title'))
@@ -89,9 +97,9 @@ trait TaxPartition
                     ),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->icon('heroicon-o-plus-circle')
-                    ->mutateFormDataUsing(function ($data) {
+                    ->mutateDataUsing(function ($data) {
                         $user = Auth::user();
 
                         $data['creator_id'] = $user->id;

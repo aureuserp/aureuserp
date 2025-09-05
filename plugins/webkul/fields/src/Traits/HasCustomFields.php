@@ -2,6 +2,7 @@
 
 namespace Webkul\Field\Traits;
 
+use Exception;
 use Webkul\Field\Models\Field;
 
 trait HasCustomFields
@@ -43,7 +44,7 @@ trait HasCustomFields
             $this->mergeFillable(self::$customFillable ??= $customFields->pluck('code')->toArray());
 
             $this->mergeCasts(self::$customCasts ??= $customFields->select('code', 'type', 'is_multiselect')->get());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // do nothing
         }
     }

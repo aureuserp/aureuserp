@@ -9,7 +9,7 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Bank;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Partner\Models\BankAccount>
+ * @extends Factory<BankAccount>
  */
 class BankAccountFactory extends Factory
 {

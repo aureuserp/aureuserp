@@ -16,7 +16,7 @@ class QuotationPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_quotation');
+        return $user->can('view_any_quotations::quotation');
     }
 
     /**
@@ -24,7 +24,7 @@ class QuotationPolicy
      */
     public function view(User $user, Quotation $quotation): bool
     {
-        return $user->can('view_quotation');
+        return $user->can('view_quotations::quotation');
     }
 
     /**
@@ -32,7 +32,7 @@ class QuotationPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_quotation');
+        return $user->can('create_quotations::quotation');
     }
 
     /**
@@ -40,7 +40,7 @@ class QuotationPolicy
      */
     public function update(User $user, Quotation $quotation): bool
     {
-        if (! $user->can('update_quotation')) {
+        if (! $user->can('update_quotations::quotation')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class QuotationPolicy
      */
     public function delete(User $user, Quotation $quotation): bool
     {
-        if (! $user->can('delete_quotation')) {
+        if (! $user->can('delete_quotations::quotation')) {
             return false;
         }
 
@@ -64,7 +64,7 @@ class QuotationPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_quotation');
+        return $user->can('delete_any_quotations::quotation');
     }
 
     /**
@@ -72,7 +72,7 @@ class QuotationPolicy
      */
     public function forceDelete(User $user, Quotation $quotation): bool
     {
-        if (! $user->can('force_delete_quotation')) {
+        if (! $user->can('force_delete_quotations::quotation')) {
             return false;
         }
 
@@ -84,7 +84,7 @@ class QuotationPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_quotation');
+        return $user->can('force_delete_any_quotations::quotation');
     }
 
     /**
@@ -92,7 +92,7 @@ class QuotationPolicy
      */
     public function restore(User $user, Quotation $quotation): bool
     {
-        if (! $user->can('restore_quotation')) {
+        if (! $user->can('restore_quotations::quotation')) {
             return false;
         }
 
@@ -104,7 +104,7 @@ class QuotationPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_quotation');
+        return $user->can('restore_any_quotations::quotation');
     }
 
     /**
@@ -112,7 +112,7 @@ class QuotationPolicy
      */
     public function replicate(User $user, Quotation $quotation): bool
     {
-        if (! $user->can('replicate_quotation')) {
+        if (! $user->can('replicate_quotations::quotation')) {
             return false;
         }
 
@@ -124,6 +124,6 @@ class QuotationPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_quotation');
+        return $user->can('reorder_quotations::quotation');
     }
 }

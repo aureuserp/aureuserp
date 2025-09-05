@@ -1,0 +1,30 @@
+{
+    "name": "webkul/full-calendar",
+    "description": "",
+    "authors": [
+        {
+            "name": "Aureus ERP",
+            "email": "support@aureuserp.in"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Webkul\\FullCalendar\\Providers\\FullCalendarServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Webkul\\FullCalendar\\": "src/",
+            "Webkul\\FullCalendar\\Database\\Factories\\": "database/factories/",
+            "Webkul\\FullCalendar\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webkul\\FullCalendar\\Tests\\": "tests/"
+        }
+    }
+}

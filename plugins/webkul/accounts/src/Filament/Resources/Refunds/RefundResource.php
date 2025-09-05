@@ -1,0 +1,30 @@
+<?php
+
+namespace Webkul\Account\Filament\Resources\Refunds;
+
+use BackedEnum;
+use Webkul\Account\Filament\Resources\Bills\BillResource;
+use Webkul\Account\Filament\Resources\Refunds\Pages\CreateRefund;
+use Webkul\Account\Filament\Resources\Refunds\Pages\EditRefund;
+use Webkul\Account\Filament\Resources\Refunds\Pages\ListRefunds;
+use Webkul\Account\Filament\Resources\Refunds\Pages\ViewRefund;
+use Webkul\Account\Models\Move as AccountMove;
+
+class RefundResource extends BillResource
+{
+    protected static ?string $model = AccountMove::class;
+
+    protected static bool $shouldRegisterNavigation = false;
+
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-credit-card';
+
+    public static function getPages(): array
+    {
+        return [
+            'index'  => ListRefunds::route('/'),
+            'create' => CreateRefund::route('/create'),
+            'edit'   => EditRefund::route('/{record}/edit'),
+            'view'   => ViewRefund::route('/{record}'),
+        ];
+    }
+}

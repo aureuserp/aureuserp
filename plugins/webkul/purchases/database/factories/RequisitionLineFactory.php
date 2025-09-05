@@ -7,7 +7,7 @@ use Webkul\Purchase\Models\RequisitionLine;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Purchase\Models\RequisitionLine>
+ * @extends Factory<RequisitionLine>
  */
 class RequisitionLineFactory extends Factory
 {

@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Webkul\Field\Traits\HasCustomFields;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\LocationType;
+use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Product\Models\Product as BaseProduct;
 use Webkul\Security\Models\User;
 
@@ -37,7 +38,7 @@ class Product extends BaseProduct
         ]);
 
         $this->mergeCasts([
-            'tracking'            => Enums\ProductTracking::class,
+            'tracking'            => ProductTracking::class,
             'use_expiration_date' => 'boolean',
             'is_storable'         => 'boolean',
         ]);
@@ -109,7 +110,7 @@ class Product extends BaseProduct
     {
         return $this->quantities()
             ->whereHas('location', function ($query) {
-                $query->where('type', Enums\LocationType::INTERNAL)
+                $query->where('type', LocationType::INTERNAL)
                     ->where('is_scrap', false);
             })
             ->sum('quantity');

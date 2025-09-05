@@ -1,0 +1,57 @@
+<?php
+
+namespace Webkul\Blog\Filament\Customer\Resources\Post;
+
+use Filament\Resources\Resource;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Webkul\Blog\Filament\Customer\Resources\Post\Pages\ViewPost;
+use Webkul\Blog\Models\Post;
+
+class PostResource extends Resource
+{
+    protected static ?string $model = Post::class;
+
+    protected static ?string $recordRouteKeyName = 'slug';
+
+    protected static ?string $recordTitleAttribute = 'title';
+
+    protected static bool $shouldRegisterNavigation = false;
+
+    protected static bool $shouldSkipAuthorization = true;
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['title', 'category.name'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('blogs::filament/customer/resources/post.global-search.category') => $record->category?->name ?? '—',
+        ];
+    }
+
+    public static function getGlobalSearchResultUrl(Model $record): string
+    {
+        // Manual route definition since nested resource is no longer handled via $parentResource
+        return route('filament.customer.resources.categories.posts.view', [
+            'category' => $record->category->slug,
+            'record'   => $record->slug,
+        ]);
+    }
+
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return parent::getGlobalSearchEloquentQuery()
+            ->with(['category'])
+            ->where('is_published', true);
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'view' => ViewPost::route('/{record}'),
+        ];
+    }
+}

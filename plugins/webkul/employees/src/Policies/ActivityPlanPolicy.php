@@ -15,7 +15,7 @@ class ActivityPlanPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_activity::plan');
+        return $user->can('view_any_activity::plans::activity::plan');
     }
 
     /**
@@ -23,7 +23,7 @@ class ActivityPlanPolicy
      */
     public function view(User $user, ActivityPlan $activityPlan): bool
     {
-        return $user->can('view_activity::plan');
+        return $user->can('view_activity::plans::activity::plan');
     }
 
     /**
@@ -31,7 +31,7 @@ class ActivityPlanPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_activity::plan');
+        return $user->can('create_activity::plans::activity::plan');
     }
 
     /**
@@ -39,7 +39,7 @@ class ActivityPlanPolicy
      */
     public function update(User $user, ActivityPlan $activityPlan): bool
     {
-        return $user->can('update_activity::plan');
+        return $user->can('update_activity::plans::activity::plan');
     }
 
     /**
@@ -47,7 +47,7 @@ class ActivityPlanPolicy
      */
     public function delete(User $user, ActivityPlan $activityPlan): bool
     {
-        return $user->can('delete_activity::plan');
+        return $user->can('delete_activity::plans::activity::plan');
     }
 
     /**
@@ -55,7 +55,7 @@ class ActivityPlanPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_activity::plan');
+        return $user->can('delete_any_activity::plans::activity::plan');
     }
 
     /**
@@ -63,7 +63,7 @@ class ActivityPlanPolicy
      */
     public function forceDelete(User $user, ActivityPlan $activityPlan): bool
     {
-        return $user->can('force_delete_activity::plan');
+        return $user->can('force_delete_activity::plans::activity::plan');
     }
 
     /**
@@ -71,7 +71,7 @@ class ActivityPlanPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_activity::plan');
+        return $user->can('force_delete_any_activity::plans::activity::plan');
     }
 
     /**
@@ -79,7 +79,7 @@ class ActivityPlanPolicy
      */
     public function restore(User $user, ActivityPlan $activityPlan): bool
     {
-        return $user->can('restore_activity::plan');
+        return $user->can('restore_activity::plans::activity::plan');
     }
 
     /**
@@ -87,7 +87,7 @@ class ActivityPlanPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_activity::plan');
+        return $user->can('restore_any_activity::plans::activity::plan');
     }
 
     /**
@@ -95,7 +95,7 @@ class ActivityPlanPolicy
      */
     public function replicate(User $user, ActivityPlan $activityPlan): bool
     {
-        return $user->can('replicate_activity::plan');
+        return $user->can('replicate_activity::plans::activity::plan');
     }
 
     /**
@@ -103,6 +103,6 @@ class ActivityPlanPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_activity::plan');
+        return $user->can('reorder_activity::plans::activity::plan');
     }
 }

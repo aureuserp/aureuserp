@@ -15,7 +15,7 @@ class LocationPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_location');
+        return $user->can('view_any_locations::location');
     }
 
     /**
@@ -23,7 +23,7 @@ class LocationPolicy
      */
     public function view(User $user, Location $location): bool
     {
-        return $user->can('view_location');
+        return $user->can('view_locations::location');
     }
 
     /**
@@ -31,7 +31,7 @@ class LocationPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_location');
+        return $user->can('create_locations::location');
     }
 
     /**
@@ -39,7 +39,7 @@ class LocationPolicy
      */
     public function update(User $user, Location $location): bool
     {
-        return $user->can('update_location');
+        return $user->can('update_locations::location');
     }
 
     /**
@@ -47,7 +47,7 @@ class LocationPolicy
      */
     public function delete(User $user, Location $location): bool
     {
-        return $user->can('delete_location');
+        return $user->can('delete_locations::location');
     }
 
     /**
@@ -55,7 +55,7 @@ class LocationPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_location');
+        return $user->can('delete_any_locations::location');
     }
 
     /**
@@ -63,7 +63,7 @@ class LocationPolicy
      */
     public function forceDelete(User $user, Location $location): bool
     {
-        return $user->can('force_delete_location');
+        return $user->can('force_delete_locations::location');
     }
 
     /**
@@ -71,7 +71,7 @@ class LocationPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_location');
+        return $user->can('force_delete_any_locations::location');
     }
 
     /**
@@ -79,7 +79,7 @@ class LocationPolicy
      */
     public function restore(User $user, Location $location): bool
     {
-        return $user->can('restore_location');
+        return $user->can('restore_locations::location');
     }
 
     /**
@@ -87,7 +87,7 @@ class LocationPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_location');
+        return $user->can('restore_any_locations::location');
     }
 
     /**
@@ -95,7 +95,7 @@ class LocationPolicy
      */
     public function replicate(User $user, Location $location): bool
     {
-        return $user->can('replicate_location');
+        return $user->can('replicate_locations::location');
     }
 
     /**
@@ -103,6 +103,6 @@ class LocationPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_location');
+        return $user->can('reorder_locations::location');
     }
 }

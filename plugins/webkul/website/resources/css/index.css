@@ -1,1 +1,3 @@
 @import '../../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../resources/views/filament/';

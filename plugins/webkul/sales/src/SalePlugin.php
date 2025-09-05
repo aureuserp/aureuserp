@@ -5,6 +5,7 @@ namespace Webkul\Sale;
 use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
+use ReflectionClass;
 use Webkul\Sale\Filament\Clusters\Settings\Pages\ManageProducts;
 use Webkul\Support\Package;
 
@@ -50,7 +51,7 @@ class SalePlugin implements Plugin
 
     protected function getPluginBasePath($path = null): string
     {
-        $reflector = new \ReflectionClass(get_class($this));
+        $reflector = new ReflectionClass(get_class($this));
 
         return dirname($reflector->getFileName()).($path ?? '');
     }

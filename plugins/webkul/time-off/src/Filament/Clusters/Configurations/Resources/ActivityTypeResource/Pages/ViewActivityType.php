@@ -2,7 +2,7 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages;
 
-use Webkul\Support\Filament\Resources\ActivityTypeResource\Pages\ViewActivityType as BaseViewActivityType;
+use Webkul\Support\Filament\Resources\ActivityTypes\Pages\ViewActivityType as BaseViewActivityType;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\ActivityTypeResource;
 
 class ViewActivityType extends BaseViewActivityType

@@ -15,7 +15,7 @@ class TaxGroupPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_tax::group');
+        return $user->can('view_any_tax::groups::tax::group');
     }
 
     /**
@@ -23,7 +23,7 @@ class TaxGroupPolicy
      */
     public function view(User $user, TaxGroup $taxGroup): bool
     {
-        return $user->can('view_tax::group');
+        return $user->can('view_tax::groups::tax::group');
     }
 
     /**
@@ -31,7 +31,7 @@ class TaxGroupPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_tax::group');
+        return $user->can('create_tax::groups::tax::group');
     }
 
     /**
@@ -39,7 +39,7 @@ class TaxGroupPolicy
      */
     public function update(User $user, TaxGroup $taxGroup): bool
     {
-        return $user->can('update_tax::group');
+        return $user->can('update_tax::groups::tax::group');
     }
 
     /**
@@ -47,7 +47,7 @@ class TaxGroupPolicy
      */
     public function delete(User $user, TaxGroup $taxGroup): bool
     {
-        return $user->can('delete_tax::group');
+        return $user->can('delete_tax::groups::tax::group');
     }
 
     /**
@@ -55,7 +55,7 @@ class TaxGroupPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_tax::group');
+        return $user->can('delete_any_tax::groups::tax::group');
     }
 
     /**
@@ -63,7 +63,7 @@ class TaxGroupPolicy
      */
     public function forceDelete(User $user, TaxGroup $taxGroup): bool
     {
-        return $user->can('force_delete_tax::group');
+        return $user->can('force_delete_tax::groups::tax::group');
     }
 
     /**
@@ -71,7 +71,7 @@ class TaxGroupPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_tax::group');
+        return $user->can('force_delete_any_tax::groups::tax::group');
     }
 
     /**
@@ -79,7 +79,7 @@ class TaxGroupPolicy
      */
     public function restore(User $user, TaxGroup $taxGroup): bool
     {
-        return $user->can('restore_tax::group');
+        return $user->can('restore_tax::groups::tax::group');
     }
 
     /**
@@ -87,7 +87,7 @@ class TaxGroupPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_tax::group');
+        return $user->can('restore_any_tax::groups::tax::group');
     }
 
     /**
@@ -95,7 +95,7 @@ class TaxGroupPolicy
      */
     public function replicate(User $user, TaxGroup $taxGroup): bool
     {
-        return $user->can('replicate_tax::group');
+        return $user->can('replicate_tax::groups::tax::group');
     }
 
     /**
@@ -103,6 +103,6 @@ class TaxGroupPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_tax::group');
+        return $user->can('reorder_tax::groups::tax::group');
     }
 }

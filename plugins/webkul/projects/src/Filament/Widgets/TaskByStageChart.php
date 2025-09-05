@@ -14,9 +14,9 @@ class TaskByStageChart extends ChartWidget
 {
     use HasWidgetShield, InteractsWithPageFilters;
 
-    protected static ?string $heading = 'Tasks By Stage';
+    protected ?string $heading = 'Tasks By Stage';
 
-    protected static ?string $maxHeight = '250px';
+    protected ?string $maxHeight = '250px';
 
     protected static ?int $sort = 1;
 
@@ -41,32 +41,32 @@ class TaskByStageChart extends ChartWidget
 
             $query = Task::query();
 
-            if (! empty($this->filters['selectedProjects'])) {
-                $query->whereIn('project_id', $this->filters['selectedProjects']);
+            if (! empty($this->pageFilters['selectedProjects'])) {
+                $query->whereIn('project_id', $this->pageFilters['selectedProjects']);
             }
 
-            if (! empty($this->filters['selectedAssignees'])) {
+            if (! empty($this->pageFilters['selectedAssignees'])) {
                 $query->whereHas('users', function ($q) {
-                    $q->whereIn('users.id', $this->filters['selectedAssignees']);
+                    $q->whereIn('users.id', $this->pageFilters['selectedAssignees']);
                 });
             }
 
-            if (! empty($this->filters['selectedTags'])) {
+            if (! empty($this->pageFilters['selectedTags'])) {
                 $query->whereHas('tags', function ($q) {
-                    $q->whereIn('projects_task_tag.tag_id', $this->filters['selectedTags']);
+                    $q->whereIn('projects_task_tag.tag_id', $this->pageFilters['selectedTags']);
                 });
             }
 
-            if (! empty($this->filters['selectedPartners'])) {
-                $query->whereIn('parent_id', $this->filters['selectedPartners']);
+            if (! empty($this->pageFilters['selectedPartners'])) {
+                $query->whereIn('parent_id', $this->pageFilters['selectedPartners']);
             }
 
-            $startDate = ! is_null($this->filters['startDate'] ?? null) ?
-                Carbon::parse($this->filters['startDate']) :
+            $startDate = ! is_null($this->pageFilters['startDate'] ?? null) ?
+                Carbon::parse($this->pageFilters['startDate']) :
                 null;
 
-            $endDate = ! is_null($this->filters['endDate'] ?? null) ?
-                Carbon::parse($this->filters['endDate']) :
+            $endDate = ! is_null($this->pageFilters['endDate'] ?? null) ?
+                Carbon::parse($this->pageFilters['endDate']) :
                 now();
 
             $datasets['datasets'][] = $query

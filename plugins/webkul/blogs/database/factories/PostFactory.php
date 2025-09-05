@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Blog\Models\Post;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Blog\Models\Post>
+ * @extends Factory<Post>
  */
 class PostFactory extends Factory
 {

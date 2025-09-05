@@ -15,7 +15,7 @@ class ScrapPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_scrap');
+        return $user->can('view_any_scraps::scrap');
     }
 
     /**
@@ -23,7 +23,7 @@ class ScrapPolicy
      */
     public function view(User $user, Scrap $scrap): bool
     {
-        return $user->can('view_scrap');
+        return $user->can('view_scraps::scrap');
     }
 
     /**
@@ -31,7 +31,7 @@ class ScrapPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_scrap');
+        return $user->can('create_scraps::scrap');
     }
 
     /**
@@ -39,7 +39,7 @@ class ScrapPolicy
      */
     public function update(User $user, Scrap $scrap): bool
     {
-        return $user->can('update_scrap');
+        return $user->can('update_scraps::scrap');
     }
 
     /**
@@ -47,7 +47,7 @@ class ScrapPolicy
      */
     public function delete(User $user, Scrap $scrap): bool
     {
-        return $user->can('delete_scrap');
+        return $user->can('delete_scraps::scrap');
     }
 
     /**
@@ -55,7 +55,7 @@ class ScrapPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_scrap');
+        return $user->can('delete_any_scraps::scrap');
     }
 
     /**
@@ -63,7 +63,7 @@ class ScrapPolicy
      */
     public function forceDelete(User $user, Scrap $scrap): bool
     {
-        return $user->can('force_delete_scrap');
+        return $user->can('force_delete_scraps::scrap');
     }
 
     /**
@@ -71,7 +71,7 @@ class ScrapPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_scrap');
+        return $user->can('force_delete_any_scraps::scrap');
     }
 
     /**
@@ -79,7 +79,7 @@ class ScrapPolicy
      */
     public function restore(User $user, Scrap $scrap): bool
     {
-        return $user->can('restore_scrap');
+        return $user->can('restore_scraps::scrap');
     }
 
     /**
@@ -87,7 +87,7 @@ class ScrapPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_scrap');
+        return $user->can('restore_any_scraps::scrap');
     }
 
     /**
@@ -95,7 +95,7 @@ class ScrapPolicy
      */
     public function replicate(User $user, Scrap $scrap): bool
     {
-        return $user->can('replicate_scrap');
+        return $user->can('replicate_scraps::scrap');
     }
 
     /**
@@ -103,6 +103,6 @@ class ScrapPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_scrap');
+        return $user->can('reorder_scraps::scrap');
     }
 }

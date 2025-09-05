@@ -15,7 +15,7 @@ class OrderTemplatePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_quotation::template');
+        return $user->can('view_any_quotation::templates::quotation::template');
     }
 
     /**
@@ -23,7 +23,7 @@ class OrderTemplatePolicy
      */
     public function view(User $user, OrderTemplate $orderTemplate): bool
     {
-        return $user->can('view_quotation::template');
+        return $user->can('view_quotation::templates::quotation::template');
     }
 
     /**
@@ -31,7 +31,7 @@ class OrderTemplatePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_quotation::template');
+        return $user->can('create_quotation::templates::quotation::template');
     }
 
     /**
@@ -39,7 +39,7 @@ class OrderTemplatePolicy
      */
     public function update(User $user, OrderTemplate $orderTemplate): bool
     {
-        return $user->can('update_quotation::template');
+        return $user->can('update_quotation::templates::quotation::template');
     }
 
     /**
@@ -47,7 +47,7 @@ class OrderTemplatePolicy
      */
     public function delete(User $user, OrderTemplate $orderTemplate): bool
     {
-        return $user->can('delete_quotation::template');
+        return $user->can('delete_quotation::templates::quotation::template');
     }
 
     /**
@@ -55,7 +55,7 @@ class OrderTemplatePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_quotation::template');
+        return $user->can('delete_any_quotation::templates::quotation::template');
     }
 
     /**
@@ -63,7 +63,7 @@ class OrderTemplatePolicy
      */
     public function forceDelete(User $user, OrderTemplate $orderTemplate): bool
     {
-        return $user->can('force_delete_quotation::template');
+        return $user->can('force_delete_quotation::templates::quotation::template');
     }
 
     /**
@@ -71,7 +71,7 @@ class OrderTemplatePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_quotation::template');
+        return $user->can('force_delete_any_quotation::templates::quotation::template');
     }
 
     /**
@@ -79,7 +79,7 @@ class OrderTemplatePolicy
      */
     public function restore(User $user, OrderTemplate $orderTemplate): bool
     {
-        return $user->can('restore_quotation::template');
+        return $user->can('restore_quotation::templates::quotation::template');
     }
 
     /**
@@ -87,7 +87,7 @@ class OrderTemplatePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_quotation::template');
+        return $user->can('restore_any_quotation::templates::quotation::template');
     }
 
     /**
@@ -95,7 +95,7 @@ class OrderTemplatePolicy
      */
     public function replicate(User $user, OrderTemplate $orderTemplate): bool
     {
-        return $user->can('replicate_quotation::template');
+        return $user->can('replicate_quotation::templates::quotation::template');
     }
 
     /**
@@ -103,6 +103,6 @@ class OrderTemplatePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_quotation::template');
+        return $user->can('reorder_quotation::templates::quotation::template');
     }
 }

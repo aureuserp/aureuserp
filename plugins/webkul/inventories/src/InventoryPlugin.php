@@ -5,6 +5,7 @@ namespace Webkul\Inventory;
 use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
+use ReflectionClass;
 use Webkul\Inventory\Filament\Clusters\Settings\Pages\ManageOperations;
 use Webkul\Support\Package;
 
@@ -51,7 +52,7 @@ class InventoryPlugin implements Plugin
 
     protected function getPluginBasePath($path = null): string
     {
-        $reflector = new \ReflectionClass(get_class($this));
+        $reflector = new ReflectionClass(get_class($this));
 
         return dirname($reflector->getFileName()).($path ?? '');
     }

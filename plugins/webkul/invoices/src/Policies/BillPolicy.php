@@ -15,7 +15,7 @@ class BillPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_bill');
+        return $user->can('view_any_bills::bill');
     }
 
     /**
@@ -23,7 +23,7 @@ class BillPolicy
      */
     public function view(User $user, Bill $bill): bool
     {
-        return $user->can('view_bill');
+        return $user->can('view_bills::bill');
     }
 
     /**
@@ -31,7 +31,7 @@ class BillPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_bill');
+        return $user->can('create_bills::bill');
     }
 
     /**
@@ -39,7 +39,7 @@ class BillPolicy
      */
     public function update(User $user, Bill $bill): bool
     {
-        return $user->can('update_bill');
+        return $user->can('update_bills::bill');
     }
 
     /**
@@ -47,7 +47,7 @@ class BillPolicy
      */
     public function delete(User $user, Bill $bill): bool
     {
-        return $user->can('delete_bill');
+        return $user->can('delete_bills::bill');
     }
 
     /**
@@ -55,7 +55,7 @@ class BillPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_bill');
+        return $user->can('delete_any_bills::bill');
     }
 
     /**
@@ -63,7 +63,7 @@ class BillPolicy
      */
     public function forceDelete(User $user, Bill $bill): bool
     {
-        return $user->can('force_delete_bill');
+        return $user->can('force_delete_bills::bill');
     }
 
     /**
@@ -71,7 +71,7 @@ class BillPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_bill');
+        return $user->can('force_delete_any_bills::bill');
     }
 
     /**
@@ -79,7 +79,7 @@ class BillPolicy
      */
     public function restore(User $user, Bill $bill): bool
     {
-        return $user->can('restore_bill');
+        return $user->can('restore_bills::bill');
     }
 
     /**
@@ -87,7 +87,7 @@ class BillPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_bill');
+        return $user->can('restore_any_bills::bill');
     }
 
     /**
@@ -95,7 +95,7 @@ class BillPolicy
      */
     public function replicate(User $user, Bill $bill): bool
     {
-        return $user->can('replicate_bill');
+        return $user->can('replicate_bills::bill');
     }
 
     /**
@@ -103,6 +103,6 @@ class BillPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_bill');
+        return $user->can('reorder_bills::bill');
     }
 }

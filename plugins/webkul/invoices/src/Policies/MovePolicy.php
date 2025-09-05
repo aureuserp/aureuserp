@@ -3,7 +3,7 @@
 namespace Webkul\Invoice\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Webkul\Invoice\Models\Move;
+use Webkul\Account\Models\Move;
 use Webkul\Security\Models\User;
 use Webkul\Security\Traits\HasScopedPermissions;
 
@@ -16,7 +16,7 @@ class MovePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_refund');
+        return $user->can('view_any_credit::notes::credit::note');
     }
 
     /**
@@ -24,7 +24,7 @@ class MovePolicy
      */
     public function view(User $user, Move $move): bool
     {
-        return $user->can('view_refund');
+        return $user->can('view_credit::notes::credit::note');
     }
 
     /**
@@ -32,7 +32,7 @@ class MovePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_refund');
+        return $user->can('create_credit::notes::credit::note');
     }
 
     /**
@@ -40,11 +40,7 @@ class MovePolicy
      */
     public function update(User $user, Move $move): bool
     {
-        if (! $user->can('update_refund')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $move, 'invoiceUser');
+        return $user->can('update_credit::notes::credit::note');
     }
 
     /**
@@ -52,11 +48,7 @@ class MovePolicy
      */
     public function delete(User $user, Move $move): bool
     {
-        if (! $user->can('delete_refund')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $move, 'invoiceUser');
+        return $user->can('delete_credit::notes::credit::note');
     }
 
     /**
@@ -64,7 +56,7 @@ class MovePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_refund');
+        return $user->can('delete_any_credit::notes::credit::note');
     }
 
     /**
@@ -72,11 +64,7 @@ class MovePolicy
      */
     public function forceDelete(User $user, Move $move): bool
     {
-        if (! $user->can('force_delete_refund')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $move, 'invoiceUser');
+        return $user->can('force_delete_credit::notes::credit::note');
     }
 
     /**
@@ -84,7 +72,7 @@ class MovePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_refund');
+        return $user->can('force_delete_any_credit::notes::credit::note');
     }
 
     /**
@@ -92,11 +80,7 @@ class MovePolicy
      */
     public function restore(User $user, Move $move): bool
     {
-        if (! $user->can('restore_refund')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $move, 'invoiceUser');
+        return $user->can('restore_credit::notes::credit::note');
     }
 
     /**
@@ -104,7 +88,7 @@ class MovePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_refund');
+        return $user->can('restore_any_credit::notes::credit::note');
     }
 
     /**
@@ -112,11 +96,7 @@ class MovePolicy
      */
     public function replicate(User $user, Move $move): bool
     {
-        if (! $user->can('replicate_refund')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $move, 'invoiceUser');
+        return $user->can('replicate_credit::notes::credit::note');
     }
 
     /**
@@ -124,6 +104,6 @@ class MovePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_refund');
+        return $user->can('reorder_credit::notes::credit::note');
     }
 }

@@ -2,7 +2,8 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Carbon;
@@ -34,8 +35,8 @@ class EditTimeOff extends EditRecord
         return [
             ChatterActions\ChatterAction::make()
                 ->setResource(static::$resource),
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make()
+            ViewAction::make(),
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()
@@ -89,7 +90,7 @@ class EditTimeOff extends EditRecord
                 $currentDate->addDay();
             }
 
-            $data['duration_display'] = $businessDays . ' day(s)';
+            $data['duration_display'] = $businessDays.' day(s)';
             $data['number_of_days'] = $businessDays;
         }
 

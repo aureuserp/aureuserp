@@ -2,7 +2,8 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
@@ -17,8 +18,8 @@ class ViewTimeOff extends ViewRecord
         return [
             ChatterActions\ChatterAction::make()
                 ->setResource(static::$resource),
-            Actions\EditAction::make(),
-            Actions\DeleteAction::make()
+            EditAction::make(),
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()

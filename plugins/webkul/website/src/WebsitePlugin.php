@@ -8,13 +8,14 @@ use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Collection;
+use ReflectionClass;
 use Webkul\Support\Package;
 use Webkul\Website\Filament\Customer\Auth\Login;
 use Webkul\Website\Filament\Customer\Auth\PasswordReset\RequestPasswordReset;
 use Webkul\Website\Filament\Customer\Auth\PasswordReset\ResetPassword;
 use Webkul\Website\Filament\Customer\Auth\Register;
 use Webkul\Website\Filament\Customer\Clusters\Account;
-use Webkul\Website\Filament\Customer\Resources\PageResource;
+use Webkul\Website\Filament\Customer\Resources\Page\PageResource;
 use Webkul\Website\Models\Page;
 use Webkul\Website\Settings\ContactSettings;
 
@@ -84,7 +85,7 @@ class WebsitePlugin implements Plugin
 
     protected function getPluginBasePath($path = null): string
     {
-        $reflector = new \ReflectionClass(get_class($this));
+        $reflector = new ReflectionClass(get_class($this));
 
         return dirname($reflector->getFileName()).($path ?? '');
     }

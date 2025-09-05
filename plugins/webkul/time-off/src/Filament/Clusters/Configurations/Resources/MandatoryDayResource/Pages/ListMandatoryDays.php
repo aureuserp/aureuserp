@@ -2,7 +2,7 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources\MandatoryDayResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +15,7 @@ class ListMandatoryDays extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days/pages/list-mandatory-days.header-actions.create.title'))
                 ->icon('heroicon-o-plus-circle')
                 ->successNotification(
@@ -24,7 +24,7 @@ class ListMandatoryDays extends ListRecords
                         ->title(__('time-off::filament/clusters/configurations/resources/mandatory-days/pages/list-mandatory-days.header-actions.create.notification.created.title'))
                         ->body(__('time-off::filament/clusters/configurations/resources/mandatory-days/pages/list-mandatory-days.header-actions.create.notification.created.body'))
                 )
-                ->mutateFormDataUsing(function ($data) {
+                ->mutateDataUsing(function ($data) {
                     $user = Auth::user();
 
                     $data['company_id'] = $user->default_company_id;

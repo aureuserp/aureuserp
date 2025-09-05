@@ -3,7 +3,7 @@
 namespace Webkul\Purchase\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Webkul\Account\Models\MoveLine as MoveLine;
+use Webkul\Account\Models\MoveLine;
 
 class AccountMoveLine extends MoveLine
 {

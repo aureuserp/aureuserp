@@ -15,7 +15,7 @@ class PaymentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_payments');
+        return $user->can('view_any_payments::payments');
     }
 
     /**
@@ -23,7 +23,7 @@ class PaymentPolicy
      */
     public function view(User $user, Payment $payment): bool
     {
-        return $user->can('view_payments');
+        return $user->can('view_payments::payments');
     }
 
     /**
@@ -31,7 +31,7 @@ class PaymentPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_payments');
+        return $user->can('create_payments::payments');
     }
 
     /**
@@ -39,7 +39,7 @@ class PaymentPolicy
      */
     public function update(User $user, Payment $payment): bool
     {
-        return $user->can('update_payments');
+        return $user->can('update_payments::payments');
     }
 
     /**
@@ -47,7 +47,7 @@ class PaymentPolicy
      */
     public function delete(User $user, Payment $payment): bool
     {
-        return $user->can('delete_payments');
+        return $user->can('delete_payments::payments');
     }
 
     /**
@@ -55,7 +55,7 @@ class PaymentPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_payments');
+        return $user->can('delete_any_payments::payments');
     }
 
     /**
@@ -63,7 +63,7 @@ class PaymentPolicy
      */
     public function forceDelete(User $user, Payment $payment): bool
     {
-        return $user->can('force_delete_payments');
+        return $user->can('force_delete_payments::payments');
     }
 
     /**
@@ -71,7 +71,7 @@ class PaymentPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_payments');
+        return $user->can('force_delete_any_payments::payments');
     }
 
     /**
@@ -79,7 +79,7 @@ class PaymentPolicy
      */
     public function restore(User $user, Payment $payment): bool
     {
-        return $user->can('restore_payments');
+        return $user->can('restore_payments::payments');
     }
 
     /**
@@ -87,7 +87,7 @@ class PaymentPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_payments');
+        return $user->can('restore_any_payments::payments');
     }
 
     /**
@@ -95,7 +95,7 @@ class PaymentPolicy
      */
     public function replicate(User $user, Payment $payment): bool
     {
-        return $user->can('replicate_payments');
+        return $user->can('replicate_payments::payments');
     }
 
     /**
@@ -103,6 +103,6 @@ class PaymentPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_payments');
+        return $user->can('reorder_payments::payments');
     }
 }

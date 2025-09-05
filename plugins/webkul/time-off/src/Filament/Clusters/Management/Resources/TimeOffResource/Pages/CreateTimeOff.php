@@ -66,7 +66,7 @@ class CreateTimeOff extends CreateRecord
                 $currentDate->addDay();
             }
 
-            $data['duration_display'] = $businessDays . ' day(s)';
+            $data['duration_display'] = $businessDays.' day(s)';
             $data['number_of_days'] = $businessDays;
         }
 
