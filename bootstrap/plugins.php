@@ -18,6 +18,7 @@ return [
     Webkul\Sale\SalePlugin::class,
     Webkul\Security\SecurityPlugin::class,
     Webkul\Field\FieldsPlugin::class,
+    Webkul\FullCalendar\FullCalendarPlugin::class,
     Webkul\Partner\PartnerPlugin::class,
     Webkul\TimeOff\TimeOffPlugin::class,
     Webkul\Timesheet\TimesheetPlugin::class,

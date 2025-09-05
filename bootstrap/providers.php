@@ -11,6 +11,7 @@ return [
     Webkul\Contact\ContactServiceProvider::class,
     Webkul\Employee\EmployeeServiceProvider::class,
     Webkul\Field\FieldServiceProvider::class,
+    Webkul\FullCalendar\FullCalendarServiceProvider::class,
     Webkul\Inventory\InventoryServiceProvider::class,
     Webkul\Invoice\InvoiceServiceProvider::class,
     Webkul\Partner\PartnerServiceProvider::class,

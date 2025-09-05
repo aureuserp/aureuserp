@@ -29,6 +29,7 @@ class TimeOffServiceProvider extends PackageServiceProvider
             ])
             ->hasDependencies([
                 'employees',
+                'full-calendar',
             ])
             ->runsMigrations()
             ->hasSeeder('Webkul\\TimeOff\\Database\\Seeders\\DatabaseSeeder')
