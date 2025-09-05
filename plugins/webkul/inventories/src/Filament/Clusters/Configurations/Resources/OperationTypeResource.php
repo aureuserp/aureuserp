@@ -50,6 +50,16 @@ class OperationTypeResource extends Resource
         return __('inventories::filament/clusters/configurations/resources/operation-type.navigation.title');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('inventories::filament/clusters/configurations/resources/operation-type.model.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('inventories::filament/clusters/configurations/resources/operation-type.model.label-plural');
+    }
+
     public static function form(Form $form): Form
     {
         return $form
