@@ -26,7 +26,6 @@ return [
 
     ],
 
-
     'total-blogs' => [
 
         'title' => 'Total Blogs',
@@ -37,18 +36,18 @@ return [
 
     'total-blogs-publish' => [
 
-        'title' => 'Total Blogs',
+        'title' => 'Total Publish Blogs',
 
-        'description' => 'Total number of blogs in the system',
+        'description' => 'Total number of publish blogs in the system',
 
     ],
-    
-    'total-blogs-draft ' => [
 
-        'title' => 'Total Blogs',
+    'total-blogs-draft' => [
 
-        'description' => 'Total number of blogs in the system',
+        'title' => 'Total Draft Blogs',
 
-    ]
+        'description' => 'Total number of draft blogs in the system',
+
+    ],
 
 ];
