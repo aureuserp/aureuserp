@@ -7,7 +7,6 @@ use Carbon\Carbon;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Webkul\Sale\Facades\SaleOrder;
 use Webkul\Sale\Models\Order;
 
 class StatsOverviewWidget extends BaseWidget

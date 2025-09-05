@@ -17,8 +17,14 @@ class TopProductsWidget extends BaseWidget
     public function table(Table $table): Table
     {
         $query = OrderLine::query()
-            ->selectRaw('product_id, SUM(price_total) as total_revenue, SUM(product_uom_qty) as total_qty')
-            ->groupBy('product_id')
+            ->selectRaw('
+                    sales_order_lines.product_id, 
+                    SUM(sales_order_lines.product_uom_qty) AS total_qty, 
+                    SUM(sales_order_lines.price_total * sales_orders.currency_rate) AS total_revenue
+                ')
+            ->join('sales_orders', 'sales_order_lines.order_id', '=', 'sales_orders.id')
+            ->where('sales_orders.state', 'confirm') // only confirmed quotations
+            ->groupBy('sales_order_lines.product_id')
             ->orderByDesc('total_revenue')
             ->with('product')
             ->limit(10);
