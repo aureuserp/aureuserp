@@ -1,11 +1,11 @@
 {
     "private": true,
+    "type": "module",
     "scripts": {
-        "build": "vite build",
-        "dev": "vite"
+        "dev:styles": "tailwindcss -i resources/css/app.css -o resources/dist/app.css --watch",
+        "build:styles": "tailwindcss -i resources/css/app.css -o resources/dist/app.css --minify"
     },
     "devDependencies": {
-        "autoprefixer": "^10.4.20",
         "@awcodes/filament-plugin-purge": "^1.1.1",
         "@fullcalendar/adaptive": "^6.1.9",
         "@fullcalendar/common": "^5.11.5",
@@ -24,18 +24,18 @@
         "@fullcalendar/timegrid": "^6.1.9",
         "@fullcalendar/timeline": "^6.1.9",
         "@shufo/prettier-plugin-blade": "^1.10.1",
-        "moment": "^2.29.4",
-        "moment-timezone": "^0.5.43",
-        "rrule": "^2.7.2",
         "@tailwindcss/cli": "^4.1.12",
         "@tailwindcss/forms": "^0.5.4",
         "@tailwindcss/postcss": "^4.1.12",
         "@tailwindcss/typography": "^0.5.9",
+        "autoprefixer": "^10.4.20",
+        "esbuild": "^0.25.9",
+        "moment": "^2.29.4",
+        "moment-timezone": "^0.5.43",
         "postcss": "^8.4.26",
         "prettier": "^3.0.0",
         "prettier-plugin-tailwindcss": "^0.6.14",
-        "tailwindcss": "^4.1.12",
-        "vite": "^4.0.0",
-        "laravel-vite-plugin": "^0.7.0"
+        "rrule": "^2.7.2",
+        "tailwindcss": "^4.1.12"
     }
 }

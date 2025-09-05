@@ -56,42 +56,177 @@ html.dark .filament-fullcalendar {
 
     --fc-list-event-hover-bg-color: rgba(var(--gray-800), 0.8);
 }
+/* Toolbar styling */
+.filament-fullcalendar .fc-toolbar {
+    @apply flex flex-wrap items-center justify-between gap-4 mb-4;
+}
 
 .filament-fullcalendar .fc-toolbar-chunk {
-    @apply space-y-1;
+    @apply flex flex-wrap items-center gap-2;
 }
 
 .filament-fullcalendar .fc-toolbar-title {
-    @apply !text-lg leading-5 md:!text-3xl;
+    @apply text-xl font-semibold text-gray-950 dark:text-white md:text-2xl;
 }
 
+/* Button group styling */
+.filament-fullcalendar .fc-button-group {
+    @apply inline-flex rounded-lg shadow-sm;
+}
+
+.filament-fullcalendar .fc-button-group .fc-button {
+    @apply relative -ml-px first:ml-0 first:rounded-l-lg last:rounded-r-lg;
+}
+
+/* Individual button styling */
 .filament-fullcalendar.fc .fc-button {
-    @apply min-h-[2.25rem] rounded-lg px-[6px] py-1 text-sm font-medium shadow outline-none transition-colors md:px-4;
+    @apply inline-flex items-center justify-center gap-1 px-3 py-2 text-sm font-medium transition-colors duration-75 border border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900;
+}
+
+.filament-fullcalendar.fc .fc-button-primary {
+    @apply text-white bg-primary-600 hover:bg-primary-500 focus:bg-primary-700 active:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 dark:focus:bg-primary-600;
 }
 
 .filament-fullcalendar.fc .fc-button-primary:disabled {
-    @apply opacity-70;
+    @apply opacity-50 cursor-not-allowed;
 }
 
-.filament-fullcalendar.fc .fc-button-primary:not(:disabled).fc-button-active,
-.filament-fullcalendar.fc .fc-button-primary:not(:disabled):active {
-    @apply shadow-none;
+.filament-fullcalendar.fc .fc-button-primary:not(:disabled).fc-button-active {
+    @apply bg-primary-700 dark:bg-primary-600;
 }
 
-.filament-fullcalendar .fc-view table,
-.filament-fullcalendar .fc-view:not(.fc-list) table th,
+/* Table and view styling */
+.filament-fullcalendar .fc-view table {
+    @apply overflow-hidden border border-gray-200 rounded-lg dark:border-gray-700;
+}
+
+.filament-fullcalendar .fc-col-header-row {
+    @apply bg-gray-50 dark:bg-gray-900;
+}
+
+.filament-fullcalendar .fc-col-header-cell {
+    @apply px-4 py-3 text-xs font-medium tracking-wider text-gray-500 uppercase border-b border-gray-200 dark:border-gray-700 dark:text-gray-400;
+}
+
+/* Day cell styling */
+.filament-fullcalendar .fc-daygrid-day {
+    @apply min-h-[120px] border-b border-r border-gray-200 last:border-r-0 dark:border-gray-700;
+}
+
+.filament-fullcalendar .fc-daygrid-day-top {
+    @apply p-2;
+}
+
+.filament-fullcalendar .fc-daygrid-day-number {
+    @apply text-sm font-medium text-gray-900 dark:text-gray-100;
+}
+
+/* Today highlighting */
+.filament-fullcalendar .fc-day-today {
+    @apply bg-primary-50 dark:bg-primary-950/50;
+}
+
+.filament-fullcalendar .fc-day-today .fc-daygrid-day-number {
+    @apply font-bold text-primary-600 dark:text-primary-400;
+}
+
+/* Event styling */
+.filament-fullcalendar .fc-event {
+    @apply px-2 py-1 text-xs font-medium transition-shadow border-0 rounded shadow-sm cursor-pointer hover:shadow-md;
+}
+
+.filament-fullcalendar .fc-event-main {
+    @apply flex items-center gap-1;
+}
+
+.filament-fullcalendar .fc-event-title {
+    @apply truncate;
+}
+
+/* List view styling */
 .filament-fullcalendar .fc-list {
-    @apply rounded-t-xl;
+    @apply overflow-hidden border border-gray-200 rounded-lg dark:border-gray-700;
 }
 
-.filament-fullcalendar .fc-list {
-    @apply overflow-hidden;
+.filament-fullcalendar .fc-list-table {
+    @apply w-full;
 }
 
-.filament-fullcalendar .fc-list .fc-list-event-title a {
-    @apply cursor-pointer;
+.filament-fullcalendar .fc-list-day th {
+    @apply px-4 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50 dark:bg-gray-900 dark:text-gray-400;
 }
 
-.filament-fullcalendar .fc-list-sticky .fc-list-day th {
-    @apply bg-inherit;
+.filament-fullcalendar .fc-list-event {
+    @apply transition-colors border-b border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-900/50;
+}
+
+.filament-fullcalendar .fc-list-event td {
+    @apply px-4 py-3;
+}
+
+.filament-fullcalendar .fc-list-event-title a {
+    @apply text-gray-900 cursor-pointer hover:text-primary-600 dark:text-gray-100 dark:hover:text-primary-400;
+}
+
+.filament-fullcalendar .fc-list-event-time {
+    @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+/* More events link */
+.filament-fullcalendar .fc-more-link {
+    @apply px-2 py-1 text-xs font-medium transition-colors rounded cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700;
+}
+
+/* Popover styling */
+.filament-fullcalendar .fc-popover {
+    @apply bg-white border border-gray-200 rounded-lg shadow-lg dark:border-gray-700 dark:bg-gray-800;
+}
+
+.filament-fullcalendar .fc-popover-header {
+    @apply px-4 py-2 border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900;
+}
+
+.filament-fullcalendar .fc-popover-title {
+    @apply text-sm font-medium text-gray-900 dark:text-gray-100;
+}
+
+.filament-fullcalendar .fc-popover-close {
+    @apply text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300;
+}
+
+/* Time grid styling */
+.filament-fullcalendar .fc-timegrid-slot {
+    @apply border-b border-gray-100 dark:border-gray-800;
+}
+
+.filament-fullcalendar .fc-timegrid-slot-label {
+    @apply pr-4 text-xs text-gray-500 dark:text-gray-400;
+}
+
+/* Scrollbar styling */
+.filament-fullcalendar .fc-scroller {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--gray-400)) transparent;
+}
+
+.filament-fullcalendar .fc-scroller::-webkit-scrollbar {
+    @apply w-2;
+}
+
+.filament-fullcalendar .fc-scroller::-webkit-scrollbar-track {
+    @apply bg-transparent;
+}
+
+.filament-fullcalendar .fc-scroller::-webkit-scrollbar-thumb {
+    @apply bg-gray-400 rounded-full hover:bg-gray-500 dark:bg-gray-600 dark:hover:bg-gray-500;
+}
+
+/* Loading state */
+.filament-fullcalendar.fc-loading {
+    @apply relative overflow-hidden;
+}
+
+.filament-fullcalendar.fc-loading::after {
+    content: '';
+    @apply absolute inset-0 bg-white/50 dark:bg-gray-900/50;
 }

@@ -11,13 +11,16 @@
             />
         </div>
 
-        <div
-            class="filament-fullcalendar"
-            wire:ignore x-load
-            x-ignore x-data="fullcalendar({
+        <div 
+            class="filament-fullcalendar" 
+            wire:ignore 
+            x-load
+            x-load-src="{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc('full-calendar', 'full-calendar') }}"
+            x-load-css="{{ \Filament\Support\Facades\FilamentAsset::getStyleHref('full-calendar', 'full-calendar') }}"
+            x-ignore 
+            x-data="fullcalendar({
                 locale: @js($plugin->getLocale()),
                 plugins: @js($plugin->getPlugins()),
-                schedulerLicenseKey: @js($plugin->getSchedulerLicenseKey()),
                 timeZone: @js($plugin->getTimezone()),
                 config: @js($this->getConfig()),
                 editable: @json($plugin->isEditable()),
@@ -26,8 +29,8 @@
                 eventContent: {!! htmlspecialchars($this->eventContent(), ENT_COMPAT) !!},
                 eventDidMount: {!! htmlspecialchars($this->eventDidMount(), ENT_COMPAT) !!},
                 eventWillUnmount: {!! htmlspecialchars($this->eventWillUnmount(), ENT_COMPAT) !!},
-            })">
-        </div>
+            })"
+        ></div>
     </x-filament::section>
 
     <x-filament-actions::modals />
