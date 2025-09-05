@@ -12,7 +12,7 @@ trait CanBeConfigured
         return [];
     }
 
-    protected function getConfig(): array
+    public function getConfig(): array
     {
         return static::mergeConfig(
             FullCalendarPlugin::get()->getConfig(),

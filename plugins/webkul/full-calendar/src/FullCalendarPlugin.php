@@ -48,7 +48,7 @@ class FullCalendarPlugin implements Plugin
         return $this->plugins;
     }
 
-    public function setCOnfig(array $config): static
+    public function setConfig(array $config): static
     {
         $this->config = $config;
 
@@ -107,7 +107,6 @@ class FullCalendarPlugin implements Plugin
     {
         return $this->selectable ?? data_get($this->config, 'selectable', false);
     }
-
 
     public function register(Panel $panel): void
     {

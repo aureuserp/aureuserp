@@ -15,11 +15,7 @@ class FullCalendarServiceProvider extends PackageServiceProvider
     {
         $package->name(static::$name)
             ->hasTranslations()
-            ->hasInstallCommand(function (InstallCommand $command) {
-                $command
-                    ->runsMigrations()
-                    ->runsSeeders();
-            })
+            ->hasInstallCommand(function (InstallCommand $command) {})
             ->hasUninstallCommand(function (UninstallCommand $command) {});
     }
 
