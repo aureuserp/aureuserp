@@ -7,6 +7,7 @@ return [
 
     'navigation' => [
         'title' => 'Manage Quotation & Order',
+        'group' => 'Sales',
     ],
 
     'form' => [
