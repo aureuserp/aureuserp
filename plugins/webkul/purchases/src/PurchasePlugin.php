@@ -46,7 +46,8 @@ class PurchasePlugin implements Plugin
                             ->url(fn () => ManageProducts::getUrl())
                             ->icon('heroicon-o-wrench')
                             ->group('Purchase')
-                            ->sort(4),
+                            ->sort(4)
+                            ->visible(fn () => ManageProducts::canAccess()),
                     ]);
             });
     }

@@ -2,6 +2,7 @@
 
 namespace Webkul\Recruitment\Filament\Widgets;
 
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Carbon;
@@ -9,6 +10,8 @@ use Webkul\Recruitment\Models\Applicant;
 
 class ApplicantChartWidget extends ChartWidget
 {
+    use HasWidgetShield;
+
     protected static ?int $sort = 2;
 
     protected int|string|array $columnSpan = 'full';

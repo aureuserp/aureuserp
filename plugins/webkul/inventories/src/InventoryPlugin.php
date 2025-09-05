@@ -39,7 +39,8 @@ class InventoryPlugin implements Plugin
                             ->url(fn () => ManageOperations::getUrl())
                             ->icon('heroicon-o-wrench')
                             ->group('Inventory')
-                            ->sort(4),
+                            ->sort(4)
+                            ->visible(fn () => ManageOperations::canAccess()),
                     ]);
             });
     }

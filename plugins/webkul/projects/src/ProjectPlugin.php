@@ -38,7 +38,8 @@ class ProjectPlugin implements Plugin
                             ->url(fn () => ManageTasks::getUrl())
                             ->icon('heroicon-o-wrench')
                             ->group('Project')
-                            ->sort(3),
+                            ->sort(3)
+                            ->visible(fn () => ManageTasks::canAccess()),
                     ]);
             });
     }
