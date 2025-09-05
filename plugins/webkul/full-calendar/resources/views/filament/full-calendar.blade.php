@@ -17,7 +17,6 @@
             x-load
             x-load-src="{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc('full-calendar', 'full-calendar') }}"
             x-load-css="{{ \Filament\Support\Facades\FilamentAsset::getStyleHref('full-calendar', 'full-calendar') }}"
-            x-ignore 
             x-data="fullcalendar({
                 locale: @js($plugin->getLocale()),
                 plugins: @js($plugin->getPlugins()),

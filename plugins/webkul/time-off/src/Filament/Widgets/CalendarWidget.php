@@ -162,6 +162,7 @@ class CalendarWidget extends FullCalendarWidget
 
     protected function modalActions(): array
     {
+        return [];
         return [
             EditAction::make()
                 ->label(__('time-off::filament/widgets/calendar-widget.modal-actions.edit.title'))
