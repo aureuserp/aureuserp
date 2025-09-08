@@ -47,6 +47,11 @@ trait InteractsWithRecords
         return null;
     }
 
+    public function hasRecord(): bool
+    {
+        return filled($this->getRecord());
+    }
+
     public function getRecord(): ?Model
     {
         $record = $this->record;

@@ -19,7 +19,6 @@ import locales from '@fullcalendar/core/locales-all'
 export default function fullcalendar({
     locale,
     plugins,
-    schedulerLicenseKey,
     timeZone,
     config,
     editable,
@@ -39,7 +38,6 @@ export default function fullcalendar({
                 },
                 plugins: plugins.map(plugin => availablePlugins[plugin]),
                 locale,
-                schedulerLicenseKey,
                 timeZone,
                 editable,
                 selectable,

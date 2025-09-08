@@ -36,7 +36,7 @@ class Dashboard extends BaseDashboard
     public function getHeaderWidgets(): array
     {
         return [
-            MyTimeOffWidget::make(),
+            // MyTimeOffWidget::make(),
         ];
     }
 }
