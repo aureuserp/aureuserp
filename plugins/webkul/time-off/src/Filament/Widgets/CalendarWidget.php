@@ -10,8 +10,10 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
@@ -218,15 +220,21 @@ class CalendarWidget extends FullCalendarWidget
                         ]);
                     }
                 ),
+
             DeleteAction::make()
-                ->label(__('time-off::filament/widgets/calendar-widget.modal-actions.delete.title')),
+                ->label(__('time-off::filament/widgets/calendar-widget.modal-actions.delete.title'))
+                ->modalIcon('heroicon-o-trash')
+                ->icon('heroicon-o-trash')
+                ->color('danger'),
         ];
     }
 
     protected function viewAction(): Action
     {
         return ViewAction::make()
-            ->modalIcon('heroicon-o-lifebuoy')
+            ->modalIcon('heroicon-o-eye')
+            ->icon('heroicon-o-eye')
+            ->color('info')
             ->label(__('time-off::filament/widgets/calendar-widget.view-action.title'))
             ->modalDescription(__('time-off::filament/widgets/calendar-widget.view-action.description'));
     }
@@ -300,49 +308,85 @@ class CalendarWidget extends FullCalendarWidget
     public function getFormSchema(): array
     {
         return [
-            Select::make('holiday_status_id')
-                ->label(__('time-off::filament/widgets/calendar-widget.form.fields.time-off-type'))
-                ->relationship('holidayStatus', 'name')
-                ->native(false)
-                ->required(),
-            Fieldset::make()
-                ->label(function (Get $get) {
-                    if ($get('request_unit_half')) {
-                        return 'Date';
-                    } else {
-                        return 'Dates';
-                    }
-                })
-                ->live()
+            Section::make(__('time-off::filament/widgets/calendar-widget.form.title'))
+                ->label(__('time-off::filament/widgets/calendar-widget.form.title'))
+                ->description(__('time-off::filament/widgets/calendar-widget.form.description'))
+                ->icon('heroicon-o-calendar-days')
                 ->schema([
-                    DatePicker::make('request_date_from')
-                        ->native(false)
-                        ->label(__('time-off::filament/widgets/calendar-widget.form.fields.request-date-from'))
-                        ->default(now())
-                        ->required(),
-                    DatePicker::make('request_date_to')
-                        ->native(false)
-                        ->label(__('time-off::filament/widgets/calendar-widget.form.fields.request-date-to'))
-                        ->default(now())
-                        ->hidden(fn (Get $get) => $get('request_unit_half'))
-                        ->required(),
-                    Select::make('request_date_from_period')
-                        ->label(__('time-off::filament/widgets/calendar-widget.form.fields.period'))
-                        ->options(RequestDateFromPeriod::class)
-                        ->default(RequestDateFromPeriod::MORNING->value)
-                        ->native(false)
-                        ->visible(fn (Get $get) => $get('request_unit_half'))
-                        ->required(),
-                ]),
-            Toggle::make('request_unit_half')
-                ->live()
-                ->label(__('time-off::filament/widgets/calendar-widget.form.fields.half-day')),
-            TextEntry::make('requested_days')
-                    ->label(__('time-off::filament/widgets/calendar-widget.form.fields.requested-days'))
-                    ->live()
-                    ->inlineLabel()
-                    ->state(function (Get $get): string {
-                        try {
+                    Select::make('holiday_status_id')
+                        ->label(__('time-off::filament/widgets/calendar-widget.form.fields.time-off-type'))
+                        ->relationship('holidayStatus', 'name')
+                        ->searchable()
+                        ->preload()
+                        ->required()
+                        ->columnSpanFull()
+                        ->placeholder(__('time-off::filament/widgets/calendar-widget.form.fields.time-off-type-placeholder'))
+                        ->helperText(__('time-off::filament/widgets/calendar-widget.form.fields.time-off-type-helper')),
+
+                    Grid::make(2)
+                        ->schema([
+                            DatePicker::make('request_date_from')
+                                ->native(false)
+                                ->label(__('time-off::filament/widgets/calendar-widget.form.fields.request-date-from'))
+                                ->default(now())
+                                ->required()
+                                ->live()
+                                ->prefixIcon('heroicon-o-calendar')
+                                ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                    if (
+                                        $state
+                                        && ! $get('request_unit_half')
+                                    ) {
+                                        $this->updateDurationCalculation($set, $get);
+                                    }
+                                }),
+
+                            DatePicker::make('request_date_to')
+                                ->native(false)
+                                ->label('To Date')
+                                ->default(now())
+                                ->hidden(fn (Get $get) => $get('request_unit_half'))
+                                ->required(fn (Get $get) => ! $get('request_unit_half'))
+                                ->live()
+                                ->prefixIcon('heroicon-o-calendar')
+                                ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                    if (
+                                        $state
+                                        && $get('request_date_from')
+                                    ) {
+                                        $this->updateDurationCalculation($set, $get);
+                                    }
+                                }),
+                        ]),
+
+                    Grid::make(2)
+                        ->schema([
+                            Toggle::make('request_unit_half')
+                                ->live()
+                                ->label(__('time-off::filament/widgets/calendar-widget.form.fields.half-day'))
+                                ->helperText(__('time-off::filament/widgets/calendar-widget.form.fields.half-day-helper'))
+                                ->afterStateUpdated(function ($state, Set $set, Get $get) {
+                                    if ($state) {
+                                        $set('duration_info', '0.5 day');
+                                    } else {
+                                        $this->updateDurationCalculation($set, $get);
+                                    }
+                                }),
+
+                            Select::make('request_date_from_period')
+                                ->label(__('time-off::filament/widgets/calendar-widget.form.fields.period'))
+                                ->options(RequestDateFromPeriod::class)
+                                ->default(RequestDateFromPeriod::MORNING->value)
+                                ->native(false)
+                                ->visible(fn (Get $get) => $get('request_unit_half'))
+                                ->required(fn (Get $get) => $get('request_unit_half'))
+                                ->prefixIcon('heroicon-o-sun'),
+                        ]),
+
+                    TextEntry::make('duration_info')
+                        ->label(__('time-off::filament/widgets/calendar-widget.form.fields.duration'))
+                        ->live()
+                        ->state(function (Get $get): string {
                             if ($get('request_unit_half')) {
                                 return '0.5 day';
                             }
@@ -350,52 +394,115 @@ class CalendarWidget extends FullCalendarWidget
                             $startDate = $get('request_date_from');
                             $endDate = $get('request_date_to');
 
-                            if (!$startDate) {
-                                return '0 days';
+                            if (! $startDate) {
+                                return __('time-off::filament/widgets/calendar-widget.form.fields.please-select-dates');
                             }
 
                             $start = Carbon::parse($startDate);
                             $end = $endDate ? Carbon::parse($endDate) : $start;
 
-                            $days = $start->diffInDays($end) + 1;
+                            $businessDays = $this->calculateBusinessDays($start, $end);
+                            $totalDays = $this->calculateTotalDays($start, $end);
+                            $weekendDays = $totalDays - $businessDays;
 
-                            return $days . ' day(s)';
-                        } catch (\Exception $e) {
-                            return '0 days';
-                        }
-                    }),
-            Textarea::make('private_name')
-                ->label(__('time-off::filament/widgets/calendar-widget.form.fields.description')),
+                            $duration = $businessDays.' working day'.($businessDays !== 1 ? 's' : '');
+
+                            if ($weekendDays > 0) {
+                                $duration .= ' (+ '.$weekendDays.' weekend day'.($weekendDays !== 1 ? 's' : '').')';
+                            }
+
+                            return $duration;
+                        })
+                        ->extraAttributes(['class' => 'font-medium text-primary-600 bg-primary-50 p-3 rounded-lg border border-primary-200']),
+
+                    Textarea::make('private_name')
+                        ->label(__('time-off::filament/widgets/calendar-widget.form.fields.description'))
+                        ->placeholder(__('time-off::filament/widgets/calendar-widget.form.fields.description-placeholder'))
+                        ->rows(3)
+                        ->columnSpanFull()
+                        ->helperText(__('time-off::filament/widgets/calendar-widget.form.fields.description-helper')),
+                ]),
         ];
     }
 
     public function getInfolistSchema(): array
     {
         return [
-            TextEntry::make('holidayStatus.name')
-                ->label(__('time-off::filament/widgets/calendar-widget.infolist.entries.time-off-type'))
-                ->icon('heroicon-o-clock'),
-            TextEntry::make('request_date_from')
-                ->label(__('time-off::filament/widgets/calendar-widget.infolist.entries.request-date-from'))
-                ->date()
-                ->icon('heroicon-o-calendar-days'),
-            TextEntry::make('request_date_to')
-                ->label(__('time-off::filament/widgets/calendar-widget.infolist.entries.request-date-to'))
-                ->date()
-                ->icon('heroicon-o-calendar-days'),
-            TextEntry::make('number_of_days')
-                ->label(__('time-off::filament/widgets/calendar-widget.infolist.entries.duration'))
-                ->formatStateUsing(fn ($state) => $state.' day(s)')
-                ->icon('heroicon-o-clock'),
-            TextEntry::make('private_name')
-                ->label(__('time-off::filament/widgets/calendar-widget.infolist.entries.description'))
-                ->icon('heroicon-o-document-text')
-                ->placeholder(__('time-off::filament/widgets/calendar-widget.infolist.entries.description-placeholder')),
-            TextEntry::make('state')
-                ->placeholder(__('time-off::filament/widgets/calendar-widget.infolist.entries.status'))
-                ->badge()
-                ->formatStateUsing(fn (State $state) => $state->getLabel())
-                ->icon('heroicon-o-check-circle'),
+            Section::make(__('time-off::filament/widgets/calendar-widget.infolist.title'))
+                ->label(__('time-off::filament/widgets/calendar-widget.infolist.title'))
+                ->description(__('time-off::filament/widgets/calendar-widget.infolist.description'))
+                ->icon('heroicon-o-information-circle')
+                ->schema([
+                    Grid::make(2)
+                        ->schema([
+                            TextEntry::make('holidayStatus.name')
+                                ->label(__('time-off::filament/widgets/calendar-widget.infolist.entries.time-off-type'))
+                                ->icon('heroicon-o-clock')
+                                ->badge()
+                                ->color('primary')
+                                ->size('lg'),
+
+                            TextEntry::make('state')
+                                ->label(__('time-off::filament/widgets/calendar-widget.infolist.entries.status'))
+                                ->badge()
+                                ->size('lg')
+                                ->formatStateUsing(fn ($state) => $this->getStateLabel($state))
+                                ->color(fn ($state) => $this->getStateColor($state, true))
+                                ->icon(fn ($state) => $this->getStateIcon($state)),
+                        ]),
+
+                    Grid::make(2)
+                        ->schema([
+                            TextEntry::make('request_date_from')
+                                ->label(__('time-off::filament/widgets/calendar-widget.infolist.entries.request-date-from'))
+                                ->date('F j, Y')
+                                ->icon('heroicon-o-calendar-days')
+                                ->badge()
+                                ->color('info'),
+
+                            TextEntry::make('request_date_to')
+                                ->label(__('time-off::filament/widgets/calendar-widget.infolist.entries.request-date-to'))
+                                ->date('F j, Y')
+                                ->icon('heroicon-o-calendar-days')
+                                ->badge()
+                                ->color('info'),
+                        ]),
+
+                    TextEntry::make('number_of_days')
+                        ->label(__('time-off::filament/widgets/calendar-widget.infolist.entries.duration'))
+                        ->formatStateUsing(function ($state, $record) {
+                            if ($record->request_unit_half) {
+                                return '0.5 day';
+                            }
+
+                            $startDate = Carbon::parse($record->request_date_from);
+                            $endDate = $record->request_date_to ? Carbon::parse($record->request_date_to) : $startDate;
+
+                            $businessDays = $this->calculateBusinessDays($startDate, $endDate);
+                            $totalDays = $this->calculateTotalDays($startDate, $endDate);
+                            $weekendDays = $totalDays - $businessDays;
+
+                            $duration = $businessDays.' working day'.($businessDays !== 1 ? 's' : '');
+
+                            if ($weekendDays > 0) {
+                                $duration .= ' (+ '.$weekendDays.' weekend day'.($weekendDays !== 1 ? 's' : '').')';
+                            }
+
+                            return $duration;
+                        })
+                        ->icon('heroicon-o-clock')
+                        ->badge()
+                        ->color('success')
+                        ->size('lg'),
+
+                    TextEntry::make('private_name')
+                        ->label(__('time-off::filament/widgets/calendar-widget.infolist.entries.description'))
+                        ->icon('heroicon-o-document-text')
+                        ->placeholder(__('time-off::filament/widgets/calendar-widget.infolist.entries.description-placeholder'))
+                        ->columnSpanFull()
+                        ->badge()
+                        ->color('gray'),
+                ]),
         ];
     }
 
@@ -461,6 +568,48 @@ class CalendarWidget extends FullCalendarWidget
             State::CONFIRM      => 'high',
             State::VALIDATE_TWO => 'highest',
             default             => 'normal'
+        };
+    }
+
+    private function getStateLabel(State $state): string
+    {
+        return match ($state) {
+            State::VALIDATE_ONE => State::VALIDATE_ONE->getLabel(),
+            State::VALIDATE_TWO => State::VALIDATE_TWO->getLabel(),
+            State::CONFIRM      => State::CONFIRM->getLabel(),
+            State::REFUSE       => State::REFUSE->getLabel(),
+        };
+    }
+
+    private function getStateIcon(State $state): string
+    {
+        return match ($state) {
+            State::VALIDATE_ONE => 'heroicon-o-magnifying-glass',
+            State::VALIDATE_TWO => 'heroicon-o-check-circle',
+            State::CONFIRM      => 'heroicon-o-clock',
+            State::REFUSE       => 'heroicon-o-x-circle',
+            default             => 'heroicon-o-document',
+        };
+    }
+
+    private function getStateColor(State $state, $isFilament = false): string
+    {
+        if ($isFilament) {
+            return match ($state) {
+                State::VALIDATE_ONE => 'info',
+                State::VALIDATE_TWO ->value=> 'success',
+                State::CONFIRM      => 'warning',
+                State::REFUSE       => 'danger',
+                default             => 'gray',
+            };
+        }
+
+        return match ($state) {
+            State::VALIDATE_ONE => '#3B82F6',
+            State::VALIDATE_TWO => '#10B981',
+            State::CONFIRM      => '#F59E0B',
+            State::REFUSE       => '#EF4444',
+            default             => '#6B7280',
         };
     }
 

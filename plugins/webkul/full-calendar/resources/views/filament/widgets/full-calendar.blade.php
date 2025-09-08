@@ -12,10 +12,11 @@
         </div>
 
         <div
+            class="full-calendar"
             wire:ignore
             x-load
             x-load-src="{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc('full-calendar', 'full-calendar') }}"
-            x-data="fullcalendar({
+            x-data="fullCalendar({
                 locale: @js($plugin->getLocale()),
                 plugins: @js($plugin->getPlugins()),
                 timeZone: @js($plugin->getTimezone()),

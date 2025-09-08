@@ -21,22 +21,18 @@ trait InteractsWithModalActions
             if ($action instanceof ActionGroup) {
                 $action->livewire($this);
 
-                if (! $action->getDropdownPlacement()) {
-                    $action->dropdownPlacement('bottom-end');
-                }
-
                 $flatActions = $action->getFlatActions();
 
                 $this->mergeCachedActions($flatActions);
 
-                $this->cachedHeaderActions[] = $action;
+                $this->cachedModalActions[] = $action;
 
                 continue;
             }
 
             $this->cacheAction($action);
 
-            $this->cachedHeaderActions[] = $action;
+            $this->cachedModalActions[] = $action;
         }
     }
 

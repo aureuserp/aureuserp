@@ -16,7 +16,7 @@ import momentPlugin from '@fullcalendar/moment'
 import momentTimezonePlugin from '@fullcalendar/moment-timezone'
 import locales from '@fullcalendar/core/locales-all'
 
-export default function fullcalendar({
+export default function fullCalendar({
     locale,
     plugins,
     timeZone,

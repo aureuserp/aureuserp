@@ -51,12 +51,6 @@ trait InteractsWithHeaderActions
         return $this->cachedHeaderActions;
     }
 
-    public function getCachedHeaderActionsComponent(): Actions
-    {
-        return Actions::make($this->getCachedHeaderActions())
-            ->container(Schema::make($this));
-    }
-
     protected function headerActions(): array
     {
         return [];
