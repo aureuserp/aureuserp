@@ -3,8 +3,6 @@
 namespace Webkul\FullCalendar\Concerns;
 
 use Filament\Actions\ActionGroup;
-use Filament\Schemas\Components\Actions;
-use Filament\Schemas\Schema;
 
 trait InteractsWithHeaderActions
 {

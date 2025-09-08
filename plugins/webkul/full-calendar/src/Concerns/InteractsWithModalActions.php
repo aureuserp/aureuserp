@@ -4,6 +4,7 @@ namespace Webkul\FullCalendar\Concerns;
 
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use InvalidArgumentException;
 
 trait InteractsWithModalActions
 {
@@ -16,9 +17,7 @@ trait InteractsWithModalActions
 
     protected function cacheModalActions(): void
     {
-        $actions = $this->modalActions();
-
-        foreach ($actions as $action) {
+        foreach ($this->modalActions() as $action) {
             if ($action instanceof ActionGroup) {
                 $action->livewire($this);
 
@@ -29,6 +28,10 @@ trait InteractsWithModalActions
                 $this->cachedModalActions[] = $action;
 
                 continue;
+            }
+
+            if (! $action instanceof Action) {
+                throw new InvalidArgumentException('Header actions must be an instance of '.Action::class.', or '.ActionGroup::class.'.');
             }
 
             $this->cacheAction($action);
@@ -46,7 +49,7 @@ trait InteractsWithModalActions
         return $this->cachedModalActions;
     }
 
-    protected function modalActions(): array
+    public function modalActions(): array
     {
         return [];
     }

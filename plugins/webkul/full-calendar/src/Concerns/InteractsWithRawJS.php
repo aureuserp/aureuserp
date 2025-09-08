@@ -6,28 +6,28 @@ trait InteractsWithRawJS
 {
     public function eventClassNames(): string
     {
-        return <<<JS
+        return <<<'JS'
             null
         JS;
     }
 
     public function eventContent(): string
     {
-        return <<<JS
+        return <<<'JS'
             null
         JS;
     }
 
     public function eventDidMount(): string
     {
-        return <<<JS
+        return <<<'JS'
             null
         JS;
     }
 
     public function eventWillUnmount(): string
     {
-        return <<<JS
+        return <<<'JS'
             null
         JS;
     }

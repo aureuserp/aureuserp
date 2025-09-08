@@ -161,7 +161,7 @@ class CalendarWidget extends FullCalendarWidget
         ];
     }
 
-    protected function modalActions(): array
+    public function modalActions(): array
     {
         return [
             EditAction::make()
@@ -248,6 +248,7 @@ class CalendarWidget extends FullCalendarWidget
                 ->label(__('time-off::filament/widgets/calendar-widget.header-actions.create.title'))
                 ->modalDescription(__('time-off::filament/widgets/calendar-widget.header-actions.create.description'))
                 ->color('success')
+                ->successNotification(null)
                 ->action(function ($data) {
                     $user = Auth::user();
                     $employee = $user->employee;
@@ -594,11 +595,11 @@ class CalendarWidget extends FullCalendarWidget
     {
         if ($isFilament) {
             return match ($state) {
-                State::VALIDATE_ONE => 'info',
-                State::VALIDATE_TWO ->value=> 'success',
-                State::CONFIRM      => 'warning',
-                State::REFUSE       => 'danger',
-                default             => 'gray',
+                State::VALIDATE_ONE       => 'info',
+                State::VALIDATE_TWO->value=> 'success',
+                State::CONFIRM            => 'warning',
+                State::REFUSE             => 'danger',
+                default                   => 'gray',
             };
         }
 

@@ -13,8 +13,8 @@ class DeleteAction extends BaseDeleteAction
         parent::setUp();
 
         $this
-            ->model(fn(FullCalendarWidget $livewire) => $livewire->getModel())
-            ->record(fn(FullCalendarWidget $livewire) => $livewire->getRecord())
+            ->model(fn (FullCalendarWidget $livewire) => $livewire->getModel())
+            ->record(fn (FullCalendarWidget $livewire) => $livewire->getRecord())
             ->after(
                 function (FullCalendarWidget $livewire) {
                     $livewire->record = null;

@@ -25,20 +25,20 @@ use Webkul\FullCalendar\Contracts\HasModalActions;
 use Webkul\FullCalendar\Contracts\HasRawJs;
 use Webkul\FullCalendar\Contracts\HasRecords;
 
-class FullCalendarWidget extends Widget implements HasForms, HasActions, HasEvents, HasRecords, HasHeaderActions, HasModalActions, HasRawJs, HasConfigurations
+class FullCalendarWidget extends Widget implements HasActions, HasConfigurations, HasEvents, HasForms, HasHeaderActions, HasModalActions, HasRawJs, HasRecords
 {
-    use InteractsWithForms;
+    use CanBeConfigured;
     use InteractsWithActions;
     use InteractsWithEvents;
-    use InteractsWithRecord;
+    use InteractsWithForms;
     use InteractsWithHeaderActions;
     use InteractsWithModalActions;
     use InteractsWithRawJS;
-    use CanBeConfigured;
+    use InteractsWithRecord;
 
     protected string $view = 'full-calendar::filament.widgets.full-calendar';
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected function headerActions(): array
     {

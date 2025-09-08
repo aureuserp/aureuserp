@@ -9,16 +9,17 @@ class ViewAction extends BaseViewAction
 {
     protected function setUp(): void
     {
-        parent::setUp();
-
-        $this->model(fn(FullCalendarWidget $livewire) => $livewire->getModel())
-            ->record(fn(FullCalendarWidget $livewire) => $livewire->getRecord())
-            ->schema(fn(FullCalendarWidget $livewire) => $livewire->getInfolistSchema())
-            ->modalFooterActions(fn(ViewAction $action, FullCalendarWidget $livewire) => [
-                ...$livewire->getCachedModalActions(),
-                $action->getModalCancelAction(),
-            ])
-            ->after(fn(FullCalendarWidget $livewire) => $livewire->refreshRecords())
-            ->cancelParentActions();
+        $this
+            ->model(fn (FullCalendarWidget $livewire) => $livewire->getModel())
+            ->record(fn (FullCalendarWidget $livewire) => $livewire->getRecord())
+            ->schema(fn (FullCalendarWidget $livewire) => $livewire->getInfolistSchema())
+            ->modalFooterActions(function (ViewAction $action, FullCalendarWidget $livewire) {
+                return [
+                    ...$livewire->modalActions(),
+                    $action->getModalCancelAction(),
+                ];
+            })
+            ->cancelParentActions('view')
+            ->after(fn (FullCalendarWidget $livewire) => $livewire->refreshRecords());
     }
 }

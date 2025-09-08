@@ -132,6 +132,7 @@ class OverviewCalendarWidget extends FullCalendarWidget
     protected function headerActions(): array
     {
         return [];
+
         return [
             CreateAction::make()
                 ->icon('heroicon-o-plus-circle')
