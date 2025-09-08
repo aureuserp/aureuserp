@@ -220,7 +220,6 @@ class CalendarWidget extends FullCalendarWidget
                         ]);
                     }
                 ),
-
             DeleteAction::make()
                 ->label(__('time-off::filament/widgets/calendar-widget.modal-actions.delete.title'))
                 ->modalIcon('heroicon-o-trash')
@@ -316,8 +315,7 @@ class CalendarWidget extends FullCalendarWidget
                     Select::make('holiday_status_id')
                         ->label(__('time-off::filament/widgets/calendar-widget.form.fields.time-off-type'))
                         ->relationship('holidayStatus', 'name')
-                        ->searchable()
-                        ->preload()
+                        ->native(false)
                         ->required()
                         ->columnSpanFull()
                         ->placeholder(__('time-off::filament/widgets/calendar-widget.form.fields.time-off-type-placeholder'))

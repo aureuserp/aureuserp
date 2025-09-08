@@ -2,6 +2,7 @@
 
 namespace Webkul\FullCalendar\Concerns;
 
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 
 trait InteractsWithModalActions

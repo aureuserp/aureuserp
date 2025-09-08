@@ -11,16 +11,11 @@ class EditAction extends BaseEditAction
     {
         parent::setUp();
 
-        $this->schema(fn(FullCalendarWidget $livewire) => $livewire->getFormSchema());
-
-        $this->model(fn(FullCalendarWidget $livewire) => $livewire->getModel());
-
-        $this->record(fn(FullCalendarWidget $livewire) => $livewire->getRecord());
-
-        $this->schema(fn(FullCalendarWidget $livewire) => $livewire->getFormSchema());
-
-        $this->after(fn(FullCalendarWidget $livewire) => $livewire->refreshRecords());
-
-        $this->cancelParentActions();
+        $this->schema(fn(FullCalendarWidget $livewire) => $livewire->getFormSchema())
+            ->model(fn(FullCalendarWidget $livewire) => $livewire->getModel())
+            ->record(fn(FullCalendarWidget $livewire) => $livewire->getRecord())
+            ->schema(fn(FullCalendarWidget $livewire) => $livewire->getFormSchema())
+            ->after(fn(FullCalendarWidget $livewire) => $livewire->refreshRecords())
+            ->successNotification(null);
     }
 }
