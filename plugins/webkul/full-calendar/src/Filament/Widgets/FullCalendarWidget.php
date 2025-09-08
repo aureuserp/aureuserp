@@ -17,7 +17,7 @@ use Webkul\FullCalendar\Concerns\InteractsWithEvents;
 use Webkul\FullCalendar\Concerns\InteractsWithHeaderActions;
 use Webkul\FullCalendar\Concerns\InteractsWithModalActions;
 use Webkul\FullCalendar\Concerns\InteractsWithRawJS;
-use Webkul\FullCalendar\Concerns\InteractsWithRecords;
+use Webkul\FullCalendar\Concerns\InteractsWithRecord;
 use Webkul\FullCalendar\Contracts\HasConfigurations;
 use Webkul\FullCalendar\Contracts\HasEvents;
 use Webkul\FullCalendar\Contracts\HasHeaderActions;
@@ -30,11 +30,13 @@ class FullCalendarWidget extends Widget implements HasForms, HasActions, HasEven
     use InteractsWithForms;
     use InteractsWithActions;
     use InteractsWithEvents;
-    use InteractsWithRecords;
+    use InteractsWithRecord;
     use InteractsWithHeaderActions;
     use InteractsWithModalActions;
     use InteractsWithRawJS;
     use CanBeConfigured;
+
+    protected static bool $isLazy = false;
 
     protected string $view = 'full-calendar::filament.full-calendar';
 

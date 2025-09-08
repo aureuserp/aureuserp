@@ -7,17 +7,14 @@ use function Filament\Support\get_model_label;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Livewire\Attributes\Locked;
 
-trait InteractsWithRecords
+trait InteractsWithRecord
 {
-    #[Locked]
     public Model | string | null $model = null;
 
     protected ?string $modelLabel = null;
 
-    #[Locked]
-    public Model | int | string | null $record;
+    public Model | int | string | null $record = null;
 
     protected static ?string $recordRouteKeyName = null;
 
@@ -69,6 +66,8 @@ trait InteractsWithRecords
 
     public function resolveRecordRouteBinding(int | string $key): ?Model
     {
+        dd($this->getModel());
+
         return app($this->getModel())
             ->resolveRouteBindingQuery($this->getEloquentQuery(), $key, $this->getRecordRouteKeyName())
             ->first();

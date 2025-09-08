@@ -3,6 +3,8 @@
 namespace Webkul\FullCalendar\Concerns;
 
 use Filament\Actions\ActionGroup;
+use Filament\Schemas\Components\Actions;
+use Filament\Schemas\Schema;
 
 trait InteractsWithHeaderActions
 {
@@ -47,6 +49,12 @@ trait InteractsWithHeaderActions
         }
 
         return $this->cachedHeaderActions;
+    }
+
+    public function getCachedHeaderActionsComponent(): Actions
+    {
+        return Actions::make($this->getCachedHeaderActions())
+            ->container(Schema::make($this));
     }
 
     protected function headerActions(): array

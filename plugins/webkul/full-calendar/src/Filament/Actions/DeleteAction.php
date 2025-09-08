@@ -13,6 +13,8 @@ class DeleteAction extends BaseDeleteAction
 
         $this->model(fn (FullCalendarWidget $livewire) => $livewire->getModel());
 
+        $this->hidden();
+
         $this->after(fn (FullCalendarWidget $livewire) => $livewire->refreshRecords());
 
         $this->cancelParentActions();

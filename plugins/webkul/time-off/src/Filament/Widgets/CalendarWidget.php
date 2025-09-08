@@ -5,7 +5,6 @@ namespace Webkul\TimeOff\Filament\Widgets;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -345,21 +344,33 @@ class CalendarWidget extends FullCalendarWidget
             Toggle::make('request_unit_half')
                 ->live()
                 ->label(__('time-off::filament/widgets/calendar-widget.form.fields.half-day')),
-            Placeholder::make('requested_days')
-                ->label(__('time-off::filament/widgets/calendar-widget.form.fields.requested-days'))
-                ->live()
-                ->inlineLabel()
-                ->reactive()
-                ->content(function ($state, Get $get): string {
-                    if ($get('request_unit_half')) {
-                        return '0.5 day';
-                    }
+            TextEntry::make('requested_days')
+                    ->label(__('time-off::filament/widgets/calendar-widget.form.fields.requested-days'))
+                    ->live()
+                    ->inlineLabel()
+                    ->state(function (Get $get): string {
+                        try {
+                            if ($get('request_unit_half')) {
+                                return '0.5 day';
+                            }
 
-                    $startDate = Carbon::parse($get('request_date_from'));
-                    $endDate = $get('request_date_to') ? Carbon::parse($get('request_date_to')) : $startDate;
+                            $startDate = $get('request_date_from');
+                            $endDate = $get('request_date_to');
 
-                    return $startDate->diffInDays($endDate) + 1 .' day(s)';
-                }),
+                            if (!$startDate) {
+                                return '0 days';
+                            }
+
+                            $start = Carbon::parse($startDate);
+                            $end = $endDate ? Carbon::parse($endDate) : $start;
+
+                            $days = $start->diffInDays($end) + 1;
+
+                            return $days . ' day(s)';
+                        } catch (\Exception $e) {
+                            return '0 days';
+                        }
+                    }),
             Textarea::make('private_name')
                 ->label(__('time-off::filament/widgets/calendar-widget.form.fields.description')),
         ];

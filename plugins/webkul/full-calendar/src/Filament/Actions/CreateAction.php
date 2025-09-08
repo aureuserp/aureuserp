@@ -11,6 +11,8 @@ class CreateAction extends BaseCreateAction
     {
         parent::setUp();
 
+        $this->model(fn (FullCalendarWidget $livewire) => $livewire->getModel());
+
         $this->schema(fn (FullCalendarWidget $livewire) => $livewire->getFormSchema());
 
         $this->after(fn (FullCalendarWidget $livewire) => $livewire->refreshRecords());
