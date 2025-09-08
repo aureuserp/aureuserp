@@ -11,7 +11,10 @@ class BlogAuthorsChart extends ChartWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?string $heading = 'Top 10 Authors by Blog Count';
+    public function getHeading(): ?string
+    {
+        return __('website::filament/admin/widgets/blog-chart.top-10-authors-count-by-blog-count');
+    }
 
     protected static ?int $sort = 2;
 

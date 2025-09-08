@@ -12,7 +12,10 @@ class TopCategoriesTable extends TableWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?string $heading = 'Top 5 Categories with Most Blogs';
+    public function getHeading(): ?string
+    {
+        return __('website::filament/admin/widgets/blog-chart.top-5-categories-with-most-blogs');
+    }
 
     protected static ?int $sort = 3;
 

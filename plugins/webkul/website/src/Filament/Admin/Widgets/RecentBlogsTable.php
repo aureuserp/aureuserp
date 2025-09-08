@@ -12,7 +12,10 @@ class RecentBlogsTable extends TableWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?string $heading = 'Recent 10 Blogs';
+    public function getHeading(): ?string
+    {
+        return __('website::filament/admin/widgets/blog-chart.recent-10-blogs');
+    }
 
     protected static ?int $sort = 6;
 

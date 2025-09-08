@@ -37,22 +37,22 @@ class WebsiteDashboard extends BaseDashboard
         return $form
             ->schema([
                 DatePicker::make('from_date')
-                    ->label('From Date')
+                    ->label(__('website::filament/admin/pages/dashboard.from-date'))
                     ->native(false)
                     ->closeOnDateSelection()
                     ->default(now()->subMonth()),
 
                 DatePicker::make('to_date')
-                    ->label('To Date')
+                    ->label(__('website::filament/admin/pages/dashboard.to-date'))
                     ->native(false)
                     ->closeOnDateSelection()
                     ->default(now()),
 
                 Select::make('author_id')
-                    ->label('Author')
+                    ->label(__('website::filament/admin/pages/dashboard.author'))
                     ->options(User::query()->pluck('name', 'id'))
                     ->searchable()
-                    ->placeholder('All Authors'),
+                    ->placeholder(__('website::filament/admin/pages/dashboard.all-author')),
             ])
             ->columns(1);
     }

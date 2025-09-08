@@ -10,7 +10,10 @@ class CategoriesPieChart extends ChartWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?string $heading = 'Blogs by Category';
+    public function getHeading(): ?string
+    {
+        return __('website::filament/admin/widgets/blog-chart.blogs-by-category');
+    }
 
     protected static ?int $sort = 4;
 

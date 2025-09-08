@@ -11,7 +11,10 @@ class BlogChart extends ChartWidget
 {
     use InteractsWithPageFilters;
 
-    protected static ?string $heading = 'Published Blogs by Month';
+    public function getHeading(): ?string
+    {
+        return __('website::filament/admin/widgets/blog-chart.published-blogs-by-month');
+    }
 
     protected static ?string $maxHeight = '250px';
 
