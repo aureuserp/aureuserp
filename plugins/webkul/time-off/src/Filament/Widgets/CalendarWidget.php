@@ -161,7 +161,6 @@ class CalendarWidget extends FullCalendarWidget
 
     protected function modalActions(): array
     {
-        return [];
         return [
             EditAction::make()
                 ->label(__('time-off::filament/widgets/calendar-widget.modal-actions.edit.title'))
@@ -229,8 +228,7 @@ class CalendarWidget extends FullCalendarWidget
         return ViewAction::make()
             ->modalIcon('heroicon-o-lifebuoy')
             ->label(__('time-off::filament/widgets/calendar-widget.view-action.title'))
-            ->modalDescription(__('time-off::filament/widgets/calendar-widget.view-action.description'))
-            ->infolist($this->infolist());
+            ->modalDescription(__('time-off::filament/widgets/calendar-widget.view-action.description'));
     }
 
     protected function headerActions(): array
@@ -295,11 +293,7 @@ class CalendarWidget extends FullCalendarWidget
                         ->body(__('time-off::filament/widgets/calendar-widget.header-actions.create.notification.body'))
                         ->send();
                 })
-                ->mountUsing(
-                    function (Schema $schema, array $arguments) {
-                        $schema->fill($arguments);
-                    }
-                ),
+                ->mountUsing(fn (Schema $schema, array $arguments) =>$schema->fill($arguments)),
         ];
     }
 
@@ -309,8 +303,7 @@ class CalendarWidget extends FullCalendarWidget
             Select::make('holiday_status_id')
                 ->label(__('time-off::filament/widgets/calendar-widget.form.fields.time-off-type'))
                 ->relationship('holidayStatus', 'name')
-                ->searchable()
-                ->preload()
+                ->native(false)
                 ->required(),
             Fieldset::make()
                 ->label(function (Get $get) {
@@ -376,7 +369,7 @@ class CalendarWidget extends FullCalendarWidget
         ];
     }
 
-    public function infolist(): array
+    public function getInfolistSchema(): array
     {
         return [
             TextEntry::make('holidayStatus.name')
@@ -401,7 +394,7 @@ class CalendarWidget extends FullCalendarWidget
             TextEntry::make('state')
                 ->placeholder(__('time-off::filament/widgets/calendar-widget.infolist.entries.status'))
                 ->badge()
-                ->formatStateUsing(fn ($state) => State::options()[$state])
+                ->formatStateUsing(fn (State $state) => $state->getLabel())
                 ->icon('heroicon-o-check-circle'),
         ];
     }
@@ -460,14 +453,14 @@ class CalendarWidget extends FullCalendarWidget
             ->all();
     }
 
-    private function getEventPriority(string $state): string
+    private function getEventPriority(State $state): string
     {
         return match ($state) {
-            State::REFUSE->value       => 'low',
-            State::VALIDATE_ONE->value => 'medium',
-            State::CONFIRM->value      => 'high',
-            State::VALIDATE_TWO->value => 'highest',
-            default                    => 'normal'
+            State::REFUSE       => 'low',
+            State::VALIDATE_ONE => 'medium',
+            State::CONFIRM      => 'high',
+            State::VALIDATE_TWO => 'highest',
+            default             => 'normal'
         };
     }
 

@@ -66,8 +66,6 @@ trait InteractsWithRecord
 
     public function resolveRecordRouteBinding(int | string $key): ?Model
     {
-        dd($this->getModel());
-
         return app($this->getModel())
             ->resolveRouteBindingQuery($this->getEloquentQuery(), $key, $this->getRecordRouteKeyName())
             ->first();
