@@ -20,10 +20,9 @@ class StatsOverviewWidget extends BaseWidget
         return __('sales::filament/pages/stats-overview.heading.title');
     }
 
-    protected function getStats(): array
+    protected function getData(): array
     {
-        $query = Order::query();
-
+        // 🔹 Extract filters
         $startDate = filled($this->filters['startDate'] ?? null)
             ? Carbon::parse($this->filters['startDate'])
             : null;
@@ -32,52 +31,39 @@ class StatsOverviewWidget extends BaseWidget
             ? Carbon::parse($this->filters['endDate'])
             : null;
 
-        $totalOrder = $this->getTotalOrder($query, $startDate, $endDate);
-        $totalRevenue = $this->getTotalRevenue($query, $startDate, $endDate);
+        // 🔹 Get only confirmed orders
+        $ordersQuery = Order::query()->where('state', 'sale');
 
-        $avgOrderValue = $totalOrder > 0
-            ? round($totalRevenue / $totalOrder, 2)
+        if ($startDate && $endDate) {
+            $ordersQuery->whereBetween('created_at', [$startDate, $endDate]);
+        } elseif ($startDate) {
+            $ordersQuery->where('created_at', '>=', $startDate);
+        } elseif ($endDate) {
+            $ordersQuery->where('created_at', '<=', $endDate);
+        }
+
+        $totalOrders = $ordersQuery->count();
+
+        $totalRevenue = (float) $ordersQuery->sum('amount_total');
+        $avgOrderValue = $totalOrders > 0
+            ? round($totalRevenue / $totalOrders, 2)
             : 0;
 
         return [
-            Stat::make('Total Orders', $totalOrder)
-                ->description('Total number of sales orders'),
+            Stat::make('Total Orders', $totalOrders)
+                ->description('Confirmed sales orders')
+                ->icon('heroicon-o-shopping-cart')
+                ->color('primary'),
 
             Stat::make('Total Revenue', number_format($totalRevenue, 2))
-                ->description('Total sales revenue'),
+                ->description('Total revenue from confirmed orders')
+                ->icon('heroicon-o-currency-dollar')
+                ->color('success'),
 
             Stat::make('Avg. Order Value', number_format($avgOrderValue, 2))
-                ->description('Average value per order'),
+                ->description('Average revenue per order')
+                ->icon('heroicon-o-chart-bar')
+                ->color('info'),
         ];
-    }
-
-    protected function getTotalOrder($query, $startDate, $endDate): int
-    {
-        $q = (clone $query)->where('state', 'sale');
-
-        if ($startDate && $endDate) {
-            $q->whereBetween('created_at', [$startDate, $endDate]);
-        } elseif ($startDate) {
-            $q->where('created_at', '>=', $startDate);
-        } elseif ($endDate) {
-            $q->where('created_at', '<=', $endDate);
-        }
-
-        return $q->count();
-    }
-
-    protected function getTotalRevenue($query, $startDate, $endDate): float
-    {
-        $q = (clone $query)->where('state', 'sale');
-
-        if ($startDate && $endDate) {
-            $q->whereBetween('created_at', [$startDate, $endDate]);
-        } elseif ($startDate) {
-            $q->where('created_at', '>=', $startDate);
-        } elseif ($endDate) {
-            $q->where('created_at', '<=', $endDate);
-        }
-
-        return (float) $q->sum('amount_total'); // Adjust column name if needed
     }
 }
