@@ -2,28 +2,28 @@
 
 namespace Webkul\FullCalendar\Concerns;
 
-use function Filament\Support\get_model_label;
-
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
+use function Filament\Support\get_model_label;
+
 trait InteractsWithRecord
 {
-    public Model | string | null $model = null;
+    public Model|string|null $model = null;
 
     protected ?string $modelLabel = null;
 
-    public Model | int | string | null $record = null;
+    public Model|int|string|null $record = null;
 
     protected static ?string $recordRouteKeyName = null;
 
-    protected function resolveRecord(int | string $key): Model
+    protected function resolveRecord(int|string $key): Model
     {
         $record = $this->resolveRecordRouteBinding($key);
 
         if ($record === null) {
-            throw (new ModelNotFoundException())->setModel($this->getModel(), [$key]);
+            throw (new ModelNotFoundException)->setModel($this->getModel(), [$key]);
         }
 
         return $record;
@@ -64,7 +64,7 @@ trait InteractsWithRecord
         return null;
     }
 
-    public function resolveRecordRouteBinding(int | string $key): ?Model
+    public function resolveRecordRouteBinding(int|string $key): ?Model
     {
         return app($this->getModel())
             ->resolveRouteBindingQuery($this->getEloquentQuery(), $key, $this->getRecordRouteKeyName())

@@ -12,29 +12,27 @@ class DeleteAction extends BaseDeleteAction
     {
         parent::setUp();
 
-        $this->model(fn(FullCalendarWidget $livewire) => $livewire->getModel());
+        $this
+            ->model(fn (FullCalendarWidget $livewire) => $livewire->getModel())
+            ->record(fn (FullCalendarWidget $livewire) => $livewire->getRecord())
+            ->after(
+                function (FullCalendarWidget $livewire) {
+                    $livewire->record = null;
+                    $livewire->refreshRecords();
+                }
+            )
+            ->successNotification(null)
+            ->hidden(static function (?Model $record): bool {
+                if (! $record) {
+                    return true;
+                }
 
-        $this->record(fn(FullCalendarWidget $livewire) => $livewire->getRecord());
+                if (! method_exists($record, 'trashed')) {
+                    return false;
+                }
 
-        $this->after(
-            function (FullCalendarWidget $livewire) {
-                $livewire->record = null;
-                $livewire->refreshRecords();
-            }
-        );
-
-        $this->hidden(static function (?Model $record): bool {
-            if (! $record) {
-                return true;
-            }
-
-            if (! method_exists($record, 'trashed')) {
-                return false;
-            }
-
-            return $record->trashed();
-        });
-
-        $this->cancelParentActions();
+                return $record->trashed();
+            })
+            ->cancelParentActions();
     }
 }

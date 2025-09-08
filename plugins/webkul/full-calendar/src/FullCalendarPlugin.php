@@ -2,9 +2,9 @@
 
 namespace Webkul\FullCalendar;
 
-use ReflectionClass;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use ReflectionClass;
 use Webkul\Support\Package;
 
 class FullCalendarPlugin implements Plugin
@@ -130,6 +130,6 @@ class FullCalendarPlugin implements Plugin
     {
         $reflector = new ReflectionClass(get_class($this));
 
-        return dirname($reflector->getFileName()) . ($path ?? '');
+        return dirname($reflector->getFileName()).($path ?? '');
     }
 }

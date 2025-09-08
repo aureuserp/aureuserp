@@ -2,6 +2,7 @@
 
 namespace Webkul\Contact\Filament\Clusters\Configurations\Resources\Industries;
 
+use BackedEnum;
 use Webkul\Contact\Filament\Clusters\Configurations;
 use Webkul\Contact\Filament\Clusters\Configurations\Resources\Industries\Pages\ManageIndustries;
 use Webkul\Partner\Filament\Resources\Industries\IndustryResource as BaseIndustryResource;
