@@ -310,7 +310,7 @@ class Move extends Model implements Sortable
 
     public function paymentTermLine()
     {
-        return $this->hasOne(MoveLine::class)
+        return $this->hasOne(MoveLine::class, 'move_id')
             ->where('display_type', 'payment_term');
     }
 
