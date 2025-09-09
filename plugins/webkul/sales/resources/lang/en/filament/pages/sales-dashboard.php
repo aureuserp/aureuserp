@@ -7,6 +7,9 @@ return [
 
     'filters-form' => [
         'start-date' => 'Start Date',
+
         'end-date'   => 'End Date',
+
+        'salesperson' => 'Sales Person',
     ],
 ];
