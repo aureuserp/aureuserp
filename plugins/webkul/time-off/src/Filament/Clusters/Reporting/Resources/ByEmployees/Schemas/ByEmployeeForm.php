@@ -3,7 +3,7 @@
 namespace Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployees\Schemas;
 
 use Filament\Schemas\Schema;
-use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource as BaseByEmployeeResourceForm;
+use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffs\TimeOffResource as BaseByEmployeeResourceForm;
 
 class ByEmployeeForm
 {

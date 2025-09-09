@@ -5,7 +5,7 @@ namespace Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployees;
 use BackedEnum;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource as BaseByEmployeeResource;
+use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffs\TimeOffResource as BaseByEmployeeResource;
 use Webkul\TimeOff\Filament\Clusters\Reporting;
 use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployees\Pages\CreateByEmployee;
 use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployees\Pages\EditByEmployee;

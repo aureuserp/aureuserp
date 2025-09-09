@@ -2,7 +2,7 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployees\Pages;
 
-use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource\Pages\CreateTimeOff as BaseCreateTimeOff;
+use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffs\Pages\CreateTimeOff as BaseCreateTimeOff;
 use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployees\ByEmployeeResource;
 
 class CreateByEmployee extends BaseCreateTimeOff
