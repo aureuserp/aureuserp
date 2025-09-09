@@ -10,6 +10,7 @@ use Webkul\TimeOff\Filament\Clusters\Reporting;
 use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployees\Pages\CreateByEmployee;
 use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployees\Pages\EditByEmployee;
 use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployees\Pages\ListByEmployees;
+use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployees\Pages\ViewByEmployee;
 use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployees\Schemas\ByEmployeeForm;
 use Webkul\TimeOff\Models\Leave;
 
@@ -48,6 +49,7 @@ class ByEmployeeResource extends BaseByEmployeeResource
             'index'  => ListByEmployees::route('/'),
             'create' => CreateByEmployee::route('/create'),
             'edit'   => EditByEmployee::route('/{record}/edit'),
+            'view'   => ViewByEmployee::route('/{record}'),
         ];
     }
 }
