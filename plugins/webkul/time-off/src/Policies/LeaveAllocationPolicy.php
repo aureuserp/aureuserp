@@ -15,7 +15,7 @@ class LeaveAllocationPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_my::allocation');
+        return $user->can('view_any_my::allocations::my::allocation');
     }
 
     /**
@@ -23,7 +23,7 @@ class LeaveAllocationPolicy
      */
     public function view(User $user, LeaveAllocation $leaveAllocation): bool
     {
-        return $user->can('view_my::allocation');
+        return $user->can('view_my::allocations::my::allocation');
     }
 
     /**
@@ -31,7 +31,7 @@ class LeaveAllocationPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_my::allocation');
+        return $user->can('create_my::allocations::my::allocation');
     }
 
     /**
@@ -39,7 +39,7 @@ class LeaveAllocationPolicy
      */
     public function update(User $user, LeaveAllocation $leaveAllocation): bool
     {
-        return $user->can('update_my::allocation');
+        return $user->can('update_my::allocations::my::allocation');
     }
 
     /**
@@ -47,7 +47,7 @@ class LeaveAllocationPolicy
      */
     public function delete(User $user, LeaveAllocation $leaveAllocation): bool
     {
-        return $user->can('delete_my::allocation');
+        return $user->can('delete_my::allocations::my::allocation');
     }
 
     /**
@@ -55,7 +55,7 @@ class LeaveAllocationPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_my::allocation');
+        return $user->can('delete_any_my::allocations::my::allocation');
     }
 
     /**
@@ -63,7 +63,7 @@ class LeaveAllocationPolicy
      */
     public function forceDelete(User $user, LeaveAllocation $leaveAllocation): bool
     {
-        return $user->can('force_delete_my::allocation');
+        return $user->can('force_delete_my::allocations::my::allocation');
     }
 
     /**
@@ -71,7 +71,7 @@ class LeaveAllocationPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_my::allocation');
+        return $user->can('force_delete_any_my::allocations::my::allocation');
     }
 
     /**
@@ -79,7 +79,7 @@ class LeaveAllocationPolicy
      */
     public function restore(User $user, LeaveAllocation $leaveAllocation): bool
     {
-        return $user->can('restore_my::allocation');
+        return $user->can('restore_my::allocations::my::allocation');
     }
 
     /**
@@ -87,7 +87,7 @@ class LeaveAllocationPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_my::allocation');
+        return $user->can('restore_any_my::allocations::my::allocation');
     }
 
     /**
@@ -95,7 +95,7 @@ class LeaveAllocationPolicy
      */
     public function replicate(User $user, LeaveAllocation $leaveAllocation): bool
     {
-        return $user->can('replicate_my::allocation');
+        return $user->can('replicate_my::allocations::my::allocation');
     }
 
     /**
@@ -103,6 +103,6 @@ class LeaveAllocationPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_my::allocation');
+        return $user->can('reorder_my::allocations::my::allocation');
     }
 }

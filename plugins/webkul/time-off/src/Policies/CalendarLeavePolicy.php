@@ -15,7 +15,7 @@ class CalendarLeavePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_public::holiday');
+        return $user->can('view_any_public::holidays::public::holiday');
     }
 
     /**
@@ -23,7 +23,7 @@ class CalendarLeavePolicy
      */
     public function view(User $user, CalendarLeave $calendarLeave): bool
     {
-        return $user->can('view_public::holiday');
+        return $user->can('view_public::holidays::public::holiday');
     }
 
     /**
@@ -31,7 +31,7 @@ class CalendarLeavePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_public::holiday');
+        return $user->can('create_public::holidays::public::holiday');
     }
 
     /**
@@ -39,7 +39,7 @@ class CalendarLeavePolicy
      */
     public function update(User $user, CalendarLeave $calendarLeave): bool
     {
-        return $user->can('update_public::holiday');
+        return $user->can('update_public::holidays::public::holiday');
     }
 
     /**
@@ -47,7 +47,7 @@ class CalendarLeavePolicy
      */
     public function delete(User $user, CalendarLeave $calendarLeave): bool
     {
-        return $user->can('delete_public::holiday');
+        return $user->can('delete_public::holidays::public::holiday');
     }
 
     /**
@@ -55,7 +55,7 @@ class CalendarLeavePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_public::holiday');
+        return $user->can('delete_any_public::holidays::public::holiday');
     }
 
     /**
@@ -63,7 +63,7 @@ class CalendarLeavePolicy
      */
     public function forceDelete(User $user, CalendarLeave $calendarLeave): bool
     {
-        return $user->can('force_delete_public::holiday');
+        return $user->can('force_delete_public::holidays::public::holiday');
     }
 
     /**
@@ -71,7 +71,7 @@ class CalendarLeavePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_public::holiday');
+        return $user->can('force_delete_any_public::holidays::public::holiday');
     }
 
     /**
@@ -79,7 +79,7 @@ class CalendarLeavePolicy
      */
     public function restore(User $user, CalendarLeave $calendarLeave): bool
     {
-        return $user->can('restore_public::holiday');
+        return $user->can('restore_public::holidays::public::holiday');
     }
 
     /**
@@ -87,7 +87,7 @@ class CalendarLeavePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_public::holiday');
+        return $user->can('restore_any_public::holidays::public::holiday');
     }
 
     /**
@@ -95,7 +95,7 @@ class CalendarLeavePolicy
      */
     public function replicate(User $user, CalendarLeave $calendarLeave): bool
     {
-        return $user->can('replicate_public::holiday');
+        return $user->can('replicate_public::holidays::public::holiday');
     }
 
     /**
@@ -103,6 +103,6 @@ class CalendarLeavePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_public::holiday');
+        return $user->can('reorder_public::holidays::public::holiday');
     }
 }
