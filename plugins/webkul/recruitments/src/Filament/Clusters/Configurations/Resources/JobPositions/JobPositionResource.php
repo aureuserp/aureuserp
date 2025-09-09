@@ -3,6 +3,7 @@
 namespace Webkul\Recruitment\Filament\Clusters\Configurations\Resources\JobPositions;
 
 use BackedEnum;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -27,10 +28,7 @@ class JobPositionResource extends Resource
 
     protected static ?string $cluster = Configurations::class;
 
-    public static function getNavigationGroup(): string
-    {
-        return __('recruitments::filament/clusters/configurations/resources/job-position.navigation.group');
-    }
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getGlobalSearchResultDetails(Model $record): array
     {

@@ -9,7 +9,6 @@ use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Route;
 use Webkul\Recruitment\Filament\Clusters\Applications;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\Candidates\Pages\CreateCandidate;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\Candidates\Pages\EditCandidate;
@@ -32,31 +31,11 @@ class CandidateResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
-    public static function getSubNavigationPosition(): SubNavigationPosition
-    {
-        $currentRoute = Route::currentRouteName();
-
-        if ($currentRoute === 'livewire.update') {
-            $previousUrl = url()->previous();
-
-            return str_contains($previousUrl, '/index') || str_contains($previousUrl, '?tableGrouping') || str_contains($previousUrl, '?tableFilters')
-                ? SubNavigationPosition::Start
-                : SubNavigationPosition::Top;
-        }
-
-        return str_contains($currentRoute, '.index')
-            ? SubNavigationPosition::Start
-            : SubNavigationPosition::Top;
-    }
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getModelLabel(): string
     {
         return __('recruitments::filament/clusters/applications/resources/candidate.title');
-    }
-
-    public static function getNavigationGroup(): string
-    {
-        return __('recruitments::filament/clusters/applications/resources/candidate.navigation.group');
     }
 
     public static function getNavigationLabel(): string

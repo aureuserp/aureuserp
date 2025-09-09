@@ -4,6 +4,7 @@ namespace Webkul\Recruitment\Filament\Clusters;
 
 use BackedEnum;
 use Filament\Clusters\Cluster;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Panel;
 
 class Applications extends Cluster
@@ -11,6 +12,8 @@ class Applications extends Cluster
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?int $navigationSort = 2;
+
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getSlug(?Panel $panel = null): string
     {
