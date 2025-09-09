@@ -48,7 +48,7 @@ class PaymentTermInfolist
                                     ->formatStateUsing(fn ($state) => new HtmlString($state))
                                     ->placeholder('—'),
                             ]),
-                    ]),
+                    ])->columnSpanFull(),
             ]);
     }
 }

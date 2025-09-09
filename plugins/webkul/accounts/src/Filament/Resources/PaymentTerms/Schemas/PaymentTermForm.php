@@ -65,7 +65,7 @@ class PaymentTermForm
                             ])->columns(2),
                         RichEditor::make('note')
                             ->label(__('accounts::filament/resources/payment-term.form.sections.fields.note')),
-                    ]),
+                    ])->columnSpanFull(),
             ]);
     }
 }

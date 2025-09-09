@@ -81,7 +81,7 @@ class TaxForm
                             ->label(__('accounts::filament/resources/tax.form.sections.field-set.fields.description')),
                         RichEditor::make('invoice_legal_notes')
                             ->label(__('accounts::filament/resources/tax.form.sections.field-set.fields.legal-notes')),
-                    ]),
+                    ])->columnSpanFull(),
             ]);
     }
 }

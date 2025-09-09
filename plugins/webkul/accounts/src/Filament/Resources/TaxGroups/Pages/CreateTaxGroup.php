@@ -4,6 +4,7 @@ namespace Webkul\Account\Filament\Resources\TaxGroups\Pages;
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Filament\Resources\TaxGroups\TaxGroupResource;
 
 class CreateTaxGroup extends CreateRecord
@@ -21,5 +22,14 @@ class CreateTaxGroup extends CreateRecord
             ->success()
             ->title(__('accounts::filament/resources/tax-group/pages/create-tax-group.notification.title'))
             ->body(__('accounts::filament/resources/tax-group/pages/create-tax-group.notification.body'));
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $user = Auth::user();
+
+        $data['creator_id'] = $user->id;
+
+        return $data;
     }
 }
