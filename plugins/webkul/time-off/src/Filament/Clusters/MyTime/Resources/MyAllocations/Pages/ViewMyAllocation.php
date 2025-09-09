@@ -1,17 +1,17 @@
 <?php
 
-namespace Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOffResource\Pages;
+namespace Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyAllocations\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
-use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOffResource;
+use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyAllocations\MyAllocationResource;
 
-class ViewMyTimeOff extends ViewRecord
+class ViewMyAllocation extends ViewRecord
 {
-    protected static string $resource = MyTimeOffResource::class;
+    protected static string $resource = MyAllocationResource::class;
 
     protected function getHeaderActions(): array
     {
@@ -23,8 +23,8 @@ class ViewMyTimeOff extends ViewRecord
                 ->successNotification(
                     Notification::make()
                         ->success()
-                        ->title(__('time-off::filament/clusters/my-time/resources/my-time-off/pages/view-time-off.header-actions.delete.notification.title'))
-                        ->body(__('time-off::filament/clusters/my-time/resources/my-time-off/pages/view-time-off.header-actions.delete.notification.body'))
+                        ->title(__('time-off::filament/clusters/my-time/resources/my-allocation/pages/view-allocation.header-actions.delete.notification.title'))
+                        ->body(__('time-off::filament/clusters/my-time/resources/my-allocation/pages/view-allocation.header-actions.delete.notification.body'))
                 ),
         ];
     }

@@ -1,10 +1,10 @@
 <?php
 
-namespace Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyAllocationResource\Pages;
+namespace Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyAllocations\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyAllocationResource;
+use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyAllocations\MyAllocationResource;
 
 class ListMyAllocations extends ListRecords
 {
