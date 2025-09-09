@@ -404,7 +404,7 @@ class CompanyResource extends Resource
             ->checkIfRecordIsSelectableUsing(
                 fn (Model $record, UserSettings $userSettings): bool => ! ($record->id === $userSettings->default_company_id)
             )
-            ->reorderable('sequence');
+            ->reorderable('sort');
     }
 
     public static function infolist(Infolist $infolist): Infolist

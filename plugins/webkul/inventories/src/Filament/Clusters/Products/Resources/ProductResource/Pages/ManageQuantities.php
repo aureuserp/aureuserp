@@ -167,19 +167,30 @@ class ManageQuantities extends ManageRelatedRecords
                     ->relationship(
                         name: 'package',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn (Builder $query, Forms\Get $get) => $query
-                            ->where('location_id', $get('location_id'))
-                            ->orWhereNull('location_id'),
+                        modifyQueryUsing: fn (Builder $query, Forms\Get $get) => $query->where(function ($query) use ($get) {
+                            $locationId = $get('location_id');
+
+                            if ($locationId) {
+                                $query->where('location_id', $locationId);
+                            } else {
+                                $query->whereNull('location_id');
+                            }
+                        }),
                     )
+                    ->getOptionLabelUsing(fn ($record) => $record?->name)
                     ->searchable()
+                    ->reactive()
                     ->preload()
                     ->createOptionForm(fn (Form $form): Form => PackageResource::form($form))
-                    ->createOptionAction(function (Action $action) {
-                        $action->mutateFormDataUsing(function (array $data) {
-                            $data['company_id'] = $this->getOwnerRecord()->company_id;
+                    ->createOptionAction(function (Action $action, Forms\Set $set) {
+                        $action
+                            ->mutateFormDataUsing(function (array $data) {
+                                $data['company_id'] = $this->getOwnerRecord()->company_id;
+                                $data['creator_id'] = filament()->auth()->user()->id;
 
-                            return $data;
-                        });
+                                return $data;
+                            })
+                            ->after(fn () => $set('package_id', null));
                     })
                     ->visible(fn (OperationSettings $settings) => $settings->enable_packages),
                 Forms\Components\TextInput::make('quantity')

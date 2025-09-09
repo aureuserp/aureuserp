@@ -201,8 +201,6 @@ class SaleManager
 
         $line->state = $line->order->state;
 
-        $line = $this->computeOrderLineWarehouseId($line);
-
         $line = $this->computeOrderLineDeliveryMethod($line);
 
         $line = $this->computeOrderLineInvoiceStatus($line);
@@ -283,6 +281,11 @@ class SaleManager
 
         $order->warehouse_id = Warehouse::where('company_id', $order->company_id)->first()?->id;
 
+        optional($order->lines)->each(function ($line) use ($order) {
+            $line->warehouse_id = $order->warehouse_id;
+            $line->save();
+        });
+
         return $order;
     }
 
@@ -311,8 +314,6 @@ class SaleManager
         }
 
         return $order;
-
-        return $record;
     }
 
     public function computeInvoiceStatus(Order $order): Order
@@ -340,17 +341,6 @@ class SaleManager
         }
 
         return $order;
-    }
-
-    public function computeOrderLineWarehouseId(OrderLine $line): OrderLine
-    {
-        if (! Package::isPluginInstalled('inventories')) {
-            return $line;
-        }
-
-        $line->warehouse_id = $line->order->warehouse_id;
-
-        return $line;
     }
 
     public function computeOrderLineDeliveryMethod(OrderLine $line): OrderLine

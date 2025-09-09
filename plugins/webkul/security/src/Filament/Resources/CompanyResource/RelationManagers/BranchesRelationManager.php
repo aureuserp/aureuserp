@@ -361,7 +361,7 @@ class BranchesRelationManager extends RelationManager
                         ),
                 ]),
             ])
-            ->reorderable('sequence');
+            ->reorderable('sort');
     }
 
     public function infolist(Infolist $infolist): Infolist

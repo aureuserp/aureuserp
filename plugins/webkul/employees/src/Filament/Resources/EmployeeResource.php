@@ -661,19 +661,16 @@ class EmployeeResource extends Resource
                                                         Forms\Components\Toggle::make('work_permit_scheduled_activity')
                                                             ->label(__('employees::filament/resources/employee.form.tabs.settings.fields.work-permit-scheduled-activity')),
                                                         Forms\Components\Select::make('user_id')
-                                                            ->relationship(
-                                                                name: 'user',
-                                                                titleAttribute: 'name',
-                                                                modifyQueryUsing: function ($query, $state) {
-                                                                    return $query->where(function ($query) use ($state) {
-                                                                        $query->whereDoesntHave('employee');
-                                                                        if ($state) {
-                                                                            $query->orWhere('id', $state);
-                                                                        }
-                                                                    });
-                                                                }
-                                                            )
-                                                            ->unique(ignoreRecord: true)
+                                                            ->relationship(name: 'user', titleAttribute: 'name', modifyQueryUsing: fn ($query) => $query->withTrashed())
+                                                            ->getOptionLabelFromRecordUsing(function ($record) {
+                                                                return $record->trashed()
+                                                                    ? $record->name.' (Deleted)'
+                                                                    : $record->name;
+                                                            })
+                                                            ->disableOptionWhen(function ($value) {
+                                                                $user = User::withTrashed()->find($value);
+                                                                return $user && $user->trashed();
+                                                            })
                                                             ->searchable()
                                                             ->preload()
                                                             ->label(__('employees::filament/resources/employee.form.tabs.settings.fields.related-user'))
@@ -1539,8 +1536,8 @@ class EmployeeResource extends Resource
                                                         ->date('F j, Y')
                                                         ->color(
                                                             fn ($record) => $record->visa_expire && now()->diffInDays($record->visa_expire, false) <= 30
-                                                                ? 'danger'
-                                                                : 'success'
+                                                            ? 'danger'
+                                                            : 'success'
                                                         ),
                                                     Infolists\Components\TextEntry::make('work_permit_expiration_date')
                                                         ->label(__('employees::filament/resources/employee.infolist.tabs.private-information.entries.work-permit-expiration-date'))
@@ -1549,8 +1546,8 @@ class EmployeeResource extends Resource
                                                         ->date('F j, Y')
                                                         ->color(
                                                             fn ($record) => $record->work_permit_expiration_date && now()->diffInDays($record->work_permit_expiration_date, false) <= 30
-                                                                ? 'danger'
-                                                                : 'success'
+                                                            ? 'danger'
+                                                            : 'success'
                                                         ),
                                                     Infolists\Components\ImageEntry::make('work_permit')
                                                         ->label(__('employees::filament/resources/employee.infolist.tabs.private-information.entries.work-permit-document'))

@@ -10,8 +10,10 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 use Webkul\Security\Enums\PermissionType;
@@ -285,6 +287,7 @@ class UserResource extends Resource
                                 ->body(__('security::filament/resources/user.table.actions.edit.notification.body')),
                         ),
                     Tables\Actions\DeleteAction::make()
+                        ->hidden(fn ($record) => $record->trashed() || $record->hasRole('admin'))
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -303,6 +306,7 @@ class UserResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
+                        ->visible(fn (User $record) => self::canDeleteUser($record))
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -310,6 +314,17 @@ class UserResource extends Resource
                                 ->body(__('security::filament/resources/user.table.bulk-actions.delete.notification.body')),
                         ),
                     Tables\Actions\ForceDeleteBulkAction::make()
+                        ->action(function (Collection $records) {
+                            try {
+                                $records->each(fn (Model $record) => $record->forceDelete());
+                            } catch (QueryException $e) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('security::filament/resources/user.table.bulk-actions.force-delete.notification.error.title'))
+                                    ->body(__('security::filament/resources/user.table.bulk-actions.force-delete.notification.error.body'))
+                                    ->send();
+                            }
+                        })
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -329,6 +344,7 @@ class UserResource extends Resource
             ->modifyQueryUsing(function ($query) {
                 $query->with('roles', 'teams', 'defaultCompany', 'allowedCompanies');
             })
+            ->checkIfRecordIsSelectableUsing(fn (User $record) => self::canDeleteUser($record))
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make()
                     ->icon('heroicon-o-plus-circle')
@@ -434,11 +450,9 @@ class UserResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
+    public static function canDeleteUser(User $record): bool
     {
-        return [
-            //
-        ];
+        return ! $record->is_default;
     }
 
     public static function getPages(): array

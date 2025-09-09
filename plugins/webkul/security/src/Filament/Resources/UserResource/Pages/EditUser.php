@@ -61,6 +61,7 @@ class EditUser extends EditRecord
                 ->icon('heroicon-o-key'),
             Actions\ViewAction::make(),
             Actions\DeleteAction::make()
+                ->visible(fn (User $record) => self::getResource()::canDeleteUser($record))
                 ->successNotification(
                     Notification::make()
                         ->success()

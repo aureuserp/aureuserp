@@ -3,7 +3,7 @@
 namespace Webkul\Security\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Spatie\Permission\Models\Role;
+use Webkul\Security\Models\Role;
 use Webkul\Security\Models\User;
 
 class RolePolicy
