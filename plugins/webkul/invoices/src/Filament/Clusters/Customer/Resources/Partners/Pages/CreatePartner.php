@@ -19,6 +19,6 @@ class CreatePartner extends BaseCreatePartner
 
     public function getTitle(): string|Htmlable
     {
-        return __('Customer');
+        return __('invoices::filament/clusters/customers/resources/partner/pages/create-partner.title');
     }
 }

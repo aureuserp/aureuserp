@@ -77,10 +77,10 @@ class SendByEmailAction extends Action
             ->modalIcon('heroicon-s-envelope')
             ->modalHeading(__('sales::filament/clusters/orders/resources/quotation/actions/send-by-email.modal.heading'))
             ->hidden(fn (Order $record) => $record->state != OrderState::SALE)
-            ->action(function (Order $record, array $data) {
+            ->action(function (Order $record, array $data, $livewire) {
                 SaleOrder::sendQuotationOrOrderByEmail($record, $data);
 
-                $this->refreshFormData(['state']);
+                $livewire->refreshFormData(['state']);
 
                 Notification::make()
                     ->success()

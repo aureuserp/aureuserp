@@ -444,7 +444,7 @@ class SaleManager
         foreach ($partners as $key => $partner) {
             $payload = [
                 'record_name'    => $record->name,
-                'model_name'     => OrderState::options()[$record->state],
+                'model_name'     => OrderState::options([$record->state]),
                 'subject'        => $data['subject'],
                 'description'    => $data['description'],
                 'to'             => [

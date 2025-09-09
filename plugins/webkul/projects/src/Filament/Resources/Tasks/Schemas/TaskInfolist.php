@@ -44,9 +44,9 @@ class TaskInfolist
                                 TextEntry::make('state')
                                     ->label(__('projects::filament/resources/task.infolist.sections.general.entries.state'))
                                     ->badge()
-                                    ->icon(fn (string $state): string => TaskState::icons()[$state])
-                                    ->color(fn (string $state): string => TaskState::colors()[$state])
-                                    ->formatStateUsing(fn (string $state): string => TaskState::options()[$state]),
+                                    ->icon(fn (TaskState $state): string => TaskState::icons()[$state->value])
+                                    ->color(fn (TaskState $state): string => TaskState::colors()[$state->value])
+                                    ->formatStateUsing(fn (TaskState $state): string => TaskState::options()[$state->value]),
 
                                 IconEntry::make('priority')
                                     ->label(__('projects::filament/resources/task.infolist.sections.general.entries.priority'))

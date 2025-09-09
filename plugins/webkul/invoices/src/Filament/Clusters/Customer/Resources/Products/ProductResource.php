@@ -2,6 +2,7 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Customer\Resources\Products;
 
+use BackedEnum;
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Webkul\Invoice\Filament\Clusters\Customer;
@@ -21,6 +22,8 @@ class ProductResource extends BaseProductResource
     protected static ?string $cluster = Customer::class;
 
     protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
     protected static bool $shouldRegisterNavigation = true;
 

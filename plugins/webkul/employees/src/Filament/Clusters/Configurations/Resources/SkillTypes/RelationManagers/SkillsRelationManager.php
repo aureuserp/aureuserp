@@ -39,7 +39,7 @@ class SkillsRelationManager extends RelationManager
                     ->required(),
                 Hidden::make('creator_id')
                     ->default(Auth::user()->id),
-            ])->columns('full');
+            ])->columns(1);
     }
 
     public function table(Table $table): Table

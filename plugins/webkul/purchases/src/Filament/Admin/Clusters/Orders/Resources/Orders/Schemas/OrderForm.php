@@ -408,7 +408,7 @@ class OrderForm
                                     ->default(0),
                                 Hidden::make('price_total')
                                     ->default(0),
-                            ]),
+                            ])->columnSpanFull(),
                     ])
                     ->columns(2),
             ])

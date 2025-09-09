@@ -12,6 +12,10 @@ class ViewPartner extends BaseViewPartner
 
     public function getTitle(): string|Htmlable
     {
-        return __('Customer');
+        return __('invoices::filament/clusters/customers/resources/partner/pages/view-partner.title');
+    }
+     public static function getNavigationLabel(): string
+    {
+        return __('invoices::filament/clusters/customers/resources/partner/pages/view-partner.sub-navigation.view-partner');
     }
 }

@@ -15,6 +15,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Product\Enums\ProductType;
+use Webkul\Product\Filament\Resources\Categories\CategoryResource;
 use Webkul\Product\Models\Category;
 use Webkul\Support\Models\UOM;
 
@@ -57,6 +58,7 @@ class ProductForm
                             ->schema([
                                 FileUpload::make('images')
                                     ->multiple()
+                                    ->image()
                                     ->storeFileNamesIn('products'),
                             ]),
 

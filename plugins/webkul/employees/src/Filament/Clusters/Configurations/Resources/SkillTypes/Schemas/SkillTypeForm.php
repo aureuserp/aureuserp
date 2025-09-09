@@ -40,7 +40,7 @@ class SkillTypeForm
                     Toggle::make('is_active')
                         ->label(__('employees::filament/clusters/configurations/resources/skill-type.form.sections.fields.status'))
                         ->default(true),
-                ])->columns(2),
+                ])->columns(2)->columnSpanFull(),
             ]);
     }
 }

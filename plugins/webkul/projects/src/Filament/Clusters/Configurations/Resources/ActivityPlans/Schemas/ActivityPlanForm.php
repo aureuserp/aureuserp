@@ -23,7 +23,7 @@ class ActivityPlanForm
                             ->label(__('projects::filament/clusters/configurations/resources/activity-plan.form.status'))
                             ->default(true)
                             ->inline(false),
-                    ])->columns(2),
+                    ])->columns(2)->columnSpanFull(),
             ]);
     }
 }
