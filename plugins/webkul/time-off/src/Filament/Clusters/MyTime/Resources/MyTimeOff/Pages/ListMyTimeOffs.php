@@ -1,10 +1,10 @@
 <?php
 
-namespace Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOffResource\Pages;
+namespace Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOff\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
-use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOffResource;
+use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOff\MyTimeOffResource;
 
 class ListMyTimeOffs extends ListRecords
 {

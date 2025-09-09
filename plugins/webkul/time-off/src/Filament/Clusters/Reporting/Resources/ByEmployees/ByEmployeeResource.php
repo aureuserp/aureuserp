@@ -1,15 +1,16 @@
 <?php
 
-namespace Webkul\TimeOff\Filament\Clusters\Reporting\Resources;
+namespace Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployees;
 
 use BackedEnum;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource as BaseByEmployeeResource;
 use Webkul\TimeOff\Filament\Clusters\Reporting;
-use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Pages\CreateByEmployee;
-use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Pages\EditByEmployee;
-use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Pages\ListByEmployees;
+use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployees\Pages\CreateByEmployee;
+use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployees\Pages\EditByEmployee;
+use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployees\Pages\ListByEmployees;
+use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployees\Schemas\ByEmployeeForm;
 use Webkul\TimeOff\Models\Leave;
 
 class ByEmployeeResource extends BaseByEmployeeResource
@@ -32,7 +33,7 @@ class ByEmployeeResource extends BaseByEmployeeResource
 
     public static function form(Schema $schema): Schema
     {
-        return BaseByEmployeeResource::form($schema);
+        return ByEmployeeForm::configure($schema);
     }
 
     public static function table(Table $table): Table

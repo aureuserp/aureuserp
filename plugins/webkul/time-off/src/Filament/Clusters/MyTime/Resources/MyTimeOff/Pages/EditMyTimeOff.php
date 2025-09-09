@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOffResource\Pages;
+namespace Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOff\Pages;
 
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
@@ -10,7 +10,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
 use Webkul\TimeOff\Enums\State;
-use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOffResource;
+use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOff\MyTimeOffResource;
 
 class EditMyTimeOff extends EditRecord
 {
