@@ -28,24 +28,24 @@ class TopAssigneesWidget extends BaseWidget
     {
         $query = Timesheet::query();
 
-        if (! empty($this->filters['selectedProjects'])) {
-            $query->whereIn('project_id', $this->filters['selectedProjects']);
+        if (! empty($this->pageFilters['selectedProjects'])) {
+            $query->whereIn('project_id', $this->pageFilters['selectedProjects']);
         }
 
-        if (! empty($this->filters['selectedAssignees'])) {
-            $query->whereIn('user_id', $this->filters['selectedAssignees']);
+        if (! empty($this->pageFilters['selectedAssignees'])) {
+            $query->whereIn('user_id', $this->pageFilters['selectedAssignees']);
         }
 
-        if (! empty($this->filters['selectedPartners'])) {
-            $query->whereIn('analytic_records.partner_id', $this->filters['selectedPartners']);
+        if (! empty($this->pageFilters['selectedPartners'])) {
+            $query->whereIn('analytic_records.partner_id', $this->pageFilters['selectedPartners']);
         }
 
-        $startDate = ! is_null($this->filters['startDate'] ?? null) ?
-            Carbon::parse($this->filters['startDate']) :
+        $startDate = ! is_null($this->pageFilters['startDate'] ?? null) ?
+            Carbon::parse($this->pageFilters['startDate']) :
             null;
 
-        $endDate = ! is_null($this->filters['endDate'] ?? null) ?
-            Carbon::parse($this->filters['endDate']) :
+        $endDate = ! is_null($this->pageFilters['endDate'] ?? null) ?
+            Carbon::parse($this->pageFilters['endDate']) :
             now();
 
         $query = $query

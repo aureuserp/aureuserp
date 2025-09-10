@@ -15,7 +15,7 @@ class PackagePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_package');
+        return $user->can('view_any_packages::package');
     }
 
     /**
@@ -23,7 +23,7 @@ class PackagePolicy
      */
     public function view(User $user, Package $package): bool
     {
-        return $user->can('view_package');
+        return $user->can('view_packages::package');
     }
 
     /**
@@ -31,7 +31,7 @@ class PackagePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_package');
+        return $user->can('create_packages::package');
     }
 
     /**
@@ -39,7 +39,7 @@ class PackagePolicy
      */
     public function update(User $user, Package $package): bool
     {
-        return $user->can('update_package');
+        return $user->can('update_packages::package');
     }
 
     /**
@@ -47,7 +47,7 @@ class PackagePolicy
      */
     public function delete(User $user, Package $package): bool
     {
-        return $user->can('delete_package');
+        return $user->can('delete_packages::package');
     }
 
     /**
@@ -55,7 +55,7 @@ class PackagePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_package');
+        return $user->can('delete_any_packages::package');
     }
 
     /**
@@ -63,7 +63,7 @@ class PackagePolicy
      */
     public function forceDelete(User $user, Package $package): bool
     {
-        return $user->can('force_delete_package');
+        return $user->can('force_delete_packages::package');
     }
 
     /**
@@ -71,7 +71,7 @@ class PackagePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_package');
+        return $user->can('force_delete_any_packages::package');
     }
 
     /**
@@ -79,7 +79,7 @@ class PackagePolicy
      */
     public function restore(User $user, Package $package): bool
     {
-        return $user->can('restore_package');
+        return $user->can('restore_packages::package');
     }
 
     /**
@@ -87,7 +87,7 @@ class PackagePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_package');
+        return $user->can('restore_any_packages::package');
     }
 
     /**
@@ -95,7 +95,7 @@ class PackagePolicy
      */
     public function replicate(User $user, Package $package): bool
     {
-        return $user->can('replicate_package');
+        return $user->can('replicate_packages::package');
     }
 
     /**
@@ -103,6 +103,6 @@ class PackagePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_package');
+        return $user->can('reorder_packages::package');
     }
 }

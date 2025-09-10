@@ -8,7 +8,7 @@ use Webkul\Product\Models\AttributeOption;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Product\Models\AttributeOption>
+ * @extends Factory<AttributeOption>
  */
 class AttributeOptionFactory extends Factory
 {

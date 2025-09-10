@@ -15,7 +15,7 @@ class LeaveAccrualPlanPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_accrual::plan');
+        return $user->can('view_any_accrual::plans::accrual::plan');
     }
 
     /**
@@ -23,7 +23,7 @@ class LeaveAccrualPlanPolicy
      */
     public function view(User $user, LeaveAccrualPlan $leaveAccrualPlan): bool
     {
-        return $user->can('view_accrual::plan');
+        return $user->can('view_accrual::plans::accrual::plan');
     }
 
     /**
@@ -31,7 +31,7 @@ class LeaveAccrualPlanPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_accrual::plan');
+        return $user->can('create_accrual::plans::accrual::plan');
     }
 
     /**
@@ -39,7 +39,7 @@ class LeaveAccrualPlanPolicy
      */
     public function update(User $user, LeaveAccrualPlan $leaveAccrualPlan): bool
     {
-        return $user->can('update_accrual::plan');
+        return $user->can('update_accrual::plans::accrual::plan');
     }
 
     /**
@@ -47,7 +47,7 @@ class LeaveAccrualPlanPolicy
      */
     public function delete(User $user, LeaveAccrualPlan $leaveAccrualPlan): bool
     {
-        return $user->can('delete_accrual::plan');
+        return $user->can('delete_accrual::plans::accrual::plan');
     }
 
     /**
@@ -55,7 +55,7 @@ class LeaveAccrualPlanPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_accrual::plan');
+        return $user->can('delete_any_accrual::plans::accrual::plan');
     }
 
     /**
@@ -63,7 +63,7 @@ class LeaveAccrualPlanPolicy
      */
     public function forceDelete(User $user, LeaveAccrualPlan $leaveAccrualPlan): bool
     {
-        return $user->can('force_delete_accrual::plan');
+        return $user->can('force_delete_accrual::plans::accrual::plan');
     }
 
     /**
@@ -71,7 +71,7 @@ class LeaveAccrualPlanPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_accrual::plan');
+        return $user->can('force_delete_any_accrual::plans::accrual::plan');
     }
 
     /**
@@ -79,7 +79,7 @@ class LeaveAccrualPlanPolicy
      */
     public function restore(User $user, LeaveAccrualPlan $leaveAccrualPlan): bool
     {
-        return $user->can('restore_accrual::plan');
+        return $user->can('restore_accrual::plans::accrual::plan');
     }
 
     /**
@@ -87,7 +87,7 @@ class LeaveAccrualPlanPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_accrual::plan');
+        return $user->can('restore_any_accrual::plans::accrual::plan');
     }
 
     /**
@@ -95,7 +95,7 @@ class LeaveAccrualPlanPolicy
      */
     public function replicate(User $user, LeaveAccrualPlan $leaveAccrualPlan): bool
     {
-        return $user->can('replicate_accrual::plan');
+        return $user->can('replicate_accrual::plans::accrual::plan');
     }
 
     /**
@@ -103,6 +103,6 @@ class LeaveAccrualPlanPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_accrual::plan');
+        return $user->can('reorder_accrual::plans::accrual::plan');
     }
 }

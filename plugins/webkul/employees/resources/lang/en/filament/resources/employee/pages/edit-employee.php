@@ -16,4 +16,7 @@ return [
             ],
         ],
     ],
+    'sub-navigation' => [
+        'edit-employee' => 'Edit Employee',
+    ],
 ];

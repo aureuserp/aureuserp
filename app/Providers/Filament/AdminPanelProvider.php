@@ -3,15 +3,15 @@
 namespace App\Providers\Filament;
 
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\MenuItem;
 use Filament\Navigation\NavigationGroup;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Support\Enums\MaxWidth;
+use Filament\Support\Enums\Width;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -46,7 +46,7 @@ class AdminPanelProvider extends PanelProvider
             ->unsavedChangesAlerts()
             // ->spa()
             ->sidebarCollapsibleOnDesktop()
-            ->maxContentWidth(MaxWidth::Full)
+            ->maxContentWidth(Width::Full)
             ->navigationGroups([
                 NavigationGroup::make()
                     ->label('Dashboard'),
@@ -54,7 +54,7 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Settings'),
             ])
             ->userMenuItems([
-                'profile' => MenuItem::make()
+                'profile' => Action::make('profile')
                     ->label(fn () => filament()->auth()->user()?->name)
                     ->url(fn (): string => Profile::getUrl()),
             ])

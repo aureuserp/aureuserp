@@ -5,7 +5,9 @@ namespace Webkul\Inventory\Filament\Clusters\Operations\Actions;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Livewire\Component;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\CreateBackorder;
+use Webkul\Inventory\Enums\OperationState;
+use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\ProductQuantity;
@@ -22,18 +24,42 @@ class ValidateAction extends Action
         parent::setUp();
 
         $this->label(__('inventories::filament/clusters/operations/actions/validate.label'))
-            ->color(function ($record) {
-                if (in_array($record->state, [Enums\OperationState::DRAFT, Enums\OperationState::CONFIRMED])) {
+            ->color(function (Operation $record) {
+                if (in_array($record->state, [OperationState::DRAFT, OperationState::CONFIRMED])) {
                     return 'gray';
                 }
 
                 return 'primary';
             })
             ->requiresConfirmation(function (Operation $record) {
-                return $record->operationType->create_backorder === Enums\CreateBackorder::ASK
+                return $record->operationType->create_backorder === CreateBackorder::ASK
                     && Inventory::canCreateBackOrder($record);
             })
-            ->configureModal($this->getRecord())
+            ->modalHeading(fn (Operation $record) => (
+                $record->operationType->create_backorder === CreateBackorder::ASK
+                && Inventory::canCreateBackOrder($record)
+            ) ? __('inventories::filament/clusters/operations/actions/validate.modal-heading') : null)
+            ->modalDescription(fn (Operation $record) => (
+                $record->operationType->create_backorder === CreateBackorder::ASK
+                && Inventory::canCreateBackOrder($record)
+            ) ? __('inventories::filament/clusters/operations/actions/validate.modal-description') : null)
+            ->extraModalFooterActions(fn (Operation $record) => (
+                $record->operationType->create_backorder === CreateBackorder::ASK
+                && Inventory::canCreateBackOrder($record)
+            ) ? [
+                Action::make('no-backorder')
+                    ->label(__('inventories::filament/clusters/operations/actions/validate.extra-modal-footer-actions.no-backorder.label'))
+                    ->color('danger')
+                    ->action(function (Operation $record, Component $livewire): void {
+                        if ($this->hasMoveErrors($record)) {
+                            return;
+                        }
+
+                        Inventory::validateTransfer($record);
+
+                        $livewire->updateForm();
+                    }),
+            ] : [])
             ->action(function (Operation $record, Component $livewire): void {
                 if ($this->hasMoveErrors($record)) {
                     return;
@@ -45,44 +71,18 @@ class ValidateAction extends Action
 
                 $livewire->updateForm();
             })
-            ->hidden(fn () => in_array($this->getRecord()->state, [
-                Enums\OperationState::DONE,
-                Enums\OperationState::CANCELED,
-            ]));
-    }
-
-    protected function configureModal(Operation $record): self
-    {
-        if (
-            $record->operationType->create_backorder === Enums\CreateBackorder::ASK
-            && Inventory::canCreateBackOrder($record)
-        ) {
-            $this->modalHeading(__('inventories::filament/clusters/operations/actions/validate.modal-heading'))
-                ->modalDescription(__('inventories::filament/clusters/operations/actions/validate.modal-description'))
-                ->extraModalFooterActions([
-                    Action::make('no-backorder')
-                        ->label(__('inventories::filament/clusters/operations/actions/validate.extra-modal-footer-actions.no-backorder.label'))
-                        ->color('danger')
-                        ->action(function (Operation $record, Component $livewire): void {
-                            if ($this->hasMoveErrors($record)) {
-                                return;
-                            }
-
-                            Inventory::validateTransfer($record);
-
-                            $livewire->updateForm();
-                        }),
+            ->hidden(function (Operation $record) {
+                return in_array($record->state, [
+                    OperationState::DONE,
+                    OperationState::CANCELED,
                 ]);
-        }
-
-        return $this;
+            });
     }
 
     protected function hasMoveErrors(Operation $record): bool
     {
         $record = Inventory::computeTransfer($record);
 
-        // Validate moves and notify on warnings.
         foreach ($record->moves as $move) {
             if ($this->hasMoveLineErrors($move)) {
                 return true;
@@ -129,7 +129,7 @@ class ValidateAction extends Action
             }
         }
 
-        $isLotTracking = $move->product->tracking == Enums\ProductTracking::LOT || $move->product->tracking == Enums\ProductTracking::SERIAL;
+        $isLotTracking = $move->product->tracking == ProductTracking::LOT || $move->product->tracking == ProductTracking::SERIAL;
 
         if ($isLotTracking && $move->lines->contains(fn ($line) => ! $line->lot_id)) {
             $this->sendNotification(
@@ -141,7 +141,7 @@ class ValidateAction extends Action
             return true;
         }
 
-        $isSerialTracking = $move->product->tracking == Enums\ProductTracking::SERIAL;
+        $isSerialTracking = $move->product->tracking == ProductTracking::SERIAL;
 
         if ($isSerialTracking) {
             if ($move->lines->contains(fn ($line) => $line->qty != 1)) {

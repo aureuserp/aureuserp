@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Website\Models\Page;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Website\Models\Page>
+ * @extends Factory<Page>
  */
 class PageFactory extends Factory
 {

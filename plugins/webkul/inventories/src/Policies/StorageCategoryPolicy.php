@@ -15,7 +15,7 @@ class StorageCategoryPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_storage::category');
+        return $user->can('view_any_storage::categories::storage::category');
     }
 
     /**
@@ -23,7 +23,7 @@ class StorageCategoryPolicy
      */
     public function view(User $user, StorageCategory $storageCategory): bool
     {
-        return $user->can('view_storage::category');
+        return $user->can('view_storage::categories::storage::category');
     }
 
     /**
@@ -31,7 +31,7 @@ class StorageCategoryPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_storage::category');
+        return $user->can('create_storage::categories::storage::category');
     }
 
     /**
@@ -39,7 +39,7 @@ class StorageCategoryPolicy
      */
     public function update(User $user, StorageCategory $storageCategory): bool
     {
-        return $user->can('update_storage::category');
+        return $user->can('update_storage::categories::storage::category');
     }
 
     /**
@@ -47,7 +47,7 @@ class StorageCategoryPolicy
      */
     public function delete(User $user, StorageCategory $storageCategory): bool
     {
-        return $user->can('delete_storage::category');
+        return $user->can('delete_storage::categories::storage::category');
     }
 
     /**
@@ -55,7 +55,7 @@ class StorageCategoryPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_storage::category');
+        return $user->can('delete_any_storage::categories::storage::category');
     }
 
     /**
@@ -63,7 +63,7 @@ class StorageCategoryPolicy
      */
     public function forceDelete(User $user, StorageCategory $storageCategory): bool
     {
-        return $user->can('force_delete_storage::category');
+        return $user->can('force_delete_storage::categories::storage::category');
     }
 
     /**
@@ -71,7 +71,7 @@ class StorageCategoryPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_storage::category');
+        return $user->can('force_delete_any_storage::categories::storage::category');
     }
 
     /**
@@ -79,7 +79,7 @@ class StorageCategoryPolicy
      */
     public function restore(User $user, StorageCategory $storageCategory): bool
     {
-        return $user->can('restore_storage::category');
+        return $user->can('restore_storage::categories::storage::category');
     }
 
     /**
@@ -87,7 +87,7 @@ class StorageCategoryPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_storage::category');
+        return $user->can('restore_any_storage::categories::storage::category');
     }
 
     /**
@@ -95,7 +95,7 @@ class StorageCategoryPolicy
      */
     public function replicate(User $user, StorageCategory $storageCategory): bool
     {
-        return $user->can('replicate_storage::category');
+        return $user->can('replicate_storage::categories::storage::category');
     }
 
     /**
@@ -103,6 +103,6 @@ class StorageCategoryPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_storage::category');
+        return $user->can('reorder_storage::categories::storage::category');
     }
 }

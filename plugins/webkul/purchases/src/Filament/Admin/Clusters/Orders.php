@@ -2,13 +2,14 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters;
 
+use BackedEnum;
 use Filament\Clusters\Cluster;
 
 class Orders extends Cluster
 {
     protected static ?string $slug = 'purchase/orders';
 
-    protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-cart';
 
     protected static ?int $navigationSort = 2;
 

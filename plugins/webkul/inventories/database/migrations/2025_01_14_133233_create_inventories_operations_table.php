@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\MoveType;
 
 return new class extends Migration
 {
@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->text('description')->nullable();
             $table->string('origin')->nullable();
-            $table->string('move_type')->default(Enums\MoveType::DIRECT);
+            $table->string('move_type')->default(MoveType::DIRECT);
             $table->string('state')->nullable();
             $table->boolean('is_favorite')->default(0);
             $table->boolean('has_deadline_issue')->default(0);

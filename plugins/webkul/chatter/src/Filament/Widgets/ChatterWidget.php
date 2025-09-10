@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 
 class ChatterWidget extends Widget
 {
-    protected static string $view = 'chatter::filament.widgets.chatter';
+    protected string $view = 'chatter::filament.widgets.chatter';
 
     protected int|string|array $columnSpan = 'full';
 

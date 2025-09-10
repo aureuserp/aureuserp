@@ -15,7 +15,7 @@ class CalendarPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_calendar');
+        return $user->can('view_any_calendar::calendar');
     }
 
     /**
@@ -23,7 +23,7 @@ class CalendarPolicy
      */
     public function view(User $user, Calendar $calendar): bool
     {
-        return $user->can('view_calendar');
+        return $user->can('view_calendar::calendar');
     }
 
     /**
@@ -31,7 +31,7 @@ class CalendarPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_calendar');
+        return $user->can('create_calendar::calendar');
     }
 
     /**
@@ -39,7 +39,7 @@ class CalendarPolicy
      */
     public function update(User $user, Calendar $calendar): bool
     {
-        return $user->can('update_calendar');
+        return $user->can('update_calendar::calendar');
     }
 
     /**
@@ -47,7 +47,7 @@ class CalendarPolicy
      */
     public function delete(User $user, Calendar $calendar): bool
     {
-        return $user->can('delete_calendar');
+        return $user->can('delete_calendar::calendar');
     }
 
     /**
@@ -55,7 +55,7 @@ class CalendarPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_calendar');
+        return $user->can('delete_any_calendar::calendar');
     }
 
     /**
@@ -63,7 +63,7 @@ class CalendarPolicy
      */
     public function forceDelete(User $user, Calendar $calendar): bool
     {
-        return $user->can('force_delete_calendar');
+        return $user->can('force_delete_calendar::calendar');
     }
 
     /**
@@ -71,7 +71,7 @@ class CalendarPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_calendar');
+        return $user->can('force_delete_any_calendar::calendar');
     }
 
     /**
@@ -79,7 +79,7 @@ class CalendarPolicy
      */
     public function restore(User $user, Calendar $calendar): bool
     {
-        return $user->can('restore_calendar');
+        return $user->can('restore_calendar::calendar');
     }
 
     /**
@@ -87,7 +87,7 @@ class CalendarPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_calendar');
+        return $user->can('restore_any_calendar::calendar');
     }
 
     /**
@@ -95,7 +95,7 @@ class CalendarPolicy
      */
     public function replicate(User $user, Calendar $calendar): bool
     {
-        return $user->can('replicate_calendar');
+        return $user->can('replicate_calendar::calendar');
     }
 
     /**
@@ -103,6 +103,6 @@ class CalendarPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_calendar');
+        return $user->can('reorder_calendar::calendar');
     }
 }

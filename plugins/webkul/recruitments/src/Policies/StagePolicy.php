@@ -15,7 +15,7 @@ class StagePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_stage');
+        return $user->can('view_any_stages::stage');
     }
 
     /**
@@ -23,7 +23,7 @@ class StagePolicy
      */
     public function view(User $user, Stage $stage): bool
     {
-        return $user->can('view_stage');
+        return $user->can('view_stages::stage');
     }
 
     /**
@@ -31,7 +31,7 @@ class StagePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_stage');
+        return $user->can('create_stages::stage');
     }
 
     /**
@@ -39,7 +39,7 @@ class StagePolicy
      */
     public function update(User $user, Stage $stage): bool
     {
-        return $user->can('update_stage');
+        return $user->can('update_stages::stage');
     }
 
     /**
@@ -47,7 +47,7 @@ class StagePolicy
      */
     public function delete(User $user, Stage $stage): bool
     {
-        return $user->can('delete_stage');
+        return $user->can('delete_stages::stage');
     }
 
     /**
@@ -55,7 +55,7 @@ class StagePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_stage');
+        return $user->can('delete_any_stages::stage');
     }
 
     /**
@@ -63,7 +63,7 @@ class StagePolicy
      */
     public function forceDelete(User $user, Stage $stage): bool
     {
-        return $user->can('force_delete_stage');
+        return $user->can('force_delete_stages::stage');
     }
 
     /**
@@ -71,7 +71,7 @@ class StagePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_stage');
+        return $user->can('force_delete_any_stages::stage');
     }
 
     /**
@@ -79,7 +79,7 @@ class StagePolicy
      */
     public function restore(User $user, Stage $stage): bool
     {
-        return $user->can('restore_stage');
+        return $user->can('restore_stages::stage');
     }
 
     /**
@@ -87,7 +87,7 @@ class StagePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_stage');
+        return $user->can('restore_any_stages::stage');
     }
 
     /**
@@ -95,7 +95,7 @@ class StagePolicy
      */
     public function replicate(User $user, Stage $stage): bool
     {
-        return $user->can('replicate_stage');
+        return $user->can('replicate_stages::stage');
     }
 
     /**
@@ -103,6 +103,6 @@ class StagePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_stage');
+        return $user->can('reorder_stages::stage');
     }
 }

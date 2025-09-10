@@ -2,13 +2,14 @@
 
 namespace Webkul\Sale\Filament\Clusters;
 
+use BackedEnum;
 use Filament\Clusters\Cluster;
 
 class Orders extends Cluster
 {
     protected static ?string $slug = 'sale/orders';
 
-    protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
     public static function getNavigationLabel(): string
     {

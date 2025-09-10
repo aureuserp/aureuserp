@@ -15,7 +15,7 @@ class PackageTypePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_package::type');
+        return $user->can('view_any_package::types::package::type');
     }
 
     /**
@@ -23,7 +23,7 @@ class PackageTypePolicy
      */
     public function view(User $user, PackageType $packageType): bool
     {
-        return $user->can('view_package::type');
+        return $user->can('view_package::types::package::type');
     }
 
     /**
@@ -31,7 +31,7 @@ class PackageTypePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_package::type');
+        return $user->can('create_package::types::package::type');
     }
 
     /**
@@ -39,7 +39,7 @@ class PackageTypePolicy
      */
     public function update(User $user, PackageType $packageType): bool
     {
-        return $user->can('update_package::type');
+        return $user->can('update_package::types::package::type');
     }
 
     /**
@@ -47,7 +47,7 @@ class PackageTypePolicy
      */
     public function delete(User $user, PackageType $packageType): bool
     {
-        return $user->can('delete_package::type');
+        return $user->can('delete_package::types::package::type');
     }
 
     /**
@@ -55,7 +55,7 @@ class PackageTypePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_package::type');
+        return $user->can('delete_any_package::types::package::type');
     }
 
     /**
@@ -63,7 +63,7 @@ class PackageTypePolicy
      */
     public function forceDelete(User $user, PackageType $packageType): bool
     {
-        return $user->can('force_delete_package::type');
+        return $user->can('force_delete_package::types::package::type');
     }
 
     /**
@@ -71,7 +71,7 @@ class PackageTypePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_package::type');
+        return $user->can('force_delete_any_package::types::package::type');
     }
 
     /**
@@ -79,7 +79,7 @@ class PackageTypePolicy
      */
     public function restore(User $user, PackageType $packageType): bool
     {
-        return $user->can('restore_package::type');
+        return $user->can('restore_package::types::package::type');
     }
 
     /**
@@ -87,7 +87,7 @@ class PackageTypePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_package::type');
+        return $user->can('restore_any_package::types::package::type');
     }
 
     /**
@@ -95,7 +95,7 @@ class PackageTypePolicy
      */
     public function replicate(User $user, PackageType $packageType): bool
     {
-        return $user->can('replicate_package::type');
+        return $user->can('replicate_package::types::package::type');
     }
 
     /**
@@ -103,6 +103,6 @@ class PackageTypePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_package::type');
+        return $user->can('reorder_package::types::package::type');
     }
 }

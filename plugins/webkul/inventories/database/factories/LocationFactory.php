@@ -7,7 +7,7 @@ use Webkul\Inventory\Models\Location;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Inventory\Models\Location>
+ * @extends Factory<Location>
  */
 class LocationFactory extends Factory
 {

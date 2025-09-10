@@ -7,7 +7,7 @@ use Webkul\Inventory\Models\ProductQuantityRelocation;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Inventory\Models\ProductQuantityRelocation>
+ * @extends Factory<ProductQuantityRelocation>
  */
 class ProductQuantityRelocationFactory extends Factory
 {

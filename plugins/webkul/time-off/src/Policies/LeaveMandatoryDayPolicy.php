@@ -15,7 +15,7 @@ class LeaveMandatoryDayPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_mandatory::day');
+        return $user->can('view_any_mandatory::days::mandatory::day');
     }
 
     /**
@@ -23,7 +23,7 @@ class LeaveMandatoryDayPolicy
      */
     public function view(User $user, LeaveMandatoryDay $leaveMandatoryDay): bool
     {
-        return $user->can('view_mandatory::day');
+        return $user->can('view_mandatory::days::mandatory::day');
     }
 
     /**
@@ -31,7 +31,7 @@ class LeaveMandatoryDayPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_mandatory::day');
+        return $user->can('create_mandatory::days::mandatory::day');
     }
 
     /**
@@ -39,7 +39,7 @@ class LeaveMandatoryDayPolicy
      */
     public function update(User $user, LeaveMandatoryDay $leaveMandatoryDay): bool
     {
-        return $user->can('update_mandatory::day');
+        return $user->can('update_mandatory::days::mandatory::day');
     }
 
     /**
@@ -47,7 +47,7 @@ class LeaveMandatoryDayPolicy
      */
     public function delete(User $user, LeaveMandatoryDay $leaveMandatoryDay): bool
     {
-        return $user->can('delete_mandatory::day');
+        return $user->can('delete_mandatory::days::mandatory::day');
     }
 
     /**
@@ -55,7 +55,7 @@ class LeaveMandatoryDayPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_mandatory::day');
+        return $user->can('delete_any_mandatory::days::mandatory::day');
     }
 
     /**
@@ -63,7 +63,7 @@ class LeaveMandatoryDayPolicy
      */
     public function forceDelete(User $user, LeaveMandatoryDay $leaveMandatoryDay): bool
     {
-        return $user->can('force_delete_mandatory::day');
+        return $user->can('force_delete_mandatory::days::mandatory::day');
     }
 
     /**
@@ -71,7 +71,7 @@ class LeaveMandatoryDayPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_mandatory::day');
+        return $user->can('force_delete_any_mandatory::days::mandatory::day');
     }
 
     /**
@@ -79,7 +79,7 @@ class LeaveMandatoryDayPolicy
      */
     public function restore(User $user, LeaveMandatoryDay $leaveMandatoryDay): bool
     {
-        return $user->can('restore_mandatory::day');
+        return $user->can('restore_mandatory::days::mandatory::day');
     }
 
     /**
@@ -87,7 +87,7 @@ class LeaveMandatoryDayPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_mandatory::day');
+        return $user->can('restore_any_mandatory::days::mandatory::day');
     }
 
     /**
@@ -95,7 +95,7 @@ class LeaveMandatoryDayPolicy
      */
     public function replicate(User $user, LeaveMandatoryDay $leaveMandatoryDay): bool
     {
-        return $user->can('replicate_mandatory::day');
+        return $user->can('replicate_mandatory::days::mandatory::day');
     }
 
     /**
@@ -103,6 +103,6 @@ class LeaveMandatoryDayPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_mandatory::day');
+        return $user->can('reorder_mandatory::days::mandatory::day');
     }
 }

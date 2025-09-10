@@ -15,7 +15,7 @@ class DegreePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_degree');
+        return $user->can('view_any_degrees::degree');
     }
 
     /**
@@ -23,7 +23,7 @@ class DegreePolicy
      */
     public function view(User $user, Degree $degree): bool
     {
-        return $user->can('view_degree');
+        return $user->can('view_degrees::degree');
     }
 
     /**
@@ -31,7 +31,7 @@ class DegreePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_degree');
+        return $user->can('create_degrees::degree');
     }
 
     /**
@@ -39,7 +39,7 @@ class DegreePolicy
      */
     public function update(User $user, Degree $degree): bool
     {
-        return $user->can('update_degree');
+        return $user->can('update_degrees::degree');
     }
 
     /**
@@ -47,7 +47,7 @@ class DegreePolicy
      */
     public function delete(User $user, Degree $degree): bool
     {
-        return $user->can('delete_degree');
+        return $user->can('delete_degrees::degree');
     }
 
     /**
@@ -55,7 +55,7 @@ class DegreePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_degree');
+        return $user->can('delete_any_degrees::degree');
     }
 
     /**
@@ -63,7 +63,7 @@ class DegreePolicy
      */
     public function forceDelete(User $user, Degree $degree): bool
     {
-        return $user->can('force_delete_degree');
+        return $user->can('force_delete_degrees::degree');
     }
 
     /**
@@ -71,7 +71,7 @@ class DegreePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_degree');
+        return $user->can('force_delete_any_degrees::degree');
     }
 
     /**
@@ -79,7 +79,7 @@ class DegreePolicy
      */
     public function restore(User $user, Degree $degree): bool
     {
-        return $user->can('restore_degree');
+        return $user->can('restore_degrees::degree');
     }
 
     /**
@@ -87,7 +87,7 @@ class DegreePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_degree');
+        return $user->can('restore_any_degrees::degree');
     }
 
     /**
@@ -95,7 +95,7 @@ class DegreePolicy
      */
     public function replicate(User $user, Degree $degree): bool
     {
-        return $user->can('replicate_degree');
+        return $user->can('replicate_degrees::degree');
     }
 
     /**
@@ -103,6 +103,6 @@ class DegreePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_degree');
+        return $user->can('reorder_degrees::degree');
     }
 }

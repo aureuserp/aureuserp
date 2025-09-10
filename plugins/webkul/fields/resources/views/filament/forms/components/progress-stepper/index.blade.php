@@ -22,26 +22,19 @@
         {{ $getLabel() }}
     </x-slot>
 
-    <x-filament::grid
-        :default="$getColumns('default')"
-        :sm="$getColumns('sm')"
-        :md="$getColumns('md')"
-        :lg="$getColumns('lg')"
-        :xl="$getColumns('xl')"
-        :two-xl="$getColumns('2xl')"
-        :is-grid="! $isInline"
-        :direction="$gridDirection"
-        :attributes="
+    <div
+        {{
             \Filament\Support\prepare_inherited_attributes($attributes)
                 ->merge($getExtraAttributes(), escape: false)
                 ->class([
-                    'state-container justify-end',
-                    'fi-fo-radio',
-                    '-mt-3' => (! $isInline) && ($gridDirection === 'column'),
-                    'flex flex-wrap' => $isInline,
+                    'state-container',
+                    'grid' => ! $isInline && $gridDirection === 'row',
+                    'flex justify-end flex-wrap' => $isInline,
                 ])
-        "
+        }}
     >
+        {{ $getChildComponentContainer() }}
+
         @foreach ($getOptions() as $value => $label)
             @php
                 $inputId = "{$id}-{$value}";
@@ -71,7 +64,6 @@
                 <x-filament::button
                     class="stage-button"
                     :color="$getColor($value)"
-                    {{-- :disabled="$shouldOptionBeDisabled" --}}
                     :for="$inputId"
                     :icon="$getIcon($value)"
                     tag="label"
@@ -80,80 +72,72 @@
                 </x-filament::button>
             </div>
         @endforeach
-    </x-filament::grid>
+    </div>
 </x-dynamic-component>
 
-<style>
-    .stage-button {
-        border-radius: 0;
-        padding-left: 30px;
-        padding-right: 20px;
-        border: 1px solid rgba(var(--gray-950), 0.2);
-        box-shadow: none;
-    }
+@push('styles')
+    <style>
+        .stage-button {
+            border-radius: 0;
+            padding-left: 30px;
+            padding-right: 20px;
+            border: 1px solid var(--gray-300);
+            box-shadow: none;
+            min-height: 38px;
+        }
+        .dark .stage-button {
+        border: 1px solid var(--gray-700);
+        }
+        .stage-button:after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: -14px;
+            width: 26px;
+            height: 26px;
+            z-index: 1;
+            transform: translateY(-50%) rotate(45deg);
+            background-color: #ffffff;
+            border-right: 1px solid var(--gray-950);
+            border-top: 1px solid var(--gray-950);
+            transition-duration: 75ms;
+        }
+        .dark .stage-button:after {
+            background-color: var(--gray-900);
+            border-right: 1px solid hsla(0, 0%, 100%, .2);
+            border-top: 1px solid hsla(0, 0%, 100%, .2);
+        }
 
-    .dark .stage-button {
-        border: 1px solid hsla(0, 0%, 100%, .2);
-    }
-
-    .stage-button:after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        right: -14px;
-        width: 26px;
-        height: 26px;
-        z-index: 1;
-        transform: translateY(-50%) rotate(45deg);
-        background-color: #ffffff;
-        border-right: 1px solid rgba(var(--gray-950), 0.3);
-        border-top: 1px solid rgba(var(--gray-950), 0.3);
-        transition-duration: 75ms;
-    }
-
-    .dark .stage-button:after {
-        background-color: rgba(var(--gray-900),var(--tw-bg-opacity));
-        border-right: 1px solid hsla(0, 0%, 100%, .2);
-        border-top: 1px solid hsla(0, 0%, 100%, .2);
-    }
-
-    .dark .stage-button:hover:after {
-        background-color: rgba(var(--gray-800),var(--tw-bg-opacity));
-    }
-
-    .state-container .state:last-child .stage-button {
-        border-radius: 0 8px 8px 0;
-    }
-
-    .state-container .state:first-child .stage-button {
-        border-radius: 8px 0 0 8px;
-    }
-
-    .state-container .state:last-child .stage-button:after {
-        content: none;
-    }
-
-    input:checked + .stage-button {
-        color: #fff;
-        border: 1px solid rgba(var(--c-500), var(--tw-bg-opacity));
-    }
-
-    input:checked + .stage-button:after {
-        background-color: rgba(var(--c-600), var(--tw-bg-opacity));
-        border-right: 1px solid rgba(var(--c-500));
-        border-top: 1px solid rgba(var(--c-500));
-    }
-
-    .dark input:checked + .stage-button:after {
-        background-color: rgba(var(--c-500), var(--tw-bg-opacity));
-    }
-
-    input:checked + .stage-button:hover:after {
-        background-color: rgba(var(--c-500), var(--tw-bg-opacity));
-        transition-duration: 75ms;
-    }
-
-    .dark input:checked + .stage-button:hover:after {
-        background-color: rgba(var(--c-400), var(--tw-bg-opacity));
-    }
-</style>
+        .dark .stage-button:hover:after {
+            background-color: var(--gray-800);
+        }
+        .state-container .state:last-child .stage-button {
+            border-radius: 0 8px 8px 0;
+        }
+        .state-container .state:first-child .stage-button {
+            border-radius: 8px 0 0 8px;
+        }
+        .state-container .state:last-child .stage-button:after {
+            content: none;
+        }
+        input:checked + .stage-button {
+            color: #fff;
+            border: 1px solid var(--color-500);
+        }
+        input:checked + .stage-button:after {
+            background-color: var(--color-600);
+            border-right: 1px solid var(--color-500);
+            border-top: 1px solid var(--color-500);
+        }
+        .dark input:checked + .stage-button:after {
+            background-color: var(--color-600);
+        }
+        input:checked + .stage-button:hover:after {
+            background-color: var(--color-500);
+            transition-duration: 75ms;
+        }
+        .dark input:checked + .stage-button:hover:after {
+            background-color: var(--color-500);
+        }
+    </style>
+@endpush

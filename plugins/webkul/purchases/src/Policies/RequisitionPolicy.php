@@ -16,7 +16,7 @@ class RequisitionPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_purchase::agreement');
+        return $user->can('view_any_purchase::agreements::purchase::agreement');
     }
 
     /**
@@ -24,7 +24,7 @@ class RequisitionPolicy
      */
     public function view(User $user, Requisition $requisition): bool
     {
-        return $user->can('view_purchase::agreement');
+        return $user->can('view_purchase::agreements::purchase::agreement');
     }
 
     /**
@@ -32,7 +32,7 @@ class RequisitionPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_purchase::agreement');
+        return $user->can('create_purchase::agreements::purchase::agreement');
     }
 
     /**
@@ -40,7 +40,7 @@ class RequisitionPolicy
      */
     public function update(User $user, Requisition $requisition): bool
     {
-        if (! $user->can('update_purchase::agreement')) {
+        if (! $user->can('update_purchase::agreements::purchase::agreement')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class RequisitionPolicy
      */
     public function delete(User $user, Requisition $requisition): bool
     {
-        if (! $user->can('delete_purchase::agreement')) {
+        if (! $user->can('delete_purchase::agreements::purchase::agreement')) {
             return false;
         }
 
@@ -64,7 +64,7 @@ class RequisitionPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_purchase::agreement');
+        return $user->can('delete_any_purchase::agreements::purchase::agreement');
     }
 
     /**
@@ -72,7 +72,7 @@ class RequisitionPolicy
      */
     public function forceDelete(User $user, Requisition $requisition): bool
     {
-        if (! $user->can('force_delete_purchase::agreement')) {
+        if (! $user->can('force_delete_purchase::agreements::purchase::agreement')) {
             return false;
         }
 
@@ -84,7 +84,7 @@ class RequisitionPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_purchase::agreement');
+        return $user->can('force_delete_any_purchase::agreements::purchase::agreement');
     }
 
     /**
@@ -92,7 +92,7 @@ class RequisitionPolicy
      */
     public function restore(User $user, Requisition $requisition): bool
     {
-        if (! $user->can('restore_purchase::agreement')) {
+        if (! $user->can('restore_purchase::agreements::purchase::agreement')) {
             return false;
         }
 
@@ -104,7 +104,7 @@ class RequisitionPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_purchase::agreement');
+        return $user->can('restore_any_purchase::agreements::purchase::agreement');
     }
 
     /**
@@ -112,7 +112,7 @@ class RequisitionPolicy
      */
     public function replicate(User $user, Requisition $requisition): bool
     {
-        if (! $user->can('replicate_purchase::agreement')) {
+        if (! $user->can('replicate_purchase::agreements::purchase::agreement')) {
             return false;
         }
 
@@ -124,6 +124,6 @@ class RequisitionPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_purchase::agreement');
+        return $user->can('reorder_purchase::agreements::purchase::agreement');
     }
 }

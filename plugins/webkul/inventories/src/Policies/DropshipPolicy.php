@@ -16,7 +16,7 @@ class DropshipPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_dropship');
+        return $user->can('view_any_dropships::dropship');
     }
 
     /**
@@ -24,7 +24,7 @@ class DropshipPolicy
      */
     public function view(User $user, Dropship $dropship): bool
     {
-        return $user->can('view_dropship');
+        return $user->can('view_dropships::dropship');
     }
 
     /**
@@ -32,7 +32,7 @@ class DropshipPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_dropship');
+        return $user->can('create_dropships::dropship');
     }
 
     /**
@@ -40,7 +40,7 @@ class DropshipPolicy
      */
     public function update(User $user, Dropship $dropship): bool
     {
-        if (! $user->can('update_dropship')) {
+        if (! $user->can('update_dropships::dropship')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class DropshipPolicy
      */
     public function delete(User $user, Dropship $dropship): bool
     {
-        if (! $user->can('delete_dropship')) {
+        if (! $user->can('delete_dropships::dropship')) {
             return false;
         }
 
@@ -64,7 +64,7 @@ class DropshipPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_dropship');
+        return $user->can('delete_any_dropships::dropship');
     }
 
     /**
@@ -72,7 +72,7 @@ class DropshipPolicy
      */
     public function forceDelete(User $user, Dropship $dropship): bool
     {
-        if (! $user->can('force_delete_dropship')) {
+        if (! $user->can('force_delete_dropships::dropship')) {
             return false;
         }
 
@@ -84,7 +84,7 @@ class DropshipPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_dropship');
+        return $user->can('force_delete_any_dropships::dropship');
     }
 
     /**
@@ -92,7 +92,7 @@ class DropshipPolicy
      */
     public function restore(User $user, Dropship $dropship): bool
     {
-        if (! $user->can('restore_dropship')) {
+        if (! $user->can('restore_dropships::dropship')) {
             return false;
         }
 
@@ -104,7 +104,7 @@ class DropshipPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_dropship');
+        return $user->can('restore_any_dropships::dropship');
     }
 
     /**
@@ -112,7 +112,7 @@ class DropshipPolicy
      */
     public function replicate(User $user, Dropship $dropship): bool
     {
-        if (! $user->can('replicate_dropship')) {
+        if (! $user->can('replicate_dropships::dropship')) {
             return false;
         }
 
@@ -124,6 +124,6 @@ class DropshipPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_dropship');
+        return $user->can('reorder_dropships::dropship');
     }
 }

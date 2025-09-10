@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Inventory\Database\Factories\ScrapFactory;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\ScrapState;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -77,7 +77,7 @@ class Scrap extends Model
      * @var string
      */
     protected $casts = [
-        'state'            => Enums\ScrapState::class,
+        'state'            => ScrapState::class,
         'should_replenish' => 'boolean',
         'closed_at'        => 'datetime',
     ];

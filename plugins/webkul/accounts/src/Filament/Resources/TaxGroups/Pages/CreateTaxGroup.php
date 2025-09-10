@@ -1,0 +1,35 @@
+<?php
+
+namespace Webkul\Account\Filament\Resources\TaxGroups\Pages;
+
+use Filament\Notifications\Notification;
+use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Auth;
+use Webkul\Account\Filament\Resources\TaxGroups\TaxGroupResource;
+
+class CreateTaxGroup extends CreateRecord
+{
+    protected static string $resource = TaxGroupResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
+    }
+
+    protected function getCreatedNotification(): ?Notification
+    {
+        return Notification::make()
+            ->success()
+            ->title(__('accounts::filament/resources/tax-group/pages/create-tax-group.notification.title'))
+            ->body(__('accounts::filament/resources/tax-group/pages/create-tax-group.notification.body'));
+    }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $user = Auth::user();
+
+        $data['creator_id'] = $user->id;
+
+        return $data;
+    }
+}

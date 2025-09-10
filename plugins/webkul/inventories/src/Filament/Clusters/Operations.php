@@ -2,13 +2,14 @@
 
 namespace Webkul\Inventory\Filament\Clusters;
 
+use BackedEnum;
 use Filament\Clusters\Cluster;
 
 class Operations extends Cluster
 {
     protected static ?string $slug = 'inventory/operations';
 
-    protected static ?string $navigationIcon = 'heroicon-o-arrows-right-left';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrows-right-left';
 
     protected static ?int $navigationSort = 1;
 

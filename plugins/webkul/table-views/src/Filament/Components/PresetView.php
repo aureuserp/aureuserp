@@ -3,7 +3,7 @@
 namespace Webkul\TableViews\Filament\Components;
 
 use Closure;
-use Filament\Resources\Components\Tab;
+use Filament\Schemas\Components\Tabs\Tab;
 use Webkul\TableViews\Models\TableViewFavorite;
 
 class PresetView extends Tab
@@ -24,13 +24,10 @@ class PresetView extends Tab
 
     protected static mixed $cachedFavoriteTableViews;
 
-    /**
-     * @return array<string | int, Tab>
-     */
     public function getFavoriteTableViews(): mixed
     {
         return TableViewFavorite::query()
-            ->where('user_id', auth()->id())
+            ->where('user_id', filament()->auth()->id())
             ->get();
     }
 
@@ -46,7 +43,7 @@ class PresetView extends Tab
         return $this;
     }
 
-    public function getModel()
+    public function getModel(): ?string
     {
         return null;
     }
@@ -58,7 +55,7 @@ class PresetView extends Tab
         return $this;
     }
 
-    public function default(bool|Closure $condition = true): static
+    public function setAsDefault(bool|Closure $condition = true): static
     {
         $this->isDefault = $condition;
 
@@ -100,9 +97,6 @@ class PresetView extends Tab
         return 'heroicon-o-lock-closed';
     }
 
-    /**
-     * @return string | array{50: string, 100: string, 200: string, 300: string, 400: string, 500: string, 600: string, 700: string, 800: string, 900: string, 950: string} | null
-     */
     public function getColor(): string|array|null
     {
         return $this->evaluate($this->color);

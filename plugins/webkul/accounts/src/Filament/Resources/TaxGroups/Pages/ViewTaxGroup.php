@@ -1,0 +1,41 @@
+<?php
+
+namespace Webkul\Account\Filament\Resources\TaxGroups\Pages;
+
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Notifications\Notification;
+use Filament\Resources\Pages\ViewRecord;
+use Illuminate\Database\QueryException;
+use Webkul\Account\Filament\Resources\TaxGroups\TaxGroupResource;
+use Webkul\Account\Models\TaxGroup;
+
+class ViewTaxGroup extends ViewRecord
+{
+    protected static string $resource = TaxGroupResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            EditAction::make(),
+            DeleteAction::make()
+                ->action(function (TaxGroup $record) {
+                    try {
+                        $record->delete();
+                    } catch (QueryException $e) {
+                        Notification::make()
+                            ->danger()
+                            ->title(__('accounts::filament/resources/tax-group/pages/view-tax-group.header-actions.delete.notification.error.title'))
+                            ->body(__('accounts::filament/resources/tax-group/pages/view-tax-group.header-actions.delete.notification.error.body'))
+                            ->send();
+                    }
+                })
+                ->successNotification(
+                    Notification::make()
+                        ->success()
+                        ->title(__('accounts::filament/resources/tax-group/pages/view-tax-group.header-actions.delete.notification.success.title'))
+                        ->body(__('accounts::filament/resources/tax-group/pages/view-tax-group.header-actions.delete.notification.success.body'))
+                ),
+        ];
+    }
+}

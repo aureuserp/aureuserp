@@ -7,7 +7,7 @@ use Webkul\Product\Models\Packaging;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Product\Models\Packaging>
+ * @extends Factory<Packaging>
  */
 class PackagingFactory extends Factory
 {

@@ -15,7 +15,7 @@ class MilestonePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_milestone');
+        return $user->can('view_any_milestones::milestone');
     }
 
     /**
@@ -23,7 +23,7 @@ class MilestonePolicy
      */
     public function view(User $user, Milestone $milestone): bool
     {
-        return $user->can('view_milestone');
+        return $user->can('view_milestones::milestone');
     }
 
     /**
@@ -31,7 +31,7 @@ class MilestonePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_milestone');
+        return $user->can('create_milestones::milestone');
     }
 
     /**
@@ -39,7 +39,7 @@ class MilestonePolicy
      */
     public function update(User $user, Milestone $milestone): bool
     {
-        return $user->can('update_milestone');
+        return $user->can('update_milestones::milestone');
     }
 
     /**
@@ -47,7 +47,7 @@ class MilestonePolicy
      */
     public function delete(User $user, Milestone $milestone): bool
     {
-        return $user->can('delete_milestone');
+        return $user->can('delete_milestones::milestone');
     }
 
     /**
@@ -55,7 +55,7 @@ class MilestonePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_milestone');
+        return $user->can('delete_any_milestones::milestone');
     }
 
     /**
@@ -63,7 +63,7 @@ class MilestonePolicy
      */
     public function forceDelete(User $user, Milestone $milestone): bool
     {
-        return $user->can('force_delete_milestone');
+        return $user->can('force_delete_milestones::milestone');
     }
 
     /**
@@ -71,7 +71,7 @@ class MilestonePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_milestone');
+        return $user->can('force_delete_any_milestones::milestone');
     }
 
     /**
@@ -79,7 +79,7 @@ class MilestonePolicy
      */
     public function restore(User $user, Milestone $milestone): bool
     {
-        return $user->can('restore_milestone');
+        return $user->can('restore_milestones::milestone');
     }
 
     /**
@@ -87,7 +87,7 @@ class MilestonePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_milestone');
+        return $user->can('restore_any_milestones::milestone');
     }
 
     /**
@@ -95,7 +95,7 @@ class MilestonePolicy
      */
     public function replicate(User $user, Milestone $milestone): bool
     {
-        return $user->can('replicate_milestone');
+        return $user->can('replicate_milestones::milestone');
     }
 
     /**
@@ -103,6 +103,6 @@ class MilestonePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_milestone');
+        return $user->can('reorder_milestones::milestone');
     }
 }

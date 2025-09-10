@@ -15,7 +15,7 @@ class TaskStagePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_task::stage');
+        return $user->can('view_any_task::stages::task::stage');
     }
 
     /**
@@ -23,7 +23,7 @@ class TaskStagePolicy
      */
     public function view(User $user, TaskStage $taskStage): bool
     {
-        return $user->can('view_task::stage');
+        return $user->can('view_task::stages::task::stage');
     }
 
     /**
@@ -31,7 +31,7 @@ class TaskStagePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_task::stage');
+        return $user->can('create_task::stages::task::stage');
     }
 
     /**
@@ -39,7 +39,7 @@ class TaskStagePolicy
      */
     public function update(User $user, TaskStage $taskStage): bool
     {
-        return $user->can('update_task::stage');
+        return $user->can('update_task::stages::task::stage');
     }
 
     /**
@@ -47,7 +47,7 @@ class TaskStagePolicy
      */
     public function delete(User $user, TaskStage $taskStage): bool
     {
-        return $user->can('delete_task::stage');
+        return $user->can('delete_task::stages::task::stage');
     }
 
     /**
@@ -55,7 +55,7 @@ class TaskStagePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_task::stage');
+        return $user->can('delete_any_task::stages::task::stage');
     }
 
     /**
@@ -63,7 +63,7 @@ class TaskStagePolicy
      */
     public function forceDelete(User $user, TaskStage $taskStage): bool
     {
-        return $user->can('force_delete_task::stage');
+        return $user->can('force_delete_task::stages::task::stage');
     }
 
     /**
@@ -71,7 +71,7 @@ class TaskStagePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_task::stage');
+        return $user->can('force_delete_any_task::stages::task::stage');
     }
 
     /**
@@ -79,7 +79,7 @@ class TaskStagePolicy
      */
     public function restore(User $user, TaskStage $taskStage): bool
     {
-        return $user->can('restore_task::stage');
+        return $user->can('restore_task::stages::task::stage');
     }
 
     /**
@@ -87,7 +87,7 @@ class TaskStagePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_task::stage');
+        return $user->can('restore_any_task::stages::task::stage');
     }
 
     /**
@@ -95,7 +95,7 @@ class TaskStagePolicy
      */
     public function replicate(User $user, TaskStage $taskStage): bool
     {
-        return $user->can('replicate_task::stage');
+        return $user->can('replicate_task::stages::task::stage');
     }
 
     /**
@@ -103,6 +103,6 @@ class TaskStagePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_task::stage');
+        return $user->can('reorder_task::stages::task::stage');
     }
 }

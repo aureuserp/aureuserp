@@ -16,7 +16,7 @@ class CandidatePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_candidate');
+        return $user->can('view_any_candidates::candidate');
     }
 
     /**
@@ -24,7 +24,7 @@ class CandidatePolicy
      */
     public function view(User $user, Candidate $candidate): bool
     {
-        return $user->can('view_candidate');
+        return $user->can('view_candidates::candidate');
     }
 
     /**
@@ -32,7 +32,7 @@ class CandidatePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_candidate');
+        return $user->can('create_candidates::candidate');
     }
 
     /**
@@ -40,7 +40,7 @@ class CandidatePolicy
      */
     public function update(User $user, Candidate $candidate): bool
     {
-        if (! $user->can('update_candidate')) {
+        if (! $user->can('update_candidates::candidate')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class CandidatePolicy
      */
     public function delete(User $user, Candidate $candidate): bool
     {
-        if (! $user->can('delete_candidate')) {
+        if (! $user->can('delete_candidates::candidate')) {
             return false;
         }
 
@@ -64,7 +64,7 @@ class CandidatePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_candidate');
+        return $user->can('delete_any_candidates::candidate');
     }
 
     /**
@@ -72,7 +72,7 @@ class CandidatePolicy
      */
     public function forceDelete(User $user, Candidate $candidate): bool
     {
-        if (! $user->can('force_delete_candidate')) {
+        if (! $user->can('force_delete_candidates::candidate')) {
             return false;
         }
 
@@ -84,7 +84,7 @@ class CandidatePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_candidate');
+        return $user->can('force_delete_any_candidates::candidate');
     }
 
     /**
@@ -92,7 +92,7 @@ class CandidatePolicy
      */
     public function restore(User $user, Candidate $candidate): bool
     {
-        if (! $user->can('restore_candidate')) {
+        if (! $user->can('restore_candidates::candidate')) {
             return false;
         }
 
@@ -104,7 +104,7 @@ class CandidatePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_candidate');
+        return $user->can('restore_any_candidates::candidate');
     }
 
     /**
@@ -112,7 +112,7 @@ class CandidatePolicy
      */
     public function replicate(User $user, Candidate $candidate): bool
     {
-        if (! $user->can('replicate_candidate')) {
+        if (! $user->can('replicate_candidates::candidate')) {
             return false;
         }
 
@@ -124,6 +124,6 @@ class CandidatePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_candidate');
+        return $user->can('reorder_candidates::candidate');
     }
 }

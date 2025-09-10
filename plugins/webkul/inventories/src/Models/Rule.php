@@ -9,7 +9,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Inventory\Database\Factories\RuleFactory;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\GroupPropagation;
+use Webkul\Inventory\Enums\ProcureMethod;
+use Webkul\Inventory\Enums\RuleAction;
+use Webkul\Inventory\Enums\RuleAuto;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -61,10 +64,10 @@ class Rule extends Model implements Sortable
      * @var string
      */
     protected $casts = [
-        'action'                   => Enums\RuleAction::class,
-        'group_propagation_option' => Enums\GroupPropagation::class,
-        'auto'                     => Enums\RuleAuto::class,
-        'procure_method'           => Enums\ProcureMethod::class,
+        'action'                   => RuleAction::class,
+        'group_propagation_option' => GroupPropagation::class,
+        'auto'                     => RuleAuto::class,
+        'procure_method'           => ProcureMethod::class,
         'location_dest_from_rule'  => 'boolean',
         'propagate_cancel'         => 'boolean',
         'propagate_carrier'        => 'boolean',

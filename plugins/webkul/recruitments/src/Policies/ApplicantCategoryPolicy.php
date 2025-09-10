@@ -15,7 +15,7 @@ class ApplicantCategoryPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_applicant::category');
+        return $user->can('view_any_applicant::categories::applicant::category');
     }
 
     /**
@@ -23,7 +23,7 @@ class ApplicantCategoryPolicy
      */
     public function view(User $user, ApplicantCategory $applicantCategory): bool
     {
-        return $user->can('view_applicant::category');
+        return $user->can('view_applicant::categories::applicant::category');
     }
 
     /**
@@ -31,7 +31,7 @@ class ApplicantCategoryPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_applicant::category');
+        return $user->can('create_applicant::categories::applicant::category');
     }
 
     /**
@@ -39,7 +39,7 @@ class ApplicantCategoryPolicy
      */
     public function update(User $user, ApplicantCategory $applicantCategory): bool
     {
-        return $user->can('update_applicant::category');
+        return $user->can('update_applicant::categories::applicant::category');
     }
 
     /**
@@ -47,7 +47,7 @@ class ApplicantCategoryPolicy
      */
     public function delete(User $user, ApplicantCategory $applicantCategory): bool
     {
-        return $user->can('delete_applicant::category');
+        return $user->can('delete_applicant::categories::applicant::category');
     }
 
     /**
@@ -55,7 +55,7 @@ class ApplicantCategoryPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_applicant::category');
+        return $user->can('delete_any_applicant::categories::applicant::category');
     }
 
     /**
@@ -63,7 +63,7 @@ class ApplicantCategoryPolicy
      */
     public function forceDelete(User $user, ApplicantCategory $applicantCategory): bool
     {
-        return $user->can('force_delete_applicant::category');
+        return $user->can('force_delete_applicant::categories::applicant::category');
     }
 
     /**
@@ -71,7 +71,7 @@ class ApplicantCategoryPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_applicant::category');
+        return $user->can('force_delete_any_applicant::categories::applicant::category');
     }
 
     /**
@@ -79,7 +79,7 @@ class ApplicantCategoryPolicy
      */
     public function restore(User $user, ApplicantCategory $applicantCategory): bool
     {
-        return $user->can('restore_applicant::category');
+        return $user->can('restore_applicant::categories::applicant::category');
     }
 
     /**
@@ -87,7 +87,7 @@ class ApplicantCategoryPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_applicant::category');
+        return $user->can('restore_any_applicant::categories::applicant::category');
     }
 
     /**
@@ -95,7 +95,7 @@ class ApplicantCategoryPolicy
      */
     public function replicate(User $user, ApplicantCategory $applicantCategory): bool
     {
-        return $user->can('replicate_applicant::category');
+        return $user->can('replicate_applicant::categories::applicant::category');
     }
 
     /**
@@ -103,6 +103,6 @@ class ApplicantCategoryPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_applicant::category');
+        return $user->can('reorder_applicant::categories::applicant::category');
     }
 }
