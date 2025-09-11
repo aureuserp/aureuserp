@@ -2,6 +2,7 @@
 
 namespace Webkul\Website\Filament\Admin\Widgets;
 
+use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +23,7 @@ class BlogChart extends ChartWidget
 
     public function getColumnSpan(): string
     {
-        return 'full'; // Full width
+        return 'full';
     }
 
     protected function getData(): array
@@ -31,12 +32,11 @@ class BlogChart extends ChartWidget
 
         $query = Post::query()
             ->select(
-                DB::raw('DATE_FORMAT(published_at, "%Y-%m") as month'),
-                DB::raw('is_published'),
+                DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month_key'),
+                'is_published',
                 DB::raw('COUNT(*) as count')
             );
 
-        // 🔍 Apply filters
         if (! empty($filters['from_date'])) {
             $query->whereDate('created_at', '>=', $filters['from_date']);
         }
@@ -50,26 +50,28 @@ class BlogChart extends ChartWidget
         }
 
         $posts = $query
-            ->groupBy('month', 'is_published')
-            ->orderBy('month')
+            ->groupBy('month_key', 'is_published')
+            ->orderBy('month_key')
             ->get();
 
-        // Collect all months
-        $months = $posts->pluck('month')->unique()->values();
+        $months = $posts->pluck('month_key')->unique()->sort()->values();
 
-        // Prepare datasets
         $publishedData = [];
         $draftData = [];
+        $labels = [];
 
-        foreach ($months as $month) {
+        foreach ($months as $monthKey) {
+
+            $labels[] = Carbon::createFromFormat('Y-m', $monthKey)->format('M Y');
+
             $publishedCount = $posts
-                ->where('month', $month)
-                ->where('is_published', true)
+                ->where('month_key', $monthKey)
+                ->where('is_published', 1)
                 ->sum('count');
 
             $draftCount = $posts
-                ->where('month', $month)
-                ->where('is_published', false)
+                ->where('month_key', $monthKey)
+                ->where('is_published', 0)
                 ->sum('count');
 
             $publishedData[] = $publishedCount;
@@ -81,22 +83,22 @@ class BlogChart extends ChartWidget
                 [
                     'label'           => 'Published',
                     'data'            => $publishedData,
-                    'backgroundColor' => 'rgba(76, 175, 80, 0.6)', // Green
+                    'backgroundColor' => 'rgba(76, 175, 80, 0.6)',
                     'borderColor'     => '#4CAF50',
                 ],
                 [
                     'label'           => 'Draft',
                     'data'            => $draftData,
-                    'backgroundColor' => 'rgba(244, 67, 54, 0.6)', // Red
+                    'backgroundColor' => 'rgba(244, 67, 54, 0.6)',
                     'borderColor'     => '#F44336',
                 ],
             ],
-            'labels' => $months,
+            'labels' => $labels,
         ];
     }
 
     protected function getType(): string
     {
-        return 'bar'; // Bar chart
+        return 'bar';
     }
 }
