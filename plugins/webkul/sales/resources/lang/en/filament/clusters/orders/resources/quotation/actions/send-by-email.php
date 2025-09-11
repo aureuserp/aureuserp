@@ -2,6 +2,7 @@
 
 return [
     'title' => 'Send By Email',
+    'resend-title' => 'Re-Send By Email',
 
     'modal' => [
         'heading' => 'Send Quotation By Email',

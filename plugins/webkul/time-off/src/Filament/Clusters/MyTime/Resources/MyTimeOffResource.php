@@ -113,7 +113,7 @@ class MyTimeOffResource extends Resource
                                     ->acceptedFileTypes([
                                         'image/*',
                                         'application/pdf',
-                                    ])   
+                                    ])
                                     ->visible(function (Get $get) {
                                         $leaveType = LeaveType::find($get('holiday_status_id'));
 
@@ -159,7 +159,7 @@ class MyTimeOffResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('state')
                     ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.table.columns.status'))
-                    ->formatStateUsing(fn ($state) => State::options()[$state])
+                    ->formatStateUsing(fn ($state) => State::options()[$state->value])
                     ->sortable()
                     ->badge()
                     ->searchable(),

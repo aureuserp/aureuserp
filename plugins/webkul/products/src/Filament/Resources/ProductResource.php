@@ -481,8 +481,7 @@ class ProductResource extends Resource
                         Infolists\Components\Section::make(__('products::filament/resources/product.infolist.sections.images.title'))
                             ->schema([
                                 Infolists\Components\ImageEntry::make('images')
-                                    ->hiddenLabel()
-                                    ->circular(),
+                                    ->hiddenLabel(),
                             ])
                             ->visible(fn ($record): bool => ! empty($record->images)),
 

@@ -57,7 +57,7 @@ class SaleOrderQuotation extends Mailable
 
         foreach ($this->attachmentData as $attachment) {
             if (isset($attachment['path'])) {
-                $attachments[] = Attachment::fromPath($attachment['path'])
+                $attachments[] = Attachment::fromStorageDisk('public',$attachment['path'])
                     ->as($attachment['name'] ?? null)
                     ->withMime($attachment['mime'] ?? null);
             } elseif (isset($attachment['data'])) {

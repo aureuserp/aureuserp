@@ -108,7 +108,7 @@ class TimesheetResource extends Resource
                     ->label(__('timesheets::filament/resources/timesheet.table.columns.time-spent'))
                     ->formatStateUsing(function ($state) {
                         $hours = floor($state);
-                        $minutes = ($hours - $hours) * 60;
+                        $minutes = ($state - $hours) * 60;
 
                         return $hours.':'.$minutes;
                     })
