@@ -54,4 +54,22 @@ enum CarryoverMonth: string implements HasLabel
             self::DEC->value => __('time-off::enums/carry-over-month.dec'),
         ];
     }
+
+    public function toNumber(): int
+    {
+        return match ($this) {
+            self::JAN => 1,
+            self::FEB => 2,
+            self::MAR => 3,
+            self::APR => 4,
+            self::MAY => 5,
+            self::JUN => 6,
+            self::JUL => 7,
+            self::AUG => 8,
+            self::SEP => 9,
+            self::OCT => 10,
+            self::NOV => 11,
+            self::DEC => 12,
+        };
+    }
 }

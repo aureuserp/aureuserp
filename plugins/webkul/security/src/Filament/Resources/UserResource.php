@@ -10,8 +10,8 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
@@ -287,7 +287,18 @@ class UserResource extends Resource
                                 ->body(__('security::filament/resources/user.table.actions.edit.notification.body')),
                         ),
                     Tables\Actions\DeleteAction::make()
-                        ->hidden(fn ($record) => $record->trashed() || $record->hasRole('admin'))
+                        ->hidden(function ($record) {
+
+                            $loggedInUser = filament()->auth()->user();
+                            if ($record->id === $loggedInUser->id) {
+                                return true;
+                            }
+                            if ($record->roles->pluck('name')->contains('Admin')) {
+                                return true;
+                            }
+
+                            return false;
+                        })
                         ->successNotification(
                             Notification::make()
                                 ->success()

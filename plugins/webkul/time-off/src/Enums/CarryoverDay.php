@@ -35,6 +35,9 @@ enum CarryoverDay: string implements HasLabel
     case DAY_26 = '26';
     case DAY_27 = '27';
     case DAY_28 = '28';
+    case DAY_29 = '29';
+    case DAY_30 = '30';
+    case DAY_31 = '31';
 
     public function getLabel(): ?string
     {
