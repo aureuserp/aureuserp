@@ -11,7 +11,7 @@ use Webkul\Sale\Models\Order;
 
 class SalesChartWidget extends ChartWidget
 {
-    use HasWidgetShield, InteractsWithPageFilters;
+    use InteractsWithPageFilters;
 
     protected int|string|array $columnSpan = 'full';
 
@@ -24,9 +24,30 @@ class SalesChartWidget extends ChartWidget
 
     protected function getData(): array
     {
+        [$startDate, $endDate] = $this->getDateRange();
+
+        $orders = $this->getFilteredOrders($startDate, $endDate);
+
+        [$labels, $datasets] = $this->prepareChartData($orders, $startDate, $endDate);
+
+        return [
+            'datasets' => $datasets,
+            'labels'   => $labels,
+        ];
+    }
+
+    protected function getType(): string
+    {
+        return 'line';
+    }
+
+    /**
+     * 🔹 Get the date range from filters or defaults.
+     */
+    protected function getDateRange(): array
+    {
         $filters = $this->filters;
 
-        // 🔹 Determine the date range
         $startDate = ! empty($filters['start_date'])
             ? Carbon::parse($filters['start_date'])->startOfDay()
             : now()->subMonth()->startOfDay();
@@ -35,29 +56,36 @@ class SalesChartWidget extends ChartWidget
             ? Carbon::parse($filters['end_date'])->endOfDay()
             : now()->endOfDay();
 
-        // 🔹 Build base query on Orders
-        $baseQuery = Order::query()
-            ->whereBetween('date_order', [$startDate, $endDate]);
+        return [$startDate, $endDate];
+    }
 
-        if (! empty($filters['salesperson_id'])) {
-            $baseQuery->where('user_id', $filters['salesperson_id']);
+    /**
+     * 🔹 Fetch filtered orders within the date range.
+     */
+    protected function getFilteredOrders(Carbon $startDate, Carbon $endDate)
+    {
+        $query = Order::query()->whereBetween('date_order', [$startDate, $endDate]);
+
+        if (! empty($this->filters['salesperson_id'])) {
+            $query->where('user_id', $this->filters['salesperson_id']);
         }
 
-        // 🔹 Fetch all orders in that range
-        $orders = $baseQuery->get();
+        return $query->get();
+    }
 
-        // 🔹 Group orders by date
-        $ordersByDay = $orders->groupBy(function ($order) {
-            return Carbon::parse($order->date_order)->format('Y-m-d');
-        });
+    /**
+     * 🔹 Prepare datasets and labels for the chart.
+     */
+    protected function prepareChartData($orders, Carbon $startDate, Carbon $endDate): array
+    {
+        $ordersByDay = $orders->groupBy(fn($order) => Carbon::parse($order->date_order)->format('Y-m-d'));
 
-        $labels = [];
-        $saleData = [];
-        $draftData = [];
-        $sentData = [];
+        $labels     = [];
+        $saleData   = [];
+        $draftData  = [];
+        $sentData   = [];
         $cancelData = [];
 
-        // 🔹 Loop through each day in the range
         $period = new \DatePeriod(
             $startDate,
             new \DateInterval('P1D'),
@@ -66,20 +94,19 @@ class SalesChartWidget extends ChartWidget
 
         foreach ($period as $dt) {
             $dateKey = $dt->format('Y-m-d');
-
             $labels[] = $dateKey;
 
             $dailyOrders = $ordersByDay[$dateKey] ?? collect();
 
-            // 🔹 Sum totals by state
-            $saleData[] = $dailyOrders->where('state', OrderState::SALE)->count();
-            $draftData[] = $dailyOrders->where('state', OrderState::DRAFT)->count();
-            $sentData[] = $dailyOrders->where('state', OrderState::SENT)->count();
-            $cancelData[] = $dailyOrders->where('state', OrderState::CANCEL)->count();
+            $saleData[]   = $this->countOrdersByState($dailyOrders, OrderState::SALE->value);
+            $draftData[]  = $this->countOrdersByState($dailyOrders, OrderState::DRAFT->value);
+            $sentData[]   = $this->countOrdersByState($dailyOrders, OrderState::SENT->value);
+            $cancelData[] = $this->countOrdersByState($dailyOrders, OrderState::CANCEL->value);
         }
 
         return [
-            'datasets' => [
+            $labels,
+            [
                 [
                     'label'           => __('sales::filament/widgets/sale-chart.dataset.order-confirm'),
                     'data'            => $saleData,
@@ -105,12 +132,14 @@ class SalesChartWidget extends ChartWidget
                     'backgroundColor' => 'rgba(239,68,68,0.2)',
                 ],
             ],
-            'labels' => $labels,
         ];
     }
 
-    protected function getType(): string
+    /**
+     * 🔹 Count orders by state.
+     */
+    protected function countOrdersByState($orders, string $state): int
     {
-        return 'line';
+        return $orders->where('state', $state)->count();
     }
 }

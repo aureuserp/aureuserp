@@ -6,29 +6,28 @@ return [
     ],
 
     'title' => [
-        'confirm-order' => 'Confirm Order',
+        'total-sent-quotation' => 'Total Sent Quotation',
 
-        'total-revenue' => 'Total Reveneu',
+        'total-quotation-confirm-by-customer' => 'Total Quotation Confirm By Customer',
 
-        'average-order' => 'Average Order',
+        'total-draft-quotation' => 'Draft Quotation',
 
-        'cancel-order' => 'Cancel Order',
+        'cancel-order' => 'Cancel Quotation',
 
-        'draft-order' => 'Draft Order',
+        'return-order' => 'Return Order',
     ],
 
     'descriptions' => [
 
-        'confirm-order' => 'Number of confirmed sales orders',
+        'total-sent-quotation' => 'Number of quotations sent to customers',
 
-        'total-revenue' => 'Revenue from confirmed orders',
+        'total-quotation-confirm-by-customer' => 'Quotations confirmed/accepted by customers',
 
-        'average-order' => 'Average revenue per confirmed order',
+        'total-draft-quotation' => 'Quotations still in draft state',
 
-        'cancel-order' => 'Orders that were cancelled',
+        'cancel-order' => 'Quotations that were cancelled',
 
-        'draft-order' => 'Orders still in draft state',
-
+        'return-order' => 'Orders or quotations returned by customers',
     ],
 
 ];

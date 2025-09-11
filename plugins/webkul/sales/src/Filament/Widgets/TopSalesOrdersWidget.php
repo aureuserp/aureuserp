@@ -6,24 +6,34 @@ use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Tables;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Webkul\Sale\Models\Order;
 use Webkul\Support\Models\Currency;
 
 class TopSalesOrdersWidget extends BaseWidget
 {
-    use HasWidgetShield, InteractsWithPageFilters;
+    use InteractsWithPageFilters;
 
     public function getHeading(): ?string
     {
         return __('sales::filament/widgets/top-sales-order.heading');
     }
 
-    protected function getTableQuery(): \Illuminate\Database\Eloquent\Builder
+    /**
+     * 🔹 Main table query with applied filters.
+     */
+    protected function getTableQuery(): Builder
     {
-        $filters = $this->filters;
+        return $this->applyFilters($this->baseQuery());
+    }
 
-        $query = Order::query()
+    /**
+     * 🔹 Base query before applying filters.
+     */
+    protected function baseQuery(): Builder
+    {
+        return Order::query()
             ->select(
                 'user_id',
                 DB::raw('COUNT(*) as total_orders'),
@@ -33,8 +43,15 @@ class TopSalesOrdersWidget extends BaseWidget
             ->groupBy('user_id')
             ->orderByDesc('total_revenue')
             ->with('user');
+    }
 
-        // 🔹 Apply Date Filters
+    /**
+     * 🔹 Apply dynamic filters.
+     */
+    protected function applyFilters(Builder $query): Builder
+    {
+        $filters = $this->filters;
+
         if (! empty($filters['start_date'])) {
             $query->whereDate('date_order', '>=', $filters['start_date']);
         }
@@ -43,7 +60,6 @@ class TopSalesOrdersWidget extends BaseWidget
             $query->whereDate('date_order', '<=', $filters['end_date']);
         }
 
-        // 🔹 Apply Salesperson Filter
         if (! empty($filters['salesperson_id'])) {
             $query->where('user_id', $filters['salesperson_id']);
         }
@@ -51,6 +67,9 @@ class TopSalesOrdersWidget extends BaseWidget
         return $query;
     }
 
+    /**
+     * 🔹 Table columns definition.
+     */
     protected function getTableColumns(): array
     {
         return [
@@ -69,8 +88,11 @@ class TopSalesOrdersWidget extends BaseWidget
         ];
     }
 
-    protected function getActiveCurrency()
+    /**
+     * 🔹 Get currently active currency.
+     */
+    protected function getActiveCurrency(): ?string
     {
-        return Currency::where('active', true)->value('name') ?? null;
+        return Currency::where('active', true)->value('name');
     }
 }

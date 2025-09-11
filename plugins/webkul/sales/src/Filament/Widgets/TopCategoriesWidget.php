@@ -5,6 +5,7 @@ namespace Webkul\Sale\Filament\Widgets;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\Database\Eloquent\Builder;
 use Webkul\Sale\Models\Category;
 
 class TopCategoriesWidget extends BaseWidget
@@ -15,29 +16,47 @@ class TopCategoriesWidget extends BaseWidget
 
     protected function getHeading(): ?string
     {
-        return _('sales::filament/widgets/top-categories.heading');
+        return __('sales::filament/widgets/top-categories.heading');
     }
 
-    public function table(Table $table): table
+    /**
+     * 🔹 Build and return the table.
+     */
+    public function table(Table $table): Table
     {
-        $query = Category::withCount('products')
-            ->orderBy('products_count', 'desc')
-            ->limit(5);
-
         return $table
+            ->query($this->baseQuery())
             ->defaultPaginationPageOption(5)
-            ->query($query)
-            ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->label(__('sales::filament/widgets/top-categories.table-columns.category'))
-                    ->searchable(),
+            ->columns($this->getTableColumns());
+    }
 
-                Tables\Columns\TextColumn::make('full_name')
-                    ->label(__('sales::filament/widgets/top-categories.table-columns.category_full_name')),
+    /**
+     * 🔹 Base query for top categories.
+     */
+    protected function baseQuery(): Builder
+    {
+        return Category::query()
+            ->withCount('products')
+            ->orderByDesc('products_count')
+            ->limit(5);
+    }
 
-                Tables\Columns\TextColumn::make('products_count')
-                    ->label(__('sales::filament/widgets/top-categories.table-columns.product_count'))
-                    ->sortable(),
-            ]);
+    /**
+     * 🔹 Define table columns.
+     */
+    protected function getTableColumns(): array
+    {
+        return [
+            Tables\Columns\TextColumn::make('name')
+                ->label(__('sales::filament/widgets/top-categories.table-columns.category'))
+                ->searchable(),
+
+            Tables\Columns\TextColumn::make('full_name')
+                ->label(__('sales::filament/widgets/top-categories.table-columns.category_full_name')),
+
+            Tables\Columns\TextColumn::make('products_count')
+                ->label(__('sales::filament/widgets/top-categories.table-columns.product_count'))
+                ->sortable(),
+        ];
     }
 }
