@@ -13,6 +13,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use Webkul\TimeOff\Enums;
 use Webkul\TimeOff\Enums\RequiresAllocation;
 use Webkul\TimeOff\Filament\Clusters\Configurations;
@@ -267,12 +270,22 @@ class LeaveTypeResource extends Resource
                                 ->body(__('time-off::filament/clusters/configurations/resources/leave-type.table.bulk-actions.delete.notification.body'))
                         ),
                     Tables\Actions\ForceDeleteBulkAction::make()
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('time-off::filament/clusters/configurations/resources/leave-type.table.bulk-actions.force-delete.notification.title'))
-                                ->body(__('time-off::filament/clusters/configurations/resources/leave-type.table.bulk-actions.force-delete.notification.body'))
-                        ),
+                        ->action(function (Collection $records) {
+                            try {
+                                $records->each(fn (Model $record) => $record->forceDelete());
+                                Notification::make()
+                                    ->success()
+                                    ->title(__('time-off::filament/clusters/configurations/resources/leave-type.table.bulk-actions.force-delete.notification.success.title'))
+                                    ->body(__('time-off::filament/clusters/configurations/resources/leave-type.table.bulk-actions.force-delete.notification.success.body'))
+                                    ->send();
+                            } catch (QueryException) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('time-off::filament/clusters/configurations/resources/leave-type.table.bulk-actions.force-delete.notification.error.title'))
+                                    ->body(__('time-off::filament/clusters/configurations/resources/leave-type.table.bulk-actions.force-delete.notification.error.body'))
+                                    ->send();
+                            }
+                        }),
                     Tables\Actions\RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()

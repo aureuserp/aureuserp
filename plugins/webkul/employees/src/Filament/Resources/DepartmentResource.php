@@ -20,7 +20,6 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Filament\Resources\DepartmentResource\Pages;
 use Webkul\Employee\Models\Department;
 use Webkul\Field\Filament\Traits\HasCustomFields;
-use Webkul\Support\Models\Company;
 
 class DepartmentResource extends Resource
 {
@@ -101,8 +100,14 @@ class DepartmentResource extends Resource
                                             ->nullable(),
                                         Forms\Components\Select::make('company_id')
                                             ->label(__('employees::filament/resources/department.form.sections.general.fields.company'))
-                                            ->relationship('company', 'name')
-                                            ->options(fn () => Company::pluck('name', 'id'))
+                                            ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query) => $query->withTrashed())
+                                            ->getOptionLabelFromRecordUsing(function (Model $record): string {
+                                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                            })
+                                            ->disableOptionWhen(function ($label) {
+                                                return str_contains($label, ' (Deleted)');
+                                            })
+                                            ->preload()
                                             ->searchable()
                                             ->placeholder(__('employees::filament/resources/department.form.sections.general.fields.company-placeholder'))
                                             ->nullable(),
