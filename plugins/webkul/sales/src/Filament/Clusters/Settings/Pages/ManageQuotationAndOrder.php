@@ -42,6 +42,11 @@ class ManageQuotationAndOrder extends SettingsPage
         return __('sales::filament/clusters/settings/pages/manage-quotation-and-order.navigation.title');
     }
 
+    public static function getNavigationGroup(): string
+    {
+        return __('sales::filament/clusters/settings/pages/manage-quotation-and-order.navigation.group');
+    }
+
     public function form(Form $form): Form
     {
         return $form
