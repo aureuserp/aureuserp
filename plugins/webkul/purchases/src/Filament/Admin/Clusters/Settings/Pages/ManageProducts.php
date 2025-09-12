@@ -41,7 +41,12 @@ class ManageProducts extends SettingsPage
 
     public static function getNavigationLabel(): string
     {
-        return __('purchases::filament/admin/clusters/settings/pages/manage-products.title');
+        return __('purchases::filament/admin/clusters/settings/pages/manage-products.navigation.title');
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return __('purchases::filament/admin/clusters/settings/pages/manage-products.navigation.group');
     }
 
     public function form(Form $form): Form
