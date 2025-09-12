@@ -2,28 +2,19 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources;
 
-use Filament\Forms\Form;
-use Filament\Infolists\Infolist;
-use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
-use Filament\Resources\Resource;
-use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Webkul\Sale\Enums\OrderState;
-use Webkul\Sale\Filament\Clusters\Orders;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages;
-use Webkul\Sale\Models\Order;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 
-class OrderResource extends Resource
+class OrderResource extends QuotationResource
 {
-    protected static ?string $model = Order::class;
+    use HasResourcePermissionQuery;
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
 
-    protected static ?string $cluster = Orders::class;
-
     protected static ?int $navigationSort = 2;
-
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getModelLabel(): string
     {
@@ -35,22 +26,13 @@ class OrderResource extends Resource
         return __('sales::filament/clusters/orders/resources/order.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function getEloquentQuery(): Builder
     {
-        return QuotationResource::form($form);
-    }
+        $query = parent::getEloquentQuery();
 
-    public static function table(Table $table): Table
-    {
-        return QuotationResource::table($table)
-            ->modifyQueryUsing(function ($query) {
-                $query->where('state', OrderState::SALE);
-            });
-    }
+        $query = static::getModel()::applyPermissionScope($query);
 
-    public static function infolist(Infolist $infolist): Infolist
-    {
-        return QuotationResource::infolist($infolist);
+        return $query->where('state', OrderState::SALE);
     }
 
     public static function getRecordSubNavigation(Page $page): array

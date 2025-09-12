@@ -2,6 +2,8 @@
 
 namespace Webkul\Security;
 
+use Illuminate\Foundation\AliasLoader;
+use Webkul\Security\Facades\Bouncer as BouncerFacade;
 use Webkul\Support\Package;
 use Webkul\Support\PackageServiceProvider;
 
@@ -35,5 +37,17 @@ class SecurityServiceProvider extends PackageServiceProvider
             ->runsSettings();
     }
 
-    public function packageBooted(): void {}
+    public function packageBooted(): void
+    {
+        require_once __DIR__.'/Helpers/helpers.php';
+    }
+
+    public function packageRegistered(): void
+    {
+        $loader = AliasLoader::getInstance();
+
+        $loader->alias('bouncer', BouncerFacade::class);
+
+        $this->app->singleton('bouncer', Bouncer::class);
+    }
 }

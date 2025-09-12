@@ -33,6 +33,7 @@ use Webkul\Sale\Models\Order;
 use Webkul\Sale\Models\OrderLine;
 use Webkul\Sale\Models\Product;
 use Webkul\Sale\Settings;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
@@ -40,6 +41,8 @@ use Webkul\Support\Package;
 
 class QuotationResource extends Resource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = Order::class;
 
     protected static ?int $navigationSort = 1;

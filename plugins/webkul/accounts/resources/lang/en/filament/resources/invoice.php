@@ -107,6 +107,7 @@ return [
         'columns' => [
             'number'           => 'Number',
             'state'            => 'State',
+            'created-by'       => 'Created By',
             'customer'         => 'Customer',
             'invoice-date'     => 'Invoice Date',
             'checked'          => 'Checked',

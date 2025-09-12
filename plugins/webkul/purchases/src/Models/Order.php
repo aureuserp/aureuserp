@@ -19,12 +19,13 @@ use Webkul\Inventory\Models\OperationType;
 use Webkul\Purchase\Database\Factories\OrderFactory;
 use Webkul\Purchase\Enums;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 
 class Order extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope;
 
     /**
      * Table name.

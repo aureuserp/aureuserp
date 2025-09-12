@@ -8,9 +8,12 @@ use Webkul\Account\Filament\Resources\BillResource as BaseBillResource;
 use Webkul\Invoice\Filament\Clusters\Vendors;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource\Pages;
 use Webkul\Invoice\Models\Bill;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class BillResource extends BaseBillResource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = Bill::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
