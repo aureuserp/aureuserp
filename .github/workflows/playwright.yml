@@ -75,7 +75,7 @@ jobs:
         run: php artisan key:generate --ansi
 
       - name: Run ERP installer
-        run: php artisan erp:install --skip-env-check --skip-admin-creation
+        run: php artisan erp:install --skip-admin-creation
 
       - name: Cache Node modules
         uses: actions/cache@v4
