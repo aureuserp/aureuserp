@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Playwright Tests
 
 on:
   push: {}
@@ -11,7 +11,7 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: secret
+          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
           MYSQL_DATABASE: laravel
         ports:
           - 3306:3306
@@ -27,7 +27,7 @@ jobs:
       DB_PORT: 3306
       DB_DATABASE: laravel
       DB_USERNAME: root
-      DB_PASSWORD: secret
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
     steps:
       - name: Checkout code
@@ -59,7 +59,7 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-cache-
 
       - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest --no-interaction --optimize-autoloader
+        run: composer install --prefer-dist --no-progress --no-interaction --optimize-autoloader
 
       - name: Create .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
@@ -67,7 +67,11 @@ jobs:
       - name: Wait for MySQL to be ready
         run: |
           for i in {1..30}; do
-            mysqladmin ping -h127.0.0.1 -P3306 -uroot -psecret >/dev/null 2>&1 && break
+            if mysqladmin ping -h127.0.0.1 -P3306 -uroot -p${DB_PASSWORD} >/dev/null 2>&1; then
+              echo "MySQL is up!"
+              break
+            fi
+            echo "Waiting for MySQL..."
             sleep 1
           done
 
@@ -76,6 +80,17 @@ jobs:
 
       - name: Run database migrations
         run: php artisan migrate --force --no-interaction
+
+      - name: Run PHPUnit tests
+        run: vendor/bin/phpunit --log-junit junit.xml || vendor/bin/phpunit --testdox
+        continue-on-error: false
+
+      - name: Upload PHPUnit results
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpunit-results
+          path: junit.xml
+        if: always()
 
       - name: Cache Node modules
         uses: actions/cache@v4
@@ -98,7 +113,12 @@ jobs:
       - name: Wait for application to be ready
         run: |
           for i in {1..30}; do
-            curl --fail http://127.0.0.1:9000 || sleep 1 && break
+            if curl --silent --fail http://127.0.0.1:9000 > /dev/null; then
+              echo "Application is up!"
+              break
+            fi
+            echo "Waiting for application..."
+            sleep 1
           done
 
       - name: Install Playwright browsers
@@ -108,6 +128,14 @@ jobs:
         env:
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:9000
         run: npx playwright test --reporter=github || npx playwright test --reporter=list
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          if-no-files-found: ignore
 
   deploy:
     runs-on: ubuntu-latest
