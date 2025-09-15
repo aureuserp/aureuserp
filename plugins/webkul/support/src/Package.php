@@ -166,44 +166,28 @@ class Package extends BasePackage
     public static function getPackagePlugin(string $name): ?Plugin
     {
         if (count(static::$plugins) == 0) {
-            try {
-                if (Schema::hasTable('plugins') === false) {
-                    return null;
-                }
-
-                static::$plugins = Plugin::all()->keyBy('name');
-            } catch (\Exception $e) {
-                // Database not ready or connection not configured (e.g. during install/package discovery).
-                static::$plugins = [];
+            if (Schema::hasTable('plugins') === false) {
                 return null;
             }
+            
+            static::$plugins = Plugin::all()->keyBy('name');
         }
 
         if (isset(static::$plugins[$name])) {
             return static::$plugins[$name];
         }
 
-        try {
-            return static::$plugins[$name] ??= Plugin::where('name', $name)->first();
-        } catch (\Exception $e) {
-            return null;
-        }
+        return static::$plugins[$name] ??= Plugin::where('name', $name)->first();
     }
 
     public static function isPluginInstalled(string $name): bool
     {
         if (count(static::$plugins) == 0) {
-            try {
-                if (Schema::hasTable('plugins') === false) {
-                    return false;
-                }
-
-                static::$plugins = Plugin::all()->keyBy('name');
-            } catch (\Exception $e) {
-                // Database not ready or connection not configured (e.g. during install/package discovery).
-                static::$plugins = [];
+            if (Schema::hasTable('plugins') === false) {
                 return false;
             }
+
+            static::$plugins = Plugin::all()->keyBy('name');
         }
 
         if (isset(static::$plugins[$name]) && static::$plugins[$name]->is_installed) {
