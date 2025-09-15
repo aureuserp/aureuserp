@@ -36,13 +36,13 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: "8.1"
           extensions: mbstring, bcmath, xml, pdo_mysql, gd
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Cache composer vendor directory
         uses: actions/cache@v4
