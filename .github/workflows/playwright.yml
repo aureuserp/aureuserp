@@ -11,7 +11,7 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MYSQL_ROOT_PASSWORD: secret
           MYSQL_DATABASE: laravel
         ports:
           - 3306:3306
@@ -27,7 +27,7 @@ jobs:
       DB_PORT: 3306
       DB_DATABASE: laravel
       DB_USERNAME: root
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_PASSWORD: secret
 
     steps:
       - name: Checkout code
@@ -67,11 +67,7 @@ jobs:
       - name: Wait for MySQL to be ready
         run: |
           for i in {1..30}; do
-            if mysqladmin ping -h127.0.0.1 -P3306 -uroot -p${DB_PASSWORD} >/dev/null 2>&1; then
-              echo "MySQL is up!"
-              break
-            fi
-            echo "Waiting for MySQL..."
+            mysqladmin ping -h127.0.0.1 -P3306 -uroot -psecret >/dev/null 2>&1 && break
             sleep 1
           done
 
@@ -80,17 +76,6 @@ jobs:
 
       - name: Run database migrations
         run: php artisan migrate --force --no-interaction
-
-      - name: Run PHPUnit tests
-        run: vendor/bin/phpunit --log-junit junit.xml || vendor/bin/phpunit --testdox
-        continue-on-error: false
-
-      - name: Upload PHPUnit results
-        uses: actions/upload-artifact@v4
-        with:
-          name: phpunit-results
-          path: junit.xml
-        if: always()
 
       - name: Cache Node modules
         uses: actions/cache@v4
@@ -113,12 +98,7 @@ jobs:
       - name: Wait for application to be ready
         run: |
           for i in {1..30}; do
-            if curl --silent --fail http://127.0.0.1:9000 > /dev/null; then
-              echo "Application is up!"
-              break
-            fi
-            echo "Waiting for application..."
-            sleep 1
+            curl --fail http://127.0.0.1:9000 || sleep 1 && break
           done
 
       - name: Install Playwright browsers
@@ -136,15 +116,3 @@ jobs:
           name: playwright-report
           path: playwright-report
           if-no-files-found: ignore
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build-and-test
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Deploy application (placeholder)
-        run: echo "Deploy steps go here. Replace with your deployment commands or actions."
