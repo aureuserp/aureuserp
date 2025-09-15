@@ -10,7 +10,7 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Project\Models\Project>
+ * @extends Factory<Project>
  */
 class ProjectFactory extends Factory
 {

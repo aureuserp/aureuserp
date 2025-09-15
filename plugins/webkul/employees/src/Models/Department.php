@@ -81,6 +81,7 @@ class Department extends Model
             if (! static::validateNoRecursion($department)) {
                 throw new InvalidArgumentException('Circular reference detected in department hierarchy');
             }
+
             static::handleDepartmentData($department);
         });
 
@@ -88,6 +89,7 @@ class Department extends Model
             if (! static::validateNoRecursion($department)) {
                 throw new InvalidArgumentException('Circular reference detected in department hierarchy');
             }
+
             static::handleDepartmentData($department);
         });
     }

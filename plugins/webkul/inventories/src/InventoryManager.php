@@ -4,6 +4,14 @@ namespace Webkul\Inventory;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Inventory\Enums\CreateBackorder;
+use Webkul\Inventory\Enums\LocationType;
+use Webkul\Inventory\Enums\MoveState;
+use Webkul\Inventory\Enums\OperationState;
+use Webkul\Inventory\Enums\ProcureMethod;
+use Webkul\Inventory\Enums\ProductTracking;
+use Webkul\Inventory\Enums\RuleAction;
+use Webkul\Inventory\Enums\RuleAuto;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\MoveLine;
@@ -59,7 +67,7 @@ class InventoryManager
     public function validateTransferMove(Move $move): Move
     {
         $move->update([
-            'state'     => Enums\MoveState::DONE,
+            'state'     => MoveState::DONE,
             'is_picked' => true,
         ]);
 
@@ -72,7 +80,7 @@ class InventoryManager
 
     public function validateTransferMoveLine(MoveLine $moveLine): MoveLine
     {
-        $moveLine->update(['state' => Enums\MoveState::DONE]);
+        $moveLine->update(['state' => MoveState::DONE]);
 
         // Process source quantity
         $sourceQuantity = ProductQuantity::where('product_id', $moveLine->product_id)
@@ -162,7 +170,7 @@ class InventoryManager
     {
         foreach ($record->moves as $move) {
             $move->update([
-                'state'        => Enums\MoveState::CANCELED,
+                'state'        => MoveState::CANCELED,
                 'quantity'     => 0,
             ]);
 
@@ -179,7 +187,7 @@ class InventoryManager
     public function returnTransfer(Operation $record): Operation
     {
         $newOperation = $record->replicate()->fill([
-            'state'                   => Enums\OperationState::DRAFT,
+            'state'                   => OperationState::DRAFT,
             'origin'                  => 'Return of '.$record->name,
             'operation_type_id'       => $record->operationType->returnOperationType?->id ?? $record->operation_type_id,
             'source_location_id'      => $record->destination_location_id,
@@ -195,7 +203,7 @@ class InventoryManager
             $newMove = $move->replicate()->fill([
                 'operation_id'            => $newOperation->id,
                 'reference'               => $newOperation->name,
-                'state'                   => Enums\MoveState::DRAFT,
+                'state'                   => MoveState::DRAFT,
                 'is_refund'               => true,
                 'product_qty'             => $move->product_qty,
                 'product_uom_qty'         => $move->product_uom_qty,
@@ -243,7 +251,7 @@ class InventoryManager
         }
 
         $newOperation = $record->replicate()->fill([
-            'state'         => Enums\OperationState::DRAFT,
+            'state'         => OperationState::DRAFT,
             'origin'        => $record->origin ?? $record->name,
             'back_order_id' => $record->id,
             'user_id'       => Auth::id(),
@@ -262,7 +270,7 @@ class InventoryManager
             $newMove = $move->replicate()->fill([
                 'operation_id'    => $newOperation->id,
                 'reference'       => $newOperation->name,
-                'state'           => Enums\MoveState::DRAFT,
+                'state'           => MoveState::DRAFT,
                 'product_qty'     => $move->uom->computeQuantity($remainingQty, $move->product->uom, true, 'HALF-UP'),
                 'product_uom_qty' => $remainingQty,
                 'quantity'        => $remainingQty,
@@ -300,7 +308,7 @@ class InventoryManager
 
     public function computeTransfer(Operation $record): Operation
     {
-        if (in_array($record->state, [Enums\OperationState::DONE, Enums\OperationState::CANCELED])) {
+        if (in_array($record->state, [OperationState::DONE, OperationState::CANCELED])) {
             return $record;
         }
 
@@ -329,7 +337,7 @@ class InventoryManager
 
         $availableQuantity = 0;
 
-        $isSupplierSource = $record->sourceLocation->type === Enums\LocationType::SUPPLIER;
+        $isSupplierSource = $record->sourceLocation->type === LocationType::SUPPLIER;
 
         $productQuantities = collect();
 
@@ -342,8 +350,8 @@ class InventoryManager
                         ->orWhere('parent_id', $record->source_location_id);
                 })
                 ->when(
-                    $record->sourceLocation->type != Enums\LocationType::SUPPLIER
-                    && $record->product->tracking == Enums\ProductTracking::LOT,
+                    $record->sourceLocation->type != LocationType::SUPPLIER
+                    && $record->product->tracking == ProductTracking::LOT,
                     fn ($query) => $query->whereNotNull('lot_id')
                 )
                 ->get();
@@ -375,7 +383,7 @@ class InventoryManager
                     $line->update([
                         'qty'     => $record->product->uom->computeQuantity($newQty, $record->uom, true, 'HALF-UP'),
                         'uom_qty' => $newQty,
-                        'state'   => Enums\MoveState::ASSIGNED,
+                        'state'   => MoveState::ASSIGNED,
                     ]);
                 }
 
@@ -394,7 +402,7 @@ class InventoryManager
                 while ($remainingQty > 0) {
                     $newQty = $remainingQty;
 
-                    if ($record->product->tracking == Enums\ProductTracking::SERIAL) {
+                    if ($record->product->tracking == ProductTracking::SERIAL) {
                         $newQty = 1;
                     }
 
@@ -402,7 +410,7 @@ class InventoryManager
                         'qty'                     => $record->product->uom->computeQuantity($newQty, $record->uom, true, 'HALF-UP'),
                         'uom_qty'                 => $newQty,
                         'source_location_id'      => $record->source_location_id,
-                        'state'                   => Enums\MoveState::ASSIGNED,
+                        'state'                   => MoveState::ASSIGNED,
                         'reference'               => $record->reference,
                         'picking_description'     => $record->description_picking,
                         'is_picked'               => $record->is_picked,
@@ -445,7 +453,7 @@ class InventoryManager
                         'package_id'              => $productQuantity->package_id,
                         'result_package_id'       => $newQty == $productQuantity->quantity ? $productQuantity->package_id : null,
                         'source_location_id'      => $productQuantity->location_id,
-                        'state'                   => Enums\MoveState::ASSIGNED,
+                        'state'                   => MoveState::ASSIGNED,
                         'reference'               => $record->reference,
                         'picking_description'     => $record->description_picking,
                         'is_picked'               => $record->is_picked,
@@ -467,25 +475,25 @@ class InventoryManager
 
         if ($availableQuantity <= 0) {
             $record->update([
-                'state'    => Enums\MoveState::CONFIRMED,
+                'state'    => MoveState::CONFIRMED,
                 'quantity' => null,
             ]);
 
             $record->lines()->update([
-                'state' => Enums\MoveState::CONFIRMED,
+                'state' => MoveState::CONFIRMED,
             ]);
         } elseif ($availableQuantity < $requestedQty) {
             $record->update([
-                'state'    => Enums\MoveState::PARTIALLY_ASSIGNED,
+                'state'    => MoveState::PARTIALLY_ASSIGNED,
                 'quantity' => $record->product->uom->computeQuantity($availableQuantity, $record->uom, true, 'HALF-UP'),
             ]);
 
             $record->lines()->update([
-                'state' => Enums\MoveState::PARTIALLY_ASSIGNED,
+                'state' => MoveState::PARTIALLY_ASSIGNED,
             ]);
         } else {
             $record->update([
-                'state'    => Enums\MoveState::ASSIGNED,
+                'state'    => MoveState::ASSIGNED,
                 'quantity' => $record->product->uom->computeQuantity($availableQuantity, $record->uom, true, 'HALF-UP'),
             ]);
         }
@@ -497,20 +505,20 @@ class InventoryManager
     {
         $record->refresh();
 
-        if (in_array($record->state, [Enums\OperationState::DONE, Enums\OperationState::CANCELED])) {
+        if (in_array($record->state, [OperationState::DONE, OperationState::CANCELED])) {
             return $record;
         }
 
-        if ($record->moves->every(fn ($move) => $move->state === Enums\MoveState::CONFIRMED)) {
-            $record->state = Enums\OperationState::CONFIRMED;
-        } elseif ($record->moves->every(fn ($move) => $move->state === Enums\MoveState::DONE)) {
-            $record->state = Enums\OperationState::DONE;
-        } elseif ($record->moves->every(fn ($move) => $move->state === Enums\MoveState::CANCELED)) {
-            $record->state = Enums\OperationState::CANCELED;
-        } elseif ($record->moves->contains(fn ($move) => $move->state === Enums\MoveState::ASSIGNED ||
-            $move->state === Enums\MoveState::PARTIALLY_ASSIGNED
+        if ($record->moves->every(fn ($move) => $move->state === MoveState::CONFIRMED)) {
+            $record->state = OperationState::CONFIRMED;
+        } elseif ($record->moves->every(fn ($move) => $move->state === MoveState::DONE)) {
+            $record->state = OperationState::DONE;
+        } elseif ($record->moves->every(fn ($move) => $move->state === MoveState::CANCELED)) {
+            $record->state = OperationState::CANCELED;
+        } elseif ($record->moves->contains(fn ($move) => $move->state === MoveState::ASSIGNED ||
+            $move->state === MoveState::PARTIALLY_ASSIGNED
         )) {
-            $record->state = Enums\OperationState::ASSIGNED;
+            $record->state = OperationState::ASSIGNED;
         }
 
         return $record;
@@ -521,7 +529,7 @@ class InventoryManager
      */
     public function canCreateBackOrder(Operation $record): bool
     {
-        if ($record->operationType->create_backorder === Enums\CreateBackorder::NEVER) {
+        if ($record->operationType->create_backorder === CreateBackorder::NEVER) {
             return false;
         }
 
@@ -533,7 +541,7 @@ class InventoryManager
      */
     private function calculateReservedQty($location, $qty): int
     {
-        if ($location->type === Enums\LocationType::INTERNAL && ! $location->is_stock_location) {
+        if ($location->type === LocationType::INTERNAL && ! $location->is_stock_location) {
             return $qty;
         }
 
@@ -583,7 +591,7 @@ class InventoryManager
     private function createPushOperation(Operation $record, Rule $rule, array $moves): void
     {
         $newOperation = Operation::create([
-            'state'                   => Enums\OperationState::DRAFT,
+            'state'                   => OperationState::DRAFT,
             'origin'                  => $record->name,
             'operation_type_id'       => $rule->operation_type_id,
             'source_location_id'      => $rule->source_location_id,
@@ -611,12 +619,12 @@ class InventoryManager
      */
     public function runPushRule(Rule $rule, Move $move)
     {
-        if ($rule->auto !== Enums\RuleAuto::MANUAL) {
+        if ($rule->auto !== RuleAuto::MANUAL) {
             return;
         }
 
         $newMove = $move->replicate()->fill([
-            'state'                   => Enums\MoveState::DRAFT,
+            'state'                   => MoveState::DRAFT,
             'reference'               => null,
             'product_qty'             => $move->uom->computeQuantity($move->quantity, $move->product->uom, true, 'HALF-UP'),
             'product_uom_qty'         => $move->quantity,
@@ -631,14 +639,14 @@ class InventoryManager
             'operation_type_id'       => $rule->operation_type_id,
             'propagate_cancel'        => $rule->propagate_cancel,
             'warehouse_id'            => $rule->warehouse_id,
-            'procure_method'          => Enums\ProcureMethod::MAKE_TO_ORDER,
+            'procure_method'          => ProcureMethod::MAKE_TO_ORDER,
         ]);
 
         $newMove->save();
 
         if ($newMove->shouldBypassReservation()) {
             $newMove->update([
-                'procure_method' => Enums\ProcureMethod::MAKE_TO_STOCK,
+                'procure_method' => ProcureMethod::MAKE_TO_STOCK,
             ]);
         }
 
@@ -658,7 +666,7 @@ class InventoryManager
 
         $location = $move->destinationLocation;
 
-        $filters['action'] = [Enums\RuleAction::PUSH, Enums\RuleAction::PULL_PUSH];
+        $filters['action'] = [RuleAction::PUSH, RuleAction::PULL_PUSH];
 
         while (! $foundRule && $location) {
             $filters['source_location_id'] = $location->id;

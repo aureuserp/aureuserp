@@ -6,6 +6,7 @@
         "dev": "vite"
     },
     "devDependencies": {
+        "@tailwindcss/postcss": "^4.1.12",
         "@playwright/test": "^1.53.1",
         "@types/node": "^24.0.3",
         "autoprefixer": "^10.4.20",
@@ -13,7 +14,9 @@
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^1.0",
         "postcss": "^8.4.47",
-        "tailwindcss": "^3.4.13",
         "vite": "^5.0"
+    },
+    "dependencies": {
+        "tailwindcss": "^4.1.12"
     }
 }

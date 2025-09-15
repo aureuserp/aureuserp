@@ -2,11 +2,17 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Customer\Resources;
 
-use Filament\Pages\SubNavigationPosition;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Tables\Table;
 use Webkul\Invoice\Filament\Clusters\Customer;
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\PartnerResource\Pages;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\PartnerResource\Pages\CreatePartner;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\PartnerResource\Pages\EditPartner;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\PartnerResource\Pages\ListPartners;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\PartnerResource\Pages\ManageAddresses;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\PartnerResource\Pages\ManageBankAccounts;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\PartnerResource\Pages\ManageContacts;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\PartnerResource\Pages\ViewPartner;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource as BasePartnerResource;
 use Webkul\Invoice\Models\Partner;
 use Webkul\Partner\Filament\Resources\PartnerResource as BaseVendorResource;
@@ -19,11 +25,11 @@ class PartnerResource extends BasePartnerResource
 
     protected static ?int $navigationSort = 6;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
     protected static ?string $cluster = Customer::class;
 
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getModelLabel(): string
     {
@@ -54,24 +60,24 @@ class PartnerResource extends BasePartnerResource
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewPartner::class,
-            Pages\EditPartner::class,
-            Pages\ManageContacts::class,
-            Pages\ManageAddresses::class,
-            Pages\ManageBankAccounts::class,
+            ViewPartner::class,
+            EditPartner::class,
+            ManageContacts::class,
+            ManageAddresses::class,
+            ManageBankAccounts::class,
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'        => Pages\ListPartners::route('/'),
-            'create'       => Pages\CreatePartner::route('/create'),
-            'view'         => Pages\ViewPartner::route('/{record}'),
-            'edit'         => Pages\EditPartner::route('/{record}/edit'),
-            'contacts'     => Pages\ManageContacts::route('/{record}/contacts'),
-            'addresses'    => Pages\ManageAddresses::route('/{record}/addresses'),
-            'bank-account' => Pages\ManageBankAccounts::route('/{record}/bank-accounts'),
+            'index'        => ListPartners::route('/'),
+            'create'       => CreatePartner::route('/create'),
+            'view'         => ViewPartner::route('/{record}'),
+            'edit'         => EditPartner::route('/{record}/edit'),
+            'contacts'     => ManageContacts::route('/{record}/contacts'),
+            'addresses'    => ManageAddresses::route('/{record}/addresses'),
+            'bank-account' => ManageBankAccounts::route('/{record}/bank-accounts'),
         ];
     }
 }

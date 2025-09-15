@@ -2,25 +2,41 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
-use Filament\Pages\SubNavigationPosition;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\RelationManagers\RelationGroup;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Webkul\Invoice\Enums;
+use Webkul\Invoice\Enums\AutoPostBills;
+use Webkul\Invoice\Enums\InvoiceFormat;
+use Webkul\Invoice\Enums\InvoiceSendingMethod;
+use Webkul\Invoice\Enums\PartyIdentificationScheme;
 use Webkul\Invoice\Filament\Clusters\Vendors;
-use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages;
-use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\RelationManagers;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\CreateVendor;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\EditVendor;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ListVendors;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ManageAddresses;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ManageBankAccounts;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ManageContacts;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ViewVendor;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\RelationManagers\BankAccountsRelationManager;
 use Webkul\Invoice\Models\Partner;
 use Webkul\Partner\Filament\Resources\PartnerResource as BaseVendorResource;
 
 class VendorResource extends BaseVendorResource
 {
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
     protected static ?string $model = Partner::class;
 
@@ -32,7 +48,7 @@ class VendorResource extends BaseVendorResource
 
     protected static ?string $cluster = Vendors::class;
 
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getModelLabel(): string
     {
@@ -49,32 +65,32 @@ class VendorResource extends BaseVendorResource
         return null;
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        $form = parent::form($form);
+        $schema = parent::form($schema);
 
-        $secondChildComponents = $form->getComponents()[1];
+        $secondChildComponents = $schema->getComponents()[1];
 
-        $saleAndPurchaseComponent = $secondChildComponents->getChildComponents()[0];
+        $saleAndPurchaseComponent = $secondChildComponents->getDefaultChildComponents()[0];
 
-        $firstTabFirstChildComponent = $saleAndPurchaseComponent->getChildComponents()[0];
+        $firstTabFirstChildComponent = $saleAndPurchaseComponent->getDefaultChildComponents()[0];
 
         $firstTabFirstChildComponent->childComponents([
-            Forms\Components\Group::make()
+            Group::make()
                 ->schema([
-                    Forms\Components\Hidden::make('sub_type')
+                    Hidden::make('sub_type')
                         ->default('supplier'),
-                    Forms\Components\Select::make('user_id')
+                    Select::make('user_id')
                         ->relationship('user', 'name')
                         ->preload()
                         ->searchable()
                         ->label(__('invoices::filament/clusters/vendors/resources/vendor.form.fields.sales-person')),
-                    Forms\Components\Select::make('property_payment_term_id')
+                    Select::make('property_payment_term_id')
                         ->relationship('propertyPaymentTerm', 'name')
                         ->preload()
                         ->searchable()
                         ->label(__('invoices::filament/clusters/vendors/resources/vendor.form.fields.payment-terms')),
-                    Forms\Components\Select::make('property_inbound_payment_method_line_id')
+                    Select::make('property_inbound_payment_method_line_id')
                         ->relationship('propertyInboundPaymentMethodLine', 'name')
                         ->preload()
                         ->searchable()
@@ -83,16 +99,16 @@ class VendorResource extends BaseVendorResource
                 ->columns(2),
         ]);
 
-        $purchaseComponents = Forms\Components\Fieldset::make(__('invoices::filament/clusters/vendors/resources/vendor.form.fields.purchase'))
+        $purchaseComponents = Fieldset::make(__('invoices::filament/clusters/vendors/resources/vendor.form.fields.purchase'))
             ->schema([
-                Forms\Components\Group::make()
+                Group::make()
                     ->schema([
-                        Forms\Components\Select::make('property_supplier_payment_term_id')
+                        Select::make('property_supplier_payment_term_id')
                             ->label(__('invoices::filament/clusters/vendors/resources/vendor.form.fields.payment-terms'))
                             ->relationship('propertySupplierPaymentTerm', 'name')
                             ->searchable()
                             ->preload(),
-                        Forms\Components\Select::make('property_outbound_payment_method_line_id')
+                        Select::make('property_outbound_payment_method_line_id')
                             ->relationship('propertyOutboundPaymentMethodLine', 'name')
                             ->preload()
                             ->searchable()
@@ -101,11 +117,11 @@ class VendorResource extends BaseVendorResource
             ])
             ->columns(1);
 
-        $fiscalInformation = Forms\Components\Fieldset::make(__('invoices::filament/clusters/vendors/resources/vendor.form.fields.fiscal-information'))
+        $fiscalInformation = Fieldset::make(__('invoices::filament/clusters/vendors/resources/vendor.form.fields.fiscal-information'))
             ->schema([
-                Forms\Components\Group::make()
+                Group::make()
                     ->schema([
-                        Forms\Components\Select::make('property_account_position_id')
+                        Select::make('property_account_position_id')
                             ->label(__('invoices::filament/clusters/vendors/resources/vendor.form.fields.fiscal-position'))
                             ->relationship('propertyAccountPosition', 'name')
                             ->searchable()
@@ -115,58 +131,58 @@ class VendorResource extends BaseVendorResource
             ->columns(1);
 
         $saleAndPurchaseComponent->childComponents([
-            $saleAndPurchaseComponent->getChildComponents()[0],
+            $saleAndPurchaseComponent->getDefaultChildComponents()[0],
             $purchaseComponents,
             $fiscalInformation,
-            $saleAndPurchaseComponent->getChildComponents()[1],
+            $saleAndPurchaseComponent->getDefaultChildComponents()[1],
         ]);
 
-        $invoicingComponent = Forms\Components\Tabs\Tab::make(__('invoices::filament/clusters/vendors/resources/vendor.form.tabs.invoicing.title'))
+        $invoicingComponent = Tab::make(__('invoices::filament/clusters/vendors/resources/vendor.form.tabs.invoicing.title'))
             ->icon('heroicon-o-receipt-percent')
             ->schema([
-                Forms\Components\Fieldset::make(__('invoices::filament/clusters/vendors/resources/vendor.form.tabs.invoicing.fields.customer-invoices'))
+                Fieldset::make(__('invoices::filament/clusters/vendors/resources/vendor.form.tabs.invoicing.fields.customer-invoices'))
                     ->schema([
-                        Forms\Components\Select::make('invoice_sending_method')
+                        Select::make('invoice_sending_method')
                             ->label('Invoice Sending Method')
                             ->label(__('invoices::filament/clusters/vendors/resources/vendor.form.tabs.invoicing.fields.invoice-sending-method'))
-                            ->options(Enums\InvoiceSendingMethod::class),
-                        Forms\Components\Select::make('invoice_edi_format_store')
+                            ->options(InvoiceSendingMethod::class),
+                        Select::make('invoice_edi_format_store')
                             ->label(__('invoices::filament/clusters/vendors/resources/vendor.form.tabs.invoicing.fields.invoice-edi-format-store'))
                             ->live()
-                            ->options(Enums\InvoiceFormat::class),
-                        Forms\Components\Group::make()
+                            ->options(InvoiceFormat::class),
+                        Group::make()
                             ->schema([
-                                Forms\Components\Select::make('peppol_eas')
+                                Select::make('peppol_eas')
                                     ->label(__('invoices::filament/clusters/vendors/resources/vendor.form.tabs.invoicing.fields.peppol-eas'))
                                     ->live()
-                                    ->visible(fn (Get $get) => $get('invoice_edi_format_store') !== Enums\InvoiceFormat::FACTURX_X_CII->value && ! empty($get('invoice_edi_format_store')))
-                                    ->options(Enums\PartyIdentificationScheme::class),
-                                Forms\Components\TextInput::make('peppol_endpoint')
+                                    ->visible(fn (Get $get) => $get('invoice_edi_format_store') !== InvoiceFormat::FACTURX_X_CII->value && ! empty($get('invoice_edi_format_store')))
+                                    ->options(PartyIdentificationScheme::class),
+                                TextInput::make('peppol_endpoint')
                                     ->label(__('invoices::filament/clusters/vendors/resources/vendor.form.tabs.invoicing.fields.endpoint'))
                                     ->live()
-                                    ->visible(fn (Get $get) => $get('invoice_edi_format_store') !== Enums\InvoiceFormat::FACTURX_X_CII->value && ! empty($get('invoice_edi_format_store'))),
+                                    ->visible(fn (Get $get) => $get('invoice_edi_format_store') !== InvoiceFormat::FACTURX_X_CII->value && ! empty($get('invoice_edi_format_store'))),
                             ])->columns(2),
                     ]),
 
-                Forms\Components\Fieldset::make(__('invoices::filament/clusters/vendors/resources/vendor.form.tabs.invoicing.fields.automation'))
+                Fieldset::make(__('invoices::filament/clusters/vendors/resources/vendor.form.tabs.invoicing.fields.automation'))
                     ->schema([
-                        Forms\Components\Select::make('autopost_bills')
+                        Select::make('autopost_bills')
                             ->label(__('invoices::filament/clusters/vendors/resources/vendor.form.tabs.invoicing.fields.auto-post-bills'))
-                            ->options(Enums\AutoPostBills::class),
-                        Forms\Components\Toggle::make('ignore_abnormal_invoice_amount')
+                            ->options(AutoPostBills::class),
+                        Toggle::make('ignore_abnormal_invoice_amount')
                             ->inline(false)
                             ->label(__('invoices::filament/clusters/vendors/resources/vendor.form.tabs.invoicing.fields.ignore-abnormal-invoice-amount')),
-                        Forms\Components\Toggle::make('ignore_abnormal_invoice_date')
+                        Toggle::make('ignore_abnormal_invoice_date')
                             ->inline(false)
                             ->label('Ignore abnormal invoice date')
                             ->label(__('invoices::filament/clusters/vendors/resources/vendor.form.tabs.invoicing.fields.ignore-abnormal-invoice-date')),
                     ]),
             ]);
 
-        $internalNotes = Forms\Components\Tabs\Tab::make(__('invoices::filament/clusters/vendors/resources/vendor.form.tabs.internal-notes.title'))
+        $internalNotes = Tab::make(__('invoices::filament/clusters/vendors/resources/vendor.form.tabs.internal-notes.title'))
             ->icon('heroicon-o-chat-bubble-left-right')
             ->schema([
-                Forms\Components\RichEditor::make('comment')
+                RichEditor::make('comment')
                     ->hiddenLabel(),
             ]);
 
@@ -176,7 +192,7 @@ class VendorResource extends BaseVendorResource
             $internalNotes,
         ]);
 
-        return $form;
+        return $schema;
     }
 
     public static function table(Table $table): Table
@@ -202,34 +218,34 @@ class VendorResource extends BaseVendorResource
         return [
             ...$table,
             RelationGroup::make('Bank Accounts', [
-                RelationManagers\BankAccountsRelationManager::class,
+                BankAccountsRelationManager::class,
             ])
                 ->icon('heroicon-o-banknotes'),
         ];
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        $infolist = parent::infolist($infolist);
+        $schema = parent::infolist($schema);
 
-        $secondChildComponents = $infolist->getComponents()[1];
+        $secondChildComponents = $schema->getComponents()[1];
 
-        $saleAndPurchaseComponent = $secondChildComponents->getChildComponents()[0];
+        $saleAndPurchaseComponent = $secondChildComponents->getDefaultChildComponents()[0];
 
-        $firstTabFirstChildComponent = $saleAndPurchaseComponent->getChildComponents()[0];
+        $firstTabFirstChildComponent = $saleAndPurchaseComponent->getDefaultChildComponents()[0];
 
         $firstTabFirstChildComponent->childComponents([
-            Infolists\Components\Group::make()
+            Group::make()
                 ->schema([
-                    Infolists\Components\TextEntry::make('user.name')
+                    TextEntry::make('user.name')
                         ->placeholder('-')
                         ->label(__('invoices::filament/clusters/vendors/resources/vendor.infolist.entries.sales-person'))
                         ->icon('heroicon-o-user'),
-                    Infolists\Components\TextEntry::make('propertyPaymentTerm.name')
+                    TextEntry::make('propertyPaymentTerm.name')
                         ->placeholder('-')
                         ->label(__('invoices::filament/clusters/vendors/resources/vendor.infolist.entries.payment-terms'))
                         ->icon('heroicon-o-calendar'),
-                    Infolists\Components\TextEntry::make('propertyInboundPaymentMethodLine.name')
+                    TextEntry::make('propertyInboundPaymentMethodLine.name')
                         ->placeholder('-')
                         ->label(__('invoices::filament/clusters/vendors/resources/vendor.infolist.entries.payment-method'))
                         ->icon('heroicon-o-credit-card'),
@@ -237,15 +253,15 @@ class VendorResource extends BaseVendorResource
                 ->columns(2),
         ]);
 
-        $purchaseComponents = Infolists\Components\Fieldset::make(__('invoices::filament/clusters/vendors/resources/vendor.infolist.entries.purchase'))
+        $purchaseComponents = Fieldset::make(__('invoices::filament/clusters/vendors/resources/vendor.infolist.entries.purchase'))
             ->schema([
-                Infolists\Components\Group::make()
+                Group::make()
                     ->schema([
-                        Infolists\Components\TextEntry::make('propertySupplierPaymentTerm.name')
+                        TextEntry::make('propertySupplierPaymentTerm.name')
                             ->label(__('invoices::filament/clusters/vendors/resources/vendor.infolist.entries.payment-terms'))
                             ->placeholder('-')
                             ->icon('heroicon-o-calendar'),
-                        Infolists\Components\TextEntry::make('propertyOutboundPaymentMethodLine.name')
+                        TextEntry::make('propertyOutboundPaymentMethodLine.name')
                             ->placeholder('-')
                             ->label(__('invoices::filament/clusters/vendors/resources/vendor.infolist.entries.payment-method'))
                             ->icon('heroicon-o-banknotes'),
@@ -253,11 +269,11 @@ class VendorResource extends BaseVendorResource
             ])
             ->columns(1);
 
-        $fiscalInformation = Infolists\Components\Fieldset::make(__('invoices::filament/clusters/vendors/resources/vendor.infolist.entries.fiscal-information'))
+        $fiscalInformation = Fieldset::make(__('invoices::filament/clusters/vendors/resources/vendor.infolist.entries.fiscal-information'))
             ->schema([
-                Infolists\Components\Group::make()
+                Group::make()
                     ->schema([
-                        Infolists\Components\TextEntry::make('propertyAccountPosition.name')
+                        TextEntry::make('propertyAccountPosition.name')
                             ->label(__('invoices::filament/clusters/vendors/resources/vendor.infolist.entries.fiscal-position'))
                             ->placeholder('-')
                             ->icon('heroicon-o-document-text'),
@@ -266,59 +282,59 @@ class VendorResource extends BaseVendorResource
             ->columns(1);
 
         $saleAndPurchaseComponent->childComponents([
-            $saleAndPurchaseComponent->getChildComponents()[0],
+            $saleAndPurchaseComponent->getDefaultChildComponents()[0],
             $purchaseComponents,
             $fiscalInformation,
-            $saleAndPurchaseComponent->getChildComponents()[1],
+            $saleAndPurchaseComponent->getDefaultChildComponents()[1],
         ]);
 
-        $invoicingComponent = Infolists\Components\Tabs\Tab::make(__('invoices::filament/clusters/vendors/resources/vendor.infolist.tabs.invoicing.title'))
+        $invoicingComponent = Tab::make(__('invoices::filament/clusters/vendors/resources/vendor.infolist.tabs.invoicing.title'))
             ->icon('heroicon-o-receipt-percent')
             ->schema([
-                Infolists\Components\Fieldset::make(__('invoices::filament/clusters/vendors/resources/vendor.infolist.tabs.invoicing.entries.customer-invoices'))
+                Fieldset::make(__('invoices::filament/clusters/vendors/resources/vendor.infolist.tabs.invoicing.entries.customer-invoices'))
                     ->schema([
-                        Infolists\Components\TextEntry::make('invoice_sending_method')
+                        TextEntry::make('invoice_sending_method')
                             ->label(__('invoices::filament/clusters/vendors/resources/vendor.infolist.tabs.invoicing.entries.invoice-sending-method'))
                             ->placeholder('-')
                             ->icon('heroicon-o-paper-airplane'),
-                        Infolists\Components\TextEntry::make('invoice_edi_format_store')
+                        TextEntry::make('invoice_edi_format_store')
                             ->label(__('invoices::filament/clusters/vendors/resources/vendor.infolist.tabs.invoicing.entries.invoice-edi-format-store'))
                             ->placeholder('-')
                             ->icon('heroicon-o-document'),
-                        Infolists\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Infolists\Components\TextEntry::make('peppol_eas')
+                                TextEntry::make('peppol_eas')
                                     ->label(__('invoices::filament/clusters/vendors/resources/vendor.infolist.tabs.invoicing.entries.peppol-eas'))
                                     ->placeholder('-')
                                     ->icon('heroicon-o-identification'),
-                                Infolists\Components\TextEntry::make('peppol_endpoint')
+                                TextEntry::make('peppol_endpoint')
                                     ->label(__('invoices::filament/clusters/vendors/resources/vendor.infolist.tabs.invoicing.entries.endpoint'))
                                     ->placeholder('-')
                                     ->icon('heroicon-o-globe-alt'),
                             ])->columns(2),
                     ]),
 
-                Infolists\Components\Fieldset::make(__('invoices::filament/clusters/vendors/resources/vendor.infolist.tabs.invoicing.entries.automation'))
+                Fieldset::make(__('invoices::filament/clusters/vendors/resources/vendor.infolist.tabs.invoicing.entries.automation'))
                     ->schema([
-                        Infolists\Components\TextEntry::make('autopost_bills')
+                        TextEntry::make('autopost_bills')
                             ->label(__('invoices::filament/clusters/vendors/resources/vendor.infolist.tabs.invoicing.entries.auto-post-bills'))
                             ->placeholder('-')
                             ->icon('heroicon-o-bolt'),
-                        Infolists\Components\IconEntry::make('ignore_abnormal_invoice_amount')
+                        IconEntry::make('ignore_abnormal_invoice_amount')
                             ->boolean()
                             ->placeholder('-')
                             ->label(__('invoices::filament/clusters/vendors/resources/vendor.infolist.tabs.invoicing.entries.ignore-abnormal-invoice-amount')),
-                        Infolists\Components\IconEntry::make('ignore_abnormal_invoice_date')
+                        IconEntry::make('ignore_abnormal_invoice_date')
                             ->boolean()
                             ->placeholder('-')
                             ->label(__('invoices::filament/clusters/vendors/resources/vendor.infolist.tabs.invoicing.entries.ignore-abnormal-invoice-date')),
                     ]),
             ]);
 
-        $internalNotes = Infolists\Components\Tabs\Tab::make(__('invoices::filament/clusters/vendors/resources/vendor.infolist.tabs.internal-notes.title'))
+        $internalNotes = Tab::make(__('invoices::filament/clusters/vendors/resources/vendor.infolist.tabs.internal-notes.title'))
             ->icon('heroicon-o-chat-bubble-left-right')
             ->schema([
-                Infolists\Components\TextEntry::make('comment')
+                TextEntry::make('comment')
                     ->hiddenLabel()
                     ->html()
                     ->placeholder('-')
@@ -331,30 +347,30 @@ class VendorResource extends BaseVendorResource
             $internalNotes,
         ]);
 
-        return $infolist;
+        return $schema;
     }
 
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewVendor::class,
-            Pages\EditVendor::class,
-            Pages\ManageContacts::class,
-            Pages\ManageAddresses::class,
-            Pages\ManageBankAccounts::class,
+            ViewVendor::class,
+            EditVendor::class,
+            ManageContacts::class,
+            ManageAddresses::class,
+            ManageBankAccounts::class,
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'        => Pages\ListVendors::route('/'),
-            'create'       => Pages\CreateVendor::route('/create'),
-            'edit'         => Pages\EditVendor::route('/{record}/edit'),
-            'view'         => Pages\ViewVendor::route('/{record}'),
-            'contacts'     => Pages\ManageContacts::route('/{record}/contacts'),
-            'addresses'    => Pages\ManageAddresses::route('/{record}/addresses'),
-            'bank-account' => Pages\ManageBankAccounts::route('/{record}/bank-accounts'),
+            'index'        => ListVendors::route('/'),
+            'create'       => CreateVendor::route('/create'),
+            'edit'         => EditVendor::route('/{record}/edit'),
+            'view'         => ViewVendor::route('/{record}'),
+            'contacts'     => ManageContacts::route('/{record}/contacts'),
+            'addresses'    => ManageAddresses::route('/{record}/addresses'),
+            'bank-account' => ManageBankAccounts::route('/{record}/bank-accounts'),
         ];
     }
 }

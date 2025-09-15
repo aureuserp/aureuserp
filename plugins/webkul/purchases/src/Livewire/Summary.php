@@ -10,23 +10,23 @@ class Summary extends Component
     #[Reactive]
     public $products = [];
 
-    public $subtotal = 0;
+    #[Reactive]
 
-    public $totalDiscount = 0;
+    public $currency = null;
 
-    public $totalTax = 0;
+    public function mount($products, $currency = null)
 
-    public $grandTotal = 0;
-
-    public function mount($products)
     {
         $this->products = $products ?? [];
+
+        $this->currency = $currency;
     }
 
     public function render()
     {
         return view('purchases::livewire/summary', [
             'products' => $this->products,
+            'currency' => $this->currency,
         ]);
     }
 }

@@ -4,8 +4,10 @@ namespace Webkul\TableViews\Filament\Actions;
 
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\CanCustomizeProcess;
-use Filament\Forms;
-use Filament\Support\Enums\MaxWidth;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Support\Enums\Width;
+use Guava\IconPicker\Forms\Components\IconPicker;
 use Webkul\TableViews\Models\TableView;
 use Webkul\TableViews\Models\TableViewFavorite;
 
@@ -24,21 +26,18 @@ class CreateViewAction extends Action
 
         $this
             ->model(TableView::class)
-            ->form([
-                Forms\Components\TextInput::make('name')
+            ->schema([
+                TextInput::make('name')
                     ->label(__('table-views::filament/actions/create-view.form.name'))
                     ->autofocus()
                     ->required(),
-                \Guava\FilamentIconPicker\Forms\IconPicker::make('icon')
+                IconPicker::make('icon')
                     ->label(__('table-views::filament/actions/create-view.form.icon'))
-                    ->sets(['heroicons'])
-                    ->columns(4)
-                    ->preload()
-                    ->optionsLimit(50),
-                Forms\Components\Toggle::make('is_favorite')
+                    ->sets(['heroicons']),
+                Toggle::make('is_favorite')
                     ->label(__('table-views::filament/actions/create-view.form.add-to-favorites'))
                     ->helperText(__('table-views::filament/actions/create-view.form.add-to-favorites-help')),
-                Forms\Components\Toggle::make('is_public')
+                Toggle::make('is_public')
                     ->label(__('table-views::filament/actions/create-view.form.make-public'))
                     ->helperText(__('table-views::filament/actions/create-view.form.make-public-help')),
             ])->action(function (): void {
@@ -54,7 +53,7 @@ class CreateViewAction extends Action
                         'view_type'       => 'saved',
                         'view_key'        => $record->id,
                         'filterable_type' => $record->filterable_type,
-                        'user_id'         => auth()->id(),
+                        'user_id'         => filament()->auth()->id(),
                         'is_favorite'     => $data['is_favorite'],
                     ]);
 
@@ -69,6 +68,6 @@ class CreateViewAction extends Action
             ->link()
             ->successNotificationTitle(__('table-views::filament/actions/create-view.form.notification.created'))
             ->modalHeading(__('table-views::filament/actions/create-view.form.modal.title'))
-            ->modalWidth(MaxWidth::Medium);
+            ->modalWidth(Width::Medium);
     }
 }

@@ -3,11 +3,12 @@
 namespace Webkul\Partner\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Webkul\Partner\Models\BankAccount;
 use Webkul\Partner\Models\Title;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Partner\Models\BankAccount>
+ * @extends Factory<BankAccount>
  */
 class TitleFactory extends Factory
 {

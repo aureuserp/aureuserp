@@ -2,13 +2,25 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,7 +28,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Purchase\Filament\Admin\Clusters\Configurations;
-use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\VendorPriceResource\Pages;
+use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\VendorPriceResource\Pages\CreateVendorPrice;
+use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\VendorPriceResource\Pages\EditVendorPrice;
+use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\VendorPriceResource\Pages\ListVendorPrices;
+use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\VendorPriceResource\Pages\ViewVendorPrice;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource\Pages\ManageVendors;
 use Webkul\Purchase\Models\ProductSupplier;
 
@@ -24,7 +39,7 @@ class VendorPriceResource extends Resource
 {
     protected static ?string $model = ProductSupplier::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-archive-box';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-archive-box';
 
     protected static ?int $navigationSort = 10;
 
@@ -35,15 +50,15 @@ class VendorPriceResource extends Resource
         return __('purchases::filament/admin/clusters/configurations/resources/vendor-price.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Forms\Components\Section::make(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.general.title'))
+                        Section::make(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.general.title'))
                             ->schema([
-                                Forms\Components\Select::make('partner_id')
+                                Select::make('partner_id')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.general.fields.vendor'))
                                     ->relationship(
                                         'partner',
@@ -52,15 +67,15 @@ class VendorPriceResource extends Resource
                                     ->searchable()
                                     ->required()
                                     ->preload(),
-                                Forms\Components\TextInput::make('product_name')
+                                TextInput::make('product_name')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.general.fields.vendor-product-name'))
                                     ->maxLength(255)
                                     ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.general.fields.vendor-product-name-tooltip')),
-                                Forms\Components\TextInput::make('product_code')
+                                TextInput::make('product_code')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.general.fields.vendor-product-code'))
                                     ->maxLength(255)
                                     ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.general.fields.vendor-product-code-tooltip')),
-                                Forms\Components\TextInput::make('delay')
+                                TextInput::make('delay')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.general.fields.delay'))
                                     ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.general.fields.delay-tooltip'))
                                     ->numeric()
@@ -71,11 +86,11 @@ class VendorPriceResource extends Resource
                     ])
                     ->columnSpan(['lg' => 2]),
 
-                Forms\Components\Group::make()
+                Group::make()
                     ->schema([
-                        Forms\Components\Section::make(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.title'))
+                        Section::make(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.title'))
                             ->schema([
-                                Forms\Components\Select::make('product_id')
+                                Select::make('product_id')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.fields.product'))
                                     ->relationship(
                                         'product',
@@ -85,46 +100,46 @@ class VendorPriceResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->hiddenOn(ManageVendors::class),
-                                Forms\Components\TextInput::make('min_qty')
+                                TextInput::make('min_qty')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.fields.quantity'))
                                     ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.fields.quantity-tooltip'))
                                     ->numeric()
                                     ->minValue(0)
                                     ->maxValue(99999999999)
                                     ->default(0),
-                                Forms\Components\Group::make()
+                                Group::make()
                                     ->schema([
-                                        Forms\Components\TextInput::make('price')
+                                        TextInput::make('price')
                                             ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.fields.unit-price'))
                                             ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.fields.unit-price-tooltip'))
                                             ->numeric()
                                             ->minValue(0)
                                             ->maxValue(99999999999)
                                             ->default(0),
-                                        Forms\Components\Select::make('currency_id')
+                                        Select::make('currency_id')
                                             ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.fields.currency'))
                                             ->relationship('currency', 'name')
                                             ->required()
                                             ->searchable()
                                             ->default(Auth::user()->defaultCompany?->currency_id)
                                             ->preload(),
-                                        Forms\Components\DatePicker::make('starts_at')
+                                        DatePicker::make('starts_at')
                                             ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.fields.valid-from'))
                                             ->native(false)
                                             ->suffixIcon('heroicon-o-calendar'),
-                                        Forms\Components\DatePicker::make('ends_at')
+                                        DatePicker::make('ends_at')
                                             ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.fields.valid-to'))
                                             ->native(false)
                                             ->suffixIcon('heroicon-o-calendar'),
                                     ])
                                     ->columns(2),
-                                Forms\Components\TextInput::make('discount')
+                                TextInput::make('discount')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.fields.discount'))
                                     ->numeric()
                                     ->minValue(0)
                                     ->maxValue(99999999999)
                                     ->default(0),
-                                Forms\Components\Select::make('company_id')
+                                Select::make('company_id')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.fields.company'))
                                     ->relationship('company', 'name')
                                     ->searchable()
@@ -141,51 +156,51 @@ class VendorPriceResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('partner.name')
+                TextColumn::make('partner.name')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.columns.vendor'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('product.name')
+                TextColumn::make('product.name')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.columns.product'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('product_name')
+                TextColumn::make('product_name')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.columns.vendor-product-name'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('product_code')
+                TextColumn::make('product_code')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.columns.vendor-product-code'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('starts_at')
+                TextColumn::make('starts_at')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.columns.valid-from'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('ends_at')
+                TextColumn::make('ends_at')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.columns.valid-to'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('company.name')
+                TextColumn::make('company.name')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.columns.company'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('min_qty')
+                TextColumn::make('min_qty')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.columns.quantity'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('price')
+                TextColumn::make('price')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.columns.unit-price'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('discount')
+                TextColumn::make('discount')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.columns.discount'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('currency.name')
+                TextColumn::make('currency.name')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.columns.currency'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
@@ -205,43 +220,43 @@ class VendorPriceResource extends Resource
                     ->collapsible(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('partner_id')
+                SelectFilter::make('partner_id')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.filters.vendor'))
                     ->relationship('partner', 'name', fn ($query) => $query->where('sub_type', 'supplier'))
                     ->searchable()
                     ->preload()
                     ->multiple(),
 
-                Tables\Filters\SelectFilter::make('product_id')
+                SelectFilter::make('product_id')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.filters.product'))
                     ->relationship('product', 'name')
                     ->searchable()
                     ->preload()
                     ->multiple(),
 
-                Tables\Filters\SelectFilter::make('currency_id')
+                SelectFilter::make('currency_id')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.filters.currency'))
                     ->relationship('currency', 'name')
                     ->searchable()
                     ->preload()
                     ->multiple(),
 
-                Tables\Filters\SelectFilter::make('company_id')
+                SelectFilter::make('company_id')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.filters.company'))
                     ->relationship('company', 'name')
                     ->searchable()
                     ->preload()
                     ->multiple(),
 
-                Tables\Filters\Filter::make('price_range')
-                    ->form([
-                        Forms\Components\Grid::make()
+                Filter::make('price_range')
+                    ->schema([
+                        Grid::make()
                             ->schema([
-                                Forms\Components\TextInput::make('price_from')
+                                TextInput::make('price_from')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.filters.price-from'))
                                     ->numeric()
                                     ->prefix('From'),
-                                Forms\Components\TextInput::make('price_to')
+                                TextInput::make('price_to')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.filters.price-to'))
                                     ->numeric()
                                     ->prefix('To'),
@@ -260,15 +275,15 @@ class VendorPriceResource extends Resource
                             );
                     }),
 
-                Tables\Filters\Filter::make('min_qty_range')
-                    ->form([
-                        Forms\Components\Grid::make()
+                Filter::make('min_qty_range')
+                    ->schema([
+                        Grid::make()
                             ->schema([
-                                Forms\Components\TextInput::make('min_qty_from')
+                                TextInput::make('min_qty_from')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.filters.min-qty-from'))
                                     ->numeric()
                                     ->prefix('From'),
-                                Forms\Components\TextInput::make('min_qty_to')
+                                TextInput::make('min_qty_to')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.filters.min-qty-to'))
                                     ->numeric()
                                     ->prefix('To'),
@@ -287,14 +302,14 @@ class VendorPriceResource extends Resource
                             );
                     }),
 
-                Tables\Filters\Filter::make('validity_period')
-                    ->form([
-                        Forms\Components\Grid::make()
+                Filter::make('validity_period')
+                    ->schema([
+                        Grid::make()
                             ->schema([
-                                Forms\Components\DatePicker::make('starts_from')
+                                DatePicker::make('starts_from')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.filters.starts-from'))
                                     ->native(false),
-                                Forms\Components\DatePicker::make('ends_before')
+                                DatePicker::make('ends_before')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.filters.ends-before'))
                                     ->native(false),
                             ])
@@ -312,14 +327,14 @@ class VendorPriceResource extends Resource
                             );
                     }),
 
-                Tables\Filters\Filter::make('created_at')
-                    ->form([
-                        Forms\Components\Grid::make()
+                Filter::make('created_at')
+                    ->schema([
+                        Grid::make()
                             ->schema([
-                                Forms\Components\DatePicker::make('created_from')
+                                DatePicker::make('created_from')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.filters.created-from'))
                                     ->native(false),
-                                Forms\Components\DatePicker::make('created_until')
+                                DatePicker::make('created_until')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.filters.created-until'))
                                     ->native(false),
                             ])
@@ -337,10 +352,10 @@ class VendorPriceResource extends Resource
                             );
                     }),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make()
                     ->action(function (ProductSupplier $record) {
                         try {
                             $record->delete();
@@ -359,8 +374,8 @@ class VendorPriceResource extends Resource
                             ->body(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.actions.delete.notification.success.body')),
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                DeleteBulkAction::make()
                     ->action(function (Collection $records) {
                         try {
                             $records->each(fn (Model $record) => $record->delete());
@@ -380,34 +395,34 @@ class VendorPriceResource extends Resource
                     ),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->icon('heroicon-o-plus-circle'),
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Infolists\Components\Section::make(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.general.entries'))
+                        Section::make(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.general.entries'))
                             ->icon('heroicon-o-information-circle')
                             ->schema([
-                                Infolists\Components\TextEntry::make('partner.name')
+                                TextEntry::make('partner.name')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.general.entries.vendor'))
                                     ->icon('heroicon-o-user-group'),
 
-                                Infolists\Components\TextEntry::make('product_name')
+                                TextEntry::make('product_name')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.general.entries.vendor-product-name'))
                                     ->icon('heroicon-o-tag')
                                     ->placeholder('—'),
 
-                                Infolists\Components\TextEntry::make('product_code')
+                                TextEntry::make('product_code')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.general.entries.vendor-product-code'))
                                     ->placeholder('—'),
 
-                                Infolists\Components\TextEntry::make('delay')
+                                TextEntry::make('delay')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.general.entries.delay'))
                                     ->icon('heroicon-o-clock')
                                     ->suffix(' days'),
@@ -415,36 +430,36 @@ class VendorPriceResource extends Resource
                     ])
                     ->columnSpan(['lg' => 2]),
 
-                Infolists\Components\Group::make()
+                Group::make()
                     ->schema([
-                        Infolists\Components\Section::make(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.prices.entries'))
+                        Section::make(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.prices.entries'))
                             ->icon('heroicon-o-currency-dollar')
                             ->schema([
-                                Infolists\Components\TextEntry::make('product.name')
+                                TextEntry::make('product.name')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.prices.entries.product'))
                                     ->icon('heroicon-o-cube'),
 
-                                Infolists\Components\TextEntry::make('min_qty')
+                                TextEntry::make('min_qty')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.prices.entries.quantity'))
                                     ->icon('heroicon-o-calculator'),
-                                Infolists\Components\Group::make()
+                                Group::make()
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('price')
+                                        TextEntry::make('price')
                                             ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.prices.entries.unit-price'))
                                             ->icon('heroicon-o-banknotes')
                                             ->money(fn ($record) => $record->currency->code ?? 'USD'),
 
-                                        Infolists\Components\TextEntry::make('currency.name')
+                                        TextEntry::make('currency.name')
                                             ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.prices.entries.currency'))
                                             ->icon('heroicon-o-globe-alt'),
 
-                                        Infolists\Components\TextEntry::make('starts_at')
+                                        TextEntry::make('starts_at')
                                             ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.prices.entries.valid-from'))
                                             ->icon('heroicon-o-calendar')
                                             ->date()
                                             ->placeholder('—'),
 
-                                        Infolists\Components\TextEntry::make('ends_at')
+                                        TextEntry::make('ends_at')
                                             ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.prices.entries.valid-to'))
                                             ->icon('heroicon-o-calendar')
                                             ->date()
@@ -452,40 +467,40 @@ class VendorPriceResource extends Resource
                                     ])
                                     ->columns(2),
 
-                                Infolists\Components\TextEntry::make('discount')
+                                TextEntry::make('discount')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.prices.entries.discount'))
                                     ->icon('heroicon-o-gift')
                                     ->suffix('%'),
 
-                                Infolists\Components\TextEntry::make('company.name')
+                                TextEntry::make('company.name')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.prices.entries.company'))
                                     ->icon('heroicon-o-building-office'),
 
-                                Infolists\Components\TextEntry::make('created_at')
+                                TextEntry::make('created_at')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.columns.created-at'))
                                     ->icon('heroicon-o-clock')
                                     ->dateTime(),
 
-                                Infolists\Components\TextEntry::make('updated_at')
+                                TextEntry::make('updated_at')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.columns.updated-at'))
                                     ->icon('heroicon-o-arrow-path')
                                     ->dateTime(),
                             ]),
 
-                        Infolists\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Infolists\Components\Section::make(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.record-information.title'))
+                                Section::make(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.record-information.title'))
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('created_at')
+                                        TextEntry::make('created_at')
                                             ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.record-information.entries.created-at'))
                                             ->dateTime()
                                             ->icon('heroicon-m-calendar'),
 
-                                        Infolists\Components\TextEntry::make('creator.name')
+                                        TextEntry::make('creator.name')
                                             ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.record-information.entries.created-by'))
                                             ->icon('heroicon-m-user'),
 
-                                        Infolists\Components\TextEntry::make('updated_at')
+                                        TextEntry::make('updated_at')
                                             ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.infolist.sections.record-information.entries.last-updated'))
                                             ->dateTime()
                                             ->icon('heroicon-m-calendar-days'),
@@ -502,10 +517,10 @@ class VendorPriceResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListVendorPrices::route('/'),
-            'create' => Pages\CreateVendorPrice::route('/create'),
-            'view'   => Pages\ViewVendorPrice::route('/{record}'),
-            'edit'   => Pages\EditVendorPrice::route('/{record}/edit'),
+            'index'  => ListVendorPrices::route('/'),
+            'create' => CreateVendorPrice::route('/create'),
+            'view'   => ViewVendorPrice::route('/{record}'),
+            'edit'   => EditVendorPrice::route('/{record}/edit'),
         ];
     }
 }

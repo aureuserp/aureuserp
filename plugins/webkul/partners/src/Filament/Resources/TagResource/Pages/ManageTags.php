@@ -2,10 +2,10 @@
 
 namespace Webkul\Partner\Filament\Resources\TagResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
-use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ManageRecords;
+use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Partner\Filament\Resources\TagResource;
 use Webkul\Partner\Models\Tag;
@@ -17,10 +17,10 @@ class ManageTags extends ManageRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label(__('partners::filament/resources/tag/pages/manage-tags.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
-                ->mutateFormDataUsing(function (array $data): array {
+                ->mutateDataUsing(function (array $data): array {
                     $data['creator_id'] = Auth::id();
 
                     return $data;

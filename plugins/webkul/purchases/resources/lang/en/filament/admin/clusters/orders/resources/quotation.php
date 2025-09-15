@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'title' => 'Quotations',
+        'title' => 'Request for Quotation',
     ],
 ];

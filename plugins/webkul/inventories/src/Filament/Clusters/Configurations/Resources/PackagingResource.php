@@ -2,14 +2,16 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
-use Filament\Tables;
+use Filament\Forms\Components\Select;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Webkul\Inventory\Filament\Clusters\Configurations;
-use Webkul\Inventory\Filament\Clusters\Configurations\Resources\PackagingResource\Pages;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\PackagingResource\Pages\ManagePackagings;
 use Webkul\Inventory\Models\Packaging;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Inventory\Settings\ProductSettings;
@@ -21,7 +23,7 @@ class PackagingResource extends BasePackagingResource
 {
     protected static ?string $model = Packaging::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-gift';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-gift';
 
     protected static bool $shouldRegisterNavigation = true;
 
@@ -52,13 +54,13 @@ class PackagingResource extends BasePackagingResource
         return __('inventories::filament/clusters/configurations/resources/packaging.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        $form = BasePackagingResource::form($form);
+        $schema = BasePackagingResource::form($schema);
 
-        $components = $form->getComponents();
+        $components = $schema->getComponents();
 
-        $components[2] = Forms\Components\Select::make('product_id')
+        $components[2] = Select::make('product_id')
             ->label(__('products::filament/resources/packaging.form.product'))
             ->relationship(
                 'product',
@@ -69,14 +71,14 @@ class PackagingResource extends BasePackagingResource
             ->searchable()
             ->preload();
 
-        $components[] = Forms\Components\Select::make('package_type_id')
+        $components[] = Select::make('package_type_id')
             ->label(__('inventories::filament/clusters/configurations/resources/packaging.form.package-type'))
             ->relationship('packageType', 'name')
             ->searchable()
             ->preload()
             ->visible(fn (OperationSettings $settings) => $settings->enable_packages);
 
-        $components[] = Forms\Components\Select::make('routes')
+        $components[] = Select::make('routes')
             ->label(__('inventories::filament/clusters/configurations/resources/packaging.form.routes'))
             ->relationship('routes', 'name')
             ->searchable()
@@ -84,9 +86,9 @@ class PackagingResource extends BasePackagingResource
             ->multiple()
             ->visible(fn (WarehouseSettings $settings) => $settings->enable_multi_steps_routes);
 
-        $form->components($components);
+        $schema->components($components);
 
-        return $form;
+        return $schema;
     }
 
     public static function table(Table $table): Table
@@ -97,13 +99,13 @@ class PackagingResource extends BasePackagingResource
 
         $filters = $table->getFilters();
 
-        $columns[] = Tables\Columns\TextColumn::make('packageType.name')
+        $columns[] = TextColumn::make('packageType.name')
             ->label(__('inventories::filament/clusters/configurations/resources/packaging.table.columns.package-type'))
             ->numeric()
             ->sortable()
             ->visible(fn (OperationSettings $settings) => $settings->enable_packages);
 
-        $filters[] = Tables\Filters\SelectFilter::make('packageType')
+        $filters[] = SelectFilter::make('packageType')
             ->label(__('inventories::filament/clusters/configurations/resources/packaging.table.filters.package-type'))
             ->relationship('packageType', 'name')
             ->searchable()
@@ -117,15 +119,15 @@ class PackagingResource extends BasePackagingResource
         return $table;
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        $infolist = BasePackagingResource::infolist($infolist);
+        $schema = BasePackagingResource::infolist($schema);
 
-        $components = $infolist->getComponents();
+        $components = $schema->getComponents();
 
-        $firstSectionChildComponents = $components[0]->getChildComponents();
+        $firstSectionChildComponents = $components[0]->getDefaultChildComponents();
 
-        $firstSectionChildComponents[] = Infolists\Components\TextEntry::make('packageType.name')
+        $firstSectionChildComponents[] = TextEntry::make('packageType.name')
             ->label(__('inventories::filament/clusters/configurations/resources/packaging.infolist.sections.general.entries.package_type'))
             ->icon('heroicon-o-archive-box')
             ->placeholder('—')
@@ -134,12 +136,12 @@ class PackagingResource extends BasePackagingResource
         $components[0]->childComponents($firstSectionChildComponents);
 
         array_splice($components, 1, 0, [
-            Infolists\Components\Section::make(__('inventories::filament/clusters/configurations/resources/packaging.infolist.sections.routing.title'))
+            Section::make(__('inventories::filament/clusters/configurations/resources/packaging.infolist.sections.routing.title'))
                 ->schema([
-                    Infolists\Components\RepeatableEntry::make('routes')
+                    RepeatableEntry::make('routes')
                         ->label(__('inventories::filament/clusters/configurations/resources/packaging.infolist.sections.routing.entries.routes'))
                         ->schema([
-                            Infolists\Components\TextEntry::make('name')
+                            TextEntry::make('name')
                                 ->label(__('inventories::filament/clusters/configurations/resources/packaging.infolist.sections.routing.entries.route_name'))
                                 ->icon('heroicon-o-truck'),
                         ])
@@ -150,15 +152,15 @@ class PackagingResource extends BasePackagingResource
                 ->visible(fn (WarehouseSettings $settings) => $settings->enable_multi_steps_routes),
         ]);
 
-        $infolist->components($components);
+        $schema->components($components);
 
-        return $infolist;
+        return $schema;
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManagePackagings::route('/'),
+            'index' => ManagePackagings::route('/'),
         ];
     }
 }

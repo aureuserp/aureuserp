@@ -3,9 +3,11 @@
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions;
 
 use Filament\Actions\Action;
-use Filament\Forms;
-use Filament\Forms\Get;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Support\Arr;
 use Webkul\Sale\Enums\AdvancedPayment;
 use Webkul\Sale\Enums\InvoiceStatus;
@@ -32,8 +34,8 @@ class CreateInvoiceAction extends Action
                 return 'primary';
             })
             ->label(__('sales::filament/clusters/orders/resources/quotation/actions/create-invoice.title'))
-            ->form([
-                Forms\Components\Radio::make('advance_payment_method')
+            ->schema([
+                Radio::make('advance_payment_method')
                     ->inline(false)
                     ->label(__('sales::filament/clusters/orders/resources/quotation/actions/create-invoice.form.fields.create-invoice'))
                     ->options(function () {
@@ -45,15 +47,15 @@ class CreateInvoiceAction extends Action
                     })
                     ->default(AdvancedPayment::DELIVERED->value)
                     ->live(),
-                Forms\Components\Group::make()
+                Group::make()
                     ->columns(2)
                     ->schema([
-                        Forms\Components\TextInput::make('amount')
+                        TextInput::make('amount')
                             ->visible(fn (Get $get) => $get('advance_payment_method') == AdvancedPayment::PERCENTAGE->value)
                             ->rules('required', 'numeric')
                             ->default(0.00)
                             ->suffix('%'),
-                        Forms\Components\TextInput::make('amount')
+                        TextInput::make('amount')
                             ->visible(fn (Get $get) => $get('advance_payment_method') == AdvancedPayment::FIXED->value)
                             ->rules('required', 'numeric')
                             ->default(0.00)

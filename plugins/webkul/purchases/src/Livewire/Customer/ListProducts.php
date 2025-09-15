@@ -2,6 +2,8 @@
 
 namespace Webkul\Purchase\Livewire\Customer;
 
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Columns\TextColumn;
@@ -11,8 +13,9 @@ use Filament\Tables\Table;
 use Livewire\Component;
 use Webkul\Purchase\Models\OrderLine;
 
-class ListProducts extends Component implements HasForms, HasTable
+class ListProducts extends Component implements HasActions, HasForms, HasTable
 {
+    use InteractsWithActions;
     use InteractsWithForms;
     use InteractsWithTable;
 

@@ -2,8 +2,8 @@
 
 namespace Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers;
 
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Webkul\Partner\Filament\Resources\AddressResource;
 
@@ -11,9 +11,9 @@ class AddressesRelationManager extends RelationManager
 {
     protected static string $relationship = 'addresses';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return AddressResource::form($form);
+        return AddressResource::form($schema);
     }
 
     public function table(Table $table): Table

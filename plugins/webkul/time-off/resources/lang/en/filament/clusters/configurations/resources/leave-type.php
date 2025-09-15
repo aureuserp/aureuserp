@@ -96,8 +96,14 @@ return [
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Leave Type force deleted',
-                    'body'  => 'The Leave Type has been force deleted successfully.',
+                    'success' => [
+                        'title' => 'Leave Type force deleted',
+                        'body'  => 'The Leave Type has been force deleted successfully.',
+                    ],
+                    'error' => [
+                        'title' => 'Leave Type could not be deleted',
+                        'body'  => 'The Leave Type cannot be deleted because it is currently in use.',
+                    ],
                 ],
             ],
         ],

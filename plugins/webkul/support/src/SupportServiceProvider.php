@@ -2,14 +2,18 @@
 
 namespace Webkul\Support;
 
+use BezhanSalleh\FilamentShield\Facades\FilamentShield;
+use Illuminate\Support\Str;
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
-use Spatie\Permission\Models\Role;
 use Webkul\Security\Livewire\AcceptInvitation;
+use Webkul\Security\Models\Role;
 use Webkul\Security\Policies\RolePolicy;
 use Webkul\Support\Console\Commands\InstallERP;
 
@@ -74,11 +78,17 @@ class SupportServiceProvider extends PackageServiceProvider
             'uses' => 'Webkul\Support\Http\Controllers\ImageCacheController@getImage',
             'as'   => 'image_cache',
         ])->where(['filename' => '[ \w\\.\\/\\-\\@\(\)\=]+']);
+
+        FilamentAsset::register([
+            Css::make('support', __DIR__.'/../resources/dist/support.css'),
+        ], 'support');
+
+        $this->managePermissions();
     }
 
     public function packageRegistered(): void
     {
-        $version = '1.0.0-alpha1';
+        $version = '1.0.0';
 
         FilamentView::registerRenderHook(
             PanelsRenderHook::USER_MENU_PROFILE_BEFORE,
@@ -100,5 +110,41 @@ class SupportServiceProvider extends PackageServiceProvider
                 'version' => $version,
             ]),
         );
+    }
+
+    public function managePermissions()
+    {
+        FilamentShield::buildPermissionKeyUsing(function (string $entity, string $affix, string $subject) {
+            $affix = Str::snake($affix);
+
+            if (
+                $entity == 'BezhanSalleh\FilamentShield\Resources\Roles\RoleResource'
+                || $entity == 'App\Filament\Resources\RoleResource'
+            ) {
+                return $affix . '_role';
+            }
+
+            if (class_exists($entity) && method_exists($entity, 'getModel')) {
+                $resourceIdentifier = Str::of($entity)
+                    ->afterLast('Resources\\')
+                    ->beforeLast('Resource')
+                    ->replace('\\', '')
+                    ->snake()
+                    ->replace('_', '::')
+                    ->toString();
+
+                return $affix . '_' . $resourceIdentifier;
+            }
+
+            if (Str::contains($entity, 'Pages\\')) {
+                return 'page_' . Str::snake(class_basename($entity));
+            }
+
+            if (Str::contains($entity, 'Widgets\\') || Str::endsWith($entity, 'Widget')) {
+                return 'widget_' . Str::snake(class_basename($entity));
+            }
+
+            return $affix . '_' . Str::snake($subject);
+        });
     }
 }

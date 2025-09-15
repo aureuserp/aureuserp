@@ -2,6 +2,7 @@
 
 namespace Webkul\Product\Filament\Resources\CategoryResource\Pages;
 
+use Exception;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +30,7 @@ class CreateCategory extends CreateRecord
     {
         try {
             parent::create($another);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Notification::make()
                 ->danger()
                 ->title(__('products::filament/resources/category/pages/create-category.create.notification.error.title'))

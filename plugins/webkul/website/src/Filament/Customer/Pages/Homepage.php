@@ -3,6 +3,7 @@
 namespace Webkul\Website\Filament\Customer\Pages;
 
 use Filament\Pages\Page;
+use Filament\Panel;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Website\Models\Page as PageModel;
 
@@ -15,14 +16,14 @@ class Homepage extends Page
     /**
      * @var view-string
      */
-    protected static string $view = 'website::filament.customer.pages.homepage';
+    protected string $view = 'website::filament.customer.pages.homepage';
 
     public static function getNavigationLabel(): string
     {
         return 'Home';
     }
 
-    public static function getRoutePath(): string
+    public static function getRoutePath(Panel $panel): string
     {
         return static::$routePath;
     }

@@ -2,25 +2,47 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\HtmlString;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\RuleAction;
 use Webkul\Inventory\Filament\Clusters\Configurations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\Pages\ManageRules;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\RelationManagers\RulesRelationManager;
-use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RuleResource\Pages;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RuleResource\Pages\CreateRule;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RuleResource\Pages\EditRule;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RuleResource\Pages\ListRules;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RuleResource\Pages\ViewRule;
 use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Settings\WarehouseSettings;
@@ -30,7 +52,7 @@ class RuleResource extends Resource
 {
     protected static ?string $model = Rule::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-check';
 
     protected static ?int $navigationSort = 4;
 
@@ -59,32 +81,32 @@ class RuleResource extends Resource
         return __('inventories::filament/clusters/configurations/resources/rule.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Forms\Components\Section::make(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.title'))
+                        Section::make(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.title'))
                             ->schema([
-                                Forms\Components\TextInput::make('name')
+                                TextInput::make('name')
                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.name'))
                                     ->required()
                                     ->maxLength(255)
                                     ->autofocus()
                                     ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;']),
-                                Forms\Components\Group::make()
+                                Group::make()
                                     ->schema([
-                                        Forms\Components\Group::make()
+                                        Group::make()
                                             ->schema([
-                                                Forms\Components\Select::make('action')
+                                                Select::make('action')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.action'))
                                                     ->required()
-                                                    ->options(Enums\RuleAction::class)
-                                                    ->default(Enums\RuleAction::PULL->value)
+                                                    ->options(RuleAction::class)
+                                                    ->default(RuleAction::PULL->value)
                                                     ->selectablePlaceholder(false)
                                                     ->live(),
-                                                Forms\Components\Select::make('operation_type_id')
+                                                Select::make('operation_type_id')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.operation-type'))
                                                     ->relationship('operationType', 'name')
                                                     ->searchable()
@@ -97,7 +119,7 @@ class RuleResource extends Resource
 
                                                         return $record->warehouse->name.': '.$record->name;
                                                     })
-                                                    ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get) {
+                                                    ->afterStateUpdated(function (Set $set, Get $get) {
                                                         $operationType = OperationType::find($get('operation_type_id'));
 
                                                         $set('source_location_id', $operationType?->source_location_id);
@@ -105,13 +127,13 @@ class RuleResource extends Resource
                                                         $set('destination_location_id', $operationType?->destination_location_id);
                                                     })
                                                     ->live(),
-                                                Forms\Components\Select::make('source_location_id')
+                                                Select::make('source_location_id')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.source-location'))
                                                     ->relationship('sourceLocation', 'full_name')
                                                     ->searchable()
                                                     ->preload()
                                                     ->required(),
-                                                Forms\Components\Select::make('destination_location_id')
+                                                Select::make('destination_location_id')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.destination-location'))
                                                     ->relationship('destinationLocation', 'full_name')
                                                     ->searchable()
@@ -119,12 +141,12 @@ class RuleResource extends Resource
                                                     ->required(),
                                             ]),
 
-                                        Forms\Components\Group::make()
+                                        Group::make()
                                             ->schema([
-                                                Forms\Components\Placeholder::make('')
+                                                Placeholder::make('placeholder')
                                                     ->hiddenLabel()
                                                     ->content(new HtmlString('When products are needed in Destination Location, </br>Operation Type are created from Source Location to fulfill the need.'))
-                                                    ->content(function (Forms\Get $get): HtmlString {
+                                                    ->content(function (Get $get): HtmlString {
                                                         $operation = OperationType::find($get('operation_type_id'));
 
                                                         $pullMessage = __('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.action-information.pull', [
@@ -138,11 +160,15 @@ class RuleResource extends Resource
                                                             'operation'           => $operation?->name ?? __('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.operation-type'),
                                                             'destinationLocation' => $operation?->destinationLocation?->full_name ?? __('inventories::filament/clusters/configurations/resources/rule.form.sections.general.fields.destination-location'),
                                                         ]);
+                                                        $action = ($get('action') instanceof RuleAction)
+                                                            ? $get('action')
+                                                            : RuleAction::tryFrom($get('action') ?? RuleAction::PULL->value);
 
-                                                        return match ($get('action') ?? Enums\RuleAction::PULL->value) {
-                                                            Enums\RuleAction::PULL->value      => new HtmlString($pullMessage),
-                                                            Enums\RuleAction::PUSH->value      => new HtmlString($pushMessage),
-                                                            Enums\RuleAction::PULL_PUSH->value => new HtmlString($pullMessage.'</br></br>'.$pushMessage),
+                                                        return match ($action) {
+                                                            RuleAction::PULL      => new HtmlString($pullMessage),
+                                                            RuleAction::PUSH      => new HtmlString($pushMessage),
+                                                            RuleAction::PULL_PUSH => new HtmlString($pullMessage.'</br></br>'.$pushMessage),
+                                                            default               => new HtmlString('Unsupported action.'),
                                                         };
                                                     }),
                                             ]),
@@ -152,27 +178,27 @@ class RuleResource extends Resource
                     ])
                     ->columnSpan(['lg' => 2]),
 
-                Forms\Components\Group::make()
+                Group::make()
                     ->schema([
-                        Forms\Components\Section::make(__('inventories::filament/clusters/configurations/resources/rule.form.sections.settings.title'))
+                        Section::make(__('inventories::filament/clusters/configurations/resources/rule.form.sections.settings.title'))
                             ->schema([
-                                Forms\Components\Select::make('partner_address_id')
+                                Select::make('partner_address_id')
                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.settings.fields.partner-address'))
                                     ->relationship('partnerAddress', 'name')
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: new HtmlString(__('inventories::filament/clusters/configurations/resources/rule.form.sections.settings.fields.partner-address-hint-tooltip')))
                                     ->searchable()
                                     ->preload()
-                                    ->createOptionForm(fn (Form $form): Form => PartnerResource::form($form))
-                                    ->hidden(fn (Forms\Get $get): bool => $get('action') == Enums\RuleAction::PUSH->value),
-                                Forms\Components\TextInput::make('delay')
+                                    ->createOptionForm(fn (Schema $schema): Schema => PartnerResource::form($schema))
+                                    ->hidden(fn (Get $get): bool => $get('action') == RuleAction::PUSH->value),
+                                TextInput::make('delay')
                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.settings.fields.lead-time'))
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: new HtmlString(__('inventories::filament/clusters/configurations/resources/rule.form.sections.settings.fields.lead-time-hint-tooltip')))
                                     ->integer()
                                     ->minValue(0),
 
-                                Forms\Components\Fieldset::make(__('inventories::filament/clusters/configurations/resources/rule.form.sections.settings.fieldsets.applicability.title'))
+                                Fieldset::make(__('inventories::filament/clusters/configurations/resources/rule.form.sections.settings.fieldsets.applicability.title'))
                                     ->schema([
-                                        Forms\Components\Select::make('route_id')
+                                        Select::make('route_id')
                                             ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.settings.fieldsets.applicability.fields.route'))
                                             ->relationship(
                                                 'route',
@@ -189,7 +215,7 @@ class RuleResource extends Resource
                                             ->preload()
                                             ->required()
                                             ->hiddenOn([ManageRules::class, RulesRelationManager::class]),
-                                        Forms\Components\Select::make('company_id')
+                                        Select::make('company_id')
                                             ->label(__('inventories::filament/clusters/configurations/resources/rule.form.sections.settings.fieldsets.applicability.fields.company'))
                                             ->relationship('company', 'name')
                                             ->searchable()
@@ -206,32 +232,32 @@ class RuleResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('action')
+                TextColumn::make('action')
                     ->label(__('inventories::filament/clusters/configurations/resources/rule.table.columns.action'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('sourceLocation.full_name')
+                TextColumn::make('sourceLocation.full_name')
                     ->label(__('inventories::filament/clusters/configurations/resources/rule.table.columns.source-location'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('destinationLocation.full_name')
+                TextColumn::make('destinationLocation.full_name')
                     ->label(__('inventories::filament/clusters/configurations/resources/rule.table.columns.destination-location'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('route.name')
+                TextColumn::make('route.name')
                     ->label(__('inventories::filament/clusters/configurations/resources/rule.table.columns.route'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('inventories::filament/clusters/configurations/resources/rule.table.columns.name'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('deleted_at')
+                TextColumn::make('deleted_at')
                     ->label(__('inventories::filament/clusters/configurations/resources/rule.table.columns.deleted-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('inventories::filament/clusters/configurations/resources/rule.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('inventories::filament/clusters/configurations/resources/rule.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
@@ -259,29 +285,29 @@ class RuleResource extends Resource
                     ->collapsible(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('action')
+                SelectFilter::make('action')
                     ->label(__('inventories::filament/clusters/configurations/resources/rule.table.filters.action'))
-                    ->options(Enums\RuleAction::class),
-                Tables\Filters\SelectFilter::make('source_location_id')
+                    ->options(RuleAction::class),
+                SelectFilter::make('source_location_id')
                     ->label(__('inventories::filament/clusters/configurations/resources/rule.table.filters.source-location'))
                     ->relationship('sourceLocation', 'full_name')
                     ->searchable()
                     ->preload(),
-                Tables\Filters\SelectFilter::make('destination_location_id')
+                SelectFilter::make('destination_location_id')
                     ->label(__('inventories::filament/clusters/configurations/resources/rule.table.filters.destination-location'))
                     ->relationship('destinationLocation', 'full_name')
                     ->searchable()
                     ->preload(),
-                Tables\Filters\SelectFilter::make('route_id')
+                SelectFilter::make('route_id')
                     ->label(__('inventories::filament/clusters/configurations/resources/rule.table.filters.route'))
                     ->relationship('route', 'name')
                     ->searchable()
                     ->preload(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ViewAction::make()
                     ->hidden(fn ($record) => $record->trashed()),
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->hidden(fn ($record) => $record->trashed())
                     ->successNotification(
                         Notification::make()
@@ -289,21 +315,21 @@ class RuleResource extends Resource
                             ->title(__('inventories::filament/clusters/configurations/resources/rule.table.actions.edit.notification.title'))
                             ->body(__('inventories::filament/clusters/configurations/resources/rule.table.actions.edit.notification.body')),
                     ),
-                Tables\Actions\RestoreAction::make()
+                RestoreAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('inventories::filament/clusters/configurations/resources/rule.table.actions.restore.notification.title'))
                             ->body(__('inventories::filament/clusters/configurations/resources/rule.table.actions.restore.notification.body')),
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('inventories::filament/clusters/configurations/resources/rule.table.actions.delete.notification.title'))
                             ->body(__('inventories::filament/clusters/configurations/resources/rule.table.actions.delete.notification.body')),
                     ),
-                Tables\Actions\ForceDeleteAction::make()
+                ForceDeleteAction::make()
                     ->action(function (Rule $record) {
                         try {
                             $record->forceDelete();
@@ -322,23 +348,23 @@ class RuleResource extends Resource
                             ->body(__('inventories::filament/clusters/configurations/resources/rule.table.actions.force-delete.notification.success.body')),
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\RestoreBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('inventories::filament/clusters/configurations/resources/rule.table.bulk-actions.restore.notification.title'))
                                 ->body(__('inventories::filament/clusters/configurations/resources/rule.table.bulk-actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteBulkAction::make()
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('inventories::filament/clusters/configurations/resources/rule.table.bulk-actions.delete.notification.title'))
                                 ->body(__('inventories::filament/clusters/configurations/resources/rule.table.bulk-actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteBulkAction::make()
+                    ForceDeleteBulkAction::make()
                         ->action(function (Collection $records) {
                             try {
                                 $records->each(fn (Model $record) => $record->forceDelete());
@@ -359,18 +385,18 @@ class RuleResource extends Resource
                 ]),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->icon('heroicon-o-plus-circle'),
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Infolists\Components\Section::make(__('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.title'))
+                        Section::make(__('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.title'))
                             ->description(function (Rule $record) {
                                 $operation = $record->operationType;
 
@@ -387,57 +413,57 @@ class RuleResource extends Resource
                                 ]);
 
                                 return match ($record->action) {
-                                    Enums\RuleAction::PULL      => new HtmlString($pullMessage),
-                                    Enums\RuleAction::PUSH      => new HtmlString($pushMessage),
-                                    Enums\RuleAction::PULL_PUSH => new HtmlString($pullMessage.'</br></br>'.$pushMessage),
+                                    RuleAction::PULL      => new HtmlString($pullMessage),
+                                    RuleAction::PUSH      => new HtmlString($pushMessage),
+                                    RuleAction::PULL_PUSH => new HtmlString($pullMessage.'</br></br>'.$pushMessage),
                                 };
                             })
                             ->schema([
-                                Infolists\Components\Group::make()
+                                Group::make()
                                     ->schema([
-                                        Infolists\Components\Group::make()
+                                        Group::make()
                                             ->schema([
-                                                Infolists\Components\TextEntry::make('name')
+                                                TextEntry::make('name')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.name'))
                                                     ->icon('heroicon-o-document-text')
-                                                    ->size(Infolists\Components\TextEntry\TextEntrySize::Large)
+                                                    ->size(TextSize::Large)
                                                     ->weight(FontWeight::Bold),
 
-                                                Infolists\Components\TextEntry::make('action')
+                                                TextEntry::make('action')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.action'))
                                                     ->icon('heroicon-o-arrows-right-left')
                                                     ->badge(),
 
-                                                Infolists\Components\TextEntry::make('operationType.name')
+                                                TextEntry::make('operationType.name')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.operation-type'))
                                                     ->icon('heroicon-o-briefcase'),
 
-                                                Infolists\Components\TextEntry::make('sourceLocation.full_name')
+                                                TextEntry::make('sourceLocation.full_name')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.source-location'))
                                                     ->icon('heroicon-o-map-pin'),
 
-                                                Infolists\Components\TextEntry::make('destinationLocation.full_name')
+                                                TextEntry::make('destinationLocation.full_name')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.destination-location'))
                                                     ->icon('heroicon-o-map-pin'),
                                             ]),
 
-                                        Infolists\Components\Group::make()
+                                        Group::make()
                                             ->schema([
-                                                Infolists\Components\TextEntry::make('route.name')
+                                                TextEntry::make('route.name')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.route'))
                                                     ->icon('heroicon-o-globe-alt'),
 
-                                                Infolists\Components\TextEntry::make('company.name')
+                                                TextEntry::make('company.name')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.company'))
                                                     ->icon('heroicon-o-building-office'),
 
-                                                Infolists\Components\TextEntry::make('partner_address_id')
+                                                TextEntry::make('partner_address_id')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.partner-address'))
                                                     ->icon('heroicon-o-user-group')
                                                     ->getStateUsing(fn ($record) => $record->partnerAddress?->name)
                                                     ->placeholder('—'),
 
-                                                Infolists\Components\TextEntry::make('delay')
+                                                TextEntry::make('delay')
                                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.infolist.sections.general.entries.lead-time'))
                                                     ->icon('heroicon-o-clock')
                                                     ->suffix(' days')
@@ -449,20 +475,20 @@ class RuleResource extends Resource
                     ])
                     ->columnSpan(['lg' => 2]),
 
-                Infolists\Components\Group::make()
+                Group::make()
                     ->schema([
-                        Infolists\Components\Section::make(__('inventories::filament/clusters/configurations/resources/rule.infolist.sections.record-information.title'))
+                        Section::make(__('inventories::filament/clusters/configurations/resources/rule.infolist.sections.record-information.title'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('created_at')
+                                TextEntry::make('created_at')
                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.infolist.sections.record-information.entries.created-at'))
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar'),
 
-                                Infolists\Components\TextEntry::make('creator.name')
+                                TextEntry::make('creator.name')
                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.infolist.sections.record-information.entries.created-by'))
                                     ->icon('heroicon-m-user'),
 
-                                Infolists\Components\TextEntry::make('updated_at')
+                                TextEntry::make('updated_at')
                                     ->label(__('inventories::filament/clusters/configurations/resources/rule.infolist.sections.record-information.entries.last-updated'))
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar-days'),
@@ -476,10 +502,10 @@ class RuleResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListRules::route('/'),
-            'create' => Pages\CreateRule::route('/create'),
-            'view'   => Pages\ViewRule::route('/{record}'),
-            'edit'   => Pages\EditRule::route('/{record}/edit'),
+            'index'  => ListRules::route('/'),
+            'create' => CreateRule::route('/create'),
+            'view'   => ViewRule::route('/{record}'),
+            'edit'   => EditRule::route('/{record}/edit'),
         ];
     }
 

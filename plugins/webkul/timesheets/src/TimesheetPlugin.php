@@ -4,6 +4,7 @@ namespace Webkul\Timesheet;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use ReflectionClass;
 use Webkul\Support\Package;
 
 class TimesheetPlugin implements Plugin
@@ -40,7 +41,7 @@ class TimesheetPlugin implements Plugin
 
     protected function getPluginBasePath($path = null): string
     {
-        $reflector = new \ReflectionClass(get_class($this));
+        $reflector = new ReflectionClass(get_class($this));
 
         return dirname($reflector->getFileName()).($path ?? '');
     }

@@ -7,7 +7,7 @@ use Webkul\Inventory\Models\Lot;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Inventory\Models\Lot>
+ * @extends Factory<Lot>
  */
 class LotFactory extends Factory
 {

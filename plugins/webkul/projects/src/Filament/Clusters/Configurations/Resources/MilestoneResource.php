@@ -2,11 +2,22 @@
 
 namespace Webkul\Project\Filament\Clusters\Configurations\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Webkul\Project\Filament\Clusters\Configurations;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\MilestoneResource\Pages;
@@ -19,7 +30,7 @@ class MilestoneResource extends Resource
 {
     protected static ?string $model = Milestone::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-flag';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-flag';
 
     protected static ?int $navigationSort = 3;
 
@@ -39,21 +50,21 @@ class MilestoneResource extends Resource
         return app(TaskSettings::class)->enable_milestones;
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.form.name'))
                     ->required()
                     ->maxLength(255),
-                Forms\Components\DateTimePicker::make('deadline')
+                DateTimePicker::make('deadline')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.form.deadline'))
                     ->native(false),
-                Forms\Components\Toggle::make('is_completed')
+                Toggle::make('is_completed')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.form.is-completed'))
                     ->required(),
-                Forms\Components\Select::make('project_id')
+                Select::make('project_id')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.form.project'))
                     ->relationship('project', 'name')
                     ->hiddenOn([
@@ -71,58 +82,58 @@ class MilestoneResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.table.columns.name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('deadline')
+                TextColumn::make('deadline')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.table.columns.deadline'))
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\ToggleColumn::make('is_completed')
+                ToggleColumn::make('is_completed')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.table.columns.is-completed'))
                     ->beforeStateUpdated(function ($record, $state) {
                         $record->completed_at = $state ? now() : null;
                     })
                     ->sortable(),
-                Tables\Columns\TextColumn::make('completed_at')
+                TextColumn::make('completed_at')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.table.columns.completed-at'))
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('project.name')
+                TextColumn::make('project.name')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.table.columns.project'))
                     ->hiddenOn([
                         MilestonesRelationManager::class,
                         ManageMilestones::class,
                     ])
                     ->sortable(),
-                Tables\Columns\TextColumn::make('creator.name')
+                TextColumn::make('creator.name')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.table.columns.creator'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->groups([
-                Tables\Grouping\Group::make('project.name')
+                Group::make('project.name')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.table.groups.project')),
-                Tables\Grouping\Group::make('is_completed')
+                Group::make('is_completed')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.table.groups.is-completed')),
-                Tables\Grouping\Group::make('created_at')
+                Group::make('created_at')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.table.groups.created-at'))
                     ->date(),
             ])
             ->filters([
-                Tables\Filters\TernaryFilter::make('is_completed')
+                TernaryFilter::make('is_completed')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.table.filters.is-completed')),
-                Tables\Filters\SelectFilter::make('project_id')
+                SelectFilter::make('project_id')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.table.filters.project'))
                     ->relationship('project', 'name')
                     ->hiddenOn([
@@ -131,21 +142,21 @@ class MilestoneResource extends Resource
                     ])
                     ->searchable()
                     ->preload(),
-                Tables\Filters\SelectFilter::make('creator_id')
+                SelectFilter::make('creator_id')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.table.filters.creator'))
                     ->relationship('creator', 'name')
                     ->searchable()
                     ->preload(),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                EditAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('projects::filament/clusters/configurations/resources/milestone.table.actions.edit.notification.title'))
                             ->body(__('projects::filament/clusters/configurations/resources/milestone.table.actions.edit.notification.body')),
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -153,9 +164,9 @@ class MilestoneResource extends Resource
                             ->body(__('projects::filament/clusters/configurations/resources/milestone.table.actions.delete.notification.body')),
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()

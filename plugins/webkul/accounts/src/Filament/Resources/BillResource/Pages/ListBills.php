@@ -2,7 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources\BillResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Webkul\Account\Enums\MoveType;
@@ -20,7 +20,7 @@ class ListBills extends BaseListBills
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->icon('heroicon-o-plus-circle'),
         ];
     }
@@ -30,7 +30,7 @@ class ListBills extends BaseListBills
         return [
             'bill' => PresetView::make(__('accounts::filament/resources/bill/pages/list-bill.tabs.bills'))
                 ->favorite()
-                ->default()
+                ->setAsDefault()
                 ->icon('heroicon-s-receipt-percent')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('move_type', MoveType::IN_INVOICE)),
             ...Arr::except(parent::getPresetTableViews(), 'invoice'),

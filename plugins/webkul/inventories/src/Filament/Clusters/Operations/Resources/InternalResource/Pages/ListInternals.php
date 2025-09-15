@@ -2,7 +2,7 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources\InternalResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\InternalResource;
@@ -28,7 +28,7 @@ class ListInternals extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label(__('inventories::filament/clusters/operations/resources/internal/pages/list-internals.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle'),
         ];

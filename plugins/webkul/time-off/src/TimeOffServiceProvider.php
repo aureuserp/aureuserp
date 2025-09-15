@@ -25,11 +25,13 @@ class TimeOffServiceProvider extends PackageServiceProvider
                 '2025_01_21_073921_create_time_off_leave_accrual_plans_table',
                 '2025_01_21_085833_create_time_off_leave_accrual_levels_table',
                 '2025_01_22_101656_create_time_off_leave_allocations_table',
+                '2025_08_13_120000_alter_private_name_column_in_time_off_leaves_table',
             ])
             ->hasDependencies([
                 'employees',
             ])
             ->runsMigrations()
+            ->hasSeeder('Webkul\\TimeOff\\Database\\Seeders\\DatabaseSeeder')
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->installDependencies()

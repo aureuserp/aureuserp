@@ -2,7 +2,7 @@
 
 namespace Webkul\Website\Filament\Admin\Resources\PageResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
@@ -29,7 +29,7 @@ class ListPages extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label(__('website::filament/admin/resources/page/pages/list-records.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle'),
         ];

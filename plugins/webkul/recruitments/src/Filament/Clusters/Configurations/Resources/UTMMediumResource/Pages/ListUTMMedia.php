@@ -2,7 +2,7 @@
 
 namespace Webkul\Recruitment\Filament\Clusters\Configurations\Resources\UTMMediumResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\UTMMediumResource;
@@ -14,7 +14,7 @@ class ListUTMMedia extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label(__('recruitments::filament/clusters/configurations/resources/medium/pages/list-medium.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
                 ->successNotification(

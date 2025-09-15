@@ -2,7 +2,8 @@
 
 namespace Webkul\Sale\Filament\Clusters\Configuration\Resources\TeamResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
@@ -30,8 +31,8 @@ class EditTeam extends EditRecord
         return [
             ChatterActions\ChatterAction::make()
                 ->setResource(static::$resource),
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make()
+            ViewAction::make(),
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()

@@ -3,9 +3,10 @@
 namespace Webkul\Sale\Filament\Clusters\Settings\Pages;
 
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Pages\SettingsPage;
+use Filament\Schemas\Schema;
 use Webkul\Sale\Settings\QuotationAndOrderSettings;
 use Webkul\Support\Filament\Clusters\Settings;
 
@@ -13,11 +14,11 @@ class ManageQuotationAndOrder extends SettingsPage
 {
     use HasPageShield;
 
-    protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-cart';
 
     protected static ?string $slug = 'sale/manage-quotation-and-order';
 
-    protected static ?string $navigationGroup = 'Sales';
+    protected static string|\UnitEnum|null $navigationGroup = 'Sales';
 
     protected static ?int $navigationSort = 2;
 
@@ -42,11 +43,11 @@ class ManageQuotationAndOrder extends SettingsPage
         return __('sales::filament/clusters/settings/pages/manage-quotation-and-order.navigation.title');
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('default_quotation_validity')
+        return $schema
+            ->components([
+                TextInput::make('default_quotation_validity')
                     ->required()
                     ->minValue(0)
                     ->numeric()
@@ -54,7 +55,7 @@ class ManageQuotationAndOrder extends SettingsPage
                     ->default(30)
                     ->label(__('sales::filament/clusters/settings/pages/manage-quotation-and-order.form.fields.validity'))
                     ->helperText(__('sales::filament/clusters/settings/pages/manage-quotation-and-order.form.fields.validity-help')),
-                Forms\Components\Toggle::make('enable_lock_confirm_sales')
+                Toggle::make('enable_lock_confirm_sales')
                     ->label(__('sales::filament/clusters/settings/pages/manage-quotation-and-order.form.fields.lock-confirm-sales'))
                     ->helperText(__('sales::filament/clusters/settings/pages/manage-quotation-and-order.form.fields.lock-confirm-sales-help')),
             ]);

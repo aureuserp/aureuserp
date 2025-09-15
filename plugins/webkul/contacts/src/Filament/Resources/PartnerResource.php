@@ -2,12 +2,18 @@
 
 namespace Webkul\Contact\Filament\Resources;
 
-use Filament\Pages\SubNavigationPosition;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\RelationManagers\RelationGroup;
-use Webkul\Contact\Filament\Resources\PartnerResource\Pages;
+use Webkul\Contact\Filament\Resources\PartnerResource\Pages\CreatePartner;
+use Webkul\Contact\Filament\Resources\PartnerResource\Pages\EditPartner;
+use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ListPartners;
+use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ManageAddresses;
+use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ManageContacts;
+use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ViewPartner;
 use Webkul\Partner\Filament\Resources\PartnerResource as BasePartnerResource;
-use Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers;
+use Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers\AddressesRelationManager;
+use Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers\ContactsRelationManager;
 use Webkul\Partner\Models\Partner;
 
 class PartnerResource extends BasePartnerResource
@@ -18,7 +24,7 @@ class PartnerResource extends BasePartnerResource
 
     protected static bool $shouldRegisterNavigation = true;
 
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getNavigationLabel(): string
     {
@@ -33,10 +39,10 @@ class PartnerResource extends BasePartnerResource
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewPartner::class,
-            Pages\EditPartner::class,
-            Pages\ManageContacts::class,
-            Pages\ManageAddresses::class,
+            ViewPartner::class,
+            EditPartner::class,
+            ManageContacts::class,
+            ManageAddresses::class,
         ]);
     }
 
@@ -44,12 +50,12 @@ class PartnerResource extends BasePartnerResource
     {
         return [
             RelationGroup::make('Contacts', [
-                RelationManagers\ContactsRelationManager::class,
+                ContactsRelationManager::class,
             ])
                 ->icon('heroicon-o-users'),
 
             RelationGroup::make('Addresses', [
-                RelationManagers\AddressesRelationManager::class,
+                AddressesRelationManager::class,
             ])
                 ->icon('heroicon-o-map-pin'),
         ];
@@ -58,12 +64,12 @@ class PartnerResource extends BasePartnerResource
     public static function getPages(): array
     {
         return [
-            'index'     => Pages\ListPartners::route('/'),
-            'create'    => Pages\CreatePartner::route('/create'),
-            'view'      => Pages\ViewPartner::route('/{record}'),
-            'edit'      => Pages\EditPartner::route('/{record}/edit'),
-            'contacts'  => Pages\ManageContacts::route('/{record}/contacts'),
-            'addresses' => Pages\ManageAddresses::route('/{record}/addresses'),
+            'index'     => ListPartners::route('/'),
+            'create'    => CreatePartner::route('/create'),
+            'view'      => ViewPartner::route('/{record}'),
+            'edit'      => EditPartner::route('/{record}/edit'),
+            'contacts'  => ManageContacts::route('/{record}/contacts'),
+            'addresses' => ManageAddresses::route('/{record}/addresses'),
         ];
     }
 }

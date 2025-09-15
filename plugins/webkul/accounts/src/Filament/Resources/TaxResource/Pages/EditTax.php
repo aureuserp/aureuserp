@@ -2,9 +2,10 @@
 
 namespace Webkul\Account\Filament\Resources\TaxResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\QueryException;
 use Webkul\Account\Filament\Resources\TaxResource;
@@ -14,7 +15,7 @@ class EditTax extends EditRecord
 {
     protected static string $resource = TaxResource::class;
 
-    public function getSubNavigationPosition(): SubNavigationPosition
+    public static function getSubNavigationPosition(): SubNavigationPosition
     {
         return SubNavigationPosition::Top;
     }
@@ -35,8 +36,8 @@ class EditTax extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make()
+            ViewAction::make(),
+            DeleteAction::make()
                 ->action(function (Tax $record) {
                     try {
                         $record->delete();

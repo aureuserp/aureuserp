@@ -2,18 +2,34 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Products\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
-use Filament\Pages\SubNavigationPosition;
+use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Field\Filament\Traits\HasCustomFields;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\MoveState;
+use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Filament\Clusters\Products;
-use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages;
+use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages\CreateProduct;
+use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages\EditProduct;
+use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages\ListProducts;
+use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageAttributes;
+use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageMoves;
+use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageQuantities;
+use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages\ManageVariants;
+use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages\ViewProduct;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Settings\TraceabilitySettings;
@@ -26,7 +42,7 @@ class ProductResource extends BaseProductResource
 
     protected static ?string $model = Product::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
     protected static bool $shouldRegisterNavigation = true;
 
@@ -34,7 +50,7 @@ class ProductResource extends BaseProductResource
 
     protected static ?int $navigationSort = 1;
 
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -43,46 +59,46 @@ class ProductResource extends BaseProductResource
         return __('inventories::filament/clusters/products/resources/product.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        $form = BaseProductResource::form($form);
+        $schema = BaseProductResource::form($schema);
 
-        $components = $form->getComponents();
+        $components = $schema->getComponents();
 
-        $firstGroupChildComponents = $components[0]->getChildComponents();
+        $firstGroupChildComponents = $components[0]->getDefaultChildComponents();
 
-        $firstGroupChildComponents[2] = Forms\Components\Section::make(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.title'))
+        $firstGroupChildComponents[2] = Section::make(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.title'))
             ->schema([
-                Forms\Components\Fieldset::make(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.tracking.title'))
+                Fieldset::make(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.tracking.title'))
                     ->schema([
-                        Forms\Components\Toggle::make('is_storable')
+                        Toggle::make('is_storable')
                             ->label(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.tracking.fields.track-inventory'))
                             ->default(true)
                             ->live()
-                            ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get) {
+                            ->afterStateUpdated(function (Set $set, Get $get) {
                                 if (! $get('is_storable')) {
-                                    $set('tracking', Enums\ProductTracking::QTY->value);
+                                    $set('tracking', ProductTracking::QTY->value);
 
                                     $set('use_expiration_date', false);
                                 }
                             }),
-                        Forms\Components\Select::make('tracking')
+                        Select::make('tracking')
                             ->label(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.tracking.fields.track-by'))
                             ->selectablePlaceholder(false)
-                            ->options(Enums\ProductTracking::class)
-                            ->default(Enums\ProductTracking::QTY->value)
-                            ->visible(fn (Forms\Get $get, TraceabilitySettings $settings): bool => $settings->enable_lots_serial_numbers && (bool) $get('is_storable'))
+                            ->options(ProductTracking::class)
+                            ->default(ProductTracking::QTY->value)
+                            ->visible(fn (Get $get, TraceabilitySettings $settings): bool => $settings->enable_lots_serial_numbers && (bool) $get('is_storable'))
                             ->live()
-                            ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get) {
-                                if ($get('tracking') == Enums\ProductTracking::QTY->value) {
+                            ->afterStateUpdated(function (Set $set, Get $get) {
+                                if ($get('tracking') == ProductTracking::QTY->value) {
                                     $set('use_expiration_date', false);
                                 }
                             }),
                     ])
                     ->columns(1),
-                Forms\Components\Fieldset::make(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.operation.title'))
+                Fieldset::make(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.operation.title'))
                     ->schema([
-                        Forms\Components\CheckboxList::make('routes')
+                        CheckboxList::make('routes')
                             ->label(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.operation.fields.routes'))
                             ->relationship(
                                 'routes',
@@ -92,25 +108,25 @@ class ProductResource extends BaseProductResource
                             ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.operation.fields.routes-hint-tooltip')),
                     ]),
 
-                Forms\Components\Fieldset::make(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.logistics.title'))
+                Fieldset::make(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.logistics.title'))
                     ->schema([
-                        Forms\Components\Select::make('responsible_id')
+                        Select::make('responsible_id')
                             ->label(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.logistics.fields.responsible'))
                             ->relationship('responsible', 'name')
                             ->searchable()
                             ->preload()
                             ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.logistics.fields.responsible-hint-tooltip')),
-                        Forms\Components\TextInput::make('weight')
+                        TextInput::make('weight')
                             ->label(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.logistics.fields.weight'))
                             ->numeric()
                             ->minValue(0)
                             ->maxValue(99999999999),
-                        Forms\Components\TextInput::make('volume')
+                        TextInput::make('volume')
                             ->label(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.logistics.fields.volume'))
                             ->numeric()
                             ->minValue(0)
                             ->maxValue(99999999999),
-                        Forms\Components\TextInput::make('sale_delay')
+                        TextInput::make('sale_delay')
                             ->label(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.logistics.fields.sale-delay'))
                             ->numeric()
                             ->minValue(0)
@@ -118,46 +134,46 @@ class ProductResource extends BaseProductResource
                             ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.logistics.fields.sale-delay-hint-tooltip')),
                     ]),
 
-                Forms\Components\Fieldset::make(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.traceability.title'))
+                Fieldset::make(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.traceability.title'))
                     ->schema([
-                        Forms\Components\TextInput::make('expiration_time')
+                        TextInput::make('expiration_time')
                             ->label(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.traceability.fields.expiration-date'))
                             ->numeric()
                             ->minValue(0)
                             ->maxValue(99999999999)
                             ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.traceability.fields.expiration-date-hint-tooltip')),
-                        Forms\Components\TextInput::make('use_time')
+                        TextInput::make('use_time')
                             ->label(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.traceability.fields.best-before-date'))
                             ->numeric()
                             ->minValue(0)
                             ->maxValue(99999999999)
                             ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.traceability.fields.best-before-date-hint-tooltip')),
-                        Forms\Components\TextInput::make('removal_time')
+                        TextInput::make('removal_time')
                             ->label(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.traceability.fields.removal-date'))
                             ->numeric()
                             ->minValue(0)
                             ->maxValue(99999999999)
                             ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.traceability.fields.removal-date-hint-tooltip')),
-                        Forms\Components\TextInput::make('alert_time')
+                        TextInput::make('alert_time')
                             ->label(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.traceability.fields.alert-date'))
                             ->numeric()
                             ->minValue(0)
                             ->maxValue(99999999999)
                             ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.traceability.fields.alert-date-hint-tooltip')),
                     ])
-                    ->visible(fn (Forms\Get $get): bool => (bool) $get('use_expiration_date')),
+                    ->visible(fn (Get $get): bool => (bool) $get('use_expiration_date')),
             ])
-            ->visible(fn (Forms\Get $get): bool => $get('type') == ProductType::GOODS->value);
+            ->visible(fn (Get $get): bool => $get('type') == ProductType::GOODS);
 
-        $firstGroupChildComponents[] = Forms\Components\Section::make(__('inventories::filament/clusters/products/resources/product.form.sections.additional.title'))
+        $firstGroupChildComponents[] = Section::make(__('inventories::filament/clusters/products/resources/product.form.sections.additional.title'))
             ->visible(! empty($customFormFields = static::getCustomFormFields()))
             ->schema($customFormFields);
 
         $components[0]->childComponents($firstGroupChildComponents);
 
-        $form->components($components);
+        $schema->components($components);
 
-        return $form;
+        return $schema;
     }
 
     public static function table(Table $table): Table
@@ -165,84 +181,84 @@ class ProductResource extends BaseProductResource
         return BaseProductResource::table($table);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        $infolist = BaseProductResource::infolist($infolist);
+        $schema = BaseProductResource::infolist($schema);
 
-        $components = $infolist->getComponents();
+        $components = $schema->getComponents();
 
-        $firstGroupChildComponents = $components[0]->getChildComponents();
+        $firstGroupChildComponents = $components[0]->getDefaultChildComponents();
 
-        $firstGroupChildComponents[2] = Infolists\Components\Section::make(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.title'))
+        $firstGroupChildComponents[2] = Section::make(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.title'))
             ->schema([
-                Infolists\Components\Grid::make(3)
+                Grid::make(3)
                     ->schema([
-                        Infolists\Components\IconEntry::make('is_storable')
+                        IconEntry::make('is_storable')
                             ->label(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.fieldsets.tracking.entries.track-inventory'))
                             ->boolean(),
 
-                        Infolists\Components\TextEntry::make('tracking')
+                        TextEntry::make('tracking')
                             ->label(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.fieldsets.tracking.entries.track-by')),
 
-                        Infolists\Components\IconEntry::make('use_expiration_date')
+                        IconEntry::make('use_expiration_date')
                             ->label(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.fieldsets.tracking.entries.expiration-date'))
                             ->boolean(),
                     ]),
 
-                Infolists\Components\Section::make(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.fieldsets.operation.title'))
+                Section::make(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.fieldsets.operation.title'))
                     ->schema([
-                        Infolists\Components\TextEntry::make('routes.name')
+                        TextEntry::make('routes.name')
                             ->label(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.fieldsets.operation.entries.routes'))
                             ->icon('heroicon-o-arrow-path')
                             ->listWithLineBreaks()
                             ->placeholder('—'),
                     ]),
 
-                Infolists\Components\Section::make(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.fieldsets.logistics.title'))
+                Section::make(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.fieldsets.logistics.title'))
                     ->schema([
-                        Infolists\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Infolists\Components\TextEntry::make('responsible.name')
+                                TextEntry::make('responsible.name')
                                     ->label(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.fieldsets.logistics.entries.responsible'))
                                     ->placeholder('—')
                                     ->icon('heroicon-o-user'),
 
-                                Infolists\Components\TextEntry::make('weight')
+                                TextEntry::make('weight')
                                     ->label(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.fieldsets.logistics.entries.weight'))
                                     ->placeholder('—')
                                     ->icon('heroicon-o-scale'),
 
-                                Infolists\Components\TextEntry::make('volume')
+                                TextEntry::make('volume')
                                     ->label(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.fieldsets.logistics.entries.volume'))
                                     ->placeholder('—')
                                     ->icon('heroicon-o-beaker'),
 
-                                Infolists\Components\TextEntry::make('sale_delay')
+                                TextEntry::make('sale_delay')
                                     ->label(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.fieldsets.logistics.entries.sale-delay'))
                                     ->placeholder('—'),
                             ]),
                     ]),
 
-                Infolists\Components\Section::make(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.fieldsets.traceability.title'))
+                Section::make(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.fieldsets.traceability.title'))
                     ->schema([
-                        Infolists\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Infolists\Components\TextEntry::make('expiration_time')
+                                TextEntry::make('expiration_time')
                                     ->label(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.fieldsets.traceability.entries.expiration-date'))
                                     ->placeholder('—')
                                     ->icon('heroicon-o-clock'),
 
-                                Infolists\Components\TextEntry::make('use_time')
+                                TextEntry::make('use_time')
                                     ->label(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.fieldsets.traceability.entries.best-before-date'))
                                     ->placeholder('—')
                                     ->icon('heroicon-o-clock'),
 
-                                Infolists\Components\TextEntry::make('removal_time')
+                                TextEntry::make('removal_time')
                                     ->label(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.fieldsets.traceability.entries.removal-date'))
                                     ->placeholder('—')
                                     ->icon('heroicon-o-clock'),
 
-                                Infolists\Components\TextEntry::make('alert_time')
+                                TextEntry::make('alert_time')
                                     ->label(__('inventories::filament/clusters/products/resources/product.infolist.sections.inventory.fieldsets.traceability.entries.alert-date'))
                                     ->placeholder('—')
                                     ->icon('heroicon-o-clock'),
@@ -254,34 +270,34 @@ class ProductResource extends BaseProductResource
 
         $components[0]->childComponents($firstGroupChildComponents);
 
-        $infolist->components($components);
+        $schema->components($components);
 
-        return $infolist;
+        return $schema;
     }
 
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewProduct::class,
-            Pages\EditProduct::class,
-            Pages\ManageAttributes::class,
-            Pages\ManageVariants::class,
-            Pages\ManageQuantities::class,
-            Pages\ManageMoves::class,
+            ViewProduct::class,
+            EditProduct::class,
+            ManageAttributes::class,
+            ManageVariants::class,
+            ManageQuantities::class,
+            ManageMoves::class,
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'      => Pages\ListProducts::route('/'),
-            'create'     => Pages\CreateProduct::route('/create'),
-            'view'       => Pages\ViewProduct::route('/{record}'),
-            'edit'       => Pages\EditProduct::route('/{record}/edit'),
-            'attributes' => Pages\ManageAttributes::route('/{record}/attributes'),
-            'variants'   => Pages\ManageVariants::route('/{record}/variants'),
-            'moves'      => Pages\ManageMoves::route('/{record}/moves'),
-            'quantities' => Pages\ManageQuantities::route('/{record}/quantities'),
+            'index'      => ListProducts::route('/'),
+            'create'     => CreateProduct::route('/create'),
+            'view'       => ViewProduct::route('/{record}'),
+            'edit'       => EditProduct::route('/{record}/edit'),
+            'attributes' => ManageAttributes::route('/{record}/attributes'),
+            'variants'   => ManageVariants::route('/{record}/variants'),
+            'moves'      => ManageMoves::route('/{record}/moves'),
+            'quantities' => ManageQuantities::route('/{record}/quantities'),
         ];
     }
 
@@ -289,7 +305,7 @@ class ProductResource extends BaseProductResource
     {
         $move = Move::create([
             'name'                    => 'Product Quantity Updated',
-            'state'                   => Enums\MoveState::DONE,
+            'state'                   => MoveState::DONE,
             'product_id'              => $record->product_id,
             'source_location_id'      => $sourceLocationId,
             'destination_location_id' => $destinationLocationId,
@@ -304,7 +320,7 @@ class ProductResource extends BaseProductResource
         ]);
 
         $move->lines()->create([
-            'state'                   => Enums\MoveState::DONE,
+            'state'                   => MoveState::DONE,
             'qty'                     => abs($currentQuantity),
             'uom_qty'                 => abs($currentQuantity),
             'is_picked'               => 1,

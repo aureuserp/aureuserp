@@ -3,16 +3,39 @@
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources;
 
 use Barryvdh\DomPDF\Facade\Pdf;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -20,7 +43,10 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Filament\Clusters\Configurations;
-use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource\Pages;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource\Pages\CreateLocation;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource\Pages\EditLocation;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource\Pages\ListLocations;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource\Pages\ViewLocation;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Pages\ManageLocations;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Settings\WarehouseSettings;
@@ -29,7 +55,7 @@ class LocationResource extends Resource
 {
     protected static ?string $model = Location::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-map-pin';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-map-pin';
 
     protected static ?int $navigationSort = 2;
 
@@ -58,46 +84,46 @@ class LocationResource extends Resource
         return __('inventories::filament/clusters/configurations/resources/location.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Forms\Components\Section::make(__('inventories::filament/clusters/configurations/resources/location.form.sections.general.title'))
+                        Section::make(__('inventories::filament/clusters/configurations/resources/location.form.sections.general.title'))
                             ->schema([
-                                Forms\Components\TextInput::make('name')
+                                TextInput::make('name')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.general.fields.location'))
                                     ->required()
                                     ->maxLength(255)
                                     ->autofocus()
                                     ->placeholder(__('inventories::filament/clusters/configurations/resources/location.form.sections.general.fields.location-placeholder'))
                                     ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;']),
-                                Forms\Components\Select::make('parent_id')
+                                Select::make('parent_id')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.general.fields.parent-location'))
                                     ->relationship('parent', 'full_name')
                                     ->searchable()
                                     ->preload()
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/location.form.sections.general.fields.parent-location-hint-tooltip')),
 
-                                Forms\Components\RichEditor::make('description')
+                                RichEditor::make('description')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.general.fields.external-notes')),
                             ]),
                     ])
                     ->columnSpan(['lg' => 2]),
 
-                Forms\Components\Group::make()
+                Group::make()
                     ->schema([
-                        Forms\Components\Section::make(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.title'))
+                        Section::make(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.title'))
                             ->schema([
-                                Forms\Components\Select::make('type')
+                                Select::make('type')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.location-type'))
                                     ->options(LocationType::class)
                                     ->selectablePlaceholder(false)
                                     ->required()
                                     ->default(LocationType::INTERNAL->value)
                                     ->live()
-                                    ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get) {
+                                    ->afterStateUpdated(function (Set $set, Get $get) {
                                         if (! $get('type') === in_array($get('type'), [LocationType::INTERNAL->value, LocationType::INVENTORY->value])) {
                                             $set('is_scrap', false);
                                         }
@@ -108,54 +134,54 @@ class LocationResource extends Resource
                                             $set('is_replenish', false);
                                         }
                                     }),
-                                Forms\Components\Select::make('company_id')
+                                Select::make('company_id')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.company'))
                                     ->relationship('company', 'name')
                                     ->searchable()
                                     ->preload()
                                     ->default(Auth::user()->default_company_id),
-                                Forms\Components\Select::make('storage_category_id')
+                                Select::make('storage_category_id')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.storage-category'))
                                     ->relationship('storageCategory', 'name')
                                     ->searchable()
                                     ->preload()
-                                    ->createOptionForm(fn (Form $form): Form => StorageCategoryResource::form($form))
-                                    ->visible(fn (Forms\Get $get): bool => $get('type') === LocationType::INTERNAL->value)
+                                    ->createOptionForm(fn (Schema $schema): Schema => StorageCategoryResource::form($schema))
+                                    ->visible(fn (Get $get): bool => $get('type') === LocationType::INTERNAL->value)
                                     ->hiddenOn(ManageLocations::class),
-                                Forms\Components\Toggle::make('is_scrap')
+                                Toggle::make('is_scrap')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.is-scrap'))
                                     ->inline(false)
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.is-scrap-hint-tooltip'))
-                                    ->visible(fn (Forms\Get $get): bool => in_array($get('type'), [LocationType::INTERNAL->value, LocationType::INVENTORY->value]))
+                                    ->visible(fn (Get $get): bool => in_array($get('type'), [LocationType::INTERNAL->value, LocationType::INVENTORY->value]))
                                     ->live(),
 
-                                Forms\Components\Toggle::make('is_dock')
+                                Toggle::make('is_dock')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.is-dock'))
                                     ->inline(false)
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.is-dock-hint-tooltip')),
 
-                                Forms\Components\Toggle::make('is_replenish')
+                                Toggle::make('is_replenish')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.is-replenish'))
                                     ->inline(false)
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.is-replenish-hint-tooltip'))
-                                    ->visible(fn (Forms\Get $get): bool => $get('type') === LocationType::INTERNAL->value),
+                                    ->visible(fn (Get $get): bool => $get('type') === LocationType::INTERNAL->value),
 
-                                Forms\Components\Fieldset::make(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.cyclic-counting'))
+                                Fieldset::make(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.cyclic-counting'))
                                     ->schema([
-                                        Forms\Components\TextInput::make('cyclic_inventory_frequency')
+                                        TextInput::make('cyclic_inventory_frequency')
                                             ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.inventory-frequency'))
                                             ->integer()
                                             ->default(0),
-                                        Forms\Components\Placeholder::make('last_inventory_date')
+                                        Placeholder::make('last_inventory_date')
                                             ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.last-inventory'))
                                             ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.last-inventory-hint-tooltip'))
                                             ->content(fn ($record) => $record?->last_inventory_date?->toFormattedDateString() ?? '—'),
-                                        Forms\Components\Placeholder::make('next_inventory_date')
+                                        Placeholder::make('next_inventory_date')
                                             ->label(__('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.next-expected'))
                                             ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/location.form.sections.settings.fields.next-expected-hint-tooltip'))
                                             ->content(fn ($record) => $record?->next_inventory_date?->toFormattedDateString() ?? '—'),
                                     ])
-                                    ->visible(fn (Forms\Get $get): bool => in_array($get('type'), [LocationType::INTERNAL->value, LocationType::TRANSIT->value]))
+                                    ->visible(fn (Get $get): bool => in_array($get('type'), [LocationType::INTERNAL->value, LocationType::TRANSIT->value]))
                                     ->columns(1),
                             ]),
                     ])
@@ -168,31 +194,31 @@ class LocationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('full_name')
+                TextColumn::make('full_name')
                     ->label(__('inventories::filament/clusters/configurations/resources/location.table.columns.location'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('type')
+                TextColumn::make('type')
                     ->label(__('inventories::filament/clusters/configurations/resources/location.table.columns.type'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('storageCategory.name')
+                TextColumn::make('storageCategory.name')
                     ->label(__('inventories::filament/clusters/configurations/resources/location.table.columns.storage-category'))
                     ->placeholder('—')
                     ->sortable()
                     ->hiddenOn(ManageLocations::class),
-                Tables\Columns\TextColumn::make('company.name')
+                TextColumn::make('company.name')
                     ->label(__('inventories::filament/clusters/configurations/resources/location.table.columns.company'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('deleted_at')
+                TextColumn::make('deleted_at')
                     ->label(__('inventories::filament/clusters/configurations/resources/location.table.columns.deleted-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('inventories::filament/clusters/configurations/resources/location.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('inventories::filament/clusters/configurations/resources/location.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
@@ -214,28 +240,28 @@ class LocationResource extends Resource
                     ->collapsible(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('type')
+                SelectFilter::make('type')
                     ->label(__('inventories::filament/clusters/configurations/resources/location.table.filters.type'))
                     ->options(LocationType::class)
                     ->searchable()
                     ->multiple()
                     ->preload(),
-                Tables\Filters\SelectFilter::make('storage_category_id')
+                SelectFilter::make('storage_category_id')
                     ->label(__('inventories::filament/clusters/configurations/resources/location.table.filters.location'))
                     ->relationship('storageCategory', 'name')
                     ->searchable()
                     ->preload(),
-                Tables\Filters\SelectFilter::make('company_id')
+                SelectFilter::make('company_id')
                     ->label(__('inventories::filament/clusters/configurations/resources/location.table.filters.company'))
                     ->relationship('company', 'name')
                     ->searchable()
                     ->preload(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ViewAction::make()
                     ->hidden(fn ($record) => $record->trashed())
                     ->modalWidth('6xl'),
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->hidden(fn ($record) => $record->trashed())
                     ->modalWidth('6xl')
                     ->successNotification(
@@ -244,21 +270,21 @@ class LocationResource extends Resource
                             ->title(__('inventories::filament/clusters/configurations/resources/location.table.actions.edit.notification.title'))
                             ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.edit.notification.body')),
                     ),
-                Tables\Actions\RestoreAction::make()
+                RestoreAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('inventories::filament/clusters/configurations/resources/location.table.actions.restore.notification.title'))
                             ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.restore.notification.body')),
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('inventories::filament/clusters/configurations/resources/location.table.actions.delete.notification.title'))
                             ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.delete.notification.body')),
                     ),
-                Tables\Actions\ForceDeleteAction::make()
+                ForceDeleteAction::make()
                     ->action(function (Location $record) {
                         try {
                             $record->forceDelete();
@@ -277,9 +303,9 @@ class LocationResource extends Resource
                             ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.force-delete.notification.success.body')),
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\BulkAction::make('print')
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('print')
                         ->label(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.print.label'))
                         ->icon('heroicon-o-printer')
                         ->action(function ($records) {
@@ -293,21 +319,21 @@ class LocationResource extends Resource
                                 echo $pdf->output();
                             }, 'Location-Barcode.pdf');
                         }),
-                    Tables\Actions\RestoreBulkAction::make()
+                    RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.restore.notification.title'))
                                 ->body(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteBulkAction::make()
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.delete.notification.title'))
                                 ->body(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteBulkAction::make()
+                    ForceDeleteBulkAction::make()
                         ->action(function (Collection $records) {
                             try {
                                 $records->each(fn (Model $record) => $record->forceDelete());
@@ -328,65 +354,65 @@ class LocationResource extends Resource
                 ]),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->icon('heroicon-o-plus-circle'),
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Infolists\Components\Section::make(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.general.title'))
+                        Section::make(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.general.title'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('name')
+                                TextEntry::make('name')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.general.entries.location'))
                                     ->icon('heroicon-o-map-pin')
-                                    ->size(Infolists\Components\TextEntry\TextEntrySize::Large)
+                                    ->size(TextSize::Large)
                                     ->weight(FontWeight::Bold)
                                     ->columnSpan(2),
-                                Infolists\Components\TextEntry::make('parent.full_name')
+                                TextEntry::make('parent.full_name')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.general.entries.parent-location'))
                                     ->icon('heroicon-o-building-office-2'),
-                                Infolists\Components\TextEntry::make('description')
+                                TextEntry::make('description')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.general.entries.external-notes'))
                                     ->markdown()
                                     ->placeholder('—'),
-                                Infolists\Components\TextEntry::make('type')
+                                TextEntry::make('type')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.settings.entries.location-type'))
                                     ->icon('heroicon-o-tag'),
-                                Infolists\Components\TextEntry::make('company.name')
+                                TextEntry::make('company.name')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.settings.entries.company'))
                                     ->icon('heroicon-o-building-office'),
-                                Infolists\Components\TextEntry::make('storageCategory.name')
+                                TextEntry::make('storageCategory.name')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.settings.entries.storage-category'))
                                     ->icon('heroicon-o-archive-box')
                                     ->placeholder('—'),
                             ])
                             ->columns(2),
 
-                        Infolists\Components\Section::make(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.settings.title'))
+                        Section::make(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.settings.title'))
                             ->schema([
-                                Infolists\Components\IconEntry::make('is_scrap')
+                                IconEntry::make('is_scrap')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.settings.entries.is-scrap')),
-                                Infolists\Components\IconEntry::make('is_dock')
+                                IconEntry::make('is_dock')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.settings.entries.is-dock')),
-                                Infolists\Components\IconEntry::make('is_replenish')
+                                IconEntry::make('is_replenish')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.settings.entries.is-replenish')),
 
-                                Infolists\Components\Fieldset::make(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.settings.entries.cyclic-counting'))
+                                Fieldset::make(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.settings.entries.cyclic-counting'))
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('cyclic_inventory_frequency')
+                                        TextEntry::make('cyclic_inventory_frequency')
                                             ->label(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.settings.entries.inventory-frequency'))
                                             ->icon('heroicon-o-clock')
                                             ->placeholder('—'),
-                                        Infolists\Components\TextEntry::make('cyclic_inventory_last')
+                                        TextEntry::make('cyclic_inventory_last')
                                             ->label(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.settings.entries.last-inventory'))
                                             ->icon('heroicon-o-calendar')
                                             ->placeholder('—'),
-                                        Infolists\Components\TextEntry::make('cyclic_inventory_next_expected')
+                                        TextEntry::make('cyclic_inventory_next_expected')
                                             ->label(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.settings.entries.next-expected'))
                                             ->icon('heroicon-o-calendar-days')
                                             ->placeholder('—'),
@@ -396,20 +422,20 @@ class LocationResource extends Resource
                     ])
                     ->columnSpan(['lg' => 2]),
 
-                Infolists\Components\Group::make()
+                Group::make()
                     ->schema([
-                        Infolists\Components\Section::make(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.record-information.title'))
+                        Section::make(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.record-information.title'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('created_at')
+                                TextEntry::make('created_at')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.record-information.entries.created-at'))
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar'),
 
-                                Infolists\Components\TextEntry::make('creator.name')
+                                TextEntry::make('creator.name')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.record-information.entries.created-by'))
                                     ->icon('heroicon-m-user'),
 
-                                Infolists\Components\TextEntry::make('updated_at')
+                                TextEntry::make('updated_at')
                                     ->label(__('inventories::filament/clusters/configurations/resources/location.infolist.sections.record-information.entries.last-updated'))
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar-days'),
@@ -440,18 +466,18 @@ class LocationResource extends Resource
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewLocation::class,
-            Pages\EditLocation::class,
+            ViewLocation::class,
+            EditLocation::class,
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListLocations::route('/'),
-            'create' => Pages\CreateLocation::route('/create'),
-            'view'   => Pages\ViewLocation::route('/{record}'),
-            'edit'   => Pages\EditLocation::route('/{record}/edit'),
+            'index'  => ListLocations::route('/'),
+            'create' => CreateLocation::route('/create'),
+            'view'   => ViewLocation::route('/{record}'),
+            'edit'   => EditLocation::route('/{record}/edit'),
         ];
     }
 }

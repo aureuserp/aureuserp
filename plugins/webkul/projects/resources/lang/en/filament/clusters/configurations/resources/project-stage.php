@@ -53,8 +53,14 @@ return [
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Project stage force deleted',
-                    'body'  => 'The project stage has been force deleted successfully.',
+                    'success' => [
+                        'title' => 'Project stage force deleted',
+                        'body'  => 'The project stage has been force deleted successfully.',
+                    ],
+                    'error' => [
+                        'title' => 'Project Stage  could not be deleted',
+                        'body'  => 'The Project Stage  cannot be deleted because it is currently in use.',
+                    ],
                 ],
             ],
         ],

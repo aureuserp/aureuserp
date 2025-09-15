@@ -3,8 +3,15 @@
 namespace Webkul\Field\Filament\Tables\Filters;
 
 use Filament\Support\Components\Component;
-use Filament\Tables;
-use Filament\Tables\Filters\QueryBuilder\Constraints;
+use Filament\Tables\Filters\BaseFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\QueryBuilder\Constraints\BooleanConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\Constraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\NumberConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\SelectConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Webkul\Field\Models\Field;
@@ -88,17 +95,17 @@ class CustomFilters extends Component
             ->get();
     }
 
-    protected function createFilter(Field $field): Tables\Filters\BaseFilter
+    protected function createFilter(Field $field): BaseFilter
     {
         $filter = match ($field->type) {
-            'checkbox' => Tables\Filters\Filter::make($field->code)
+            'checkbox' => Filter::make($field->code)
                 ->query(fn (Builder $query): Builder => $query->where($field->code, true)),
 
-            'toggle' => Tables\Filters\Filter::make($field->code)
+            'toggle' => Filter::make($field->code)
                 ->toggle()
                 ->query(fn (Builder $query): Builder => $query->where($field->code, true)),
 
-            'radio' => Tables\Filters\SelectFilter::make($field->code)
+            'radio' => SelectFilter::make($field->code)
                 ->options(function () use ($field) {
                     return collect($field->options)
                         ->mapWithKeys(fn ($option) => [$option => $option])
@@ -106,7 +113,7 @@ class CustomFilters extends Component
                 }),
 
             'select' => $field->is_multiselect
-                ? Tables\Filters\SelectFilter::make($field->code)
+                ? SelectFilter::make($field->code)
                     ->options(function () use ($field) {
                         return collect($field->options)
                             ->mapWithKeys(fn ($option) => [$option => $option])
@@ -124,14 +131,14 @@ class CustomFilters extends Component
                         });
                     })
                     ->multiple()
-                : Tables\Filters\SelectFilter::make($field->code)
+                : SelectFilter::make($field->code)
                     ->options(function () use ($field) {
                         return collect($field->options)
                             ->mapWithKeys(fn ($option) => [$option => $option])
                             ->toArray();
                     }),
 
-            'checkbox_list' => Tables\Filters\SelectFilter::make($field->code)
+            'checkbox_list' => SelectFilter::make($field->code)
                 ->options(function () use ($field) {
                     return collect($field->options)
                         ->mapWithKeys(fn ($option) => [$option => $option])
@@ -150,41 +157,41 @@ class CustomFilters extends Component
                 })
                 ->multiple(),
 
-            default => Tables\Filters\Filter::make($field->code),
+            default => Filter::make($field->code),
         };
 
         return $filter->label($field->name);
     }
 
-    protected function createConstraint(Field $field): Constraints\Constraint
+    protected function createConstraint(Field $field): Constraint
     {
         $filter = match ($field->type) {
             'text' => match ($field->input_type) {
-                'integer' => Constraints\NumberConstraint::make($field->code)->integer(),
-                'numeric' => Constraints\NumberConstraint::make($field->code),
-                default   => Constraints\TextConstraint::make($field->code),
+                'integer' => NumberConstraint::make($field->code)->integer(),
+                'numeric' => NumberConstraint::make($field->code),
+                default   => TextConstraint::make($field->code),
             },
 
-            'datetime' => Constraints\DateConstraint::make($field->code),
+            'datetime' => DateConstraint::make($field->code),
 
-            'checkbox', 'toggle' => Constraints\BooleanConstraint::make($field->code),
+            'checkbox', 'toggle' => BooleanConstraint::make($field->code),
 
             'select' => $field->is_multiselect
-                ? Constraints\SelectConstraint::make($field->code)
+                ? SelectConstraint::make($field->code)
                     ->options(function () use ($field) {
                         return collect($field->options)
                             ->mapWithKeys(fn ($option) => [$option => $option])
                             ->toArray();
                     })
                     ->multiple()
-                : Constraints\SelectConstraint::make($field->code)
+                : SelectConstraint::make($field->code)
                     ->options(function () use ($field) {
                         return collect($field->options)
                             ->mapWithKeys(fn ($option) => [$option => $option])
                             ->toArray();
                     }),
 
-            'checkbox_list' => Constraints\SelectConstraint::make($field->code)
+            'checkbox_list' => SelectConstraint::make($field->code)
                 ->options(function () use ($field) {
                     return collect($field->options)
                         ->mapWithKeys(fn ($option) => [$option => $option])
@@ -192,7 +199,7 @@ class CustomFilters extends Component
                 })
                 ->multiple(),
 
-            default => Constraints\TextConstraint::make($field->code),
+            default => TextConstraint::make($field->code),
         };
 
         return $filter->label($field->name);

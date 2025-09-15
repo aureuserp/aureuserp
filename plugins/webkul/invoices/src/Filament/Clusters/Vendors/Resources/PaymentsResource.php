@@ -2,11 +2,18 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources;
 
-use Filament\Pages\SubNavigationPosition;
+use Filament\Pages\Enums\SubNavigationPosition;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Infolists\Infolist;
 use Webkul\Account\Filament\Resources\PaymentsResource as BasePaymentsResource;
 use Webkul\Invoice\Filament\Clusters\Vendors;
-use Webkul\Invoice\Filament\Clusters\Vendors\Resources\PaymentsResource\Pages;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\PaymentsResource\Pages\CreatePayments;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\PaymentsResource\Pages\EditPayments;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\PaymentsResource\Pages\ListPayments;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\PaymentsResource\Pages\ViewPayments;
 use Webkul\Invoice\Models\Payment;
+use Filament\Schemas\Schema;
 
 class PaymentsResource extends BasePaymentsResource
 {
@@ -18,7 +25,7 @@ class PaymentsResource extends BasePaymentsResource
 
     protected static ?string $cluster = Vendors::class;
 
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getModelLabel(): string
     {
@@ -35,13 +42,64 @@ class PaymentsResource extends BasePaymentsResource
         return null;
     }
 
+    public static function form(Schema $schema): Schema
+    {
+        $form = parent::form($schema);
+
+        $components = $form->getComponents();
+
+        $group = $components[1]?->getChildComponents()[0] ?? null;
+
+        if ($group) {
+            $fields = $group->getChildComponents();
+
+            $fields[1] = $fields[1]->label(__('invoices::filament/resources/payment.form.sections.fields.vender-bank-account'));
+
+            $fields[2] = Forms\Components\Select::make('partner_id')
+                ->label(__('invoices::filament/resources/payment.form.sections.fields.vender'))
+                ->relationship(
+                    'partner',
+                    'name',
+                    fn ($query) => $query->where('sub_type', 'supplier')->orderBy('id')
+                )
+                ->searchable()
+                ->preload();
+
+            $group->childComponents($fields);
+            $components[1]->childComponents([$group]);
+        }
+
+        return $form->components($components);
+    }
+
+    public static function infolist(Schema $schema): Schema
+    {
+        $infolist = parent::infolist($schema);
+
+        $components = $infolist->getComponents();
+
+        $group = $components[0]?->getChildComponents()[0] ?? null;
+
+        if ($group) {
+            $fields = $group->getChildComponents();
+
+            $fields[2] = $fields[2]->label(__('invoices::filament/resources/payment.form.sections.fields.vender-bank-account'));
+            $fields[3] = $fields[3]->label(__('invoices::filament/resources/payment.form.sections.fields.vender'));
+
+            $group->childComponents($fields);
+            $components[0]->childComponents([$group]);
+        }
+
+        return $infolist->components($components);
+    }
+
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListPayments::route('/'),
-            'create' => Pages\CreatePayments::route('/create'),
-            'view'   => Pages\ViewPayments::route('/{record}'),
-            'edit'   => Pages\EditPayments::route('/{record}/edit'),
+            'index'  => ListPayments::route('/'),
+            'create' => CreatePayments::route('/create'),
+            'view'   => ViewPayments::route('/{record}'),
+            'edit'   => EditPayments::route('/{record}/edit'),
         ];
     }
 }

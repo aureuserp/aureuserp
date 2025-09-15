@@ -7,7 +7,7 @@ use Webkul\Inventory\Models\Route;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Inventory\Models\Route>
+ * @extends Factory<Route>
  */
 class RouteFactory extends Factory
 {

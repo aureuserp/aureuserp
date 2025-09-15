@@ -2,10 +2,10 @@
 
 namespace Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
-use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResource;
 use Webkul\Support\Models\ActivityPlan;
@@ -24,10 +24,10 @@ class ListActivityPlans extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->icon('heroicon-o-plus-circle')
                 ->label(__('employees::filament/clusters/configurations/resources/activity-plan/pages/list-activity-plan.header-actions.create.label'))
-                ->mutateFormDataUsing(function ($data) {
+                ->mutateDataUsing(function ($data) {
                     $user = Auth::user();
 
                     $data['plugin'] = static::getPluginName();

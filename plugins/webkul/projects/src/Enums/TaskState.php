@@ -2,13 +2,30 @@
 
 namespace Webkul\Project\Enums;
 
-enum TaskState: string
+use Filament\Support\Contracts;
+
+enum TaskState: string implements Contracts\HasColor, Contracts\HasIcon, Contracts\HasLabel
 {
     case IN_PROGRESS = 'in_progress';
     case CHANGE_REQUESTED = 'change_requested';
     case APPROVED = 'approved';
     case CANCELLED = 'cancelled';
     case DONE = 'done';
+
+    public function getLabel(): string
+    {
+        return self::options()[$this->value];
+    }
+
+    public function getIcon(): ?string
+    {
+        return self::icons()[$this->value] ?? null;
+    }
+
+    public function getColor(): ?string
+    {
+        return self::colors()[$this->value] ?? null;
+    }
 
     public static function options(): array
     {

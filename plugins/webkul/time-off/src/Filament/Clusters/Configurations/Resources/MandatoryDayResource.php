@@ -2,23 +2,35 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\ColorEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Webkul\TimeOff\Filament\Clusters\Configurations;
-use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\MandatoryDayResource\Pages;
+use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\MandatoryDayResource\Pages\ListMandatoryDays;
 use Webkul\TimeOff\Models\LeaveMandatoryDay;
 
 class MandatoryDayResource extends Resource
 {
     protected static ?string $model = LeaveMandatoryDay::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-arrow-path-rounded-square';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path-rounded-square';
 
     protected static ?string $cluster = Configurations::class;
 
@@ -34,24 +46,24 @@ class MandatoryDayResource extends Resource
         return __('time-off::filament/clusters/configurations/resources/mandatory-days.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\ColorPicker::make('color')
+        return $schema
+            ->components([
+                ColorPicker::make('color')
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.form.fields.color'))
                     ->required()
                     ->hexColor()
                     ->default('#000000'),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.form.fields.name'))
                     ->required(),
-                Forms\Components\DatePicker::make('start_date')
+                DatePicker::make('start_date')
                     ->native(false)
                     ->default(now()->format('Y-m-d'))
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.form.fields.start-date'))
                     ->required(),
-                Forms\Components\DatePicker::make('end_date')
+                DatePicker::make('end_date')
                     ->native(false)
                     ->default(now()->format('Y-m-d'))
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.form.fields.end-date'))
@@ -63,85 +75,85 @@ class MandatoryDayResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable()
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.columns.name'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('company.name')
+                TextColumn::make('company.name')
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.columns.company-name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('createdBy.name')
+                TextColumn::make('createdBy.name')
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.columns.created-by'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('start_date')
+                TextColumn::make('start_date')
                     ->date()
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.columns.start-date'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('end_date')
+                TextColumn::make('end_date')
                     ->date()
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.columns.end-date'))
                     ->searchable()
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('company_id')
+                SelectFilter::make('company_id')
                     ->relationship('company', 'name')
                     ->searchable()
                     ->preload()
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.filters.company-name')),
-                Tables\Filters\SelectFilter::make('creator_id')
+                SelectFilter::make('creator_id')
                     ->relationship('createdBy', 'name')
                     ->searchable()
                     ->preload()
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.filters.created-by')),
-                Tables\Filters\QueryBuilder::make()
+                QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
-                        Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('name')
+                        TextConstraint::make('name')
                             ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.filters.name'))
                             ->icon('heroicon-o-clock'),
-                        Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('start_date')
+                        TextConstraint::make('start_date')
                             ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.filters.start-date'))
                             ->icon('heroicon-o-calendar'),
-                        Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('end_date')
+                        TextConstraint::make('end_date')
                             ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.filters.end-date'))
                             ->icon('heroicon-o-calendar'),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('created_at')
+                        DateConstraint::make('created_at')
                             ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.filters.created-at')),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('updated_at')
+                        DateConstraint::make('updated_at')
                             ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.filters.updated-at')),
                     ]),
             ])
             ->groups([
-                Tables\Grouping\Group::make('name')
+                Group::make('name')
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.groups.name'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('createdBy.name')
+                Group::make('createdBy.name')
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.groups.created-by'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('company.name')
+                Group::make('company.name')
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.groups.company-name'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('start_date')
+                Group::make('start_date')
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.groups.start-date'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('end_date')
+                Group::make('end_date')
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.groups.end-date'))
                     ->collapsible(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.actions.edit.notification.title'))
                             ->body(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.actions.edit.notification.body')),
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -149,9 +161,9 @@ class MandatoryDayResource extends Resource
                             ->body(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.actions.delete.notification.body')),
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -162,22 +174,22 @@ class MandatoryDayResource extends Resource
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\ColorEntry::make('color')
+        return $schema
+            ->components([
+                ColorEntry::make('color')
                     ->placeholder('—')
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.infolist.entries.color')),
-                Infolists\Components\TextEntry::make('name')
+                TextEntry::make('name')
                     ->placeholder('-')
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.infolist.entries.name')),
-                Infolists\Components\TextEntry::make('start_date')
+                TextEntry::make('start_date')
                     ->date()
                     ->placeholder('-')
                     ->icon('heroicon-o-calendar')
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.infolist.entries.start-date')),
-                Infolists\Components\TextEntry::make('end_date')
+                TextEntry::make('end_date')
                     ->date()
                     ->placeholder('-')
                     ->icon('heroicon-o-calendar')
@@ -188,7 +200,7 @@ class MandatoryDayResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListMandatoryDays::route('/'),
+            'index' => ListMandatoryDays::route('/'),
         ];
     }
 }

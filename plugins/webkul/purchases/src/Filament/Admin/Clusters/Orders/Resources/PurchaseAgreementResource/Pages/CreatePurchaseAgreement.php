@@ -6,7 +6,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Purchase\Enums;
+use Webkul\Purchase\Enums\RequisitionState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource;
 
 class CreatePurchaseAgreement extends CreateRecord
@@ -35,7 +35,7 @@ class CreatePurchaseAgreement extends CreateRecord
     {
         $data['creator_id'] = Auth::id();
 
-        $data['state'] ??= Enums\RequisitionState::DRAFT;
+        $data['state'] ??= RequisitionState::DRAFT;
 
         return $data;
     }

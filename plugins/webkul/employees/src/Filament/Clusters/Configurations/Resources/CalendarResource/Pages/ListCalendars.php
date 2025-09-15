@@ -2,10 +2,10 @@
 
 namespace Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
-use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Tabs\Tab;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource;
 use Webkul\Employee\Models\Calendar;
 
@@ -16,7 +16,7 @@ class ListCalendars extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label(__('employees::filament/clusters/configurations/resources/calendar/pages/list-calendar.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
                 ->successNotification(

@@ -2,23 +2,48 @@
 
 namespace Webkul\Recruitment\Filament\Clusters\Configurations\Resources;
 
-use Filament\Forms;
-use Filament\Infolists\Components;
-use Filament\Infolists\Infolist;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Filters\QueryBuilder\Constraints\BooleanConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
+use Filament\Tables\Table;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Recruitment\Filament\Clusters\Configurations;
-use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\StageResource\Pages;
+use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\StageResource\Pages\CreateStage;
+use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\StageResource\Pages\EditStage;
+use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\StageResource\Pages\ListStages;
+use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\StageResource\Pages\ViewStages;
 use Webkul\Recruitment\Models\Stage;
 
 class StageResource extends Resource
 {
     protected static ?string $model = Stage::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-cube';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cube';
 
     protected static ?int $navigationSort = 1;
 
@@ -39,24 +64,24 @@ class StageResource extends Resource
         return __('recruitments::filament/clusters/configurations/resources/stage.navigation.title');
     }
 
-    public static function form(Forms\Form $form): Forms\Form
+    public static function form(Schema $schema): Schema
     {
-        return $form->schema([
-            Forms\Components\Group::make()
+        return $schema->components([
+            Group::make()
                 ->schema([
-                    Forms\Components\Group::make()
+                    Group::make()
                         ->schema([
-                            Forms\Components\Group::make()
+                            Group::make()
                                 ->schema([
-                                    Forms\Components\Section::make(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.general-information.title'))
+                                    Section::make(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.general-information.title'))
                                         ->schema([
-                                            Forms\Components\Hidden::make('creator_id')
+                                            Hidden::make('creator_id')
                                                 ->default(Auth::id())
                                                 ->required(),
-                                            Forms\Components\TextInput::make('name')
+                                            TextInput::make('name')
                                                 ->label(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.general-information.fields.stage-name'))
                                                 ->required(),
-                                            Forms\Components\RichEditor::make('requirements')
+                                            RichEditor::make('requirements')
                                                 ->label(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.general-information.fields.requirements'))
                                                 ->maxLength(255)
                                                 ->columnSpanFull(),
@@ -64,41 +89,41 @@ class StageResource extends Resource
                                 ]),
                         ])
                         ->columnSpan(['lg' => 2]),
-                    Forms\Components\Group::make()
+                    Group::make()
                         ->schema([
-                            Forms\Components\Section::make(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.tooltips.title'))
+                            Section::make(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.tooltips.title'))
                                 ->description(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.tooltips.description'))
                                 ->schema([
-                                    Forms\Components\TextInput::make('legend_normal')
+                                    TextInput::make('legend_normal')
                                         ->label(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.tooltips.fields.gray-label'))
                                         ->required()
                                         ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('recruitments::filament/clusters/configurations/resources/stage.form.sections.tooltips.fields.gray-label-tooltip'))
                                         ->default('In Progress'),
-                                    Forms\Components\TextInput::make('legend_blocked')
+                                    TextInput::make('legend_blocked')
                                         ->label(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.tooltips.fields.red-label'))
                                         ->required()
                                         ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('recruitments::filament/clusters/configurations/resources/stage.form.sections.tooltips.fields.red-label-tooltip'))
                                         ->hintColor('danger')
                                         ->default('Blocked'),
-                                    Forms\Components\TextInput::make('legend_done')
+                                    TextInput::make('legend_done')
                                         ->label(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.tooltips.fields.green-label'))
                                         ->required()
                                         ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('recruitments::filament/clusters/configurations/resources/stage.form.sections.tooltips.fields.green-label-tooltip'))
                                         ->hintColor('success')
                                         ->default('Ready for Next Stage'),
                                 ]),
-                            Forms\Components\Section::make(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.additional-information.title'))
+                            Section::make(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.additional-information.title'))
                                 ->schema([
-                                    Forms\Components\Select::make('recruitments_job_positions')
+                                    Select::make('recruitments_job_positions')
                                         ->relationship('jobs', 'name')
                                         ->multiple()
                                         ->preload()
                                         ->label(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.additional-information.fields.job-positions')),
-                                    Forms\Components\Toggle::make('fold')
+                                    Toggle::make('fold')
                                         ->label(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.additional-information.fields.folded')),
-                                    Forms\Components\Toggle::make('hired_stage')
+                                    Toggle::make('hired_stage')
                                         ->label(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.additional-information.fields.hired-stage')),
-                                    Forms\Components\Toggle::make('is_default')
+                                    Toggle::make('is_default')
                                         ->label(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.additional-information.fields.default-stage')),
                                 ]),
                         ])
@@ -106,54 +131,54 @@ class StageResource extends Resource
                 ])
                 ->columns(3),
         ])
-            ->columns('full');
+            ->columns(1);
     }
 
-    public static function table(Tables\Table $table): Tables\Table
+    public static function table(Table $table): Table
     {
         return $table->columns([
-            Tables\Columns\TextColumn::make('id')
+            TextColumn::make('id')
                 ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.id'))
                 ->sortable()
                 ->toggleable(isToggledHiddenByDefault: true),
-            Tables\Columns\TextColumn::make('name')
+            TextColumn::make('name')
                 ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.name'))
                 ->sortable()
                 ->searchable(),
-            Tables\Columns\TextColumn::make('jobs.name')
+            TextColumn::make('jobs.name')
                 ->placeholder('-')
                 ->badge()
                 ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.job-positions')),
-            Tables\Columns\IconColumn::make('is_default')
+            IconColumn::make('is_default')
                 ->boolean()
                 ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.default-stage')),
-            Tables\Columns\IconColumn::make('fold')
+            IconColumn::make('fold')
                 ->boolean()
                 ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.folded')),
-            Tables\Columns\IconColumn::make('hired_stage')
+            IconColumn::make('hired_stage')
                 ->boolean()
                 ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.hired-stage')),
-            Tables\Columns\TextColumn::make('createdBy.name')
+            TextColumn::make('createdBy.name')
                 ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.created-by'))
                 ->sortable()
                 ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
-            Tables\Columns\TextColumn::make('created_at')
+            TextColumn::make('created_at')
                 ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.created-at'))
                 ->sortable()
                 ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
-            Tables\Columns\TextColumn::make('updated_at')
+            TextColumn::make('updated_at')
                 ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.updated-at'))
                 ->sortable()
                 ->toggleable(isToggledHiddenByDefault: true)
                 ->searchable(),
         ])
             ->filters([
-                Tables\Filters\QueryBuilder::make()
+                QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('name')
+                        RelationshipConstraint::make('name')
                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.filters.name'))
                             ->multiple()
                             ->selectable(
@@ -163,7 +188,7 @@ class StageResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('jobs')
+                        RelationshipConstraint::make('jobs')
                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.filters.job-position'))
                             ->multiple()
                             ->icon('heroicon-o-briefcase')
@@ -174,16 +199,16 @@ class StageResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\BooleanConstraint::make('fold')
+                        BooleanConstraint::make('fold')
                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.filters.folded'))
                             ->icon('heroicon-o-briefcase'),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('legend_normal')
+                        RelationshipConstraint::make('legend_normal')
                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.filters.gray-label')),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('legend_blocked')
+                        RelationshipConstraint::make('legend_blocked')
                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.filters.red-label')),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('legend_done')
+                        RelationshipConstraint::make('legend_done')
                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.filters.green-label')),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('createdBy')
+                        RelationshipConstraint::make('createdBy')
                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.filters.created-by'))
                             ->multiple()
                             ->icon('heroicon-o-user')
@@ -194,9 +219,9 @@ class StageResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('created_at')
+                        DateConstraint::make('created_at')
                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.filters.created-at')),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('updated_at')
+                        DateConstraint::make('updated_at')
                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.filters.updated-at')),
                     ]),
             ])
@@ -229,24 +254,36 @@ class StageResource extends Resource
                     ->collapsible(),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.empty-state-actions.create.label'))
                     ->icon('heroicon-o-plus-circle'),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make()
+                    ->action(function (Stage $record, DeleteAction $action) {
+                        try {
+                            $record->delete();
+                        } catch (QueryException $e) {
+                            Notification::make()
+                                ->danger()
+                                ->title(__('recruitments::filament/clusters/configurations/resources/stage.table.actions.delete.notification.error.title'))
+                                ->body(__('recruitments::filament/clusters/configurations/resources/stage.table.actions.delete.notification.error.body'))
+                                ->send();
+                            $action->cancel();
+                        }
+                    })
                     ->successNotification(
                         Notification::make()
                             ->success()
-                            ->title(__('recruitments::filament/clusters/configurations/resources/stage.table.actions.delete.notification.title'))
-                            ->body(__('recruitments::filament/clusters/configurations/resources/stage.table.actions.delete.notification.body'))
+                            ->title(__('recruitments::filament/clusters/configurations/resources/stage.table.actions.delete.notification.success.title'))
+                            ->body(__('recruitments::filament/clusters/configurations/resources/stage.table.actions.delete.notification.success.body'))
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -258,62 +295,62 @@ class StageResource extends Resource
             ->reorderable('sort', 'Desc');
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Components\Grid::make(['default' => 3])
+        return $schema
+            ->components([
+                Grid::make(['default' => 3])
                     ->schema([
-                        Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Components\Section::make(__('recruitments::filament/clusters/configurations/resources/stage.infolist.sections.general-information.title'))
+                                Section::make(__('recruitments::filament/clusters/configurations/resources/stage.infolist.sections.general-information.title'))
                                     ->schema([
-                                        Components\TextEntry::make('name')
+                                        TextEntry::make('name')
                                             ->icon('heroicon-o-cube')
                                             ->placeholder('—')
                                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.infolist.sections.general-information.entries.stage-name')),
-                                        Components\TextEntry::make('sort')
+                                        TextEntry::make('sort')
                                             ->placeholder('—')
                                             ->icon('heroicon-o-bars-3-bottom-right')
                                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.infolist.sections.general-information.entries.sort')),
-                                        Components\TextEntry::make('requirements')
+                                        TextEntry::make('requirements')
                                             ->icon('heroicon-o-document-text')
                                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.infolist.sections.general-information.entries.requirements'))
                                             ->placeholder('—')
                                             ->html()
                                             ->columnSpanFull(),
                                     ])->columns(2),
-                                Components\Section::make(__('recruitments::filament/clusters/configurations/resources/stage.infolist.sections.additional-information.title'))
+                                Section::make(__('recruitments::filament/clusters/configurations/resources/stage.infolist.sections.additional-information.title'))
                                     ->schema([
-                                        Components\TextEntry::make('jobs.name')
+                                        TextEntry::make('jobs.name')
                                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.infolist.sections.additional-information.entries.job-positions'))
                                             ->badge()
                                             ->listWithLineBreaks()
                                             ->placeholder('—'),
-                                        Components\IconEntry::make('fold')
+                                        IconEntry::make('fold')
                                             ->boolean()
                                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.infolist.sections.additional-information.entries.folded')),
-                                        Components\IconEntry::make('hired_stage')
+                                        IconEntry::make('hired_stage')
                                             ->boolean()
                                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.infolist.sections.additional-information.entries.hired-stage')),
-                                        Components\IconEntry::make('is_default')
+                                        IconEntry::make('is_default')
                                             ->boolean()
                                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.infolist.sections.additional-information.entries.default-stage')),
                                     ]),
                             ])->columnSpan(2),
-                        Components\Group::make([
-                            Components\Section::make(__('recruitments::filament/clusters/configurations/resources/stage.infolist.sections.tooltips.title'))
+                        Group::make([
+                            Section::make(__('recruitments::filament/clusters/configurations/resources/stage.infolist.sections.tooltips.title'))
                                 ->schema([
-                                    Components\TextEntry::make('legend_normal')
+                                    TextEntry::make('legend_normal')
                                         ->label(__('recruitments::filament/clusters/configurations/resources/stage.infolist.sections.tooltips.entries.gray-label'))
                                         ->icon('heroicon-o-information-circle')
                                         ->placeholder('—'),
-                                    Components\TextEntry::make('legend_blocked')
+                                    TextEntry::make('legend_blocked')
                                         ->label(__('recruitments::filament/clusters/configurations/resources/stage.infolist.sections.tooltips.entries.red-label'))
                                         ->icon('heroicon-o-x-circle')
                                         ->iconColor('danger')
                                         ->placeholder('—'),
-                                    Components\TextEntry::make('legend_done')
+                                    TextEntry::make('legend_done')
                                         ->label(__('recruitments::filament/clusters/configurations/resources/stage.infolist.sections.tooltips.entries.green-label'))
                                         ->icon('heroicon-o-check-circle')
                                         ->iconColor('success')
@@ -321,17 +358,17 @@ class StageResource extends Resource
                                 ]),
 
                         ])->columnSpan(1),
-                    ]),
+                    ])->columnSpanFull(),
             ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListStages::route('/'),
-            'create' => Pages\CreateStage::route('/create'),
-            'edit'   => Pages\EditStage::route('/{record}/edit'),
-            'view'   => Pages\ViewStages::route('/{record}'),
+            'index'  => ListStages::route('/'),
+            'create' => CreateStage::route('/create'),
+            'edit'   => EditStage::route('/{record}/edit'),
+            'view'   => ViewStages::route('/{record}'),
         ];
     }
 }

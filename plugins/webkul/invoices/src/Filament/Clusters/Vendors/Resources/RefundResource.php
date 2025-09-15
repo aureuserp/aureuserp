@@ -2,11 +2,14 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources;
 
-use Filament\Pages\SubNavigationPosition;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Webkul\Account\Filament\Resources\RefundResource as BaseRefundResource;
 use Webkul\Invoice\Filament\Clusters\Vendors;
-use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\CreateRefund;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\EditRefund;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\ListRefunds;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\ViewRefund;
 use Webkul\Invoice\Models\Refund;
 
 class RefundResource extends BaseRefundResource
@@ -19,7 +22,7 @@ class RefundResource extends BaseRefundResource
 
     protected static ?string $cluster = Vendors::class;
 
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getNavigationGroup(): ?string
     {
@@ -39,18 +42,18 @@ class RefundResource extends BaseRefundResource
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewRefund::class,
-            Pages\EditRefund::class,
+            ViewRefund::class,
+            EditRefund::class,
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListRefunds::route('/'),
-            'create' => Pages\CreateRefund::route('/create'),
-            'edit'   => Pages\EditRefund::route('/{record}/edit'),
-            'view'   => Pages\ViewRefund::route('/{record}'),
+            'index'  => ListRefunds::route('/'),
+            'create' => CreateRefund::route('/create'),
+            'edit'   => EditRefund::route('/{record}/edit'),
+            'view'   => ViewRefund::route('/{record}'),
         ];
     }
 }

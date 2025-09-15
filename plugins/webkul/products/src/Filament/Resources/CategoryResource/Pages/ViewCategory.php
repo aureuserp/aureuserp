@@ -2,7 +2,8 @@
 
 namespace Webkul\Product\Filament\Resources\CategoryResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\QueryException;
@@ -16,9 +17,9 @@ class ViewCategory extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
-            Actions\DeleteAction::make()
-                ->action(function (Actions\DeleteAction $action, Category $record) {
+            EditAction::make(),
+            DeleteAction::make()
+                ->action(function (DeleteAction $action, Category $record) {
                     try {
                         $record->delete();
 

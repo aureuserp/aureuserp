@@ -2,18 +2,43 @@
 
 namespace Webkul\Website\Filament\Admin\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
+use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
-use Webkul\Website\Filament\Admin\Resources\PageResource\Pages;
+use Webkul\Website\Filament\Admin\Resources\PageResource\Pages\CreatePage;
+use Webkul\Website\Filament\Admin\Resources\PageResource\Pages\EditPage;
+use Webkul\Website\Filament\Admin\Resources\PageResource\Pages\ListPages;
+use Webkul\Website\Filament\Admin\Resources\PageResource\Pages\ViewPage;
 use Webkul\Website\Models\Page as PageModel;
 
 class PageResource extends Resource
@@ -22,9 +47,9 @@ class PageResource extends Resource
 
     protected static ?string $slug = 'website/pages';
 
-    protected static ?string $navigationIcon = 'heroicon-o-window';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-window';
 
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     protected static ?string $recordTitleAttribute = 'title';
 
@@ -38,51 +63,51 @@ class PageResource extends Resource
         return __('website::filament/admin/resources/page.navigation.group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Forms\Components\Section::make(__('website::filament/admin/resources/page.form.sections.general.title'))
+                        Section::make(__('website::filament/admin/resources/page.form.sections.general.title'))
                             ->schema([
-                                Forms\Components\TextInput::make('title')
+                                TextInput::make('title')
                                     ->label(__('website::filament/admin/resources/page.form.sections.general.fields.title'))
                                     ->required()
                                     ->live(onBlur: true)
                                     ->placeholder(__('website::filament/admin/resources/page.form.sections.general.fields.title-placeholder'))
                                     ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;'])
-                                    ->afterStateUpdated(fn (string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
-                                Forms\Components\TextInput::make('slug')
+                                    ->afterStateUpdated(fn (string $operation, $state, Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
+                                TextInput::make('slug')
                                     ->disabled()
                                     ->dehydrated()
                                     ->required()
                                     ->maxLength(255)
                                     ->unique(PageModel::class, 'slug', ignoreRecord: true),
-                                Forms\Components\RichEditor::make('content')
+                                RichEditor::make('content')
                                     ->label(__('website::filament/admin/resources/page.form.sections.general.fields.content'))
                                     ->required(),
                             ]),
 
-                        Forms\Components\Section::make(__('website::filament/admin/resources/page.form.sections.seo.title'))
+                        Section::make(__('website::filament/admin/resources/page.form.sections.seo.title'))
                             ->schema([
-                                Forms\Components\TextInput::make('meta_title')
+                                TextInput::make('meta_title')
                                     ->label(__('website::filament/admin/resources/page.form.sections.seo.fields.meta-title')),
-                                Forms\Components\TextInput::make('meta_keywords')
+                                TextInput::make('meta_keywords')
                                     ->label(__('website::filament/admin/resources/page.form.sections.seo.fields.meta-keywords')),
-                                Forms\Components\Textarea::make('meta_description')
+                                Textarea::make('meta_description')
                                     ->label(__('website::filament/admin/resources/page.form.sections.seo.fields.meta-description')),
                             ]),
                     ])
                     ->columnSpan(['lg' => 2]),
-                Forms\Components\Group::make()
+                Group::make()
                     ->schema([
-                        Forms\Components\Section::make(__('website::filament/admin/resources/page.form.sections.settings.title'))
+                        Section::make(__('website::filament/admin/resources/page.form.sections.settings.title'))
                             ->schema([
-                                Forms\Components\Toggle::make('is_header_visible')
+                                Toggle::make('is_header_visible')
                                     ->label(__('website::filament/admin/resources/page.form.sections.settings.fields.is-header-visible'))
                                     ->inline(false),
-                                Forms\Components\Toggle::make('is_footer_visible')
+                                Toggle::make('is_footer_visible')
                                     ->label(__('website::filament/admin/resources/page.form.sections.settings.fields.is-footer-visible'))
                                     ->inline(false),
                             ]),
@@ -95,36 +120,36 @@ class PageResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')
+                TextColumn::make('title')
                     ->label(__('website::filament/admin/resources/page.table.columns.title'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('slug')
+                TextColumn::make('slug')
                     ->label(__('website::filament/admin/resources/page.table.columns.slug'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('creator.name')
+                TextColumn::make('creator.name')
                     ->label(__('website::filament/admin/resources/page.table.columns.creator'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\IconColumn::make('is_published')
+                IconColumn::make('is_published')
                     ->label(__('website::filament/admin/resources/page.table.columns.is-published'))
                     ->boolean()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('is_header_visible')
+                IconColumn::make('is_header_visible')
                     ->label(__('website::filament/admin/resources/page.table.columns.is-header-visible'))
                     ->boolean()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\IconColumn::make('is_footer_visible')
+                IconColumn::make('is_footer_visible')
                     ->label(__('website::filament/admin/resources/page.table.columns.is-footer-visible'))
                     ->boolean()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('website::filament/admin/resources/page.table.columns.updated-at'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('website::filament/admin/resources/page.table.columns.created-at'))
                     ->sortable(),
             ])
@@ -134,35 +159,35 @@ class PageResource extends Resource
                     ->date(),
             ])
             ->filters([
-                Tables\Filters\Filter::make('is_published')
+                Filter::make('is_published')
                     ->label(__('website::filament/admin/resources/page.table.filters.is-published')),
-                Tables\Filters\SelectFilter::make('creator_id')
+                SelectFilter::make('creator_id')
                     ->label(__('website::filament/admin/resources/page.table.filters.creator'))
                     ->relationship('creator', 'name')
                     ->searchable()
                     ->preload(),
             ])
-            ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ActionGroup::make([
+                    ViewAction::make()
                         ->hidden(fn ($record) => $record->trashed()),
-                    Tables\Actions\EditAction::make()
+                    EditAction::make()
                         ->hidden(fn ($record) => $record->trashed()),
-                    Tables\Actions\RestoreAction::make()
+                    RestoreAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('website::filament/admin/resources/page.table.actions.restore.notification.title'))
                                 ->body(__('website::filament/admin/resources/page.table.actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteAction::make()
+                    DeleteAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('website::filament/admin/resources/page.table.actions.delete.notification.title'))
                                 ->body(__('website::filament/admin/resources/page.table.actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteAction::make()
+                    ForceDeleteAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -171,23 +196,23 @@ class PageResource extends Resource
                         ),
                 ]),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\RestoreBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('website::filament/admin/resources/page.table.bulk-actions.restore.notification.title'))
                                 ->body(__('website::filament/admin/resources/page.table.bulk-actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteBulkAction::make()
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('website::filament/admin/resources/page.table.bulk-actions.delete.notification.title'))
                                 ->body(__('website::filament/admin/resources/page.table.bulk-actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteBulkAction::make()
+                    ForceDeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -198,37 +223,37 @@ class PageResource extends Resource
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Infolists\Components\Section::make(__('website::filament/admin/resources/page.form.sections.general.title'))
+                        Section::make(__('website::filament/admin/resources/page.form.sections.general.title'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('title')
+                                TextEntry::make('title')
                                     ->label(__('website::filament/admin/resources/page.form.sections.general.fields.title'))
-                                    ->size(Infolists\Components\TextEntry\TextEntrySize::Large)
-                                    ->weight(\Filament\Support\Enums\FontWeight::Bold),
+                                    ->size(TextSize::Large)
+                                    ->weight(FontWeight::Bold),
 
-                                Infolists\Components\TextEntry::make('content')
+                                TextEntry::make('content')
                                     ->label(__('website::filament/admin/resources/page.form.sections.general.fields.content'))
                                     ->markdown(),
                             ]),
 
-                        Infolists\Components\Section::make(__('website::filament/admin/resources/page.form.sections.seo.title'))
+                        Section::make(__('website::filament/admin/resources/page.form.sections.seo.title'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('meta_title')
+                                TextEntry::make('meta_title')
                                     ->label(__('website::filament/admin/resources/page.form.sections.seo.fields.meta-title'))
                                     ->icon('heroicon-o-document-text')
                                     ->placeholder('—'),
 
-                                Infolists\Components\TextEntry::make('meta_keywords')
+                                TextEntry::make('meta_keywords')
                                     ->label(__('website::filament/admin/resources/page.form.sections.seo.fields.meta-keywords'))
                                     ->icon('heroicon-o-hashtag')
                                     ->placeholder('—'),
 
-                                Infolists\Components\TextEntry::make('meta_description')
+                                TextEntry::make('meta_description')
                                     ->label(__('website::filament/admin/resources/page.form.sections.seo.fields.meta-description'))
                                     ->markdown()
                                     ->placeholder('—'),
@@ -236,43 +261,43 @@ class PageResource extends Resource
                     ])
                     ->columnSpan(['lg' => 2]),
 
-                Infolists\Components\Group::make()
+                Group::make()
                     ->schema([
-                        Infolists\Components\Section::make(__('website::filament/admin/resources/page.infolist.sections.record-information.title'))
+                        Section::make(__('website::filament/admin/resources/page.infolist.sections.record-information.title'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('creator.name')
+                                TextEntry::make('creator.name')
                                     ->label(__('website::filament/admin/resources/page.infolist.sections.record-information.entries.created-by'))
                                     ->icon('heroicon-m-user'),
 
-                                Infolists\Components\TextEntry::make('published_at')
+                                TextEntry::make('published_at')
                                     ->label(__('website::filament/admin/resources/page.infolist.sections.record-information.entries.published-at'))
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar-days')
                                     ->placeholder('—'),
 
-                                Infolists\Components\TextEntry::make('created_at')
+                                TextEntry::make('created_at')
                                     ->label(__('website::filament/admin/resources/page.infolist.sections.record-information.entries.created-at'))
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar'),
 
-                                Infolists\Components\TextEntry::make('updated_at')
+                                TextEntry::make('updated_at')
                                     ->label(__('website::filament/admin/resources/page.infolist.sections.record-information.entries.last-updated'))
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar-days'),
 
-                                Infolists\Components\IconEntry::make('is_published')
+                                IconEntry::make('is_published')
                                     ->label(__('website::filament/admin/resources/page.table.columns.is-published'))
                                     ->boolean(),
 
                             ]),
 
-                        Infolists\Components\Section::make(__('website::filament/admin/resources/page.infolist.sections.settings.title'))
+                        Section::make(__('website::filament/admin/resources/page.infolist.sections.settings.title'))
                             ->schema([
-                                Infolists\Components\IconEntry::make('is_header_visible')
+                                IconEntry::make('is_header_visible')
                                     ->label(__('website::filament/admin/resources/page.infolist.sections.settings.entries.is-header-visible'))
                                     ->boolean(),
 
-                                Infolists\Components\IconEntry::make('is_footer_visible')
+                                IconEntry::make('is_footer_visible')
                                     ->label(__('website::filament/admin/resources/page.infolist.sections.settings.entries.is-footer-visible'))
                                     ->boolean(),
                             ]),
@@ -285,18 +310,18 @@ class PageResource extends Resource
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewPage::class,
-            Pages\EditPage::class,
+            ViewPage::class,
+            EditPage::class,
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListPages::route('/'),
-            'create' => Pages\CreatePage::route('/create'),
-            'view'   => Pages\ViewPage::route('/{record}'),
-            'edit'   => Pages\EditPage::route('/{record}/edit'),
+            'index'  => ListPages::route('/'),
+            'create' => CreatePage::route('/create'),
+            'view'   => ViewPage::route('/{record}'),
+            'edit'   => EditPage::route('/{record}/edit'),
         ];
     }
 }

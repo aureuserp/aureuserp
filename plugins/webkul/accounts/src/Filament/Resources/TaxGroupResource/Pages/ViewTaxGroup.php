@@ -2,7 +2,8 @@
 
 namespace Webkul\Account\Filament\Resources\TaxGroupResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\QueryException;
@@ -16,8 +17,8 @@ class ViewTaxGroup extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
-            Actions\DeleteAction::make()
+            EditAction::make(),
+            DeleteAction::make()
                 ->action(function (TaxGroup $record) {
                     try {
                         $record->delete();

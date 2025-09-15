@@ -2,11 +2,13 @@
 
 namespace Webkul\Security\Filament\Resources\UserResource\Pages;
 
-use Filament\Actions;
+use Exception;
+use Filament\Actions\Action;
+use Filament\Actions\CreateAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Support\Facades\Mail;
 use Webkul\Security\Filament\Resources\UserResource;
 use Webkul\Security\Mail\UserInvitationMail;
@@ -34,16 +36,16 @@ class ListUsers extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->icon('heroicon-o-user-plus')
                 ->label(__('security::filament/resources/user/pages/list-user.header-actions.create.label')),
-            Actions\Action::make('inviteUser')
+            Action::make('inviteUser')
                 ->label(__('security::filament/resources/user/pages/list-user.header-actions.invite.title'))
                 ->icon('heroicon-o-envelope')
                 ->modalIcon('heroicon-o-envelope')
                 ->modalSubmitActionLabel(__('security::filament/resources/user/pages/list-user.header-actions.invite.modal.submit-action-label'))
                 ->visible(fn (UserSettings $userSettings) => $userSettings->enable_user_invitation)
-                ->form([
+                ->schema([
                     TextInput::make('email')
                         ->email()
                         ->label(__('security::filament/resources/user/pages/list-user.header-actions.invite.form.email'))
@@ -70,7 +72,7 @@ class ListUsers extends ListRecords
                             ->body(__('security::filament/resources/user/pages/list-user.header-actions.invite.notification.success.body'))
                             ->success()
                             ->send();
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         report($e);
 
                         Notification::make('invitedFailed')

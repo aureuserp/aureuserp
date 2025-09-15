@@ -2,13 +2,13 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Pages;
 
-use Filament\Actions;
 use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\QueryException;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
-use Webkul\Purchase\Enums;
+use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
 use Webkul\Purchase\Models\Order;
 
@@ -35,10 +35,11 @@ class ViewOrder extends ViewRecord
     {
         return [
             ChatterAction::make()
+                ->record(\Webkul\Purchase\Models\Order::find($this->getRecord()->id))
                 ->setResource(static::$resource),
-            Actions\DeleteAction::make()
-                ->hidden(fn () => $this->getRecord()->state == Enums\OrderState::DONE)
-                ->action(function (Actions\DeleteAction $action, Order $record) {
+            DeleteAction::make()
+                ->hidden(fn () => $this->getRecord()->state == OrderState::DONE)
+                ->action(function (DeleteAction $action, Order $record) {
                     try {
                         $record->delete();
 

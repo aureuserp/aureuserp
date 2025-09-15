@@ -2,14 +2,31 @@
 
 namespace Webkul\Product\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
-use Filament\Tables;
+use Filament\Support\Enums\TextSize;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -21,21 +38,21 @@ class AttributeResource extends Resource
 {
     protected static ?string $model = Attribute::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-swatch';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-swatch';
 
     protected static bool $shouldRegisterNavigation = false;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make(__('products::filament/resources/attribute.form.sections.general.title'))
+        return $schema
+            ->components([
+                Section::make(__('products::filament/resources/attribute.form.sections.general.title'))
                     ->schema([
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->label(__('products::filament/resources/attribute.form.sections.general.fields.name'))
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\Radio::make('type')
+                        Radio::make('type')
                             ->label(__('products::filament/resources/attribute.form.sections.general.fields.type'))
                             ->required()
                             ->options(AttributeType::class)
@@ -43,21 +60,21 @@ class AttributeResource extends Resource
                             ->live(),
                     ]),
 
-                Forms\Components\Section::make(__('products::filament/resources/attribute.form.sections.options.title'))
+                Section::make(__('products::filament/resources/attribute.form.sections.options.title'))
                     ->schema([
-                        Forms\Components\Repeater::make(__('products::filament/resources/attribute.form.sections.options.title'))
+                        Repeater::make(__('products::filament/resources/attribute.form.sections.options.title'))
                             ->hiddenLabel()
                             ->relationship('options')
                             ->schema([
-                                Forms\Components\TextInput::make('name')
+                                TextInput::make('name')
                                     ->label(__('products::filament/resources/attribute.form.sections.options.fields.name'))
                                     ->required()
                                     ->maxLength(255),
-                                Forms\Components\ColorPicker::make('color')
+                                ColorPicker::make('color')
                                     ->label(__('products::filament/resources/attribute.form.sections.options.fields.color'))
                                     ->hexColor()
-                                    ->visible(fn (Forms\Get $get): bool => $get('../../type') === AttributeType::COLOR->value),
-                                Forms\Components\TextInput::make('extra_price')
+                                    ->visible(fn (Get $get): bool => $get('../../type') === AttributeType::COLOR),
+                                TextInput::make('extra_price')
                                     ->label(__('products::filament/resources/attribute.form.sections.options.fields.extra-price'))
                                     ->required()
                                     ->numeric()
@@ -74,62 +91,62 @@ class AttributeResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('products::filament/resources/attribute.table.columns.name'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('type')
+                TextColumn::make('type')
                     ->label(__('products::filament/resources/attribute.table.columns.type'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('products::filament/resources/attribute.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('products::filament/resources/attribute.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->groups([
-                Tables\Grouping\Group::make('type')
+                Group::make('type')
                     ->label(__('products::filament/resources/attribute.table.groups.type'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('created_at')
+                Group::make('created_at')
                     ->label(__('products::filament/resources/attribute.table.groups.created-at'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('updated_at')
+                Group::make('updated_at')
                     ->label(__('products::filament/resources/attribute.table.groups.updated-at'))
                     ->date()
                     ->collapsible(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('type')
+                SelectFilter::make('type')
                     ->label(__('products::filament/resources/attribute.table.filters.type'))
                     ->options(AttributeType::class)
                     ->searchable()
                     ->preload(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ViewAction::make()
                     ->hidden(fn ($record) => $record->trashed()),
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->hidden(fn ($record) => $record->trashed()),
-                Tables\Actions\RestoreAction::make()
+                RestoreAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('products::filament/resources/attribute.table.actions.restore.notification.title'))
                             ->body(__('products::filament/resources/attribute.table.actions.restore.notification.body')),
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('products::filament/resources/attribute.table.actions.delete.notification.title'))
                             ->body(__('products::filament/resources/attribute.table.actions.delete.notification.body')),
                     ),
-                Tables\Actions\ForceDeleteAction::make()
+                ForceDeleteAction::make()
                     ->action(function (Attribute $record) {
                         try {
                             $record->forceDelete();
@@ -148,23 +165,23 @@ class AttributeResource extends Resource
                             ->body(__('products::filament/resources/attribute.table.actions.force-delete.notification.success.body')),
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\RestoreBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('products::filament/resources/attribute.table.bulk-actions.restore.notification.title'))
                                 ->body(__('products::filament/resources/attribute.table.bulk-actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteBulkAction::make()
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('products::filament/resources/attribute.table.bulk-actions.delete.notification.title'))
                                 ->body(__('products::filament/resources/attribute.table.bulk-actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteBulkAction::make()
+                    ForceDeleteBulkAction::make()
                         ->action(function (Collection $records) {
                             try {
                                 $records->each(fn (Model $record) => $record->forceDelete());
@@ -185,47 +202,47 @@ class AttributeResource extends Resource
                 ]),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->icon('heroicon-o-plus-circle'),
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Group::make()
+        return $schema
+            ->components([
+                \Filament\Schemas\Components\Group::make()
                     ->schema([
-                        Infolists\Components\Section::make(__('products::filament/resources/attribute.infolist.sections.general.title'))
+                        Section::make(__('products::filament/resources/attribute.infolist.sections.general.title'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('name')
+                                TextEntry::make('name')
                                     ->label(__('products::filament/resources/attribute.infolist.sections.general.entries.name'))
-                                    ->size(Infolists\Components\TextEntry\TextEntrySize::Large)
+                                    ->size(TextSize::Large)
                                     ->weight(FontWeight::Bold),
 
-                                Infolists\Components\TextEntry::make('type')
+                                TextEntry::make('type')
                                     ->label(__('products::filament/resources/attribute.infolist.sections.general.entries.type'))
                                     ->placeholder('—'),
                             ]),
                     ])
                     ->columnSpan(['lg' => 2]),
 
-                Infolists\Components\Group::make()
+                \Filament\Schemas\Components\Group::make()
                     ->schema([
-                        Infolists\Components\Section::make(__('products::filament/resources/attribute.infolist.sections.record-information.title'))
+                        Section::make(__('products::filament/resources/attribute.infolist.sections.record-information.title'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('creator.name')
+                                TextEntry::make('creator.name')
                                     ->label(__('products::filament/resources/attribute.infolist.sections.record-information.entries.creator'))
                                     ->icon('heroicon-o-user')
                                     ->placeholder('—'),
 
-                                Infolists\Components\TextEntry::make('created_at')
+                                TextEntry::make('created_at')
                                     ->label(__('products::filament/resources/attribute.infolist.sections.record-information.entries.created_at'))
                                     ->dateTime()
                                     ->icon('heroicon-o-calendar')
                                     ->placeholder('—'),
 
-                                Infolists\Components\TextEntry::make('updated_at')
+                                TextEntry::make('updated_at')
                                     ->label(__('products::filament/resources/attribute.infolist.sections.record-information.entries.updated_at'))
                                     ->dateTime()
                                     ->icon('heroicon-o-clock')

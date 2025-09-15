@@ -2,21 +2,29 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources;
 
-use Filament\Forms\Form;
-use Filament\Infolists\Infolist;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\OperationState;
+use Webkul\Inventory\Enums\OperationType;
 use Webkul\Inventory\Filament\Clusters\Operations;
-use Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource\Pages;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource\Pages\CreateDropship;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource\Pages\EditDropship;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource\Pages\ListDropships;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource\Pages\ManageMoves;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource\Pages\ViewDropship;
 use Webkul\Inventory\Models\Dropship;
 use Webkul\Inventory\Settings\LogisticSettings;
 
@@ -24,7 +32,7 @@ class DropshipResource extends Resource
 {
     protected static ?string $model = Dropship::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-truck';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-truck';
 
     protected static ?int $navigationSort = 4;
 
@@ -32,7 +40,7 @@ class DropshipResource extends Resource
 
     protected static ?string $cluster = Operations::class;
 
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function isDiscovered(): bool
     {
@@ -58,20 +66,20 @@ class DropshipResource extends Resource
         return __('inventories::filament/clusters/operations/resources/dropship.navigation.group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return OperationResource::form($form);
+        return OperationResource::form($schema);
     }
 
     public static function table(Table $table): Table
     {
         return OperationResource::table($table)
-            ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make()
-                        ->hidden(fn (Dropship $record): bool => $record->state == Enums\OperationState::DONE)
+            ->recordActions([
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make()
+                        ->hidden(fn (Dropship $record): bool => $record->state == OperationState::DONE)
                         ->action(function (Dropship $record) {
                             try {
                                 $record->delete();
@@ -91,8 +99,8 @@ class DropshipResource extends Resource
                         ),
                 ]),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                DeleteBulkAction::make()
                     ->action(function (Collection $records) {
                         try {
                             $records->each(fn (Model $record) => $record->delete());
@@ -113,33 +121,33 @@ class DropshipResource extends Resource
             ])
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('operationType', function (Builder $query) {
-                    $query->where('type', Enums\OperationType::DROPSHIP);
+                    $query->where('type', OperationType::DROPSHIP);
                 });
             });
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return OperationResource::infolist($infolist);
+        return OperationResource::infolist($schema);
     }
 
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewDropship::class,
-            Pages\EditDropship::class,
-            Pages\ManageMoves::class,
+            ViewDropship::class,
+            EditDropship::class,
+            ManageMoves::class,
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListDropships::route('/'),
-            'create' => Pages\CreateDropship::route('/create'),
-            'edit'   => Pages\EditDropship::route('/{record}/edit'),
-            'view'   => Pages\ViewDropship::route('/{record}/view'),
-            'moves'  => Pages\ManageMoves::route('/{record}/moves'),
+            'index'  => ListDropships::route('/'),
+            'create' => CreateDropship::route('/create'),
+            'edit'   => EditDropship::route('/{record}/edit'),
+            'view'   => ViewDropship::route('/{record}/view'),
+            'moves'  => ManageMoves::route('/{record}/moves'),
         ];
     }
 }

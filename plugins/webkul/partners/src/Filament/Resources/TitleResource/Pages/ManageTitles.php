@@ -2,7 +2,7 @@
 
 namespace Webkul\Partner\Filament\Resources\TitleResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRecords;
 use Illuminate\Support\Facades\Auth;
@@ -15,10 +15,10 @@ class ManageTitles extends ManageRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label(__('partners::filament/resources/title/pages/manage-titles.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
-                ->mutateFormDataUsing(function (array $data): array {
+                ->mutateDataUsing(function (array $data): array {
                     $data['creator_id'] = Auth::id();
 
                     return $data;

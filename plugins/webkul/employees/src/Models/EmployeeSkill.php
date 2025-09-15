@@ -42,7 +42,7 @@ class EmployeeSkill extends Model
         return $this->belongsTo(SkillType::class);
     }
 
-    public function creator()
+    public function createdBy()
     {
         return $this->belongsTo(User::class, 'creator_id');
     }

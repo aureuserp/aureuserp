@@ -2,19 +2,25 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources;
 
-use Filament\Pages\SubNavigationPosition;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Tables\Table;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\PartnerResource as BaseCustomerResource;
 use Webkul\Sale\Filament\Clusters\Orders;
-use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages\CreateCustomer;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages\EditCustomer;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages\ListCustomers;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages\ManageAddresses;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages\ManageBankAccounts;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages\ManageContacts;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages\ViewCustomer;
 use Webkul\Sale\Models\Partner;
 
 class CustomerResource extends BaseCustomerResource
 {
     protected static ?string $model = Partner::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
     protected static bool $shouldRegisterNavigation = true;
 
@@ -22,7 +28,7 @@ class CustomerResource extends BaseCustomerResource
 
     protected static ?int $navigationSort = 3;
 
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getModelLabel(): string
     {
@@ -48,24 +54,24 @@ class CustomerResource extends BaseCustomerResource
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewCustomer::class,
-            Pages\EditCustomer::class,
-            Pages\ManageContacts::class,
-            Pages\ManageAddresses::class,
-            Pages\ManageBankAccounts::class,
+            ViewCustomer::class,
+            EditCustomer::class,
+            ManageContacts::class,
+            ManageAddresses::class,
+            ManageBankAccounts::class,
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'        => Pages\ListCustomers::route('/'),
-            'create'       => Pages\CreateCustomer::route('/create'),
-            'view'         => Pages\ViewCustomer::route('/{record}'),
-            'edit'         => Pages\EditCustomer::route('/{record}/edit'),
-            'contacts'     => Pages\ManageContacts::route('/{record}/contacts'),
-            'addresses'    => Pages\ManageAddresses::route('/{record}/addresses'),
-            'bank-account' => Pages\ManageBankAccounts::route('/{record}/bank-accounts'),
+            'index'        => ListCustomers::route('/'),
+            'create'       => CreateCustomer::route('/create'),
+            'view'         => ViewCustomer::route('/{record}'),
+            'edit'         => EditCustomer::route('/{record}/edit'),
+            'contacts'     => ManageContacts::route('/{record}/contacts'),
+            'addresses'    => ManageAddresses::route('/{record}/addresses'),
+            'bank-account' => ManageBankAccounts::route('/{record}/bank-accounts'),
         ];
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Webkul\Product\Filament\Resources\PackagingResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRecords;
 use Illuminate\Support\Facades\Auth;
@@ -15,10 +15,10 @@ class ManagePackagings extends ManageRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label(__('products::filament/resources/packaging/pages/manage-packagings.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
-                ->mutateFormDataUsing(function (array $data): array {
+                ->mutateDataUsing(function (array $data): array {
                     $data['creator_id'] = Auth::id();
 
                     return $data;

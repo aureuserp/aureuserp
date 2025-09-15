@@ -2,26 +2,44 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Management\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\TimeOff\Enums\AllocationType;
 use Webkul\TimeOff\Enums\State;
 use Webkul\TimeOff\Filament\Clusters\Management;
-use Webkul\TimeOff\Filament\Clusters\Management\Resources\AllocationResource\Pages;
+use Webkul\TimeOff\Filament\Clusters\Management\Resources\AllocationResource\Pages\CreateAllocation;
+use Webkul\TimeOff\Filament\Clusters\Management\Resources\AllocationResource\Pages\EditAllocation;
+use Webkul\TimeOff\Filament\Clusters\Management\Resources\AllocationResource\Pages\ListAllocations;
+use Webkul\TimeOff\Filament\Clusters\Management\Resources\AllocationResource\Pages\ViewAllocation;
 use Webkul\TimeOff\Models\LeaveAllocation;
 
 class AllocationResource extends Resource
 {
     protected static ?string $model = LeaveAllocation::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
 
     protected static ?string $cluster = Management::class;
 
@@ -37,11 +55,11 @@ class AllocationResource extends Resource
         return __('time-off::filament/clusters/management/resources/allocation.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Grid::make()
+        return $schema
+            ->components([
+                Grid::make()
                     ->schema([
                         ProgressStepper::make('state')
                             ->hiddenLabel()
@@ -66,47 +84,47 @@ class AllocationResource extends Resource
                             ->reactive()
                             ->live(),
                     ])->columns(2),
-                Forms\Components\Section::make()
+                Section::make()
                     ->schema([
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\TextInput::make('name')
+                                TextInput::make('name')
                                     ->label(__('time-off::filament/clusters/management/resources/allocation.form.fields.name'))
                                     ->placeholder(__('time-off::filament/clusters/management/resources/allocation.form.fields.name-placeholder'))
                                     ->required(),
-                                Forms\Components\Grid::make(2)
+                                Grid::make(2)
                                     ->schema([
-                                        Forms\Components\Select::make('holiday_status_id')
+                                        Select::make('holiday_status_id')
                                             ->label(__('time-off::filament/clusters/management/resources/allocation.form.fields.time-off-type'))
                                             ->relationship('holidayStatus', 'name')
                                             ->searchable()
                                             ->preload()
                                             ->required(),
-                                        Forms\Components\Select::make('employee_id')
+                                        Select::make('employee_id')
                                             ->label(__('time-off::filament/clusters/management/resources/allocation.form.fields.employee-name'))
                                             ->relationship('employee', 'name')
                                             ->searchable()
                                             ->preload()
                                             ->required(),
                                     ]),
-                                Forms\Components\Radio::make('allocation_type')
+                                Radio::make('allocation_type')
                                     ->label(__('time-off::filament/clusters/management/resources/allocation.form.fields.allocation-type'))
                                     ->options(AllocationType::class)
                                     ->default(AllocationType::REGULAR->value)
                                     ->required(),
-                                Forms\Components\Fieldset::make('Validity Period')
+                                Fieldset::make('Validity Period')
                                     ->schema([
-                                        Forms\Components\DatePicker::make('date_from')
+                                        DatePicker::make('date_from')
                                             ->label(__('time-off::filament/clusters/management/resources/allocation.form.fields.date-from'))
                                             ->native(false)
                                             ->required()
                                             ->default(now()),
-                                        Forms\Components\DatePicker::make('date_to')
+                                        DatePicker::make('date_to')
                                             ->label(__('time-off::filament/clusters/management/resources/allocation.form.fields.date-to'))
                                             ->native(false)
                                             ->placeholder(__('time-off::filament/clusters/management/resources/allocation.form.fields.date-to-placeholder')),
                                     ]),
-                                Forms\Components\TextInput::make('number_of_days')
+                                TextInput::make('number_of_days')
                                     ->label(__('time-off::filament/clusters/management/resources/allocation.form.fields.allocation'))
                                     ->numeric()
                                     ->default(0)
@@ -114,36 +132,37 @@ class AllocationResource extends Resource
                                     ->maxValue(99999999999)
                                     ->required()
                                     ->suffix(__('time-off::filament/clusters/management/resources/allocation.form.fields.allocation-suffix')),
-                                Forms\Components\RichEditor::make('notes')
+                                RichEditor::make('notes')
                                     ->label(__('time-off::filament/clusters/management/resources/allocation.form.fields.reason')),
                             ]),
-                    ])->columns(2),
-            ]);
+                    ])->columns(1),
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('employee.name')
+                TextColumn::make('employee.name')
                     ->label(__('time-off::filament/clusters/management/resources/allocation.table.columns.employee-name'))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('holidayStatus.name')
+                TextColumn::make('holidayStatus.name')
                     ->label(__('time-off::filament/clusters/management/resources/allocation.table.columns.time-off-type'))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('number_of_days')
+                TextColumn::make('number_of_days')
                     ->label(__('time-off::filament/clusters/management/resources/allocation.table.columns.amount'))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('allocation_type')
-                    ->formatStateUsing(fn ($state) => AllocationType::options()[$state])
+                TextColumn::make('allocation_type')
+                    ->formatStateUsing(fn($state) => $state->getLabel())
                     ->label(__('time-off::filament/clusters/management/resources/allocation.table.columns.allocation-type'))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('state')
-                    ->formatStateUsing(fn ($state) => State::options()[$state])
+                TextColumn::make('state')
+                    ->formatStateUsing(fn($state) => State::options()[$state])
                     ->label(__('time-off::filament/clusters/management/resources/allocation.table.columns.status'))
                     ->badge()
                     ->sortable()
@@ -166,21 +185,21 @@ class AllocationResource extends Resource
                     ->label(__('time-off::filament/clusters/management/resources/allocation.table.groups.start-date'))
                     ->collapsible(),
             ])
-            ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make()
+            ->recordActions([
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('time-off::filament/clusters/management/resources/allocation.table.actions.delete.notification.title'))
                                 ->body(__('time-off::filament/clusters/management/resources/allocation.table.actions.delete.notification.body'))
                         ),
-                    Tables\Actions\Action::make('approve')
+                    Action::make('approve')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
-                        ->hidden(fn ($record) => $record->state === State::VALIDATE_TWO->value)
+                        ->hidden(fn($record) => $record->state === State::VALIDATE_TWO->value)
                         ->action(function ($record) {
                             if ($record->state === State::VALIDATE_ONE->value) {
                                 $record->update(['state' => State::VALIDATE_TWO->value]);
@@ -201,9 +220,9 @@ class AllocationResource extends Resource
                                 return __('time-off::filament/clusters/management/resources/allocation.table.actions.approve.title.approve');
                             }
                         }),
-                    Tables\Actions\Action::make('refuse')
+                    Action::make('refuse')
                         ->icon('heroicon-o-x-circle')
-                        ->hidden(fn ($record) => $record->state === State::REFUSE->value)
+                        ->hidden(fn($record) => $record->state === State::REFUSE->value)
                         ->color('danger')
                         ->action(function ($record) {
                             $record->update(['state' => State::REFUSE->value]);
@@ -217,9 +236,9 @@ class AllocationResource extends Resource
                         ->label(__('time-off::filament/clusters/management/resources/allocation.table.actions.refused.title')),
                 ]),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -230,70 +249,71 @@ class AllocationResource extends Resource
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Grid::make(['default' => 3])
+        return $schema
+            ->components([
+                Grid::make(['default' => 3])
                     ->schema([
-                        Infolists\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Infolists\Components\Section::make(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.allocation-details.title'))
+                                Section::make(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.allocation-details.title'))
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('name')
+                                        TextEntry::make('name')
                                             ->icon('heroicon-o-calendar')
                                             ->placeholder('—')
                                             ->label(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.allocation-details.entries.name')),
-                                        Infolists\Components\TextEntry::make('holidayStatus.name')
+                                        TextEntry::make('holidayStatus.name')
                                             ->placeholder('—')
                                             ->icon('heroicon-o-clock')
                                             ->label(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.allocation-details.entries.time-off-type')),
-                                        Infolists\Components\TextEntry::make('allocation_type')
+                                        TextEntry::make('allocation_type')
                                             ->placeholder('—')
                                             ->icon('heroicon-o-queue-list')
-                                            ->formatStateUsing(fn ($state) => AllocationType::options()[$state])
+                                            ->formatStateUsing(fn($state) => $state->getLabel())
                                             ->label(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.allocation-details.entries.allocation-type')),
                                     ])->columns(2),
-                                Infolists\Components\Section::make(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.validity-period.title'))
+                                Section::make(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.validity-period.title'))
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('date_from')
+                                        TextEntry::make('date_from')
                                             ->label(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.validity-period.entries.date-from'))
                                             ->placeholder('—'),
-                                        Infolists\Components\TextEntry::make('date_to')
+                                        TextEntry::make('date_to')
                                             ->label(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.validity-period.entries.date-to'))
                                             ->placeholder('—'),
-                                        Infolists\Components\TextEntry::make('notes')
+                                        TextEntry::make('notes')
                                             ->label(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.validity-period.entries.reason'))
                                             ->placeholder('—')
                                             ->columnSpanFull(),
                                     ]),
                             ])->columnSpan(2),
-                        Infolists\Components\Group::make([
-                            Infolists\Components\Section::make(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.allocation-status.title'))
+                        Group::make([
+                            Section::make(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.allocation-status.title'))
                                 ->schema([
-                                    Infolists\Components\TextEntry::make('number_of_days')
+                                    TextEntry::make('number_of_days')
                                         ->label(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.allocation-status.entries.allocation'))
                                         ->placeholder('—')
                                         ->icon('heroicon-o-calculator')
                                         ->numeric(),
-                                    Infolists\Components\TextEntry::make('state')
+                                    TextEntry::make('state')
                                         ->placeholder('—')
                                         ->icon('heroicon-o-flag')
-                                        ->formatStateUsing(fn ($state) => State::options()[$state])
+                                        ->formatStateUsing(fn($state) => State::options()[$state])
                                         ->label(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.allocation-status.entries.state')),
                                 ]),
                         ])->columnSpan(1),
                     ]),
-            ]);
+            ])
+            ->columns(1);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListAllocations::route('/'),
-            'create' => Pages\CreateAllocation::route('/create'),
-            'edit'   => Pages\EditAllocation::route('/{record}/edit'),
-            'view'   => Pages\ViewAllocation::route('/{record}'),
+            'index'  => ListAllocations::route('/'),
+            'create' => CreateAllocation::route('/create'),
+            'edit'   => EditAllocation::route('/{record}/edit'),
+            'view'   => ViewAllocation::route('/{record}'),
         ];
     }
 }

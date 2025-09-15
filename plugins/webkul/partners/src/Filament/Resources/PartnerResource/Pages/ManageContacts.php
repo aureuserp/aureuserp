@@ -2,10 +2,10 @@
 
 namespace Webkul\Partner\Filament\Resources\PartnerResource\Pages;
 
-use Filament\Forms\Form;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Partner\Filament\Resources\PartnerResource;
@@ -16,26 +16,26 @@ class ManageContacts extends ManageRelatedRecords
 
     protected static string $relationship = 'contacts';
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
     public static function getNavigationLabel(): string
     {
         return __('partners::filament/resources/partner/pages/manage-contacts.title');
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return PartnerResource::form($form);
+        return PartnerResource::form($schema);
     }
 
     public function table(Table $table): Table
     {
         return PartnerResource::table($table)
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label(__('partners::filament/resources/partner/pages/manage-contacts.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
                         $data['creator_id'] = Auth::id();
 
                         return $data;

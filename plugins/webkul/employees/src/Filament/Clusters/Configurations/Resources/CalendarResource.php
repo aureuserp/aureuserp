@@ -2,26 +2,55 @@
 
 namespace Webkul\Employee\Filament\Clusters\Configurations\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\NumberConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
+use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Filament\Clusters\Configurations;
-use Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource\Pages;
-use Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource\RelationManagers;
+use Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource\Pages\CreateCalendar;
+use Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource\Pages\EditCalendar;
+use Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource\Pages\ListCalendars;
+use Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource\Pages\ViewCalendar;
+use Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource\RelationManagers\CalendarAttendance;
 use Webkul\Employee\Models\Calendar;
 
 class CalendarResource extends Resource
 {
     protected static ?string $model = Calendar::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clock';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clock';
 
     protected static ?string $cluster = Configurations::class;
 
@@ -40,24 +69,24 @@ class CalendarResource extends Resource
         return __('employees::filament/clusters/configurations/resources/calendar.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Section::make(__('employees::filament/clusters/configurations/resources/calendar.form.sections.general.title'))
+                                Section::make(__('employees::filament/clusters/configurations/resources/calendar.form.sections.general.title'))
                                     ->schema([
-                                        Forms\Components\Hidden::make('creator_id')
+                                        Hidden::make('creator_id')
                                             ->default(Auth::user()->id),
-                                        Forms\Components\TextInput::make('name')
+                                        TextInput::make('name')
                                             ->label(__('employees::filament/clusters/configurations/resources/calendar.form.sections.general.fields.schedule-name'))
                                             ->maxLength(255)
                                             ->required()
                                             ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('employees::filament/clusters/configurations/resources/calendar.form.sections.general.fields.schedule-name-tooltip')),
-                                        Forms\Components\Select::make('timezone')
+                                        Select::make('timezone')
                                             ->label(__('employees::filament/clusters/configurations/resources/calendar.form.sections.general.fields.timezone'))
                                             ->options(function () {
                                                 return collect(timezone_identifiers_list())->mapWithKeys(function ($timezone) {
@@ -69,22 +98,22 @@ class CalendarResource extends Resource
                                             ->searchable()
                                             ->required()
                                             ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('employees::filament/clusters/configurations/resources/calendar.form.sections.general.fields.timezone-tooltip')),
-                                        Forms\Components\Select::make('company_id')
+                                        Select::make('company_id')
                                             ->label(__('employees::filament/clusters/configurations/resources/calendar.form.sections.general.fields.company'))
                                             ->relationship('company', 'name')
                                             ->searchable()
                                             ->preload(),
                                     ])->columns(2),
-                                Forms\Components\Section::make(__('employees::filament/clusters/configurations/resources/calendar.form.sections.configuration.title'))
+                                Section::make(__('employees::filament/clusters/configurations/resources/calendar.form.sections.configuration.title'))
                                     ->schema([
-                                        Forms\Components\TextInput::make('hours_per_day')
+                                        TextInput::make('hours_per_day')
                                             ->label(__('employees::filament/clusters/configurations/resources/calendar.form.sections.configuration.fields.hours-per-day'))
                                             ->numeric()
                                             ->minValue(0)
                                             ->maxValue(24)
                                             ->default(8)
                                             ->suffix(__('employees::filament/clusters/configurations/resources/calendar.form.sections.configuration.fields.hours-per-day-suffix')),
-                                        Forms\Components\TextInput::make('full_time_required_hours')
+                                        TextInput::make('full_time_required_hours')
                                             ->label('Full-Time Required Hours')
                                             ->label(__('employees::filament/clusters/configurations/resources/calendar.form.sections.configuration.fields.full-time-required-hours'))
                                             ->numeric()
@@ -95,19 +124,19 @@ class CalendarResource extends Resource
                                     ])->columns(2),
                             ])
                             ->columnSpan(['lg' => 2]),
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Section::make(__('employees::filament/clusters/configurations/resources/calendar.form.sections.flexibility.title'))
+                                Section::make(__('employees::filament/clusters/configurations/resources/calendar.form.sections.flexibility.title'))
                                     ->schema([
-                                        Forms\Components\Toggle::make('is_active')
+                                        Toggle::make('is_active')
                                             ->label(__('employees::filament/clusters/configurations/resources/calendar.form.sections.flexibility.fields.status'))
                                             ->default(true)
                                             ->inline(false),
-                                        Forms\Components\Toggle::make('two_weeks_calendar')
+                                        Toggle::make('two_weeks_calendar')
                                             ->label(__('employees::filament/clusters/configurations/resources/calendar.form.sections.flexibility.fields.two-weeks-calendar'))
                                             ->inline(false)
                                             ->hintIcon('heroicon-o-question-mark-circle', tooltip: 'Enable alternating two-week work schedule'),
-                                        Forms\Components\Toggle::make('flexible_hours')
+                                        Toggle::make('flexible_hours')
                                             ->label(__('employees::filament/clusters/configurations/resources/calendar.form.sections.flexibility.fields.flexible-hours'))
                                             ->inline(false)
                                             ->live()
@@ -118,53 +147,53 @@ class CalendarResource extends Resource
                     ])
                     ->columns(3),
             ])
-            ->columns('full');
+            ->columns(1);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
+                TextColumn::make('id')
                     ->label(__('employees::filament/clusters/configurations/resources/calendar.table.columns.id'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label('Schedule Name')
                     ->label(__('employees::filament/clusters/configurations/resources/calendar.table.columns.name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('timezone')
+                TextColumn::make('timezone')
                     ->label(__('employees::filament/clusters/configurations/resources/calendar.table.columns.timezone'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('company.name')
+                TextColumn::make('company.name')
                     ->label(__('employees::filament/clusters/configurations/resources/calendar.table.columns.company'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('flexible_hours')
+                IconColumn::make('flexible_hours')
                     ->sortable()
                     ->label(__('employees::filament/clusters/configurations/resources/calendar.table.columns.flexible-hours'))
                     ->boolean(),
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->sortable()
                     ->label(__('employees::filament/clusters/configurations/resources/calendar.table.columns.status'))
                     ->boolean(),
-                Tables\Columns\TextColumn::make('hours_per_day')
+                TextColumn::make('hours_per_day')
                     ->label(__('employees::filament/clusters/configurations/resources/calendar.table.columns.daily-hours'))
                     ->numeric()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('createdBy.name')
+                TextColumn::make('createdBy.name')
                     ->label(__('employees::filament/clusters/configurations/resources/calendar.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('employees::filament/clusters/configurations/resources/calendar.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('employees::filament/clusters/configurations/resources/calendar.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
@@ -196,31 +225,31 @@ class CalendarResource extends Resource
             ])
             ->filtersFormColumns(2)
             ->filters([
-                Tables\Filters\SelectFilter::make('company')
+                SelectFilter::make('company')
                     ->relationship('company', 'name')
                     ->label(__('employees::filament/clusters/configurations/resources/calendar.table.filters.company')),
-                Tables\Filters\TernaryFilter::make('is_active')
+                TernaryFilter::make('is_active')
                     ->label(__('employees::filament/clusters/configurations/resources/calendar.table.filters.is-active')),
-                Tables\Filters\TernaryFilter::make('two_weeks_calendar')
+                TernaryFilter::make('two_weeks_calendar')
                     ->label(__('employees::filament/clusters/configurations/resources/calendar.table.filters.two-week-calendar')),
-                Tables\Filters\TernaryFilter::make('flexible_hours')
+                TernaryFilter::make('flexible_hours')
                     ->label(__('employees::filament/clusters/configurations/resources/calendar.table.filters.flexible-hours')),
-                Tables\Filters\QueryBuilder::make()
+                QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
-                        Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('name')
+                        TextConstraint::make('name')
                             ->label(__('employees::filament/clusters/configurations/resources/calendar.table.filters.name'))
                             ->icon('heroicon-o-user'),
-                        Tables\Filters\QueryBuilder\Constraints\NumberConstraint::make('hours_per_day')
+                        NumberConstraint::make('hours_per_day')
                             ->label(__('employees::filament/clusters/configurations/resources/calendar.table.filters.daily-hours'))
                             ->icon('heroicon-o-clock'),
-                        Tables\Filters\QueryBuilder\Constraints\NumberConstraint::make('full_time_required_hours')
+                        NumberConstraint::make('full_time_required_hours')
                             ->label(__('employees::filament/clusters/configurations/resources/calendar.table.filters.full-time-required-hours'))
                             ->icon('heroicon-o-clock'),
-                        Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('timezone')
+                        TextConstraint::make('timezone')
                             ->label(__('employees::filament/clusters/configurations/resources/calendar.table.filters.timezone'))
                             ->icon('heroicon-o-clock'),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('attendance')
+                        RelationshipConstraint::make('attendance')
                             ->label(__('employees::filament/clusters/configurations/resources/calendar.table.filters.attendance'))
                             ->icon('heroicon-o-building-office')
                             ->multiple()
@@ -232,7 +261,7 @@ class CalendarResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('company')
+                        RelationshipConstraint::make('company')
                             ->label(__('employees::filament/clusters/configurations/resources/calendar.table.filters.name'))
                             ->icon('heroicon-o-building-office')
                             ->multiple()
@@ -243,7 +272,7 @@ class CalendarResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('createdBy')
+                        RelationshipConstraint::make('createdBy')
                             ->label('Created By')
                             ->icon('heroicon-o-user')
                             ->label(__('employees::filament/clusters/configurations/resources/calendar.table.filters.created-by'))
@@ -255,31 +284,31 @@ class CalendarResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('created_at')
+                        DateConstraint::make('created_at')
                             ->label(__('employees::filament/clusters/configurations/resources/calendar.table.filters.created-at')),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('updated_at')
+                        DateConstraint::make('updated_at')
                             ->label(__('employees::filament/clusters/configurations/resources/calendar.table.filters.updated-at')),
                     ]),
             ])
-            ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\RestoreAction::make()
+            ->recordActions([
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    RestoreAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('employees::filament/clusters/configurations/resources/calendar.table.actions.restore.notification.title'))
                                 ->body(__('employees::filament/clusters/configurations/resources/calendar.table.actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteAction::make()
+                    DeleteAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('employees::filament/clusters/configurations/resources/calendar.table.actions.delete.notification.title'))
                                 ->body(__('employees::filament/clusters/configurations/resources/calendar.table.actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteAction::make()
+                    ForceDeleteAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -288,23 +317,23 @@ class CalendarResource extends Resource
                         ),
                 ]),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\RestoreBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('employees::filament/clusters/configurations/resources/calendar.table.bulk-actions.restore.notification.title'))
                                 ->body(__('employees::filament/clusters/configurations/resources/calendar.table.bulk-actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteBulkAction::make()
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('employees::filament/clusters/configurations/resources/calendar.table.bulk-actions.delete.notification.title'))
                                 ->body(__('employees::filament/clusters/configurations/resources/calendar.table.bulk-actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteBulkAction::make()
+                    ForceDeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -314,82 +343,82 @@ class CalendarResource extends Resource
                 ]),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->icon('heroicon-o-plus-circle'),
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Grid::make(['default' => 3])
+        return $schema
+            ->components([
+                Grid::make(['default' => 3])
                     ->schema([
-                        Infolists\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Infolists\Components\Section::make(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.general.title'))
+                                Section::make(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.general.title'))
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('name')
+                                        TextEntry::make('name')
                                             ->icon('heroicon-o-clock')
                                             ->placeholder('—')
                                             ->label(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.general.entries.name')),
-                                        Infolists\Components\TextEntry::make('timezone')
+                                        TextEntry::make('timezone')
                                             ->placeholder('—')
                                             ->icon('heroicon-o-clock')
                                             ->label(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.general.entries.timezone')),
-                                        Infolists\Components\TextEntry::make('company.name')
+                                        TextEntry::make('company.name')
                                             ->icon('heroicon-o-building-office-2')
                                             ->placeholder('—')
                                             ->label(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.general.entries.company')),
                                     ])->columns(2),
-                                Infolists\Components\Section::make(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.configuration.title'))
+                                Section::make(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.configuration.title'))
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('hours_per_day')
+                                        TextEntry::make('hours_per_day')
                                             ->placeholder('—')
                                             ->label(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.configuration.entries.hours-per-day'))
                                             ->icon('heroicon-o-clock')
                                             ->date(),
-                                        Infolists\Components\TextEntry::make('full_time_required_hours')
+                                        TextEntry::make('full_time_required_hours')
                                             ->placeholder('—')
                                             ->label(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.configuration.entries.full-time-required-hours'))
                                             ->icon('heroicon-o-clock')
                                             ->date(),
                                     ])->columns(2),
                             ])->columnSpan(2),
-                        Infolists\Components\Group::make([
-                            Infolists\Components\Section::make(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.flexibility.title'))
+                        Group::make([
+                            Section::make(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.flexibility.title'))
                                 ->schema([
-                                    Infolists\Components\IconEntry::make('is_active')
+                                    IconEntry::make('is_active')
                                         ->boolean()
                                         ->label(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.flexibility.entries.status')),
-                                    Infolists\Components\IconEntry::make('two_weeks_calendar')
+                                    IconEntry::make('two_weeks_calendar')
                                         ->boolean()
                                         ->placeholder('—')
                                         ->label(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.flexibility.entries.two-weeks-calendar')),
-                                    Infolists\Components\IconEntry::make('flexible_hours')
+                                    IconEntry::make('flexible_hours')
                                         ->placeholder('—')
                                         ->boolean()
                                         ->label(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.flexibility.entries.flexible-hours')),
                                 ]),
                         ])->columnSpan(1),
-                    ]),
+                    ])->columnSpanFull(),
             ]);
     }
 
     public static function getRelations(): array
     {
         return [
-            RelationManagers\CalendarAttendance::class,
+            CalendarAttendance::class,
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListCalendars::route('/'),
-            'create' => Pages\CreateCalendar::route('/create'),
-            'view'   => Pages\ViewCalendar::route('/{record}'),
-            'edit'   => Pages\EditCalendar::route('/{record}/edit'),
+            'index'  => ListCalendars::route('/'),
+            'create' => CreateCalendar::route('/create'),
+            'view'   => ViewCalendar::route('/{record}'),
+            'edit'   => EditCalendar::route('/{record}/edit'),
         ];
     }
 }

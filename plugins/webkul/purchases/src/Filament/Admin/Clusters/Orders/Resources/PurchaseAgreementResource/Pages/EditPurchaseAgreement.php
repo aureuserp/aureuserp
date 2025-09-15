@@ -3,11 +3,12 @@
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource\Pages;
 
 use Barryvdh\DomPDF\Facade\Pdf;
-use Filament\Actions;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
-use Webkul\Purchase\Enums;
+use Webkul\Purchase\Enums\RequisitionState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource;
 use Webkul\Purchase\Models\Requisition;
 
@@ -33,43 +34,43 @@ class EditPurchaseAgreement extends EditRecord
         return [
             ChatterAction::make()
                 ->setResource(static::$resource),
-            Actions\Action::make('confirm')
+            Action::make('confirm')
                 ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.confirm.label'))
                 ->color('primary')
                 ->action(function () {
                     $this->getRecord()->update([
-                        'state' => Enums\RequisitionState::CONFIRMED,
+                        'state' => RequisitionState::CONFIRMED,
                     ]);
 
                     $this->fillForm();
                 })
-                ->visible(fn () => $this->getRecord()->state == Enums\RequisitionState::DRAFT),
-            Actions\Action::make('close')
+                ->visible(fn () => $this->getRecord()->state == RequisitionState::DRAFT),
+            Action::make('close')
                 ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.close.label'))
                 ->color('primary')
                 ->action(function () {
                     $this->getRecord()->update([
-                        'state' => Enums\RequisitionState::CLOSED,
+                        'state' => RequisitionState::CLOSED,
                     ]);
 
                     $this->fillForm();
                 })
-                ->visible(fn () => $this->getRecord()->state == Enums\RequisitionState::CONFIRMED),
-            Actions\Action::make('cancelRecord')
+                ->visible(fn () => $this->getRecord()->state == RequisitionState::CONFIRMED),
+            Action::make('cancelRecord')
                 ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.cancel.label'))
                 ->color('gray')
                 ->action(function () {
                     $this->getRecord()->update([
-                        'state' => Enums\RequisitionState::CANCELED,
+                        'state' => RequisitionState::CANCELED,
                     ]);
 
                     $this->fillForm();
                 })
                 ->visible(fn () => ! in_array($this->getRecord()->state, [
-                    Enums\RequisitionState::CLOSED,
-                    Enums\RequisitionState::CANCELED,
+                    RequisitionState::CLOSED,
+                    RequisitionState::CANCELED,
                 ])),
-            Actions\Action::make('print')
+            Action::make('print')
                 ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.print.label'))
                 ->icon('heroicon-o-printer')
                 ->color('gray')
@@ -84,8 +85,8 @@ class EditPurchaseAgreement extends EditRecord
                         echo $pdf->output();
                     }, 'Purchase Agreement-'.str_replace('/', '_', $record->name).'.pdf');
                 }),
-            Actions\DeleteAction::make()
-                ->hidden(fn () => $this->getRecord()->state == Enums\RequisitionState::CLOSED)
+            DeleteAction::make()
+                ->hidden(fn () => $this->getRecord()->state == RequisitionState::CLOSED)
                 ->successNotification(
                     Notification::make()
                         ->success()

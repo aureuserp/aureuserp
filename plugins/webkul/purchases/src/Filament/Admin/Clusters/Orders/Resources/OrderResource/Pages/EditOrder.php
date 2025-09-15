@@ -2,13 +2,13 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Pages;
 
-use Filament\Actions;
 use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\QueryException;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
-use Webkul\Purchase\Enums;
+use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Facades\PurchaseOrder;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Actions as OrderActions;
@@ -50,6 +50,7 @@ class EditOrder extends EditRecord
     {
         return [
             ChatterAction::make()
+                ->record(\Webkul\Purchase\Models\Order::find($this->getRecord()->id))
                 ->setResource(self::$resource),
             OrderActions\SendEmailAction::make(),
             OrderActions\SendPOEmailAction::make(),
@@ -61,9 +62,9 @@ class EditOrder extends EditRecord
             OrderActions\LockAction::make(),
             OrderActions\UnlockAction::make(),
             OrderActions\CancelAction::make(),
-            Actions\DeleteAction::make()
-                ->hidden(fn () => $this->getRecord()->state == Enums\OrderState::DONE)
-                ->action(function (Actions\DeleteAction $action, Order $record) {
+            DeleteAction::make()
+                ->hidden(fn () => $this->getRecord()->state == OrderState::DONE)
+                ->action(function (DeleteAction $action, Order $record) {
                     try {
                         $record->delete();
 

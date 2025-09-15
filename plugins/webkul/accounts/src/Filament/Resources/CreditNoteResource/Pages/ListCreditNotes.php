@@ -23,7 +23,7 @@ class ListCreditNotes extends ListRecords
         return [
             'out_refund' => PresetView::make(__('accounts::filament/resources/credit-note/pages/list-credit-note.tabs.credit-notes'))
                 ->favorite()
-                ->default()
+                ->setAsDefault()
                 ->icon('heroicon-s-receipt-percent')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('move_type', MoveType::OUT_REFUND)),
             ...Arr::except($predefinedViews, ['invoice']),

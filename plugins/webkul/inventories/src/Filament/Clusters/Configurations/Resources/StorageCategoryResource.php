@@ -2,22 +2,36 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Enums\AllowNewProduct;
 use Webkul\Inventory\Filament\Clusters\Configurations;
-use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Pages;
-use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\RelationManagers;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Pages\CreateStorageCategory;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Pages\EditStorageCategory;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Pages\ListStorageCategories;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Pages\ManageCapacityByPackages;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Pages\ManageCapacityByProducts;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Pages\ManageLocations;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Pages\ViewStorageCategory;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\RelationManagers\CapacityByPackagesRelationManager;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\RelationManagers\CapacityByProductsRelationManager;
 use Webkul\Inventory\Models\StorageCategory;
 use Webkul\Inventory\Settings\WarehouseSettings;
 
@@ -25,7 +39,7 @@ class StorageCategoryResource extends Resource
 {
     protected static ?string $model = StorageCategory::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-folder';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-folder';
 
     protected static ?int $navigationSort = 4;
 
@@ -54,35 +68,35 @@ class StorageCategoryResource extends Resource
         return __('inventories::filament/clusters/configurations/resources/storage-category.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make(__('inventories::filament/clusters/configurations/resources/storage-category.form.sections.general.title'))
+        return $schema
+            ->components([
+                Section::make(__('inventories::filament/clusters/configurations/resources/storage-category.form.sections.general.title'))
                     ->schema([
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->label(__('inventories::filament/clusters/configurations/resources/storage-category.form.sections.general.fields.name'))
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('max_weight')
+                        TextInput::make('max_weight')
                             ->label(__('inventories::filament/clusters/configurations/resources/storage-category.form.sections.general.fields.max-weight'))
                             ->numeric()
                             ->default(0.0000)
                             ->minValue(0)
                             ->maxValue(99999999),
-                        Forms\Components\Select::make('allow_new_products')
+                        Select::make('allow_new_products')
                             ->label(__('inventories::filament/clusters/configurations/resources/storage-category.form.sections.general.fields.allow-new-products'))
                             ->options(AllowNewProduct::class)
                             ->required()
                             ->default(AllowNewProduct::MIXED),
-                        Forms\Components\Select::make('company_id')
+                        Select::make('company_id')
                             ->label(__('inventories::filament/clusters/configurations/resources/storage-category.form.sections.general.fields.company'))
                             ->relationship(name: 'company', titleAttribute: 'name')
                             ->searchable()
                             ->preload()
                             ->default(Auth::user()->default_company_id),
                     ])
-                    ->columns(2),
+                    ->columns(2)->columnSpanFull(),
             ]);
     }
 
@@ -90,47 +104,47 @@ class StorageCategoryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category.table.columns.name'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('allow_new_products')
+                TextColumn::make('allow_new_products')
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category.table.columns.allow-new-products'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('max_weight')
+                TextColumn::make('max_weight')
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category.table.columns.max-weight'))
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('company.name')
+                TextColumn::make('company.name')
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category.table.columns.company'))
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->groups([
-                Tables\Grouping\Group::make('allow_new_products')
+                Group::make('allow_new_products')
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category.table.groups.allow-new-products'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('created_at')
+                Group::make('created_at')
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category.table.groups.created-at'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('updated_at')
+                Group::make('updated_at')
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category.table.groups.updated-at'))
                     ->date()
                     ->collapsible(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -138,8 +152,8 @@ class StorageCategoryResource extends Resource
                             ->body(__('inventories::filament/clusters/configurations/resources/storage-category.table.actions.delete.notification.body')),
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                DeleteBulkAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -148,30 +162,30 @@ class StorageCategoryResource extends Resource
                     ),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->icon('heroicon-o-plus-circle'),
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Group::make()
+        return $schema
+            ->components([
+                \Filament\Schemas\Components\Group::make()
                     ->schema([
-                        Infolists\Components\Section::make(__('inventories::filament/clusters/configurations/resources/storage-category.infolist.sections.general.title'))
+                        Section::make(__('inventories::filament/clusters/configurations/resources/storage-category.infolist.sections.general.title'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('name')
+                                TextEntry::make('name')
                                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category.infolist.sections.general.entries.name'))
                                     ->icon('heroicon-o-tag'), // Example icon for name
-                                Infolists\Components\TextEntry::make('max_weight')
+                                TextEntry::make('max_weight')
                                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category.infolist.sections.general.entries.max-weight'))
                                     ->numeric()
                                     ->icon('heroicon-o-scale'), // Example icon for max weight
-                                Infolists\Components\TextEntry::make('allow_new_products')
+                                TextEntry::make('allow_new_products')
                                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category.infolist.sections.general.entries.allow-new-products'))
                                     ->icon('heroicon-o-plus-circle'), // Example icon for allow new products
-                                Infolists\Components\TextEntry::make('company.name')
+                                TextEntry::make('company.name')
                                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category.infolist.sections.general.entries.company'))
                                     ->icon('heroicon-o-building-office'), // Example icon for company
                             ])
@@ -179,20 +193,20 @@ class StorageCategoryResource extends Resource
                     ])
                     ->columnSpan(['lg' => 2]),
 
-                Infolists\Components\Group::make()
+                \Filament\Schemas\Components\Group::make()
                     ->schema([
-                        Infolists\Components\Section::make(__('inventories::filament/clusters/configurations/resources/storage-category.infolist.sections.record-information.title'))
+                        Section::make(__('inventories::filament/clusters/configurations/resources/storage-category.infolist.sections.record-information.title'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('created_at')
+                                TextEntry::make('created_at')
                                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category.infolist.sections.record-information.entries.created-at'))
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar'),
 
-                                Infolists\Components\TextEntry::make('creator.name')
+                                TextEntry::make('creator.name')
                                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category.infolist.sections.record-information.entries.created-by'))
                                     ->icon('heroicon-m-user'),
 
-                                Infolists\Components\TextEntry::make('updated_at')
+                                TextEntry::make('updated_at')
                                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category.infolist.sections.record-information.entries.last-updated'))
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar-days'),
@@ -223,11 +237,11 @@ class StorageCategoryResource extends Resource
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewStorageCategory::class,
-            Pages\EditStorageCategory::class,
-            Pages\ManageCapacityByPackages::class,
-            Pages\ManageCapacityByProducts::class,
-            Pages\ManageLocations::class,
+            ViewStorageCategory::class,
+            EditStorageCategory::class,
+            ManageCapacityByPackages::class,
+            ManageCapacityByProducts::class,
+            ManageLocations::class,
         ]);
     }
 
@@ -235,12 +249,12 @@ class StorageCategoryResource extends Resource
     {
         return [
             RelationGroup::make('Capacity By Packages', [
-                RelationManagers\CapacityByPackagesRelationManager::class,
+                CapacityByPackagesRelationManager::class,
             ])
                 ->icon('heroicon-o-cube'),
 
             RelationGroup::make('Capacity By Products', [
-                RelationManagers\CapacityByProductsRelationManager::class,
+                CapacityByProductsRelationManager::class,
             ])
                 ->icon('heroicon-o-clipboard-document-check'),
         ];
@@ -249,13 +263,13 @@ class StorageCategoryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'      => Pages\ListStorageCategories::route('/'),
-            'create'     => Pages\CreateStorageCategory::route('/create'),
-            'view'       => Pages\ViewStorageCategory::route('/{record}'),
-            'edit'       => Pages\EditStorageCategory::route('/{record}/edit'),
-            'packages'   => Pages\ManageCapacityByPackages::route('/{record}/packages'),
-            'products'   => Pages\ManageCapacityByProducts::route('/{record}/products'),
-            'locations'  => Pages\ManageLocations::route('/{record}/locations'),
+            'index'      => ListStorageCategories::route('/'),
+            'create'     => CreateStorageCategory::route('/create'),
+            'view'       => ViewStorageCategory::route('/{record}'),
+            'edit'       => EditStorageCategory::route('/{record}/edit'),
+            'packages'   => ManageCapacityByPackages::route('/{record}/packages'),
+            'products'   => ManageCapacityByProducts::route('/{record}/products'),
+            'locations'  => ManageLocations::route('/{record}/locations'),
         ];
     }
 }

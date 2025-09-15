@@ -2,11 +2,15 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\RelationManagers;
 
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -27,11 +31,11 @@ class CapacityByPackagesRelationManager extends RelationManager
         return __('inventories::filament/clusters/configurations/resources/storage-category/relation-managers/capacity-by-packages.title');
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('package_type_id')
+        return $schema
+            ->components([
+                Select::make('package_type_id')
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category/relation-managers/capacity-by-packages.form.package-type'))
                     ->relationship(
                         'packageType',
@@ -43,7 +47,7 @@ class CapacityByPackagesRelationManager extends RelationManager
                     })
                     ->searchable()
                     ->preload(),
-                Forms\Components\TextInput::make('qty')
+                TextInput::make('qty')
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category/relation-managers/capacity-by-packages.form.qty'))
                     ->required()
                     ->numeric()
@@ -58,16 +62,16 @@ class CapacityByPackagesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('packageType.name')
+                TextColumn::make('packageType.name')
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category/relation-managers/capacity-by-packages.table.columns.package-type')),
-                Tables\Columns\TextColumn::make('qty')
+                TextColumn::make('qty')
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category/relation-managers/capacity-by-packages.table.columns.qty')),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category/relation-managers/capacity-by-packages.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
                         $data['creator_id'] = Auth::id();
 
                         return $data;
@@ -79,15 +83,15 @@ class CapacityByPackagesRelationManager extends RelationManager
                             ->body(__('inventories::filament/clusters/configurations/resources/storage-category/relation-managers/capacity-by-packages.table.header-actions.create.notification.body')),
                     ),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                EditAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('inventories::filament/clusters/configurations/resources/storage-category/relation-managers/capacity-by-packages.table.actions.edit.notification.title'))
                             ->body(__('inventories::filament/clusters/configurations/resources/storage-category/relation-managers/capacity-by-packages.table.actions.edit.notification.body')),
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()

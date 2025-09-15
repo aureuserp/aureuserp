@@ -2,7 +2,8 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Carbon;
@@ -34,8 +35,8 @@ class EditTimeOff extends EditRecord
         return [
             ChatterActions\ChatterAction::make()
                 ->setResource(static::$resource),
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make()
+            ViewAction::make(),
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()
@@ -53,7 +54,7 @@ class EditTimeOff extends EditRecord
             if ($employee->department) {
                 $data['department_id'] = $employee->department?->id;
             } else {
-                $data['department_id'] = null;
+                $data['department_id'] = $data['department_id'] ?? null;
             }
 
             if ($employee->calendar) {
@@ -72,25 +73,33 @@ class EditTimeOff extends EditRecord
             }
         }
 
-        if (isset($data['request_unit_half'])) {
+        if (isset($data['request_unit_half']) && $data['request_unit_half']) {
             $data['duration_display'] = '0.5 day';
-
             $data['number_of_days'] = 0.5;
         } else {
             $startDate = Carbon::parse($data['request_date_from']);
             $endDate = $data['request_date_to'] ? Carbon::parse($data['request_date_to']) : $startDate;
+            $businessDays = 0;
+            $currentDate = $startDate->copy();
 
-            $data['duration_display'] = $startDate->diffInDays($endDate) + 1 .' day(s)';
+            while ($currentDate->lte($endDate)) {
+                if (! in_array($currentDate->dayOfWeek, [0, 6])) {
+                    $businessDays++;
+                }
 
-            $data['number_of_days'] = $startDate->diffInDays($endDate) + 1;
+                $currentDate->addDay();
+            }
+
+            $data['duration_display'] = $businessDays . ' day(s)';
+            $data['number_of_days'] = $businessDays;
         }
 
         $data['creator_id'] = Auth::user()->id;
 
         $data['state'] = State::CONFIRM->value;
 
-        $data['date_from'] = $data['request_date_from'];
-        $data['date_to'] = $data['request_date_to'];
+        $data['date_from'] = $data['request_date_from'] ?? null;
+        $data['date_to'] = $data['request_date_to'] ?? null;
 
         return $data;
     }

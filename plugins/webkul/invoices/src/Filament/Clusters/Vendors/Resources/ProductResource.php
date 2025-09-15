@@ -2,17 +2,25 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Pages\SubNavigationPosition;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Models\Tax;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Invoice\Enums\InvoicePolicy;
 use Webkul\Invoice\Filament\Clusters\Vendors;
-use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource\Pages;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource\Pages\CreateProduct;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource\Pages\EditProduct;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource\Pages\ListProducts;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource\Pages\ManageAttributes;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource\Pages\ManageVariants;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource\Pages\ViewProduct;
 use Webkul\Invoice\Models\Product;
 use Webkul\Product\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Support\Models\UOM;
@@ -23,7 +31,7 @@ class ProductResource extends BaseProductResource
 
     protected static ?string $model = Product::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
     protected static bool $shouldRegisterNavigation = true;
 
@@ -31,23 +39,23 @@ class ProductResource extends BaseProductResource
 
     protected static ?string $cluster = Vendors::class;
 
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getNavigationLabel(): string
     {
         return __('invoices::filament/clusters/vendors/resources/product.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        $form = BaseProductResource::form($form);
+        $schema = BaseProductResource::form($schema);
 
-        $components = $form->getComponents();
+        $components = $schema->getComponents();
 
-        $priceComponent = $components[1]->getChildComponents()[1]->getChildComponents();
+        $priceComponent = $components[1]->getDefaultChildComponents()[1]->getDefaultChildComponents();
 
         $newPriceComponents = [
-            Forms\Components\Select::make('accounts_product_taxes')
+            Select::make('accounts_product_taxes')
                 ->relationship(
                     'productTaxes',
                     'name',
@@ -58,7 +66,7 @@ class ProductResource extends BaseProductResource
                 ->searchable()
                 ->preload(),
 
-            Forms\Components\Placeholder::make('total_tax_inclusion')
+            Placeholder::make('total_tax_inclusion')
                 ->hiddenLabel()
                 ->content(function (Get $get) {
                     $price = floatval($get('price'));
@@ -116,7 +124,7 @@ class ProductResource extends BaseProductResource
                     return ! empty($parts) ? '(= '.implode(', ', $parts).')' : ' ';
                 }),
 
-            Forms\Components\Select::make('accounts_product_supplier_taxes')
+            Select::make('accounts_product_supplier_taxes')
                 ->relationship(
                     'supplierTaxes',
                     'name',
@@ -130,20 +138,20 @@ class ProductResource extends BaseProductResource
 
         $priceComponent = array_merge($newPriceComponents, $priceComponent);
 
-        $components[1]->getChildComponents()[1]->schema($priceComponent);
+        $components[1]->getDefaultChildComponents()[1]->schema($priceComponent);
 
-        $childComponents = $components[0]->getChildComponents();
+        $childComponents = $components[0]->getDefaultChildComponents();
 
         $policyComponent = [
-            Forms\Components\Section::make()
+            Section::make()
                 ->visible(fn (Get $get) => $get('sales_ok'))
                 ->schema([
-                    Forms\Components\Select::make('invoice_policy')
+                    Select::make('invoice_policy')
                         ->label(__('invoices::filament/clusters/vendors/resources/product.form.sections.invoice-policy.title'))
                         ->options(InvoicePolicy::class)
                         ->live()
                         ->default(InvoicePolicy::ORDER->value),
-                    Forms\Components\Placeholder::make('invoice_policy_help')
+                    Placeholder::make('invoice_policy_help')
                         ->hiddenLabel()
                         ->content(function (Get $get) {
                             return match ($get('invoice_policy')) {
@@ -159,38 +167,38 @@ class ProductResource extends BaseProductResource
 
         $components[0]->schema($childComponents);
 
-        $form->components([
+        $schema->components([
             ...$components,
-            Forms\Components\Hidden::make('uom_id')
+            Hidden::make('uom_id')
                 ->default(UOM::first()->id),
-            Forms\Components\Hidden::make('uom_po_id')
+            Hidden::make('uom_po_id')
                 ->default(UOM::first()->id),
-            Forms\Components\Hidden::make('sale_line_warn')
+            Hidden::make('sale_line_warn')
                 ->default('no-message'),
         ]);
 
-        return $form;
+        return $schema;
     }
 
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewProduct::class,
-            Pages\EditProduct::class,
-            Pages\ManageAttributes::class,
-            Pages\ManageVariants::class,
+            ViewProduct::class,
+            EditProduct::class,
+            ManageAttributes::class,
+            ManageVariants::class,
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'      => Pages\ListProducts::route('/'),
-            'create'     => Pages\CreateProduct::route('/create'),
-            'view'       => Pages\ViewProduct::route('/{record}'),
-            'edit'       => Pages\EditProduct::route('/{record}/edit'),
-            'attributes' => Pages\ManageAttributes::route('/{record}/attributes'),
-            'variants'   => Pages\ManageVariants::route('/{record}/variants'),
+            'index'      => ListProducts::route('/'),
+            'create'     => CreateProduct::route('/create'),
+            'view'       => ViewProduct::route('/{record}'),
+            'edit'       => EditProduct::route('/{record}/edit'),
+            'attributes' => ManageAttributes::route('/{record}/attributes'),
+            'variants'   => ManageVariants::route('/{record}/variants'),
         ];
     }
 }

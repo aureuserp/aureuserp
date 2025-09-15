@@ -2,23 +2,30 @@
 
 namespace Webkul\Sale\Filament\Clusters\Configuration\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\ColorEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\ColorColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Webkul\Sale\Filament\Clusters\Configuration;
-use Webkul\Sale\Filament\Clusters\Configuration\Resources\TagResource\Pages;
+use Webkul\Sale\Filament\Clusters\Configuration\Resources\TagResource\Pages\ListTags;
 use Webkul\Sale\Models\Tag;
 
 class TagResource extends Resource
 {
     protected static ?string $model = Tag::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-tag';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tag';
 
     protected static ?string $cluster = Configuration::class;
 
@@ -37,15 +44,15 @@ class TagResource extends Resource
         return __('sales::filament/clusters/configurations/resources/tag.navigation.group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->label(__('sales::filament/clusters/configurations/resources/tag.form.fields.name'))
                     ->required()
                     ->placeholder(__('Name')),
-                Forms\Components\ColorPicker::make('color')
+                ColorPicker::make('color')
                     ->label(__('sales::filament/clusters/configurations/resources/tag.form.fields.color'))
                     ->hexColor(),
             ]);
@@ -55,25 +62,25 @@ class TagResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable()
                     ->sortable()
                     ->label(__('sales::filament/clusters/configurations/resources/tag.table.columns.name')),
-                Tables\Columns\ColorColumn::make('color')
+                ColorColumn::make('color')
                     ->label(__('sales::filament/clusters/configurations/resources/tag.table.columns.color')),
-                Tables\Columns\TextColumn::make('createdBy.name')
+                TextColumn::make('createdBy.name')
                     ->label(__('sales::filament/clusters/configurations/resources/tag.table.columns.created-by')),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('sales::filament/clusters/configurations/resources/tag.table.actions.edit.notification.title'))
                             ->body(__('sales::filament/clusters/configurations/resources/tag.table.actions.edit.notification.body'))
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -81,9 +88,9 @@ class TagResource extends Resource
                             ->body(__('sales::filament/clusters/configurations/resources/tag.table.actions.delete.notification.body'))
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -97,18 +104,18 @@ class TagResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTags::route('/'),
+            'index' => ListTags::route('/'),
         ];
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\TextEntry::make('name')
+        return $schema
+            ->components([
+                TextEntry::make('name')
                     ->label(__('sales::filament/clusters/configurations/resources/tag.infolist.entries.name'))
                     ->placeholder('-'),
-                Infolists\Components\ColorEntry::make('color')
+                ColorEntry::make('color')
                     ->label(__('sales::filament/clusters/configurations/resources/tag.infolist.entries.color')),
             ]);
     }

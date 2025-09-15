@@ -3,7 +3,7 @@
 namespace Webkul\Account\Filament\Resources\RefundResource\Pages;
 
 use Filament\Notifications\Notification;
-use Webkul\Account\Enums;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\CreateInvoice as CreateBaseRefund;
 use Webkul\Account\Filament\Resources\RefundResource;
@@ -27,7 +27,7 @@ class CreateRefund extends CreateBaseRefund
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['move_type'] ??= Enums\MoveType::IN_REFUND;
+        $data['move_type'] ??= MoveType::IN_REFUND;
 
         $data['date'] = now();
 

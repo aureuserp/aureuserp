@@ -2,8 +2,8 @@
 
 return [
     'notification' => [
-        'title' => 'Quotation created',
-        'body'  => 'The quotation has been created successfully.',
+        'title' => 'Quotation updated',
+        'body'  => 'The quotation has been updated successfully.',
     ],
 
     'header-actions' => [

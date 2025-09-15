@@ -2,11 +2,15 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource\Pages;
 
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -19,18 +23,18 @@ class ManageCapacityByProducts extends ManageRelatedRecords
 
     protected static string $relationship = 'storageCategoryCapacitiesByProduct';
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-check';
 
     public static function getNavigationLabel(): string
     {
         return __('inventories::filament/clusters/configurations/resources/storage-category/pages/manage-capacity-by-products.title');
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('product_id')
+        return $schema
+            ->components([
+                Select::make('product_id')
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category/pages/manage-capacity-by-products.form.product'))
                     ->relationship(
                         'product',
@@ -49,7 +53,7 @@ class ManageCapacityByProducts extends ManageRelatedRecords
                     })
                     ->searchable()
                     ->preload(),
-                Forms\Components\TextInput::make('qty')
+                TextInput::make('qty')
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category/pages/manage-capacity-by-products.form.qty'))
                     ->required()
                     ->numeric()
@@ -64,16 +68,16 @@ class ManageCapacityByProducts extends ManageRelatedRecords
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('product.name')
+                TextColumn::make('product.name')
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category/pages/manage-capacity-by-products.table.columns.product')),
-                Tables\Columns\TextColumn::make('qty')
+                TextColumn::make('qty')
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category/pages/manage-capacity-by-products.table.columns.qty')),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label(__('inventories::filament/clusters/configurations/resources/storage-category/pages/manage-capacity-by-products.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
                         $data['creator_id'] = Auth::id();
 
                         return $data;
@@ -85,15 +89,15 @@ class ManageCapacityByProducts extends ManageRelatedRecords
                             ->body(__('inventories::filament/clusters/configurations/resources/storage-category/pages/manage-capacity-by-products.table.header-actions.create.notification.body')),
                     ),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                EditAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('inventories::filament/clusters/configurations/resources/storage-category/pages/manage-capacity-by-products.table.actions.edit.notification.title'))
                             ->body(__('inventories::filament/clusters/configurations/resources/storage-category/pages/manage-capacity-by-products.table.actions.edit.notification.body')),
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()

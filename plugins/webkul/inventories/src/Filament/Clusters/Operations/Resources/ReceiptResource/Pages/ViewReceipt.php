@@ -2,12 +2,13 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\QueryException;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource;
 use Webkul\Inventory\Models\Receipt;
@@ -21,7 +22,7 @@ class ViewReceipt extends ViewRecord
         return [
             ChatterAction::make()
                 ->setResource(static::$resource),
-            Actions\ActionGroup::make([
+            ActionGroup::make([
                 OperationActions\Print\PickingOperationAction::make(),
                 OperationActions\Print\DeliverySlipAction::make(),
                 OperationActions\Print\PackageAction::make(),
@@ -31,9 +32,9 @@ class ViewReceipt extends ViewRecord
                 ->icon('heroicon-o-printer')
                 ->color('gray')
                 ->button(),
-            Actions\DeleteAction::make()
-                ->hidden(fn () => $this->getRecord()->state == Enums\OperationState::DONE)
-                ->action(function (Actions\DeleteAction $action, Receipt $record) {
+            DeleteAction::make()
+                ->hidden(fn () => $this->getRecord()->state == OperationState::DONE)
+                ->action(function (DeleteAction $action, Receipt $record) {
                     try {
                         $record->delete();
 

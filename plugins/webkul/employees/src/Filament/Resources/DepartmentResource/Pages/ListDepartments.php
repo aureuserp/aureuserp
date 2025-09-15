@@ -2,7 +2,7 @@
 
 namespace Webkul\Employee\Filament\Resources\DepartmentResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Employee\Filament\Resources\DepartmentResource;
@@ -18,7 +18,7 @@ class ListDepartments extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label(__('employees::filament/resources/department/pages/list-department.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle'),
         ];

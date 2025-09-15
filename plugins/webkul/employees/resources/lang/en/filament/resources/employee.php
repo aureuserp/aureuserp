@@ -290,8 +290,15 @@ return [
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Employees deleted',
-                    'body'  => 'The employees has been deleted successfully.',
+                    'success' => [
+                        'title' => 'Employees deleted',
+                        'body'  => 'The employees has been deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Employee could not be deleted',
+                        'body'  => 'The employee cannot be deleted because it is currently in use.',
+                    ],
                 ],
             ],
         ],

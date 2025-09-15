@@ -2,25 +2,42 @@
 
 namespace Webkul\Project\Filament\Clusters\Configurations\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use BackedEnum;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Project\Filament\Clusters\Configurations;
-use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages;
-use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResource\RelationManagers;
+use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\EditActivityPlan;
+use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\ListActivityPlans;
+use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\ViewActivityPlan;
+use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResource\RelationManagers\ActivityTemplateRelationManager;
 use Webkul\Support\Models\ActivityPlan;
 
 class ActivityPlanResource extends Resource
 {
     protected static ?string $model = ActivityPlan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-briefcase';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
 
     protected static ?int $navigationSort = 5;
 
@@ -31,21 +48,21 @@ class ActivityPlanResource extends Resource
         return __('projects::filament/clusters/configurations/resources/activity-plan.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make()
+        return $schema
+            ->components([
+                Section::make()
                     ->schema([
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->label(__('projects::filament/clusters/configurations/resources/activity-plan.form.name'))
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\Toggle::make('is_active')
+                        Toggle::make('is_active')
                             ->label(__('projects::filament/clusters/configurations/resources/activity-plan.form.status'))
                             ->default(true)
                             ->inline(false),
-                    ])->columns(2),
+                    ])->columnSpanFull(),
             ]);
     }
 
@@ -53,60 +70,60 @@ class ActivityPlanResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('projects::filament/clusters/configurations/resources/activity-plan.table.columns.name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->label(__('projects::filament/clusters/configurations/resources/activity-plan.table.columns.status'))
                     ->sortable()
                     ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('projects::filament/clusters/configurations/resources/activity-plan.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('projects::filament/clusters/configurations/resources/activity-plan.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->groups([
-                Tables\Grouping\Group::make('name')
+                Group::make('name')
                     ->label(__('projects::filament/clusters/configurations/resources/activity-plan.table.groups.name'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('is_active')
+                Group::make('is_active')
                     ->label(__('projects::filament/clusters/configurations/resources/activity-plan.table.groups.status'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('created_at')
+                Group::make('created_at')
                     ->label(__('projects::filament/clusters/configurations/resources/activity-plan.table.groups.created-at'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('updated_at')
+                Group::make('updated_at')
                     ->label(__('projects::filament/clusters/configurations/resources/activity-plan.table.groups.updated-at'))
                     ->date()
                     ->collapsible(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ViewAction::make()
                     ->hidden(fn ($record) => $record->trashed()),
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->hidden(fn ($record) => $record->trashed()),
-                Tables\Actions\RestoreAction::make()
+                RestoreAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('projects::filament/clusters/configurations/resources/activity-plan.table.actions.restore.notification.title'))
                             ->body(__('projects::filament/clusters/configurations/resources/activity-plan.table.actions.restore.notification.body')),
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('projects::filament/clusters/configurations/resources/activity-plan.table.actions.delete.notification.title'))
                             ->body(__('projects::filament/clusters/configurations/resources/activity-plan.table.actions.delete.notification.body')),
                     ),
-                Tables\Actions\ForceDeleteAction::make()
+                ForceDeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -114,23 +131,23 @@ class ActivityPlanResource extends Resource
                             ->body(__('projects::filament/clusters/configurations/resources/activity-plan.table.actions.force-delete.notification.body')),
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\RestoreBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('projects::filament/clusters/configurations/resources/activity-plan.table.bulk-actions.restore.notification.title'))
                                 ->body(__('projects::filament/clusters/configurations/resources/activity-plan.table.bulk-actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteBulkAction::make()
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('projects::filament/clusters/configurations/resources/activity-plan.table.bulk-actions.delete.notification.title'))
                                 ->body(__('projects::filament/clusters/configurations/resources/activity-plan.table.bulk-actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteBulkAction::make()
+                    ForceDeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -140,9 +157,9 @@ class ActivityPlanResource extends Resource
                 ]),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->icon('heroicon-o-plus-circle')
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
                         $user = Auth::user();
 
                         $data['plugin'] = 'projects';
@@ -165,17 +182,17 @@ class ActivityPlanResource extends Resource
             });
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Section::make('General Information')
+        return $schema
+            ->components([
+                Section::make('General Information')
                     ->schema([
-                        Infolists\Components\TextEntry::make('name')
+                        TextEntry::make('name')
                             ->label(__('projects::filament/clusters/configurations/resources/activity-plan.infolist.name'))
                             ->icon('heroicon-o-briefcase')
                             ->placeholder('—'),
-                        Infolists\Components\IconEntry::make('is_active')
+                        IconEntry::make('is_active')
                             ->label(__('projects::filament/clusters/configurations/resources/activity-plan.infolist.status'))
                             ->boolean(),
                     ])
@@ -186,16 +203,16 @@ class ActivityPlanResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\ActivityTemplateRelationManager::class,
+            ActivityTemplateRelationManager::class,
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListActivityPlans::route('/'),
-            'view'   => Pages\ViewActivityPlan::route('/{record}'),
-            'edit'   => Pages\EditActivityPlan::route('/{record}/edit'),
+            'index'  => ListActivityPlans::route('/'),
+            'view'   => ViewActivityPlan::route('/{record}'),
+            'edit'   => EditActivityPlan::route('/{record}/edit'),
         ];
     }
 }

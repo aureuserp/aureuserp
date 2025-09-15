@@ -4,8 +4,10 @@ namespace Webkul\TableViews\Filament\Actions;
 
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\CanCustomizeProcess;
-use Filament\Forms;
-use Filament\Support\Enums\MaxWidth;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Support\Enums\Width;
+use Guava\IconPicker\Forms\Components\IconPicker;
 use Webkul\TableViews\Models\TableView;
 use Webkul\TableViews\Models\TableViewFavorite;
 
@@ -26,7 +28,7 @@ class EditViewAction extends Action
             ->model(TableView::class)
             ->fillForm(function (array $arguments): array {
                 $tableViewFavorite = TableViewFavorite::query()
-                    ->where('user_id', auth()->id())
+                    ->where('user_id', filament()->auth()->id())
                     ->where('view_type', 'saved')
                     ->where('view_key', $arguments['view_model']['id'])
                     ->where('filterable_type', $arguments['view_model']['filterable_type'])
@@ -40,21 +42,19 @@ class EditViewAction extends Action
                     'is_public'   => $arguments['view_model']['is_public'],
                 ];
             })
-            ->form([
-                Forms\Components\TextInput::make('name')
+            ->schema([
+                TextInput::make('name')
                     ->label(__('table-views::filament/actions/edit-view.form.name'))
                     ->autofocus()
                     ->required(),
-                \Guava\FilamentIconPicker\Forms\IconPicker::make('icon')
+                IconPicker::make('icon')
                     ->label(__('table-views::filament/actions/edit-view.form.icon'))
                     ->sets(['heroicons'])
-                    ->columns(4)
-                    ->preload()
-                    ->optionsLimit(50),
-                Forms\Components\Toggle::make('is_favorite')
+                    ->columns(4),
+                Toggle::make('is_favorite')
                     ->label(__('table-views::filament/actions/edit-view.form.add-to-favorites'))
                     ->helperText(__('table-views::filament/actions/edit-view.form.add-to-favorites-help')),
-                Forms\Components\Toggle::make('is_public')
+                Toggle::make('is_public')
                     ->label(__('table-views::filament/actions/edit-view.form.make-public'))
                     ->helperText(__('table-views::filament/actions/edit-view.form.make-public-help')),
             ])->action(function (array $arguments): void {
@@ -71,7 +71,7 @@ class EditViewAction extends Action
                             'view_type'       => 'saved',
                             'view_key'        => $arguments['view_model']['id'],
                             'filterable_type' => $record->filterable_type,
-                            'user_id'         => auth()->id(),
+                            'user_id'         => filament()->auth()->id(),
                         ], [
                             'is_favorite' => $data['is_favorite'],
                         ]
@@ -88,6 +88,6 @@ class EditViewAction extends Action
             ->successNotificationTitle(__('table-views::filament/actions/edit-view.form.notification.created'))
             ->icon('heroicon-s-pencil-square')
             ->modalHeading(__('table-views::filament/actions/edit-view.form.modal.title'))
-            ->modalWidth(MaxWidth::Medium);
+            ->modalWidth(Width::Medium);
     }
 }

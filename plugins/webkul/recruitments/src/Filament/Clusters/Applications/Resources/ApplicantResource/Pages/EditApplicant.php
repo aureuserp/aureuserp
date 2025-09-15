@@ -2,13 +2,17 @@
 
 namespace Webkul\Recruitment\Filament\Clusters\Applications\Resources\ApplicantResource\Pages;
 
-use Filament\Actions;
 use Filament\Actions\Action;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
 use Webkul\Employee\Filament\Resources\EmployeeResource;
@@ -68,8 +72,8 @@ class EditApplicant extends EditRecord
                         return RecruitmentState::NORMAL->getColor();
                     }
                 })
-                ->form([
-                    Forms\Components\ToggleButtons::make('state')
+                ->schema([
+                    ToggleButtons::make('state')
                         ->inline()
                         ->options(RecruitmentState::class),
                 ])
@@ -87,6 +91,7 @@ class EditApplicant extends EditRecord
                 })
                 ->action(function (Applicant $record, $data) {
                     $record->update($data);
+                    $record->refresh();
 
                     Notification::make()
                         ->success()
@@ -114,21 +119,21 @@ class EditApplicant extends EditRecord
 
                     return redirect(EmployeeResource::getUrl('edit', ['record' => $employee]));
                 }),
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()
                         ->title(__('recruitments::filament/clusters/applications/resources/applicant/pages/edit-applicant.header-actions.delete.notification.title'))
                         ->body(__('recruitments::filament/clusters/applications/resources/applicant/pages/edit-applicant.header-actions.delete.notification.body'))
                 ),
-            Actions\ForceDeleteAction::make()
+            ForceDeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()
                         ->title(__('recruitments::filament/clusters/applications/resources/applicant/pages/edit-applicant.header-actions.force-delete.notification.title'))
                         ->body(__('recruitments::filament/clusters/applications/resources/applicant/pages/edit-applicant.header-actions.force-delete.notification.body'))
                 ),
-            Actions\RestoreAction::make()
+            RestoreAction::make()
                 ->successNotification(
                     Notification::make()
                         ->info()
@@ -139,20 +144,20 @@ class EditApplicant extends EditRecord
                 ->modalIcon('heroicon-s-bug-ant')
                 ->hidden(fn ($record) => $record->refuse_reason_id || $record->application_status->value === ApplicationStatus::ARCHIVED->value)
                 ->modalHeading(__('recruitments::filament/clusters/applications/resources/applicant/pages/edit-applicant.header-actions.refuse.title'))
-                ->form(function (Form $form, $record) {
-                    return $form->schema([
-                        Forms\Components\ToggleButtons::make('refuse_reason_id')
+                ->schema(function (Schema $schema, $record) {
+                    return $schema->components([
+                        ToggleButtons::make('refuse_reason_id')
                             ->hiddenLabel()
                             ->inline()
                             ->live()
                             ->options(RefuseReason::all()->pluck('name', 'id')),
-                        Forms\Components\Toggle::make('notify')
+                        Toggle::make('notify')
                             ->inline()
                             ->live()
                             ->default(true)
                             ->visible(fn (Get $get) => $get('refuse_reason_id'))
                             ->label('Notify'),
-                        Forms\Components\TextInput::make('email')
+                        TextInput::make('email')
                             ->visible(fn (Get $get) => $get('notify') && $get('refuse_reason_id'))
                             ->default($record->candidate->email_from)
                             ->label('Email To'),

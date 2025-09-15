@@ -7,7 +7,7 @@ use Webkul\Purchase\Models\OrderLine;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Purchase\Models\OrderLine>
+ * @extends Factory<OrderLine>
  */
 class OrderLineFactory extends Factory
 {

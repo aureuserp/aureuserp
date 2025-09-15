@@ -1,7 +1,9 @@
 <?php
 
 return [
-    'heading' => 'Top Projects',
+    'heading' => [
+        'title' => 'Top Projects',
+    ],
 
     'table-columns' => [
         'project-name' => 'Project',

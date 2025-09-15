@@ -2,13 +2,25 @@
 
 namespace Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\RelationManagers;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TrashedFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,70 +30,70 @@ class SkillsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/skills.form.name'))
                     ->required(),
-                Forms\Components\Hidden::make('creator_id')
+                Hidden::make('creator_id')
                     ->default(Auth::user()->id),
-            ])->columns('full');
+            ])->columns(1);
     }
 
     public function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/skills.table.columns.name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/skills.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/skills.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->groups([
-                Tables\Grouping\Group::make('created_at')
+                Group::make('created_at')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/skills.table.groups.created-at'))
                     ->date()
                     ->collapsible(),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->icon('heroicon-o-plus-circle')
                     ->modal('form'),
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make()
+                TrashedFilter::make()
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/skills.table.filters.deleted-records')),
             ])
-            ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make()
+            ->recordActions([
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/skills.table.actions.edit.notification.title'))
                                 ->body(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/skills.table.actions.edit.notification.body')),
                         ),
-                    Tables\Actions\DeleteAction::make()
+                    DeleteAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/skills.table.actions.delete.notification.title'))
                                 ->body(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/skills.table.actions.delete.notification.body')),
                         ),
-                    Tables\Actions\RestoreAction::make()
+                    RestoreAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -90,23 +102,23 @@ class SkillsRelationManager extends RelationManager
                         ),
                 ]),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/skills.table.bulk-actions.delete.notification.title'))
                                 ->body(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/skills.table.bulk-actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteBulkAction::make()
+                    ForceDeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/skills.table.bulk-actions.force-delete.notification.title'))
                                 ->body(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/skills.table.bulk-actions.force-delete.notification.body')),
                         ),
-                    Tables\Actions\RestoreBulkAction::make()
+                    RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -117,11 +129,11 @@ class SkillsRelationManager extends RelationManager
             ]);
     }
 
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\TextEntry::make('name')
+        return $schema
+            ->components([
+                TextEntry::make('name')
                     ->placeholder('—')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/skills.infolist.entries.name')),
             ]);

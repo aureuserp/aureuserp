@@ -2,7 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources\InvoiceResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Account\Filament\Resources\InvoiceResource;
@@ -27,7 +27,7 @@ class ViewInvoice extends ViewRecord
                 ->setTemplate('accounts::invoice/actions/preview.index'),
             BaseActions\PrintAndSendAction::make(),
             BaseActions\CreditNoteAction::make(),
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()

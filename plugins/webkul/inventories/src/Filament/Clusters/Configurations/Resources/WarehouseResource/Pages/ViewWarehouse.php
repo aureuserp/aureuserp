@@ -2,7 +2,7 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\WarehouseResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\WarehouseResource;
@@ -14,7 +14,7 @@ class ViewWarehouse extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()

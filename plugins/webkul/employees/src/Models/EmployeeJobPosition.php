@@ -49,7 +49,7 @@ class EmployeeJobPosition extends Model implements Sortable
         'sort_when_creating' => true,
     ];
 
-    public function creator(): BelongsTo
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }

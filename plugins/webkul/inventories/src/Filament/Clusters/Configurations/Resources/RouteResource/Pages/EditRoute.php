@@ -2,7 +2,7 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource;
@@ -22,7 +22,7 @@ class EditRoute extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()

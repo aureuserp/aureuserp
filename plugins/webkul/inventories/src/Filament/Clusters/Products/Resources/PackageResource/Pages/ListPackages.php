@@ -2,7 +2,7 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Inventory\Enums\LocationType;
@@ -21,7 +21,7 @@ class ListPackages extends ListRecords
         return [
             'internal_locations' => PresetView::make(__('inventories::filament/clusters/products/resources/package/pages/list-packages.tabs.internal'))
                 ->favorite()
-                ->default()
+                ->setAsDefault()
                 ->icon('heroicon-s-map-pin')
                 ->modifyQueryUsing(function ($query) {
                     return $query->whereHas('location', function (Builder $query) {
@@ -34,7 +34,7 @@ class ListPackages extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label(__('inventories::filament/clusters/products/resources/package/pages/list-packages.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle'),
         ];

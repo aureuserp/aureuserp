@@ -2,28 +2,36 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources;
 
-use Filament\Forms\Form;
-use Filament\Infolists\Infolist;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\OperationState;
+use Webkul\Inventory\Enums\OperationType;
 use Webkul\Inventory\Filament\Clusters\Operations;
-use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource\Pages;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource\Pages\CreateDelivery;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource\Pages\EditDelivery;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource\Pages\ListDeliveries;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource\Pages\ManageMoves;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource\Pages\ViewDelivery;
 use Webkul\Inventory\Models\Delivery;
 
 class DeliveryResource extends Resource
 {
     protected static ?string $model = Delivery::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-truck';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-truck';
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -31,7 +39,7 @@ class DeliveryResource extends Resource
 
     protected static ?string $cluster = Operations::class;
 
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getModelLabel(): string
     {
@@ -48,20 +56,20 @@ class DeliveryResource extends Resource
         return __('inventories::filament/clusters/operations/resources/delivery.navigation.group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return OperationResource::form($form);
+        return OperationResource::form($schema);
     }
 
     public static function table(Table $table): Table
     {
         return OperationResource::table($table)
-            ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make()
-                        ->hidden(fn (Delivery $record) => $record->state == Enums\OperationState::DONE)
+            ->recordActions([
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make()
+                        ->hidden(fn (Delivery $record) => $record->state == OperationState::DONE)
                         ->action(function (Delivery $record) {
                             try {
                                 $record->delete();
@@ -81,8 +89,8 @@ class DeliveryResource extends Resource
                         ),
                 ]),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                DeleteBulkAction::make()
                     ->action(function (Collection $records) {
                         try {
                             $records->each(fn (Model $record) => $record->delete());
@@ -103,33 +111,33 @@ class DeliveryResource extends Resource
             ])
             ->modifyQueryUsing(function (Builder $query) {
                 return $query->whereHas('operationType', function (Builder $query) {
-                    $query->where('type', Enums\OperationType::OUTGOING);
+                    $query->where('type', OperationType::OUTGOING);
                 });
             });
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return OperationResource::infolist($infolist);
+        return OperationResource::infolist($schema);
     }
 
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewDelivery::class,
-            Pages\EditDelivery::class,
-            Pages\ManageMoves::class,
+            ViewDelivery::class,
+            EditDelivery::class,
+            ManageMoves::class,
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListDeliveries::route('/'),
-            'create' => Pages\CreateDelivery::route('/create'),
-            'view'   => Pages\ViewDelivery::route('/{record}/view'),
-            'edit'   => Pages\EditDelivery::route('/{record}/edit'),
-            'moves'  => Pages\ManageMoves::route('/{record}/moves'),
+            'index'  => ListDeliveries::route('/'),
+            'create' => CreateDelivery::route('/create'),
+            'view'   => ViewDelivery::route('/{record}/view'),
+            'edit'   => EditDelivery::route('/{record}/edit'),
+            'moves'  => ManageMoves::route('/{record}/moves'),
         ];
     }
 }

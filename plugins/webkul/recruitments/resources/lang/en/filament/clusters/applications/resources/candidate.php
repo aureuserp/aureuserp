@@ -4,7 +4,6 @@ return [
     'title' => 'Candidate',
 
     'navigation' => [
-        'group' => 'Applications',
         'title' => 'Candidates',
     ],
 
@@ -82,7 +81,7 @@ return [
             'delete' => [
                 'notification' => [
                     'title' => 'Candidate Deleted',
-                    'body'  => 'The candidate was successfully deleted.',
+                    'body'  => 'The candidates has been deleted successfully.',
                 ],
             ],
 
@@ -90,8 +89,17 @@ return [
                 'create' => [
                     'notification' => [
                         'title' => 'Candidate Created',
-                        'body'  => 'The candidate was successfully created.',
+                        'body'  => 'The candidates has been created successfully.',
                     ],
+                ],
+            ],
+        ],
+
+        'bulk-actions' => [
+            'delete' => [
+                'notification' => [
+                    'title' => 'Candidates Deleted',
+                    'body'  => 'The candidates has been deleted successfully.',
                 ],
             ],
         ],

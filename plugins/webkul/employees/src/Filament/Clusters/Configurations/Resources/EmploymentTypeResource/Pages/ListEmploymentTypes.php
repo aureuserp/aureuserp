@@ -2,7 +2,7 @@
 
 namespace Webkul\Employee\Filament\Clusters\Configurations\Resources\EmploymentTypeResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Facades\Auth;
@@ -15,9 +15,9 @@ class ListEmploymentTypes extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()->icon('heroicon-o-plus-circle')
+            CreateAction::make()->icon('heroicon-o-plus-circle')
                 ->label(__('employees::filament/clusters/configurations/resources/employment-type/pages/list-employment-type.header-actions.create.label'))
-                ->mutateFormDataUsing(function (array $data): array {
+                ->mutateDataUsing(function (array $data): array {
                     $data['code'] = $data['code'] ?? $data['name'];
 
                     $data['user_id'] = Auth::user()->id;

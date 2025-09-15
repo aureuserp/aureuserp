@@ -22,12 +22,12 @@
 
         <meta property="og:description" content="{!! htmlspecialchars(trim(strip_tags($record->content))) !!}" />
 
-        <meta property="og:url" content="{{ self::getResource()::$parentResource::getUrl('posts.view', ['parent' => $record->category->slug, 'record' => $record->slug]) }}" />
+        <meta property="og:url" content="{{ self::getResource()::$parentResource::getUrl('posts.view', ['category' => $record->category->slug, 'record' => $record->slug]) }}" />
     @endPush
 
     @if ($record->image_url)
         <div class="md:shrink-0">
-            <img class="h-48 w-full rounded-md object-cover md:h-full md:w-48" src="{{$record->image_url}}" alt="Blog post featured image" style="aspect-ratio: 3 / 1"/>
+            <img class="object-cover w-full h-48 rounded-md md:h-full md:w-48" src="{{$record->image_url}}" alt="Blog post featured image" style="aspect-ratio: 3 / 1"/>
         </div>
     @endif
 
@@ -57,7 +57,7 @@
             <p class="text-sm font-medium text-gray-900">
                 {{ $record->creator->name }}
             </p>
-            
+
             <p class="text-sm text-gray-500">
                 {{ $record->published_at->format('F j, Y').' · '.$record->reading_time }}
             </p>

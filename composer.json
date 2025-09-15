@@ -1,6 +1,7 @@
 {
     "name": "aureuserp/aureuserp",
     "type": "project",
+
     "description": "Open Source ERP Solution built on Laravel for Small and Medium Enterprises (SMEs) and large-scale enterprises.",
     "keywords": [
         "erp",
@@ -10,23 +11,24 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "awcodes/filament-badgeable-column": "^3.0",
         "barryvdh/laravel-debugbar": "^3.15",
         "barryvdh/laravel-dompdf": "^3.1",
-        "bezhansalleh/filament-shield": "^3.2",
-        "filament/filament": "^3.2",
-        "filament/spatie-laravel-settings-plugin": "^3.2",
+        "bezhansalleh/filament-shield": "^4.0",
+        "filament/filament": "^4.0",
+        "filament/spatie-laravel-settings-plugin": "^4.0",
         "flowframe/laravel-trend": "^0.3.0",
-        "guava/filament-icon-picker": "^2.0",
-        "hugomyb/filament-media-action": "v3.1.1.5",
+        "guava/filament-icon-picker": "^3.0",
+        "hugomyb/filament-media-action": "^4.0",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "milon/barcode": "^11.0",
-        "saade/filament-fullcalendar": "^3.0",
         "spatie/eloquent-sortable": "^4.4",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "filament/upgrade": "^4.0",
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
@@ -87,7 +89,7 @@
             "wikimedia/composer-merge-plugin": true
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "beta",
     "prefer-stable": true,
     "support": {
         "issues": "https://github.com/aureuserp/aureuserp/issues",

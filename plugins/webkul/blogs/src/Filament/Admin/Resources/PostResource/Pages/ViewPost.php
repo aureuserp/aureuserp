@@ -2,7 +2,7 @@
 
 namespace Webkul\Blog\Filament\Admin\Resources\PostResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Blog\Filament\Admin\Resources\PostResource;
@@ -14,7 +14,7 @@ class ViewPost extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()

@@ -81,8 +81,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Time Offs deleted',
-                    'body'  => 'The time offs has been deleted successfully.',
+                    'title' => 'Time Off deleted',
+                    'body'  => 'The time off has been deleted successfully.',
                 ],
             ],
         ],
@@ -90,6 +90,8 @@ return [
 
     'infolist' => [
         'entries' => [
+            'employee-name'     => 'Employee Name',
+            'department-name'   => 'Department Name',
             'time-off-type'     => 'Time off Type',
             'date'              => 'Date',
             'dates'             => 'Dates',
@@ -99,10 +101,12 @@ return [
             'period'            => 'Period',
             'half-day'          => 'Half Day',
             'requested-days'    => 'Requested (Days/Hours)',
-            'description'       => 'Description',
             'attachment'        => 'Attachment',
             'day'               => ':day day',
             'days'              => ':days day(s)',
+            'date-from'         => 'Date From',
+            'date-to'           => 'Date To',
+            'status'            => 'Status',
         ],
     ],
 ];

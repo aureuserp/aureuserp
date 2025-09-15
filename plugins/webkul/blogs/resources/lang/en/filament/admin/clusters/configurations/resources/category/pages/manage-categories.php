@@ -11,4 +11,9 @@ return [
             ],
         ],
     ],
+
+    'tabs' => [
+        'all'      => 'All',
+        'archived' => 'Archived',
+    ],
 ];

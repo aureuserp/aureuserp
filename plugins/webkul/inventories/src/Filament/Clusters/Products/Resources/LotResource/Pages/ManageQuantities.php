@@ -2,12 +2,15 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource\Pages;
 
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\TextInputColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\LocationType;
+use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource;
 use Webkul\Inventory\Models\Location;
@@ -22,7 +25,7 @@ class ManageQuantities extends ManageRelatedRecords
 
     protected static string $relationship = 'quantities';
 
-    protected static ?string $navigationIcon = 'heroicon-o-map-pin';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-map-pin';
 
     /**
      * @param  array<string, mixed>  $parameters
@@ -39,7 +42,7 @@ class ManageQuantities extends ManageRelatedRecords
             || app(WarehouseSettings::class)->enable_locations
             || (
                 app(TraceabilitySettings::class)->enable_lots_serial_numbers
-                && $parameters['record']->tracking != Enums\ProductTracking::QTY
+                && $parameters['record']->tracking != ProductTracking::QTY
             );
     }
 
@@ -53,27 +56,27 @@ class ManageQuantities extends ManageRelatedRecords
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('product.name')
+                TextColumn::make('product.name')
                     ->label(__('inventories::filament/clusters/products/resources/lot/pages/manage-quantities.table.columns.product'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('location.full_name')
+                TextColumn::make('location.full_name')
                     ->label(__('inventories::filament/clusters/products/resources/lot/pages/manage-quantities.table.columns.location'))
                     ->visible(fn (WarehouseSettings $settings) => $settings->enable_locations),
-                Tables\Columns\TextColumn::make('storageCategory.name')
+                TextColumn::make('storageCategory.name')
                     ->label(__('inventories::filament/clusters/products/resources/lot/pages/manage-quantities.table.columns.storage-category'))
                     ->placeholder('—'),
-                Tables\Columns\TextColumn::make('package.name')
+                TextColumn::make('package.name')
                     ->label(__('inventories::filament/clusters/products/resources/lot/pages/manage-quantities.table.columns.package'))
                     ->placeholder('—')
                     ->visible(fn (OperationSettings $settings) => $settings->enable_packages),
-                Tables\Columns\TextInputColumn::make('quantity')
+                TextInputColumn::make('quantity')
                     ->label(__('inventories::filament/clusters/products/resources/lot/pages/manage-quantities.table.columns.on-hand'))
                     ->searchable()
                     ->sortable()
                     ->rules([
                         'numeric',
                         'min:1',
-                        'max:'.($this->getOwnerRecord()->product->tracking == Enums\ProductTracking::SERIAL ? '1' : '999999999'),
+                        'max:'.($this->getOwnerRecord()->product->tracking == ProductTracking::SERIAL ? '1' : '999999999'),
                     ])
                     ->beforeStateUpdated(function ($record, $state) {
                         $previousQuantity = $record->quantity;
@@ -82,7 +85,7 @@ class ManageQuantities extends ManageRelatedRecords
                             return;
                         }
 
-                        $adjustmentLocation = Location::where('type', Enums\LocationType::INVENTORY)
+                        $adjustmentLocation = Location::where('type', LocationType::INVENTORY)
                             ->where('is_scrap', false)
                             ->first();
 
@@ -101,7 +104,7 @@ class ManageQuantities extends ManageRelatedRecords
                         ProductResource::createMove($record, $currentQuantity, $sourceLocationId, $destinationLocationId);
                     })
                     ->afterStateUpdated(function ($record, $state) {
-                        $adjustmentLocation = Location::where('type', Enums\LocationType::INVENTORY)
+                        $adjustmentLocation = Location::where('type', LocationType::INVENTORY)
                             ->where('is_scrap', false)
                             ->first();
 
@@ -129,8 +132,8 @@ class ManageQuantities extends ManageRelatedRecords
                             ->send();
                     }),
             ])
-            ->actions([
-                Tables\Actions\DeleteAction::make()
+            ->recordActions([
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()

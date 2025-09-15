@@ -2,7 +2,7 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource;
@@ -28,7 +28,7 @@ class ListDropships extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label(__('inventories::filament/clusters/operations/resources/dropship/pages/list-dropships.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle'),
         ];

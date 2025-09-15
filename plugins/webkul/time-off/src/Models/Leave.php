@@ -12,6 +12,7 @@ use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\Employee;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\TimeOff\Enums\State;
 
 class Leave extends Model
 {
@@ -75,6 +76,10 @@ class Leave extends Model
         'number_of_hours'          => 'Number Of Hours',
         'request_hour_from'        => 'Request Hour From',
         'request_hour_to'          => 'Request Hour To',
+    ];
+
+    protected $casts = [
+        'state' => State::class,
     ];
 
     public function user(): BelongsTo

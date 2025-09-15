@@ -2,12 +2,18 @@
 
 namespace Webkul\Project\Filament\Resources\TaskResource\RelationManagers;
 
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -30,25 +36,25 @@ class TimesheetsRelationManager extends RelationManager
         return $ownerRecord->project->allow_timesheets;
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Hidden::make('type')
+        return $schema
+            ->components([
+                Hidden::make('type')
                     ->default('projects'),
-                Forms\Components\DatePicker::make('date')
+                DatePicker::make('date')
                     ->label(__('projects::filament/resources/task/relation-managers/timesheets.form.date'))
                     ->required()
                     ->native(false),
-                Forms\Components\Select::make('user_id')
+                Select::make('user_id')
                     ->label(__('projects::filament/resources/task/relation-managers/timesheets.form.employee'))
                     ->required()
                     ->relationship('user', 'name')
                     ->searchable()
                     ->preload(),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->label(__('projects::filament/resources/task/relation-managers/timesheets.form.description')),
-                Forms\Components\TextInput::make('unit_amount')
+                TextInput::make('unit_amount')
                     ->label(__('projects::filament/resources/task/relation-managers/timesheets.form.time-spent'))
                     ->numeric()
                     ->required()
@@ -64,18 +70,18 @@ class TimesheetsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('date')
+                TextColumn::make('date')
                     ->label(__('projects::filament/resources/task/relation-managers/timesheets.table.columns.date'))
                     ->date('Y-m-d'),
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->label(__('projects::filament/resources/task/relation-managers/timesheets.table.columns.employee')),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('projects::filament/resources/task/relation-managers/timesheets.table.columns.description')),
-                Tables\Columns\TextColumn::make('unit_amount')
+                TextColumn::make('unit_amount')
                     ->label(__('projects::filament/resources/task/relation-managers/timesheets.table.columns.time-spent'))
                     ->formatStateUsing(function ($state) {
                         $hours = floor($state);
-                        $minutes = ($hours - $hours) * 60;
+                        $minutes = ($state - $hours) * 60;
 
                         return $hours.':'.$minutes;
                     })
@@ -120,10 +126,10 @@ class TimesheetsRelationManager extends RelationManager
                     ]),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label(__('projects::filament/resources/task/relation-managers/timesheets.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
                         $data['creator_id'] = Auth::id();
 
                         $ownerRecord = $this->getOwnerRecord();
@@ -141,15 +147,15 @@ class TimesheetsRelationManager extends RelationManager
                             ->body(__('projects::filament/resources/task/relation-managers/timesheets.table.header-actions.create.notification.body')),
                     ),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                EditAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('projects::filament/resources/task/relation-managers/timesheets.table.actions.edit.notification.title'))
                             ->body(__('projects::filament/resources/task/relation-managers/timesheets.table.actions.edit.notification.body')),
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()

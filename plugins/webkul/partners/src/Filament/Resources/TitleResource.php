@@ -2,11 +2,14 @@
 
 namespace Webkul\Partner\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Webkul\Partner\Models\Title;
 
@@ -16,15 +19,15 @@ class TitleResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->label(__('partners::filament/resources/title.form.name'))
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('short_name')
+                TextInput::make('short_name')
                     ->label(__('partners::filament/resources/title.form.short-name'))
                     ->required()
                     ->maxLength(255),
@@ -35,30 +38,30 @@ class TitleResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('partners::filament/resources/title.table.columns.name'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('short_name')
+                TextColumn::make('short_name')
                     ->label(__('partners::filament/resources/title.table.columns.short-name'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                EditAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('partners::filament/resources/title.table.actions.edit.notification.title'))
                             ->body(__('partners::filament/resources/title.table.actions.edit.notification.body')),
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -66,8 +69,8 @@ class TitleResource extends Resource
                             ->body(__('partners::filament/resources/title.table.actions.delete.notification.body')),
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                DeleteBulkAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()

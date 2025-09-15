@@ -119,6 +119,10 @@ return [
                 'notification' => [
                     'title' => 'Users force deleted',
                     'body'  => 'The users has been force deleted successfully.',
+                    'error' => [
+                        'title' => 'User could not be deleted',
+                        'body'  => 'The user cannot be deleted because it is currently in use.',
+                    ],
                 ],
             ],
         ],

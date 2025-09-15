@@ -113,11 +113,22 @@ return [
             ],
 
             'force-delete' => [
+
                 'notification' => [
-                    'title' => 'Project force deleted',
-                    'body'  => 'The project has been force deleted successfully.',
+
+                    'success' => [
+                        'title' => 'Project permanently deleted',
+                        'body'  => 'The project has been permanently deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Project cannot be permanently deleted',
+                        'body'  => 'The project is associated with other records.',
+                    ],
+
                 ],
             ],
+
         ],
     ],
 

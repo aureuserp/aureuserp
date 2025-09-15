@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'overview' => [
-        'label' => 'Applicant Overview',
+    'heading' => [
+        'title' => 'Applicant Overview',
     ],
 
     'ongoing'  => 'Ongoing',

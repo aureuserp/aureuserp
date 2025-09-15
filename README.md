@@ -1,5 +1,11 @@
 <p align="center">
-<a href="https://aureuserp.com"><img src="https://aureuserp.com/wp-content/uploads/2025/03/logo.png" alt="Total Downloads"></a>
+  <a href="https://aureuserp.com">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/aureuserp/temp-media/master/aureus-logo-dark.png">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/aureuserp/temp-media/master/aureus-logo-light.png">
+      <img src="https://raw.githubusercontent.com/aureuserp/temp-media/master/aureus-logo-light.png" alt="AureusERP logo">
+    </picture>
+  </a>  
 </p>
 
 <p align="center">

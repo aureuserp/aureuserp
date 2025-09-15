@@ -7,7 +7,7 @@ use Webkul\Inventory\Models\OperationType;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Inventory\Models\OperationType>
+ * @extends Factory<OperationType>
  */
 class OperationTypeFactory extends Factory
 {

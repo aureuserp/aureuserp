@@ -2,29 +2,53 @@
 
 namespace Webkul\Employee\Filament\Clusters\Configurations\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Employee\Enums;
+use Webkul\Employee\Enums\Colors;
 use Webkul\Employee\Filament\Clusters\Configurations;
-use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\Pages;
-use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\RelationManagers;
+use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\Pages\EditSkillType;
+use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\Pages\ListSkillTypes;
+use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\Pages\ViewSkillType;
+use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\RelationManagers\SkillLevelRelationManager;
+use Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource\RelationManagers\SkillsRelationManager;
 use Webkul\Employee\Models\SkillType;
 
 class SkillTypeResource extends Resource
 {
     protected static ?string $model = SkillType::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-academic-cap';
 
-    protected static ?string $navigationGroup = 'Employee';
+    protected static string|\UnitEnum|null $navigationGroup = 'Employee';
 
     protected static ?int $navigationSort = 1;
 
@@ -45,23 +69,23 @@ class SkillTypeResource extends Resource
         return __('employees::filament/clusters/configurations/resources/skill-type.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make([
-                    Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                Section::make([
+                    TextInput::make('name')
                         ->label(__('employees::filament/clusters/configurations/resources/skill-type.form.sections.fields.name'))
                         ->required()
                         ->unique(ignoreRecord: true)
                         ->maxLength(255)
                         ->placeholder('Enter skill type name'),
-                    Forms\Components\Hidden::make('creator_id')
+                    Hidden::make('creator_id')
                         ->default(Auth::user()->id),
-                    Forms\Components\Select::make('color')
+                    Select::make('color')
                         ->label(__('employees::filament/clusters/configurations/resources/skill-type.form.sections.fields.color'))
                         ->options(function () {
-                            return collect(Enums\Colors::options())->mapWithKeys(function ($value, $key) {
+                            return collect(Colors::options())->mapWithKeys(function ($value, $key) {
                                 return [
                                     $key => '<div class="flex items-center gap-4"><span class="flex h-5 w-5 rounded-full" style="background: rgb(var(--'.$key.'-500))"></span> '.$value.'</span>',
                                 ];
@@ -69,10 +93,10 @@ class SkillTypeResource extends Resource
                         })
                         ->native(false)
                         ->allowHtml(),
-                    Forms\Components\Toggle::make('is_active')
+                    Toggle::make('is_active')
                         ->label(__('employees::filament/clusters/configurations/resources/skill-type.form.sections.fields.status'))
                         ->default(true),
-                ])->columns(2),
+                ])->columns(2)->columnSpanFull(),
             ]);
     }
 
@@ -80,46 +104,46 @@ class SkillTypeResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
+                TextColumn::make('id')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.columns.id'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.columns.name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('color')
+                TextColumn::make('color')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.columns.color'))
                     ->toggleable(isToggledHiddenByDefault: false)
-                    ->formatStateUsing(fn (SkillType $skillType) => '<span class="flex h-5 w-5 rounded-full" style="background: rgb(var(--'.$skillType->color.'-500))"></span>')
+                    ->formatStateUsing(fn (Model $skillType) => '<span class="flex h-5 w-5 rounded-full" style="background: rgb(var(--'.$skillType?->color.'-500))"></span>')
                     ->html()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('skills.name')
+                TextColumn::make('skills.name')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.columns.skills'))
                     ->badge()
-                    ->color(fn (SkillType $skillType) => $skillType->color)
+                    ->color(fn (Model $skillType) => $skillType?->color)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('skillLevels.name')
+                TextColumn::make('skillLevels.name')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.columns.levels'))
                     ->badge()
                     ->color('gray')
                     ->searchable(),
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->sortable()
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.columns.status'))
                     ->sortable()
                     ->boolean(),
-                Tables\Columns\TextColumn::make('createdBy.name')
+                TextColumn::make('createdBy.name')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
@@ -127,12 +151,12 @@ class SkillTypeResource extends Resource
             ])
             ->columnToggleFormColumns(2)
             ->filters([
-                Tables\Filters\TernaryFilter::make('is_active')
+                TernaryFilter::make('is_active')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.filters.status')),
-                Tables\Filters\QueryBuilder::make()
+                QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('skillLevels')
+                        RelationshipConstraint::make('skillLevels')
                             ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.filters.skill-levels'))
                             ->icon('heroicon-o-bolt')
                             ->multiple()
@@ -143,7 +167,7 @@ class SkillTypeResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('skills')
+                        RelationshipConstraint::make('skills')
                             ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.filters.skills'))
                             ->icon('heroicon-o-bolt')
                             ->multiple()
@@ -154,7 +178,7 @@ class SkillTypeResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('createdBy')
+                        RelationshipConstraint::make('createdBy')
                             ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.filters.created-by'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -165,46 +189,46 @@ class SkillTypeResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('created_at')
+                        DateConstraint::make('created_at')
                             ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.filters.created-at')),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('updated_at')
+                        DateConstraint::make('updated_at')
                             ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.filters.updated-at')),
                     ]),
             ])
             ->filtersFormColumns(2)
             ->groups([
-                Tables\Grouping\Group::make('name')
+                Group::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.groups.name'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('color')
+                Group::make('color')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.groups.color'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('createdBy.name')
+                Group::make('createdBy.name')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.groups.created-by'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('is_active')
+                Group::make('is_active')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.groups.status'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('created_at')
+                Group::make('created_at')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.groups.created-at'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('updated_at')
+                Group::make('updated_at')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.groups.updated-at'))
                     ->date()
                     ->collapsible(),
             ])
-            ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make()
+            ->recordActions([
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('employees::filament/clusters/configurations/resources/skill-type.table.actions.delete.notification.title'))
                                 ->body(__('employees::filament/clusters/configurations/resources/skill-type.table.actions.delete.notification.body')),
                         ),
-                    Tables\Actions\RestoreAction::make()
+                    RestoreAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -213,23 +237,23 @@ class SkillTypeResource extends Resource
                         ),
                 ]),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\RestoreBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('employees::filament/clusters/configurations/resources/skill-type.table.bulk-actions.restore.notification.title'))
                                 ->body(__('employees::filament/clusters/configurations/resources/skill-type.table.bulk-actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteBulkAction::make()
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('employees::filament/clusters/configurations/resources/skill-type.table.bulk-actions.delete.notification.title'))
                                 ->body(__('employees::filament/clusters/configurations/resources/skill-type.table.bulk-actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteBulkAction::make()
+                    ForceDeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -239,7 +263,7 @@ class SkillTypeResource extends Resource
                 ]),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->icon('heroicon-o-plus-circle')
                     ->successNotification(
                         Notification::make()
@@ -258,38 +282,38 @@ class SkillTypeResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\SkillsRelationManager::class,
-            RelationManagers\SkillLevelRelationManager::class,
+            SkillsRelationManager::class,
+            SkillLevelRelationManager::class,
         ];
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Section::make()
+        return $schema
+            ->components([
+                Section::make()
                     ->schema([
-                        Infolists\Components\TextEntry::make('name')
+                        TextEntry::make('name')
                             ->placeholder('—')
                             ->label(__('employees::filament/clusters/configurations/resources/skill-type.infolist.sections.entries.name')),
-                        Infolists\Components\TextEntry::make('color')
+                        TextEntry::make('color')
                             ->placeholder('—')
                             ->html()
                             ->formatStateUsing(fn (SkillType $skillType) => '<span class="flex h-5 w-5 rounded-full" style="background: rgb(var(--'.$skillType->color.'-500))"></span>')
                             ->label(__('employees::filament/clusters/configurations/resources/skill-type.infolist.sections.entries.color')),
-                        Infolists\Components\IconEntry::make('is_active')
+                        IconEntry::make('is_active')
                             ->boolean()
                             ->label(__('employees::filament/clusters/configurations/resources/skill-type.infolist.sections.entries.status')),
-                    ])->columns(3),
+                    ])->columns(3)->columnSpanFull(),
             ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSkillTypes::route('/'),
-            'view'  => Pages\ViewSkillType::route('/{record}'),
-            'edit'  => Pages\EditSkillType::route('/{record}/edit'),
+            'index' => ListSkillTypes::route('/'),
+            'view'  => ViewSkillType::route('/{record}'),
+            'edit'  => EditSkillType::route('/{record}/edit'),
         ];
     }
 }

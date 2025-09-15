@@ -14,7 +14,7 @@ class ManageSkill extends ManageRelatedRecords
 
     protected static string $relationship = 'skills';
 
-    protected static ?string $navigationIcon = 'heroicon-o-bolt';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-bolt';
 
     public static function getNavigationLabel(): string
     {

@@ -2,7 +2,7 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\PackageTypeResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Facades\Auth;
@@ -15,10 +15,10 @@ class ListPackageTypes extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label(__('inventories::filament/clusters/configurations/resources/package-type/pages/list-package-types.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
-                ->mutateFormDataUsing(function ($data) {
+                ->mutateDataUsing(function ($data) {
                     $user = Auth::user();
 
                     $data['creator_id'] = $user->id;

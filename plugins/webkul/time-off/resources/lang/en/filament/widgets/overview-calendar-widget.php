@@ -1,9 +1,17 @@
 <?php
 
 return [
+    'heading' => [
+        'title' => 'Time Off Overview',
+    ],
+
     'modal-actions' => [
         'edit' => [
             'title' => 'Edit',
+            'notification' => [
+                'title' => 'Time Off Updated',
+                'body'  => 'Time off request has been updated successfully.',
+            ],
         ],
 
         'delete' => [
@@ -20,6 +28,11 @@ return [
         'create' => [
             'title'       => 'New Time Off',
             'description' => 'Create Time Off Request',
+
+            'notification' => [
+                'title' => 'Time Off Created',
+                'body'  => 'Time off request has been created successfully.',
+            ],
 
             'employee-not-found' => [
                 'notification' => [
@@ -41,6 +54,7 @@ return [
             'description'       => 'Description',
         ],
     ],
+
     'infolist' => [
         'entries' => [
             'time-off-type'           => 'Time Off Type',

@@ -2,14 +2,24 @@
 
 namespace Webkul\Product\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -20,19 +30,19 @@ class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-folder';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-folder';
 
     protected static bool $shouldRegisterNavigation = false;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Forms\Components\Section::make(__('products::filament/resources/category.form.sections.general.title'))
+                        Section::make(__('products::filament/resources/category.form.sections.general.title'))
                             ->schema([
-                                Forms\Components\TextInput::make('name')
+                                TextInput::make('name')
                                     ->label(__('products::filament/resources/category.form.sections.general.fields.name'))
                                     ->required()
                                     ->maxLength(255)
@@ -40,7 +50,7 @@ class CategoryResource extends Resource
                                     ->placeholder(__('products::filament/resources/category.form.sections.general.fields.name-placeholder'))
                                     ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;'])
                                     ->unique(ignoreRecord: true),
-                                Forms\Components\Select::make('parent_id')
+                                Select::make('parent_id')
                                     ->label(__('products::filament/resources/category.form.sections.general.fields.parent'))
                                     ->relationship('parent', 'full_name')
                                     ->searchable()
@@ -49,43 +59,43 @@ class CategoryResource extends Resource
                     ])
                     ->columnSpan(['lg' => 2]),
 
-                Forms\Components\Group::make()
+                Group::make()
                     ->schema([])
                     ->columnSpan(['lg' => 1]),
             ])
-            ->columns(3);
+            ->columns(1);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('products::filament/resources/category.table.columns.name'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('full_name')
+                TextColumn::make('full_name')
                     ->label(__('products::filament/resources/category.table.columns.full-name'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('parent_path')
+                TextColumn::make('parent_path')
                     ->label(__('products::filament/resources/category.table.columns.parent-path'))
                     ->placeholder('—')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('parent.name')
+                TextColumn::make('parent.name')
                     ->label(__('products::filament/resources/category.table.columns.parent'))
                     ->placeholder('—')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('creator.name')
+                TextColumn::make('creator.name')
                     ->label(__('products::filament/resources/category.table.columns.creator'))
                     ->placeholder('—')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('products::filament/resources/category.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('products::filament/resources/category.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
@@ -107,21 +117,21 @@ class CategoryResource extends Resource
                     ->collapsible(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('parent_id')
+                SelectFilter::make('parent_id')
                     ->label(__('products::filament/resources/category.table.filters.parent'))
                     ->relationship('parent', 'full_name')
                     ->searchable()
                     ->preload(),
-                Tables\Filters\SelectFilter::make('creator_id')
+                SelectFilter::make('creator_id')
                     ->label(__('products::filament/resources/category.table.filters.creator'))
                     ->relationship('creator', 'name')
                     ->searchable()
                     ->preload(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make()
                     ->action(function (Category $record) {
                         try {
                             $record->delete();
@@ -140,8 +150,8 @@ class CategoryResource extends Resource
                             ->body(__('products::filament/resources/category.table.actions.delete.notification.success.body')),
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                DeleteBulkAction::make()
                     ->action(function (Collection $records) {
                         try {
                             $records->each(fn (Model $record) => $record->delete());
@@ -161,36 +171,36 @@ class CategoryResource extends Resource
                     ),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->icon('heroicon-o-plus-circle'),
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Infolists\Components\Section::make(__('products::filament/resources/category.infolist.sections.general.title'))
+                        Section::make(__('products::filament/resources/category.infolist.sections.general.title'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('name')
+                                TextEntry::make('name')
                                     ->label(__('products::filament/resources/category.infolist.sections.general.entries.name'))
                                     ->weight(FontWeight::Bold)
-                                    ->size(Infolists\Components\TextEntry\TextEntrySize::Large)
+                                    ->size(TextSize::Large)
                                     ->icon('heroicon-o-document-text'),
 
-                                Infolists\Components\TextEntry::make('parent.name')
+                                TextEntry::make('parent.name')
                                     ->label(__('products::filament/resources/category.infolist.sections.general.entries.parent'))
                                     ->icon('heroicon-o-folder')
                                     ->placeholder('—'),
 
-                                Infolists\Components\TextEntry::make('full_name')
+                                TextEntry::make('full_name')
                                     ->label(__('products::filament/resources/category.infolist.sections.general.entries.full_name'))
                                     ->icon('heroicon-o-folder-open')
                                     ->placeholder('—'),
 
-                                Infolists\Components\TextEntry::make('parent_path')
+                                TextEntry::make('parent_path')
                                     ->label(__('products::filament/resources/category.infolist.sections.general.entries.parent_path'))
                                     ->icon('heroicon-o-arrows-right-left')
                                     ->placeholder('—'),
@@ -198,22 +208,22 @@ class CategoryResource extends Resource
                     ])
                     ->columnSpan(['lg' => 2]),
 
-                Infolists\Components\Group::make()
+                Group::make()
                     ->schema([
-                        Infolists\Components\Section::make(__('products::filament/resources/category.infolist.sections.record-information.title'))
+                        Section::make(__('products::filament/resources/category.infolist.sections.record-information.title'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('creator.name')
+                                TextEntry::make('creator.name')
                                     ->label(__('products::filament/resources/category.infolist.sections.record-information.entries.creator'))
                                     ->icon('heroicon-o-user')
                                     ->placeholder('—'),
 
-                                Infolists\Components\TextEntry::make('created_at')
+                                TextEntry::make('created_at')
                                     ->label(__('products::filament/resources/category.infolist.sections.record-information.entries.created_at'))
                                     ->dateTime()
                                     ->icon('heroicon-o-calendar')
                                     ->placeholder('—'),
 
-                                Infolists\Components\TextEntry::make('updated_at')
+                                TextEntry::make('updated_at')
                                     ->label(__('products::filament/resources/category.infolist.sections.record-information.entries.updated_at'))
                                     ->dateTime()
                                     ->icon('heroicon-o-clock')

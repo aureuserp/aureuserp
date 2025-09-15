@@ -2,12 +2,17 @@
 
 namespace Webkul\Product\Filament\Resources\ProductResource\Pages;
 
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -22,23 +27,23 @@ class ManageAttributes extends ManageRelatedRecords
 
     protected static string $relationship = 'attributes';
 
-    public function getSubNavigationPosition(): SubNavigationPosition
+    public static function getSubNavigationPosition(): SubNavigationPosition
     {
         return SubNavigationPosition::Top;
     }
 
-    protected static ?string $navigationIcon = 'heroicon-o-swatch';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-swatch';
 
     public static function getNavigationLabel(): string
     {
         return __('products::filament/resources/product/pages/manage-attributes.title');
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('attribute_id')
+        return $schema
+            ->components([
+                Select::make('attribute_id')
                     ->label(__('products::filament/resources/product/pages/manage-attributes.form.attribute'))
                     ->required()
                     ->relationship(
@@ -55,17 +60,17 @@ class ManageAttributes extends ManageRelatedRecords
                     ->searchable()
                     ->preload()
                     ->disabledOn('edit')
-                    ->createOptionForm(fn (Forms\Form $form): Form => AttributeResource::form($form))
-                    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                    ->createOptionForm(fn (Schema $schema): Schema => AttributeResource::form($schema))
+                    ->afterStateUpdated(function ($state, Set $set) {
                         $set('options', []);
                     }),
-                Forms\Components\Select::make('options')
+                Select::make('options')
                     ->label(__('products::filament/resources/product/pages/manage-attributes.form.values'))
                     ->required()
                     ->relationship(
                         name: 'options',
                         titleAttribute: 'name',
-                        modifyQueryUsing: fn (Forms\Get $get, Builder $query) => $query->where('products_attribute_options.attribute_id', $get('attribute_id')),
+                        modifyQueryUsing: fn (Get $get, Builder $query) => $query->where('products_attribute_options.attribute_id', $get('attribute_id')),
                     )
                     ->searchable()
                     ->preload()
@@ -80,18 +85,18 @@ class ManageAttributes extends ManageRelatedRecords
             ->recordTitleAttribute('name')
             ->description(__('products::filament/resources/product/pages/manage-attributes.table.description'))
             ->columns([
-                Tables\Columns\TextColumn::make('attribute.name')
+                TextColumn::make('attribute.name')
                     ->label(__('products::filament/resources/product/pages/manage-attributes.table.columns.attribute')),
-                Tables\Columns\TextColumn::make('values.attributeOption.name')
+                TextColumn::make('values.attributeOption.name')
                     ->label(__('products::filament/resources/product/pages/manage-attributes.table.columns.values'))
                     ->badge(),
             ])
             ->headerActions([
                 GenerateVariantsAction::make(),
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label(__('products::filament/resources/product/pages/manage-attributes.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
                         $data['creator_id'] = Auth::id();
 
                         return $data;
@@ -106,8 +111,8 @@ class ManageAttributes extends ManageRelatedRecords
                             ->body(__('products::filament/resources/product/pages/manage-attributes.table.header-actions.create.notification.body')),
                     ),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                EditAction::make()
                     ->after(function (ProductAttribute $record) {
                         $this->updateOrCreateVariants($record);
                     })
@@ -117,7 +122,7 @@ class ManageAttributes extends ManageRelatedRecords
                             ->title(__('products::filament/resources/product/pages/manage-attributes.table.actions.edit.notification.title'))
                             ->body(__('products::filament/resources/product/pages/manage-attributes.table.actions.edit.notification.body')),
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->after(function (ProductAttribute $record) {
                         $this->updateOrCreateVariants($record);
                     })

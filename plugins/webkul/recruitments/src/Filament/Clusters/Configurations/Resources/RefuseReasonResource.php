@@ -2,23 +2,30 @@
 
 namespace Webkul\Recruitment\Filament\Clusters\Configurations\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Webkul\Recruitment\Filament\Clusters\Configurations;
-use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\RefuseReasonResource\Pages;
+use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\RefuseReasonResource\Pages\ListRefuseReasons;
 use Webkul\Recruitment\Models\RefuseReason;
 
 class RefuseReasonResource extends Resource
 {
     protected static ?string $model = RefuseReason::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-arrow-uturn-left';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-uturn-left';
 
     protected static ?string $cluster = Configurations::class;
 
@@ -37,16 +44,16 @@ class RefuseReasonResource extends Resource
         return __('recruitments::filament/clusters/configurations/resources/refuse-reason.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/refuse-reason.form.fields.name'))
                     ->required()
                     ->maxLength(255)
                     ->placeholder(__('recruitments::filament/clusters/configurations/resources/refuse-reason.form.fields.name-placeholder')),
-                Forms\Components\Select::make('template')
+                Select::make('template')
                     ->label(__('recruitments::filament/clusters/configurations/resources/refuse-reason.form.fields.template.title'))
                     ->options([
                         'applicant-refuse'         => __('recruitments::filament/clusters/configurations/resources/refuse-reason.form.fields.template.applicant-refuse'),
@@ -60,53 +67,53 @@ class RefuseReasonResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
+                TextColumn::make('id')
                     ->label(__('recruitments::filament/clusters/configurations/resources/refuse-reason.table.columns.id'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/refuse-reason.table.columns.name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('template')
+                TextColumn::make('template')
                     ->label(__('recruitments::filament/clusters/configurations/resources/refuse-reason.table.columns.template'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('createdBy.name')
+                TextColumn::make('createdBy.name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/refuse-reason.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('recruitments::filament/clusters/configurations/resources/refuse-reason.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('recruitments::filament/clusters/configurations/resources/refuse-reason.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\QueryBuilder::make()
+                QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
-                        Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('name')
+                        TextConstraint::make('name')
                             ->label(__('recruitments::filament/clusters/configurations/resources/refuse-reason.table.filters.name'))
                             ->icon('heroicon-o-user'),
                     ]),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('recruitments::filament/clusters/configurations/resources/refuse-reason.table.actions.edit.notification.title'))
                             ->body(__('recruitments::filament/clusters/configurations/resources/refuse-reason.table.actions.edit.notification.body'))
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -114,9 +121,9 @@ class RefuseReasonResource extends Resource
                             ->body(__('recruitments::filament/clusters/configurations/resources/refuse-reason.table.actions.delete.notification.body'))
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -128,15 +135,15 @@ class RefuseReasonResource extends Resource
             ->reorderable('sort', 'desc');
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\TextEntry::make('name')
+        return $schema
+            ->components([
+                TextEntry::make('name')
                     ->placeholder('—')
                     ->icon('heroicon-o-briefcase')
                     ->label(__('recruitments::filament/clusters/configurations/resources/refuse-reason.infolist.name')),
-                Infolists\Components\TextEntry::make('name')
+                TextEntry::make('name')
                     ->placeholder('—')
                     ->icon('heroicon-o-briefcase')
                     ->label(__('recruitments::filament/clusters/configurations/resources/refuse-reason.infolist.template')),
@@ -146,7 +153,7 @@ class RefuseReasonResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRefuseReasons::route('/'),
+            'index' => ListRefuseReasons::route('/'),
         ];
     }
 }

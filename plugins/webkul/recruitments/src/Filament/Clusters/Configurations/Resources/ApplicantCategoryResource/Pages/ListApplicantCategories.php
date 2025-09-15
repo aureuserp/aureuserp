@@ -2,7 +2,7 @@
 
 namespace Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ApplicantCategoryResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Facades\Auth;
@@ -15,10 +15,10 @@ class ListApplicantCategories extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label(__('recruitments::filament/clusters/configurations/resources/applicant-category/pages/list-applicant-categories.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
-                ->mutateFormDataUsing(function (array $data): array {
+                ->mutateDataUsing(function (array $data): array {
                     $data['creator_id'] = Auth::id();
 
                     return $data;

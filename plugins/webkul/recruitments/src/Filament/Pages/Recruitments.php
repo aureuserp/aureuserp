@@ -3,15 +3,16 @@
 namespace Webkul\Recruitment\Filament\Pages;
 
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Pages\Dashboard as BaseDashboard;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
 use Filament\View\LegacyComponents\Widget;
 use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\EmployeeJobPosition;
-use Webkul\Recruitment\Filament\Widgets;
+use Webkul\Recruitment\Filament\Widgets\ApplicantChartWidget;
+use Webkul\Recruitment\Filament\Widgets\JobPositionStatsWidget;
 use Webkul\Recruitment\Models\Stage;
 use Webkul\Support\Filament\Clusters\Dashboard as DashboardCluster;
 use Webkul\Support\Models\Company;
@@ -22,7 +23,7 @@ class Recruitments extends BaseDashboard
 
     protected static string $routePath = 'recruitment';
 
-    protected static ?string $navigationIcon = 'heroicon-o-folder';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-folder';
 
     protected static ?string $cluster = DashboardCluster::class;
 
@@ -31,10 +32,10 @@ class Recruitments extends BaseDashboard
         return __('recruitments::filament/pages/recruitment.navigation.title');
     }
 
-    public function filtersForm(Form $form): Form
+    public function filtersForm(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make()
                     ->schema([
                         Select::make('selectedJobs')
@@ -88,7 +89,7 @@ class Recruitments extends BaseDashboard
                             ->default(now())
                             ->native(false),
                     ])
-                    ->columns(3),
+                    ->columns(3)->columnSpanFull(),
             ]);
     }
 
@@ -98,8 +99,8 @@ class Recruitments extends BaseDashboard
     public function getWidgets(): array
     {
         return [
-            Widgets\JobPositionStatsWidget::class,
-            Widgets\ApplicantChartWidget::class,
+            JobPositionStatsWidget::class,
+            ApplicantChartWidget::class,
         ];
     }
 }

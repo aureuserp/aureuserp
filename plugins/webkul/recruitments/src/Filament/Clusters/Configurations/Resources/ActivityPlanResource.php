@@ -2,14 +2,33 @@
 
 namespace Webkul\Recruitment\Filament\Clusters\Configurations\Resources;
 
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
-use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
+use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResource as BaseActivityPlanResource;
 use Webkul\Recruitment\Filament\Clusters\Configurations;
-use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages;
+use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\EditActivityPlan;
+use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\ListActivityPlans;
+use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\ViewActivityPlan;
 use Webkul\Recruitment\Models\ActivityPlan;
 
 class ActivityPlanResource extends BaseActivityPlanResource
@@ -27,50 +46,50 @@ class ActivityPlanResource extends BaseActivityPlanResource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.columns.name'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('department.name')
+                TextColumn::make('department.name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.columns.department'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('department.manager.name')
+                TextColumn::make('department.manager.name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.columns.manager'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('company.name')
+                TextColumn::make('company.name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.columns.company'))
                     ->sortable(),
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.columns.status'))
                     ->sortable()
                     ->boolean(),
-                Tables\Columns\TextColumn::make('createdBy.name')
+                TextColumn::make('createdBy.name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\TernaryFilter::make('is_active')
+                TernaryFilter::make('is_active')
                     ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.filters.is-active')),
-                Tables\Filters\QueryBuilder::make()
+                QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
-                        Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('name')
+                        TextConstraint::make('name')
                             ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.filters.name'))
                             ->icon('heroicon-o-briefcase'),
-                        Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('plugin')
+                        TextConstraint::make('plugin')
                             ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.filters.plugin'))
                             ->icon('heroicon-o-briefcase'),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('activityTypes')
+                        RelationshipConstraint::make('activityTypes')
                             ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.filters.activity-types'))
                             ->icon('heroicon-o-briefcase')
                             ->multiple()
@@ -82,7 +101,7 @@ class ActivityPlanResource extends BaseActivityPlanResource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('company')
+                        RelationshipConstraint::make('company')
                             ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.filters.company'))
                             ->icon('heroicon-o-building-office-2')
                             ->multiple()
@@ -94,7 +113,7 @@ class ActivityPlanResource extends BaseActivityPlanResource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('department')
+                        RelationshipConstraint::make('department')
                             ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.filters.department'))
                             ->icon('heroicon-o-building-office-2')
                             ->multiple()
@@ -106,50 +125,50 @@ class ActivityPlanResource extends BaseActivityPlanResource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('created_at')
+                        DateConstraint::make('created_at')
                             ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.filters.created-at')),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('updated_at')
+                        DateConstraint::make('updated_at')
                             ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.filters.updated-at')),
                     ]),
             ])
             ->groups([
-                Tables\Grouping\Group::make('name')
+                Group::make('name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.groups.name'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('createdBy.name')
+                Group::make('createdBy.name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.groups.created-by'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('is_active')
+                Group::make('is_active')
                     ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.groups.status'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('created_at')
+                Group::make('created_at')
                     ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.groups.created-at'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('updated_at')
+                Group::make('updated_at')
                     ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.groups.updated-at'))
                     ->date()
                     ->collapsible(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ViewAction::make()
                     ->hidden(fn ($record) => $record->trashed()),
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->hidden(fn ($record) => $record->trashed()),
-                Tables\Actions\RestoreAction::make()
+                RestoreAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.actions.restore.notification.title'))
                             ->body(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.actions.restore.notification.body')),
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.actions.delete.notification.title'))
                             ->body(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.actions.delete.notification.body')),
                     ),
-                Tables\Actions\ForceDeleteAction::make()
+                ForceDeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -157,23 +176,23 @@ class ActivityPlanResource extends BaseActivityPlanResource
                             ->body(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.actions.force-delete.notification.body')),
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\RestoreBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.bulk-actions.restore.notification.title'))
                                 ->body(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.bulk-actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteBulkAction::make()
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.bulk-actions.delete.notification.title'))
                                 ->body(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.bulk-actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteBulkAction::make()
+                    ForceDeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -183,9 +202,9 @@ class ActivityPlanResource extends BaseActivityPlanResource
                 ]),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->icon('heroicon-o-plus-circle')
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
                         $user = Auth::user();
 
                         $data['plugin'] = 'recruitments';
@@ -211,9 +230,9 @@ class ActivityPlanResource extends BaseActivityPlanResource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListActivityPlans::route('/'),
-            'edit'   => Pages\EditActivityPlan::route('/{record}/edit'),
-            'view'   => Pages\ViewActivityPlan::route('/{record}'),
+            'index'  => ListActivityPlans::route('/'),
+            'edit'   => EditActivityPlan::route('/{record}/edit'),
+            'view'   => ViewActivityPlan::route('/{record}'),
         ];
     }
 }
