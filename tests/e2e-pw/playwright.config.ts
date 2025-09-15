@@ -28,7 +28,7 @@ export default defineConfig({
     ],
   ],
   use: {
-    baseURL: `http://127.0.0.1:8001`, //process.env.APP_URL,
+    baseURL: `http://127.0.0.1:8000`, //process.env.APP_URL,
     screenshot: { mode: "only-on-failure", fullPage: true },
     video: "retain-on-failure",
     trace: "retain-on-failure",

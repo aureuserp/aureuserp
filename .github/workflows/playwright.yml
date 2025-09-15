@@ -74,8 +74,8 @@ jobs:
       - name: Generate application key
         run: php artisan key:generate --ansi
 
-      - name: Run database migrations
-        run: php artisan migrate --force --no-interaction
+      - name: Run ERP installer
+        run: php artisan erp:install --no-interaction || php artisan erp:install
 
       - name: Cache Node modules
         uses: actions/cache@v4
@@ -92,13 +92,13 @@ jobs:
 
       - name: Start Laravel dev server
         run: |
-          nohup php artisan serve --host=127.0.0.1 --port=9000 >/tmp/laravel.log 2>&1 &
+          nohup php artisan serve --host=127.0.0.1 --port=8000 >/tmp/laravel.log 2>&1 &
           echo $! > /tmp/artisan.pid
 
       - name: Wait for application to be ready
         run: |
           for i in {1..30}; do
-            curl --fail http://127.0.0.1:9000 || sleep 1 && break
+            curl --fail http://127.0.0.1:8000 || sleep 1 && break
           done
 
       - name: Install Playwright browsers
@@ -106,7 +106,7 @@ jobs:
 
       - name: Run Playwright tests
         env:
-          PLAYWRIGHT_BASE_URL: http://127.0.0.1:9000
+          BASE_URL: http://127.0.0.1:8000
         run: npx playwright test --reporter=github || npx playwright test --reporter=list
 
       - name: Upload Playwright report
@@ -114,5 +114,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: playwright-report
+          path: |
+            tests/e2e-pw/playwright-report
+            tests/e2e-pw/test-results
           if-no-files-found: ignore
