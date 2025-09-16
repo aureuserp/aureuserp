@@ -10,9 +10,12 @@ export async function loginAsAdmin(page) {
     /**
      * Authenticate the admin user.
      */
+    console.log("logging in as admin...");
     await page.goto("admin/login");
     await page.fill('input[type="email"]', adminCredentials.email);
     await page.fill('input[type="password"]', adminCredentials.password);
+
+    console.log("email and password filled...");
 
     // Submit the form and wait for navigation (avoid race conditions)
     await Promise.all([
