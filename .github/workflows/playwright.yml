@@ -23,7 +23,7 @@ jobs:
 
     env:
       DB_CONNECTION: mysql
-      DB_HOST: 127.0.0.1
+      DB_HOST: mysql
       DB_PORT: 3306
       DB_DATABASE: laravel
       DB_USERNAME: root
@@ -64,10 +64,19 @@ jobs:
       - name: Create .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
+      - name: Ensure .env contains service DB connection (use service hostname)
+        run: |
+          # Overwrite DB settings in .env so the app talks to the GitHub Actions service container named 'mysql'
+          sed -i "s/^DB_HOST=.*/DB_HOST=mysql/" .env || echo "DB_HOST=mysql" >> .env
+          sed -i "s/^DB_PORT=.*/DB_PORT=3306/" .env || echo "DB_PORT=3306" >> .env
+          sed -i "s/^DB_DATABASE=.*/DB_DATABASE=laravel/" .env || echo "DB_DATABASE=laravel" >> .env
+          sed -i "s/^DB_USERNAME=.*/DB_USERNAME=root/" .env || echo "DB_USERNAME=root" >> .env
+          sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=secret/" .env || echo "DB_PASSWORD=secret" >> .env
+
       - name: Wait for MySQL to be ready
         run: |
           for i in {1..30}; do
-            mysqladmin ping -h127.0.0.1 -P3306 -uroot -psecret >/dev/null 2>&1 && break
+            mysqladmin ping -hmysql -P3306 -uroot -psecret >/dev/null 2>&1 && break
             sleep 1
           done
 
