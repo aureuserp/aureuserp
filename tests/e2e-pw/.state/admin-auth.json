@@ -1,0 +1,51 @@
+{
+  "cookies": [
+    {
+      "name": "XSRF-TOKEN",
+      "value": "eyJpdiI6InN2N0VrTjVmZE5HdXhZUWlUcWZXS2c9PSIsInZhbHVlIjoiM3hzZzUxS01UZHM2NnZtZ1c3STFoRnVOd2JWZExwWkp5ekhJZDl0dTZVS0Q3UXRWY1NQcVFLWS9VaTlla0VMK3MvNmRxUEhVZU9WWGpsTVFFREYwYzNYdkx5Yk1IYWNrcGtxNTJKNUp3TTM5Y0pWTWxWL2RWSFQzakFtZ3QxUnIiLCJtYWMiOiIzNGZmYWUyYzQ1OTQwOWFmMjg2N2EzZmVhOTFhNmE5MTE3YzFlNzU2OWFiMWRmOGI4NDIzZWYwMjVhZWY0NmQ2IiwidGFnIjoiIn0%3D",
+      "domain": "127.0.0.1",
+      "path": "/",
+      "expires": 1758038088.241317,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "aureuserp_session",
+      "value": "eyJpdiI6IjdaWWExRjRFT3N3RXVCU3NLaWxhWUE9PSIsInZhbHVlIjoiQlpML000TVEyOTcrTUVncFBadEEzY2s2WWFUcGFkVUoydEo3aTFrbHZsTTVOeUE5dmRCdGZUSUZPMFhsRzRnK3lnWG1tQjFoMlV4Zk56eGVOdzZWQXhKelp1TVc3OVNscldsMTc2TlBuKzg3OHZOd3ZkZGtXMEp0Y0Q2VXNIblkiLCJtYWMiOiJkZDJmZmQ2ODBlNjcyYWRhZjU0NjkwZmRlOTJkZTRjMjE1NmQwMjA2MmU2ZDJkMzg3NzE3NmVlMDJlYWM1NTMzIiwidGFnIjoiIn0%3D",
+      "domain": "127.0.0.1",
+      "path": "/",
+      "expires": 1758038088.241378,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://127.0.0.1:8000",
+      "localStorage": [
+        {
+          "name": "theme",
+          "value": "system"
+        },
+        {
+          "name": "isOpenDesktop",
+          "value": "true"
+        },
+        {
+          "name": "phpdebugbar-height",
+          "value": "300"
+        },
+        {
+          "name": "isOpen",
+          "value": "true"
+        },
+        {
+          "name": "collapsedGroups",
+          "value": "[]"
+        }
+      ]
+    }
+  ]
+}

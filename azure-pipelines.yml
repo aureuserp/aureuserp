@@ -61,10 +61,10 @@ stages:
             env:
               PLAYWRIGHT_BASE_URL: http://127.0.0.1:8000
 
-  - stage: Deploy
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-    jobs:
-      - job: DeployToProduction
-        steps:
-          - script: echo "Add your deployment steps here"
-            displayName: "Deploy"
+  # - stage: Deploy
+  #   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  #   jobs:
+  #     - job: DeployToProduction
+  #       steps:
+  #         - script: echo "Add your deployment steps here"
+  #           displayName: "Deploy"

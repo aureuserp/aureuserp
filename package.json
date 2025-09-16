@@ -6,8 +6,8 @@
         "dev": "vite"
     },
     "devDependencies": {
-        "@tailwindcss/postcss": "^4.1.12",
         "@playwright/test": "^1.53.1",
+        "@tailwindcss/postcss": "^4.1.12",
         "@types/node": "^24.0.3",
         "autoprefixer": "^10.4.20",
         "axios": "^1.7.4",
@@ -17,6 +17,7 @@
         "vite": "^5.0"
     },
     "dependencies": {
+        "dotenv": "^17.2.2",
         "tailwindcss": "^4.1.12"
     }
 }
