@@ -11,35 +11,34 @@ export async function loginAsAdmin(page) {
      * Authenticate the admin user.
      */
     console.log("logging in as admin...");
-    await page.goto("admin/login");
+    await page.goto("/admin/login");
     await page.fill('input[type="email"]', adminCredentials.email);
     await page.fill('input[type="password"]', adminCredentials.password);
 
     console.log("email and password filled...");
 
-    // Submit the form and wait for navigation (avoid race conditions)
-    await Promise.all([
-        page.waitForNavigation({ waitUntil: 'networkidle', timeout: 15000 }),
-        page.press('input[type="password"]', 'Enter'),
-    ]);
-
-    /**
-     * Wait for the dashboard to load (fallbacks for SPA or non-navigation flows).
-     */
-    console.log("dashboard loading...");
-
-    // First try a dashboard-specific selector; if not present, wait for URL change as a fallback.
-    try {
-        // Adjust the selector to a reliable element on your dashboard if needed.
-        await page.waitForSelector('text=Dashboard', { timeout: 10000 });
-    } catch (e) {
-        try {
-            await page.waitForURL(/admin|dashboard/, { timeout: 10000 });
-        } catch (e) {
-            // last resort: short pause so tests don't hang indefinitely
-            await page.waitForTimeout(2000);
-        }
+    // Try to submit via the form submit button first, fallback to pressing Enter
+    const submitClicked = await page.locator('button[type="submit"]').first().catch(() => null);
+    if (submitClicked) {
+        await submitClicked.click();
+    } else {
+        await page.press('input[type="password"]', 'Enter');
     }
+
+    // Wait for one of several signals that login succeeded (avoid long hangs):
+    // - navigation
+    // - dashboard-specific selector
+    // - URL change
+    // Use short timeouts so the test fails fast instead of getting stuck.
+    const timeout = 8000;
+
+    const navPromise = page.waitForNavigation({ waitUntil: 'networkidle', timeout }).catch(() => null);
+    const selectorPromise = page.waitForSelector('text=Dashboard', { timeout }).catch(() => null);
+    const urlPromise = page.waitForURL(/admin|dashboard/, { timeout }).catch(() => null);
+
+    await Promise.race([navPromise, selectorPromise, urlPromise]);
+
+    console.log("dashboard loading...");
 
     return adminCredentials;
 }
