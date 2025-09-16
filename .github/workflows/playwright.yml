@@ -114,9 +114,6 @@ jobs:
             curl --fail http://127.0.0.1:8000 || sleep 1 && break
           done
 
-      # - name: Install Playwright browsers
-      #   run: npx playwright install --with-deps
-
       - name: Install Playwright Browsers
         run: |
           sudo apt-get update --allow-releaseinfo-change
@@ -125,7 +122,6 @@ jobs:
       - name: Run Playwright tests
         env:
           BASE_URL: http://127.0.0.1:8000
-          # run: npx playwright test --reporter=github || npx playwright test --reporter=list
           run: npx playwright test --config=tests/e2e-pw/playwright.config.ts
 
       - name: Upload Playwright report
