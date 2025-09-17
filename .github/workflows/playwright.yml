@@ -82,17 +82,6 @@ jobs:
           done
           mysqladmin version -h${HOST} -P${PORT} -uroot -proot || true
 
-      - name: Generate application key (write to .env without booting app)
-        run: |
-          # generate base64 key and write into .env without booting Laravel (avoids running service providers)
-          KEY="base64:$(php -r 'echo base64_encode(random_bytes(32));')"
-          if grep -q "^APP_KEY=" .env; then
-            sed -i "s/^APP_KEY=.*/APP_KEY=${KEY}/" .env
-          else
-            echo "APP_KEY=${KEY}" >> .env
-          fi
-          echo "APP_KEY set to ${KEY}"
-
       - name: Run Composer autoload and Laravel package discovery (after DB ready)
         run: |
           composer dump-autoload -o
