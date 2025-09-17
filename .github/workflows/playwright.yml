@@ -64,7 +64,7 @@ jobs:
           sed -i 's/^#DB_PASSWORD=.*/DB_PASSWORD=root/' .env
 
       - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-progress --no-interaction --optimize-autoloader
+        run: composer install --prefer-dist --no-progress --no-interaction --optimize-autoloader --no-scripts
 
       - name: Wait for MySQL to be ready
         run: |
