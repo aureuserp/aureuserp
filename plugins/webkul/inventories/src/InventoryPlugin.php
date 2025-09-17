@@ -36,7 +36,7 @@ class InventoryPlugin implements Plugin
                     ->discoverWidgets(in: $this->getPluginBasePath('/Filament/Widgets'), for: 'Webkul\\Inventory\\Filament\\Widgets')
                     ->navigationItems([
                         NavigationItem::make('settings')
-                            ->label('Settings')
+                            ->label(fn () => __('inventories::app.navigation.settings.label'))
                             ->url(fn () => ManageOperations::getUrl())
                             ->icon('heroicon-o-wrench')
                             ->group('Inventory')

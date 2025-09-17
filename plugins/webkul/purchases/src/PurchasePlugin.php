@@ -43,7 +43,7 @@ class PurchasePlugin implements Plugin
                     ->discoverWidgets(in: $this->getPluginBasePath('/Filament/Admin/Widgets'), for: 'Webkul\\Purchase\\Filament\\Admin\\Widgets')
                     ->navigationItems([
                         NavigationItem::make('settings')
-                            ->label('Settings')
+                            ->label(fn () => __('purchases::app.navigation.settings.label'))
                             ->url(fn () => ManageProducts::getUrl())
                             ->icon('heroicon-o-wrench')
                             ->group('Purchase')

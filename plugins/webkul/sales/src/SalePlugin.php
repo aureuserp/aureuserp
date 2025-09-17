@@ -35,7 +35,7 @@ class SalePlugin implements Plugin
                     ->discoverWidgets(in: $this->getPluginBasePath('/Filament/Widgets'), for: 'Webkul\\Sale\\Filament\\Widgets')
                     ->navigationItems([
                         NavigationItem::make('settings')
-                            ->label('Settings')
+                            ->label(fn () => __('sales::app.navigation.settings.label'))
                             ->url(fn () => ManageProducts::getUrl())
                             ->icon('heroicon-o-wrench')
                             ->group('Sales')

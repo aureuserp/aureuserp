@@ -35,7 +35,8 @@ class ProjectPlugin implements Plugin
                     ->discoverClusters(in: $this->getPluginBasePath('/Filament/Clusters'), for: 'Webkul\\Project\\Filament\\Clusters')
                     ->discoverWidgets(in: $this->getPluginBasePath('/Filament/Widgets'), for: 'Webkul\\Project\\Filament\\Widgets')
                     ->navigationItems([
-                        NavigationItem::make('Settings')
+                        NavigationItem::make('settings')
+                            ->label(fn () => __('projects::app.navigation.settings.label'))
                             ->url(fn () => ManageTasks::getUrl())
                             ->icon('heroicon-o-wrench')
                             ->group('Project')
