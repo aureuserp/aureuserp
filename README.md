@@ -48,7 +48,7 @@ To run and develop Aureus ERP, ensure your environment meets the following requi
 
 -   **PHP**: Version 8.2 or higher.
 -   **Laravel**: Version 11.x, for leveraging the latest framework features and improvements.
--   **FilamentPHP**: Version 3.x, for a seamless and modern admin panel experience.
+-   **FilamentPHP**: Version 4.x, for a seamless and modern admin panel experience.
 -   **Database**: MySQL 8.0+ or SQLite for database management.
 -   **Composer**: Latest version, to manage PHP dependencies.
 -   **Node.js & NPM**: Latest stable versions for compiling front-end assets.
