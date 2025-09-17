@@ -11,10 +11,10 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: secret
-          MYSQL_DATABASE: laravel
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: aureus
         ports:
-          - 3306:3306
+          - 3306
         options: >-
           --health-cmd "mysqladmin ping --silent"
           --health-interval 10s
@@ -25,9 +25,9 @@ jobs:
       DB_CONNECTION: mysql
       DB_HOST: 127.0.0.1
       DB_PORT: 3306
-      DB_DATABASE: laravel
+      DB_DATABASE: aureus
       DB_USERNAME: root
-      DB_PASSWORD: secret
+      DB_PASSWORD: root
 
     steps:
       - name: Checkout code
@@ -59,15 +59,25 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-cache-
 
       - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-progress --no-interaction --optimize-autoloader
+        run: composer install
 
       - name: Create .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
+      - name: Ensure .env contains service DB connection (use service hostname)
+        run: |
+          sed -i "s|^\(DB_HOST=\s*\).*$|\1127.0.0.1|" .env
+          sed -i "s|^\(DB_PORT=\s*\).*$|\1${{ job.services.mysql.ports['3306'] }}|" .env
+          sed -i "s/^DB_DATABASE=.*/DB_DATABASE=aureus/" .env || echo "DB_DATABASE=aureus" >> .env
+          sed -i "s/^DB_USERNAME=.*/DB_USERNAME=root/" .env || echo "DB_USERNAME=root" >> .env
+          sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=root/" .env || echo "DB_PASSWORD=root" >> .env
+
       - name: Wait for MySQL to be ready
         run: |
+          HOST=127.0.0.1
+          PORT=${{ job.services.mysql.ports['3306'] }}
           for i in {1..30}; do
-            mysqladmin ping -h127.0.0.1 -P3306 -uroot -psecret >/dev/null 2>&1 && break
+            mysqladmin ping -h${HOST} -P${PORT} -uroot -proot >/dev/null 2>&1 && break
             sleep 1
           done
 
