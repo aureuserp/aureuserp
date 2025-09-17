@@ -59,7 +59,7 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-cache-
 
       - name: Install Composer dependencies
-        run: composer install
+        run: composer install --prefer-dist --no-progress --no-interaction --optimize-autoloader --no-scripts
 
       - name: Create .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
@@ -83,6 +83,11 @@ jobs:
 
       - name: Generate application key
         run: php artisan key:generate --ansi
+
+      - name: Run Composer autoload and Laravel package discovery (after DB ready)
+        run: |
+          composer dump-autoload -o
+          php artisan package:discover --ansi
 
       - name: Run ERP installer (non-interactive via secrets)
         env:
