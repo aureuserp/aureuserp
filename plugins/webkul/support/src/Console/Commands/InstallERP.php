@@ -24,7 +24,7 @@ class InstallERP extends Command
      *
      * @var string
      */
-    protected $signature = 'erp:install';
+    protected $signature = 'erp:install {--admin-name= : Admin user name} {--admin-email= : Admin user email} {--admin-password= : Admin user password}';
 
     /**
      * The console command description.
@@ -114,28 +114,11 @@ class InstallERP extends Command
 
         $userModel = app(Utils::getAuthProviderFQCN());
 
-        $adminData = [
-            'name'  => text(
-                'Name',
-                default: 'Example',
-                required: true
-            ),
-            'email' => text(
-                'Email address',
-                default: 'admin@example.com',
-                required: true,
-                validate: fn ($email) => $this->validateAdminEmail($email, $userModel)
-            ),
-            'password' => Hash::make(
-                password(
-                    'Password',
-                    required: true,
-                    validate: fn ($value) => $this->validateAdminPassword($value)
-                )
-            ),
-            'resource_permission' => 'global',
-            'default_company_id'  => $defaultCompany->id,
-        ];
+        $adminData = $this->getAdminCredentials($userModel);
+
+        $adminData['resource_permission'] = 'global';
+
+        $adminData['default_company_id'] = $defaultCompany->id;
 
         $adminData['is_default'] = true;
 
@@ -154,6 +137,65 @@ class InstallERP extends Command
         $this->syncDefaultSettings($adminUser);
 
         $this->info("✅ Admin user '{$adminUser->name}' created and assigned the '{$this->getAdminRoleName()}' role successfully.");
+    }
+
+    /**
+     * Get admin data from command options or interactive prompts.
+     */
+    protected function getAdminCredentials(Model $userModel): array
+    {
+        $name = $this->option('admin-name');
+
+        if (empty($name)) {
+            $name = text(
+                'Name',
+                default: 'Example',
+                required: true
+            );
+        }
+
+        $email = $this->option('admin-email');
+
+        if (empty($email)) {
+            $email = text(
+                'Email address',
+                default: 'admin@example.com',
+                required: true,
+                validate: fn ($email) => $this->validateAdminEmail($email, $userModel)
+            );
+        } else {
+            $emailValidation = $this->validateAdminEmail($email, $userModel);
+
+            if ($emailValidation) {
+                $this->error("Invalid email: {$emailValidation}");
+
+                exit(1);
+            }
+        }
+
+        $passwordInput = $this->option('admin-password');
+
+        if (empty($passwordInput)) {
+            $passwordInput = password(
+                'Password',
+                required: true,
+                validate: fn ($value) => $this->validateAdminPassword($value)
+            );
+        } else {
+            $passwordValidation = $this->validateAdminPassword($passwordInput);
+
+            if ($passwordValidation) {
+                $this->error("Invalid password: {$passwordValidation}");
+
+                exit(1);
+            }
+        }
+
+        return [
+            'name'     => $name,
+            'email'    => $email,
+            'password' => Hash::make($passwordInput),
+        ];
     }
 
     /**
