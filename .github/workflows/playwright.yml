@@ -137,6 +137,7 @@ jobs:
         run: |
           sudo apt-get update --allow-releaseinfo-change
           npx playwright install --with-deps chromium
+        working-directory: tests/e2e-pw
 
       - name: Run Playwright tests
         env:
