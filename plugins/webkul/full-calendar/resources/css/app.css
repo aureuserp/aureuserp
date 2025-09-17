@@ -1,4 +1,6 @@
-@import '../../../../../vendor/filament/filament/resources/css/theme.css';
+@import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
+@import "../../../support/resources/css/colors.css";
 
 @source '../../resources/views';
 
