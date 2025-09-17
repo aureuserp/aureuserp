@@ -139,6 +139,12 @@ jobs:
           npx playwright install --with-deps chromium
         working-directory: tests/e2e-pw
 
+      - name: Start Laravel server
+        run: |
+          php artisan serve --host=0.0.0.0 --port=8000 > server.log 2>&1 &
+          echo "Waiting for server to start..."
+          timeout 30 bash -c 'until curl -s http://127.0.0.1:8000 > /dev/null; do sleep 1; done'
+
       - name: Run Playwright tests
         env:
           BASE_URL: http://127.0.0.1:8000
