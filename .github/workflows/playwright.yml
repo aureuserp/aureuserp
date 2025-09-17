@@ -84,7 +84,9 @@ jobs:
 
       - name: Run Composer autoload and Laravel package discovery (after DB ready)
         run: |
-          composer dump-autoload -o
+          # avoid triggering composer scripts (which call artisan package:discover) before DB is ready
+          composer dump-autoload -o --no-scripts
+          php artisan package:discover --ansi
 
       - name: Run ERP installer (non-interactive via secrets)
         env:
