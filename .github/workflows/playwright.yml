@@ -125,7 +125,7 @@ jobs:
           KEY=$(php artisan key:generate --show)
           # Ensure we replace the APP_KEY line or append if missing
           if grep -q "^APP_KEY=" .env; then
-            sed -i "s/^APP_KEY=.*/APP_KEY=${KEY}/" .env
+            sed -i "s|^APP_KEY=.*|APP_KEY=${KEY}|" .env
           else
             echo "APP_KEY=${KEY}" >> .env
           fi
