@@ -21,14 +21,6 @@ jobs:
           --health-timeout 5s
           --health-retries 3
 
-    env:
-      DB_CONNECTION: mysql
-      DB_HOST: 127.0.0.1
-      DB_PORT: 3306
-      DB_DATABASE: aureus
-      DB_USERNAME: root
-      DB_PASSWORD: root
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -58,19 +50,21 @@ jobs:
           key: ${{ runner.os }}-composer-cache-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-cache-
 
-      - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-progress --no-interaction --optimize-autoloader --no-scripts
-
       - name: Create .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
-      - name: Ensure .env contains service DB connection (use service hostname)
+      - name: Update .env file
         run: |
-          sed -i "s|^\(DB_HOST=\s*\).*$|\1127.0.0.1|" .env
-          sed -i "s|^\(DB_PORT=\s*\).*$|\1${{ job.services.mysql.ports['3306'] }}|" .env
-          sed -i "s/^DB_DATABASE=.*/DB_DATABASE=aureus/" .env || echo "DB_DATABASE=aureus" >> .env
-          sed -i "s/^DB_USERNAME=.*/DB_USERNAME=root/" .env || echo "DB_USERNAME=root" >> .env
-          sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=root/" .env || echo "DB_PASSWORD=root" >> .env
+          # Make replacements robust: handle optional leading '#' and optional spaces
+          sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
+          sed -i 's/^[#[:space:]]*DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+          sed -i 's/^[#[:space:]]*DB_PORT=.*/DB_PORT=3306/' .env
+          sed -i 's/^[#[:space:]]*DB_DATABASE=.*/DB_DATABASE=aureus/' .env
+          sed -i 's/^[#[:space:]]*DB_USERNAME=.*/DB_USERNAME=root/' .env
+          sed -i 's/^[#[:space:]]*DB_PASSWORD=.*/DB_PASSWORD=root/' .env
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction --optimize-autoloader
 
       - name: Wait for MySQL to be ready
         run: |
