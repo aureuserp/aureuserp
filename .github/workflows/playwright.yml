@@ -85,7 +85,6 @@ jobs:
       - name: Run Composer autoload and Laravel package discovery (after DB ready)
         run: |
           composer dump-autoload -o
-          php artisan package:discover --ansi
 
       - name: Run ERP installer (non-interactive via secrets)
         env:
@@ -96,7 +95,7 @@ jobs:
           # Use provided secrets or fallbacks (bash parameter expansion)
           NAME="${ADMIN_NAME:-Example}"
           EMAIL="${ADMIN_EMAIL:-admin@example.com}"
-          PASSWORD="${ADMIN_PASSWORD:-admin123!}"
+          PASSWORD="${ADMIN_PASSWORD:-admin123}"
 
           php artisan erp:install --no-interaction \
             --admin-name="${NAME}" \
