@@ -120,8 +120,16 @@ jobs:
         run: npm run build --if-present
 
       - name: Generate application key
-        run: php artisan key:generate
-          sed -i 's/APP_KEY=.*/APP_KEY='$(php artisan key:generate --show)'/' .env
+        run: |
+          # generate key without extra arguments and update .env reliably
+          KEY=$(php artisan key:generate --show)
+          # Ensure we replace the APP_KEY line or append if missing
+          if grep -q "^APP_KEY=" .env; then
+            sed -i "s/^APP_KEY=.*/APP_KEY=${KEY}/" .env
+          else
+            echo "APP_KEY=${KEY}" >> .env
+          fi
+          echo "APP_KEY set to ${KEY}"
 
       - name: Start Laravel dev server
         run: |
