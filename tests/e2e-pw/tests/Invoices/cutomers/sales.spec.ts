@@ -134,7 +134,6 @@ async function createCustomer(adminPage) {
      * Redirecting to Customer inside sales plugin.
      */
     await adminPage.goto("/admin/sale/orders/customers");
-    await adminPage.getByRole('link', { name: 'Create Customer' }).click();
 
     /**
      * New Customer button clicked
@@ -217,7 +216,8 @@ async function createCustomer(adminPage) {
     /**
      * Clicking create button
      */
-    await adminPage.getByRole('button', { name: 'Create' }).nth(3).click();
+    await adminPage.locator('//span[contains(.,"Create")]').nth(4).click();
+    // await adminPage.getByRole('button', { name: 'Create' }).nth(3).click();
 
     /**
      * Selecting Account holder name from the drop down 

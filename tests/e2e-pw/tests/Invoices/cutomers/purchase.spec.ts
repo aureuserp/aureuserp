@@ -2,6 +2,8 @@ import { test, expect } from "../../../setup";
 import {
     generateVendorName,
     generateName,
+    generateAccountNumber,
+    generateBankName,
 } from "../../../utils/faker";
 
 async function createVendorIndividual(adminPage) {
@@ -28,18 +30,8 @@ async function createVendorIndividual(adminPage) {
     const vendorName = generateName();
     await adminPage.getByRole('textbox', { name: 'Name' }).fill(vendorName);
 
-    // await adminPage.getByText('Browse').click();
-    // await adminPage.locator('input[type="file"]').setInputFiles(filePath);
-    /**
-     * Clicking on create
-     */
-    //await adminPage.locator('#key-bindings-1').click();
 
-    /**
-     * Clicking on contacts
-     */
-    await adminPage.getByRole('main').locator('a').filter({ hasText: 'Contacts' }).click();
-    //await adminPage.locator('a').filter({ hasText: 'Contacts' }).click();
+    await adminPage.locator('//span[contains(.,"Create")]').nth(5).click();
 
     /**
      * Waiting for contacts page to appear
@@ -116,7 +108,7 @@ async function createVendorCompany(adminPage) {
     /**
      * Redirecting to Vendor inside purchase plugin.
      */
-    await adminPage.goto("/admin/purchase/orders/vendors");
+    await adminPage.goto("/admin/purchase/orders/vendors/contacts");
     await adminPage.getByRole('link', { name: 'Create Vendor' }).click();
 
     /**
@@ -154,7 +146,7 @@ async function createVendorCompany(adminPage) {
      * Clicking on Add Contact
      */
     await adminPage.getByRole('button', { name: 'Add Contact' }).click();
-    await adminPage.getByRole('textbox', { name: 'Name' }).fill(customerName);
+    await adminPage.getByRole('textbox', { name: 'Name' }).fill(vendorName);
 
     /**
      * Clicking on create button

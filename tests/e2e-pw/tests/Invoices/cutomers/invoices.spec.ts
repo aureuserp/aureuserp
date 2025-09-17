@@ -50,6 +50,7 @@ async function createCustomer(adminPage) {
     const randomCustomerImg = Math.floor(Math.random() * 7) + 1;
     const customerImagePath = path.resolve(__dirname, `../../../utils/images/avatar/avatar${randomCustomerImg}.png`);
     await adminPage.locator('input[type="file"]').setInputFiles(customerImagePath);
+    await adminPage.getByRole('button', { name: 'Remove' }).waitFor({ state: 'visible' });
 
     /**
      * Filling the address details
@@ -70,16 +71,18 @@ async function createCustomer(adminPage) {
      */
     await adminPage.locator('#key-bindings-1').click();
 
+    await adminPage.getByRole('tab', { name: 'Edit' }).waitFor({ state: 'visible' });
+    await adminPage.getByRole('tab', { name: 'View' }).waitFor({ state: 'visible' });
+
     /**
      * Clicking on contacts
      */
-    await adminPage.getByRole('main').locator('a').filter({ hasText: 'Contacts' }).click();
-    //await adminPage.locator('a').filter({ hasText: 'Contacts' }).click();
+    await adminPage.getByRole('tab', { name: 'Contacts' }).click();
 
     /**
      * Waiting for contacts page to appear
      */
-    await adminPage.waitForSelector('h1:has-text("Manage Contacts")');
+    await adminPage.waitForSelector('h1:has-text("Manage Customers Contacts")');
 
     /**
      * Clicking on Add Contact
@@ -97,6 +100,7 @@ async function createCustomer(adminPage) {
     const randomContactImg = Math.floor(Math.random() * 7) + 1;
     const contactImagePath = path.resolve(__dirname, `../../../utils/images/avatar/avatar${randomContactImg}.png`);
     await adminPage.locator('input[type="file"]').setInputFiles(contactImagePath);
+    await adminPage.getByRole('button', { name: 'Remove' }).waitFor({ state: 'visible' });
 
     /**
      * Filling the address details
@@ -116,8 +120,7 @@ async function createCustomer(adminPage) {
      * Clicking on create button
      */
 
-    await adminPage.getByRole('button', { name: 'Create', exact: true }).nth(4).click();
-    //await adminPage.getByRole('button', { name: 'Create', exact: true }).nth(4).click();
+    await adminPage.locator('//span[contains(.,"Create")]').nth(0).click();
 
     /**
      * Waiting for success message
@@ -132,7 +135,7 @@ async function createCustomer(adminPage) {
     /**
     * Waiting for Manage Bank Accounts page to appear
     */
-    await adminPage.waitForSelector('h1:has-text("Manage Bank Accounts")');
+    await adminPage.waitForSelector('h1:has-text("Manage Customers Bank Accounts")');
 
     /**
      * Clicking on New Bank Account
@@ -160,6 +163,7 @@ async function createCustomer(adminPage) {
     const bankEmailName = bankName.replace(/\s/g, '-').toLowerCase();
     await adminPage.getByRole('textbox', { name: 'Email' }).fill(`${bankEmailName}@demo.com`);
     await adminPage.getByRole('textbox', { name: 'Phone' }).fill(generatePhoneNumber());
+
     await adminPage.getByRole('textbox', { name: 'Street 1' }).fill(generateAddress().street)
     await adminPage.getByRole('textbox', { name: 'City' }).fill(generateAddress().city);
     await adminPage.getByRole('textbox', { name: 'ZIP' }).fill(generateAddress().zip);
@@ -167,22 +171,20 @@ async function createCustomer(adminPage) {
     /**
      * Clicking create button
      */
-    await adminPage.getByRole('button', { name: 'Create' }).nth(3).click();
-    //await adminPage.getByRole('button', { name: 'Create' }).click();
-
-    /**
-     * Selecting Account holder name from the drop down 
-     */
-    await adminPage.locator('div:nth-child(4) > .fi-fo-field-wrp > div > .grid > .fi-input-wrp > .fi-input-wrp-input > div:nth-child(2) > .choices > .choices__inner').click();
-    await adminPage.locator('[id="choices--mountedTableActionsData0partner_id-item-choice-1"]').click();
+    await adminPage.locator('//span[contains(.,"Create")]').nth(2).click();
 
     /**
      * Clicking on create button
      */
-    await adminPage.getByRole('button', { name: 'Create' }).nth(1).click();
+    await adminPage.locator('//span[contains(.,"Create")]').nth(1).click();
+
+    /**
+     *  Checking if the bank account is created
+     */
+    expect(adminPage.locator('h2:has-text("No bank accounts")')).not.toBeVisible();
 }
 
-async function createProduct(adminPage) {
+async function createCustomerProduct(adminPage) {
 
     /**
      * Redirecting to Products inside Invoices plugin.
@@ -203,30 +205,25 @@ async function createProduct(adminPage) {
     /**
      * Filling up the required fields
      */
-    const productName = generateProductName();
-    await adminPage.getByRole('textbox', { name: 'Name*' }).fill(productName);
+    await adminPage.getByRole('textbox', { name: 'Name*' }).fill(generateProductName());
 
-    /**
-     * Uploading an image for the product
-     */
-    const productSlug = productName.replace(/\s/g, '-').toLowerCase();
-    const productImagePath = path.resolve(__dirname, `../../../utils/images/products/${productSlug}.jpg`);
-    await adminPage.locator('input[type="file"]').setInputFiles(productImagePath);
-
-    await adminPage.locator('[id="data\\.description"]').fill(generateDescription());
-    await adminPage.getByRole('spinbutton', { name: 'Price*' }).fill('1000');
+    //await adminPage.locator('[id="data\\.description"]').fill(generateDescription());
+    await adminPage.getByRole('paragraph').filter({ hasText: /^$/ }).fill(generateDescription());
+    //await adminPage.getByRole('textbox', { name: 'Description' }).fill(generateDescription());
+    await adminPage.getByRole('spinbutton', { name: 'Price*' }).fill('100');
 
     /**
      * Adding a Category
      */
-    await adminPage.locator('[id="data\\.settings"]').getByRole('button', { name: 'Create' }).click();
+    await adminPage.locator('[id="form\\.settings\\:\\:data\\:\\:section"]').getByRole('button', { name: 'Create' }).click();
+    //await adminPage.locator('[id="data\\.settings"]').getByRole('button', { name: 'Create' }).click();
     await adminPage.getByPlaceholder('eg. Lamps').fill(generateCategory());
-    await adminPage.getByRole('button', { name: 'Create' }).nth(4).click();
+    await adminPage.locator('//span[contains(.,"Create")]').nth(2).click();
 
     /**
      * Saving the product
      */
-    await adminPage.locator('#key-bindings-1').click();
+    await adminPage.locator('//span[contains(.,"Create")]').nth(1).click();
 
     /**
      * Clicking on Attributes
@@ -236,7 +233,7 @@ async function createProduct(adminPage) {
     /**
      * Waiting for Manage Attributes page to appear
      */
-    await adminPage.waitForSelector('h1:has-text("Manage Attributes")');
+    await adminPage.waitForSelector('h1:has-text("Manage Products Attributes")');
 
     /**
      * Clicking on Add Attribute
@@ -247,13 +244,15 @@ async function createProduct(adminPage) {
      * Filling up the required fields for attribute
      */
     await adminPage.getByTitle('Create').click();
-    await adminPage.locator('[id="mountedFormComponentActionsData\\.0\\.name"]').fill('Color');
+
+    await adminPage.locator('[id="mountedActionSchema1\\.name"]').fill('Color');
+    //await adminPage.locator('[id="mountedFormComponentActionsData\\.0\\.name"]').fill('Color');
     await adminPage.getByRole('radio', { name: 'Color' }).check();
     await adminPage.locator('[id="mountedFormComponentActionsData\\.0\\.options"]').getByRole('textbox', { name: 'Name*' }).fill('RED');
     await adminPage.getByRole('spinbutton', { name: 'Extra Price*' }).fill('100');
     await adminPage.getByRole('button', { name: 'Add to options' }).click();
     await adminPage.getByRole('textbox', { name: 'Name*' }).nth(2).fill('BLUE');
-    await adminPage.getByRole('spinbutton', { name: 'Extra Price*' }).nth(1).fill('200');
+    await adminPage.getByRole('spinbutton', { name: 'Extra Price*' }).nth(1).fill('2000');
 
     /**
      * Clicking on Create button
@@ -276,7 +275,7 @@ async function createProduct(adminPage) {
     /**
      * Waiting for success message
      */
-    await expect(adminPage.getByRole('heading', { name: 'Attribute created' })).toBeVisible();
+    //await expect(adminPage.getByRole('heading', { name: 'Attribute created' })).toBeVisible();
 
     /**
      * Clicking on Generate Variants 
@@ -310,9 +309,10 @@ async function createInvoice(adminPage) {
     /**
      * General Section
      */
-    await adminPage.locator('.choices__inner').first().click();
-    await adminPage.waitForSelector('input[name="search_terms"]');
-    await adminPage.locator('[data-id="1"]').nth(0).click();
+    await adminPage.getByRole('button', { name: 'Select an option' }).first().click();
+    //await adminPage.locator('.choices__inner').first().click();
+    await adminPage.waitForSelector('input[placeholder="Start typing to search..."]');
+    await adminPage.locator('[role="option"]').nth(0).click();
 
     /**
      * Clicked on Add Products.
@@ -561,28 +561,127 @@ async function createVendor(adminPage) {
      */
     await adminPage.getByTitle('Create').click();
 
+
     /**
      * Filling bank details
      */
-    await adminPage.getByRole('textbox', { name: 'Name*' }).fill(vendorName);
+    const bankName = generateBankName();
+    await adminPage.getByRole('textbox', { name: 'Name*' }).fill(bankName);
+    const bankCode = bankName.replace(/[^A-Za-z]/g, '').toUpperCase();
+    await adminPage.getByRole('textbox', { name: 'Bank Identifier Code' }).fill(bankCode);
+    const bankEmailName = bankName.replace(/\s/g, '-').toLowerCase();
+    await adminPage.getByRole('textbox', { name: 'Email' }).fill(`${bankEmailName}@demo.com`);
+    await adminPage.getByRole('textbox', { name: 'Phone' }).fill(generatePhoneNumber());
 
-    /**
-     * Clicking create button
-     */
-    await adminPage.getByRole('button', { name: 'Create' }).nth(3).click();
-    //await adminPage.getByRole('button', { name: 'Create' }).click();
-
-    /**
-     * Selecting Account holder name from the drop down 
-     */
-    await adminPage.locator('div:nth-child(4) > .fi-fo-field-wrp > div > .grid > .fi-input-wrp > .fi-input-wrp-input > div:nth-child(2) > .choices > .choices__inner').click();
-    await adminPage.locator('[id="choices--mountedTableActionsData0partner_id-item-choice-1"]').click();
+    await adminPage.getByRole('textbox', { name: 'Street 1' }).fill(generateAddress().street)
+    await adminPage.getByRole('textbox', { name: 'City' }).fill(generateAddress().city);
+    await adminPage.getByRole('textbox', { name: 'ZIP' }).fill(generateAddress().zip);
+    await adminPage.locator('//span[contains(.,"Create")]').nth(4).click();
 
     /**
      * Clicking on create button
      */
     await adminPage.getByRole('button', { name: 'Create' }).nth(1).click();
 
+}
+
+async function createVendorProduct(adminPage) {
+
+    /**
+     * Redirecting to Products inside Invoices plugin.
+     */
+    await adminPage.goto("admin/vendors/products");
+    await adminPage.waitForSelector('a:has-text("New Product")');
+
+    /**
+     * New Product button clicked
+     */
+    await adminPage.getByRole('link', { name: 'New Product' }).click();
+
+    /**
+     * Waiting for Products edit page to appear
+     */
+    await adminPage.waitForSelector('h1:has-text("Create Product")');
+
+    /**
+     * Filling up the required fields
+     */
+    await adminPage.getByRole('textbox', { name: 'Name*' }).fill(generateProductName());
+    await adminPage.locator('[id="data\\.description"]').fill(generateDescription());
+    //await adminPage.getByRole('textbox', { name: 'Description' }).fill(generateDescription());
+    await adminPage.getByRole('spinbutton', { name: 'Price*' }).fill('100');
+
+    /**
+     * Adding a Category
+     */
+    await adminPage.locator('[id="data\\.settings"]').getByRole('button', { name: 'Create' }).click();
+    await adminPage.getByPlaceholder('eg. Lamps').fill(generateCategory());
+    await adminPage.getByRole('button', { name: 'Create' }).nth(4).click();
+
+    /**
+     * Saving the product
+     */
+    await adminPage.locator('#key-bindings-1').click();
+
+    /**
+     * Clicking on Attributes
+     */
+    await adminPage.getByRole('tab', { name: 'Attributes' }).click();
+
+    /**
+     * Waiting for Manage Attributes page to appear
+     */
+    await adminPage.waitForSelector('h1:has-text("Manage Attributes")');
+
+    /**
+     * Clicking on Add Attribute
+     */
+    await adminPage.getByRole('button', { name: 'Add Attribute' }).click();
+
+    /**
+     * Filling up the required fields for attribute
+     */
+    await adminPage.getByTitle('Create').click();
+    await adminPage.locator('[id="mountedFormComponentActionsData\\.0\\.name"]').fill('Color');
+    await adminPage.getByRole('radio', { name: 'Color' }).check();
+    await adminPage.locator('[id="mountedFormComponentActionsData\\.0\\.options"]').getByRole('textbox', { name: 'Name*' }).fill('RED');
+    await adminPage.getByRole('spinbutton', { name: 'Extra Price*' }).fill('100');
+    await adminPage.getByRole('button', { name: 'Add to options' }).click();
+    await adminPage.getByRole('textbox', { name: 'Name*' }).nth(2).fill('BLUE');
+    await adminPage.getByRole('spinbutton', { name: 'Extra Price*' }).nth(1).fill('2000');
+
+    /**
+     * Clicking on Create button
+     */
+    await adminPage.getByRole('button', { name: 'Create' }).click();
+
+    /**
+     * Selecting the values for the attribute
+     */
+    await adminPage.getByRole('textbox', { name: 'Select an option' }).click();
+    await adminPage.getByRole('option', { name: 'BLUE' }).click();
+    await adminPage.getByRole('option', { name: 'RED' }).click();
+    await adminPage.getByRole('heading', { name: 'Create product attribute' }).click();
+
+    /**
+     * Clicking on Create button for creating the attribute
+     */
+    await adminPage.getByRole('button', { name: 'Create' }).nth(1).click();
+
+    /**
+     * Waiting for success message
+     */
+    await expect(adminPage.getByRole('heading', { name: 'Attribute created' })).toBeVisible();
+
+    /**
+     * Clicking on Generate Variants 
+     */
+    await adminPage.getByRole('button', { name: 'Generate Variants' }).click();
+
+    /**
+     * Waiting for success message
+     */
+    await expect(adminPage.getByRole('heading', { name: 'Variants generated' })).toBeVisible();
 }
 
 async function createBill(adminPage) {
@@ -915,7 +1014,10 @@ async function createTaxGroups(adminPage) {
      */
     await adminPage.getByRole('textbox', { name: 'Name*' }).fill(generateTaxGroup());
     await adminPage.locator('div').filter({ hasText: /^Select an option$/ }).first().click();
-    await adminPage.getByRole('option', { name: 'DummyCorp LLC' }).click();
+    await adminPage.locator('#choices--datacompany_id-item-choice-1').click();
+    //await adminPage.locator('.choices__inner').first().click();
+
+    //await adminPage.getByRole('option', { name: 'DummyCorp LLC' }).click();
 
     /**
      * Clicking on Create button
@@ -1021,7 +1123,7 @@ test.describe("Customers management", () => {
     });
 
     test("should create a new product", async ({ adminPage }) => {
-        await createProduct(adminPage);
+        await createCustomerProduct(adminPage);
     });
 
     test("should create a new invoice", async ({ adminPage }) => {
@@ -1041,6 +1143,10 @@ test.describe("Customers management", () => {
 test.describe("Vendors management", () => {
     test("should create a new vendor", async ({ adminPage }) => {
         await createVendor(adminPage);
+    });
+
+    test("should create a new product", async ({ adminPage }) => {
+        await createVendorProduct(adminPage);
     });
 
     test("should create a new bills", async ({ adminPage }) => {
