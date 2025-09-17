@@ -119,6 +119,10 @@ jobs:
       - name: Build assets
         run: npm run build --if-present
 
+      - name: Generate application key
+        run: php artisan key:generate
+          sed -i 's/APP_KEY=.*/APP_KEY='$(php artisan key:generate --show)'/' .env
+
       - name: Start Laravel dev server
         run: |
           nohup php artisan serve --host=127.0.0.1 --port=8000 >/tmp/laravel.log 2>&1 &
