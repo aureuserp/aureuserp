@@ -56,12 +56,12 @@ jobs:
       - name: Update .env file
         run: |
           # Make replacements robust: handle optional leading '#' and optional spaces
-          sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
-          sed -i 's/^#DB_HOST=.*/DB_HOST=127.0.0.1/' .env
-          sed -i 's/^#DB_PORT=.*/DB_PORT=3306/' .env
-          sed -i 's/^#DB_DATABASE=.*/DB_DATABASE=aureus/' .env
-          sed -i 's/^#DB_USERNAME=.*/DB_USERNAME=root/' .env
-          sed -i 's/^#DB_PASSWORD=.*/DB_PASSWORD=root/' .env
+          sed -i 's/^[#[:space:]]*DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
+          sed -i 's/^[#[:space:]]*DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+          sed -i 's/^[#[:space:]]*DB_PORT=.*/DB_PORT=3306/' .env
+          sed -i 's/^[#[:space:]]*DB_DATABASE=.*/DB_DATABASE=aureus/' .env
+          sed -i 's/^[#[:space:]]*DB_USERNAME=.*/DB_USERNAME=root/' .env
+          sed -i 's/^[#[:space:]]*DB_PASSWORD=.*/DB_PASSWORD=root/' .env
 
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress --no-interaction --optimize-autoloader --no-scripts
