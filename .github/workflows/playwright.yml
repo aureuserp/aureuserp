@@ -55,10 +55,12 @@ jobs:
 
       - name: Update .env file
         run: |
-          # Make replacements robust: handle optional leading '#' and optional spaces
+          # Resolve service port exported by GitHub Actions and write DB settings into .env
+          PORT=${{ job.services.mysql.ports['3306'] }}
+          echo "Using MySQL host=127.0.0.1 port=${PORT}"
           sed -i 's/^[#[:space:]]*DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
           sed -i 's/^[#[:space:]]*DB_HOST=.*/DB_HOST=127.0.0.1/' .env
-          sed -i 's/^[#[:space:]]*DB_PORT=.*/DB_PORT=3306/' .env
+          sed -i "s/^[#[:space:]]*DB_PORT=.*/DB_PORT=${PORT}/" .env
           sed -i 's/^[#[:space:]]*DB_DATABASE=.*/DB_DATABASE=aureus/' .env
           sed -i 's/^[#[:space:]]*DB_USERNAME=.*/DB_USERNAME=root/' .env
           sed -i 's/^[#[:space:]]*DB_PASSWORD=.*/DB_PASSWORD=root/' .env
