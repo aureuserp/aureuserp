@@ -48,6 +48,7 @@ class ListUsers extends ListRecords
                 ->schema([
                     TextInput::make('email')
                         ->email()
+                        ->extraAttributes(['data-test' => 'pest-invite-user-email'])
                         ->label(__('security::filament/resources/user/pages/list-user.header-actions.invite.form.email'))
                         ->required(),
                 ])

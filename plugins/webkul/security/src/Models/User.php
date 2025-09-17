@@ -16,10 +16,12 @@ use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\Employee;
 use Webkul\Partner\Models\Partner;
 use Webkul\Support\Models\Company;
+use Webkul\Security\Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class User extends BaseUser implements FilamentUser
 {
-    use HasRoles, SoftDeletes;
+    use HasRoles, SoftDeletes, HasFactory;
 
     public function __construct(array $attributes = [])
     {
@@ -33,6 +35,11 @@ class User extends BaseUser implements FilamentUser
             'resource_permission',
             'is_default',
         ]);
+    }
+
+    protected static function newFactory(): UserFactory
+    {
+        return UserFactory::new();
     }
 
     protected $casts = [
