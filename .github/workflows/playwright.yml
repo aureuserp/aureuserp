@@ -76,13 +76,28 @@ jobs:
         run: |
           HOST=127.0.0.1
           PORT=${{ job.services.mysql.ports['3306'] }}
-          for i in {1..30}; do
-            mysqladmin ping -h${HOST} -P${PORT} -uroot -proot >/dev/null 2>&1 && break
+          echo "Waiting for MySQL at ${HOST}:${PORT} (up to 120s)"
+          for i in {1..120}; do
+            if mysqladmin ping -h${HOST} -P${PORT} -uroot -proot >/dev/null 2>&1; then
+              echo "MySQL is up"
+              sleep 2
+              break
+            fi
+            echo "MySQL not ready yet (attempt ${i})"
             sleep 1
           done
+          mysqladmin version -h${HOST} -P${PORT} -uroot -proot || true
 
-      - name: Generate application key
-        run: php artisan key:generate --ansi
+      - name: Generate application key (write to .env without booting app)
+        run: |
+          # generate base64 key and write into .env without booting Laravel (avoids running service providers)
+          KEY="base64:$(php -r 'echo base64_encode(random_bytes(32));')"
+          if grep -q "^APP_KEY=" .env; then
+            sed -i "s/^APP_KEY=.*/APP_KEY=${KEY}/" .env
+          else
+            echo "APP_KEY=${KEY}" >> .env
+          fi
+          echo "APP_KEY set to ${KEY}"
 
       - name: Run Composer autoload and Laravel package discovery (after DB ready)
         run: |
