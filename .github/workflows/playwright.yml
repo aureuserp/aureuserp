@@ -144,6 +144,7 @@ jobs:
           php artisan serve --host=0.0.0.0 --port=8000 > server.log 2>&1 &
           echo "Waiting for server to start..."
           timeout 30 bash -c 'until curl -s http://127.0.0.1:8000 > /dev/null; do sleep 1; done'
+          echo "Server is up"
 
       - name: Run Playwright tests
         env:
