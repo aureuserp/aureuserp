@@ -89,20 +89,4 @@ class LeaveTypePolicy
     {
         return $user->can('restore_any_leave::type');
     }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, LeaveType $leaveType): bool
-    {
-        return $user->can('replicate_leave::type');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_leave::type');
-    }
 }

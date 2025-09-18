@@ -89,20 +89,4 @@ class TagPolicy
     {
         return $user->can('restore_any_tag');
     }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Tag $tag): bool
-    {
-        return $user->can('replicate_tag');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_tag');
-    }
 }

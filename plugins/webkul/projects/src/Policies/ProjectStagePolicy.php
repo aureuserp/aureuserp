@@ -91,14 +91,6 @@ class ProjectStagePolicy
     }
 
     /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, ProjectStage $projectStage): bool
-    {
-        return $user->can('replicate_project::stage');
-    }
-
-    /**
      * Determine whether the user can reorder.
      */
     public function reorder(User $user): bool

@@ -106,24 +106,4 @@ class RequisitionPolicy
     {
         return $user->can('restore_any_purchase::agreement');
     }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Requisition $requisition): bool
-    {
-        if (! $user->can('replicate_purchase::agreement')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $requisition);
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_purchase::agreement');
-    }
 }

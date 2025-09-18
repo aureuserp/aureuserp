@@ -89,20 +89,4 @@ class WarehousePolicy
     {
         return $user->can('restore_any_warehouse');
     }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Warehouse $warehouse): bool
-    {
-        return $user->can('replicate_warehouse');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_warehouse');
-    }
 }

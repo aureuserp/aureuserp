@@ -89,20 +89,4 @@ class AttributePolicy
     {
         return $user->can('restore_any_product::attribute');
     }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Attribute $attribute): bool
-    {
-        return $user->can('replicate_product::attribute');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_product::attribute');
-    }
 }

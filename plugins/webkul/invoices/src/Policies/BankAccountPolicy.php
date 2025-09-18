@@ -90,19 +90,4 @@ class BankAccountPolicy
         return $user->can('restore_any_bank::account');
     }
 
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, BankAccount $bankAccount): bool
-    {
-        return $user->can('replicate_bank::account');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_bank::account');
-    }
 }

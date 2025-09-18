@@ -89,20 +89,4 @@ class OperationTypePolicy
     {
         return $user->can('restore_any_operation::type');
     }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, OperationType $operationType): bool
-    {
-        return $user->can('replicate_operation::type');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_operation::type');
-    }
 }

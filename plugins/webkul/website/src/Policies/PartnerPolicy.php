@@ -89,20 +89,4 @@ class PartnerPolicy
     {
         return $user->can('restore_any_partner');
     }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Partner $partner): bool
-    {
-        return $user->can('replicate_partner');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_partner');
-    }
 }

@@ -88,20 +88,4 @@ class UserPolicy
     {
         return $user->can('restore_any_user');
     }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function replicate(User $user): bool
-    {
-        return $user->can('replicate_user');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_user');
-    }
 }

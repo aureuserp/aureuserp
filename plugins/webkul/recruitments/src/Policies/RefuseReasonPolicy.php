@@ -59,46 +59,6 @@ class RefuseReasonPolicy
     }
 
     /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, RefuseReason $refuseReason): bool
-    {
-        return $user->can('force_delete_refuse::reason');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_refuse::reason');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, RefuseReason $refuseReason): bool
-    {
-        return $user->can('restore_refuse::reason');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_refuse::reason');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, RefuseReason $refuseReason): bool
-    {
-        return $user->can('replicate_refuse::reason');
-    }
-
-    /**
      * Determine whether the user can reorder.
      */
     public function reorder(User $user): bool

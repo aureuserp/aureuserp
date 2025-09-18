@@ -91,14 +91,6 @@ class RolePolicy
     }
 
     /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Role $role): bool
-    {
-        return $user->can('replicate_field');
-    }
-
-    /**
      * Determine whether the user can reorder.
      */
     public function reorder(User $user): bool

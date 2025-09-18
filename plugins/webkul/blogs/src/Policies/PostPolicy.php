@@ -89,20 +89,4 @@ class PostPolicy
     {
         return $user->can('restore_any_post');
     }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Post $post): bool
-    {
-        return $user->can('replicate_post');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_post');
-    }
 }

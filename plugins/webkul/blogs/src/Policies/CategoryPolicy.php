@@ -19,14 +19,6 @@ class CategoryPolicy
     }
 
     /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, Category $category): bool
-    {
-        return $user->can('view_category');
-    }
-
-    /**
      * Determine whether the user can create models.
      */
     public function create(User $user): bool
@@ -88,21 +80,5 @@ class CategoryPolicy
     public function restoreAny(User $user): bool
     {
         return $user->can('restore_any_category');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Category $category): bool
-    {
-        return $user->can('replicate_category');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_category');
     }
 }

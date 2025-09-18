@@ -89,20 +89,4 @@ class CalendarPolicy
     {
         return $user->can('restore_any_calendar');
     }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Calendar $calendar): bool
-    {
-        return $user->can('replicate_calendar');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_calendar');
-    }
 }

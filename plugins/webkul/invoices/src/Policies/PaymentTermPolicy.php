@@ -90,19 +90,4 @@ class PaymentTermPolicy
         return $user->can('restore_any_payment::term');
     }
 
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, PaymentTerm $paymentTerm): bool
-    {
-        return $user->can('replicate_payment::term');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_payment::term');
-    }
 }

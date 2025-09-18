@@ -2,7 +2,6 @@
 
 namespace Webkul\Recruitment\Filament\Clusters\Configurations\Resources;
 
-use Filament\Tables\Table;
 use Webkul\Recruitment\Filament\Clusters\Configurations;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages\CreateActivityType;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages\EditActivityType;
@@ -21,17 +20,11 @@ class ActivityTypeResource extends BaseActivityTypeResource
 
     protected static bool $shouldRegisterNavigation = true;
 
+    protected static ?string $pluginName = 'recruitments';
+
     public static function getNavigationGroup(): string
     {
         return __('recruitments::filament/clusters/configurations/resources/activity-type.navigation.group');
-    }
-
-    public static function table(Table $table): Table
-    {
-        return BaseActivityTypeResource::table($table)
-            ->modifyQueryUsing(function ($query) {
-                return $query->where('plugin', 'recruitments');
-            });
     }
 
     public static function getPages(): array

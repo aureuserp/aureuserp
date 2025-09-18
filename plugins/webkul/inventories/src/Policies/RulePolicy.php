@@ -89,20 +89,4 @@ class RulePolicy
     {
         return $user->can('restore_any_rule');
     }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Rule $rule): bool
-    {
-        return $user->can('replicate_rule');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_rule');
-    }
 }

@@ -91,14 +91,6 @@ class CompanyPolicy
     }
 
     /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Company $company): bool
-    {
-        return $user->can('replicate_company');
-    }
-
-    /**
      * Determine whether the user can reorder.
      */
     public function reorder(User $user): bool

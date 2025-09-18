@@ -91,14 +91,6 @@ class EmployeeJobPositionPolicy
     }
 
     /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, EmployeeJobPosition $employeeJobPosition): bool
-    {
-        return $user->can('replicate_job::position');
-    }
-
-    /**
      * Determine whether the user can reorder.
      */
     public function reorder(User $user): bool

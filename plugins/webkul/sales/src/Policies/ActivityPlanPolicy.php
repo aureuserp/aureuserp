@@ -89,20 +89,4 @@ class ActivityPlanPolicy
     {
         return $user->can('restore_any_activity::plan');
     }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, ActivityPlan $activityPlan): bool
-    {
-        return $user->can('replicate_activity::plan');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_activity::plan');
-    }
 }

@@ -152,7 +152,7 @@ class MyAllocationResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('allocation_type')
-                    ->formatStateUsing(fn ($state) => AllocationType::options()[$state])
+                    ->formatStateUsing(fn ($state) => AllocationType::options([$state]))
                     ->label(__('time-off::filament/clusters/my-time/resources/my-allocation.table.columns.allocation-type'))
                     ->sortable()
                     ->searchable(),
