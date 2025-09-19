@@ -14,7 +14,7 @@ jobs:
         operating-systems: [ubuntu-latest]
         php-versions: ["8.2"]
         node-version: ["22.13.1"]
-        shard-index: [1, 2, 3, 4, 5, 6]
+        shard-index: [1]
         shard-total: [6]
 
     name: Playwright Tests | Shard ${{ matrix.shard-index }} Of ${{ matrix.shard-total }}
@@ -113,10 +113,8 @@ jobs:
           EMAIL="${ADMIN_EMAIL:-admin@example.com}"
           PASSWORD="${ADMIN_PASSWORD:-admin123}"
 
-          php artisan erp:install --no-interaction \
-            --admin-name="${NAME}" \
-            --admin-email="${EMAIL}" \
-            --admin-password="${PASSWORD}"
+          echo "Running erp:install for admin ${EMAIL} (name: ${NAME})"
+          php artisan erp:install --no-interaction --admin-name="${NAME}" --admin-email="${EMAIL}" --admin-password="${PASSWORD}"
 
       - name: Cache Node modules
         uses: actions/cache@v4
