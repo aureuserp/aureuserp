@@ -2,27 +2,28 @@
 
 namespace Webkul\Security\Filament\Resources;
 
-use Filament\Tables\Table;
+use BezhanSalleh\FilamentShield\Facades\FilamentShield;
+use BezhanSalleh\FilamentShield\Resources\Roles\RoleResource as RolesRoleResource;
 use BezhanSalleh\FilamentShield\Support\Utils;
-use Filament\Facades\Filament;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
-use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Unique;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Model;
-use BezhanSalleh\FilamentShield\Facades\FilamentShield;
-use BezhanSalleh\FilamentShield\Resources\Roles\RoleResource as RolesRoleResource;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Unique;
 use Webkul\Security\Filament\Resources\RoleResource\Pages\CreateRole;
 use Webkul\Security\Filament\Resources\RoleResource\Pages\EditRole;
 use Webkul\Security\Filament\Resources\RoleResource\Pages\ListRoles;
@@ -60,7 +61,7 @@ class RoleResource extends RolesRoleResource
                                     ->label(__('filament-shield::filament-shield.field.name'))
                                     ->unique(
                                         ignoreRecord: true,
-                                        modifyRuleUsing: fn(Unique $rule): Unique => Utils::isTenancyEnabled() ? $rule->where(Utils::getTenantModelForeignKey(), Filament::getTenant()?->id) : $rule
+                                        modifyRuleUsing: fn (Unique $rule): Unique => Utils::isTenancyEnabled() ? $rule->where(Utils::getTenantModelForeignKey(), Filament::getTenant()?->id) : $rule
                                     )
                                     ->required()
                                     ->maxLength(255),
@@ -75,9 +76,9 @@ class RoleResource extends RolesRoleResource
                                     ->label(__('filament-shield::filament-shield.field.team'))
                                     ->placeholder(__('filament-shield::filament-shield.field.team.placeholder'))
                                     ->default([Filament::getTenant()?->id])
-                                    ->options(fn(): Arrayable => Utils::getTenantModel() ? Utils::getTenantModel()::pluck('name', 'id') : collect())
-                                    ->hidden(fn(): bool => ! (static::shield()->isCentralApp() && Utils::isTenancyEnabled()))
-                                    ->dehydrated(fn(): bool => ! (static::shield()->isCentralApp() && Utils::isTenancyEnabled())),
+                                    ->options(fn (): Arrayable => Utils::getTenantModel() ? Utils::getTenantModel()::pluck('name', 'id') : collect())
+                                    ->hidden(fn (): bool => ! (static::shield()->isCentralApp() && Utils::isTenancyEnabled()))
+                                    ->dehydrated(fn (): bool => ! (static::shield()->isCentralApp() && Utils::isTenancyEnabled())),
                                 static::getSelectAllFormComponent(),
                             ])
                             ->columns([
@@ -98,7 +99,7 @@ class RoleResource extends RolesRoleResource
                 TextColumn::make('name')
                     ->badge()
                     ->label(__('filament-shield::filament-shield.column.name'))
-                    ->formatStateUsing(fn($state): string => Str::headline($state))
+                    ->formatStateUsing(fn ($state): string => Str::headline($state))
                     ->colors(['primary'])
                     ->searchable(),
                 TextColumn::make('guard_name')
@@ -116,7 +117,7 @@ class RoleResource extends RolesRoleResource
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make()
-                    ->hidden(fn(Model $record) => $record->name == config('filament-shield.panel_user.name')),
+                    ->hidden(fn (Model $record) => $record->name == config('filament-shield.panel_user.name')),
             ])
             ->toolbarActions([
                 DeleteBulkAction::make(),
@@ -213,5 +214,38 @@ class RoleResource extends RolesRoleResource
                     ]);
             })
             ->toArray();
+    }
+
+    public static function setPermissionStateForRecordPermissions(Component $component, string $operation, array $permissions, ?Model $record): void
+    {
+        if (! in_array($operation, ['edit', 'view']) || blank($record)) {
+            return;
+        }
+
+        if (! $component->isVisible() || empty($permissions)) {
+            return;
+        }
+
+        static $cachedRolePermissions = null;
+
+        if (is_null($cachedRolePermissions)) {
+
+            $cachedRolePermissions = DB::table('role_has_permissions')
+                ->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                ->where('role_has_permissions.role_id', $record->id)
+                ->pluck('permissions.name')
+                ->flip();
+        }
+
+        $permissionKeys = array_keys($permissions);
+        $selectedPermissions = [];
+
+        foreach ($permissionKeys as $key) {
+            if (isset($cachedRolePermissions[$key])) {
+                $selectedPermissions[] = $key;
+            }
+        }
+
+        $component->state($selectedPermissions);
     }
 }
