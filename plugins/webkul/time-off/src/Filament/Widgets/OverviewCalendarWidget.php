@@ -184,6 +184,8 @@ class OverviewCalendarWidget extends FullCalendarWidget
                         $data['duration_display'] = $startDate->diffInDays($endDate) + 1 .' day(s)';
 
                         $data['number_of_days'] = $startDate->diffInDays($endDate) + 1;
+                        $data['date_to'] = $data['request_date_to'];
+
                     }
 
                     $data['creator_id'] = Auth::user()->id;
@@ -191,7 +193,6 @@ class OverviewCalendarWidget extends FullCalendarWidget
                     $data['state'] = State::CONFIRM->value;
 
                     $data['date_from'] = $data['request_date_from'];
-                    $data['date_to'] = $data['request_date_to'];
 
                     Leave::create($data);
 
@@ -200,6 +201,9 @@ class OverviewCalendarWidget extends FullCalendarWidget
                         ->title(__('time-off::filament/widgets/overview-calendar-widget.header-actions.create.notification.title'))
                         ->body(__('time-off::filament/widgets/overview-calendar-widget.header-actions.create.notification.body'))
                         ->send();
+
+                    $action->cancel();
+
                 })
                 ->mountUsing(
                     function (Schema $schema, array $arguments) {
