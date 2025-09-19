@@ -24,7 +24,7 @@ class InstallERP extends Command
      *
      * @var string
      */
-    protected $signature = 'erp:install';
+    protected $signature = 'erp:install {--admin-name=} {--admin-email=} {--admin-password=}';
 
     /**
      * The console command description.
@@ -114,25 +114,64 @@ class InstallERP extends Command
 
         $userModel = app(Utils::getAuthProviderFQCN());
 
-        $adminData = [
-            'name'  => text(
-                'Name',
-                default: 'Example',
-                required: true
-            ),
-            'email' => text(
+        // Get options if provided (useful for CI/non-interactive runs)
+        $optName = $this->option('admin-name');
+        $optEmail = $this->option('admin-email');
+        $optPassword = $this->option('admin-password');
+
+        // Name
+        if ($optName !== null) {
+            $name = $optName;
+        } elseif ($this->input->isInteractive()) {
+            $name = text('Name', default: 'Example', required: true);
+        } else {
+            $name = 'Example';
+        }
+
+        // Email
+        if ($optEmail !== null) {
+            $emailError = $this->validateAdminEmail($optEmail, $userModel);
+            if ($emailError) {
+                $this->error($emailError);
+                exit(1);
+            }
+            $email = $optEmail;
+        } elseif ($this->input->isInteractive()) {
+            $email = text(
                 'Email address',
                 default: 'admin@example.com',
                 required: true,
                 validate: fn ($email) => $this->validateAdminEmail($email, $userModel)
-            ),
-            'password' => Hash::make(
+            );
+        } else {
+            $email = 'admin@example.com';
+        }
+
+        // Password
+        if ($optPassword !== null) {
+            $passwordError = $this->validateAdminPassword($optPassword);
+            if ($passwordError) {
+                $this->error($passwordError);
+                exit(1);
+            }
+            $passwordHash = Hash::make($optPassword);
+        } elseif ($this->input->isInteractive()) {
+            $passwordHash = Hash::make(
                 password(
                     'Password',
                     required: true,
                     validate: fn ($value) => $this->validateAdminPassword($value)
                 )
-            ),
+            );
+        } else {
+            // Non-interactive default password (CI only) - recommend overriding with --admin-password
+            $passwordHash = Hash::make('password');
+        }
+
+        $adminData = [
+            'name'  => $name,
+            'email' => $email,
+            'password' => $passwordHash,
             'resource_permission' => 'global',
             'default_company_id'  => $defaultCompany->id,
         ];

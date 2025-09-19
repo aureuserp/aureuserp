@@ -1,0 +1,186 @@
+name: Playwright Tests
+
+on:
+  push: {}
+  pull_request: {}
+
+jobs:
+  playwright_test:
+    runs-on: ${{ matrix.operating-systems }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        operating-systems: [ubuntu-latest]
+        php-versions: ["8.2"]
+        node-version: ["22.13.1"]
+        shard-index: [1]
+        shard-total: [6]
+
+    name: Playwright Tests | Shard ${{ matrix.shard-index }} Of ${{ matrix.shard-total }}
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: aureus
+        ports:
+          - 3306
+        options: >-
+          --health-cmd "mysqladmin ping --silent"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: mbstring, bcmath, xml, pdo_mysql, gd
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache composer vendor directory
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-vendor-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-vendor-
+
+      - name: Cache Composer cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-composer-cache-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-cache-
+
+      - name: Create .env
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+      - name: Update .env file
+        run: |
+          # Resolve service port exported by GitHub Actions and write DB settings into .env
+          PORT=${{ job.services.mysql.ports['3306'] }}
+          echo "Using MySQL host=127.0.0.1 port=${PORT}"
+          sed -i 's/^[#[:space:]]*DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
+          sed -i 's/^[#[:space:]]*DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+          sed -i "s/^[#[:space:]]*DB_PORT=.*/DB_PORT=${PORT}/" .env
+          sed -i 's/^[#[:space:]]*DB_DATABASE=.*/DB_DATABASE=aureus/' .env
+          sed -i 's/^[#[:space:]]*DB_USERNAME=.*/DB_USERNAME=root/' .env
+          sed -i 's/^[#[:space:]]*DB_PASSWORD=.*/DB_PASSWORD=root/' .env
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction --optimize-autoloader --no-scripts
+
+      - name: Wait for MySQL to be ready
+        run: |
+          HOST=127.0.0.1
+          PORT=${{ job.services.mysql.ports['3306'] }}
+          echo "Waiting for MySQL at ${HOST}:${PORT} (up to 120s)"
+          for i in {1..120}; do
+            if mysqladmin ping -h${HOST} -P${PORT} -uroot -proot >/dev/null 2>&1; then
+              echo "MySQL is up"
+              sleep 2
+              break
+            fi
+            echo "MySQL not ready yet (attempt ${i})"
+            sleep 1
+          done
+          mysqladmin version -h${HOST} -P${PORT} -uroot -proot || true
+
+      - name: Run Composer autoload and Laravel package discovery (after DB ready)
+        run: |
+          # avoid triggering composer scripts (which call artisan package:discover) before DB is ready
+          composer dump-autoload -o --no-scripts
+          php artisan package:discover --ansi
+
+      - name: Run ERP installer (non-interactive via secrets)
+        env:
+          ADMIN_NAME: ${{ secrets.ADMIN_NAME }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        run: |
+          # Use provided secrets or fallbacks (bash parameter expansion)
+          NAME="${ADMIN_NAME:-Example}"
+          EMAIL="${ADMIN_EMAIL:-admin@example.com}"
+          PASSWORD="${ADMIN_PASSWORD:-admin123}"
+
+          echo "Running erp:install for admin ${EMAIL} (name: ${NAME})"
+          php artisan erp:install --no-interaction --admin-name="${NAME}" --admin-email="${EMAIL}" --admin-password="${PASSWORD}"
+
+      - name: Cache Node modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Build assets
+        run: npm run build --if-present
+
+      - name: Generate application key
+        run: |
+          # generate key without extra arguments and update .env reliably
+          KEY=$(php artisan key:generate --show)
+          # Ensure we replace the APP_KEY line or append if missing
+          if grep -q "^APP_KEY=" .env; then
+            sed -i "s|^APP_KEY=.*|APP_KEY=${KEY}|" .env
+          else
+            echo "APP_KEY=${KEY}" >> .env
+          fi
+          echo "APP_KEY set to ${KEY}"
+
+      - name: Start Laravel dev server
+        run: |
+          nohup php artisan serve --host=127.0.0.1 --port=8000 >/tmp/laravel.log 2>&1 &
+          echo $! > /tmp/artisan.pid
+
+      - name: Wait for application to be ready
+        run: |
+          for i in {1..30}; do
+            if curl --fail http://127.0.0.1:8000 >/dev/null 2>&1; then
+              break
+            fi
+            sleep 1
+          done
+
+      - name: Install Playwright Browsers
+        run: |
+          sudo apt-get update --allow-releaseinfo-change
+          npx playwright install --with-deps chromium
+        working-directory: tests/e2e-pw
+
+      - name: Start Laravel server
+        run: |
+          php artisan serve --host=0.0.0.0 --port=8000 > server.log 2>&1 &
+          echo "Waiting for server to start..."
+          timeout 30 bash -c 'until curl -s http://127.0.0.1:8000 > /dev/null; do sleep 1; done'
+          echo "Server is up"
+
+      - name: Run Playwright tests
+        env:
+          BASE_URL: "http://127.0.0.1:8000"
+        run: |
+          npx playwright test --config=tests/e2e-pw/playwright.config.ts --shard=${{ matrix.shard-index }}/${{ matrix.shard-total }}
+        working-directory: tests/e2e-pw
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.shard-index }}-${{ github.run_id }}-${{ github.run_number }}
+          path: |
+            tests/e2e-pw/playwright-report
+            tests/e2e-pw/test-results
+          if-no-files-found: ignore
