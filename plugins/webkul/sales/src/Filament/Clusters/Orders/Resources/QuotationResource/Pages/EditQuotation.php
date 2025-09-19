@@ -11,9 +11,12 @@ use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Facades\SaleOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions as BaseActions;
+use Webkul\Support\Concerns\HasRepeaterColumnManager;
 
 class EditQuotation extends EditRecord
 {
+    use HasRepeaterColumnManager;
+
     protected static string $resource = QuotationResource::class;
 
     protected function getRedirectUrl(): string
@@ -47,7 +50,7 @@ class EditQuotation extends EditRecord
             BaseActions\SendByEmailAction::make(),
             BaseActions\LockAndUnlockAction::make(),
             DeleteAction::make()
-                ->hidden(fn () => $this->getRecord()->state == OrderState::SALE)
+                ->hidden(fn() => $this->getRecord()->state == OrderState::SALE)
                 ->successNotification(
                     Notification::make()
                         ->success()

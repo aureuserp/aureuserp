@@ -7,9 +7,12 @@ use Filament\Resources\Pages\CreateRecord;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account;
 use Webkul\Account\Filament\Resources\BillResource;
+use Webkul\Support\Concerns\HasRepeaterColumnManager;
 
 class CreateBill extends CreateRecord
 {
+    use HasRepeaterColumnManager;
+
     protected static string $resource = BillResource::class;
 
     protected function getRedirectUrl(): string

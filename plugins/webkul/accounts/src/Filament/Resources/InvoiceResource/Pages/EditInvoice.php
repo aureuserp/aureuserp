@@ -11,9 +11,12 @@ use Webkul\Account\Filament\Resources\InvoiceResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
 use Webkul\Partner\Models\Partner;
+use Webkul\Support\Concerns\HasRepeaterColumnManager;
 
 class EditInvoice extends EditRecord
 {
+    use HasRepeaterColumnManager;
+
     protected static string $resource = InvoiceResource::class;
 
     protected function getRedirectUrl(): string

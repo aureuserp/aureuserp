@@ -14,7 +14,6 @@ use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -60,6 +59,8 @@ use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementRe
 use Webkul\Purchase\Models\Requisition;
 use Webkul\Purchase\Settings\OrderSettings;
 use Webkul\Purchase\Settings\ProductSettings;
+use Webkul\Support\Filament\Forms\Components\Repeater;
+use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 
 class PurchaseAgreementResource extends Resource
 {
@@ -228,6 +229,25 @@ class PurchaseAgreementResource extends Resource
         return Repeater::make('lines')
             ->hiddenLabel()
             ->relationship()
+            ->table([
+                TableColumn::make('product_id')
+                    ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.columns.product'))
+                    ->width(250)
+                    ->markAsRequired(),
+                TableColumn::make('qty')
+                    ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.columns.quantity'))
+                    ->width(250)
+                    ->markAsRequired(),
+                TableColumn::make('uom_id')
+                    ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.columns.uom'))
+                    ->width(250)
+                    ->visible(fn () => resolve(ProductSettings::class)->enable_uom)
+                    ->markAsRequired(),
+                TableColumn::make('price_unit')
+                    ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.columns.unit-price'))
+                    ->width(250)
+                    ->markAsRequired(),
+            ])
             ->schema([
                 Select::make('product_id')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.fields.product'))

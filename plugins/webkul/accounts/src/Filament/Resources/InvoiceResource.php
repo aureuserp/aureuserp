@@ -11,7 +11,6 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -59,6 +58,8 @@ use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Invoice\Models\Product;
 use Webkul\Invoice\Settings\ProductSettings;
+use Webkul\Support\Filament\Forms\Components\Repeater;
+use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
@@ -737,6 +738,39 @@ class InvoiceResource extends Resource
             ->addActionLabel(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.add-product'))
             ->collapsible()
             ->defaultItems(0)
+            ->table([
+                TableColumn::make('product_id')
+                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.product'))
+                    ->width(250)
+                    ->markAsRequired()
+                    ->toggleable(),
+                TableColumn::make('quantity')
+                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.quantity'))
+                    ->width(150)
+                    ->markAsRequired()
+                    ->toggleable(),
+                TableColumn::make('uom_id')
+                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.unit'))
+                    ->width(150)
+                    ->visible(fn () => resolve(ProductSettings::class)->enable_uom)
+                    ->toggleable(),
+                TableColumn::make('taxes')
+                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.taxes'))
+                    ->width(250)
+                    ->toggleable(),
+                TableColumn::make('discount')
+                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.discount-percentage'))
+                    ->width(150)
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TableColumn::make('price_unit')
+                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.unit-price'))
+                    ->width(150)
+                    ->markAsRequired(),
+                TableColumn::make('price_subtotal')
+                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.sub-total'))
+                    ->width(150)
+                    ->toggleable(),
+            ])
             ->itemLabel(function ($state) {
                 if (! empty($state['name'])) {
                     return $state['name'];
@@ -748,108 +782,101 @@ class InvoiceResource extends Resource
             })
             ->deleteAction(fn (Action $action) => $action->requiresConfirmation())
             ->schema([
-                Group::make()
-                    ->schema([
-                        Grid::make(4)
-                            ->schema([
-                                Select::make('product_id')
-                                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.product'))
-                                    ->relationship(
-                                        'product',
-                                        'name',
-                                        fn (Builder $query) => $query->where('is_configurable', null),
-                                    )
-                                    ->getOptionLabelFromRecordUsing(function (Model $record) {
-                                        if ($record->product) {
-                                            return $record->product->name;
-                                        }
+                Select::make('product_id')
+                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.product'))
+                    ->relationship(
+                        'product',
+                        'name',
+                        fn (Builder $query) => $query->where('is_configurable', null),
+                    )
+                    ->getOptionLabelFromRecordUsing(function (Model $record) {
+                        if ($record->product) {
+                            return $record->product->name;
+                        }
 
-                                        return $record->name;
-                                    })
-                                    ->searchable()
-                                    ->preload()
-                                    ->live()
-                                    ->dehydrated()
-                                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                                    ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductUpdated($set, $get))
-                                    ->required(),
-                                TextInput::make('quantity')
-                                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.quantity'))
-                                    ->required()
-                                    ->default(1)
-                                    ->numeric()
-                                    ->maxValue(99999999999)
-                                    ->live()
-                                    ->dehydrated()
-                                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                                    ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductQtyUpdated($set, $get)),
-                                Select::make('uom_id')
-                                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.unit'))
-                                    ->relationship(
-                                        'uom',
-                                        'name',
-                                        fn ($query) => $query->where('category_id', 1)->orderBy('id'),
-                                    )
-                                    ->required()
-                                    ->live()
-                                    ->selectablePlaceholder(false)
-                                    ->dehydrated()
-                                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                                    ->afterStateUpdated(fn (Set $set, Get $get) => static::afterUOMUpdated($set, $get))
-                                    ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
-                                Select::make('taxes')
-                                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.taxes'))
-                                    ->relationship(
-                                        'taxes',
-                                        'name',
-                                        function (Builder $query) {
-                                            return $query->where('type_tax_use', TypeTaxUse::SALE->value);
-                                        },
-                                    )
-                                    ->searchable()
-                                    ->multiple()
-                                    ->preload()
-                                    ->dehydrated()
-                                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                                    ->afterStateHydrated(fn (Get $get, Set $set) => self::calculateLineTotals($set, $get))
-                                    ->afterStateUpdated(fn (Get $get, Set $set, $state) => self::calculateLineTotals($set, $get))
-                                    ->live(),
-                                TextInput::make('discount')
-                                    ->label(__('Discount Percentage'))
-                                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.discount-percentage'))
-                                    ->numeric()
-                                    ->default(0)
-                                    ->minValue(0)
-                                    ->maxValue(99999999999)
-                                    ->live()
-                                    ->dehydrated()
-                                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
-                                TextInput::make('price_unit')
-                                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.unit-price'))
-                                    ->numeric()
-                                    ->default(0)
-                                    ->minValue(0)
-                                    ->maxValue(99999999999)
-                                    ->required()
-                                    ->live()
-                                    ->dehydrated()
-                                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
-                                TextInput::make('price_subtotal')
-                                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.sub-total'))
-                                    ->default(0)
-                                    ->dehydrated()
-                                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
-                                Hidden::make('product_uom_qty')
-                                    ->default(0),
-                                Hidden::make('price_tax')
-                                    ->default(0),
-                                Hidden::make('price_total')
-                                    ->default(0),
-                            ]),
-                    ])
-                    ->columns(1),
+                        return $record->name;
+                    })
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->dehydrated()
+                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductUpdated($set, $get))
+                    ->required(),
+                TextInput::make('quantity')
+                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.quantity'))
+                    ->required()
+                    ->default(1)
+                    ->numeric()
+                    ->maxValue(99999999999)
+                    ->live()
+                    ->dehydrated()
+                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductQtyUpdated($set, $get)),
+                Select::make('uom_id')
+                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.unit'))
+                    ->relationship(
+                        'uom',
+                        'name',
+                        fn ($query) => $query->where('category_id', 1)->orderBy('id'),
+                    )
+                    ->required()
+                    ->live()
+                    ->selectablePlaceholder(false)
+                    ->dehydrated()
+                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->afterStateUpdated(fn (Set $set, Get $get) => static::afterUOMUpdated($set, $get))
+                    ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
+                Select::make('taxes')
+                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.taxes'))
+                    ->relationship(
+                        'taxes',
+                        'name',
+                        function (Builder $query) {
+                            return $query->where('type_tax_use', TypeTaxUse::SALE->value);
+                        },
+                    )
+                    ->searchable()
+                    ->multiple()
+                    ->preload()
+                    ->dehydrated()
+                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->afterStateHydrated(fn (Get $get, Set $set) => self::calculateLineTotals($set, $get))
+                    ->afterStateUpdated(fn (Get $get, Set $set, $state) => self::calculateLineTotals($set, $get))
+                    ->live(),
+                TextInput::make('discount')
+                    ->label(__('Discount Percentage'))
+                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.discount-percentage'))
+                    ->numeric()
+                    ->default(0)
+                    ->minValue(0)
+                    ->maxValue(99999999999)
+                    ->live()
+                    ->dehydrated()
+                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
+                TextInput::make('price_unit')
+                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.unit-price'))
+                    ->numeric()
+                    ->default(0)
+                    ->minValue(0)
+                    ->maxValue(99999999999)
+                    ->required()
+                    ->live()
+                    ->dehydrated()
+                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
+                TextInput::make('price_subtotal')
+                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.sub-total'))
+                    ->default(0)
+                    ->dehydrated()
+                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
+                Hidden::make('product_uom_qty')
+                    ->default(0),
+                Hidden::make('price_tax')
+                    ->default(0),
+                Hidden::make('price_total')
+                    ->default(0),
             ])
             ->mutateRelationshipDataBeforeCreateUsing(fn (array $data, $record) => static::mutateProductRelationship($data, $record))
             ->mutateRelationshipDataBeforeSaveUsing(fn (array $data, $record) => static::mutateProductRelationship($data, $record));

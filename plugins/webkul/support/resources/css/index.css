@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "./repeater.css";
+
 @variant dark (&:where(.dark, .dark *));
 
 @source '../../../../app/Filament';

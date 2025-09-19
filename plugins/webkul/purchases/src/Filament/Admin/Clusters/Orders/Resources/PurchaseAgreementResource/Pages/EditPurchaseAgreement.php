@@ -11,9 +11,12 @@ use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Purchase\Enums\RequisitionState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource;
 use Webkul\Purchase\Models\Requisition;
+use Webkul\Support\Concerns\HasRepeaterColumnManager;
 
 class EditPurchaseAgreement extends EditRecord
 {
+    use HasRepeaterColumnManager;
+
     protected static string $resource = PurchaseAgreementResource::class;
 
     protected function getRedirectUrl(): string

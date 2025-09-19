@@ -1,0 +1,198 @@
+.fi-fo-table-repeater {
+    @apply grid gap-3 p-2;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scrollbar-width: thin;
+    scrollbar-color: rgb(156 163 175) transparent;
+
+    &::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        @apply bg-gray-100 dark:bg-gray-800;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        @apply bg-gray-400 rounded dark:bg-gray-600;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        @apply bg-gray-500 dark:bg-gray-500;
+    }
+
+    & > table {
+        @apply block w-full bg-white divide-y divide-gray-200 shadow-sm rounded-xl ring-1 ring-gray-950/5 dark:divide-white/10 dark:bg-gray-900 dark:ring-white/10;
+
+        & > thead {
+            @apply hidden whitespace-nowrap;
+
+            & > tr {
+                & > th {
+                    @apply border-gray-200 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-950 first-of-type:rounded-tl-xl last-of-type:rounded-tr-xl dark:border-white/5 dark:bg-white/5 dark:text-white [&:not(:first-of-type)]:border-s [&:not(:last-of-type)]:border-e;
+
+                    &.fi-align-start,
+                    &.fi-align-left {
+                        @apply text-start;
+                    }
+
+                    &.fi-align-end,
+                    &.fi-align-right {
+                        @apply text-end;
+                    }
+
+                    &.fi-wrapped {
+                        @apply whitespace-normal;
+                    }
+
+                    &:not(.fi-wrapped) {
+                        @apply whitespace-nowrap;
+                    }
+
+                    &.fi-fo-table-repeater-empty-header-cell {
+                        @apply w-1;
+                    }
+                }
+            }
+        }
+
+        & > tbody {
+            @apply block divide-y divide-gray-200 dark:divide-white/5;
+
+            & > tr {
+                @apply grid gap-6 p-6;
+
+                & > td {
+                    @apply block;
+
+                    &.fi-hidden {
+                        @apply hidden;
+                    }
+                }
+            }
+        }
+
+        & .fi-fo-table-repeater-header-required-mark {
+            @apply font-medium text-red-600 dark:text-red-400;
+        }
+
+        & .fi-fo-table-repeater-actions {
+            @apply flex items-center h-full gap-x-3;
+        }
+    }
+
+    @supports (container-type: inline-size) {
+        @apply @container;
+
+        & > table {
+            @apply @xl:table table-fixed;
+
+            & > thead {
+                @apply @xl:table-header-group;
+            }
+
+            & > tbody {
+                @apply @xl:table-row-group;
+
+                & > tr {
+                    @apply @xl:table-row @xl:p-0;
+
+                    & > td {
+                        @apply @xl:table-cell @xl:px-3 @xl:py-2;
+
+                        &.fi-hidden {
+                            @apply @xl:table-cell;
+                        }
+
+                        & .fi-fo-field {
+                            @apply @xl:gap-y-0;
+                        }
+
+                        & .fi-in-entry {
+                            @apply @xl:gap-y-0;
+                        }
+
+                        & .fi-fo-field-label-content {
+                            @apply @xl:hidden;
+                        }
+
+                        & .fi-in-entry-label-content {
+                            @apply @xl:hidden;
+                        }
+                    }
+                }
+            }
+
+            & .fi-fo-table-repeater-actions {
+                @apply @xl:px-3 @xl:py-2;
+            }
+        }
+    }
+
+    @supports not (container-type: inline-size) {
+        & > table {
+            @apply lg:table;
+
+            & > thead {
+                @apply lg:table-header-group;
+            }
+
+            & > tbody {
+                @apply lg:table-row-group;
+
+                & > tr {
+                    @apply lg:table-row lg:p-0;
+
+                    & > td {
+                        @apply lg:table-cell lg:px-3 lg:py-2;
+
+                        &.fi-hidden {
+                            @apply lg:table-cell;
+                        }
+
+                        & .fi-fo-field {
+                            @apply lg:gap-y-0;
+                        }
+
+                        & .fi-in-entry {
+                            @apply lg:gap-y-0;
+                        }
+
+                        & .fi-fo-field-label-content {
+                            @apply lg:hidden;
+                        }
+
+                        & .fi-in-entry-label-content {
+                            @apply lg:hidden;
+                        }
+                    }
+                }
+            }
+
+            & .fi-fo-table-repeater-actions {
+                @apply lg:px-3 lg:py-2;
+            }
+        }
+    }
+
+    & .fi-fo-table-repeater-add {
+        @apply flex justify-center w-full;
+
+        &.fi-align-start,
+        &.fi-align-left {
+            @apply justify-start;
+        }
+
+        &.fi-align-end,
+        &.fi-align-right {
+            @apply justify-end;
+        }
+    }
+}
+
+.fi-select-input {
+    & .fi-select-input-ctn {
+        @apply static;
+    }
+}

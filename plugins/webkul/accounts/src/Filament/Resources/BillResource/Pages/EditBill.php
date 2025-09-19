@@ -11,9 +11,12 @@ use Webkul\Account\Filament\Resources\BillResource;
 use Webkul\Account\Filament\Resources\BillResource\Actions\CreditNoteAction;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
+use Webkul\Support\Concerns\HasRepeaterColumnManager;
 
 class EditBill extends EditRecord
 {
+    use HasRepeaterColumnManager;
+
     protected static string $resource = BillResource::class;
 
     protected function getRedirectUrl(): string

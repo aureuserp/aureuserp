@@ -8,9 +8,12 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Facades\PurchaseOrder;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
+use Webkul\Support\Concerns\HasRepeaterColumnManager;
 
 class CreateOrder extends CreateRecord
 {
+    use HasRepeaterColumnManager;
+
     protected static string $resource = OrderResource::class;
 
     protected function getRedirectUrl(): string
