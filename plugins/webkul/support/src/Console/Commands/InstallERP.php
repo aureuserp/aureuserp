@@ -62,9 +62,14 @@ class InstallERP extends Command
     {
         $this->info('⚙️ Running database migrations...');
 
-        Artisan::call('migrate', [], $this->getOutput());
+        // Ensure a clean database state before running fresh migrations.
+        // Use --force to run non-interactively in environments like CI or when called from another command.
+        $this->call('db:wipe', ['--force' => true]);
 
-        $this->info('✅ Migrations completed successfully.');
+        // Run fresh migrations to recreate the database schema.
+        $this->call('migrate:fresh', ['--force' => true]);
+
+        $this->info('✅ Migrations wiped and run fresh successfully.');
     }
 
     /**
