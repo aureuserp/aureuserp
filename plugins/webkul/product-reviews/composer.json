@@ -1,0 +1,29 @@
+{
+    "name": "webkul/product-reviews",
+    "description": "Manage product reviews",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Webkul",
+            "email": "support@webkul.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Webkul\\ProductReview\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Webkul\\ProductReview\\ProductReviewServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

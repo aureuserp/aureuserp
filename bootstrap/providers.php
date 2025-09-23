@@ -27,4 +27,5 @@ return [
     Webkul\FullCalendar\FullCalendarServiceProvider::class,
     Webkul\Timesheet\TimesheetServiceProvider::class,
     Webkul\Website\WebsiteServiceProvider::class,
+    Webkul\ProductReview\ProductReviewServiceProvider::class,
 ];
