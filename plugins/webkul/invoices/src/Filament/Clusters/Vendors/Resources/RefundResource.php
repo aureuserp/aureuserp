@@ -11,9 +11,12 @@ use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\Edit
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\ListRefunds;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\ViewRefund;
 use Webkul\Invoice\Models\Refund;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class RefundResource extends BaseRefundResource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = Refund::class;
 
     protected static ?int $navigationSort = 2;
@@ -23,11 +26,6 @@ class RefundResource extends BaseRefundResource
     protected static ?string $cluster = Vendors::class;
 
     protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
-
-    public static function getNavigationGroup(): ?string
-    {
-        return null;
-    }
 
     public static function getModelLabel(): string
     {

@@ -89,5 +89,4 @@ class PartnerPolicy
     {
         return $user->can('restore_any_partner');
     }
-
 }

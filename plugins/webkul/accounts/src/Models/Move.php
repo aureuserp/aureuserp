@@ -16,6 +16,7 @@ use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UtmCampaign;
@@ -24,7 +25,7 @@ use Webkul\Support\Models\UTMSource;
 
 class Move extends Model implements Sortable
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SortableTrait;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope, SortableTrait;
 
     protected $table = 'accounts_account_moves';
 
@@ -151,6 +152,11 @@ class Move extends Model implements Sortable
         'order_column_name'  => 'sort',
         'sort_when_creating' => true,
     ];
+
+    protected function getAssignmentColumn(): ?string
+    {
+        return 'invoice_user_id';
+    }
 
     public function campaign()
     {
@@ -366,7 +372,7 @@ class Move extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($model) {
-            $model->creator_id = auth()->id();
+            $model->creator_id = filament()->auth()->user()->id;
         });
 
         static::created(function ($model) {

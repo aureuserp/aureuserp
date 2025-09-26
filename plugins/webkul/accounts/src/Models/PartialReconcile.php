@@ -20,7 +20,7 @@ class PartialReconcile extends Model
         'debit_currency_id',
         'credit_currency_id',
         'company_id',
-        'created_by',
+        'creator_id',
         'max_date',
         'amount',
         'debit_amount_currency',

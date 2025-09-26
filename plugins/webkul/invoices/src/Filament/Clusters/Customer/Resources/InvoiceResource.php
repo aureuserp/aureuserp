@@ -11,9 +11,12 @@ use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\Ed
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ListInvoices;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ViewInvoice;
 use Webkul\Invoice\Models\Invoice;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class InvoiceResource extends BaseInvoiceResource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = Invoice::class;
 
     protected static bool $shouldRegisterNavigation = true;

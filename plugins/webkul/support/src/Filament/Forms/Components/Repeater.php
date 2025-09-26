@@ -15,7 +15,7 @@ class Repeater extends BaseRepeater
 
     protected ?string $columnManagerSessionKey = null;
 
-    protected bool | Closure | null $isRepeaterHasTableView = false;
+    protected bool|Closure|null $isRepeaterHasTableView = false;
 
     public function getDefaultView(): string
     {
@@ -26,7 +26,7 @@ class Repeater extends BaseRepeater
         return (string) parent::getDefaultView();
     }
 
-    public function table(array | Closure | null $columns): static
+    public function table(array|Closure|null $columns): static
     {
         $this->isRepeaterHasTableView = true;
 

@@ -58,6 +58,7 @@ use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Invoice\Models\Product;
 use Webkul\Invoice\Settings\ProductSettings;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Models\Company;
@@ -66,6 +67,8 @@ use Webkul\Support\Models\UOM;
 
 class InvoiceResource extends Resource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = AccountMove::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
@@ -310,6 +313,11 @@ class InvoiceResource extends Resource
                 TextColumn::make('state')
                     ->placeholder('-')
                     ->label(__('accounts::filament/resources/invoice.table.columns.state'))
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('createdBy.name')
+                    ->placeholder('-')
+                    ->label(__('accounts::filament/resources/invoice.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('invoice_partner_display_name')

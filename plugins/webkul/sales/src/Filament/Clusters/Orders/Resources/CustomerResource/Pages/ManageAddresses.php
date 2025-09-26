@@ -10,7 +10,7 @@ class ManageAddresses extends BaseManageAddresses
 {
     protected static string $resource = CustomerResource::class;
 
-    public  static function getSubNavigationPosition(): SubNavigationPosition
+    public static function getSubNavigationPosition(): SubNavigationPosition
     {
         return SubNavigationPosition::Top;
     }
