@@ -89,5 +89,4 @@ class PaymentTermPolicy
     {
         return $user->can('restore_any_payment::term');
     }
-
 }

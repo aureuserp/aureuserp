@@ -25,6 +25,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -42,10 +44,13 @@ use Webkul\Security\Filament\Resources\UserResource\Pages\EditUser;
 use Webkul\Security\Filament\Resources\UserResource\Pages\ListUsers;
 use Webkul\Security\Filament\Resources\UserResource\Pages\ViewUsers;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Models\Company;
 
 class UserResource extends Resource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = User::class;
 
     protected static ?int $navigationSort = 4;
@@ -120,16 +125,37 @@ class UserResource extends Resource
                                             ->searchable(),
                                         Select::make('resource_permission')
                                             ->label(__('security::filament/resources/user.form.sections.permissions.fields.resource-permission'))
-                                            ->options(PermissionType::options())
+                                            ->live()
+                                            ->options(PermissionType::class)
                                             ->required()
                                             ->preload()
+                                            ->default(PermissionType::GLOBAL->value)
+                                            ->afterStateUpdated(function (Get $get, Set $set) {
+                                                if ($get('resource_permission') != PermissionType::GROUP) {
+                                                    $set('teams', []);
+                                                }
+                                            })
                                             ->searchable(),
                                         Select::make('teams')
                                             ->label(__('security::filament/resources/user.form.sections.permissions.fields.teams'))
-                                            ->relationship('teams', 'name')
+                                            ->relationship(
+                                                name: 'teams',
+                                                titleAttribute: 'name'
+                                            )
+                                            ->live()
                                             ->multiple()
                                             ->preload()
-                                            ->searchable(),
+                                            ->searchable()
+                                            ->required(fn (Get $get) => $get('resource_permission') == PermissionType::GROUP)
+                                            ->createOptionForm(fn (Schema $schema) => TeamResource::form($schema))
+                                            ->createOptionAction(function (Action $action, Get $get) {
+                                                $action
+                                                    ->mutateDataUsing(function (array $data) {
+                                                        $data['creator_id'] = filament()->auth()->user()->id;
+
+                                                        return $data;
+                                                    });
+                                            }),
                                     ])
                                     ->columns(2),
                             ])
@@ -216,7 +242,7 @@ class UserResource extends Resource
                     ])
                     ->columns(3),
             ])
-                ->columns(1);
+            ->columns(1);
     }
 
     public static function table(Table $table): Table
@@ -245,13 +271,19 @@ class UserResource extends Resource
                     ->label(__('security::filament/resources/user.table.columns.role')),
                 TextColumn::make('resource_permission')
                     ->label(__('security::filament/resources/user.table.columns.resource-permission'))
-                    ->formatStateUsing(fn ($state) => PermissionType::options()[$state] ?? $state)
+                    ->formatStateUsing(fn (PermissionType $state) => $state->getLabel())
                     ->sortable(),
                 TextColumn::make('defaultCompany.name')
                     ->label(__('security::filament/resources/user.table.columns.default-company'))
                     ->sortable(),
                 TextColumn::make('allowedCompanies.name')
                     ->label(__('security::filament/resources/user.table.columns.allowed-company'))
+                    ->badge()
+                     ->listWithLineBreaks(),
+                TextColumn::make('createdBy.name')
+                    ->label(__('security::filament/resources/user.table.columns.created-by'))
+                    ->default('—')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->badge()
                     ->listWithLineBreaks(),
                 TextColumn::make('created_at')
@@ -269,7 +301,7 @@ class UserResource extends Resource
                 SelectFilter::make('resource_permission')
                     ->label(__('security::filament/resources/user.table.filters.resource-permission'))
                     ->searchable()
-                    ->options(PermissionType::options())
+                    ->options(PermissionType::class)
                     ->preload(),
                 SelectFilter::make('default_company')
                     ->relationship('defaultCompany', 'name')
@@ -430,9 +462,9 @@ class UserResource extends Resource
                                                     PermissionType::GLOBAL->value     => 'heroicon-o-globe-alt',
                                                     PermissionType::INDIVIDUAL->value => 'heroicon-o-user',
                                                     PermissionType::GROUP->value      => 'heroicon-o-user-group',
-                                                ][$record->resource_permission];
+                                                ][$record->resource_permission->value];
                                             })
-                                            ->formatStateUsing(fn ($state) => PermissionType::options()[$state] ?? $state)
+                                            ->formatStateUsing(fn ($state) => PermissionType::options()[$state->value ?? $state] ?? $state)
                                             ->placeholder('-')
                                             ->label(__('security::filament/resources/user.infolist.sections.permissions.entries.resource-permission')),
                                     ])
@@ -472,7 +504,7 @@ class UserResource extends Resource
                         ])->columnSpan(1),
                     ]),
             ])
-                ->columns(1);
+            ->columns(1);
     }
 
     public static function canDeleteUser(User $record): bool

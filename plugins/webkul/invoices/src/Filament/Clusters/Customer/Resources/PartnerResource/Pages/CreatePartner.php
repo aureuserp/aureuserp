@@ -12,6 +12,8 @@ class CreatePartner extends BaseCreatePartner
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
+        $data['creator_id'] = filament()->auth()->id();
+
         $data['sub_type'] = 'customer';
 
         return $data;

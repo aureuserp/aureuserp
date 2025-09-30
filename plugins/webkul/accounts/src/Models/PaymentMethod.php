@@ -12,11 +12,11 @@ class PaymentMethod extends Model
 
     protected $table = 'accounts_payment_methods';
 
-    protected $fillable = ['code', 'payment_type', 'name', 'created_by'];
+    protected $fillable = ['code', 'payment_type', 'name', 'creator_id'];
 
     public function createdBy()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'creator_id');
     }
 
     public function accountMovePayment()

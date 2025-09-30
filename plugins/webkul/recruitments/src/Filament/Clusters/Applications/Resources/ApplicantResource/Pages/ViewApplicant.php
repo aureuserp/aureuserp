@@ -54,7 +54,7 @@ class ViewApplicant extends ViewRecord
                         ->inline()
                         ->options(RecruitmentState::class),
                 ])
-                ->fillForm(fn($record) => [
+                ->fillForm(fn ($record) => [
                     'state' => $record->state,
                 ])
                 ->tooltip(function ($record) {
@@ -83,7 +83,7 @@ class ViewApplicant extends ViewRecord
                 }),
             Action::make('gotoEmployee')
                 ->tooltip(__('recruitments::filament/clusters/applications/resources/applicant/pages/edit-applicant.goto-employee'))
-                ->visible(fn($record) => $record->application_status->value == ApplicationStatus::HIRED->value || $record->candidate->employee_id)
+                ->visible(fn ($record) => $record->application_status->value == ApplicationStatus::HIRED->value || $record->candidate->employee_id)
                 ->icon('heroicon-s-arrow-top-right-on-square')
                 ->iconButton()
                 ->action(function (Applicant $record) {
@@ -95,7 +95,7 @@ class ViewApplicant extends ViewRecord
                 ->setResource(static::$resource),
             Action::make('createEmployee')
                 ->label(__('recruitments::filament/clusters/applications/resources/applicant/pages/edit-applicant.create-employee'))
-                ->hidden(fn($record) => $record->application_status->value == ApplicationStatus::HIRED->value || $record->candidate->employee_id)
+                ->hidden(fn ($record) => $record->application_status->value == ApplicationStatus::HIRED->value || $record->candidate->employee_id)
                 ->action(function (Applicant $record) {
                     $employee = $record->createEmployee();
 
@@ -110,7 +110,7 @@ class ViewApplicant extends ViewRecord
                 ),
             Action::make('Refuse')
                 ->modalIcon('heroicon-s-bug-ant')
-                ->hidden(fn($record) => $record->refuse_reason_id || $record->application_status->value === ApplicationStatus::ARCHIVED->value)
+                ->hidden(fn ($record) => $record->refuse_reason_id || $record->application_status->value === ApplicationStatus::ARCHIVED->value)
                 ->modalHeading('Refuse Reason')
                 ->schema(function (Schema $schema, $record) {
                     return $schema->components([
@@ -123,10 +123,10 @@ class ViewApplicant extends ViewRecord
                             ->inline()
                             ->live()
                             ->default(true)
-                            ->visible(fn(Get $get) => $get('refuse_reason_id'))
+                            ->visible(fn (Get $get) => $get('refuse_reason_id'))
                             ->label('Notify'),
                         TextInput::make('email')
-                            ->visible(fn(Get $get) => $get('notify') && $get('refuse_reason_id'))
+                            ->visible(fn (Get $get) => $get('notify') && $get('refuse_reason_id'))
                             ->default($record->candidate->email_from)
                             ->label('Email To'),
                     ]);
@@ -157,7 +157,7 @@ class ViewApplicant extends ViewRecord
                         ->send();
                 }),
             Action::make('Restore')
-                ->hidden(fn($record) => ! $record->refuse_reason_id)
+                ->hidden(fn ($record) => ! $record->refuse_reason_id)
                 ->modalHeading('Restore Applicant from refuse')
                 ->requiresConfirmation()
                 ->color('gray')

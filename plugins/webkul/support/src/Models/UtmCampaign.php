@@ -16,7 +16,7 @@ class UtmCampaign extends Model
         'user_id',
         'stage_id',
         'color',
-        'created_by',
+        'creator_id',
         'name',
         'title',
         'is_active',
@@ -36,7 +36,7 @@ class UtmCampaign extends Model
 
     public function createdBy()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'creator_id');
     }
 
     public function company()

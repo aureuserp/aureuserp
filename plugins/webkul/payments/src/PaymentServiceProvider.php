@@ -20,6 +20,7 @@ class PaymentServiceProvider extends PackageServiceProvider
                 '2025_02_11_101123_create_payments_payment_tokens_table',
                 '2025_02_11_103602_create_payments_payment_transactions_table',
                 '2025_02_12_103602_add_columns_to_account_payments_table',
+                '2025_08_08_105243_alter_payments_payment_methods_table',
             ])
             ->runsMigrations()
             ->hasDependencies([

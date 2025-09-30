@@ -8,8 +8,8 @@ use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Webkul\Security\Filament\Resources\RoleResource;
 use Spatie\Permission\PermissionRegistrar;
+use Webkul\Security\Filament\Resources\RoleResource;
 
 class EditRole extends EditRecord
 {
@@ -73,8 +73,8 @@ class EditRole extends EditRecord
             $missingPermissions = $chunk->diff($existingPermissions->keys());
 
             if ($missingPermissions->isNotEmpty()) {
-                $insertData = $missingPermissions->map(fn($name) => [
-                    'name' => $name,
+                $insertData = $missingPermissions->map(fn ($name) => [
+                    'name'       => $name,
                     'guard_name' => $guard,
                     'created_at' => now(),
                     'updated_at' => now(),

@@ -267,7 +267,7 @@ class Employee extends Model
         $partner = $employee->partner()->create([
             'account_type' => 'individual',
             'sub_type'     => 'employee',
-            'creator_id'   => Auth::id(),
+            'creator_id'   => $employee->creator_id ?? filament()->auth()->id(),
             'name'         => $employee?->name,
             'email'        => $employee?->work_email ?? $employee?->private_email,
             'job_title'    => $employee?->job_title,
@@ -293,7 +293,7 @@ class Employee extends Model
             [
                 'account_type' => 'individual',
                 'sub_type'     => 'employee',
-                'creator_id'   => Auth::id(),
+                'creator_id'   => $employee->creator_id ?? filament()->auth()->id(),
                 'name'         => $employee?->name,
                 'email'        => $employee?->work_email ?? $employee?->private_email,
                 'job_title'    => $employee?->job_title,

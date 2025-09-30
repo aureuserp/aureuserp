@@ -31,7 +31,7 @@ class EditCompany extends EditRecord
         return [
             ViewAction::make(),
             DeleteAction::make()
-               ->hidden(fn () => \App\Models\User::where('default_company_id', $this->record->id)->exists())
+                ->hidden(fn () => \App\Models\User::where('default_company_id', $this->record->id)->exists())
                 ->successNotification(
                     Notification::make()
                         ->success()
