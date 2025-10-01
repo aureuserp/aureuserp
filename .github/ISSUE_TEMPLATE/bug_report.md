@@ -23,15 +23,15 @@ Steps to reproduce the behavior:
 
 ---
 
-## ✅ Expected Behavior
-
-A clear and concise description of what you expected to happen.
-
----
-
 ## ❌ Actual Behavior
 
 What actually happened instead of the expected behavior?
+
+---
+
+## ✅ Expected Behavior
+
+A clear and concise description of what you expected to happen.
 
 ---
 

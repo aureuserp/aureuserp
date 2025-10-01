@@ -17,7 +17,7 @@ body:
     attributes:
       label: 🧩 Aureuserp Version(s) Affected
       description: Specify the Aureuserp version(s) where the issue occurs.
-      placeholder: "e.g., 2.1.0"
+      placeholder: "e.g., v1.1.0"
     validations:
       required: true
 
@@ -58,22 +58,22 @@ body:
       required: true
 
   - type: textarea
-    id: expected
-    attributes:
-      label: ✅ Expected Behavior
-      description: What did you expect to happen?
-      placeholder: |
-        The page should display the correct price...
-    validations:
-      required: true
-
-  - type: textarea
     id: actual
     attributes:
       label: ❌ Actual Behavior
       description: What actually happened instead?
       placeholder: |
         The price is shown as 0...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: ✅ Expected Behavior
+      description: What did you expect to happen?
+      placeholder: |
+        The page should display the correct price...
     validations:
       required: true
 
