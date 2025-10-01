@@ -13,6 +13,15 @@ class CreateTimeOff extends CreateRecord
 
     protected static string $resource = TimeOffResource::class;
 
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
+
     protected function getCreatedNotification(): Notification
     {
         return Notification::make()

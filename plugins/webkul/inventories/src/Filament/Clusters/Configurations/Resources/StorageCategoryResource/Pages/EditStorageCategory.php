@@ -7,9 +7,12 @@ use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditStorageCategory extends EditRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = StorageCategoryResource::class;
 
     protected function getSavedNotification(): Notification

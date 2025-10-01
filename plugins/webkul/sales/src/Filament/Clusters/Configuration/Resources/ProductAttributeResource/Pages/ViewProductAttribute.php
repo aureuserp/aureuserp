@@ -8,4 +8,13 @@ use Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductAttributeResour
 class ViewProductAttribute extends BaseViewProductAttribute
 {
     protected static string $resource = ProductAttributeResource::class;
+
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
 }

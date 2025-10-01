@@ -196,7 +196,7 @@ class ActivityPlanResource extends Resource
                             ->label(__('projects::filament/clusters/configurations/resources/activity-plan.infolist.status'))
                             ->boolean(),
                     ])
-                    ->columns(2),
+                    ->columns(2)->columnSpanFull(),
             ]);
     }
 

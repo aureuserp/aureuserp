@@ -10,6 +10,15 @@ class ViewPackageType extends ViewRecord
 {
     protected static string $resource = PackageTypeResource::class;
 
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
+
     protected function getHeaderActions(): array
     {
         return [

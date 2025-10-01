@@ -9,9 +9,12 @@ use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\QueryException;
 use Webkul\Product\Filament\Resources\CategoryResource;
 use Webkul\Product\Models\Category;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewCategory extends ViewRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = CategoryResource::class;
 
     protected function getHeaderActions(): array

@@ -8,4 +8,12 @@ use Webkul\Support\Filament\Resources\ActivityTypeResource\Pages\EditActivityTyp
 class EditActivityType extends BaseEditActivityType
 {
     protected static string $resource = ActivityTypeResource::class;
+      public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
 }

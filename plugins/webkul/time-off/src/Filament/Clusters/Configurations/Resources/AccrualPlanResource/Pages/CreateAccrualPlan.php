@@ -12,9 +12,18 @@ class CreateAccrualPlan extends CreateRecord
 {
     protected static string $resource = AccrualPlanResource::class;
 
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
+
     public static function getSubNavigationPosition(): SubNavigationPosition
     {
-        return SubNavigationPosition::Top;
+        return SubNavigationPosition::Start;
     }
 
     protected function getRedirectUrl(): string

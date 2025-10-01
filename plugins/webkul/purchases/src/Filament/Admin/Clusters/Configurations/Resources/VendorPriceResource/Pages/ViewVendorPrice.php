@@ -22,4 +22,13 @@ class ViewVendorPrice extends ViewRecord
             EditAction::make(),
         ];
     }
+
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
 }

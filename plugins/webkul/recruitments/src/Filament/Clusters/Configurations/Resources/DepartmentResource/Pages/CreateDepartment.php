@@ -8,4 +8,13 @@ use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\DepartmentReso
 class CreateDepartment extends BaseCreateDepartment
 {
     protected static string $resource = DepartmentResource::class;
+
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
 }

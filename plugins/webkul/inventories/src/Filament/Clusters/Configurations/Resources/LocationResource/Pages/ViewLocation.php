@@ -9,9 +9,12 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource;
 use Webkul\Inventory\Models\Location;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewLocation extends ViewRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = LocationResource::class;
 
     protected function getHeaderActions(): array

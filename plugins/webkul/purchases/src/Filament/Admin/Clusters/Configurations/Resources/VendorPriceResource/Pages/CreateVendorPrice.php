@@ -38,4 +38,13 @@ class CreateVendorPrice extends CreateRecord
 
         return $data;
     }
+
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
 }
