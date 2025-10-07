@@ -25,9 +25,12 @@ use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource\Page
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource\Pages\ManageMoves;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource\Pages\ViewReceipt;
 use Webkul\Inventory\Models\Receipt;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class ReceiptResource extends Resource
 {
+    use HasResourcePermissionQuery;
+    
     protected static ?string $model = Receipt::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-down-tray';
