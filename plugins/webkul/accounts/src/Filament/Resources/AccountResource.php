@@ -23,10 +23,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Webkul\Account\Enums\AccountType;
-use Webkul\Account\Filament\Resources\AccountResource\Pages\CreateAccount;
-use Webkul\Account\Filament\Resources\AccountResource\Pages\EditAccount;
-use Webkul\Account\Filament\Resources\AccountResource\Pages\ListAccounts;
-use Webkul\Account\Filament\Resources\AccountResource\Pages\ViewAccount;
+use Webkul\Account\Filament\Resources\AccountResource\Pages\ManageAccounts;
 use Webkul\Account\Models\Account;
 
 class AccountResource extends Resource
@@ -53,6 +50,7 @@ class AccountResource extends Resource
                             ->label(__('accounts::filament/resources/account.form.sections.fields.account-name'))
                             ->maxLength(255)
                             ->columnSpan(1),
+
                         Fieldset::make(__('accounts::filament/resources/account.form.sections.fields.accounting'))
                             ->schema([
                                 Select::make('account_type')
@@ -96,8 +94,9 @@ class AccountResource extends Resource
                                     ->inline(false)
                                     ->label(__('accounts::filament/resources/account.form.sections.fields.non-trade')),
                             ]),
-                    ])->columns(2),
-            ]);
+                    ]),
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table
@@ -128,7 +127,13 @@ class AccountResource extends Resource
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
+                EditAction::make()
+                    ->successNotification(
+                        Notification::make()
+                            ->success()
+                            ->title(__('accounts::filament/resources/account.table.actions.edit.notification.title'))
+                            ->body(__('accounts::filament/resources/account.table.actions.edit.notification.body'))
+                    ),
                 DeleteAction::make()
                     ->successNotification(
                         Notification::make()
@@ -166,6 +171,7 @@ class AccountResource extends Resource
                             ->icon('heroicon-o-document-text')
                             ->placeholder('-')
                             ->columnSpan(1),
+                            
                         Section::make(__('accounts::filament/resources/account.infolist.sections.entries.accounting'))
                             ->schema([
                                 TextEntry::make('account_type')
@@ -206,17 +212,15 @@ class AccountResource extends Resource
                                     ]),
                             ])
                             ->columns(2),
-                    ])->columns(2),
-            ]);
+                    ]),
+            ])
+            ->columns(1);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => ListAccounts::route('/'),
-            'create' => CreateAccount::route('/create'),
-            'view'   => ViewAccount::route('/{record}'),
-            'edit'   => EditAccount::route('/{record}/edit'),
+            'index' => ManageAccounts::route('/'),
         ];
     }
 }

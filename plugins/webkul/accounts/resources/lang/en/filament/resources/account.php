@@ -31,6 +31,13 @@ return [
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Account updated',
+                    'body'  => 'The account has been updated successfully.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
                     'title' => 'Account deleted',
