@@ -341,7 +341,7 @@ class WarehouseResource extends Resource
                                     ->schema([
                                         TextEntry::make('supplierWarehouses.name')
                                             ->label(__('inventories::filament/clusters/configurations/resources/warehouse.infolist.sections.settings.entries.resupply-from'))
-                                            ->icon('heroicon-o-refresh')
+                                            ->icon('heroicon-o-arrow-path')
                                             ->placeholder('—'),
                                     ]),
                             ]),

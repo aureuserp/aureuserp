@@ -6,6 +6,7 @@ use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Filament\Clusters\Orders;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\CreateOrder;
@@ -21,6 +22,8 @@ class OrderResource extends Resource
     protected static ?string $model = Order::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?string $cluster = Orders::class;
 
@@ -74,5 +77,11 @@ class OrderResource extends Resource
             'invoices'   => ManageInvoices::route('/{record}/invoices'),
             'deliveries' => ManageDeliveries::route('/{record}/deliveries'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderByDesc('id');
     }
 }

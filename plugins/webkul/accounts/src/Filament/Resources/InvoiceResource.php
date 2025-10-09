@@ -44,6 +44,7 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
@@ -67,6 +68,8 @@ use Webkul\Support\Models\UOM;
 class InvoiceResource extends Resource
 {
     protected static ?string $model = AccountMove::class;
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
 
@@ -735,7 +738,7 @@ class InvoiceResource extends Resource
         return Repeater::make('products')
             ->relationship('lines')
             ->hiddenLabel()
-            ->live()
+            ->live(onBlur: true)
             ->reactive()
             ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.title'))
             ->addActionLabel(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.add-product'))
@@ -790,14 +793,31 @@ class InvoiceResource extends Resource
                     ->relationship(
                         'product',
                         'name',
-                        fn (Builder $query) => $query->where('is_configurable', null),
+                        fn (Builder $query) => $query->withTrashed()->where('is_configurable', null),
                     )
-                    ->getOptionLabelFromRecordUsing(function (Model $record) {
-                        if ($record->product) {
-                            return $record->product->name;
+                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                    })
+                    ->disableOptionWhen(function ($value, $state, $component, $label) {
+                        if (str_contains($label, ' (Deleted)')) {
+                            return true;
                         }
 
-                        return $record->name;
+                        $repeater = $component->getParentRepeater();
+                        if (! $repeater) {
+                            return false;
+                        }
+
+                        return collect($repeater->getState())
+                            ->pluck(
+                                (string) str($component->getStatePath())
+                                    ->after("{$repeater->getStatePath()}.")
+                                    ->after('.'),
+                            )
+                            ->flatten()
+                            ->diff(Arr::wrap($state))
+                            ->filter(fn (mixed $siblingItemState): bool => filled($siblingItemState))
+                            ->contains($value);
                     })
                     ->searchable()
                     ->preload()
@@ -812,7 +832,7 @@ class InvoiceResource extends Resource
                     ->default(1)
                     ->numeric()
                     ->maxValue(99999999999)
-                    ->live()
+                    ->live(onBlur: true)
                     ->dehydrated()
                     ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductQtyUpdated($set, $get)),
@@ -854,7 +874,7 @@ class InvoiceResource extends Resource
                     ->default(0)
                     ->minValue(0)
                     ->maxValue(99999999999)
-                    ->live()
+                    ->live(onBlur: true)
                     ->dehydrated()
                     ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
@@ -865,7 +885,7 @@ class InvoiceResource extends Resource
                     ->minValue(0)
                     ->maxValue(99999999999)
                     ->required()
-                    ->live()
+                    ->live(onBlur: true)
                     ->dehydrated()
                     ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
@@ -1008,5 +1028,11 @@ class InvoiceResource extends Resource
         $set('price_tax', $taxAmount);
 
         $set('price_total', $subTotal + $taxAmount);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderByDesc('id');
     }
 }

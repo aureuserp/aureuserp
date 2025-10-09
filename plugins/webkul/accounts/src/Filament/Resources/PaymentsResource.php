@@ -395,4 +395,10 @@ class PaymentsResource extends Resource
             'edit'   => EditPayments::route('/{record}/edit'),
         ];
     }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderByDesc('id');
+    }
 }

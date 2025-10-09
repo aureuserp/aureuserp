@@ -741,7 +741,7 @@ class OperationResource extends Resource
                     ->maxValue(99999999999)
                     ->default(0)
                     ->required()
-                    ->live()
+                    ->live(onBlur:true)
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductUOMQtyUpdated($set, $get))
                     ->disabled(fn (?Move $record): bool => $record?->id && $record?->state !== MoveState::DRAFT),
                 TextInput::make('quantity')

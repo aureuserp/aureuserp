@@ -238,6 +238,11 @@ class Profile extends Page implements HasForms
                 ->success()
                 ->duration(3000)
                 ->send();
+                
+            if (request()->hasSession()) {
+                request()->session()->invalidate();
+                request()->session()->regenerateToken();
+            }
 
             return redirect()->to(filament()->getCurrentPanel()->getLoginUrl());
         } catch (ValidationException $e) {

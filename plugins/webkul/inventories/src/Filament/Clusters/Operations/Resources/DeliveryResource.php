@@ -137,4 +137,10 @@ class DeliveryResource extends Resource
             'moves'  => ManageMoves::route('/{record}/moves'),
         ];
     }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderByDesc('id');
+    }
 }
