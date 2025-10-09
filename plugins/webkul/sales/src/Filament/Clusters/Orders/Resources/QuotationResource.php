@@ -23,7 +23,6 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
@@ -1009,59 +1008,59 @@ class QuotationResource extends Resource
                     ->live(onBlur: true)
                     ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount)
                     ->dehydrated(),
-                Actions::make([
-                    Action::make('add_order_line')
-                        ->tooltip(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.tooltip.add-order-line'))
-                        ->hiddenLabel()
-                        ->icon('heroicon-o-shopping-cart')
-                        ->action(function ($state, $livewire, $record) use ($parentSet, $parentGet) {
-                            $data = [
-                                'product_id'      => $state['product_id'],
-                                'product_qty'     => $state['quantity'],
-                                'price_unit'      => $state['price_unit'],
-                                'discount'        => $state['discount'],
-                                'name'            => $state['name'],
-                                'customer_lead'   => 0,
-                                'purchase_price'  => 0,
-                                'product_uom_qty' => 0,
-                            ];
+            ])
+            ->extraItemActions([
+                Action::make('add_order_line')
+                    ->tooltip(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.tooltip.add-order-line'))
+                    ->hiddenLabel()
+                    ->icon('heroicon-o-shopping-cart')
+                    ->action(function ($state, $livewire, $record) use ($parentSet, $parentGet) {
+                        $data = [
+                            'product_id'      => $state['product_id'],
+                            'product_qty'     => $state['quantity'],
+                            'price_unit'      => $state['price_unit'],
+                            'discount'        => $state['discount'],
+                            'name'            => $state['name'],
+                            'customer_lead'   => 0,
+                            'purchase_price'  => 0,
+                            'product_uom_qty' => 0,
+                        ];
 
-                            $parentSet('products', [
-                                ...$parentGet('products'),
-                                $data,
-                            ]);
+                        $parentSet('products', [
+                            ...$parentGet('products'),
+                            $data,
+                        ]);
 
-                            $user = Auth::user();
+                        $user = Auth::user();
 
-                            $data['order_id'] = $livewire->record->id;
-                            $data['creator_id'] = $user->id;
-                            $data['company_id'] = $user?->default_company_id;
-                            $data['currency_id'] = $livewire->record->currency_id;
-                            $data['product_uom_id'] = $state['product_uom_id'];
-                            $orderLine = OrderLine::create($data);
+                        $data['order_id'] = $livewire->record->id;
+                        $data['creator_id'] = $user->id;
+                        $data['company_id'] = $user?->default_company_id;
+                        $data['currency_id'] = $livewire->record->currency_id;
+                        $data['product_uom_id'] = $state['product_uom_id'];
+                        $orderLine = OrderLine::create($data);
 
-                            $record->line_id = $orderLine->id;
+                        $record->line_id = $orderLine->id;
 
-                            $record->save();
+                        $record->save();
 
-                            $livewire->refreshFormData(['products']);
+                        $livewire->refreshFormData(['products']);
 
-                            $products = collect($parentGet('products'))->values();
+                        $products = collect($parentGet('products'))->values();
 
-                            $orderLineEntry = $products->first(fn ($product) => $product['id'] == $orderLine->id);
+                        $orderLineEntry = $products->first(fn ($product) => $product['id'] == $orderLine->id);
 
-                            $orderLine->update($orderLineEntry);
+                        $orderLine->update($orderLineEntry);
 
-                            Notification::make()
-                                ->success()
-                                ->title(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-added.title'))
-                                ->body(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-added.body'))
-                                ->send();
-                        })
-                        ->extraAttributes([
-                            'style' => 'margin-top: 2rem;',
-                        ]),
-                ])->hidden(fn ($record) => ! $record ?? false),
+                        Notification::make()
+                            ->success()
+                            ->title(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-added.title'))
+                            ->body(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-added.body'))
+                            ->send();
+                    })
+                    ->extraAttributes([
+                        'style' => 'margin-top: 2rem;',
+                    ])->visible(fn ($record) => $record !== null),
             ]);
     }
 
