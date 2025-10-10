@@ -9,6 +9,8 @@ use Filament\Resources\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Table;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Models\Tax;
 use Webkul\Field\Filament\Traits\HasCustomFields;
@@ -184,6 +186,22 @@ class ProductResource extends BaseProductResource
             ManageAttributes::class,
             ManageVariants::class,
         ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        $table = parent::table($table);
+
+        $filtered = collect($table->getFilters()['queryBuilder']->getConstraints())
+            ->reject(fn ($constraint) => $constraint->getName() == 'responsible')
+            ->all();
+
+        $table = $table->filters([
+            QueryBuilder::make()
+                ->constraints($filtered),
+        ]);
+
+        return $table;
     }
 
     public static function getPages(): array
