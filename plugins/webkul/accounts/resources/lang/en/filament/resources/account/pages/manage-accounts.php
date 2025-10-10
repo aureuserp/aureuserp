@@ -9,4 +9,14 @@ return [
             ],
         ],
     ],
+
+    'tabs' => [
+        'receivable' => 'Receivable',
+        'payable'    => 'Payable',
+        'equity'     => 'Equity',
+        'assets'     => 'Assets',
+        'liability'  => 'Liability',
+        'income'     => 'Income',
+        'expenses'   => 'Expenses',
+    ],
 ];

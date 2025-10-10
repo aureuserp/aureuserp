@@ -13,7 +13,7 @@ return [
                 'journals'      => 'Journals',
                 'currency'      => 'Currency',
                 'deprecated'    => 'Deprecated',
-                'reconcile'     => 'Reconcile',
+                'reconcile'     => 'Allow Reconcile',
                 'non-trade'     => 'Non Trade',
             ],
         ],
@@ -23,11 +23,22 @@ return [
         'columns' => [
             'code'         => 'Code',
             'account-name' => 'Account Name',
-            'account-type' => 'Account Type',
+            'account-type' => 'Account',
             'currency'     => 'Currency',
-            'deprecated'   => 'Deprecated',
-            'reconcile'    => 'Reconcile',
-            'non-trade'    => 'Non Trade',
+            'journals'     => 'Journals',
+            'reconcile'    => 'Allow Reconcile',
+        ],
+
+        'grouping' => [
+            'account-type' => 'Account Type',
+        ],
+
+        'filters' => [
+            'account-type'    => 'Account Type',
+            'allow-reconcile' => 'Allow Reconcile',
+            'currency'        => 'Currency',
+            'account-journals' => 'Journals',
+            'non-trade'       => 'Non Trade',
         ],
 
         'actions' => [

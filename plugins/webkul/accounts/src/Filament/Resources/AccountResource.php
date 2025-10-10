@@ -21,6 +21,8 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Filament\Resources\AccountResource\Pages\ManageAccounts;
@@ -44,7 +46,8 @@ class AccountResource extends Resource
                             ->required()
                             ->label(__('accounts::filament/resources/account.form.sections.fields.code'))
                             ->maxLength(255)
-                            ->columnSpan(1),
+                            ->columnSpan(1)
+                            ->unique(ignoreRecord: true),
                         TextInput::make('name')
                             ->required()
                             ->label(__('accounts::filament/resources/account.form.sections.fields.account-name'))
@@ -54,7 +57,7 @@ class AccountResource extends Resource
                         Fieldset::make(__('accounts::filament/resources/account.form.sections.fields.accounting'))
                             ->schema([
                                 Select::make('account_type')
-                                    ->options(AccountType::options())
+                                    ->options(AccountType::groupedOptions())
                                     ->preload()
                                     ->required()
                                     ->label(__('accounts::filament/resources/account.form.sections.fields.account-type'))
@@ -104,26 +107,46 @@ class AccountResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('code')
+                    ->label(__('accounts::filament/resources/account.table.columns.code'))
                     ->searchable()
-                    ->label(__('accounts::filament/resources/account.table.columns.code')),
+                    ->sortable(),
                 TextColumn::make('name')
+                    ->label(__('accounts::filament/resources/account.table.columns.account-name'))
                     ->searchable()
-                    ->label(__('accounts::filament/resources/account.table.columns.account-name')),
+                    ->sortable(),
                 TextColumn::make('account_type')
+                    ->label(__('accounts::filament/resources/account.table.columns.account-type'))
                     ->searchable()
-                    ->label(__('accounts::filament/resources/account.table.columns.account-type')),
-                TextColumn::make('currency.name')
-                    ->searchable()
-                    ->label(__('accounts::filament/resources/account.table.columns.currency')),
-                IconColumn::make('deprecated')
-                    ->boolean()
-                    ->label(__('accounts::filament/resources/account.table.columns.deprecated')),
+                    ->sortable(),
                 IconColumn::make('reconcile')
+                    ->label(__('accounts::filament/resources/account.table.columns.reconcile'))
                     ->boolean()
-                    ->label(__('accounts::filament/resources/account.table.columns.reconcile')),
-                IconColumn::make('non_trade')
-                    ->boolean()
-                    ->label(__('accounts::filament/resources/account.table.columns.non-trade')),
+                    ->sortable(),
+                TextColumn::make('currency.name')
+                    ->label(__('accounts::filament/resources/account.table.columns.currency'))
+                    ->sortable(),
+            ])
+            ->groups([
+                'account_type',
+            ])
+            ->filters([
+                SelectFilter::make('account_type')
+                    ->options(AccountType::groupedOptions())
+                    ->label(__('accounts::filament/resources/account.table.filters.account-type')),
+                SelectFilter::make('journals')
+                    ->relationship('journals', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->label(__('accounts::filament/resources/account.table.filters.account-journals')),
+                SelectFilter::make('currency')
+                    ->relationship('currency', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->label(__('accounts::filament/resources/account.table.filters.currency')),
+                TernaryFilter::make('reconcile')
+                    ->label(__('accounts::filament/resources/account.table.filters.allow-reconcile')),
+                TernaryFilter::make('non_trade')
+                    ->label(__('accounts::filament/resources/account.table.filters.non-trade')),
             ])
             ->recordActions([
                 ViewAction::make(),
