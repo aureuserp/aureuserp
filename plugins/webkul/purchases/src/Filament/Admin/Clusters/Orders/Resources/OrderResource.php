@@ -47,7 +47,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Tax as TaxFacade;
-use Webkul\Account\Filament\Resources\IncoTermResource;
+use Webkul\Account\Filament\Resources\IncotermResource;
 use Webkul\Account\Models\Partner;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
@@ -254,7 +254,7 @@ class OrderResource extends Resource
                                             ->relationship('incoterm', 'name')
                                             ->searchable()
                                             ->preload()
-                                            ->createOptionForm(fn (Schema $schema) => IncoTermResource::form($schema))
+                                            ->createOptionForm(fn (Schema $schema) => IncotermResource::form($schema))
                                             ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('purchases::filament/admin/clusters/orders/resources/order.form.tabs.additional.fields.incoterm-tooltip'))
                                             ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT, OrderState::PURCHASE])),
                                         TextInput::make('reference')

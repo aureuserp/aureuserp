@@ -3,7 +3,7 @@
 namespace Webkul\Sale\Settings;
 
 use Spatie\LaravelSettings\Settings;
-use Webkul\Invoice\Enums\InvoicePolicy;
+use Webkul\Account\Enums\InvoicePolicy;
 
 class InvoiceSettings extends Settings
 {
