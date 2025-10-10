@@ -93,6 +93,7 @@ return [
 
     'table' => [
         'columns' => [
+            'favorite'        => 'Favorite',
             'reference'       => 'Reference',
             'from'            => 'From',
             'to'              => 'To',

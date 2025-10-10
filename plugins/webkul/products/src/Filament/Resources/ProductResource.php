@@ -196,7 +196,7 @@ class ProductResource extends Resource
             ->columnManagerColumns(2)
             ->columns([
                 IconColumn::make('is_favorite')
-                    ->label("\u{200B}")
+                    ->label(__('products::filament/resources/product.table.columns.favorite'))
                     ->icon(fn (Product $record): string => $record->is_favorite ? 'heroicon-s-star' : 'heroicon-o-star')
                     ->color(fn (Product $record): string => $record->is_favorite ? 'warning' : 'gray')
                     ->action(function (Product $record): void {
