@@ -15,4 +15,18 @@ class Currency extends Model
         'rounding',
         'active',
     ];
+
+    protected $casts = [
+        'active' => 'boolean',
+    ];
+
+    /**
+     * Get all states for the country.
+     *
+     * @return HasMany
+     */
+    public function rates()
+    {
+        return $this->hasMany(CurrencyRate::class);
+    }
 }
