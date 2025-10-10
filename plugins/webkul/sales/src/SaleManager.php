@@ -17,7 +17,7 @@ use Webkul\Inventory\Models\Operation as InventoryOperation;
 use Webkul\Inventory\Models\Product as InventoryProduct;
 use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Models\Warehouse;
-use Webkul\Accounts\Enums\InvoicePolicy;
+use Webkul\Account\Enums\InvoicePolicy;
 use Webkul\Partner\Models\Partner;
 use Webkul\Sale\Enums\AdvancedPayment;
 use Webkul\Sale\Enums\InvoiceStatus;

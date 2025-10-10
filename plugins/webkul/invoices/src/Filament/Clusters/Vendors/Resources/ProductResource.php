@@ -12,7 +12,7 @@ use Filament\Schemas\Schema;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Models\Tax;
 use Webkul\Field\Filament\Traits\HasCustomFields;
-use Webkul\Accounts\Enums\InvoicePolicy;
+use Webkul\Account\Enums\InvoicePolicy;
 use Webkul\Invoice\Filament\Clusters\Vendors;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource\Pages\CreateProduct;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource\Pages\EditProduct;

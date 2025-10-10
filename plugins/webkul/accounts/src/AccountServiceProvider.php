@@ -41,6 +41,7 @@ class AccountServiceProvider extends PackageServiceProvider
                 '2025_02_03_121847_create_accounts_fiscal_positions_table',
                 '2025_02_03_131858_create_accounts_fiscal_position_taxes_table',
                 '2025_02_03_144139_create_accounts_cash_roundings_table',
+                '2025_02_04_082243_alter_products_products_table',
                 '2025_02_04_104958_create_accounts_product_taxes_table',
                 '2025_02_04_111337_create_accounts_product_supplier_taxes_table',
                 '2025_02_10_073440_create_accounts_reconciles_table',
