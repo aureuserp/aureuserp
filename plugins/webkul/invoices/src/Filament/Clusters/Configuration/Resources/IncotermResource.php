@@ -2,12 +2,12 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Configuration\Resources;
 
-use Webkul\Account\Filament\Resources\IncoTermResource as BaseIncoTermResource;
+use Webkul\Account\Filament\Resources\IncotermResource as BaseIncotermResource;
 use Webkul\Invoice\Filament\Clusters\Configuration;
-use Webkul\Invoice\Filament\Clusters\Configuration\Resources\IncoTermResource\Pages\ListIncoTerms;
+use Webkul\Invoice\Filament\Clusters\Configuration\Resources\IncotermResource\Pages\ManageIncoterms;
 use Webkul\Invoice\Models\Incoterm;
 
-class IncoTermResource extends BaseIncoTermResource
+class IncotermResource extends BaseIncotermResource
 {
     protected static ?string $model = Incoterm::class;
 
@@ -33,7 +33,7 @@ class IncoTermResource extends BaseIncoTermResource
     public static function getPages(): array
     {
         return [
-            'index' => ListIncoTerms::route('/'),
+            'index' => ManageIncoterms::route('/'),
         ];
     }
 }

@@ -19,10 +19,10 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Account\Filament\Resources\IncoTermResource\Pages\ListIncoTerms;
+use Webkul\Account\Filament\Resources\IncotermResource\Pages\ManageIncoterms;
 use Webkul\Account\Models\Incoterm;
 
-class IncoTermResource extends Resource
+class IncotermResource extends Resource
 {
     protected static ?string $model = Incoterm::class;
 
@@ -124,7 +124,7 @@ class IncoTermResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListIncoTerms::route('/'),
+            'index' => ManageIncoterms::route('/'),
         ];
     }
 }
