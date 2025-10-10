@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'model-label' => 'Chat of Account',
+    'model-label' => 'Chart of Account',
 
     'navigation' => [
-        'title' => 'Chat of Accounts',
+        'title' => 'Chart of Accounts',
         'group' => 'Accounting',
     ],
 ];
