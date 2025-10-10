@@ -17,7 +17,7 @@ class IncotermResource extends BaseIncotermResource
 
     public static function getModelLabel(): string
     {
-        return __('invoices::filament/clusters/configurations/resources/incoterm.title');
+        return __('invoices::filament/clusters/configurations/resources/incoterm.model-label');
     }
 
     public static function getNavigationLabel(): string

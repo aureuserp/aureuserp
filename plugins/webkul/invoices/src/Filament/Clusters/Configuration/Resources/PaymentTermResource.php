@@ -22,7 +22,7 @@ class PaymentTermResource extends BasePaymentTermResource
 
     public static function getModelLabel(): string
     {
-        return __('invoices::filament/clusters/configurations/resources/payment-term.title');
+        return __('invoices::filament/clusters/configurations/resources/payment-term.model-label');
     }
 
     public static function getNavigationLabel(): string
