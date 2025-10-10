@@ -22,7 +22,7 @@ use Webkul\Account\Enums\RoundingMethod;
 use Webkul\Account\Enums\RoundingStrategy;
 use Webkul\Account\Filament\Resources\CashRoundingResource\Pages\CreateCashRounding;
 use Webkul\Account\Filament\Resources\CashRoundingResource\Pages\EditCashRounding;
-use Webkul\Account\Filament\Resources\CashRoundingResource\Pages\ListCashRounding;
+use Webkul\Account\Filament\Resources\CashRoundingResource\Pages\ListCashRoundings;
 use Webkul\Account\Filament\Resources\CashRoundingResource\Pages\ViewCashRounding;
 use Webkul\Account\Models\CashRounding;
 
@@ -164,7 +164,7 @@ class CashRoundingResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => ListCashRounding::route('/'),
+            'index'  => ListCashRoundings::route('/'),
             'create' => CreateCashRounding::route('/create'),
             'view'   => ViewCashRounding::route('/{record}'),
             'edit'   => EditCashRounding::route('/{record}/edit'),

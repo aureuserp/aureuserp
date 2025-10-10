@@ -6,7 +6,7 @@ use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Webkul\Account\Filament\Resources\CashRoundingResource;
 
-class ListCashRounding extends ListRecords
+class ListCashRoundings extends ListRecords
 {
     protected static string $resource = CashRoundingResource::class;
 
