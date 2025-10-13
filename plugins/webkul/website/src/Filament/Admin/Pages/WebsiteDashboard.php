@@ -4,6 +4,7 @@ namespace Webkul\Website\Filament\Admin\Pages;
 
 use App\Models\User;
 use BackedEnum;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard as BaseDashboard;
@@ -20,6 +21,7 @@ use Webkul\Website\Filament\Admin\Widgets\TopCategoriesTable;
 class WebsiteDashboard extends BaseDashboard
 {
     use BaseDashboard\Concerns\HasFiltersForm;
+    use HasPageShield;
 
     protected static string $routePath = 'website';
 
