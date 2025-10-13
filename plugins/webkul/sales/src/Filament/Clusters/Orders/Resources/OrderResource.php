@@ -5,6 +5,7 @@ namespace Webkul\Sale\Filament\Clusters\Orders\Resources;
 use Filament\Resources\Pages\Page;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Sale\Enums\OrderState;
+use Webkul\Sale\Filament\Clusters\Orders;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\CreateOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\EditOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ListOrders;
@@ -19,6 +20,10 @@ class OrderResource extends QuotationResource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
+    protected static ?string $recordTitleAttribute = 'name';
+
+    protected static ?string $cluster = Orders::class;
+
     protected static ?int $navigationSort = 2;
 
     public static function getModelLabel(): string
@@ -29,15 +34,6 @@ class OrderResource extends QuotationResource
     public static function getNavigationLabel(): string
     {
         return __('sales::filament/clusters/orders/resources/order.navigation.title');
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        $query = parent::getEloquentQuery();
-
-        $query = static::getModel()::applyPermissionScope($query);
-
-        return $query->where('state', OrderState::SALE);
     }
 
     public static function getRecordSubNavigation(Page $page): array
@@ -60,5 +56,16 @@ class OrderResource extends QuotationResource
             'invoices'   => ManageInvoices::route('/{record}/invoices'),
             'deliveries' => ManageDeliveries::route('/{record}/deliveries'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        $query = static::getModel()::applyPermissionScope($query);
+
+        $query = $query->where('state', OrderState::SALE);
+
+        return $query->orderByDesc('id');
     }
 }

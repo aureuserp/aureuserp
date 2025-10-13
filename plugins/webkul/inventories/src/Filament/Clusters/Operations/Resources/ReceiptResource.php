@@ -30,7 +30,7 @@ use Webkul\Security\Traits\HasResourcePermissionQuery;
 class ReceiptResource extends Resource
 {
     use HasResourcePermissionQuery;
-    
+
     protected static ?string $model = Receipt::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-down-tray';
@@ -139,5 +139,11 @@ class ReceiptResource extends Resource
             'view'   => ViewReceipt::route('/{record}/view'),
             'moves'  => ManageMoves::route('/{record}/moves'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderByDesc('id');
     }
 }

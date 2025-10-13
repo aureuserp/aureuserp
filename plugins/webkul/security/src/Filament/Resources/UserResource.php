@@ -248,6 +248,8 @@ class UserResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
                 ImageColumn::make('partner.avatar')
                     ->defaultImageUrl(fn ($record) => $record->avatar_url)
@@ -279,7 +281,7 @@ class UserResource extends Resource
                 TextColumn::make('allowedCompanies.name')
                     ->label(__('security::filament/resources/user.table.columns.allowed-company'))
                     ->badge()
-                     ->listWithLineBreaks(),
+                    ->listWithLineBreaks(),
                 TextColumn::make('createdBy.name')
                     ->label(__('security::filament/resources/user.table.columns.created-by'))
                     ->default('—')

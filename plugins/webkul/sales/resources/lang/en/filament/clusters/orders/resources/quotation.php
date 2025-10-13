@@ -261,6 +261,7 @@ return [
             'general' => [
                 'title'   => 'General',
                 'entries' => [
+                    'sale-order'     => 'Sales Order',
                     'customer'       => 'Customer',
                     'expiration'     => 'Expiration',
                     'quotation-date' => 'Quotation Date',

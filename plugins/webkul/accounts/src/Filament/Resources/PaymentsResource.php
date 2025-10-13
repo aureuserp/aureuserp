@@ -124,6 +124,8 @@ class PaymentsResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
                 TextColumn::make('name')
                     ->label(__('accounts::filament/resources/payment.table.columns.name'))
@@ -394,5 +396,11 @@ class PaymentsResource extends Resource
             'view'   => ViewPayments::route('/{record}'),
             'edit'   => EditPayments::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderByDesc('id');
     }
 }

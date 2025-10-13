@@ -87,6 +87,7 @@ class BankAccountResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
             ->columns([
                 TextColumn::make('account_number')
                     ->label(__('partners::filament/resources/bank-account.table.columns.account-number'))

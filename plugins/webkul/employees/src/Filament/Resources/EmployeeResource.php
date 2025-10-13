@@ -697,25 +697,28 @@ class EmployeeResource extends Resource
                                                             ->label(__('employees::filament/resources/employee.form.tabs.settings.fields.work-permit-scheduled-activity')),
                                                         Select::make('user_id')
                                                             ->relationship(name: 'user', titleAttribute: 'name', modifyQueryUsing: fn ($query) => $query->withTrashed())
-                                                            ->getOptionLabelFromRecordUsing(function ($record) {
+                                                            ->getOptionLabelFromRecordUsing(function ($record, $livewire) {
+                                                                $label = $record->name;
+
                                                                 if ($record->trashed()) {
-                                                                    return $record->name.' ( Deleted )';
+                                                                    $label .= ' (Deleted)';
+                                                                } elseif ($record->employee && $record->id !== $livewire->record?->user_id) {
+                                                                    $label .= ' (Assigned)';
                                                                 }
 
-                                                                if ($record->employee) {
-                                                                    return $record->name.' ( Assigned )';
-                                                                }
-
-                                                                return $record->name;
+                                                                return $label;
                                                             })
-                                                            ->disableOptionWhen(function ($value) {
+                                                            ->disableOptionWhen(function ($value, $livewire) {
                                                                 $user = User::withTrashed()->find($value);
 
                                                                 if (! $user) {
                                                                     return false;
                                                                 }
 
-                                                                return $user->trashed() || $user->employee()->exists();
+                                                                $currentEmployeeUserId = $livewire->record?->user_id ?? null;
+
+                                                                return ($user->trashed() || $user->employee()->exists())
+                                                                    && $user->id !== $currentEmployeeUserId;
                                                             })
                                                             ->searchable()
                                                             ->preload()

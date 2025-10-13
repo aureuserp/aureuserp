@@ -145,6 +145,8 @@ class QuantityResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('location.full_name')

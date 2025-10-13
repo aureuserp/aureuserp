@@ -279,6 +279,7 @@ class CompanyResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
             ->columns(static::mergeCustomTableColumns([
                 ImageColumn::make('partner.avatar')
                     ->circular()

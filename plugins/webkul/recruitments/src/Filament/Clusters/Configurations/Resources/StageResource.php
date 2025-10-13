@@ -136,44 +136,47 @@ class StageResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->columns([
-            TextColumn::make('id')
-                ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.id'))
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
-            TextColumn::make('name')
-                ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.name'))
-                ->sortable()
-                ->searchable(),
-            TextColumn::make('jobs.name')
-                ->placeholder('-')
-                ->badge()
-                ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.job-positions')),
-            IconColumn::make('is_default')
-                ->boolean()
-                ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.default-stage')),
-            IconColumn::make('fold')
-                ->boolean()
-                ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.folded')),
-            IconColumn::make('hired_stage')
-                ->boolean()
-                ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.hired-stage')),
-            TextColumn::make('createdBy.name')
-                ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.created-by'))
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            TextColumn::make('created_at')
-                ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.created-at'))
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            TextColumn::make('updated_at')
-                ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.updated-at'))
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-        ])
+        return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
+            ->columns([
+                TextColumn::make('id')
+                    ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.id'))
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('name')
+                    ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.name'))
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('jobs.name')
+                    ->placeholder('-')
+                    ->badge()
+                    ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.job-positions')),
+                IconColumn::make('is_default')
+                    ->boolean()
+                    ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.default-stage')),
+                IconColumn::make('fold')
+                    ->boolean()
+                    ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.folded')),
+                IconColumn::make('hired_stage')
+                    ->boolean()
+                    ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.hired-stage')),
+                TextColumn::make('createdBy.name')
+                    ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.created-by'))
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                TextColumn::make('created_at')
+                    ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.created-at'))
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                TextColumn::make('updated_at')
+                    ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.updated-at'))
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+            ])
             ->filters([
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)

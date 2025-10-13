@@ -30,15 +30,6 @@ class OrderToInvoiceResource extends QuotationResource
         return __('sales::filament/clusters/to-invoice/resources/order-to-invoice.navigation.title');
     }
 
-    public static function getEloquentQuery(): Builder
-    {
-        $query = parent::getEloquentQuery();
-
-        $query = static::getModel()::applyPermissionScope($query);
-
-        return $query->where('invoice_status', InvoiceStatus::TO_INVOICE);
-    }
-
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
@@ -54,5 +45,16 @@ class OrderToInvoiceResource extends QuotationResource
             'view'  => ViewOrderToInvoice::route('/{record}'),
             'edit'  => EditOrderToInvoice::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        $query = static::getModel()::applyPermissionScope($query);
+
+        $query = $query->where('invoice_status', InvoiceStatus::TO_INVOICE);
+
+        return $query->orderByDesc('id');
     }
 }

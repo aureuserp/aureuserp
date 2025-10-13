@@ -162,6 +162,7 @@ class WarehouseResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
             ->columns([
                 TextColumn::make('name')
                     ->label(__('inventories::filament/clusters/configurations/resources/warehouse.table.columns.name'))
@@ -341,7 +342,7 @@ class WarehouseResource extends Resource
                                     ->schema([
                                         TextEntry::make('supplierWarehouses.name')
                                             ->label(__('inventories::filament/clusters/configurations/resources/warehouse.infolist.sections.settings.entries.resupply-from'))
-                                            ->icon('heroicon-o-refresh')
+                                            ->icon('heroicon-o-arrow-path')
                                             ->placeholder('—'),
                                     ]),
                             ]),
@@ -372,7 +373,7 @@ class WarehouseResource extends Resource
             ->columns(3);
     }
 
-    static public function getWarehouseSettings(): WarehouseSettings
+    public static function getWarehouseSettings(): WarehouseSettings
     {
         return once(fn () => app(WarehouseSettings::class));
     }

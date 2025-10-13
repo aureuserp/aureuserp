@@ -242,9 +242,11 @@ class OperationResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
                 IconColumn::make('is_favorite')
-                    ->label('')
+                    ->label("\u{200B}")
                     ->icon(fn (Operation $record): string => $record->is_favorite ? 'heroicon-s-star' : 'heroicon-o-star')
                     ->color(fn (Operation $record): string => $record->is_favorite ? 'warning' : 'gray')
                     ->action(function (Operation $record): void {
@@ -741,7 +743,7 @@ class OperationResource extends Resource
                     ->maxValue(99999999999)
                     ->default(0)
                     ->required()
-                    ->live()
+                    ->live(onBlur: true)
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductUOMQtyUpdated($set, $get))
                     ->disabled(fn (?Move $record): bool => $record?->id && $record?->state !== MoveState::DRAFT),
                 TextInput::make('quantity')
@@ -1215,22 +1217,22 @@ class OperationResource extends Resource
         return null;
     }
 
-    static public function getOperationSettings(): OperationSettings
+    public static function getOperationSettings(): OperationSettings
     {
         return once(fn () => app(OperationSettings::class));
     }
 
-    static public function getProductSettings(): ProductSettings
+    public static function getProductSettings(): ProductSettings
     {
         return once(fn () => app(ProductSettings::class));
     }
 
-    static public function getTraceabilitySettings(): TraceabilitySettings
+    public static function getTraceabilitySettings(): TraceabilitySettings
     {
         return once(fn () => app(TraceabilitySettings::class));
     }
 
-    static public function getWarehouseSettings(): WarehouseSettings
+    public static function getWarehouseSettings(): WarehouseSettings
     {
         return once(fn () => app(WarehouseSettings::class));
     }
