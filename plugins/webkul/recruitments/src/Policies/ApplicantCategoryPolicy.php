@@ -59,46 +59,6 @@ class ApplicantCategoryPolicy
     }
 
     /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, ApplicantCategory $applicantCategory): bool
-    {
-        return $user->can('force_delete_applicant::category');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_applicant::category');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, ApplicantCategory $applicantCategory): bool
-    {
-        return $user->can('restore_applicant::category');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_applicant::category');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, ApplicantCategory $applicantCategory): bool
-    {
-        return $user->can('replicate_applicant::category');
-    }
-
-    /**
      * Determine whether the user can reorder.
      */
     public function reorder(User $user): bool

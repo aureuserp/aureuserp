@@ -2,15 +2,17 @@
 
 namespace Webkul\Security\Filament\Resources\UserResource\Pages;
 
-use Filament\Actions;
-use Filament\Forms;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Webkul\Security\Filament\Resources\UserResource;
 use Webkul\Security\Models\User;
-use Webkul\Security\Settings;
+use Webkul\Security\Settings\UserSettings;
 
 class EditUser extends EditRecord
 {
@@ -32,9 +34,9 @@ class EditUser extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('changePassword')
+            Action::make('changePassword')
                 ->label(__('security::filament/resources/user/pages/edit-user.header-actions.change-password.label'))
-                ->visible(fn (Settings\UserSettings $userSettings) => $userSettings->enable_reset_password)
+                ->visible(fn (UserSettings $userSettings) => $userSettings->enable_reset_password)
                 ->action(function (User $record, array $data): void {
                     $record->update([
                         'password' => Hash::make($data['new_password']),
@@ -46,21 +48,21 @@ class EditUser extends EditRecord
                         ->success()
                         ->send();
                 })
-                ->form([
-                    Forms\Components\TextInput::make('new_password')
+                ->schema([
+                    TextInput::make('new_password')
                         ->password()
                         ->label(__('security::filament/resources/user/pages/edit-user.header-actions.change-password.form.new-password'))
                         ->required()
                         ->rule(Password::default()),
-                    Forms\Components\TextInput::make('new_password_confirmation')
+                    TextInput::make('new_password_confirmation')
                         ->password()
                         ->label(__('security::filament/resources/user/pages/edit-user.header-actions.change-password.form.confirm-new-password'))
                         ->rule('required', fn ($get) => (bool) $get('new_password'))
                         ->same('new_password'),
                 ])
                 ->icon('heroicon-o-key'),
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make()
+            ViewAction::make(),
+            DeleteAction::make()
                 ->visible(fn (User $record) => self::getResource()::canDeleteUser($record))
                 ->successNotification(
                     Notification::make()

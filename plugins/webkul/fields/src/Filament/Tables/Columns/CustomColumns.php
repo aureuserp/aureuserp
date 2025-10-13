@@ -4,8 +4,11 @@ namespace Webkul\Field\Filament\Tables\Columns;
 
 use Filament\Support\Components\Component;
 use Filament\Support\Enums\FontWeight;
-use Filament\Tables;
-use Filament\Tables\Columns\TextColumn\TextColumnSize;
+use Filament\Support\Enums\TextSize;
+use Filament\Tables\Columns\ColorColumn;
+use Filament\Tables\Columns\Column;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Support\Collection;
 use Webkul\Field\Models\Field;
 
@@ -76,16 +79,16 @@ class CustomColumns extends Component
         return $this->resourceClass;
     }
 
-    protected function createColumn(Field $field): Tables\Columns\Column
+    protected function createColumn(Field $field): Column
     {
         $columnClass = match ($field->type) {
-            'text', 'textarea', 'select', 'radio' => Tables\Columns\TextColumn::class,
-            'checkbox', 'toggle' => Tables\Columns\IconColumn::class,
-            'checkbox_list' => Tables\Columns\TextColumn::class,
-            'datetime'      => Tables\Columns\TextColumn::class,
-            'editor', 'markdown' => Tables\Columns\TextColumn::class,
-            'color' => Tables\Columns\ColorColumn::class,
-            default => Tables\Columns\TextColumn::class,
+            'text', 'textarea', 'select', 'radio' => TextColumn::class,
+            'checkbox', 'toggle' => IconColumn::class,
+            'checkbox_list' => TextColumn::class,
+            'datetime'      => TextColumn::class,
+            'editor', 'markdown' => TextColumn::class,
+            'color' => ColorColumn::class,
+            default => TextColumn::class,
         };
 
         $column = $columnClass::make($field->code)
@@ -100,7 +103,7 @@ class CustomColumns extends Component
         return $column;
     }
 
-    protected function applySetting(Tables\Columns\Column $column, array $setting): void
+    protected function applySetting(Column $column, array $setting): void
     {
         $name = $setting['setting'];
         $value = $setting['value'] ?? null;
@@ -110,7 +113,7 @@ class CustomColumns extends Component
                 if ($name == 'weight') {
                     $column->{$name}(constant(FontWeight::class."::$value"));
                 } elseif ($name == 'size') {
-                    $column->{$name}(constant(TextColumnSize::class."::$value"));
+                    $column->{$name}(constant(TextSize::class."::$value"));
                 } else {
                     $column->{$name}($value);
                 }

@@ -4,7 +4,6 @@ namespace Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResourc
 
 use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource\Pages\ListTimeOff;
 use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource;
-use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource\Pages\ListTimeOffs as BaseListTimeOffs;
 
 class ListByEmployees extends ListTimeOff
 {

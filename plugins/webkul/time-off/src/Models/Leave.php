@@ -12,6 +12,7 @@ use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\Employee;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\TimeOff\Enums\RequestDateFromPeriod;
 use Webkul\TimeOff\Enums\State;
 
 class Leave extends Model
@@ -79,7 +80,8 @@ class Leave extends Model
     ];
 
     protected $casts = [
-        'state' => State::class,
+        'state'                    => State::class,
+        'request_date_from_period' => RequestDateFromPeriod::class,
     ];
 
     public function user(): BelongsTo

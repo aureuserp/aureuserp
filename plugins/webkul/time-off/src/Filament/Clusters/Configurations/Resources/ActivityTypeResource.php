@@ -4,14 +4,17 @@ namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources;
 
 use Webkul\Support\Filament\Resources\ActivityTypeResource as BaseActivityTypeResource;
 use Webkul\TimeOff\Filament\Clusters\Configurations;
-use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages;
+use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages\CreateActivityType;
+use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages\EditActivityType;
+use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages\ListActivityTypes;
+use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\ActivityTypeResource\Pages\ViewActivityType;
 use Webkul\TimeOff\Models\ActivityType;
 
 class ActivityTypeResource extends BaseActivityTypeResource
 {
     protected static ?string $model = ActivityType::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clock';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clock';
 
     protected static bool $shouldRegisterNavigation = true;
 
@@ -24,10 +27,10 @@ class ActivityTypeResource extends BaseActivityTypeResource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListActivityTypes::route('/'),
-            'create' => Pages\CreateActivityType::route('/create'),
-            'edit'   => Pages\EditActivityType::route('/{record}/edit'),
-            'view'   => Pages\ViewActivityType::route('/{record}'),
+            'index'  => ListActivityTypes::route('/'),
+            'create' => CreateActivityType::route('/create'),
+            'edit'   => EditActivityType::route('/{record}/edit'),
+            'view'   => ViewActivityType::route('/{record}'),
         ];
     }
 }

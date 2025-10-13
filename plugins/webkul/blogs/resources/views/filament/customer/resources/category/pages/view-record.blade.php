@@ -24,15 +24,15 @@
 
         <meta property="og:url" content="{{ self::getResource()::getUrl('view', ['record' => $record->slug]) }}" />
     @endPush
-    
+
     <?php
         $categories = $this->getRecords();
 
         $posts = $this->getPosts();
     ?>
-    
+
     <div class="flex gap-4">
-        <a href="{{ self::getResource()::getUrl('index') }}" class="hover:bg-primary-6 font-bold text-gray-500">
+        <a href="{{ self::getResource()::getUrl('index') }}" class="font-bold text-gray-500 hover:bg-primary-6">
             All
         </a>
 
@@ -45,6 +45,6 @@
             </a>
         @endforeach
     </div>
-    
+
     @include('blogs::filament.customer.resources.post.pages.list-records', ['records' => $posts])
 </x-filament-panels::page>

@@ -3,7 +3,7 @@
 namespace Webkul\Account\Filament\Resources\CreditNoteResource\Pages;
 
 use Filament\Notifications\Notification;
-use Webkul\Account\Enums;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account;
 use Webkul\Account\Filament\Resources\CreditNoteResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\CreateInvoice as CreateRecord;
@@ -27,7 +27,7 @@ class CreateCreditNote extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['move_type'] ??= Enums\MoveType::OUT_REFUND;
+        $data['move_type'] ??= MoveType::OUT_REFUND;
 
         $data['date'] = now();
 

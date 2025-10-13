@@ -10,7 +10,7 @@ class ViewPage extends ViewRecord
 {
     protected static string $resource = PageResource::class;
 
-    protected static string $view = 'website::filament.customer.resources.page.pages.view-record';
+    protected string $view = 'website::filament.customer.resources.page.pages.view-record';
 
     public function getBreadcrumbs(): array
     {

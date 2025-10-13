@@ -2,7 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources\InvoiceResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Account\Enums\MoveState;
@@ -23,7 +23,7 @@ class ListInvoices extends ListRecords
         return [
             'invoice' => PresetView::make(__('accounts::filament/resources/invoice/pages/list-invoice.tabs.invoices'))
                 ->favorite()
-                ->default()
+                ->setAsDefault()
                 ->icon('heroicon-s-receipt-percent')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('move_type', MoveType::OUT_INVOICE)),
             'draft' => PresetView::make(__('accounts::filament/resources/invoice/pages/list-invoice.tabs.draft'))
@@ -79,7 +79,7 @@ class ListInvoices extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->icon('heroicon-o-plus-circle'),
         ];
     }

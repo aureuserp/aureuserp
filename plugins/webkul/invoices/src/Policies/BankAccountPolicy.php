@@ -15,7 +15,7 @@ class BankAccountPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_bank::account');
+        return $user->can('view_any_invoice_bank::account');
     }
 
     /**
@@ -23,7 +23,7 @@ class BankAccountPolicy
      */
     public function view(User $user, BankAccount $bankAccount): bool
     {
-        return $user->can('view_bank::account');
+        return $user->can('view_invoice_bank::account');
     }
 
     /**
@@ -31,7 +31,7 @@ class BankAccountPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_bank::account');
+        return $user->can('create_invoice_bank::account');
     }
 
     /**
@@ -39,7 +39,7 @@ class BankAccountPolicy
      */
     public function update(User $user, BankAccount $bankAccount): bool
     {
-        return $user->can('update_bank::account');
+        return $user->can('update_invoice_bank::account');
     }
 
     /**
@@ -47,7 +47,7 @@ class BankAccountPolicy
      */
     public function delete(User $user, BankAccount $bankAccount): bool
     {
-        return $user->can('delete_bank::account');
+        return $user->can('delete_invoice_bank::account');
     }
 
     /**
@@ -55,7 +55,7 @@ class BankAccountPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_bank::account');
+        return $user->can('delete_any_invoice_bank::account');
     }
 
     /**
@@ -63,7 +63,7 @@ class BankAccountPolicy
      */
     public function forceDelete(User $user, BankAccount $bankAccount): bool
     {
-        return $user->can('force_delete_bank::account');
+        return $user->can('force_delete_invoice_bank::account');
     }
 
     /**
@@ -71,7 +71,7 @@ class BankAccountPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_bank::account');
+        return $user->can('force_delete_any_invoice_bank::account');
     }
 
     /**
@@ -79,7 +79,7 @@ class BankAccountPolicy
      */
     public function restore(User $user, BankAccount $bankAccount): bool
     {
-        return $user->can('restore_bank::account');
+        return $user->can('restore_invoice_bank::account');
     }
 
     /**
@@ -87,22 +87,7 @@ class BankAccountPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_bank::account');
+        return $user->can('restore_any_invoice_bank::account');
     }
 
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, BankAccount $bankAccount): bool
-    {
-        return $user->can('replicate_bank::account');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_bank::account');
-    }
 }

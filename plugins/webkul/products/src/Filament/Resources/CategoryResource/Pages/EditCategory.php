@@ -2,23 +2,28 @@
 
 namespace Webkul\Product\Filament\Resources\CategoryResource\Pages;
 
-use Filament\Actions;
+use Exception;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\QueryException;
 use Webkul\Product\Filament\Resources\CategoryResource;
 use Webkul\Product\Models\Category;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditCategory extends EditRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = CategoryResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make()
-                ->action(function (Actions\DeleteAction $action, Category $record) {
+            ViewAction::make(),
+            DeleteAction::make()
+                ->action(function (DeleteAction $action, Category $record) {
                     try {
                         $record->delete();
 
@@ -46,7 +51,7 @@ class EditCategory extends EditRecord
     {
         try {
             parent::save($shouldRedirect, $shouldSendSavedNotification);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Notification::make()
                 ->danger()
                 ->title(__('products::filament/resources/category/pages/edit-category.save.notification.error.title'))

@@ -2,11 +2,19 @@
 
 namespace Webkul\Partner\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Webkul\Partner\Models\Industry;
 
@@ -21,16 +29,16 @@ class IndustryResource extends Resource
         return __('partners::filament/resources/industry.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->label(__('partners::filament/resources/industry.form.name'))
                     ->required()
                     ->maxLength(255)
                     ->unique(ignoreRecord: true),
-                Forms\Components\TextInput::make('description')
+                TextInput::make('description')
                     ->label(__('partners::filament/resources/industry.form.full-name'))
                     ->required()
                     ->maxLength(255)
@@ -42,17 +50,17 @@ class IndustryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('partners::filament/resources/industry.table.columns.name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('description')
+                TextColumn::make('description')
                     ->label(__('partners::filament/resources/industry.table.columns.full-name'))
                     ->searchable()
                     ->sortable(),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                EditAction::make()
                     ->hidden(fn ($record) => $record->trashed())
                     ->successNotification(
                         Notification::make()
@@ -60,21 +68,21 @@ class IndustryResource extends Resource
                             ->title(__('partners::filament/resources/industry.table.actions.edit.notification.title'))
                             ->body(__('partners::filament/resources/industry.table.actions.edit.notification.body')),
                     ),
-                Tables\Actions\RestoreAction::make()
+                RestoreAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('partners::filament/resources/industry.table.actions.restore.notification.title'))
                             ->body(__('partners::filament/resources/industry.table.actions.restore.notification.body')),
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('partners::filament/resources/industry.table.actions.delete.notification.title'))
                             ->body(__('partners::filament/resources/industry.table.actions.delete.notification.body')),
                     ),
-                Tables\Actions\ForceDeleteAction::make()
+                ForceDeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -82,23 +90,23 @@ class IndustryResource extends Resource
                             ->body(__('partners::filament/resources/industry.table.actions.force-delete.notification.body')),
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\RestoreBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('partners::filament/resources/industry.table.bulk-actions.restore.notification.title'))
                                 ->body(__('partners::filament/resources/industry.table.bulk-actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteBulkAction::make()
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('partners::filament/resources/industry.table.bulk-actions.delete.notification.title'))
                                 ->body(__('partners::filament/resources/industry.table.bulk-actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteBulkAction::make()
+                    ForceDeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()

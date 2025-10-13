@@ -5,6 +5,7 @@ namespace Webkul\Purchase;
 use Illuminate\Foundation\AliasLoader;
 use Livewire\Livewire;
 use Webkul\Purchase\Facades\PurchaseOrder as PurchaseOrderFacade;
+use Webkul\Purchase\Livewire\Customer\ListProducts;
 use Webkul\Purchase\Livewire\Summary;
 use Webkul\Support\Console\Commands\InstallCommand;
 use Webkul\Support\Console\Commands\UninstallCommand;
@@ -58,7 +59,7 @@ class PurchaseServiceProvider extends PackageServiceProvider
     {
         Livewire::component('order-summary', Summary::class);
 
-        Livewire::component('list-products', \Webkul\Purchase\Livewire\Customer\ListProducts::class);
+        Livewire::component('list-products', ListProducts::class);
 
         // \Webkul\Account\Models\Move::observe(\Webkul\Purchase\Observers\AccountMoveObserver::class);
     }

@@ -2,25 +2,35 @@
 
 namespace Webkul\Employee\Filament\Clusters\Configurations\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
+use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Filament\Clusters\Configurations;
-use Webkul\Employee\Filament\Clusters\Configurations\Resources\DepartureReasonResource\Pages;
+use Webkul\Employee\Filament\Clusters\Configurations\Resources\DepartureReasonResource\Pages\ListDepartureReasons;
 use Webkul\Employee\Models\DepartureReason;
 
 class DepartureReasonResource extends Resource
 {
     protected static ?string $model = DepartureReason::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-fire';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-fire';
 
     protected static ?string $cluster = Configurations::class;
 
@@ -39,23 +49,23 @@ class DepartureReasonResource extends Resource
         return __('employees::filament/clusters/configurations/resources/departure-reason.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/departure-reason.form.fields.name'))
                     ->required(),
-                Forms\Components\Hidden::make('creator_id')
+                Hidden::make('creator_id')
                     ->default(Auth::user()->id),
-            ])->columns('full');
+            ])->columns(1);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\TextEntry::make('name')
+        return $schema
+            ->components([
+                TextEntry::make('name')
                     ->placeholder('—')
                     ->label(__('employees::filament/clusters/configurations/resources/departure-reason.infolist.name')),
             ]);
@@ -65,38 +75,38 @@ class DepartureReasonResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
+                TextColumn::make('id')
                     ->label(__('employees::filament/clusters/configurations/resources/departure-reason.table.columns.id'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/departure-reason.table.columns.name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('createdBy.name')
+                TextColumn::make('createdBy.name')
                     ->label(__('employees::filament/clusters/configurations/resources/departure-reason.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('employees::filament/clusters/configurations/resources/departure-reason.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('employees::filament/clusters/configurations/resources/departure-reason.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\QueryBuilder::make()
+                QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
-                        Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('name')
+                        TextConstraint::make('name')
                             ->label(__('employees::filament/clusters/configurations/resources/departure-reason.table.filters.name'))
                             ->icon('heroicon-o-user'),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('employees')
+                        RelationshipConstraint::make('employees')
                             ->label(__('employees::filament/clusters/configurations/resources/departure-reason.table.filters.employee'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -107,7 +117,7 @@ class DepartureReasonResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('createdBy')
+                        RelationshipConstraint::make('createdBy')
                             ->label(__('employees::filament/clusters/configurations/resources/departure-reason.table.filters.created-by'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -118,29 +128,29 @@ class DepartureReasonResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('created_at')
+                        DateConstraint::make('created_at')
                             ->label(__('employees::filament/clusters/configurations/resources/departure-reason.table.filters.created-at')),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('updated_at')
+                        DateConstraint::make('updated_at')
                             ->label(__('employees::filament/clusters/configurations/resources/departure-reason.table.filters.updated-at')),
                     ]),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('employees::filament/clusters/configurations/resources/departure-reason.table.actions.edit.notification.title'))
                             ->body(__('employees::filament/clusters/configurations/resources/departure-reason.table.actions.edit.notification.body')),
                     )
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
                         $data['reason_code'] = $data['reason_code'] ?? crc32($data['name']) % 100000;
 
                         $data['creator_id'] = $data['creator_id'] ?? Auth::user()->id;
 
                         return $data;
                     }),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -148,9 +158,9 @@ class DepartureReasonResource extends Resource
                             ->body(__('employees::filament/clusters/configurations/resources/departure-reason.table.actions.delete.notification.body')),
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -160,7 +170,7 @@ class DepartureReasonResource extends Resource
                 ]),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->icon('heroicon-o-plus-circle')
                     ->successNotification(
                         Notification::make()
@@ -176,7 +186,7 @@ class DepartureReasonResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListDepartureReasons::route('/'),
+            'index' => ListDepartureReasons::route('/'),
         ];
     }
 }

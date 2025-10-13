@@ -91,14 +91,6 @@ class OrderTemplatePolicy
     }
 
     /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, OrderTemplate $orderTemplate): bool
-    {
-        return $user->can('replicate_quotation::template');
-    }
-
-    /**
      * Determine whether the user can reorder.
      */
     public function reorder(User $user): bool

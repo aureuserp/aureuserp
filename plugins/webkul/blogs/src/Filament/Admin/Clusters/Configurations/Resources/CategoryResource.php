@@ -2,17 +2,26 @@
 
 namespace Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Str;
-use Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources\CategoryResource\Pages;
+use Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources\CategoryResource\Pages\ManageCategories;
 use Webkul\Blog\Models\Category;
 use Webkul\Website\Filament\Admin\Clusters\Configurations;
 
@@ -22,7 +31,7 @@ class CategoryResource extends Resource
 
     protected static ?string $cluster = Configurations::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-folder';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-folder';
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -36,25 +45,25 @@ class CategoryResource extends Resource
         return __('blogs::filament/admin/clusters/configurations/resources/category.navigation.group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->label(__('blogs::filament/admin/clusters/configurations/resources/category.form.fields.name'))
                     ->required()
                     ->maxLength(255)
                     ->live(onBlur: true)
                     ->placeholder(__('blogs::filament/admin/clusters/configurations/resources/category.form.fields.name-placeholder'))
                     ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;'])
-                    ->afterStateUpdated(fn(string $operation, $state, Forms\Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
-                Forms\Components\TextInput::make('slug')
+                    ->afterStateUpdated(fn(string $operation, $state, Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
+                TextInput::make('slug')
                     ->disabled()
                     ->dehydrated()
                     ->required()
                     ->maxLength(255)
                     ->unique(Category::class, 'slug', ignoreRecord: true),
-                Forms\Components\TextInput::make('sub_title')
+                TextInput::make('sub_title')
                     ->label(__('blogs::filament/admin/clusters/configurations/resources/category.form.fields.sub-title'))
                     ->maxLength(255),
             ])
@@ -65,19 +74,16 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('blogs::filament/admin/clusters/configurations/resources/category.table.columns.name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('blogs::filament/admin/clusters/configurations/resources/category.table.columns.created-at'))
                     ->sortable(),
             ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                EditAction::make()
                     ->hidden(fn($record) => $record->trashed())
                     ->successNotification(
                         Notification::make()
@@ -85,24 +91,25 @@ class CategoryResource extends Resource
                             ->title(__('blogs::filament/admin/clusters/configurations/resources/category.table.actions.edit.notification.title'))
                             ->body(__('blogs::filament/admin/clusters/configurations/resources/category.table.actions.edit.notification.body')),
                     ),
-                Tables\Actions\RestoreAction::make()
+                RestoreAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('blogs::filament/admin/clusters/configurations/resources/category.table.actions.restore.notification.title'))
                             ->body(__('blogs::filament/admin/clusters/configurations/resources/category.table.actions.restore.notification.body')),
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('blogs::filament/admin/clusters/configurations/resources/category.table.actions.delete.notification.title'))
                             ->body(__('blogs::filament/admin/clusters/configurations/resources/category.table.actions.delete.notification.body')),
                     ),
-                Tables\Actions\ForceDeleteAction::make()
+                ForceDeleteAction::make()
                     ->action(function (Category $record) {
                         try {
                             $record->forceDelete();
+
                             Notification::make()
                                 ->success()
                                 ->title(__('blogs::filament/admin/clusters/configurations/resources/category.table.actions.force-delete.notification.success.title'))
@@ -117,26 +124,27 @@ class CategoryResource extends Resource
                         }
                     }),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\RestoreBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('blogs::filament/admin/clusters/configurations/resources/category.table.bulk-actions.restore.notification.title'))
                                 ->body(__('blogs::filament/admin/clusters/configurations/resources/category.table.bulk-actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteBulkAction::make()
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('blogs::filament/admin/clusters/configurations/resources/category.table.bulk-actions.delete.notification.title'))
                                 ->body(__('blogs::filament/admin/clusters/configurations/resources/category.table.bulk-actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteBulkAction::make()
+                    ForceDeleteBulkAction::make()
                         ->action(function (Collection $records) {
                             try {
                                 $records->each(fn (Model $record) => $record->forceDelete());
+
                                 Notification::make()
                                     ->success()
                                     ->title(__('blogs::filament/admin/clusters/configurations/resources/category.table.actions.force-delete.notification.success.title'))
@@ -157,7 +165,7 @@ class CategoryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageCategories::route('/'),
+            'index' => ManageCategories::route('/'),
         ];
     }
 }

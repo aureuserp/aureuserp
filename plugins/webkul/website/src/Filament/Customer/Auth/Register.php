@@ -7,17 +7,18 @@ use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
-use Filament\Events\Auth\Registered;
+use Filament\Auth\Events\Registered;
+use Filament\Auth\Http\Responses\Contracts\RegistrationResponse;
+use Filament\Auth\Notifications\VerifyEmail;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Http\Responses\Auth\Contracts\RegistrationResponse;
-use Filament\Notifications\Auth\VerifyEmail;
+use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Concerns\CanUseDatabaseTransactions;
 use Filament\Pages\Concerns\InteractsWithFormActions;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Component;
+use Filament\Schemas\Schema;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Auth\SessionGuard;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -26,23 +27,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
-/**
- * @property Form $form
- */
 class Register extends Page
 {
     use CanUseDatabaseTransactions;
     use InteractsWithFormActions;
+    use InteractsWithForms;
     use WithRateLimiting;
 
-    /**
-     * @var view-string
-     */
-    protected static string $view = 'website::filament.customer.pages.auth.register';
+    protected string $view = 'website::filament.customer.pages.auth.register';
 
-    /**
-     * @var array<string, mixed> | null
-     */
     public ?array $data = [];
 
     protected string $userModel;
@@ -104,20 +97,17 @@ class Register extends Page
     protected function getRateLimitedNotification(TooManyRequestsException $exception): ?Notification
     {
         return Notification::make()
-            ->title(__('filament-panels::pages/auth/register.notifications.throttled.title', [
+            ->title(__('website::filament/customer/pages/auth/register.notifications.throttled.title', [
                 'seconds' => $exception->secondsUntilAvailable,
                 'minutes' => $exception->minutesUntilAvailable,
             ]))
-            ->body(array_key_exists('body', __('filament-panels::pages/auth/register.notifications.throttled') ?: []) ? __('filament-panels::pages/auth/register.notifications.throttled.body', [
+            ->body(array_key_exists('body', __('website::filament/customer/pages/auth/register.notifications.throttled') ?: []) ? __('website::filament/customer/pages/auth/register.notifications.throttled.body', [
                 'seconds' => $exception->secondsUntilAvailable,
                 'minutes' => $exception->minutesUntilAvailable,
             ]) : null)
             ->danger();
     }
 
-    /**
-     * @param  array<string, mixed>  $data
-     */
     protected function handleRegistration(array $data): Model
     {
         return $this->getUserModel()::create($data);
@@ -145,20 +135,17 @@ class Register extends Page
         $user->notify($notification);
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form;
+        return $schema;
     }
 
-    /**
-     * @return array<int | string, string | Form>
-     */
     protected function getForms(): array
     {
         return [
             'form' => $this->form(
-                $this->makeForm()
-                    ->schema([
+                $this->makeSchema()
+                    ->components([
                         $this->getNameFormComponent(),
                         $this->getEmailFormComponent(),
                         $this->getPasswordFormComponent(),
@@ -172,7 +159,7 @@ class Register extends Page
     protected function getNameFormComponent(): Component
     {
         return TextInput::make('name')
-            ->label(__('filament-panels::pages/auth/register.form.name.label'))
+            ->label(__('website::filament/customer/pages/auth/register.form.name.label'))
             ->required()
             ->maxLength(255)
             ->autofocus();
@@ -181,7 +168,7 @@ class Register extends Page
     protected function getEmailFormComponent(): Component
     {
         return TextInput::make('email')
-            ->label(__('filament-panels::pages/auth/register.form.email.label'))
+            ->label(__('website::filament/customer/pages/auth/register.form.email.label'))
             ->email()
             ->required()
             ->maxLength(255)
@@ -191,20 +178,20 @@ class Register extends Page
     protected function getPasswordFormComponent(): Component
     {
         return TextInput::make('password')
-            ->label(__('filament-panels::pages/auth/register.form.password.label'))
+            ->label(__('website::filament/customer/pages/auth/register.form.password.label'))
             ->password()
             ->revealable(filament()->arePasswordsRevealable())
             ->required()
             ->rule(Password::default())
             ->dehydrateStateUsing(fn ($state) => Hash::make($state))
             ->same('passwordConfirmation')
-            ->validationAttribute(__('filament-panels::pages/auth/register.form.password.validation_attribute'));
+            ->validationAttribute(__('website::filament/customer/pages/auth/register.form.password.validation_attribute'));
     }
 
     protected function getPasswordConfirmationFormComponent(): Component
     {
         return TextInput::make('passwordConfirmation')
-            ->label(__('filament-panels::pages/auth/register.form.password_confirmation.label'))
+            ->label(__('website::filament/customer/pages/auth/register.form.password_confirmation.label'))
             ->password()
             ->revealable(filament()->arePasswordsRevealable())
             ->required()
@@ -215,7 +202,7 @@ class Register extends Page
     {
         return Action::make('login')
             ->link()
-            ->label(__('filament-panels::pages/auth/register.actions.login.label'))
+            ->label(__('website::filament/customer/pages/auth/register.actions.login.label'))
             ->url(filament()->getLoginUrl());
     }
 
@@ -236,7 +223,7 @@ class Register extends Page
 
     public function getTitle(): string|Htmlable
     {
-        return __('filament-panels::pages/auth/register.title');
+        return __('website::filament/customer/pages/auth/register.title');
     }
 
     public function getHeading(): string|Htmlable
@@ -244,9 +231,6 @@ class Register extends Page
         return '';
     }
 
-    /**
-     * @return array<Action | ActionGroup>
-     */
     protected function getFormActions(): array
     {
         return [
@@ -257,7 +241,7 @@ class Register extends Page
     public function getRegisterFormAction(): Action
     {
         return Action::make('register')
-            ->label(__('filament-panels::pages/auth/register.form.actions.register.label'))
+            ->label(__('website::filament/customer/pages/auth/register.form.actions.register.label'))
             ->submit('register');
     }
 
@@ -266,10 +250,6 @@ class Register extends Page
         return true;
     }
 
-    /**
-     * @param  array<string, mixed>  $data
-     * @return array<string, mixed>
-     */
     protected function mutateFormDataBeforeRegister(array $data): array
     {
         return $data;

@@ -19,7 +19,7 @@ class ListPayments extends BaseListPayments
             ...$presets,
             'customer_payments' => PresetView::make(__('Customer Payments'))
                 ->favorite()
-                ->default()
+                ->setAsDefault()
                 ->icon('heroicon-s-banknotes')
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('partner_type', ['customer', 'company'])),
         ];

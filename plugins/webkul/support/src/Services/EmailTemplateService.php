@@ -2,6 +2,7 @@
 
 namespace Webkul\Support\Services;
 
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Webkul\Support\Mail\DynamicEmail;
@@ -53,7 +54,7 @@ class EmailTemplateService
             $this->logEmail($template->id, $recipientEmail, $recipientName, $emailData['subject'], $variables, 'sent');
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logEmail($template->id, $recipientEmail, $recipientName, $emailData['subject'] ?? '', $variables, 'failed', $e->getMessage());
 
             throw $e;

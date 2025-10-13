@@ -2,21 +2,19 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource;
 
 class EditAccrualPlan extends EditRecord
 {
-    protected static string $resource = AccrualPlanResource::class;
+    use HasRecordNavigationTabs;
 
-    public function getSubNavigationPosition(): SubNavigationPosition
-    {
-        return SubNavigationPosition::Top;
-    }
+    protected static string $resource = AccrualPlanResource::class;
 
     protected function getRedirectUrl(): string
     {
@@ -34,8 +32,8 @@ class EditAccrualPlan extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make()
+            ViewAction::make(),
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()

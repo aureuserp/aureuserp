@@ -2,7 +2,8 @@
 
 namespace Webkul\Security\Filament\Resources\CompanyResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
@@ -28,8 +29,9 @@ class EditCompany extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make()
+            ViewAction::make(),
+            DeleteAction::make()
+               ->hidden(fn () => \App\Models\User::where('default_company_id', $this->record->id)->exists())
                 ->successNotification(
                     Notification::make()
                         ->success()

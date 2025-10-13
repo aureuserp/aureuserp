@@ -2,14 +2,15 @@
 
 namespace Webkul\Purchase\Filament\Customer\Clusters\Account\Resources;
 
-use Webkul\Purchase\Filament\Customer\Clusters\Account\Resources\PurchaseOrderResource\Pages;
+use Webkul\Purchase\Filament\Customer\Clusters\Account\Resources\PurchaseOrderResource\Pages\ListPurchaseOrders;
+use Webkul\Purchase\Filament\Customer\Clusters\Account\Resources\PurchaseOrderResource\Pages\ViewPurchaseOrder;
 use Webkul\Purchase\Models\CustomerPurchaseOrder as PurchaseOrder;
 
 class PurchaseOrderResource extends OrderResource
 {
     protected static ?string $model = PurchaseOrder::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     protected static ?int $navigationSort = 2;
 
@@ -28,8 +29,8 @@ class PurchaseOrderResource extends OrderResource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPurchaseOrders::route('/'),
-            'view'  => Pages\ViewPurchaseOrder::route('/{record}'),
+            'index' => ListPurchaseOrders::route('/'),
+            'view'  => ViewPurchaseOrder::route('/{record}'),
         ];
     }
 }

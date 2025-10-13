@@ -9,6 +9,15 @@ use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResourc
 
 class CreateCandidate extends CreateRecord
 {
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
+
     protected static string $resource = CandidateResource::class;
 
     protected function getRedirectUrl(): string

@@ -108,18 +108,6 @@ class TaskPolicy
     }
 
     /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Task $task): bool
-    {
-        if (! $user->can('replicate_task')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $task, 'users');
-    }
-
-    /**
      * Determine whether the user can reorder.
      */
     public function reorder(User $user): bool

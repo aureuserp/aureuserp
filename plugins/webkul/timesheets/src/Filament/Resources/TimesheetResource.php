@@ -2,23 +2,33 @@
 
 namespace Webkul\Timesheet\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Webkul\Project\Models\Timesheet;
-use Webkul\Timesheet\Filament\Resources\TimesheetResource\Pages;
+use Webkul\Timesheet\Filament\Resources\TimesheetResource\Pages\ManageTimesheets;
 
 class TimesheetResource extends Resource
 {
     protected static ?string $model = Timesheet::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-clock';
 
     public static function getNavigationLabel(): string
     {
@@ -30,45 +40,45 @@ class TimesheetResource extends Resource
         return __('timesheets::filament/resources/timesheet.navigation.group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Hidden::make('type')
+        return $schema
+            ->components([
+                Hidden::make('type')
                     ->default('projects'),
-                Forms\Components\DatePicker::make('date')
+                DatePicker::make('date')
                     ->label(__('timesheets::filament/resources/timesheet.form.date'))
                     ->required()
                     ->native(false),
-                Forms\Components\Select::make('user_id')
+                Select::make('user_id')
                     ->label(__('timesheets::filament/resources/timesheet.form.employee'))
                     ->required()
                     ->relationship('user', 'name')
                     ->searchable()
                     ->preload(),
-                Forms\Components\Select::make('project_id')
+                Select::make('project_id')
                     ->label(__('timesheets::filament/resources/timesheet.form.project'))
                     ->required()
                     ->relationship('project', 'name')
                     ->searchable()
                     ->preload()
                     ->live()
-                    ->afterStateUpdated(function (Forms\Set $set) {
+                    ->afterStateUpdated(function (Set $set) {
                         $set('task_id', null);
                     }),
-                Forms\Components\Select::make('task_id')
+                Select::make('task_id')
                     ->label(__('timesheets::filament/resources/timesheet.form.task'))
                     ->required()
                     ->relationship(
                         name: 'task',
                         titleAttribute: 'title',
-                        modifyQueryUsing: fn (Forms\Get $get, Builder $query) => $query->where('project_id', $get('project_id')),
+                        modifyQueryUsing: fn (Get $get, Builder $query) => $query->where('project_id', $get('project_id')),
                     )
                     ->searchable()
                     ->preload(),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->label(__('timesheets::filament/resources/timesheet.form.description')),
-                Forms\Components\TextInput::make('unit_amount')
+                TextInput::make('unit_amount')
                     ->label(__('timesheets::filament/resources/timesheet.form.time-spent'))
                     ->numeric()
                     ->required()
@@ -84,31 +94,31 @@ class TimesheetResource extends Resource
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('date')
+                TextColumn::make('date')
                     ->label(__('timesheets::filament/resources/timesheet.table.columns.date'))
                     ->date('Y-m-d')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->label(__('timesheets::filament/resources/timesheet.table.columns.employee'))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('project.name')
+                TextColumn::make('project.name')
                     ->label(__('timesheets::filament/resources/timesheet.table.columns.project'))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('task.title')
+                TextColumn::make('task.title')
                     ->label(__('timesheets::filament/resources/timesheet.table.columns.task'))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('timesheets::filament/resources/timesheet.table.columns.description'))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('unit_amount')
+                TextColumn::make('unit_amount')
                     ->label(__('timesheets::filament/resources/timesheet.table.columns.time-spent'))
                     ->formatStateUsing(function ($state) {
                         $hours = floor($state);
-                        $minutes = ($hours - $hours) * 60;
+                        $minutes = ($state - $hours) * 60;
 
                         return $hours.':'.$minutes;
                     })
@@ -123,38 +133,38 @@ class TimesheetResource extends Resource
                                 return $hours.':'.$minutes;
                             }),
                     ]),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('timesheets::filament/resources/timesheet.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('timesheets::filament/resources/timesheet.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->groups([
-                Tables\Grouping\Group::make('date')
+                Group::make('date')
                     ->label(__('timesheets::filament/resources/timesheet.table.groups.date'))
                     ->date(),
-                Tables\Grouping\Group::make('user.name')
+                Group::make('user.name')
                     ->label(__('timesheets::filament/resources/timesheet.table.groups.employee')),
-                Tables\Grouping\Group::make('project.name')
+                Group::make('project.name')
                     ->label(__('timesheets::filament/resources/timesheet.table.groups.project')),
-                Tables\Grouping\Group::make('task.title')
+                Group::make('task.title')
                     ->label(__('timesheets::filament/resources/timesheet.table.groups.task')),
-                Tables\Grouping\Group::make('creator.name')
+                Group::make('creator.name')
                     ->label(__('timesheets::filament/resources/timesheet.table.groups.creator')),
             ])
             ->filters([
-                Tables\Filters\Filter::make('date')
-                    ->form([
-                        Forms\Components\DatePicker::make('date_from')
+                Filter::make('date')
+                    ->schema([
+                        DatePicker::make('date_from')
                             ->label(__('timesheets::filament/resources/timesheet.table.filters.date-from'))
                             ->native(false)
                             ->placeholder(fn ($state): string => 'Dec 18, '.now()->subYear()->format('Y')),
-                        Forms\Components\DatePicker::make('date_until')
+                        DatePicker::make('date_until')
                             ->label(__('timesheets::filament/resources/timesheet.table.filters.date-until'))
                             ->native(false)
                             ->placeholder(fn ($state): string => now()->format('M d, Y')),
@@ -181,36 +191,36 @@ class TimesheetResource extends Resource
 
                         return $indicators;
                     }),
-                Tables\Filters\SelectFilter::make('user_id')
+                SelectFilter::make('user_id')
                     ->label(__('timesheets::filament/resources/timesheet.table.filters.employee'))
                     ->relationship('user', 'name')
                     ->searchable()
                     ->preload(),
-                Tables\Filters\SelectFilter::make('project_id')
+                SelectFilter::make('project_id')
                     ->label(__('timesheets::filament/resources/timesheet.table.filters.project'))
                     ->relationship('project', 'name')
                     ->searchable()
                     ->preload(),
-                Tables\Filters\SelectFilter::make('task_id')
+                SelectFilter::make('task_id')
                     ->label(__('timesheets::filament/resources/timesheet.table.filters.task'))
                     ->relationship('task', 'title')
                     ->searchable()
                     ->preload(),
-                Tables\Filters\SelectFilter::make('creator_id')
+                SelectFilter::make('creator_id')
                     ->label(__('timesheets::filament/resources/timesheet.table.filters.creator'))
                     ->relationship('creator', 'name')
                     ->searchable()
                     ->preload(),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                EditAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('timesheets::filament/resources/timesheet.table.actions.edit.notification.title'))
                             ->body(__('timesheets::filament/resources/timesheet.table.actions.edit.notification.body')),
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -218,9 +228,9 @@ class TimesheetResource extends Resource
                             ->body(__('timesheets::filament/resources/timesheet.table.actions.delete.notification.body')),
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -234,7 +244,7 @@ class TimesheetResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageTimesheets::route('/'),
+            'index' => ManageTimesheets::route('/'),
         ];
     }
 }

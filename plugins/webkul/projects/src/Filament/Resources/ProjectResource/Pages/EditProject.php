@@ -2,7 +2,7 @@
 
 namespace Webkul\Project\Filament\Resources\ProjectResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
@@ -32,7 +32,7 @@ class EditProject extends EditRecord
             ChatterAction::make()
                 ->setResource(static::$resource)
                 ->setActivityPlans($this->getActivityPlans()),
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()

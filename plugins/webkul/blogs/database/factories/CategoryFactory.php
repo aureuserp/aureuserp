@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Webkul\Blog\Models\Category;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Blog\Models\Category>
+ * @extends Factory<Category>
  */
 class CategoryFactory extends Factory
 {

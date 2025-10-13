@@ -2,7 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources\BillResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
@@ -11,9 +11,13 @@ use Webkul\Account\Filament\Resources\BillResource;
 use Webkul\Account\Filament\Resources\BillResource\Actions\CreditNoteAction;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
+use Webkul\Support\Concerns\HasRepeaterColumnManager;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditBill extends EditRecord
 {
+    use HasRecordNavigationTabs, HasRepeaterColumnManager;
+
     protected static string $resource = BillResource::class;
 
     protected function getRedirectUrl(): string
@@ -41,7 +45,7 @@ class EditBill extends EditRecord
             BaseActions\SetAsCheckedAction::make(),
             BaseActions\PrintAndSendAction::make(),
             CreditNoteAction::make(),
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 

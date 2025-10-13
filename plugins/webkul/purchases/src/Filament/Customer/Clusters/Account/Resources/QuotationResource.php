@@ -2,14 +2,15 @@
 
 namespace Webkul\Purchase\Filament\Customer\Clusters\Account\Resources;
 
-use Webkul\Purchase\Filament\Customer\Clusters\Account\Resources\QuotationResource\Pages;
+use Webkul\Purchase\Filament\Customer\Clusters\Account\Resources\QuotationResource\Pages\ListQuotations;
+use Webkul\Purchase\Filament\Customer\Clusters\Account\Resources\QuotationResource\Pages\ViewQuotation;
 use Webkul\Purchase\Models\CustomerPurchaseOrder as PurchaseOrder;
 
 class QuotationResource extends OrderResource
 {
     protected static ?string $model = PurchaseOrder::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     protected static ?int $navigationSort = 1;
 
@@ -28,8 +29,8 @@ class QuotationResource extends OrderResource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListQuotations::route('/'),
-            'view'  => Pages\ViewQuotation::route('/{record}'),
+            'index' => ListQuotations::route('/'),
+            'view'  => ViewQuotation::route('/{record}'),
         ];
     }
 }

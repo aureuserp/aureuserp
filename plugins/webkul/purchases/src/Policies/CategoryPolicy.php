@@ -15,7 +15,7 @@ class CategoryPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_product::category');
+        return $user->can('view_any_purchase_product::category');
     }
 
     /**
@@ -23,7 +23,7 @@ class CategoryPolicy
      */
     public function view(User $user, Category $category): bool
     {
-        return $user->can('view_product::category');
+        return $user->can('view_purchase_product::category');
     }
 
     /**
@@ -31,7 +31,7 @@ class CategoryPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_product::category');
+        return $user->can('create_purchase_product::category');
     }
 
     /**
@@ -39,7 +39,7 @@ class CategoryPolicy
      */
     public function update(User $user, Category $category): bool
     {
-        return $user->can('update_product::category');
+        return $user->can('update_purchase_product::category');
     }
 
     /**
@@ -47,7 +47,7 @@ class CategoryPolicy
      */
     public function delete(User $user, Category $category): bool
     {
-        return $user->can('delete_product::category');
+        return $user->can('delete_purchase_product::category');
     }
 
     /**
@@ -55,54 +55,6 @@ class CategoryPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_product::category');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, Category $category): bool
-    {
-        return $user->can('force_delete_product::category');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_product::category');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, Category $category): bool
-    {
-        return $user->can('restore_product::category');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_product::category');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Category $category): bool
-    {
-        return $user->can('replicate_product::category');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_product::category');
+        return $user->can('delete_any_purchase_product::category');
     }
 }

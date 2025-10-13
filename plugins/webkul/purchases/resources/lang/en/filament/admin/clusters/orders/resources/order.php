@@ -43,6 +43,21 @@ return [
                             'unit-price'          => 'Unit Price',
                             'amount'              => 'Amount',
                         ],
+
+                        'columns' => [
+                            'product'             => 'Product',
+                            'expected-arrival'    => 'Expected Arrival',
+                            'quantity'            => 'Quantity',
+                            'received'            => 'Received',
+                            'billed'              => 'Billed',
+                            'unit'                => 'Unit',
+                            'packaging-qty'       => 'Packaging Qty',
+                            'packaging'           => 'Packaging',
+                            'taxes'               => 'Taxes',
+                            'discount-percentage' => 'Discount (%)',
+                            'unit-price'          => 'Unit Price',
+                            'amount'              => 'Amount',
+                        ],
                     ],
 
                     'section' => [
@@ -164,6 +179,7 @@ return [
                 'title' => 'General',
 
                 'entries' => [
+                    'purchase-order'           => 'Purchase Order',
                     'vendor'                   => 'Vendor',
                     'vendor-reference'         => 'Vendor Reference',
                     'vendor-reference-tooltip' => 'The reference number of the sales order or bid provided by the vendor. It is used for matching when receiving products, as this reference is typically included in the vendor\'s delivery order.',

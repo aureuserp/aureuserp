@@ -43,7 +43,9 @@ class EditCreditNote extends EditRecord
             }
 
             return $action;
-        })->toArray();
+        })
+            ->values()
+            ->all();
 
         return $predefinedActions;
     }

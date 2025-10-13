@@ -2,7 +2,8 @@
 
 namespace Webkul\Recruitment\Filament\Clusters\Configurations\Resources\StageResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\StageResource;
@@ -10,6 +11,15 @@ use Webkul\Recruitment\Filament\Clusters\Configurations\Resources\StageResource;
 class EditStage extends EditRecord
 {
     protected static string $resource = StageResource::class;
+
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
 
     protected function getRedirectUrl(): string
     {
@@ -27,8 +37,8 @@ class EditStage extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make()
+            ViewAction::make(),
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()

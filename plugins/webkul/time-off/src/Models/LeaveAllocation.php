@@ -10,6 +10,7 @@ use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\Employee;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\TimeOff\Enums\AllocationType;
 
 class LeaveAllocation extends Model
 {
@@ -72,6 +73,10 @@ class LeaveAllocation extends Model
         'expiring_carryover_days'           => 'Expiring Carryover Days',
         'created_at'                        => 'Created At',
         'updated_at'                        => 'Updated At',
+    ];
+
+    protected $casts = [
+        'allocation_type' => AllocationType::class,
     ];
 
     public function employee()

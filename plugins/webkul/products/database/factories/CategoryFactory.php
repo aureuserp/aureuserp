@@ -7,7 +7,7 @@ use Webkul\Product\Models\Category;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Product\Models\Category>
+ * @extends Factory<Category>
  */
 class CategoryFactory extends Factory
 {

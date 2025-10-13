@@ -2,14 +2,20 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
-use Filament\Pages\SubNavigationPosition;
+use Filament\Forms\Components\Select;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Webkul\Inventory\Filament\Clusters\Configurations;
-use Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryResource\Pages;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryResource\Pages\CreateProductCategory;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryResource\Pages\EditProductCategory;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryResource\Pages\ListProductCategories;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryResource\Pages\ManageProducts;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryResource\Pages\ViewProductCategory;
 use Webkul\Inventory\Models\Category;
 use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Product\Filament\Resources\CategoryResource;
@@ -18,7 +24,7 @@ class ProductCategoryResource extends CategoryResource
 {
     protected static ?string $model = Category::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-folder';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-folder';
 
     protected static bool $shouldRegisterNavigation = true;
 
@@ -40,19 +46,19 @@ class ProductCategoryResource extends CategoryResource
         return __('inventories::filament/clusters/configurations/resources/product-category.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        $form = CategoryResource::form($form);
+        $schema = CategoryResource::form($schema);
 
-        $components = $form->getComponents();
+        $components = $schema->getComponents();
 
-        $childComponents = $components[1]->getChildComponents();
+        $childComponents = $components[1]->getDefaultChildComponents();
 
-        $childComponents[] = Forms\Components\Section::make(__('inventories::filament/clusters/configurations/resources/product-category.form.sections.inventory.title'))
+        $childComponents[] = Section::make(__('inventories::filament/clusters/configurations/resources/product-category.form.sections.inventory.title'))
             ->schema([
-                Forms\Components\Fieldset::make(__('inventories::filament/clusters/configurations/resources/product-category.form.sections.inventory.fieldsets.logistics.title'))
+                Fieldset::make(__('inventories::filament/clusters/configurations/resources/product-category.form.sections.inventory.fieldsets.logistics.title'))
                     ->schema([
-                        Forms\Components\Select::make('routes')
+                        Select::make('routes')
                             ->label(__('inventories::filament/clusters/configurations/resources/product-category.form.sections.inventory.fieldsets.logistics.fields.routes'))
                             ->relationship('routes', 'name')
                             ->searchable()
@@ -65,27 +71,27 @@ class ProductCategoryResource extends CategoryResource
 
         $components[1]->childComponents($childComponents);
 
-        $form->components($components);
+        $schema->components($components);
 
-        return $form;
+        return $schema;
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        $infolist = CategoryResource::infolist($infolist);
+        $schema = CategoryResource::infolist($schema);
 
-        $components = $infolist->getComponents();
+        $components = $schema->getComponents();
 
-        $firstGroupChildComponents = $components[0]->getChildComponents();
+        $firstGroupChildComponents = $components[0]->getDefaultChildComponents();
 
-        $firstGroupChildComponents[] = Infolists\Components\Section::make(__('inventories::filament/clusters/configurations/resources/product-category.infolist.sections.inventory.title'))
+        $firstGroupChildComponents[] = Section::make(__('inventories::filament/clusters/configurations/resources/product-category.infolist.sections.inventory.title'))
             ->schema([
-                Infolists\Components\Section::make(__('inventories::filament/clusters/configurations/resources/product-category.infolist.sections.inventory.subsections.logistics.title'))
+                Section::make(__('inventories::filament/clusters/configurations/resources/product-category.infolist.sections.inventory.subsections.logistics.title'))
                     ->schema([
-                        Infolists\Components\RepeatableEntry::make('routes')
+                        RepeatableEntry::make('routes')
                             ->label(__('inventories::filament/clusters/configurations/resources/product-category.infolist.sections.inventory.subsections.logistics.entries.routes'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('name')
+                                TextEntry::make('name')
                                     ->label(__('inventories::filament/clusters/configurations/resources/product-category.infolist.sections.inventory.subsections.logistics.entries.route_name'))
                                     ->icon('heroicon-o-truck'),
                             ])
@@ -98,9 +104,9 @@ class ProductCategoryResource extends CategoryResource
 
         $components[0]->childComponents($firstGroupChildComponents);
 
-        $infolist->components($components);
+        $schema->components($components);
 
-        return $infolist;
+        return $schema;
     }
 
     public static function getSubNavigationPosition(): SubNavigationPosition
@@ -123,20 +129,20 @@ class ProductCategoryResource extends CategoryResource
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewProductCategory::class,
-            Pages\EditProductCategory::class,
-            Pages\ManageProducts::class,
+            ViewProductCategory::class,
+            EditProductCategory::class,
+            ManageProducts::class,
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'    => Pages\ListProductCategories::route('/'),
-            'create'   => Pages\CreateProductCategory::route('/create'),
-            'view'     => Pages\ViewProductCategory::route('/{record}'),
-            'edit'     => Pages\EditProductCategory::route('/{record}/edit'),
-            'products' => Pages\ManageProducts::route('/{record}/products'),
+            'index'    => ListProductCategories::route('/'),
+            'create'   => CreateProductCategory::route('/create'),
+            'view'     => ViewProductCategory::route('/{record}'),
+            'edit'     => EditProductCategory::route('/{record}/edit'),
+            'products' => ManageProducts::route('/{record}/products'),
         ];
     }
 }

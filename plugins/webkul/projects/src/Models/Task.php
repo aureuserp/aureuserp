@@ -42,7 +42,6 @@ class Task extends Model implements Sortable
         'color',
         'priority',
         'state',
-        'tags',
         'sort',
         'is_active',
         'is_recurring',
@@ -71,7 +70,6 @@ class Task extends Model implements Sortable
      */
     protected $casts = [
         'is_active'           => 'boolean',
-        'tags'                => 'array',
         'deadline'            => 'datetime',
         'priority'            => 'boolean',
         'is_active'           => 'boolean',
@@ -92,7 +90,6 @@ class Task extends Model implements Sortable
         'color',
         'priority',
         'state',
-        'tags',
         'sort',
         'is_active',
         'is_recurring',

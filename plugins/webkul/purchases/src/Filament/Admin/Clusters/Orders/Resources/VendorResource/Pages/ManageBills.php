@@ -2,19 +2,23 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\VendorResource\Pages;
 
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables;
 use Filament\Tables\Table;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\VendorResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageBills extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = VendorResource::class;
 
     protected static string $relationship = 'accountMoves';
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-check';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-check';
 
     public static function getNavigationLabel(): string
     {
@@ -25,12 +29,12 @@ class ManageBills extends ManageRelatedRecords
     {
         return BillResource::table($table)
             ->modifyQueryUsing(fn ($query) => $query->where('partner_id', $this->record->getKey()))
-            ->actions([
-                Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ViewAction::make()
                     ->url(fn ($record) => BillResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(false),
 
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->url(fn ($record) => BillResource::getUrl('edit', ['record' => $record]))
                     ->openUrlInNewTab(false),
             ]);

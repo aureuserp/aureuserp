@@ -18,6 +18,7 @@ use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\Receipt;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Purchase\Enums as PurchaseEnums;
+use Webkul\Purchase\Enums\QtyReceivedMethod;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderResource;
 use Webkul\Purchase\Mail\VendorPurchaseOrderMail;
 use Webkul\Purchase\Models\AccountMove;
@@ -28,7 +29,11 @@ use Webkul\Support\Package;
 
 class PurchaseOrder
 {
-    public function __construct(protected OrderSettings $orderSettings) {}
+
+    static public function getOrderSettings(): OrderSettings
+    {
+        return once(fn () => app(OrderSettings::class));
+    }
 
     public function sendRFQ(Order $record, array $data): Order
     {
@@ -66,7 +71,7 @@ class PurchaseOrder
     public function confirmPurchaseOrder(Order $record): Order
     {
         $record->update([
-            'state'       => $this->orderSettings->enable_lock_confirmed_orders
+            'state'       => static::getOrderSettings()->enable_lock_confirmed_orders
                 ? PurchaseEnums\OrderState::DONE
                 : PurchaseEnums\OrderState::PURCHASE,
             'approved_at' => now(),
@@ -199,7 +204,7 @@ class PurchaseOrder
 
         $line = $this->computeQtyReceived($line);
 
-        if ($line->qty_received_method == Enums\QtyReceivedMethod::MANUAL) {
+        if ($line->qty_received_method == QtyReceivedMethod::MANUAL) {
             $line->qty_received_manual = $line->qty_received ?? 0;
         }
 
@@ -322,11 +327,11 @@ class PurchaseOrder
     {
         $line->qty_received = 0.0;
 
-        if ($line->qty_received_method == Enums\QtyReceivedMethod::MANUAL) {
+        if ($line->qty_received_method == QtyReceivedMethod::MANUAL) {
             $line->qty_received = $line->qty_received_manual ?? 0.0;
         }
 
-        if ($line->qty_received_method == Enums\QtyReceivedMethod::STOCK_MOVE) {
+        if ($line->qty_received_method == QtyReceivedMethod::STOCK_MOVE) {
             $total = 0.0;
 
             foreach ($line->inventoryMoves as $move) {

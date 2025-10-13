@@ -15,7 +15,7 @@ class JobPositionPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_job::position');
+        return $user->can('view_any_recruitment_job::position');
     }
 
     /**
@@ -23,7 +23,7 @@ class JobPositionPolicy
      */
     public function view(User $user, JobPosition $jobPosition): bool
     {
-        return $user->can('view_job::position');
+        return $user->can('view_recruitment_job::position');
     }
 
     /**
@@ -31,7 +31,7 @@ class JobPositionPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_job::position');
+        return $user->can('create_recruitment_job::position');
     }
 
     /**
@@ -39,7 +39,7 @@ class JobPositionPolicy
      */
     public function update(User $user, JobPosition $jobPosition): bool
     {
-        return $user->can('update_job::position');
+        return $user->can('update_recruitment_job::position');
     }
 
     /**
@@ -47,7 +47,7 @@ class JobPositionPolicy
      */
     public function delete(User $user, JobPosition $jobPosition): bool
     {
-        return $user->can('delete_job::position');
+        return $user->can('delete_recruitment_job::position');
     }
 
     /**
@@ -55,7 +55,7 @@ class JobPositionPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_job::position');
+        return $user->can('delete_any_recruitment_job::position');
     }
 
     /**
@@ -63,7 +63,7 @@ class JobPositionPolicy
      */
     public function forceDelete(User $user, JobPosition $jobPosition): bool
     {
-        return $user->can('force_delete_job::position');
+        return $user->can('force_delete_recruitment_job::position');
     }
 
     /**
@@ -71,7 +71,7 @@ class JobPositionPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_job::position');
+        return $user->can('force_delete_any_recruitment_job::position');
     }
 
     /**
@@ -79,7 +79,7 @@ class JobPositionPolicy
      */
     public function restore(User $user, JobPosition $jobPosition): bool
     {
-        return $user->can('restore_job::position');
+        return $user->can('restore_recruitment_job::position');
     }
 
     /**
@@ -87,15 +87,7 @@ class JobPositionPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_job::position');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, JobPosition $jobPosition): bool
-    {
-        return $user->can('replicate_job::position');
+        return $user->can('restore_any_recruitment_job::position');
     }
 
     /**
@@ -103,6 +95,6 @@ class JobPositionPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_job::position');
+        return $user->can('reorder_recruitment_job::position');
     }
 }

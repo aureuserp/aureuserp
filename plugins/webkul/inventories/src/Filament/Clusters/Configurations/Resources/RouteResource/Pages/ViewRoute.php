@@ -2,19 +2,22 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewRoute extends ViewRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = RouteResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()

@@ -2,31 +2,59 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Infolists;
-use Filament\Infolists\Components\TextEntry\TextEntrySize;
-use Filament\Infolists\Infolist;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\ColorEntry;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
+use Filament\Support\Enums\TextSize;
+use Filament\Tables\Columns\ColorColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
+use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Webkul\TimeOff\Enums;
+use Webkul\TimeOff\Enums\AllocationValidationType;
+use Webkul\TimeOff\Enums\EmployeeRequest;
+use Webkul\TimeOff\Enums\LeaveValidationType;
+use Webkul\TimeOff\Enums\RequestUnit;
 use Webkul\TimeOff\Enums\RequiresAllocation;
+use Webkul\TimeOff\Enums\TimeType;
 use Webkul\TimeOff\Filament\Clusters\Configurations;
-use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\LeaveTypeResource\Pages;
+use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\LeaveTypeResource\Pages\CreateLeaveType;
+use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\LeaveTypeResource\Pages\EditLeaveType;
+use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\LeaveTypeResource\Pages\ListLeaveTypes;
+use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\LeaveTypeResource\Pages\ViewLeaveType;
 use Webkul\TimeOff\Models\LeaveType;
 
 class LeaveTypeResource extends Resource
 {
     protected static ?string $model = LeaveType::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?string $cluster = Configurations::class;
 
@@ -37,102 +65,102 @@ class LeaveTypeResource extends Resource
         return __('time-off::filament/clusters/configurations/resources/leave-type.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Section::make(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.general.title'))
+                                Section::make(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.general.title'))
                                     ->schema([
-                                        Forms\Components\TextInput::make('name')
+                                        TextInput::make('name')
                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.general.fields.name'))
                                             ->required()
                                             ->maxLength(255)
                                             ->live(onBlur: true)
                                             ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;']),
-                                        Forms\Components\Group::make()
+                                        Group::make()
                                             ->schema([
-                                                Forms\Components\Group::make()
+                                                Group::make()
                                                     ->schema([
-                                                        Forms\Components\Radio::make('leave_validation_type')
+                                                        Radio::make('leave_validation_type')
                                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.general.fields.approval'))
                                                             ->inline(false)
-                                                            ->default(Enums\LeaveValidationType::HR->value)
+                                                            ->default(LeaveValidationType::HR->value)
                                                             ->live()
-                                                            ->options(Enums\LeaveValidationType::class),
-                                                        Forms\Components\Radio::make('requires_allocation')
+                                                            ->options(LeaveValidationType::class),
+                                                        Radio::make('requires_allocation')
                                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.general.fields.requires-allocation'))
                                                             ->inline(false)
                                                             ->live()
-                                                            ->default(Enums\RequiresAllocation::NO->value)
-                                                            ->options(Enums\RequiresAllocation::class),
-                                                        Forms\Components\Radio::make('employee_requests')
+                                                            ->default(RequiresAllocation::NO->value)
+                                                            ->options(RequiresAllocation::class),
+                                                        Radio::make('employee_requests')
                                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.general.fields.employee-requests'))
                                                             ->inline(false)
                                                             ->live()
-                                                            ->visible(fn (Get $get) => $get('requires_allocation') === Enums\RequiresAllocation::YES->value)
-                                                            ->default(Enums\EmployeeRequest::NO->value)
-                                                            ->options(Enums\EmployeeRequest::class),
-                                                        Forms\Components\Radio::make('allocation_validation_type')
+                                                            ->visible(fn (Get $get) => $get('requires_allocation') === RequiresAllocation::YES)
+                                                            ->default(EmployeeRequest::NO->value)
+                                                            ->options(EmployeeRequest::class),
+                                                        Radio::make('allocation_validation_type')
                                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.general.fields.approval'))
                                                             ->inline(false)
                                                             ->live()
-                                                            ->visible(fn (Get $get) => $get('requires_allocation') === Enums\RequiresAllocation::YES->value)
-                                                            ->default(Enums\AllocationValidationType::HR->value)
-                                                            ->options(Enums\AllocationValidationType::class),
+                                                            ->visible(fn (Get $get) => $get('requires_allocation') === RequiresAllocation::YES)
+                                                            ->default(AllocationValidationType::HR->value)
+                                                            ->options(AllocationValidationType::class),
                                                     ]),
                                             ]),
                                     ]),
                             ])
                             ->columnSpan(['lg' => 2]),
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Section::make(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.display-option.title'))
+                                Section::make(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.display-option.title'))
                                     ->hiddenLabel()
                                     ->schema([
-                                        Forms\Components\ColorPicker::make('color')
+                                        ColorPicker::make('color')
                                             ->required()
                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.display-option.fields.color'))
                                             ->hexColor(),
                                     ]),
-                                Forms\Components\Section::make(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.configuration.title'))
+                                Section::make(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.configuration.title'))
                                     ->hiddenLabel()
                                     ->schema([
-                                        Forms\Components\Select::make('time_off_user_leave_types')
+                                        Select::make('time_off_user_leave_types')
                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.configuration.fields.notified-time-off-officers'))
                                             ->relationship('notifiedTimeOffOfficers', 'name')
                                             ->searchable()
                                             ->preload()
                                             ->multiple(),
-                                        Forms\Components\Select::make('request_unit')
+                                        Select::make('request_unit')
                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.configuration.fields.take-time-off-in'))
-                                            ->options(Enums\RequestUnit::class)
-                                            ->default(Enums\RequestUnit::DAY->value),
-                                        Forms\Components\Toggle::make('include_public_holidays_in_duration')
+                                            ->options(RequestUnit::class)
+                                            ->default(RequestUnit::DAY->value),
+                                        Toggle::make('include_public_holidays_in_duration')
                                             ->inline(false)
                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.configuration.fields.public-holiday-included')),
-                                        Forms\Components\Toggle::make('support_document')
+                                        Toggle::make('support_document')
                                             ->inline(false)
                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.configuration.fields.allow-to-attach-supporting-document')),
-                                        Forms\Components\Toggle::make('show_on_dashboard')
+                                        Toggle::make('show_on_dashboard')
                                             ->inline(false)
                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.configuration.fields.show-on-dashboard')),
-                                        Forms\Components\Select::make('time_type')
-                                            ->options(Enums\TimeType::class)
-                                            ->default(Enums\TimeType::LEAVE->value)
+                                        Select::make('time_type')
+                                            ->options(TimeType::class)
+                                            ->default(TimeType::LEAVE->value)
                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.configuration.fields.kind-of-time')),
-                                        Forms\Components\Toggle::make('allows_negative')
-                                            ->visible(fn (Get $get) => $get('requires_allocation') === Enums\RequiresAllocation::YES->value)
+                                        Toggle::make('allows_negative')
+                                            ->visible(fn (Get $get) => $get('requires_allocation') === RequiresAllocation::YES)
                                             ->live()
                                             ->inline(false)
                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.configuration.fields.allow-negative-cap')),
-                                        Forms\Components\TextInput::make('max_allowed_negative')
+                                        TextInput::make('max_allowed_negative')
                                             ->numeric()
                                             ->default(0)
-                                            ->visible(fn (Get $get) => $get('requires_allocation') === Enums\RequiresAllocation::YES->value && $get('allows_negative') === true)
+                                            ->visible(fn (Get $get) => $get('requires_allocation') === RequiresAllocation::YES && $get('allows_negative') === true)
                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.configuration.fields.max-negative-cap'))
                                             ->step(1)
                                             ->live()
@@ -143,77 +171,79 @@ class LeaveTypeResource extends Resource
                     ])
                     ->columns(3),
             ])
-            ->columns('full');
+            ->columns(1);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.columns.name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('leave_validation_type')
+                TextColumn::make('leave_validation_type')
                     ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.columns.time-off-approval'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('notifiedTimeOffOfficers.name')
+                TextColumn::make('notifiedTimeOffOfficers.name')
                     ->badge()
                     ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.columns.notified-time-officers'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('requires_allocation')
+                TextColumn::make('requires_allocation')
                     ->badge()
                     ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.columns.requires-allocation'))
                     ->formatStateUsing(fn ($state) => RequiresAllocation::options()[$state])
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('allocation_validation_type')
+                TextColumn::make('allocation_validation_type')
                     ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.columns.allocation-approval'))
                     ->searchable()
-                    ->formatStateUsing(fn ($state) => Enums\AllocationValidationType::options()[$state])
+                    ->formatStateUsing(fn ($state) => AllocationValidationType::options()[$state])
                     ->sortable(),
-                Tables\Columns\TextColumn::make('employee_requests')
+                TextColumn::make('employee_requests')
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.columns.employee-request'))
-                    ->formatStateUsing(fn ($state) => Enums\EmployeeRequest::options()[$state])
+                    ->formatStateUsing(fn ($state) => EmployeeRequest::options()[$state])
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\ColorColumn::make('color')
+                ColorColumn::make('color')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.columns.color')),
-                Tables\Columns\TextColumn::make('company.name')
+                TextColumn::make('company.name')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
             ])
             ->filters([
-                Tables\Filters\QueryBuilder::make()
+                QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
-                        Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('name')
+                        TextConstraint::make('name')
                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.filters.name'))
                             ->icon('heroicon-o-building-office-2'),
-                        Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('leave_validation_type')
+                        TextConstraint::make('leave_validation_type')
                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.filters.time-off-approval'))
                             ->icon('heroicon-o-check-circle'),
-                        Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('requires_allocation')
+                        TextConstraint::make('requires_allocation')
                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.filters.requires-allocation'))
                             ->icon('heroicon-o-calculator'),
-                        Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('employee_requests')
+                        TextConstraint::make('employee_requests')
                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.filters.employee-request'))
                             ->icon('heroicon-o-user-group'),
-                        Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('time_type')
+                        TextConstraint::make('time_type')
                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.filters.time-type'))
                             ->icon('heroicon-o-clock'),
-                        Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('request_unit')
+                        TextConstraint::make('request_unit')
                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.filters.request-unit'))
                             ->icon('heroicon-o-clock'),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('created_by')
+                        RelationshipConstraint::make('created_by')
                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.filters.created-by'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -224,7 +254,7 @@ class LeaveTypeResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('company')
+                        RelationshipConstraint::make('company')
                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.filters.company-name'))
                             ->icon('heroicon-o-building-office-2')
                             ->multiple()
@@ -235,24 +265,24 @@ class LeaveTypeResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('created_at')
+                        DateConstraint::make('created_at')
                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.filters.created-at')),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('updated_at')
+                        DateConstraint::make('updated_at')
                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.filters.updated-at')),
                     ]),
             ])
             ->filtersFormColumns(2)
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('time-off::filament/clusters/configurations/resources/leave-type.table.actions.delete.notification.title'))
                             ->body(__('time-off::filament/clusters/configurations/resources/leave-type.table.actions.delete.notification.body'))
                     ),
-                Tables\Actions\RestoreAction::make()
+                RestoreAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -260,19 +290,20 @@ class LeaveTypeResource extends Resource
                             ->body(__('time-off::filament/clusters/configurations/resources/leave-type.table.actions.restore.notification.body'))
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('time-off::filament/clusters/configurations/resources/leave-type.table.bulk-actions.delete.notification.title'))
                                 ->body(__('time-off::filament/clusters/configurations/resources/leave-type.table.bulk-actions.delete.notification.body'))
                         ),
-                    Tables\Actions\ForceDeleteBulkAction::make()
+                    ForceDeleteBulkAction::make()
                         ->action(function (Collection $records) {
                             try {
                                 $records->each(fn (Model $record) => $record->forceDelete());
+
                                 Notification::make()
                                     ->success()
                                     ->title(__('time-off::filament/clusters/configurations/resources/leave-type.table.bulk-actions.force-delete.notification.success.title'))
@@ -286,7 +317,7 @@ class LeaveTypeResource extends Resource
                                     ->send();
                             }
                         }),
-                    Tables\Actions\RestoreBulkAction::make()
+                    RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -297,64 +328,64 @@ class LeaveTypeResource extends Resource
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Grid::make(['default' => 3])
+        return $schema
+            ->components([
+                Grid::make(['default' => 3])
                     ->schema([
-                        Infolists\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Infolists\Components\Section::make(__('time-off::filament/clusters/configurations/resources/leave-type.infolist.sections.general.title'))
+                                Section::make(__('time-off::filament/clusters/configurations/resources/leave-type.infolist.sections.general.title'))
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('name')
+                                        TextEntry::make('name')
                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.infolist.sections.general.entries.name'))
                                             ->icon('heroicon-o-document-text')
                                             ->placeholder('—')
-                                            ->size(TextEntrySize::Large),
-                                        Infolists\Components\Group::make()
+                                            ->size(TextSize::Large),
+                                        Group::make()
                                             ->schema([
-                                                Infolists\Components\Group::make()
+                                                Group::make()
                                                     ->schema([
-                                                        Infolists\Components\TextEntry::make('leave_validation_type')
+                                                        TextEntry::make('leave_validation_type')
                                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.infolist.sections.general.entries.approval'))
                                                             ->icon('heroicon-o-check-circle')
                                                             ->placeholder('—')
                                                             ->badge(),
-                                                        Infolists\Components\TextEntry::make('requires_allocation')
+                                                        TextEntry::make('requires_allocation')
                                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.infolist.sections.general.entries.requires-allocation'))
                                                             ->icon('heroicon-o-calculator')
                                                             ->placeholder('—')
-                                                            ->formatStateUsing(fn ($state) => Enums\RequiresAllocation::options()[$state])
+                                                            ->formatStateUsing(fn ($state) => RequiresAllocation::options()[$state])
                                                             ->badge(),
-                                                        Infolists\Components\TextEntry::make('employee_requests')
+                                                        TextEntry::make('employee_requests')
                                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.infolist.sections.general.entries.employee-requests'))
                                                             ->icon('heroicon-o-user-group')
                                                             ->placeholder('—')
-                                                            ->formatStateUsing(fn ($state) => Enums\EmployeeRequest::options()[$state])
-                                                            ->visible(fn ($record) => $record->requires_allocation === Enums\RequiresAllocation::YES->value)
+                                                            ->formatStateUsing(fn ($state) => EmployeeRequest::options()[$state])
+                                                            ->visible(fn ($record) => $record->requires_allocation === RequiresAllocation::YES->value)
                                                             ->badge(),
-                                                        Infolists\Components\TextEntry::make('allocation_validation_type')
+                                                        TextEntry::make('allocation_validation_type')
                                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.infolist.sections.general.entries.approval'))
                                                             ->icon('heroicon-o-shield-check')
                                                             ->placeholder('—')
-                                                            ->formatStateUsing(fn ($state) => Enums\AllocationValidationType::options()[$state])
-                                                            ->visible(fn ($record) => $record->requires_allocation === Enums\RequiresAllocation::YES->value)
+                                                            ->formatStateUsing(fn ($state) => AllocationValidationType::options()[$state])
+                                                            ->visible(fn ($record) => $record->requires_allocation === RequiresAllocation::YES->value)
                                                             ->badge(),
                                                     ]),
                                             ]),
                                     ]),
                             ])->columnSpan(2),
-                        Infolists\Components\Group::make([
-                            Infolists\Components\Section::make(__('time-off::filament/clusters/configurations/resources/leave-type.infolist.sections.display-option.title'))
+                        Group::make([
+                            Section::make(__('time-off::filament/clusters/configurations/resources/leave-type.infolist.sections.display-option.title'))
                                 ->schema([
-                                    Infolists\Components\ColorEntry::make('color')
+                                    ColorEntry::make('color')
                                         ->label(__('time-off::filament/clusters/configurations/resources/leave-type.infolist.sections.display-option.entries.color'))
                                         ->placeholder('—'),
                                 ]),
-                            Infolists\Components\Section::make(__('time-off::filament/clusters/configurations/resources/leave-type.infolist.sections.configuration.title'))
+                            Section::make(__('time-off::filament/clusters/configurations/resources/leave-type.infolist.sections.configuration.title'))
                                 ->schema([
-                                    Infolists\Components\TextEntry::make('notifiedTimeOffOfficers')
+                                    TextEntry::make('notifiedTimeOffOfficers')
                                         ->label(__('time-off::filament/clusters/configurations/resources/leave-type.infolist.sections.configuration.entries.notified-time-off-officers'))
                                         ->icon('heroicon-o-bell-alert')
                                         ->placeholder('—')
@@ -362,53 +393,53 @@ class LeaveTypeResource extends Resource
                                         ->getStateUsing(function ($record) {
                                             return $record->notifiedTimeOffOfficers->pluck('name')->join(', ') ?: '—';
                                         }),
-                                    Infolists\Components\TextEntry::make('request_unit')
+                                    TextEntry::make('request_unit')
                                         ->label(__('time-off::filament/clusters/configurations/resources/leave-type.infolist.sections.configuration.entries.take-time-off-in'))
                                         ->icon('heroicon-o-clock')
-                                        ->formatStateUsing(fn ($state) => Enums\RequestUnit::options()[$state])
+                                        ->formatStateUsing(fn ($state) => RequestUnit::options()[$state])
                                         ->placeholder('—')
                                         ->badge(),
-                                    Infolists\Components\IconEntry::make('include_public_holidays_in_duration')
+                                    IconEntry::make('include_public_holidays_in_duration')
                                         ->label(__('time-off::filament/clusters/configurations/resources/leave-type.infolist.sections.configuration.entries.public-holiday-included'))
                                         ->boolean()
                                         ->placeholder('—'),
-                                    Infolists\Components\IconEntry::make('support_document')
+                                    IconEntry::make('support_document')
                                         ->label(__('time-off::filament/clusters/configurations/resources/leave-type.infolist.sections.configuration.entries.allow-to-attach-supporting-document'))
                                         ->boolean()
                                         ->placeholder('—'),
-                                    Infolists\Components\IconEntry::make('show_on_dashboard')
+                                    IconEntry::make('show_on_dashboard')
                                         ->label(__('time-off::filament/clusters/configurations/resources/leave-type.infolist.sections.configuration.entries.show-on-dashboard'))
                                         ->boolean()
                                         ->placeholder('—'),
-                                    Infolists\Components\TextEntry::make('time_type')
+                                    TextEntry::make('time_type')
                                         ->label(__('time-off::filament/clusters/configurations/resources/leave-type.infolist.sections.configuration.entries.kind-of-time'))
                                         ->icon('heroicon-o-clock')
                                         ->placeholder('—')
-                                        ->formatStateUsing(fn ($state) => Enums\TimeType::options()[$state])
+                                        ->formatStateUsing(fn ($state) => TimeType::options()[$state])
                                         ->badge(),
-                                    Infolists\Components\IconEntry::make('allows_negative')
+                                    IconEntry::make('allows_negative')
                                         ->boolean()
-                                        ->visible(fn ($record) => $record->requires_allocation === Enums\RequiresAllocation::YES->value)
+                                        ->visible(fn ($record) => $record->requires_allocation === RequiresAllocation::YES->value)
                                         ->placeholder('—'),
-                                    Infolists\Components\TextEntry::make('max_allowed_negative')
+                                    TextEntry::make('max_allowed_negative')
                                         ->label(__('time-off::filament/clusters/configurations/resources/leave-type.infolist.sections.configuration.entries.max-negative-cap'))
                                         ->icon('heroicon-o-arrow-trending-down')
                                         ->placeholder('—')
-                                        ->visible(fn ($record) => $record->requires_allocation === Enums\RequiresAllocation::YES->value && $record->allows_negative === true)
+                                        ->visible(fn ($record) => $record->requires_allocation === RequiresAllocation::YES->value && $record->allows_negative === true)
                                         ->numeric(),
                                 ]),
                         ])->columnSpan(1),
-                    ]),
+                    ])->columnSpanFull(),
             ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListLeaveTypes::route('/'),
-            'create' => Pages\CreateLeaveType::route('/create'),
-            'view'   => Pages\ViewLeaveType::route('/{record}'),
-            'edit'   => Pages\EditLeaveType::route('/{record}/edit'),
+            'index'  => ListLeaveTypes::route('/'),
+            'create' => CreateLeaveType::route('/create'),
+            'view'   => ViewLeaveType::route('/{record}'),
+            'edit'   => EditLeaveType::route('/{record}/edit'),
         ];
     }
 }

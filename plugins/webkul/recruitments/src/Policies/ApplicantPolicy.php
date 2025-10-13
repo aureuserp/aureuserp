@@ -106,24 +106,4 @@ class ApplicantPolicy
     {
         return $user->can('restore_any_applicant');
     }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Applicant $applicant): bool
-    {
-        if (! $user->can('replicate_applicant')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $applicant, 'recruiter');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_applicant');
-    }
 }

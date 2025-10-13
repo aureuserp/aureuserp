@@ -9,26 +9,24 @@
 >
     <div {{ $attributes->merge($getExtraAttributes())->class('') }}>
         @if($record->body)
-            <div class="text-sm">
+            <div class="text-sm leading-6 text-gray-700 dark:text-gray-300 [overflow-wrap:anywhere] max-w-full overflow-x-hidden [&_a]:[overflow-wrap:anywhere] [&_a]:text-primary-600 dark:[&_a]:text-primary-400 [&_a:hover]:underline [&_ul]:list-disc [&_ul]:ms-5 [&_ol]:list-decimal [&_ol]:ms-5">
                 {!! $record->body !!}
             </div>
         @endif
 
-        <div class="mt-2 bg-white rounded-lg shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-800 dark:ring-white/10">
-            <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <x-heroicon-m-clipboard-document-check class="w-5 h-5 text-primary-500"/>
+        <div class="mt-3 shadow-sm rounded-xl bg-white/70 ring-1 ring-black/5 dark:bg-gray-900/60 dark:ring-white/5">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200/80 dark:border-gray-800">
+                <div class="flex items-center gap-2">
+                    <x-heroicon-m-clipboard-document-check class="w-5 h-5 text-primary-500"/>
 
-                        <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                            @lang('chatter::views/filament/infolists/components/activities/content-text-entry.activity-details')
-                        </h3>
-                    </div>
-
-                    <span class="inline-flex items-center px-2 py-1 text-xs font-bold rounded-md bg-primary-50 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300">
-                        {{ ucfirst($record->activityType?->name) }}
-                    </span>
+                    <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        @lang('chatter::views/filament/infolists/components/activities/content-text-entry.activity-details')
+                    </h3>
                 </div>
+
+                <span class="inline-flex items-center px-2 py-1 text-xs font-bold rounded-md bg-primary-50 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300">
+                    {{ ucfirst($record->activityType?->name) }}
+                </span>
             </div>
 
             <div class="grid grid-cols-1 gap-4 p-4 md:grid-cols-2">
@@ -105,12 +103,10 @@
                                 <span class="text-sm font-bold" @style([$textColor])>
                                     <div class="flex items-center gap-2">
                                         {{ $deadlineDescription }}
-
                                         <x-filament::icon-button
                                             icon="heroicon-m-question-mark-circle"
                                             color="gray"
                                             :tooltip="$deadline->format('F j, Y')"
-                                            label="New label"
                                         />
                                     </div>
                                 </span>

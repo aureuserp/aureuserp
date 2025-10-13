@@ -7,7 +7,7 @@ use Webkul\Inventory\Models\PackageLevel;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Inventory\Models\PackageLevel>
+ * @extends Factory<PackageLevel>
  */
 class PackageLevelFactory extends Factory
 {

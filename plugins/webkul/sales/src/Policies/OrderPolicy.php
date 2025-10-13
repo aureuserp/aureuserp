@@ -106,24 +106,4 @@ class OrderPolicy
     {
         return $user->can('restore_any_quotation');
     }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Order $order): bool
-    {
-        if (! $user->can('replicate_quotation')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $order);
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_quotation');
-    }
 }

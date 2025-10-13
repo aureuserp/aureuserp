@@ -2,7 +2,8 @@
 
 namespace Webkul\Website\Filament\Admin\Resources\PageResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Website\Filament\Admin\Resources\PageResource;
@@ -28,7 +29,7 @@ class EditPage extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('publish')
+            Action::make('publish')
                 ->label(__('website::filament/admin/resources/page/pages/edit-record.header-actions.publish.label'))
                 ->icon('heroicon-o-check-circle')
                 ->action(function (Page $record) {
@@ -44,7 +45,7 @@ class EditPage extends EditRecord
                         ->send();
                 })
                 ->visible(fn (Page $record) => ! $record->is_published),
-            Actions\Action::make('draft')
+            Action::make('draft')
                 ->label(__('website::filament/admin/resources/page/pages/edit-record.header-actions.draft.label'))
                 ->icon('heroicon-o-archive-box')
                 ->action(function (Page $record) {
@@ -60,7 +61,7 @@ class EditPage extends EditRecord
                         ->send();
                 })
                 ->visible(fn (Page $record) => $record->is_published),
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()

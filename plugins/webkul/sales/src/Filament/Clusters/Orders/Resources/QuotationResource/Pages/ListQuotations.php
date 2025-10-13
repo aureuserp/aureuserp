@@ -2,7 +2,7 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +20,7 @@ class ListQuotations extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->icon('heroicon-o-plus-circle'),
         ];
     }
@@ -31,7 +31,7 @@ class ListQuotations extends ListRecords
             'my_quotations' => PresetView::make(__('sales::filament/clusters/orders/resources/quotation/pages/list-quotation.tabs.my-quotations'))
                 ->icon('heroicon-s-user')
                 ->favorite()
-                ->default()
+                ->setAsDefault()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('user_id', Auth::id())),
             'quotations' => PresetView::make(__('sales::filament/clusters/orders/resources/quotation/pages/list-quotation.tabs.quotations'))
                 ->icon('heroicon-s-receipt-percent')

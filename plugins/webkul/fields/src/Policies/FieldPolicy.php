@@ -89,20 +89,4 @@ class FieldPolicy
     {
         return $user->can('restore_any_field');
     }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Field $field): bool
-    {
-        return $user->can('replicate_field');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_field');
-    }
 }

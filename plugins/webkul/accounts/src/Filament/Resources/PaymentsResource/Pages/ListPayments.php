@@ -2,7 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources\PaymentsResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Account\Enums\PaymentStatus;
@@ -29,28 +29,23 @@ class ListPayments extends ListRecords
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('partner_type', 'supplier')),
             'draft' => PresetView::make(__('Draft'))
                 ->favorite()
-                ->default()
+                ->setAsDefault()
                 ->icon('heroicon-s-stop')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('state', PaymentStatus::DRAFT->value)),
             'in_process' => PresetView::make(__('In Process'))
                 ->favorite()
-                ->default()
                 ->icon('heroicon-s-play')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('state', PaymentStatus::IN_PROCESS->value)),
             'is_sent' => PresetView::make(__('Sent'))
-                ->default()
                 ->icon('heroicon-s-play')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('is_sent', true)),
             'not_sent' => PresetView::make(__('No Sent'))
-                ->default()
                 ->icon('heroicon-s-play')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('is_sent', false)),
             'no_bank_matching' => PresetView::make(__('No Bank Matching'))
-                ->default()
                 ->icon('heroicon-s-play')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('is_matched', false)),
             'is_reconciled' => PresetView::make(__('Reconciled'))
-                ->default()
                 ->icon('heroicon-s-play')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('is_reconciled', true)),
         ];
@@ -59,7 +54,7 @@ class ListPayments extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->icon('heroicon-o-plus-circle'),
         ];
     }

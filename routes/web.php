@@ -2,5 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/login', '/admin/login')
-    ->name('login');
+if (! request()->getRequestUri() == '/login') {
+    Route::redirect('/login', '/admin/login')
+        ->name('login');
+}

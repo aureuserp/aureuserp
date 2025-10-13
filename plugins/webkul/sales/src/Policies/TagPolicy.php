@@ -15,7 +15,7 @@ class TagPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_tag');
+        return $user->can('view_any_sale_tag');
     }
 
     /**
@@ -23,7 +23,7 @@ class TagPolicy
      */
     public function view(User $user, Tag $tag): bool
     {
-        return $user->can('view_tag');
+        return $user->can('view_sale_tag');
     }
 
     /**
@@ -31,7 +31,7 @@ class TagPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_tag');
+        return $user->can('create_sale_tag');
     }
 
     /**
@@ -39,7 +39,7 @@ class TagPolicy
      */
     public function update(User $user, Tag $tag): bool
     {
-        return $user->can('update_tag');
+        return $user->can('update_sale_tag');
     }
 
     /**
@@ -47,7 +47,7 @@ class TagPolicy
      */
     public function delete(User $user, Tag $tag): bool
     {
-        return $user->can('delete_tag');
+        return $user->can('delete_sale_tag');
     }
 
     /**
@@ -55,54 +55,6 @@ class TagPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_tag');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, Tag $tag): bool
-    {
-        return $user->can('force_delete_tag');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_tag');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, Tag $tag): bool
-    {
-        return $user->can('restore_tag');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_tag');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Tag $tag): bool
-    {
-        return $user->can('replicate_tag');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_tag');
+        return $user->can('delete_any_sale_tag');
     }
 }

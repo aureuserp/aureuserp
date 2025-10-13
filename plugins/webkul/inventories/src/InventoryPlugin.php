@@ -5,6 +5,7 @@ namespace Webkul\Inventory;
 use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
+use ReflectionClass;
 use Webkul\Inventory\Filament\Clusters\Settings\Pages\ManageOperations;
 use Webkul\Support\Package;
 
@@ -35,11 +36,11 @@ class InventoryPlugin implements Plugin
                     ->discoverWidgets(in: $this->getPluginBasePath('/Filament/Widgets'), for: 'Webkul\\Inventory\\Filament\\Widgets')
                     ->navigationItems([
                         NavigationItem::make('settings')
-                            ->label('Settings')
+                            ->label(fn () => __('inventories::app.navigation.settings.label'))
                             ->url(fn () => ManageOperations::getUrl())
-                            ->icon('heroicon-o-wrench')
                             ->group('Inventory')
-                            ->sort(4),
+                            ->sort(4)
+                            ->visible(fn() => ManageOperations::canAccess()),
                     ]);
             });
     }
@@ -51,8 +52,8 @@ class InventoryPlugin implements Plugin
 
     protected function getPluginBasePath($path = null): string
     {
-        $reflector = new \ReflectionClass(get_class($this));
+        $reflector = new ReflectionClass(get_class($this));
 
-        return dirname($reflector->getFileName()).($path ?? '');
+        return dirname($reflector->getFileName()) . ($path ?? '');
     }
 }

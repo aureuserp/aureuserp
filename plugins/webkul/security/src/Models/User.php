@@ -89,7 +89,7 @@ class User extends BaseUser implements FilamentUser
         parent::boot();
 
         static::saved(function ($user) {
-            if (!$user->partner_id) {
+            if (! $user->partner_id) {
                 $user->handlePartnerCreation($user);
             } else {
                 $user->handlePartnerUpdation($user);
@@ -101,8 +101,8 @@ class User extends BaseUser implements FilamentUser
     {
         $partner = $user->partner()->create([
             'creator_id' => Auth::user()->id ?? $user->id,
-            'user_id' => $user->id,
-            'sub_type' => 'partner',
+            'user_id'    => $user->id,
+            'sub_type'   => 'partner',
             ...Arr::except($user->toArray(), ['id']),
         ]);
 
@@ -116,8 +116,8 @@ class User extends BaseUser implements FilamentUser
             ['id' => $user->partner_id],
             [
                 'creator_id' => Auth::user()->id ?? $user->id,
-                'user_id' => $user->id,
-                'sub_type' => 'partner',
+                'user_id'    => $user->id,
+                'sub_type'   => 'partner',
                 ...Arr::except($user->toArray(), ['id']),
             ]
         );

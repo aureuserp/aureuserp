@@ -3,8 +3,11 @@
 namespace Webkul\Account\Filament\Resources\InvoiceResource\Actions;
 
 use Filament\Actions\Action;
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\JournalType;
@@ -31,17 +34,17 @@ class PayAction extends Action
         $this
             ->label(__('accounts::filament/resources/invoice/actions/pay-action.title'))
             ->color('success')
-            ->form(function (Form $form) {
-                return $form->schema([
-                    Forms\Components\Group::make()
+            ->schema(function (Schema $schema) {
+                return $schema->components([
+                    Group::make()
                         ->schema([
-                            Forms\Components\TextInput::make('amount')
+                            TextInput::make('amount')
                                 ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.amount'))
                                 ->prefix(fn ($record) => $record->currency->symbol ?? '')
                                 ->formatStateUsing(fn ($record) => number_format($record->lines->sum('price_total'), 2, '.', ''))
                                 ->dehydrateStateUsing(fn ($state) => (float) str_replace(',', '', $state))
                                 ->required(),
-                            Forms\Components\Select::make('payment_method_line_id')
+                            Select::make('payment_method_line_id')
                                 ->relationship(
                                     name: 'paymentMethodLine',
                                     titleAttribute: 'name',
@@ -55,12 +58,12 @@ class PayAction extends Action
                                 ->label('Payment Method')
                                 ->searchable()
                                 ->preload(),
-                            Forms\Components\DatePicker::make('payment_date')
+                            DatePicker::make('payment_date')
                                 ->native(false)
                                 ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.payment-date'))
                                 ->default(now())
                                 ->required(),
-                            Forms\Components\Select::make('partner_bank_id')
+                            Select::make('partner_bank_id')
                                 ->relationship(
                                     'partnerBank',
                                     'account_number',
@@ -71,7 +74,7 @@ class PayAction extends Action
                                 })
                                 ->searchable()
                                 ->required(),
-                            Forms\Components\TextInput::make('communication')
+                            TextInput::make('communication')
                                 ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.communication'))
                                 ->default(function ($record) {
                                     return $record->name;

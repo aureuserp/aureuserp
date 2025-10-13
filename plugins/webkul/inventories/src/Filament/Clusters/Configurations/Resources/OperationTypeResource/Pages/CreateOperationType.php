@@ -5,12 +5,21 @@ namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\OperationT
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\ReservationMethod;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\OperationTypeResource;
 
 class CreateOperationType extends CreateRecord
 {
     protected static string $resource = OperationTypeResource::class;
+
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
 
     protected function getRedirectUrl(): string
     {
@@ -27,7 +36,7 @@ class CreateOperationType extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['reservation_method'] = Enums\ReservationMethod::AT_CONFIRM;
+        $data['reservation_method'] = ReservationMethod::AT_CONFIRM;
 
         $data['creator_id'] = Auth::id();
 

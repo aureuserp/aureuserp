@@ -2,10 +2,11 @@
 
 namespace Webkul\Project\Filament\Resources\ProjectResource\RelationManagers;
 
-use Filament\Forms\Form;
+use Webkul\Project\Filament\Resources\ProjectResource;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -18,12 +19,12 @@ class MilestonesRelationManager extends RelationManager
 
     public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
     {
-        return app(TaskSettings::class)->enable_milestones && $ownerRecord->allow_milestones;
+        return ProjectResource::getTaskSettings()->enable_milestones && $ownerRecord->allow_milestones;
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return MilestoneResource::form($form);
+        return MilestoneResource::form($schema);
     }
 
     public function table(Table $table): Table
@@ -32,10 +33,10 @@ class MilestonesRelationManager extends RelationManager
             ->filters([])
             ->groups([])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label(__('projects::filament/resources/project/relation-managers/milestones.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
                         $data['creator_id'] = Auth::id();
 
                         return $data;

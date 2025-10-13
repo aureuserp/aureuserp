@@ -7,7 +7,7 @@ use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Inventory\Models\ProductQuantity>
+ * @extends Factory<ProductQuantity>
  */
 class ProductQuantityFactory extends Factory
 {

@@ -2,9 +2,13 @@
 
 namespace Webkul\Field\Filament\Infolists\Components;
 
-use Filament\Infolists;
-use Filament\Infolists\Components\Component;
+use Filament\Infolists\Components\ColorEntry;
+use Filament\Infolists\Components\Entry;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Component;
 use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
 use Illuminate\Support\Collection;
 use Webkul\Field\Models\Field;
 
@@ -77,13 +81,13 @@ class CustomEntries extends Component
     protected function createEntry(Field $field): Component
     {
         $entryClass = match ($field->type) {
-            'text', 'textarea', 'select', 'radio' => Infolists\Components\TextEntry::class,
-            'checkbox', 'toggle' => Infolists\Components\IconEntry::class,
-            'checkbox_list' => Infolists\Components\TextEntry::class,
-            'datetime'      => Infolists\Components\TextEntry::class,
-            'editor', 'markdown' => Infolists\Components\TextEntry::class,
-            'color' => Infolists\Components\ColorEntry::class,
-            default => Infolists\Components\TextEntry::class,
+            'text', 'textarea', 'select', 'radio' => TextEntry::class,
+            'checkbox', 'toggle' => IconEntry::class,
+            'checkbox_list' => TextEntry::class,
+            'datetime'      => TextEntry::class,
+            'editor', 'markdown' => TextEntry::class,
+            'color' => ColorEntry::class,
+            default => TextEntry::class,
         };
 
         $entry = $entryClass::make($field->code)
@@ -98,7 +102,7 @@ class CustomEntries extends Component
         return $entry;
     }
 
-    protected function applySetting(Infolists\Components\Entry $column, array $setting): void
+    protected function applySetting(Entry $column, array $setting): void
     {
         $name = $setting['setting'];
         $value = $setting['value'] ?? null;
@@ -108,7 +112,7 @@ class CustomEntries extends Component
                 if ($name == 'weight') {
                     $column->{$name}(constant(FontWeight::class."::$value"));
                 } elseif ($name == 'size') {
-                    $column->{$name}(constant(Infolists\Components\TextEntry\TextEntrySize::class."::$value"));
+                    $column->{$name}(constant(TextSize::class."::$value"));
                 } else {
                     $column->{$name}($value);
                 }

@@ -15,7 +15,7 @@ class DepartmentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_department');
+        return $user->can('view_any_recruitment_department');
     }
 
     /**
@@ -23,7 +23,7 @@ class DepartmentPolicy
      */
     public function view(User $user, Department $department): bool
     {
-        return $user->can('view_department');
+        return $user->can('view_recruitment_department');
     }
 
     /**
@@ -31,7 +31,7 @@ class DepartmentPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_department');
+        return $user->can('create_recruitment_department');
     }
 
     /**
@@ -39,7 +39,7 @@ class DepartmentPolicy
      */
     public function update(User $user, Department $department): bool
     {
-        return $user->can('update_department');
+        return $user->can('update_recruitment_department');
     }
 
     /**
@@ -47,7 +47,7 @@ class DepartmentPolicy
      */
     public function delete(User $user, Department $department): bool
     {
-        return $user->can('delete_department');
+        return $user->can('delete_recruitment_department');
     }
 
     /**
@@ -55,7 +55,7 @@ class DepartmentPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_department');
+        return $user->can('delete_any_recruitment_department');
     }
 
     /**
@@ -63,7 +63,7 @@ class DepartmentPolicy
      */
     public function forceDelete(User $user, Department $department): bool
     {
-        return $user->can('force_delete_department');
+        return $user->can('force_delete_recruitment_department');
     }
 
     /**
@@ -71,7 +71,7 @@ class DepartmentPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_department');
+        return $user->can('force_delete_any_recruitment_department');
     }
 
     /**
@@ -79,7 +79,7 @@ class DepartmentPolicy
      */
     public function restore(User $user, Department $department): bool
     {
-        return $user->can('restore_department');
+        return $user->can('restore_recruitment_department');
     }
 
     /**
@@ -87,22 +87,6 @@ class DepartmentPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_department');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Department $department): bool
-    {
-        return $user->can('replicate_department');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_department');
+        return $user->can('restore_any_recruitment_department');
     }
 }

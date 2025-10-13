@@ -91,14 +91,6 @@ class TaskStagePolicy
     }
 
     /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, TaskStage $taskStage): bool
-    {
-        return $user->can('replicate_task::stage');
-    }
-
-    /**
      * Determine whether the user can reorder.
      */
     public function reorder(User $user): bool

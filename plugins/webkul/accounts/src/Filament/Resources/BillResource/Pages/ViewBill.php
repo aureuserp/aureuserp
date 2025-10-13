@@ -2,16 +2,19 @@
 
 namespace Webkul\Account\Filament\Resources\BillResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Account\Filament\Resources\BillResource;
 use Webkul\Account\Filament\Resources\BillResource\Actions\CreditNoteAction;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewBill extends ViewRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = BillResource::class;
 
     protected function getHeaderActions(): array
@@ -25,7 +28,7 @@ class ViewBill extends ViewRecord
             BaseActions\ResetToDraftAction::make(),
             BaseActions\SetAsCheckedAction::make(),
             CreditNoteAction::make(),
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()

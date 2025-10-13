@@ -7,7 +7,7 @@ use Webkul\Inventory\Models\OrderPoint;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Inventory\Models\OrderPoint>
+ * @extends Factory<OrderPoint>
  */
 class OrderPointFactory extends Factory
 {

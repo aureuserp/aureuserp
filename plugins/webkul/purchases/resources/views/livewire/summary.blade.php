@@ -85,7 +85,7 @@
 
                 <div class="divider"></div>
 
-                <div class="font-bold invoice-item" style="color: #000">
+                <div class="font-bold invoice-item">
                     <span>Total</span>
                     <span>{{ money($grandTotal, $currency?->name) }}</span>
                 </div>

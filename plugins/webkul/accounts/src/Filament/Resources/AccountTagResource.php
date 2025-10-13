@@ -2,52 +2,66 @@
 
 namespace Webkul\Account\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
+use Filament\Tables\Columns\ColorColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Webkul\Account\Enums\Applicability;
-use Webkul\Account\Filament\Resources\AccountTagResource\Pages;
+use Webkul\Account\Filament\Resources\AccountTagResource\Pages\ListAccountTags;
 use Webkul\Account\Models\Tag;
 
 class AccountTagResource extends Resource
 {
     protected static ?string $model = Tag::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-tag';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tag';
 
     protected static bool $shouldRegisterNavigation = false;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make()
+        return $schema
+            ->components([
+                Section::make()
                     ->schema([
-                        Forms\Components\ColorPicker::make('color')
+                        ColorPicker::make('color')
                             ->label(__('accounts::filament/resources/account-tag.form.fields.color'))
                             ->hexColor(),
-                        Forms\Components\Select::make('country_id')
+                        Select::make('country_id')
                             ->searchable()
                             ->preload()
                             ->label(__('accounts::filament/resources/account-tag.form.fields.country'))
                             ->relationship('country', 'name'),
-                        Forms\Components\Select::make('applicability')
+                        Select::make('applicability')
                             ->options(Applicability::options())
                             ->default(Applicability::ACCOUNT->value)
                             ->label(__('accounts::filament/resources/account-tag.form.fields.applicability'))
                             ->required(),
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->required()
                             ->label(__('accounts::filament/resources/account-tag.form.fields.name'))
                             ->maxLength(255),
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Toggle::make('tax_negate')
+                                Toggle::make('tax_negate')
                                     ->inline(false)
                                     ->label(__('accounts::filament/resources/account-tag.form.fields.tax-negate'))
                                     ->required(),
@@ -60,32 +74,32 @@ class AccountTagResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ColorColumn::make('color')
+                ColorColumn::make('color')
                     ->label(__('accounts::filament/resources/account-tag.table.columns.color'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('country.name')
+                TextColumn::make('country.name')
                     ->numeric()
                     ->maxValue(99999999999)
                     ->label(__('accounts::filament/resources/account-tag.table.columns.country'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('createdBy.name')
+                TextColumn::make('createdBy.name')
                     ->label(__('accounts::filament/resources/account-tag.table.columns.created-by'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('applicability')
+                TextColumn::make('applicability')
                     ->label(__('accounts::filament/resources/account-tag.table.columns.applicability'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('accounts::filament/resources/account-tag.table.columns.name'))
                     ->searchable(),
-                Tables\Columns\IconColumn::make('tax_negate')
+                IconColumn::make('tax_negate')
                     ->label(__('accounts::filament/resources/account-tag.table.columns.tax-negate'))
                     ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->label(__('accounts::filament/resources/account-tag.table.columns.created-at'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->label(__('accounts::filament/resources/account-tag.table.columns.updated-at'))
                     ->sortable()
@@ -105,24 +119,24 @@ class AccountTagResource extends Resource
                     ->label(__('accounts::filament/resources/account-tag.table.groups.name'))
                     ->collapsible(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make()
                     ->successNotification(
                         Notification::make()
                             ->title('accounts::filament/clusters/configurations/resources/account-tag.table.actions.edit.notification.title')
                             ->body('accounts::filament/clusters/configurations/resources/account-tag.table.actions.edit.notification.body')
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->title('accounts::filament/clusters/configurations/resources/account-tag.table.actions.delete.notification.title')
                             ->body('accounts::filament/clusters/configurations/resources/account-tag.table.actions.delete.notification.body')
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->title('accounts::filament/clusters/configurations/resources/account-tag.table.bulk-actions.delete.notification.title')
@@ -132,28 +146,28 @@ class AccountTagResource extends Resource
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Grid::make(['default' => 2])
+        return $schema
+            ->components([
+                Grid::make(['default' => 2])
                     ->schema([
-                        Infolists\Components\TextEntry::make('name')
+                        TextEntry::make('name')
                             ->label(__('accounts::filament/resources/account-tag.infolist.entries.name'))
                             ->icon('heroicon-o-briefcase')
                             ->placeholder('—'),
-                        Infolists\Components\TextEntry::make('color')
+                        TextEntry::make('color')
                             ->label(__('accounts::filament/resources/account-tag.infolist.entries.color'))
                             ->formatStateUsing(fn ($state) => "<span style='display:inline-block;width:15px;height:15px;background-color:{$state};border-radius:50%;'></span> ".$state)
                             ->html()
                             ->placeholder('—'),
-                        Infolists\Components\TextEntry::make('applicability')
+                        TextEntry::make('applicability')
                             ->label(__('accounts::filament/resources/account-tag.infolist.entries.applicability'))
                             ->placeholder('—'),
-                        Infolists\Components\TextEntry::make('country.name')
+                        TextEntry::make('country.name')
                             ->label(__('accounts::filament/resources/account-tag.infolist.entries.country'))
                             ->placeholder('—'),
-                        Infolists\Components\IconEntry::make('tax_negate')
+                        IconEntry::make('tax_negate')
                             ->label(__('accounts::filament/resources/account-tag.infolist.entries.tax-negate'))
                             ->boolean(),
                     ]),
@@ -163,7 +177,7 @@ class AccountTagResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAccountTags::route('/'),
+            'index' => ListAccountTags::route('/'),
         ];
     }
 }

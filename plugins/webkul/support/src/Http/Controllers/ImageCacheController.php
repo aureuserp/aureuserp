@@ -2,6 +2,7 @@
 
 namespace Webkul\Support\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Support\Facades\Cache;
 
@@ -33,7 +34,7 @@ class ImageCacheController
             $content = Cache::remember('aureus-logo', 10080, function () {
                 return base64_encode($this->getImageFromUrl(self::AUREUS_LOGO));
             });
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $content = '';
         }
 
@@ -66,7 +67,7 @@ class ImageCacheController
             return $data;
         }
 
-        throw new \Exception(
+        throw new Exception(
             'Unable to init from given url ('.$url.').'
         );
     }

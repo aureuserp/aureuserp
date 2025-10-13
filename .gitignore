@@ -1,5 +1,6 @@
 /.phpunit.cache
 /node_modules
+/npm-debug.log
 /public/build
 /public/hot
 /public/storage
@@ -20,3 +21,6 @@ yarn-error.log
 /.idea
 /.vscode
 /.zed
+
+/playwright-report
+/test-results

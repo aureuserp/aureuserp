@@ -2,10 +2,11 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\RelationManagers;
 
-use Filament\Forms\Form;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -20,24 +21,24 @@ class RulesRelationManager extends RelationManager
         return __('inventories::filament/clusters/configurations/resources/route/relation-managers/rules.title');
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return RuleResource::form($form);
+        return RuleResource::form($schema);
     }
 
     public function table(Table $table): Table
     {
         return RuleResource::table($table)
             ->columns([
-                Tables\Columns\TextColumn::make('action')
+                TextColumn::make('action')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('sourceLocation.full_name')
+                TextColumn::make('sourceLocation.full_name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('destinationLocation.full_name')
+                TextColumn::make('destinationLocation.full_name')
                     ->searchable(),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label(__('inventories::filament/clusters/configurations/resources/route/relation-managers/rules.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
                     ->fillForm(function (array $arguments): array {
@@ -45,7 +46,7 @@ class RulesRelationManager extends RelationManager
                             'route_id' => $this->getOwnerRecord()->id,
                         ];
                     })
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
                         $data['creator_id'] = Auth::id();
 
                         $data['company_id'] = $data['company_id'] ?? Auth::user()->default_company_id;

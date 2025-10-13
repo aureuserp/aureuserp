@@ -2,10 +2,14 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource\Pages;
 
-use Filament\Actions;
-use Filament\Forms;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\LocationType;
+use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource;
 use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Product;
@@ -23,23 +27,23 @@ class EditProduct extends BaseEditProduct
     protected function getHeaderActions(): array
     {
         return array_merge([
-            Actions\Action::make('updateQuantity')
+            Action::make('updateQuantity')
                 ->label(__('inventories::filament/clusters/products/resources/product/pages/edit-product.header-actions.update-quantity.label'))
                 ->modalHeading(__('inventories::filament/clusters/products/resources/product/pages/edit-product.header-actions.update-quantity.modal-heading'))
-                ->form(fn (Product $record): array => [
-                    Forms\Components\Select::make('product_id')
+                ->schema(fn (Product $record): array => [
+                    Select::make('product_id')
                         ->label(__('inventories::filament/clusters/products/resources/product/pages/edit-product.header-actions.update-quantity.form.fields.product'))
                         ->required()
                         ->options($record->variants->pluck('name', 'id'))
                         ->searchable()
                         ->live()
-                        ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
+                        ->afterStateUpdated(function (Get $get, Set $set) {
                             $product = Product::find($get('product_id'));
 
                             $set('quantity', $product?->on_hand_quantity ?? 0);
                         })
                         ->visible((bool) $record->is_configurable),
-                    Forms\Components\TextInput::make('quantity')
+                    TextInput::make('quantity')
                         ->label(__('inventories::filament/clusters/products/resources/product/pages/edit-product.header-actions.update-quantity.form.fields.on-hand-qty'))
                         ->numeric()
                         ->maxValue(99999999999)
@@ -60,7 +64,7 @@ class EditProduct extends BaseEditProduct
                         || $warehouseSettings->enable_locations
                         || (
                             $traceabilitySettings->enable_lots_serial_numbers
-                            && $record->tracking != Enums\ProductTracking::QTY
+                            && $record->tracking != ProductTracking::QTY
                         )
                     ) {
                         return redirect()->to(ProductResource::getUrl('quantities', ['record' => $record]));
@@ -79,7 +83,7 @@ class EditProduct extends BaseEditProduct
 
                     $warehouse = Warehouse::first();
 
-                    $adjustmentLocation = Location::where('type', Enums\LocationType::INVENTORY)
+                    $adjustmentLocation = Location::where('type', LocationType::INVENTORY)
                         ->where('is_scrap', false)
                         ->first();
 
