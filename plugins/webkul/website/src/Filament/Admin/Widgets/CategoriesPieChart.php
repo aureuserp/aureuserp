@@ -15,18 +15,19 @@ class CategoriesPieChart extends ChartWidget
         return __('website::filament/admin/widgets/blog-chart.blogs-by-category');
     }
 
-    protected static ?int $sort = 4;
+    protected static ?int $sort = 2;
+
+    protected ?string $maxHeight = '250px';
 
     protected function getType(): string
     {
-        return 'pie'; // Pie chart
+        return 'pie';
     }
 
     protected function getData(): array
     {
         $filters = $this->filters;
 
-        // 🔍 Get categories with blog counts, applying filters on posts
         $categories = Category::query()
             ->withCount([
                 'posts as filtered_posts_count' => function ($query) use ($filters) {
@@ -55,16 +56,8 @@ class CategoriesPieChart extends ChartWidget
                     'label'           => 'Blogs by Category',
                     'data'            => $data,
                     'backgroundColor' => [
-                        '#4CAF50', // Green
-                        '#2196F3', // Blue
-                        '#FFC107', // Amber
-                        '#FF5722', // Orange
-                        '#9C27B0', // Purple
-                        '#00BCD4', // Cyan
-                        '#8BC34A', // Light Green
-                        '#FF9800', // Deep Orange
-                        '#E91E63', // Pink
-                        '#795548', // Brown
+                        '#4CAF50', '#2196F3', '#FFC107', '#FF5722', '#9C27B0',
+                        '#00BCD4', '#8BC34A', '#FF9800', '#E91E63', '#795548',
                     ],
                 ],
             ],

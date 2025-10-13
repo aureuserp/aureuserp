@@ -19,11 +19,6 @@ class RecentBlogsTable extends TableWidget
 
     protected static ?int $sort = 6;
 
-    public function getColumnSpan(): string
-    {
-        return 'full'; // Full width
-    }
-
     protected function getTableQuery(): Builder
     {
         $filters = $this->filters;

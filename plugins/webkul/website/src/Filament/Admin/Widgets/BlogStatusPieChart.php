@@ -15,12 +15,14 @@ class BlogStatusPieChart extends ChartWidget
         return __('website::filament/admin/widgets/blog-chart.blogs-published-vs-draft');
     }
 
-    protected static ?int $sort = 5;
+    protected static ?int $sort = 4;
 
     protected function getType(): string
     {
         return 'pie';
     }
+
+    protected ?string $maxHeight = '250px';
 
     protected function getData(): array
     {

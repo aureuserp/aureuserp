@@ -3,12 +3,12 @@
 namespace Webkul\Website\Filament\Admin\Pages;
 
 use App\Models\User;
+use BackedEnum;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
 use Filament\Pages\Dashboard as BaseDashboard;
+use Filament\Schemas\Schema;
 use Filament\View\LegacyComponents\Widget;
-use Webkul\Support\Filament\Clusters\Dashboard as DashboardCluster;
 use Webkul\Website\Filament\Admin\Widgets\BlogAuthorsChart;
 use Webkul\Website\Filament\Admin\Widgets\BlogChart;
 use Webkul\Website\Filament\Admin\Widgets\BlogStatusPieChart;
@@ -23,16 +23,24 @@ class WebsiteDashboard extends BaseDashboard
 
     protected static string $routePath = 'website';
 
-    protected static ?string $navigationIcon = 'heroicon-o-folder';
+    protected static string|BackedEnum|null $navigationIcon = null;
 
-    protected static ?string $cluster = DashboardCluster::class;
+    public static function getNavigationIcon(): string|BackedEnum|null
+    {
+        return null;
+    }
 
     public static function getNavigationLabel(): string
     {
-        return 'Website Dashboard';
+        return 'Website';
     }
 
-    public function filtersForm(Form $form): Form
+    public static function getNavigationGroup(): string
+    {
+        return 'Dashboard';
+    }
+
+    public function filtersForm(Schema $form): Schema
     {
         return $form
             ->schema([
@@ -67,8 +75,8 @@ class WebsiteDashboard extends BaseDashboard
             BlogChart::class,
             CategoriesPieChart::class,
             BlogAuthorsChart::class,
-            TopCategoriesTable::class,
             BlogStatusPieChart::class,
+            TopCategoriesTable::class,
             RecentBlogsTable::class,
         ];
     }

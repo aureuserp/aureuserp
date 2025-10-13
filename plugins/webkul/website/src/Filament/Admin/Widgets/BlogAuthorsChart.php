@@ -16,7 +16,9 @@ class BlogAuthorsChart extends ChartWidget
         return __('website::filament/admin/widgets/blog-chart.top-10-authors-count-by-blog-count');
     }
 
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 3;
+
+    protected ?string $maxHeight = '250px';
 
     protected function getData(): array
     {

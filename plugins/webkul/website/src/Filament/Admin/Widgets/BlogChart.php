@@ -17,14 +17,9 @@ class BlogChart extends ChartWidget
         return __('website::filament/admin/widgets/blog-chart.published-blogs-by-month');
     }
 
-    protected static ?string $maxHeight = '250px';
+    protected ?string $maxHeight = '250px';
 
     protected static ?int $sort = 1;
-
-    public function getColumnSpan(): string
-    {
-        return 'full';
-    }
 
     protected function getData(): array
     {
