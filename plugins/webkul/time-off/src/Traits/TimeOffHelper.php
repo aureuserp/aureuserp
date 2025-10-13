@@ -224,8 +224,8 @@ trait TimeOffHelper
      */
     private function handleLeaveOverlap(array &$data, ?int $excludeRecordId = null, ?Action $action = null): void
     {
-        $employee = Employee::find($data['employee_id']);
-        if (! $employee) {
+        if (empty($data['employee_id'])) {
+
             Notification::make()
                 ->danger()
                 ->title(__('time-off::filament/widgets/overview-calendar-widget.header-actions.create.employee-not-found.notification.title'))
@@ -240,6 +240,7 @@ trait TimeOffHelper
 
             return;
         }
+        $employee = Employee::find($data['employee_id']);
 
         $overlap = $this->checkForOverlappingLeave(
             $employee->id,
@@ -281,7 +282,7 @@ trait TimeOffHelper
         }
 
         $leaveType = LeaveType::find($leaveTypeId);
-        if (! $leaveType || ! $leaveType->requires_allocation) {
+        if (! $leaveType ||  $leaveType->requires_allocation!='yes') {
             return;
         }
 
@@ -300,7 +301,7 @@ trait TimeOffHelper
         $totalTaken = Leave::where('employee_id', $employee->id)
             ->where('holiday_status_id', $leaveTypeId)
             ->where('state', '!=', State::REFUSE->value)
-            ->where(fn ($q) => true)  
+            ->where(fn ($q) => true)
             ->sum('number_of_days');
 
         $availableBalance = round($totalAllocated - $totalTaken, 1);
@@ -433,10 +434,10 @@ trait TimeOffHelper
 
         if (! empty($data['employee_id'])) {
             $employee = Employee::find($data['employee_id']);
-            $user = $employee->user;
+            $user = $employee->user ?? null;
         } else {
             $user = Auth::user();
-            $employee = $user->employee;
+            $employee = $user?->employee;
         }
 
         if ($employee) {
@@ -453,6 +454,10 @@ trait TimeOffHelper
             if ($employee->calendar) {
                 $data['calendar_id'] = $employee->calendar->id;
                 $data['number_of_hours'] = $employee->calendar->hours_per_day;
+            }
+
+            if ($employee->leave_manager_id) {
+                $data['second_approver_id'] = $employee->leaveManager->employee->id;
             }
         }
 

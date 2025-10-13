@@ -10,6 +10,8 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\TimeOff\Enums\State;
 use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource;
 use Webkul\TimeOff\Filament\Clusters\MyTime;
@@ -22,6 +24,7 @@ use Webkul\TimeOff\Traits\TimeOffHelper;
 
 class MyTimeOffResource extends Resource
 {
+    use HasResourcePermissionQuery;
     use TimeOffHelper;
 
     protected static ?string $model = Leave::class;
@@ -48,9 +51,12 @@ class MyTimeOffResource extends Resource
     }
 
     public static function table(Table $table): Table
-    {
-        return $table = TimeOffResource::table($table);
-    }
+{
+    return TimeOffResource::table($table)
+        ->modifyQueryUsing(function ($query) {
+            $query->where('employee_id', Auth::user()?->employee?->id);
+        });
+}
 
     public static function getPages(): array
     {

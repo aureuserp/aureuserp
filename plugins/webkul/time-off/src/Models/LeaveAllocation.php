@@ -9,12 +9,13 @@ use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\Employee;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 use Webkul\TimeOff\Enums\AllocationType;
 
 class LeaveAllocation extends Model
 {
-    use HasChatter, HasFactory, HasLogActivity;
+    use HasChatter, HasFactory, HasLogActivity, HasPermissionScope;
 
     protected $table = 'time_off_leave_allocations';
 

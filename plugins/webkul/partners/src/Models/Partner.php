@@ -17,13 +17,14 @@ use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Partner\Database\Factories\PartnerFactory;
 use Webkul\Partner\Enums\AccountType;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
 use Webkul\Support\Models\State;
 
 class Partner extends Authenticatable implements FilamentUser
 {
-    use HasChatter, HasFactory, HasLogActivity, Notifiable, SoftDeletes;
+    use HasChatter, HasFactory, HasLogActivity, Notifiable, SoftDeletes, HasPermissionScope;
 
     /**
      * Table name.
@@ -75,19 +76,16 @@ class Partner extends Authenticatable implements FilamentUser
         'is_active'    => 'boolean',
     ];
 
-    /**
-     * Determine if the user can access the Filament panel.
-     */
     public function canAccessPanel(Panel $panel): bool
     {
         return true;
     }
 
-    /**
-     * Get image url for the product image.
-     *
-     * @return string
-     */
+    protected function getOwnerColumn(): string
+    {
+        return 'creator_id';
+    }
+
     public function getAvatarUrlAttribute()
     {
         if (! $this->avatar) {

@@ -19,7 +19,7 @@ return [
         'footer' => [
             'home' => 'Home',
         ],
-        
+
         'social' => [
             'facebook'  => 'Facebook',
             'twitter'   => 'Twitter',

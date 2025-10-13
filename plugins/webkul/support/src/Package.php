@@ -171,7 +171,7 @@ class Package extends BasePackage
             if (Schema::hasTable('plugins') === false) {
                 return null;
             }
-            
+
             static::$plugins = Plugin::all()->keyBy('name');
         }
 

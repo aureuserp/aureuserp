@@ -11,13 +11,14 @@ use Webkul\Employee\Models\Calendar;
 use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\Employee;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 use Webkul\TimeOff\Enums\RequestDateFromPeriod;
 use Webkul\TimeOff\Enums\State;
 
 class Leave extends Model
 {
-    use HasChatter, HasFactory, HasLogActivity;
+    use HasChatter, HasFactory, HasLogActivity, HasPermissionScope;
 
     protected $table = 'time_off_leaves';
 
@@ -83,6 +84,31 @@ class Leave extends Model
         'state'                    => State::class,
         'request_date_from_period' => RequestDateFromPeriod::class,
     ];
+public function scopeApplyPermissionScope($query)
+{
+    $user = filament()->auth()->user();
+    if (! $user) {
+        return $query;
+    }
+
+    if ($user->resource_permission === \Webkul\Security\Enums\PermissionType::GLOBAL) {
+        return $query;
+    }
+
+    $query->where(function ($sub) use ($user) {
+        $sub->whereHas('employee', fn($q) => $q->where('user_id', $user->id))
+
+            ->orWhereHas('employee', fn($q) => $q->where('leave_manager_id', $user->id))
+
+            ->orWhereHas('secondApprover', fn($q) => $q->whereHas('user', fn($u) => $u->where('id', $user->id)))
+
+            ->orWhere('creator_id', $user->id)
+
+            ->orWhere('user_id', $user->id);
+    });
+
+    return $query;
+}
 
     public function user(): BelongsTo
     {

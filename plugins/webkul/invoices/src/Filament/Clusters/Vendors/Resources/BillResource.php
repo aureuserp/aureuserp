@@ -10,9 +10,12 @@ use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource\Pages\EditBi
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource\Pages\ListBills;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource\Pages\ViewBill;
 use Webkul\Invoice\Models\Bill;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class BillResource extends BaseBillResource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = Bill::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-credit-card';

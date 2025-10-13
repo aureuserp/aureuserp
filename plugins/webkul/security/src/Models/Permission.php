@@ -2,9 +2,9 @@
 
 namespace Webkul\Security\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Spatie\Permission\Models\Permission as BasePermission;
 use Webkul\Security\PermissionRegistrar;
-use Illuminate\Database\Eloquent\Collection;
 
 class Permission extends BasePermission
 {

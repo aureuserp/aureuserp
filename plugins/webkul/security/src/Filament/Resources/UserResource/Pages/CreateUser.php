@@ -22,4 +22,11 @@ class CreateUser extends CreateRecord
             ->title(__('security::filament/resources/user/pages/create-user.notification.title'))
             ->body(__('security::filament/resources/user/pages/create-user.notification.body'));
     }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['creator_id'] = filament()->auth()->user()->id;
+
+        return $data;
+    }
 }

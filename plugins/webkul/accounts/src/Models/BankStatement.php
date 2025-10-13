@@ -16,7 +16,7 @@ class BankStatement extends Model
     protected $fillable = [
         'company_id',
         'journal_id',
-        'created_by',
+        'creator_id',
         'name',
         'reference',
         'first_line_index',
@@ -39,6 +39,6 @@ class BankStatement extends Model
 
     public function createdBy()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'creator_id');
     }
 }

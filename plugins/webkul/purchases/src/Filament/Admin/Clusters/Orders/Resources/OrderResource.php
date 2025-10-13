@@ -60,6 +60,7 @@ use Webkul\Purchase\Models\Order;
 use Webkul\Purchase\Models\Product;
 use Webkul\Purchase\Settings\OrderSettings;
 use Webkul\Purchase\Settings\ProductSettings;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Models\Currency;
@@ -68,7 +69,7 @@ use Webkul\Support\Package;
 
 class OrderResource extends Resource
 {
-    use HasCustomFields;
+    use HasCustomFields, HasResourcePermissionQuery;
 
     protected static ?string $model = Order::class;
 

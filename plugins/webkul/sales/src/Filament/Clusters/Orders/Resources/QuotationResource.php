@@ -70,6 +70,7 @@ use Webkul\Sale\Settings;
 use Webkul\Sale\Settings\PriceSettings;
 use Webkul\Sale\Settings\ProductSettings;
 use Webkul\Sale\Settings\QuotationAndOrderSettings;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Models\Company;
@@ -79,6 +80,8 @@ use Webkul\Support\Package;
 
 class QuotationResource extends Resource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = Order::class;
 
     protected static ?int $navigationSort = 1;

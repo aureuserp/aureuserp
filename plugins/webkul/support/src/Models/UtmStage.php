@@ -17,7 +17,7 @@ class UtmStage extends Model implements Sortable
     protected $fillable = [
         'sort',
         'name',
-        'created_by',
+        'creator_id',
     ];
 
     public $sortable = [
@@ -27,6 +27,6 @@ class UtmStage extends Model implements Sortable
 
     public function createdBy()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'creator_id');
     }
 }

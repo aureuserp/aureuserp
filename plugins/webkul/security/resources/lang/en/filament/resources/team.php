@@ -16,7 +16,8 @@ return [
 
     'table' => [
         'columns' => [
-            'name'         => 'Name',
+            'name'       => 'Name',
+            'created-by' => 'Created By',
         ],
 
         'actions' => [
