@@ -56,83 +56,61 @@ class SalesDashboard extends BaseDashboard
                     ->schema([
                         DatePicker::make('start_date')
                             ->label(__('sales::filament/pages/sales-dashboard.filters-form.start-date'))
-                            ->maxDate(fn (Get $get) => $get('endDate') ?: now())
+                            ->maxDate(fn (Get $get) => $get('end_date') ?: now())
                             ->default(now()->subMonth())
                             ->native(false),
 
                         DatePicker::make('end_date')
                             ->label(__('sales::filament/pages/sales-dashboard.filters-form.end-date'))
-                            ->minDate(fn (Get $get) => $get('startDate') ?: now())
+                            ->minDate(fn (Get $get) => $get('start_date') ?: now())
                             ->maxDate(now())
-                            ->default(now()) // ✅ Default = today
+                            ->default(now())
                             ->native(false),
 
                         Select::make('country_id')
-                            ->label('Country')
-                            ->options(
-                                fn () => Country::get()
-                                    ->pluck('name', 'id')
-                                    ->toArray()
-                            )
+                            ->label(__('sales::filament/pages/sales-dashboard.filters-form.country'))
+                            ->options(fn () => Country::pluck('name', 'id')->toArray())
                             ->multiple()
                             ->searchable()
-                            ->placeholder('All Countries'),
+                            ->placeholder(__('sales::filament/pages/sales-dashboard.filters-form.country')),
 
                         Select::make('product_id')
-                            ->label('Product')
-                            ->options(
-                                fn () => Product::get()
-                                    ->pluck('name', 'id')
-                                    ->toArray()
-                            )
+                            ->label(__('sales::filament/pages/sales-dashboard.filters-form.product'))
+                            ->options(fn () => Product::pluck('name', 'id')->toArray())
                             ->multiple()
                             ->searchable()
-                            ->placeholder('All Products'),
+                            ->placeholder(__('sales::filament/pages/sales-dashboard.filters-form.product')),
 
                         Select::make('customer_id')
-                            ->label('Customer')
-                            ->options(
-                                fn () => Partner::get()
-                                    ->pluck('name', 'id')
-                                    ->toArray()
-                            )
+                            ->label(__('sales::filament/pages/sales-dashboard.filters-form.customer'))
+                            ->options(fn () => Partner::pluck('name', 'id')->toArray())
                             ->multiple()
                             ->searchable()
-                            ->placeholder('All Customers'),
+                            ->placeholder(__('sales::filament/pages/sales-dashboard.filters-form.customer')),
 
                         Select::make('category_id')
-                            ->label('Category')
-                            ->options(
-                                fn () => Category::get()
-                                    ->pluck('name', 'id')
-                                    ->toArray()
-                            )
+                            ->label(__('sales::filament/pages/sales-dashboard.filters-form.category'))
+                            ->options(fn () => Category::pluck('name', 'id')->toArray())
                             ->multiple()
                             ->searchable()
-                            ->placeholder('All Categories'),
+                            ->placeholder(__('sales::filament/pages/sales-dashboard.filters-form.category')),
 
                         Select::make('salesteam_id')
-                            ->label('Sales Team')
-                            ->options(
-                                fn () => Team::get()
-                                    ->pluck('name', 'id')
-                                    ->toArray()
-                            )
+                            ->label(__('sales::filament/pages/sales-dashboard.filters-form.salesteam'))
+                            ->options(fn () => Team::pluck('name', 'id')->toArray())
                             ->multiple()
                             ->searchable()
-                            ->placeholder('All Sales teams'),
+                            ->placeholder(__('sales::filament/pages/sales-dashboard.filters-form.salesteam')),
 
                         Select::make('salesperson_id')
                             ->label(__('sales::filament/pages/sales-dashboard.filters-form.salesperson'))
-                            ->options(
-                                fn () => User::whereIn('id', Order::distinct()->pluck('user_id')->filter())
-                                    ->pluck('name', 'id')
-                                    ->toArray()
+                            ->options(fn () => User::whereIn('id', Order::distinct()->pluck('user_id')->filter())
+                                ->pluck('name', 'id')
+                                ->toArray()
                             )
-
                             ->multiple()
                             ->searchable()
-                            ->placeholder('All Salespersons'),
+                            ->placeholder(__('sales::filament/pages/sales-dashboard.filters-form.salesperson')),
                     ])
                     ->columns(4)
                     ->columnSpanFull(),

@@ -6,10 +6,13 @@ return [
     ],
 
     'filters-form' => [
-        'start-date' => 'Start Date',
-
-        'end-date'   => 'End Date',
-
-        'salesperson' => 'Sales Person',
+        'start-date'     => 'Start Date',
+        'end-date'       => 'End Date',
+        'salesperson'    => 'Sales Person',
+        'country'        => 'Country',
+        'product'        => 'Product',
+        'customer'       => 'Customer',
+        'category'       => 'Category',
+        'salesteam'      => 'Sales Team',
     ],
 ];
