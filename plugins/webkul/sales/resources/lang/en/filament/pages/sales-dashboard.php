@@ -15,4 +15,21 @@ return [
         'category'       => 'Category',
         'salesteam'      => 'Sales Team',
     ],
+
+    'widgets' => [
+        'stats-overview' => [
+            'heading'   => 'Sales Overview',
+            'quotation' => 'Quotation',
+            'order'     => 'Order',
+            'draft'     => 'Draft Quotation',
+            'cancel'    => 'Cancel Quotation',
+
+            'descriptions' => [
+                'quotation' => 'Quotations sent to customers',
+                'order'     => 'Orders confirmed by customers',
+                'draft'     => 'Draft quotations',
+                'cancel'    => 'Orders cancelled by customers',
+            ],
+        ],
+    ],
 ];

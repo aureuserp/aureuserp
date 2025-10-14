@@ -15,7 +15,7 @@ class StatsOverviewWidget extends BaseWidget
 
     protected function getHeading(): ?string
     {
-        return 'Sales Stats Overview';
+        return __('sales::filament/pages/sales-dashboard.widgets.stats-overview.heading');
     }
 
     protected function getColumns(): int
@@ -84,26 +84,28 @@ class StatsOverviewWidget extends BaseWidget
         return [
             [
                 'state'       => OrderState::SENT,
-                'title'       => 'Quotation',
-                'description' => 'Number of quotations sent to customers',
+                'title'       => __('sales::filament/pages/sales-dashboard.widgets.stats-overview.quotation'),
+                'description' => __('sales::filament/pages/sales-dashboard.widgets.stats-overview.descriptions.quotation'),
                 'color'       => 'primary',
             ],
             [
                 'state'       => OrderState::SALE,
                 'title'       => 'Confirmed Order',
                 'description' => 'Orders confirmed by customers',
+                'title'       => __('sales::filament/pages/sales-dashboard.widgets.stats-overview.order'),
+                'description' => __('sales::filament/pages/sales-dashboard.widgets.stats-overview.descriptions.order'),
                 'color'       => 'success',
             ],
             [
                 'state'       => OrderState::DRAFT,
-                'title'       => 'Draft Quotation',
-                'description' => 'Quotations still in draft state',
+                'title'       => __('sales::filament/pages/sales-dashboard.widgets.stats-overview.draft'),
+                'description' => __('sales::filament/pages/sales-dashboard.widgets.stats-overview.descriptions.draft'),
                 'color'       => 'info',
             ],
             [
                 'state'       => OrderState::CANCEL,
-                'title'       => 'Cancel Quotation',
-                'description' => 'Quotations that were cancelled',
+                'title'       => __('sales::filament/pages/sales-dashboard.widgets.stats-overview.cancel'),
+                'description' => __('sales::filament/pages/sales-dashboard.widgets.stats-overview.descriptions.cancel'),
                 'color'       => 'danger',
             ],
         ];
