@@ -31,5 +31,13 @@ return [
                 'cancel'    => 'Orders cancelled by customers',
             ],
         ],
+
+        'sales-chart' => [
+            'heading'          => 'Sales Chart',
+            'confirmed-orders' => 'Confirmed Orders',
+            'draft-orders'     => 'Draft Orders',
+            'sent-orders'      => 'Sent Orders',
+            'cancelled-orders' => 'Cancelled Orders',
+        ],
     ],
 ];

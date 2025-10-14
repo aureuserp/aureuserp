@@ -123,8 +123,8 @@ class SalesDashboard extends BaseDashboard
     public function getWidgets(): array
     {
         return [
-            StatsOverviewWidget::class,
-            SalesChartWidget::class,
+            StatsOverviewWidget::class, // Stats Overview
+            SalesChartWidget::class, // Sales Chart
             RevenewChartWidget::class,
             YearlyComparisonWidget::class,
             TopCategoriesWidget::class,

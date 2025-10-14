@@ -18,7 +18,7 @@ class SalesChartWidget extends ChartWidget
 
     public function getHeading(): ?string
     {
-        return 'Sales Trends';
+        return __('sales::filament/pages/sales-dashboard.widgets.sales-chart.heading');
     }
 
     protected function getData(): array
@@ -130,25 +130,25 @@ class SalesChartWidget extends ChartWidget
             $labels,
             [
                 [
-                    'label'           => 'Confirmed Orders',
+                    'label'           => __('sales::filament/pages/sales-dashboard.widgets.sales-chart.confirmed-orders'),
                     'data'            => $saleData,
                     'borderColor'     => '#3b82f6',
                     'backgroundColor' => 'rgba(59,130,246,0.2)',
                 ],
                 [
-                    'label'           => 'Draft Orders',
+                    'label'           => __('sales::filament/pages/sales-dashboard.widgets.sales-chart.draft-orders'),
                     'data'            => $draftData,
                     'borderColor'     => '#fbbf24',
                     'backgroundColor' => 'rgba(251,191,36,0.2)',
                 ],
                 [
-                    'label'           => 'Sent Orders',
+                    'label'           => __('sales::filament/pages/sales-dashboard.widgets.sales-chart.sent-orders'),
                     'data'            => $sentData,
                     'borderColor'     => '#10b981',
                     'backgroundColor' => 'rgba(16,185,129,0.2)',
                 ],
                 [
-                    'label'           => 'Cancelled Orders',
+                    'label'           => __('sales::filament/pages/sales-dashboard.widgets.sales-chart.cancelled-orders'),
                     'data'            => $cancelData,
                     'borderColor'     => '#ef4444',
                     'backgroundColor' => 'rgba(239,68,68,0.2)',
