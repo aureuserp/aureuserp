@@ -8,7 +8,7 @@ use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Models\Order;
 
-class SalesChartWidget extends ChartWidget
+class RevenewChartWidget extends ChartWidget
 {
     use InteractsWithPageFilters;
 
@@ -18,7 +18,7 @@ class SalesChartWidget extends ChartWidget
 
     public function getHeading(): ?string
     {
-        return 'Sales Trends';
+        return 'Revenue Trends';
     }
 
     protected function getData(): array
@@ -26,8 +26,9 @@ class SalesChartWidget extends ChartWidget
         [$startDate, $endDate] = $this->getDateRange();
 
         $orders = $this->getFilteredQuery()
+            ->where('state', OrderState::SALE)
             ->whereBetween('date_order', [$startDate, $endDate])
-            ->get();
+            ->get(['date_order', 'amount_total']);
 
         [$labels, $datasets] = $this->prepareChartData($orders, $startDate, $endDate);
 
@@ -54,22 +55,11 @@ class SalesChartWidget extends ChartWidget
         return [$startDate, $endDate];
     }
 
-    /**
-     * 🔹 Apply all filters to the query
-     */
     protected function getFilteredQuery()
     {
         $filters = $this->filters;
 
         $query = Order::query();
-
-        if (! empty($filters['start_date'])) {
-            $query->whereDate('date_order', '>=', $filters['start_date']);
-        }
-
-        if (! empty($filters['end_date'])) {
-            $query->whereDate('date_order', '<=', $filters['end_date']);
-        }
 
         if (! empty($filters['country_id'])) {
             $query->whereHas('partner', fn ($q) => $q->whereIn('country_id', (array) $filters['country_id']));
@@ -103,10 +93,7 @@ class SalesChartWidget extends ChartWidget
         $ordersByDay = $orders->groupBy(fn ($order) => Carbon::parse($order->date_order)->format('Y-m-d'));
 
         $labels = [];
-        $saleData = [];
-        $draftData = [];
-        $sentData = [];
-        $cancelData = [];
+        $revenueData = [];
 
         $period = new \DatePeriod(
             $startDate,
@@ -119,46 +106,21 @@ class SalesChartWidget extends ChartWidget
             $labels[] = $dateKey;
 
             $dailyOrders = $ordersByDay[$dateKey] ?? collect();
-
-            $saleData[] = $this->countOrdersByState($dailyOrders, OrderState::SALE->value);
-            $draftData[] = $this->countOrdersByState($dailyOrders, OrderState::DRAFT->value);
-            $sentData[] = $this->countOrdersByState($dailyOrders, OrderState::SENT->value);
-            $cancelData[] = $this->countOrdersByState($dailyOrders, OrderState::CANCEL->value);
+            $revenueData[] = $dailyOrders->sum('amount_total');
         }
 
         return [
             $labels,
             [
                 [
-                    'label'           => 'Confirmed Orders',
-                    'data'            => $saleData,
-                    'borderColor'     => '#3b82f6',
+                    'label'           => 'Revenue',
+                    'data'            => $revenueData,
+                    'borderColor'     => '#1e851eff',
                     'backgroundColor' => 'rgba(59,130,246,0.2)',
-                ],
-                [
-                    'label'           => 'Draft Orders',
-                    'data'            => $draftData,
-                    'borderColor'     => '#fbbf24',
-                    'backgroundColor' => 'rgba(251,191,36,0.2)',
-                ],
-                [
-                    'label'           => 'Sent Orders',
-                    'data'            => $sentData,
-                    'borderColor'     => '#10b981',
-                    'backgroundColor' => 'rgba(16,185,129,0.2)',
-                ],
-                [
-                    'label'           => 'Cancelled Orders',
-                    'data'            => $cancelData,
-                    'borderColor'     => '#ef4444',
-                    'backgroundColor' => 'rgba(239,68,68,0.2)',
+                    'fill'            => true,
+                    'tension'         => 0.3,
                 ],
             ],
         ];
-    }
-
-    protected function countOrdersByState($orders, string $state): int
-    {
-        return $orders->where('state', $state)->count();
     }
 }

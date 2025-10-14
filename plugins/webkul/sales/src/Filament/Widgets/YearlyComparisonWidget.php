@@ -11,19 +11,42 @@ class YearlyComparisonWidget extends ChartWidget
 {
     use InteractsWithPageFilters;
 
+    protected ?string $maxHeight = '450px';
+
     public function getHeading(): ?string
     {
-        return __('sales::filament/widgets/year-sales.heading');
+        return 'Yearly Sales Comparison';
     }
 
     protected function getData(): array
     {
         $filters = $this->filters;
 
-        $baseQuery = Order::where('state', OrderState::SALE);
+        $baseQuery = Order::query()->where('state', OrderState::SALE);
 
+        // Apply filters
         if (! empty($filters['salesperson_id'])) {
-            $baseQuery->where('user_id', $filters['salesperson_id']);
+            $baseQuery->whereIn('user_id', (array) $filters['salesperson_id']);
+        }
+
+        if (! empty($filters['country_id'])) {
+            $baseQuery->whereHas('partner', fn ($q) => $q->whereIn('country_id', (array) $filters['country_id']));
+        }
+
+        if (! empty($filters['product_id'])) {
+            $baseQuery->whereHas('orderLines', fn ($q) => $q->whereIn('product_id', (array) $filters['product_id']));
+        }
+
+        if (! empty($filters['customer_id'])) {
+            $baseQuery->whereIn('partner_id', (array) $filters['customer_id']);
+        }
+
+        if (! empty($filters['category_id'])) {
+            $baseQuery->whereHas('orderLines.product.category', fn ($q) => $q->whereIn('category_id', (array) $filters['category_id']));
+        }
+
+        if (! empty($filters['salesteam_id'])) {
+            $baseQuery->whereIn('team_id', (array) $filters['salesteam_id']);
         }
 
         $currentYear = now()->year;
@@ -46,9 +69,9 @@ class YearlyComparisonWidget extends ChartWidget
                         $currentYearSales,
                     ],
                     'backgroundColor'    => ['#a3e635', '#3b82f6'],
-                    'borderColor'        => '#1e293b', // Optional border for bars
+                    'borderColor'        => '#1e293b',
                     'borderWidth'        => 1,
-                    'barPercentage'      => 0.5, // Slimmer bars
+                    'barPercentage'      => 0.5,
                     'categoryPercentage' => 0.6,
                 ],
             ],

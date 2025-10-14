@@ -118,6 +118,11 @@ class Order extends Model
         return $this->belongsTo(Company::class)->withTrashed();
     }
 
+    public function orderLines()
+    {
+        return $this->hasMany(OrderLine::class, 'order_id');
+    }
+
     public function partner()
     {
         return $this->belongsTo(Partner::class);

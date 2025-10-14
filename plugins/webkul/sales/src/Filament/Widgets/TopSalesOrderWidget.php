@@ -12,7 +12,7 @@ use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Models\OrderLine;
 use Webkul\Support\Models\Currency;
 
-class TopProductsWidget extends BaseWidget
+class TopSalesOrderWidget extends BaseWidget
 {
     use InteractsWithPageFilters;
 
@@ -94,7 +94,8 @@ class TopProductsWidget extends BaseWidget
             Tables\Columns\TextColumn::make('product_id')
                 ->label('Product')
                 ->formatStateUsing(fn ($state, $record) => $record->product?->name ?? '—')
-                ->sortable(),
+                ->sortable()
+                ->searchable(),
 
             Tables\Columns\TextColumn::make('total_qty')
                 ->label('Quantity Sold')

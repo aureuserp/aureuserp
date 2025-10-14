@@ -6,7 +6,7 @@ return [
     ],
 
     'title' => [
-        'total-sent-quotation' => 'Total Sent Quotation',
+        'total-sent-quotation' => 'Quotation',
 
         'total-quotation-confirm-by-customer' => 'Total Quotation Confirm By Customer',
 

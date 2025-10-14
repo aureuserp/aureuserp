@@ -3,7 +3,6 @@
 namespace Webkul\Sale\Filament\Widgets;
 
 use Filament\Tables;
-use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Sale\Models\Category;
@@ -12,28 +11,15 @@ class TopCategoriesWidget extends BaseWidget
 {
     protected static ?string $pollingInterval = '15s';
 
-    protected int|string|array $columnSpan = 'full';
-
     protected function getHeading(): ?string
     {
         return __('sales::filament/widgets/top-categories.heading');
     }
 
     /**
-     * 🔹 Build and return the table.
+     * 🔹 Table query for top categories.
      */
-    public function table(Table $table): Table
-    {
-        return $table
-            ->query($this->baseQuery())
-            ->defaultPaginationPageOption(5)
-            ->columns($this->getTableColumns());
-    }
-
-    /**
-     * 🔹 Base query for top categories.
-     */
-    protected function baseQuery(): Builder
+    protected function getTableQuery(): Builder
     {
         return Category::query()
             ->withCount('products')
@@ -42,7 +28,7 @@ class TopCategoriesWidget extends BaseWidget
     }
 
     /**
-     * 🔹 Define table columns.
+     * 🔹 Table columns.
      */
     protected function getTableColumns(): array
     {
