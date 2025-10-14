@@ -6,37 +6,30 @@ use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use Filament\Auth\Http\Responses\Contracts\LoginResponse;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Checkbox;
-use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Http\Responses\Auth\Contracts\LoginResponse;
+use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Notifications\Notification;
 use Filament\Pages\Concerns\InteractsWithFormActions;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Component;
+use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
 
-/**
- * @property Form $form
- */
 class Login extends Page
 {
     use InteractsWithFormActions;
+    use InteractsWithForms;
     use WithRateLimiting;
 
-    /**
-     * @var view-string
-     */
-    protected static string $view = 'website::filament.customer.pages.auth.login';
+    protected string $view = 'website::filament.customer.pages.auth.login';
 
-    /**
-     * @var array<string, mixed> | null
-     */
     public ?array $data = [];
 
     public function mount(): void
@@ -68,7 +61,7 @@ class Login extends Page
 
         if (
             ($user instanceof FilamentUser) &&
-            (! $user->canAccessPanel(Filament::getCurrentPanel()))
+            (! $user->canAccessPanel(Filament::getCurrentOrDefaultPanel()))
         ) {
             Filament::auth()->logout();
 
@@ -83,11 +76,11 @@ class Login extends Page
     protected function getRateLimitedNotification(TooManyRequestsException $exception): ?Notification
     {
         return Notification::make()
-            ->title(__('filament-panels::pages/auth/login.notifications.throttled.title', [
+            ->title(__('website::filament/customer/pages/auth/login.notifications.throttled.title', [
                 'seconds' => $exception->secondsUntilAvailable,
                 'minutes' => $exception->minutesUntilAvailable,
             ]))
-            ->body(array_key_exists('body', __('filament-panels::pages/auth/login.notifications.throttled') ?: []) ? __('filament-panels::pages/auth/login.notifications.throttled.body', [
+            ->body(array_key_exists('body', __('website::filament/customer/pages/auth/login.notifications.throttled') ?: []) ? __('website::filament/customer/pages/auth/login.notifications.throttled.body', [
                 'seconds' => $exception->secondsUntilAvailable,
                 'minutes' => $exception->minutesUntilAvailable,
             ]) : null)
@@ -97,24 +90,21 @@ class Login extends Page
     protected function throwFailureValidationException(): never
     {
         throw ValidationException::withMessages([
-            'data.email' => __('filament-panels::pages/auth/login.messages.failed'),
+            'data.email' => __('website::filament/customer/pages/auth/login.messages.failed'),
         ]);
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form;
+        return $schema;
     }
 
-    /**
-     * @return array<int | string, string | Form>
-     */
     protected function getForms(): array
     {
         return [
             'form' => $this->form(
-                $this->makeForm()
-                    ->schema([
+                $this->makeSchema()
+                    ->components([
                         $this->getEmailFormComponent(),
                         $this->getPasswordFormComponent(),
                         $this->getRememberFormComponent(),
@@ -127,7 +117,7 @@ class Login extends Page
     protected function getEmailFormComponent(): Component
     {
         return TextInput::make('email')
-            ->label(__('filament-panels::pages/auth/login.form.email.label'))
+            ->label(__('website::filament/customer/pages/auth/login.form.email.label'))
             ->email()
             ->required()
             ->autocomplete()
@@ -138,8 +128,8 @@ class Login extends Page
     protected function getPasswordFormComponent(): Component
     {
         return TextInput::make('password')
-            ->label(__('filament-panels::pages/auth/login.form.password.label'))
-            ->hint(filament()->hasPasswordReset() ? new HtmlString(Blade::render('<x-filament::link :href="filament()->getRequestPasswordResetUrl()" tabindex="3"> {{ __(\'filament-panels::pages/auth/login.actions.request_password_reset.label\') }}</x-filament::link>')) : null)
+            ->label(__('website::filament/customer/pages/auth/login.form.password.label'))
+            ->hint(filament()->hasPasswordReset() ? new HtmlString(Blade::render('<x-filament::link :href="filament()->getRequestPasswordResetUrl()" tabindex="3"> {{ __(\'website::filament/customer/pages/auth/login.actions.request_password_reset.label\') }}</x-filament::link>')) : null)
             ->password()
             ->revealable(filament()->arePasswordsRevealable())
             ->autocomplete('current-password')
@@ -150,20 +140,20 @@ class Login extends Page
     protected function getRememberFormComponent(): Component
     {
         return Checkbox::make('remember')
-            ->label(__('filament-panels::pages/auth/login.form.remember.label'));
+            ->label(__('website::filament/customer/pages/auth/login.form.remember.label'));
     }
 
     public function registerAction(): Action
     {
         return Action::make('register')
             ->link()
-            ->label(__('filament-panels::pages/auth/login.actions.register.label'))
+            ->label(__('website::filament/customer/pages/auth/login.actions.register.label'))
             ->url(filament()->getRegistrationUrl());
     }
 
     public function getTitle(): string|Htmlable
     {
-        return __('filament-panels::pages/auth/login.title');
+        return __('website::filament/customer/pages/auth/login.title');
     }
 
     public function getHeading(): string|Htmlable
@@ -171,9 +161,6 @@ class Login extends Page
         return '';
     }
 
-    /**
-     * @return array<Action | ActionGroup>
-     */
     protected function getFormActions(): array
     {
         return [
@@ -184,7 +171,7 @@ class Login extends Page
     protected function getAuthenticateFormAction(): Action
     {
         return Action::make('authenticate')
-            ->label(__('filament-panels::pages/auth/login.form.actions.authenticate.label'))
+            ->label(__('website::filament/customer/pages/auth/login.form.actions.authenticate.label'))
             ->submit('authenticate');
     }
 
@@ -193,10 +180,6 @@ class Login extends Page
         return true;
     }
 
-    /**
-     * @param  array<string, mixed>  $data
-     * @return array<string, mixed>
-     */
     protected function getCredentialsFromFormData(array $data): array
     {
         return [

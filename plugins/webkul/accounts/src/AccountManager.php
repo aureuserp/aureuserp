@@ -4,6 +4,8 @@ namespace Webkul\Account;
 
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Account\Enums\DelayType;
+use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Facades\Tax as TaxFacade;
@@ -78,7 +80,7 @@ class AccountManager
 
             foreach ($data['files'] as $file) {
                 $attachments[] = [
-                    'path' => asset('storage/'.$file),
+                    'path' => $file,
                     'name' => basename($file),
                 ];
             }
@@ -243,7 +245,7 @@ class AccountManager
 
                     case Enums\DelayType::DAYS_AFTER_END_OF_MONTH->value:
                         $dateMaturity = $dateMaturity->endOfMonth()->addDays((int) $dueTerm->nb_days);
-              
+
                         break;
 
                     case Enums\DelayType::DAYS_AFTER_END_OF_NEXT_MONTH->value:
@@ -251,7 +253,7 @@ class AccountManager
 
                         break;
 
-                    case Enums\DelayType::DAYS_END_OF_MONTH_NO_THE->value:
+                    case DelayType::DAYS_END_OF_MONTH_NO_THE->value:
                         $dateMaturity = $dateMaturity->endOfMonth();
 
                         break;
@@ -424,7 +426,7 @@ class AccountManager
                 'name'                     => $tax->name,
                 'move_id'                  => $move->id,
                 'move_name'                => $move->name,
-                'display_type'             => Enums\DisplayType::TAX,
+                'display_type'             => DisplayType::TAX,
                 'currency_id'              => $move->currency_id,
                 'partner_id'               => $move->partner_id,
                 'company_id'               => $move->company_id,
@@ -474,11 +476,11 @@ class AccountManager
 
         MoveLine::updateOrCreate([
             'move_id'      => $move->id,
-            'display_type' => Enums\DisplayType::PAYMENT_TERM,
+            'display_type' => DisplayType::PAYMENT_TERM,
         ], [
             'move_id'                  => $move->id,
             'move_name'                => $move->name,
-            'display_type'             => Enums\DisplayType::PAYMENT_TERM,
+            'display_type'             => DisplayType::PAYMENT_TERM,
             'currency_id'              => $move->currency_id,
             'partner_id'               => $move->partner_id,
             'date_maturity'            => $move->invoice_date_due,

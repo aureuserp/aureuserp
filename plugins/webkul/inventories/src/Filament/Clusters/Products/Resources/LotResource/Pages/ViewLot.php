@@ -3,21 +3,25 @@
 namespace Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource\Pages;
 
 use Barryvdh\DomPDF\Facade\Pdf;
-use Filament\Actions;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\QueryException;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource;
 use Webkul\Inventory\Models\Lot;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewLot extends ViewRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = LotResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('print')
+            Action::make('print')
                 ->label(__('inventories::filament/clusters/products/resources/lot/pages/view-lot.header-actions.print.label'))
                 ->icon('heroicon-o-printer')
                 ->color('gray')
@@ -32,8 +36,8 @@ class ViewLot extends ViewRecord
                         echo $pdf->output();
                     }, 'Lot-'.str_replace('/', '_', $record->name).'.pdf');
                 }),
-            Actions\DeleteAction::make()
-                ->action(function (Actions\DeleteAction $action, Lot $record) {
+            DeleteAction::make()
+                ->action(function (DeleteAction $action, Lot $record) {
                     try {
                         $record->delete();
 

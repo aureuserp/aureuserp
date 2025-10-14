@@ -108,18 +108,6 @@ class ProjectPolicy
     }
 
     /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Project $project): bool
-    {
-        if (! $user->can('replicate_project')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $project);
-    }
-
-    /**
      * Determine whether the user can reorder.
      */
     public function reorder(User $user): bool

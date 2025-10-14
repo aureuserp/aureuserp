@@ -2,7 +2,7 @@
 
 namespace Webkul\Sale;
 
-use Filament\Notifications\Notification;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Webkul\Account\Enums as AccountEnums;
@@ -19,6 +19,11 @@ use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Invoice\Enums as InvoiceEnums;
 use Webkul\Partner\Models\Partner;
+use Webkul\Sale\Enums\AdvancedPayment;
+use Webkul\Sale\Enums\InvoiceStatus;
+use Webkul\Sale\Enums\OrderDeliveryStatus;
+use Webkul\Sale\Enums\OrderState;
+use Webkul\Sale\Enums\QtyDeliveredMethod;
 use Webkul\Sale\Mail\SaleOrderCancelQuotation;
 use Webkul\Sale\Mail\SaleOrderQuotation;
 use Webkul\Sale\Models\AdvancedPaymentInvoice;
@@ -36,13 +41,15 @@ class SaleManager
         protected InvoiceSettings $invoiceSettings,
     ) {}
 
-    public function sendQuotationOrOrderByEmail(Order $record, array $data = []): Order
+    public function sendQuotationOrOrderByEmail(Order $record, array $data = []): array
     {
-        $record = $this->sendByEmail($record, $data);
+        $result = $this->sendByEmail($record, $data);
 
-        $record = $this->computeSaleOrder($record);
+        if (! empty($result['sent'])) {
+            $record = $this->computeSaleOrder($record);
+        }
 
-        return $record;
+        return $result;
     }
 
     public function lockAndUnlock(Order $record): Order
@@ -59,8 +66,8 @@ class SaleManager
         $this->applyPullRules($record);
 
         $record->update([
-            'state'          => Enums\OrderState::SALE,
-            'invoice_status' => Enums\InvoiceStatus::TO_INVOICE,
+            'state'          => OrderState::SALE,
+            'invoice_status' => InvoiceStatus::TO_INVOICE,
             'locked'         => $this->quotationAndOrderSettings->enable_lock_confirm_sales,
         ]);
 
@@ -72,8 +79,8 @@ class SaleManager
     public function backToQuotation(Order $record): Order
     {
         $record->update([
-            'state'          => Enums\OrderState::DRAFT,
-            'invoice_status' => Enums\InvoiceStatus::NO,
+            'state'          => OrderState::DRAFT,
+            'invoice_status' => InvoiceStatus::NO,
         ]);
 
         $record = $this->computeSaleOrder($record);
@@ -84,8 +91,8 @@ class SaleManager
     public function cancelSaleOrder(Order $record, array $data = []): Order
     {
         $record->update([
-            'state'          => Enums\OrderState::CANCEL,
-            'invoice_status' => Enums\InvoiceStatus::NO,
+            'state'          => OrderState::CANCEL,
+            'invoice_status' => InvoiceStatus::NO,
         ]);
 
         if (! empty($data)) {
@@ -102,7 +109,7 @@ class SaleManager
     public function createInvoice(Order $record, array $data = [])
     {
         DB::transaction(function () use ($record, $data) {
-            if ($data['advance_payment_method'] == Enums\AdvancedPayment::DELIVERED->value) {
+            if ($data['advance_payment_method'] == AdvancedPayment::DELIVERED->value) {
                 $this->createAccountMove($record);
             }
 
@@ -164,10 +171,6 @@ class SaleManager
         $line = $this->computeQtyInvoiced($line);
 
         $line = $this->computeQtyDelivered($line);
-
-        if ($line->qty_delivered_method == Enums\QtyDeliveredMethod::MANUAL) {
-            $line->qty_delivered = $line->qty_delivered ?? 0;
-        }
 
         $line->qty_to_invoice = $line->qty_delivered - $line->qty_invoiced;
 
@@ -242,11 +245,11 @@ class SaleManager
 
     public function computeQtyDelivered(OrderLine $line): OrderLine
     {
-        if ($line->qty_delivered_method == Enums\QtyDeliveredMethod::MANUAL) {
+        if ($line->qty_delivered_method == QtyDeliveredMethod::MANUAL) {
             $line->qty_delivered = $line->qty_delivered ?? 0.0;
         }
 
-        if ($line->qty_delivered_method == Enums\QtyDeliveredMethod::STOCK_MOVE) {
+        if ($line->qty_delivered_method == QtyDeliveredMethod::STOCK_MOVE) {
             $qty = 0.0;
 
             [$outgoingMoves, $incomingMoves] = $this->getOutgoingIncomingMoves($line);
@@ -292,7 +295,7 @@ class SaleManager
     public function computeDeliveryStatus(Order $order): Order
     {
         if (! Package::isPluginInstalled('inventories')) {
-            $order->delivery_status = Enums\OrderDeliveryStatus::NO;
+            $order->delivery_status = OrderDeliveryStatus::NO;
 
             return $order;
         }
@@ -300,17 +303,17 @@ class SaleManager
         if ($order->operations->isEmpty() || $order->operations->every(function ($receipt) {
             return $receipt->state == InventoryEnums\OperationState::CANCELED;
         })) {
-            $order->delivery_status = Enums\OrderDeliveryStatus::NO;
+            $order->delivery_status = OrderDeliveryStatus::NO;
         } elseif ($order->operations->every(function ($receipt) {
             return in_array($receipt->state, [InventoryEnums\OperationState::DONE, InventoryEnums\OperationState::CANCELED]);
         })) {
-            $order->delivery_status = Enums\OrderDeliveryStatus::FULL;
+            $order->delivery_status = OrderDeliveryStatus::FULL;
         } elseif ($order->operations->contains(function ($receipt) {
             return $receipt->state == InventoryEnums\OperationState::DONE;
         })) {
-            $order->delivery_status = Enums\OrderDeliveryStatus::PARTIAL;
+            $order->delivery_status = OrderDeliveryStatus::PARTIAL;
         } else {
-            $order->delivery_status = Enums\OrderDeliveryStatus::PENDING;
+            $order->delivery_status = OrderDeliveryStatus::PENDING;
         }
 
         return $order;
@@ -318,26 +321,26 @@ class SaleManager
 
     public function computeInvoiceStatus(Order $order): Order
     {
-        if ($order->state != Enums\OrderState::SALE) {
-            $order->invoice_status = Enums\InvoiceStatus::NO;
+        if ($order->state != OrderState::SALE) {
+            $order->invoice_status = InvoiceStatus::NO;
 
             return $order;
         }
 
         if ($order->lines->contains(function ($line) {
-            return $line->invoice_status == Enums\InvoiceStatus::TO_INVOICE;
+            return $line->invoice_status == InvoiceStatus::TO_INVOICE;
         })) {
-            $order->invoice_status = Enums\InvoiceStatus::TO_INVOICE;
+            $order->invoice_status = InvoiceStatus::TO_INVOICE;
         } elseif ($order->lines->contains(function ($line) {
-            return $line->invoice_status == Enums\InvoiceStatus::INVOICED;
+            return $line->invoice_status == InvoiceStatus::INVOICED;
         })) {
-            $order->invoice_status = Enums\InvoiceStatus::INVOICED;
+            $order->invoice_status = InvoiceStatus::INVOICED;
         } elseif ($order->lines->contains(function ($line) {
-            return in_array($line->invoice_status, [Enums\InvoiceStatus::INVOICED, Enums\InvoiceStatus::UP_SELLING]);
+            return in_array($line->invoice_status, [InvoiceStatus::INVOICED, InvoiceStatus::UP_SELLING]);
         })) {
-            $order->invoice_status = Enums\InvoiceStatus::UP_SELLING;
+            $order->invoice_status = InvoiceStatus::UP_SELLING;
         } else {
-            $order->invoice_status = Enums\InvoiceStatus::NO;
+            $order->invoice_status = InvoiceStatus::NO;
         }
 
         return $order;
@@ -348,7 +351,7 @@ class SaleManager
         if ($line->is_expense) {
             $line->qty_delivered_method = 'analytic';
         } else {
-            $line->qty_delivered_method = 'manual';
+            $line->qty_delivered_method = 'stock_move';
         }
 
         return $line;
@@ -356,37 +359,44 @@ class SaleManager
 
     public function computeOrderLineInvoiceStatus(OrderLine $line): OrderLine
     {
-        if ($line->state !== Enums\OrderState::SALE) {
-            $line->invoice_status = Enums\InvoiceStatus::NO;
+        if ($line->state !== OrderState::SALE) {
+            $line->invoice_status = InvoiceStatus::NO;
 
             return $line;
         }
+
+        $policy = $line->product?->invoice_policy ?? $this->invoiceSettings->invoice_policy->value;
 
         if (
             $line->is_downpayment
             && $line->untaxed_amount_to_invoice == 0
         ) {
-            $line->invoice_status = Enums\InvoiceStatus::INVOICED;
-        } elseif ($line->qty_to_invoice != 0) {
-            $line->invoice_status = Enums\InvoiceStatus::TO_INVOICE;
-        } elseif (
-            $line->product->invoice_policy === InvoiceEnums\InvoicePolicy::ORDER->value
-            && $line->product_uom_qty >= 0
-            && $line->qty_delivered > $line->product_uom_qty
-        ) {
-            $line->invoice_status = Enums\InvoiceStatus::UP_SELLING;
-        } elseif ($line->qty_invoiced >= $line->product_uom_qty) {
-            $line->invoice_status = Enums\InvoiceStatus::INVOICED;
+            $line->invoice_status = InvoiceStatus::INVOICED;
+        } elseif ($policy === InvoiceEnums\InvoicePolicy::ORDER->value) {
+            if ($line->qty_invoiced >= $line->product_uom_qty) {
+                $line->invoice_status = InvoiceStatus::INVOICED;
+            } elseif ($line->qty_delivered > $line->product_uom_qty) {
+                $line->invoice_status = InvoiceStatus::UP_SELLING;
+            } else {
+                $line->invoice_status = InvoiceStatus::TO_INVOICE;
+            }
+        } elseif ($policy === InvoiceEnums\InvoicePolicy::DELIVERY->value) {
+            if ($line->qty_invoiced >= $line->product_uom_qty) {
+                $line->invoice_status = InvoiceStatus::INVOICED;
+            } elseif ($line->qty_to_invoice != 0 || $line->qty_delivered == $line->product_uom_qty) {
+                $line->invoice_status = InvoiceStatus::TO_INVOICE;
+            } else {
+                $line->invoice_status = InvoiceStatus::NO;
+            }
         } else {
-            $line->invoice_status = Enums\InvoiceStatus::NO;
+            $line->invoice_status = InvoiceStatus::NO;
         }
-
         return $line;
     }
 
     public function computeOrderLineUntaxedAmountToInvoice(OrderLine $line): OrderLine
     {
-        if ($line->state !== Enums\OrderState::SALE) {
+        if ($line->state !== OrderState::SALE) {
             $line->untaxed_amount_to_invoice = 0;
 
             return $line;
@@ -431,56 +441,68 @@ class SaleManager
         return $line;
     }
 
-    public function sendByEmail(Order $record, array $data): Order
+    public function sendByEmail(Order $record, array $data): array
     {
         $partners = Partner::whereIn('id', $data['partners'])->get();
 
-        foreach ($partners as $key => $partner) {
-            if (empty($partner?->email)) {
-                Notification::make()
-                    ->title('Email not sent')
-                    ->body("Partner '{$partner->name}' does not have an email address.")
-                    ->danger()
-                    ->send();
+        $sent = [];
+        $failed = [];
 
-                return $record;
+        foreach ($partners as $partner) {
+            if (empty($partner->email)) {
+                $failed[$partner->name] = 'No email address';
+
+                continue;
             }
-            $payload = [
-                'record_name'    => $record->name,
-                'model_name'     => $record->state->getLabel(),
-                'subject'        => $data['subject'],
-                'description'    => $data['description'],
-                'to'             => [
-                    'address' => $partner?->email,
-                    'name'    => $partner?->name,
-                ],
-            ];
 
-            app(EmailService::class)->send(
-                mailClass: SaleOrderQuotation::class,
-                view: $viewName = 'sales::mails.sale-order-quotation',
-                payload: $payload,
-                attachments: [
-                    [
-                        'path' => $data['file'],
-                        'name' => basename($data['file']),
+            try {
+                $payload = [
+                    'record_name'    => $record->name,
+                    'model_name'     => $record->state->getLabel(),
+                    'subject'        => $data['subject'],
+                    'description'    => $data['description'],
+                    'to'             => [
+                        'address' => $partner->email,
+                        'name'    => $partner->name,
                     ],
-                ]
-            );
+                ];
 
-            $record->addMessage([
-                'from' => [
-                    'company' => Auth::user()->defaultCompany->toArray(),
-                ],
-                'body' => view($viewName, compact('payload'))->render(),
-                'type' => 'comment',
-            ]);
+                app(EmailService::class)->send(
+                    mailClass: SaleOrderQuotation::class,
+                    view: $viewName = 'sales::mails.sale-order-quotation',
+                    payload: $payload,
+                    attachments: [
+                        [
+                            'path' => $data['file'],
+                            'name' => basename($data['file']),
+                        ],
+                    ]
+                );
+
+                $record->addMessage([
+                    'from' => [
+                        'company' => Auth::user()->defaultCompany->toArray(),
+                    ],
+                    'body' => view($viewName, compact('payload'))->render(),
+                    'type' => 'comment',
+                ]);
+
+                $sent[] = $partner->name;
+
+            } catch (\Exception $e) {
+                $failed[$partner->name] = 'Email service error: '.$e->getMessage();
+            }
         }
 
-        $record->state = Enums\OrderState::SENT;
-        $record->save();
+        if (! empty($sent) && $record->state === OrderState::DRAFT) {
+            $record->state = OrderState::SENT;
+            $record->save();
+        }
 
-        return $record;
+        return [
+            'sent'   => $sent,
+            'failed' => $failed,
+        ];
     }
 
     public function cancelAndSendEmail(Order $record, array $data)
@@ -544,11 +566,11 @@ class SaleManager
         }
 
         foreach ($moves as $move) {
-            $isOutgoingStrict = $strict && $move->destinationLocation == InventoryEnums\LocationType::CUSTOMER;
+            $isOutgoingStrict = $strict && $move->destinationLocation->type == InventoryEnums\LocationType::CUSTOMER;
 
             $isOutgoingNonStrict = ! $strict
                 && in_array($move->rule_id, $triggeringRuleIds)
-                && ($move->finalLocation ?? $move->destinationLocation) == InventoryEnums\LocationType::CUSTOMER;
+                && ($move->finalLocation ?? $move->destinationLocation->type) == InventoryEnums\LocationType::CUSTOMER;
 
             if ($isOutgoingStrict || $isOutgoingNonStrict) {
                 if (
@@ -598,7 +620,7 @@ class SaleManager
     private function createAccountMoveLine(AccountMove $accountMove, OrderLine $orderLine): void
     {
         $productInvoicePolicy = $orderLine->product?->invoice_policy;
-        $invoiceSetting = $this->invoiceSettings->invoice_policy;
+        $invoiceSetting = $this->invoiceSettings->invoice_policy->value;
 
         $quantity = ($productInvoicePolicy ?? $invoiceSetting) === InvoiceEnums\InvoicePolicy::ORDER->value
             ? $orderLine->product_uom_qty
@@ -637,7 +659,7 @@ class SaleManager
             $rule = $this->getPullRule($line);
 
             if (! $rule) {
-                throw new \Exception("No pull rule has been found to replenish \"{$line->name}\".\nVerify the routes configuration on the product.");
+                throw new Exception("No pull rule has been found to replenish \"{$line->name}\".\nVerify the routes configuration on the product.");
             }
 
             $rulesToRun[$line->id] = $rule;

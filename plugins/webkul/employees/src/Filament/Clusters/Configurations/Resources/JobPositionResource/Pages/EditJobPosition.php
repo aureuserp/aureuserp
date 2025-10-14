@@ -2,7 +2,8 @@
 
 namespace Webkul\Employee\Filament\Clusters\Configurations\Resources\JobPositionResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\JobPositionResource;
@@ -10,6 +11,15 @@ use Webkul\Employee\Filament\Clusters\Configurations\Resources\JobPositionResour
 class EditJobPosition extends EditRecord
 {
     protected static string $resource = JobPositionResource::class;
+
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
 
     protected function getRedirectUrl(): string
     {
@@ -27,8 +37,8 @@ class EditJobPosition extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make()
+            ViewAction::make(),
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()

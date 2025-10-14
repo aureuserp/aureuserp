@@ -2,10 +2,10 @@
 
 namespace Webkul\Product\Filament\Resources\AttributeResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
-use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Product\Filament\Resources\AttributeResource;
 use Webkul\Product\Models\Attribute;
@@ -17,10 +17,10 @@ class ListAttributes extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label(__('products::filament/resources/attribute/pages/list-attributes.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
-                ->mutateFormDataUsing(function ($data) {
+                ->mutateDataUsing(function ($data) {
                     $user = Auth::user();
 
                     $data['creator_id'] = $user->id;

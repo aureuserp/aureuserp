@@ -16,7 +16,7 @@ use Webkul\Inventory\Models\OrderPoint;
 use Webkul\Partner\Models\Partner;
 use Webkul\Product\Models\Packaging;
 use Webkul\Purchase\Database\Factories\OrderLineFactory;
-use Webkul\Purchase\Enums;
+use Webkul\Purchase\Enums\QtyReceivedMethod;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
@@ -79,7 +79,7 @@ class OrderLine extends Model implements Sortable
      * @var string
      */
     protected $casts = [
-        'qty_received_method' => Enums\QtyReceivedMethod::class,
+        'qty_received_method' => QtyReceivedMethod::class,
         'planned_at'          => 'datetime',
         'is_downpayment'      => 'boolean',
         'propagate_cancel'    => 'boolean',

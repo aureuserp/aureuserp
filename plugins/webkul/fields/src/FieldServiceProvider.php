@@ -2,6 +2,8 @@
 
 namespace Webkul\Field;
 
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Gate;
 use Webkul\Field\Models\Field;
 use Webkul\Field\Policies\FieldPolicy;
@@ -28,6 +30,15 @@ class FieldServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        $this->registerCustomCss();
+
         Gate::policy(Field::class, FieldPolicy::class);
+    }
+
+    public function registerCustomCss()
+    {
+        FilamentAsset::register([
+            Css::make('fields', __DIR__.'/../resources/dist/fields.css'),
+        ], 'fields');
     }
 }

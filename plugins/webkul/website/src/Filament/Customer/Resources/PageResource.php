@@ -3,7 +3,7 @@
 namespace Webkul\Website\Filament\Customer\Resources;
 
 use Filament\Resources\Resource;
-use Webkul\Website\Filament\Customer\Resources\PageResource\Pages;
+use Webkul\Website\Filament\Customer\Resources\PageResource\Pages\ViewPage;
 use Webkul\Website\Models\Page;
 
 class PageResource extends Resource
@@ -19,7 +19,7 @@ class PageResource extends Resource
     public static function getPages(): array
     {
         return [
-            'view' => Pages\ViewPage::route('/{record}'),
+            'view' => ViewPage::route('/{record}'),
         ];
     }
 }

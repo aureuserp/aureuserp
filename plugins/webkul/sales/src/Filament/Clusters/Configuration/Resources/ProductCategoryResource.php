@@ -5,7 +5,11 @@ namespace Webkul\Sale\Filament\Clusters\Configuration\Resources;
 use Filament\Resources\Pages\Page;
 use Webkul\Invoice\Filament\Clusters\Configuration\Resources\ProductCategoryResource as BaseProductCategoryResource;
 use Webkul\Sale\Filament\Clusters\Configuration;
-use Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductCategoryResource\Pages;
+use Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductCategoryResource\Pages\CreateProductCategory;
+use Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductCategoryResource\Pages\EditProductCategory;
+use Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductCategoryResource\Pages\ListProductCategories;
+use Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductCategoryResource\Pages\ManageProducts;
+use Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductCategoryResource\Pages\ViewProductCategory;
 use Webkul\Sale\Models\Category;
 
 class ProductCategoryResource extends BaseProductCategoryResource
@@ -22,20 +26,20 @@ class ProductCategoryResource extends BaseProductCategoryResource
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewProductCategory::class,
-            Pages\EditProductCategory::class,
-            Pages\ManageProducts::class,
+            ViewProductCategory::class,
+            EditProductCategory::class,
+            ManageProducts::class,
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'    => Pages\ListProductCategories::route('/'),
-            'create'   => Pages\CreateProductCategory::route('/create'),
-            'view'     => Pages\ViewProductCategory::route('/{record}'),
-            'edit'     => Pages\EditProductCategory::route('/{record}/edit'),
-            'products' => Pages\ManageProducts::route('/{record}/products'),
+            'index'    => ListProductCategories::route('/'),
+            'create'   => CreateProductCategory::route('/create'),
+            'view'     => ViewProductCategory::route('/{record}'),
+            'edit'     => EditProductCategory::route('/{record}/edit'),
+            'products' => ManageProducts::route('/{record}/products'),
         ];
     }
 }

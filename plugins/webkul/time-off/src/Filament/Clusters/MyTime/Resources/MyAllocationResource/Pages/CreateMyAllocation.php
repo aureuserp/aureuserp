@@ -10,6 +10,15 @@ use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyAllocationResource;
 
 class CreateMyAllocation extends CreateRecord
 {
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
+
     protected static string $resource = MyAllocationResource::class;
 
     protected function getRedirectUrl(): string

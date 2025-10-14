@@ -2,7 +2,8 @@
 
 namespace Webkul\Support\Filament\Resources\ActivityTypeResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Support\Filament\Resources\ActivityTypeResource;
@@ -14,8 +15,8 @@ class ViewActivityType extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
-            Actions\DeleteAction::make()
+            EditAction::make(),
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()

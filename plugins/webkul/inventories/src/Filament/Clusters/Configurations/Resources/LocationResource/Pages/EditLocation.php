@@ -3,14 +3,18 @@
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource\Pages;
 
 use Barryvdh\DomPDF\Facade\Pdf;
-use Filament\Actions;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource;
 use Webkul\Inventory\Models\Location;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditLocation extends EditRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = LocationResource::class;
 
     protected function getSavedNotification(): Notification
@@ -24,7 +28,7 @@ class EditLocation extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('print')
+            Action::make('print')
                 ->label(__('inventories::filament/clusters/configurations/resources/location/pages/edit-location.header-actions.print.label'))
                 ->icon('heroicon-o-printer')
                 ->color('gray')
@@ -39,7 +43,7 @@ class EditLocation extends EditRecord
                         echo $pdf->output();
                     }, 'Location-'.$record->name.'.pdf');
                 }),
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()

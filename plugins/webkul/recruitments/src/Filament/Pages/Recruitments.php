@@ -2,39 +2,49 @@
 
 namespace Webkul\Recruitment\Filament\Pages;
 
+use BackedEnum;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Pages\Dashboard as BaseDashboard;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
 use Filament\View\LegacyComponents\Widget;
+use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Employee\Models\Department;
 use Webkul\Employee\Models\EmployeeJobPosition;
-use Webkul\Recruitment\Filament\Widgets;
+use Webkul\Recruitment\Filament\Widgets\ApplicantChartWidget;
+use Webkul\Recruitment\Filament\Widgets\JobPositionStatsWidget;
 use Webkul\Recruitment\Models\Stage;
-use Webkul\Support\Filament\Clusters\Dashboard as DashboardCluster;
 use Webkul\Support\Models\Company;
 
 class Recruitments extends BaseDashboard
 {
+     use HasPageShield;
     use BaseDashboard\Concerns\HasFiltersForm;
 
     protected static string $routePath = 'recruitment';
-
-    protected static ?string $navigationIcon = 'heroicon-o-folder';
-
-    protected static ?string $cluster = DashboardCluster::class;
 
     public static function getNavigationLabel(): string
     {
         return __('recruitments::filament/pages/recruitment.navigation.title');
     }
 
-    public function filtersForm(Form $form): Form
+    public static function getNavigationGroup(): string
     {
-        return $form
-            ->schema([
+        return __('recruitments::filament/pages/recruitment.navigation.group');
+    }
+
+    public static function getNavigationIcon(): string|BackedEnum|Htmlable|null
+    {
+        return null;
+    }
+
+    public function filtersForm(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
                 Section::make()
                     ->schema([
                         Select::make('selectedJobs')
@@ -88,7 +98,13 @@ class Recruitments extends BaseDashboard
                             ->default(now())
                             ->native(false),
                     ])
-                    ->columns(3),
+                    ->columnSpanFull()
+                    ->columns([
+                        'default' => 1,
+                        'sm'      => 2,
+                        'md'      => 3,
+                        'xl'      => 7,
+                    ]),
             ]);
     }
 
@@ -98,8 +114,8 @@ class Recruitments extends BaseDashboard
     public function getWidgets(): array
     {
         return [
-            Widgets\JobPositionStatsWidget::class,
-            Widgets\ApplicantChartWidget::class,
+            JobPositionStatsWidget::class,
+            ApplicantChartWidget::class,
         ];
     }
 }

@@ -2,24 +2,24 @@
 
 namespace Webkul\Account\Filament\Resources;
 
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Webkul\Account\Filament\Resources\BankAccountResource\Pages;
+use Webkul\Account\Filament\Resources\BankAccountResource\Pages\ListBankAccounts;
 use Webkul\Partner\Filament\Resources\BankAccountResource as BaseBankAccountResource;
 
 class BankAccountResource extends BaseBankAccountResource
 {
     protected static bool $shouldRegisterNavigation = false;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        $form = BaseBankAccountResource::form($form);
+        $schema = BaseBankAccountResource::form($schema);
 
-        $components = collect($form->getComponents())->forget(1)->all();
+        $components = collect($schema->getComponents())->forget(1)->all();
 
-        $form->components($components);
+        $schema->components($components);
 
-        return $form;
+        return $schema;
     }
 
     public static function table(Table $table): Table
@@ -36,7 +36,7 @@ class BankAccountResource extends BaseBankAccountResource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListBankAccounts::route('/'),
+            'index' => ListBankAccounts::route('/'),
         ];
     }
 }

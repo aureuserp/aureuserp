@@ -22,7 +22,7 @@ class ListOrders extends BaseListOrders
             'my_orders' => PresetView::make(__('sales::filament/clusters/orders/resources/order/pages/list-orders.tabs.my-orders'))
                 ->icon('heroicon-s-shopping-bag')
                 ->favorite()
-                ->default()
+                ->setAsDefault()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('user_id', Auth::id())),
             'to_invoice' => PresetView::make(__('sales::filament/clusters/orders/resources/order/pages/list-orders.tabs.to-invoice'))
                 ->icon('heroicon-s-receipt-percent')

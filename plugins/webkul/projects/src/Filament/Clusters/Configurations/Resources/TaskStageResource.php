@@ -2,27 +2,38 @@
 
 namespace Webkul\Project\Filament\Clusters\Configurations\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
+use BackedEnum;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Illuminate\Database\Eloquent\Builder;
 use Webkul\Project\Filament\Clusters\Configurations;
-use Webkul\Project\Filament\Clusters\Configurations\Resources\TaskStageResource\Pages;
+use Webkul\Project\Filament\Clusters\Configurations\Resources\TaskStageResource\Pages\ManageTaskStages;
 use Webkul\Project\Filament\Resources\ProjectResource\RelationManagers\TaskStagesRelationManager;
-use Webkul\Project\Models\Project;
 use Webkul\Project\Models\TaskStage;
 
 class TaskStageResource extends Resource
 {
     protected static ?string $model = TaskStage::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?int $navigationSort = 2;
 
@@ -33,15 +44,15 @@ class TaskStageResource extends Resource
         return __('projects::filament/clusters/configurations/resources/task-stage.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->label(__('projects::filament/clusters/configurations/resources/task-stage.form.name'))
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('project_id')
+                Select::make('project_id')
                     ->label(__('projects::filament/clusters/configurations/resources/task-stage.form.project'))
                     ->relationship(
                         'project',
@@ -64,17 +75,17 @@ class TaskStageResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('projects::filament/clusters/configurations/resources/task-stage.table.columns.name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('project.name')
+                TextColumn::make('project.name')
                     ->label(__('projects::filament/clusters/configurations/resources/task-stage.table.columns.project'))
                     ->hiddenOn(TaskStagesRelationManager::class)
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('project_id')
+                SelectFilter::make('project_id')
                     ->label(__('projects::filament/clusters/configurations/resources/task-stage.table.filters.project'))
                     ->relationship('project', 'name')
                     ->hiddenOn(TaskStagesRelationManager::class)
@@ -82,16 +93,16 @@ class TaskStageResource extends Resource
                     ->preload(),
             ])
             ->groups([
-                Tables\Grouping\Group::make('project.name')
+                Group::make('project.name')
                     ->label(__('projects::filament/clusters/configurations/resources/task-stage.table.groups.project')),
-                Tables\Grouping\Group::make('created_at')
+                Group::make('created_at')
                     ->label(__('projects::filament/clusters/configurations/resources/task-stage.table.groups.created-at'))
                     ->date(),
             ])
             ->reorderable('sort')
             ->defaultSort('sort', 'desc')
-            ->actions([
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                EditAction::make()
                     ->hidden(fn ($record) => $record->trashed())
                     ->successNotification(
                         Notification::make()
@@ -99,21 +110,21 @@ class TaskStageResource extends Resource
                             ->title(__('projects::filament/clusters/configurations/resources/task-stage.table.actions.edit.notification.title'))
                             ->body(__('projects::filament/clusters/configurations/resources/task-stage.table.actions.edit.notification.body')),
                     ),
-                Tables\Actions\RestoreAction::make()
+                RestoreAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('projects::filament/clusters/configurations/resources/task-stage.table.actions.restore.notification.title'))
                             ->body(__('projects::filament/clusters/configurations/resources/task-stage.table.actions.restore.notification.body')),
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('projects::filament/clusters/configurations/resources/task-stage.table.actions.delete.notification.title'))
                             ->body(__('projects::filament/clusters/configurations/resources/task-stage.table.actions.delete.notification.body')),
                     ),
-                Tables\Actions\ForceDeleteAction::make()
+                ForceDeleteAction::make()
                     ->action(function (TaskStage $record) {
                         try {
                             $record->forceDelete();
@@ -131,26 +142,27 @@ class TaskStageResource extends Resource
                         }
                     }),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\RestoreBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('projects::filament/clusters/configurations/resources/task-stage.table.bulk-actions.restore.notification.title'))
                                 ->body(__('projects::filament/clusters/configurations/resources/task-stage.table.bulk-actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteBulkAction::make()
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('projects::filament/clusters/configurations/resources/task-stage.table.bulk-actions.delete.notification.title'))
                                 ->body(__('projects::filament/clusters/configurations/resources/task-stage.table.bulk-actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteBulkAction::make()
+                    ForceDeleteBulkAction::make()
                         ->action(function (Collection $records) {
                             try {
                                 $records->each(fn (Model $record) => $record->forceDelete());
+
                                 Notification::make()
                                     ->success()
                                     ->title(__('projects::filament/clusters/configurations/resources/task-stage.table.actions.force-delete.notification.success.title'))
@@ -171,7 +183,7 @@ class TaskStageResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageTaskStages::route('/'),
+            'index' => ManageTaskStages::route('/'),
         ];
     }
 }

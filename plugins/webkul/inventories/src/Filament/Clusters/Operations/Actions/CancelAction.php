@@ -4,7 +4,7 @@ namespace Webkul\Inventory\Filament\Clusters\Operations\Actions;
 
 use Filament\Actions\Action;
 use Livewire\Component;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Facades\Inventory;
 use Webkul\Inventory\Models\Operation;
 
@@ -28,8 +28,8 @@ class CancelAction extends Action
                 $livewire->updateForm();
             })
             ->visible(fn () => ! in_array($this->getRecord()->state, [
-                Enums\OperationState::DONE,
-                Enums\OperationState::CANCELED,
+                OperationState::DONE,
+                OperationState::CANCELED,
             ]));
     }
 }

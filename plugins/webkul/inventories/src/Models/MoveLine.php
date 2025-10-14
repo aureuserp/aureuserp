@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Webkul\Inventory\Database\Factories\MoveLineFactory;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\MoveState;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -58,7 +58,7 @@ class MoveLine extends Model
      * @var array
      */
     protected $casts = [
-        'state'             => Enums\MoveState::class,
+        'state'             => MoveState::class,
         'is_picked'         => 'boolean',
         'scheduled_at'      => 'datetime',
     ];

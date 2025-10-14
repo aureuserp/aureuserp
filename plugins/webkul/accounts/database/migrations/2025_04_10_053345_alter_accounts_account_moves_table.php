@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Webkul\Account\Enums;
+use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\PaymentState;
 
 return new class extends Migration
 {
@@ -22,8 +23,8 @@ return new class extends Migration
         DB::table('accounts_account_moves')->whereNull('is_move_sent')->update(['is_move_sent' => 0]);
 
         Schema::table('accounts_account_moves', function (Blueprint $table) {
-            $table->string('state')->default(Enums\MoveState::DRAFT)->comment('State')->change();
-            $table->string('payment_state')->default(Enums\PaymentState::NOT_PAID)->nullable()->comment('Payment State')->change();
+            $table->string('state')->default(MoveState::DRAFT)->comment('State')->change();
+            $table->string('payment_state')->default(PaymentState::NOT_PAID)->nullable()->comment('Payment State')->change();
 
             $table->boolean('is_storno')->default(0)->nullable(false)->change();
             $table->boolean('always_tax_exigible')->default(0)->nullable(false)->change();

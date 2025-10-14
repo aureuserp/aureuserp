@@ -2,37 +2,33 @@
 
 namespace Webkul\Product\Filament\Resources\ProductResource\Pages;
 
-use Filament\Forms\Form;
-use Filament\Infolists\Infolist;
-use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Support\Enums\MaxWidth;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Support\Enums\Width;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Arr;
 use Webkul\Product\Filament\Resources\ProductResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageVariants extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = ProductResource::class;
 
     protected static string $relationship = 'variants';
 
-    public function getSubNavigationPosition(): SubNavigationPosition
-    {
-        return SubNavigationPosition::Top;
-    }
-
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     public static function getNavigationLabel(): string
     {
         return __('products::filament/resources/product/pages/manage-variants.title');
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return ProductResource::form($form);
+        return ProductResource::form($schema);
     }
 
     public function table(Table $table): Table
@@ -45,18 +41,18 @@ class ManageVariants extends ManageRelatedRecords
 
         if (isset($flatActions['edit'])) {
             $flatActions['edit']
-                ->modalWidth(MaxWidth::SevenExtraLarge);
+                ->modalWidth(Width::SevenExtraLarge);
         }
 
         if (isset($flatActions['view'])) {
             $flatActions['view']
-                ->modalWidth(MaxWidth::SevenExtraLarge);
+                ->modalWidth(Width::SevenExtraLarge);
         }
 
         $table->columns(Arr::except($table->getColumns(), ['variants_count']));
 
         $table->columns([
-            Tables\Columns\TextColumn::make('combinations')
+            TextColumn::make('combinations')
                 ->label(__('products::filament/resources/product/pages/manage-variants.table.columns.variant-values'))
                 ->state(function ($record) {
                     return $record->combinations->map(function ($combination) {
@@ -76,8 +72,8 @@ class ManageVariants extends ManageRelatedRecords
         return $table;
     }
 
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $schema): Schema
     {
-        return ProductResource::infolist($infolist);
+        return ProductResource::infolist($schema);
     }
 }

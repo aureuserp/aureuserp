@@ -2,21 +2,25 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Pages;
 
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables;
 use Filament\Tables\Table;
 use Livewire\Livewire;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
 use Webkul\Support\Package;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageReceipts extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = OrderResource::class;
 
     protected static string $relationship = 'operations';
 
-    protected static ?string $navigationIcon = 'heroicon-o-arrow-down-tray';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-down-tray';
 
     /**
      * @param  array<string, mixed>  $parameters
@@ -45,15 +49,15 @@ class ManageReceipts extends ManageRelatedRecords
     public function table(Table $table): Table
     {
         return OperationResource::table($table)
-            ->actions([
-                Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ViewAction::make()
                     ->url(fn ($record) => OperationResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(false),
 
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->url(fn ($record) => OperationResource::getUrl('edit', ['record' => $record]))
                     ->openUrlInNewTab(false),
             ])
-            ->bulkActions([]);
+            ->toolbarActions([]);
     }
 }

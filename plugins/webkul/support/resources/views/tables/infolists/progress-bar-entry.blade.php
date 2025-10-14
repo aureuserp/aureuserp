@@ -12,6 +12,20 @@
     $displayProgress = $progress == 100 ? number_format($progress, 0) : number_format($progress, 2);
 
     $color = $getColor($state) ?? 'gray';
+
+    $colorMap = [
+        'primary'   => 'rgba(13, 110, 253, 1)',  
+        'secondary' => 'rgba(108, 117, 125, 1)', 
+        'success'   => 'rgba(25, 135, 84, 1)',   
+        'danger'    => 'rgba(220, 53, 69, 1)',   
+        'warning'   => 'rgba(255, 193, 7, 1)',   
+        'info'      => 'rgba(13, 202, 240, 1)',  
+        'light'     => 'rgba(248, 249, 250, 1)', 
+        'dark'      => 'rgba(33, 37, 41, 1)',    
+    ];
+
+    $bgColor = $colorMap[$color] ?? $color;
+
 @endphp
 
 <x-dynamic-component :component="$getEntryWrapperView()" :entry="$entry">
@@ -25,7 +39,7 @@
         }}
     >
         <div class="progress-container">
-            <div class="progress-bar" style="width: {{ $displayProgress }}%; background-color: rgb(var(--{{ $color }}-500));"></div>
+            <div class="progress-bar" style="width: {{ $displayProgress }}%; background-color: {{ $bgColor }};"></div>
 
             <div class="progress-text">
                 <small

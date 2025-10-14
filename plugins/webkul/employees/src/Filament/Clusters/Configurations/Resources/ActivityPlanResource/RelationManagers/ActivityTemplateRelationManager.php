@@ -2,15 +2,29 @@
 
 namespace Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResource\RelationManagers;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Support\Enums\MaxWidth;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
+use Filament\Support\Enums\Width;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
@@ -24,26 +38,26 @@ class ActivityTemplateRelationManager extends RelationManager
 {
     protected static string $relationship = 'activityPlanTemplates';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Section::make(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.form.sections.activity-details.title'))
+                                Section::make(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.form.sections.activity-details.title'))
                                     ->schema([
-                                        Forms\Components\Group::make()
+                                        Group::make()
                                             ->schema([
-                                                Forms\Components\Select::make('activity_type_id')
+                                                Select::make('activity_type_id')
                                                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.form.sections.activity-details.fields.activity-type'))
                                                     ->options(ActivityType::pluck('name', 'id'))
                                                     ->relationship('activityType', 'name')
                                                     ->searchable()
                                                     ->required()
                                                     ->default(ActivityType::first()?->id)
-                                                    ->createOptionForm(fn (Form $form) => ActivityTypeResource::form($form))
+                                                    ->createOptionForm(fn (Schema $schema) => ActivityTypeResource::form($schema))
                                                     ->preload()
                                                     ->live()
                                                     ->afterStateUpdated(function ($state, callable $set) {
@@ -55,19 +69,19 @@ class ActivityTemplateRelationManager extends RelationManager
                                                             $set('responsible_id', $activityType->default_user_id);
                                                         }
                                                     }),
-                                                Forms\Components\TextInput::make('summary')
+                                                TextInput::make('summary')
                                                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.form.sections.activity-details.fields.summary')),
                                             ])->columns(2),
-                                        Forms\Components\RichEditor::make('note')
+                                        RichEditor::make('note')
                                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.form.sections.activity-details.fields.note')),
                                     ]),
                             ])
                             ->columnSpan(['lg' => 2]),
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Section::make(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.form.sections.assignment.title'))
+                                Section::make(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.form.sections.assignment.title'))
                                     ->schema([
-                                        Forms\Components\Select::make('responsible_type')
+                                        Select::make('responsible_type')
                                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.form.sections.assignment.fields.assignment'))
                                             ->options(ActivityResponsibleType::options())
                                             ->default(ActivityResponsibleType::ON_DEMAND->value)
@@ -76,28 +90,28 @@ class ActivityTemplateRelationManager extends RelationManager
                                             ->live()
                                             ->required()
                                             ->preload(),
-                                        Forms\Components\Select::make('responsible_id')
+                                        Select::make('responsible_id')
                                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.form.sections.assignment.fields.assignee'))
                                             ->options(fn () => User::pluck('name', 'id'))
                                             ->hidden(fn (Get $get) => $get('responsible_type') !== ActivityResponsibleType::OTHER->value)
                                             ->searchable()
                                             ->preload(),
                                     ]),
-                                Forms\Components\Section::make(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.form.sections.delay-information.title'))
+                                Section::make(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.form.sections.delay-information.title'))
                                     ->schema([
-                                        Forms\Components\TextInput::make('delay_count')
+                                        TextInput::make('delay_count')
                                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.form.sections.delay-information.fields.delay-count'))
                                             ->numeric()
                                             ->default(0)
                                             ->minValue(0)
                                             ->maxValue(99999999999),
-                                        Forms\Components\Select::make('delay_unit')
+                                        Select::make('delay_unit')
                                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.form.sections.delay-information.fields.delay-unit'))
                                             ->searchable()
                                             ->preload()
                                             ->default(ActivityDelayUnit::DAYS->value)
                                             ->options(ActivityDelayUnit::options()),
-                                        Forms\Components\Select::make('delay_from')
+                                        Select::make('delay_from')
                                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.form.sections.delay-information.fields.delay-from'))
                                             ->searchable()
                                             ->preload()
@@ -110,63 +124,63 @@ class ActivityTemplateRelationManager extends RelationManager
                     ])
                     ->columns(3),
             ])
-            ->columns('full');
+            ->columns(1);
     }
 
     public function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('activityType.name')
+                TextColumn::make('activityType.name')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.columns.activity-type'))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('summary')
+                TextColumn::make('summary')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.columns.summary'))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('responsible_type')
+                TextColumn::make('responsible_type')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.columns.assignment'))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('responsible.name')
+                TextColumn::make('responsible.name')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.columns.assigned-to'))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('delay_count')
+                TextColumn::make('delay_count')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.columns.interval'))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('delay_unit')
+                TextColumn::make('delay_unit')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.columns.delay-unit'))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('delay_from')
+                TextColumn::make('delay_from')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.columns.delay-from'))
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('createdBy.name')
+                TextColumn::make('createdBy.name')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('activity_type_id')
+                SelectFilter::make('activity_type_id')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.filters.activity-type'))
                     ->options(ActivityType::pluck('name', 'id')),
-                Tables\Filters\TernaryFilter::make('is_active')
+                TernaryFilter::make('is_active')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.filters.activity-status')),
-                Tables\Filters\Filter::make('has_delay')
+                Filter::make('has_delay')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.filters.has-delay'))
                     ->query(fn ($query) => $query->whereNotNull('delay_count')),
             ])
@@ -186,9 +200,9 @@ class ActivityTemplateRelationManager extends RelationManager
                     ->collapsible(),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
-                    ->modalWidth(MaxWidth::FitContent)
-                    ->mutateFormDataUsing(function (array $data): array {
+                CreateAction::make()
+                    ->modalWidth(Width::FitContent)
+                    ->mutateDataUsing(function (array $data): array {
                         return [
                             ...$data,
                             'creator_id' => Auth::user()->id,
@@ -202,12 +216,12 @@ class ActivityTemplateRelationManager extends RelationManager
                             ->body(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.actions.create.notification.body')),
                     ),
             ])
-            ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\EditAction::make()
-                        ->modalWidth(MaxWidth::FitContent)
-                        ->mutateFormDataUsing(function (array $data): array {
+            ->recordActions([
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make()
+                        ->modalWidth(Width::FitContent)
+                        ->mutateDataUsing(function (array $data): array {
                             return [
                                 ...$data,
                                 'creator_id' => Auth::user()->id,
@@ -219,7 +233,7 @@ class ActivityTemplateRelationManager extends RelationManager
                                 ->title(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.actions.edit.notification.title'))
                                 ->body(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.actions.edit.notification.body')),
                         ),
-                    Tables\Actions\DeleteAction::make()
+                    DeleteAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -228,8 +242,8 @@ class ActivityTemplateRelationManager extends RelationManager
                         ),
                 ]),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                DeleteBulkAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -240,56 +254,56 @@ class ActivityTemplateRelationManager extends RelationManager
             ->reorderable('sort');
     }
 
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Grid::make(['default' => 3])
+        return $schema
+            ->components([
+                Grid::make(['default' => 3])
                     ->schema([
-                        Infolists\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Infolists\Components\Section::make(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.infolist.sections.activity-details.title'))
+                                Section::make(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.infolist.sections.activity-details.title'))
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('activityType.name')
+                                        TextEntry::make('activityType.name')
                                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.infolist.sections.activity-details.entries.activity-type'))
                                             ->placeholder('—')
                                             ->icon('heroicon-o-briefcase'),
-                                        Infolists\Components\TextEntry::make('summary')
+                                        TextEntry::make('summary')
                                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.infolist.sections.activity-details.entries.summary'))
                                             ->placeholder('—')
                                             ->icon('heroicon-o-document-text'),
                                     ])->columns(2),
-                                Infolists\Components\Section::make(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.infolist.sections.delay-information.title'))
+                                Section::make(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.infolist.sections.delay-information.title'))
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('delay_count')
+                                        TextEntry::make('delay_count')
                                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.infolist.sections.delay-information.entries.delay-count'))
                                             ->placeholder('—')
                                             ->icon('heroicon-o-clock'),
-                                        Infolists\Components\TextEntry::make('delay_unit')
+                                        TextEntry::make('delay_unit')
                                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.infolist.sections.delay-information.entries.delay-unit'))
                                             ->placeholder('—')
                                             ->icon('heroicon-o-calendar'),
-                                        Infolists\Components\TextEntry::make('delay_from')
+                                        TextEntry::make('delay_from')
                                             ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.infolist.sections.delay-information.entries.delay-from'))
                                             ->placeholder('—')
                                             ->formatStateUsing(fn ($state) => ActivityDelayInterval::options()[$state])
                                             ->helperText(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.infolist.sections.delay-information.entries.delay-from-helper-text'))
                                             ->icon('heroicon-o-ellipsis-horizontal-circle'),
                                     ])->columns(2),
-                                Infolists\Components\TextEntry::make('note')
+                                TextEntry::make('note')
                                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.infolist.note'))
                                     ->html()
                                     ->placeholder('—')
                                     ->icon('heroicon-o-document'),
                             ])->columnSpan(2),
-                        Infolists\Components\Group::make([
-                            Infolists\Components\Section::make(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.infolist.sections.assignment.title'))
+                        Group::make([
+                            Section::make(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.infolist.sections.assignment.title'))
                                 ->schema([
-                                    Infolists\Components\TextEntry::make('responsible_type')
+                                    TextEntry::make('responsible_type')
                                         ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.infolist.sections.assignment.entries.assignment'))
                                         ->placeholder('—')
                                         ->icon('heroicon-o-user-circle'),
-                                    Infolists\Components\TextEntry::make('responsible.name')
+                                    TextEntry::make('responsible.name')
                                         ->placeholder('—')
                                         ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.infolist.sections.assignment.entries.assignee'))
                                         ->icon('heroicon-o-user'),

@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Webkul\Inventory\Database\Factories\MoveFactory;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\LocationType;
+use Webkul\Inventory\Enums\MoveState;
 use Webkul\Partner\Models\Partner;
 use Webkul\Purchase\Models\OrderLine as PurchaseOrderLine;
 use Webkul\Sale\Models\OrderLine as SaleOrderLine;
@@ -78,7 +79,7 @@ class Move extends Model
      * @var string
      */
     protected $casts = [
-        'state'            => Enums\MoveState::class,
+        'state'            => MoveState::class,
         'is_favorite'      => 'boolean',
         'is_picked'        => 'boolean',
         'is_scraped'       => 'boolean',
@@ -97,7 +98,7 @@ class Move extends Model
      */
     public function isPurchaseReturn()
     {
-        return $this->destinationLocation->type === Enums\LocationType::SUPPLIER
+        return $this->destinationLocation->type === LocationType::SUPPLIER
             || (
                 $this->originReturnedMove
                 && $this->destinationLocation->id === $this->destinationLocation->company->inter_company_location_id
@@ -112,12 +113,12 @@ class Move extends Model
     public function isDropshipped()
     {
         return (
-            $this->sourceLocation->type === Enums\LocationType::SUPPLIER
-            || ($this->sourceLocation->type === Enums\LocationType::TRANSIT && ! $this->sourceLocation->company_id)
+            $this->sourceLocation->type === LocationType::SUPPLIER
+            || ($this->sourceLocation->type === LocationType::TRANSIT && ! $this->sourceLocation->company_id)
         )
             && (
-                $this->destinationLocation->type === Enums\LocationType::CUSTOMER
-                || ($this->destinationLocation->type === Enums\LocationType::TRANSIT && ! $this->destinationLocation->company_id)
+                $this->destinationLocation->type === LocationType::CUSTOMER
+                || ($this->destinationLocation->type === LocationType::TRANSIT && ! $this->destinationLocation->company_id)
             );
     }
 
@@ -129,12 +130,12 @@ class Move extends Model
     public function isDropshippedReturned()
     {
         return (
-            $this->sourceLocation->type === Enums\LocationType::CUSTOMER
-            || ($this->sourceLocation->type === Enums\LocationType::TRANSIT && ! $this->sourceLocation->company_id)
+            $this->sourceLocation->type === LocationType::CUSTOMER
+            || ($this->sourceLocation->type === LocationType::TRANSIT && ! $this->sourceLocation->company_id)
         )
             && (
-                $this->destinationLocation->type === Enums\LocationType::SUPPLIER
-                || ($this->destinationLocation->type === Enums\LocationType::TRANSIT && ! $this->destinationLocation->company_id)
+                $this->destinationLocation->type === LocationType::SUPPLIER
+                || ($this->destinationLocation->type === LocationType::TRANSIT && ! $this->destinationLocation->company_id)
             );
     }
 

@@ -91,14 +91,6 @@ class OrderPointPolicy
     }
 
     /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, OrderPoint $orderPoint): bool
-    {
-        return $user->can('replicate_replenishment');
-    }
-
-    /**
      * Determine whether the user can reorder.
      */
     public function reorder(User $user): bool

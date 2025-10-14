@@ -7,7 +7,7 @@ use Webkul\Purchase\Models\Order;
 
 class RespondQuotation extends SimplePage
 {
-    protected static string $view = 'purchases::livewire.respond-quotation';
+    protected string $view = 'purchases::livewire.respond-quotation';
 
     public int $order;
 

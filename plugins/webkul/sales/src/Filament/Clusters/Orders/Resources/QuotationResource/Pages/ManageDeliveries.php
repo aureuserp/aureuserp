@@ -2,26 +2,27 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages;
 
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables;
 use Filament\Tables\Table;
 use Livewire\Livewire;
-use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Support\Package;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageDeliveries extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = QuotationResource::class;
 
     protected static string $relationship = 'operations';
 
-    protected static ?string $navigationIcon = 'heroicon-o-truck';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-truck';
 
-    /**
-     * @param  array<string, mixed>  $parameters
-     */
     public static function canAccess(array $parameters = []): bool
     {
         $canAccess = parent::canAccess($parameters);
@@ -47,14 +48,14 @@ class ManageDeliveries extends ManageRelatedRecords
     {
         return OperationResource::table($table)
             ->actions([
-                Tables\Actions\ViewAction::make()
+                ViewAction::make()
                     ->url(fn ($record) => DeliveryResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(false),
 
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->url(fn ($record) => DeliveryResource::getUrl('edit', ['record' => $record]))
                     ->openUrlInNewTab(false),
             ])
-            ->bulkActions([]);
+            ->toolbarActions([]);
     }
 }

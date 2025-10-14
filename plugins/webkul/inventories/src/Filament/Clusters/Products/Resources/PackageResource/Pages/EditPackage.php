@@ -3,15 +3,20 @@
 namespace Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource\Pages;
 
 use Barryvdh\DomPDF\Facade\Pdf;
-use Filament\Actions;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\QueryException;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource;
 use Webkul\Inventory\Models\Package;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditPackage extends EditRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = PackageResource::class;
 
     protected function getRedirectUrl(): string
@@ -30,8 +35,8 @@ class EditPackage extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ActionGroup::make([
-                Actions\Action::make('print-without-content')
+            ActionGroup::make([
+                Action::make('print-without-content')
                     ->label(__('inventories::filament/clusters/products/resources/package/pages/edit-package.header-actions.print.actions.without-content.label'))
                     ->color('gray')
                     ->action(function (Package $record) {
@@ -45,7 +50,7 @@ class EditPackage extends EditRecord
                             echo $pdf->output();
                         }, 'Package-'.$record->name.'.pdf');
                     }),
-                Actions\Action::make('print-with-content')
+                Action::make('print-with-content')
                     ->label(__('inventories::filament/clusters/products/resources/package/pages/edit-package.header-actions.print.actions.with-content.label'))
                     ->color('gray')
                     ->action(function (Package $record) {
@@ -64,8 +69,8 @@ class EditPackage extends EditRecord
                 ->icon('heroicon-o-printer')
                 ->color('gray')
                 ->button(),
-            Actions\DeleteAction::make()
-                ->action(function (Actions\DeleteAction $action, Package $record) {
+            DeleteAction::make()
+                ->action(function (DeleteAction $action, Package $record) {
                     try {
                         $record->delete();
 

@@ -12,7 +12,8 @@ use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Database\Factories\OperationFactory;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\MoveType;
+use Webkul\Inventory\Enums\OperationState;
 use Webkul\Partner\Models\Partner;
 use Webkul\Purchase\Models\Order as PurchaseOrder;
 use Webkul\Sale\Models\Order as SaleOrder;
@@ -67,8 +68,8 @@ class Operation extends Model
      * @var string
      */
     protected $casts = [
-        'state'              => Enums\OperationState::class,
-        'move_type'          => Enums\MoveType::class,
+        'state'              => OperationState::class,
+        'move_type'          => MoveType::class,
         'is_favorite'        => 'boolean',
         'has_deadline_issue' => 'boolean',
         'is_printed'         => 'boolean',

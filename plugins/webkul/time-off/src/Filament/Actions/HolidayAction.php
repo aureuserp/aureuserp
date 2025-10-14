@@ -3,8 +3,8 @@
 namespace Webkul\TimeOff\Filament\Actions;
 
 use Filament\Actions\Action;
-use Filament\Forms;
-use Filament\Support\Enums\MaxWidth;
+use Filament\Forms\Components\Placeholder;
+use Filament\Support\Enums\Width;
 use Illuminate\Support\HtmlString;
 use Webkul\Employee\Models\CalendarLeaves;
 use Webkul\TimeOff\Models\LeaveMandatoryDay;
@@ -23,10 +23,10 @@ class HolidayAction extends Action
         $this
             ->hiddenLabel()
             ->icon('heroicon-o-lifebuoy')
-            ->modalWidth(MaxWidth::TwoExtraLarge)
+            ->modalWidth(Width::TwoExtraLarge)
             ->slideOver()
-            ->form([
-                Forms\Components\Placeholder::make('public_holiday')
+            ->schema([
+                Placeholder::make('public_holiday')
                     ->label(__('time-off::filament/actions/holiday-action.form.placeholders.public-holiday'))
                     ->content(function () {
                         $publicHolidays = CalendarLeaves::with('company')->get();
@@ -42,7 +42,7 @@ class HolidayAction extends Action
                                 ? $holiday->date_from
                                 : "{$holiday->date_from} - {$holiday->date_to}";
 
-                            $companyName = $holiday->calendar->company ? $holiday->calendar->company->name : 'N/A';
+                            $companyName = $holiday->calendar?->company ? $holiday->calendar?->company->name : 'N/A';
 
                             $html .= "
                                 <div class='flex items-center justify-between rounded-lg bg-gray-100 p-4 dark:bg-gray-800'>
@@ -62,7 +62,7 @@ class HolidayAction extends Action
                         return new HtmlString($html);
                     }),
 
-                Forms\Components\Placeholder::make('mandatory_holiday')
+                Placeholder::make('mandatory_holiday')
                     ->label(__('time-off::filament/actions/holiday-action.form.placeholders.mandatory-holiday'))
                     ->content(function () {
                         $mandatoryHolidays = LeaveMandatoryDay::with('company', 'createdBy')->get();

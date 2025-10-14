@@ -2,6 +2,7 @@
 
 namespace Webkul\Support\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -53,7 +54,7 @@ class UOM extends Model
      * @param  bool  $raiseIfFailure  Whether to throw an exception on conversion failure
      * @return float The converted quantity
      *
-     * @throws \Exception If conversion fails and $raiseIfFailure is true
+     * @throws Exception If conversion fails and $raiseIfFailure is true
      */
     public function computeQuantity($qty, $toUnit, $round = true, $roundingMethod = 'UP', $raiseIfFailure = true)
     {
@@ -63,7 +64,7 @@ class UOM extends Model
 
         if ($this->id !== $toUnit->id && $this->category_id !== $toUnit->category_id) {
             if ($raiseIfFailure) {
-                throw new \Exception(__(
+                throw new Exception(__(
                     'The unit of measure :unit defined on the order line doesn\'t belong to the same category as the unit of measure :product_unit defined on the product. Please correct the unit of measure defined on the order line or on the product. They should belong to the same category.',
                     ['unit' => $this->name, 'product_unit' => $toUnit->name]
                 ));

@@ -2,7 +2,7 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +23,7 @@ class ListTimeOff extends ListRecords
             'waiting_for_me' => PresetView::make(__('Waiting For Me'))
                 ->icon('heroicon-o-user-circle')
                 ->favorite()
-                ->default()
+                ->setAsDefault()
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('state', [
                     State::CONFIRM->value,
                     State::VALIDATE_ONE->value,
@@ -31,7 +31,6 @@ class ListTimeOff extends ListRecords
             'second_approval' => PresetView::make(__('Second Approval'))
                 ->icon('heroicon-o-shield-check')
                 ->favorite()
-                ->default()
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('state', [
                     State::CONFIRM->value,
                     State::VALIDATE_TWO->value,
@@ -39,11 +38,9 @@ class ListTimeOff extends ListRecords
             'approved' => PresetView::make(__('Approved'))
                 ->icon('heroicon-o-check-badge')
                 ->favorite()
-                ->default()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('state', State::VALIDATE_TWO->value)),
             'valid' => PresetView::make(__('Currently Valid'))
                 ->icon('heroicon-o-check')
-                ->default()
                 ->modifyQueryUsing(function (Builder $query) {
                     $today = now()->format('Y-m-d');
 
@@ -56,7 +53,6 @@ class ListTimeOff extends ListRecords
                 }),
             'my_team' => PresetView::make(__('My Team'))
                 ->icon('heroicon-o-users')
-                ->default()
                 ->modifyQueryUsing(function (Builder $query) {
                     $currentUserId = Auth::user()->id;
 
@@ -67,7 +63,6 @@ class ListTimeOff extends ListRecords
                 }),
             'my_department' => PresetView::make(__('My Team'))
                 ->icon('heroicon-o-building-office')
-                ->default()
                 ->modifyQueryUsing(function (Builder $query) {
                     $currentUserId = Auth::user()->id;
 
@@ -79,7 +74,6 @@ class ListTimeOff extends ListRecords
                 }),
             'refused' => PresetView::make(__('Refused'))
                 ->icon('heroicon-o-x-circle')
-                ->default()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('state', State::REFUSE->value)),
         ];
     }
@@ -87,7 +81,7 @@ class ListTimeOff extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            CreateAction::make(),
         ];
     }
 }

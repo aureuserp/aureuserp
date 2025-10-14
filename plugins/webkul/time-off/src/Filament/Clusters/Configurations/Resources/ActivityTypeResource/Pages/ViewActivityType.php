@@ -8,4 +8,13 @@ use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\ActivityTypeResour
 class ViewActivityType extends BaseViewActivityType
 {
     protected static string $resource = ActivityTypeResource::class;
+
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
 }

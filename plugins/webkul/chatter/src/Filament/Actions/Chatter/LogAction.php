@@ -2,11 +2,17 @@
 
 namespace Webkul\Chatter\Filament\Actions\Chatter;
 
+use Exception;
 use Filament\Actions\Action;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Actions;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
 
 class LogAction extends Action
@@ -23,14 +29,14 @@ class LogAction extends Action
         $this
             ->color('gray')
             ->outlined()
-            ->mountUsing(function (Form $form) {
-                $form->fill();
+            ->mountUsing(function (Schema $schema) {
+                $schema->fill();
             })
-            ->form(
+            ->schema(
                 fn ($form) => $form->schema([
-                    Forms\Components\Group::make([
-                        Forms\Components\Actions::make([
-                            Forms\Components\Actions\Action::make('add_subject')
+                    Group::make([
+                        Actions::make([
+                            Action::make('add_subject')
                                 ->label(function ($get) {
                                     return $get('showSubject') ? __('chatter::filament/resources/actions/chatter/log-action.setup.form.fields.hide-subject') : __('chatter::filament/resources/actions/chatter/log-action.setup.form.fields.add-subject');
                                 })
@@ -50,26 +56,27 @@ class LogAction extends Action
                             ->columnSpan('full')
                             ->alignRight(),
                     ]),
-                    Forms\Components\TextInput::make('subject')
+                    TextInput::make('subject')
                         ->placeholder(__('chatter::filament/resources/actions/chatter/log-action.setup.form.fields.subject'))
                         ->live()
                         ->visible(fn ($get) => $get('showSubject'))
                         ->columnSpanFull(),
-                    Forms\Components\RichEditor::make('body')
+                    RichEditor::make('body')
                         ->hiddenLabel()
                         ->placeholder(__('chatter::filament/resources/actions/chatter/log-action.setup.form.fields.write-message-here'))
                         ->required()
                         ->fileAttachmentsDirectory('log-attachments')
-                        ->disableGrammarly()
                         ->columnSpanFull(),
-                    Forms\Components\FileUpload::make('attachments')
+                    FileUpload::make('attachments')
                         ->hiddenLabel()
                         ->multiple()
                         ->directory('log-attachments')
+                        ->disk('public')
+                        ->visibility('public')
+                        ->preserveFilenames()
                         ->previewable(true)
                         ->panelLayout('grid')
                         ->imagePreviewHeight('100')
-                        ->disableGrammarly()
                         ->acceptedFileTypes([
                             'image/*',
                             'application/pdf',
@@ -82,7 +89,7 @@ class LogAction extends Action
                         ->maxSize(10240)
                         ->helperText(__('chatter::filament/resources/actions/chatter/log-action.setup.form.fields.attachments-helper-text'))
                         ->columnSpanFull(),
-                    Forms\Components\Hidden::make('type')
+                    Hidden::make('type')
                         ->default('note'),
                 ])
                     ->columns(1)
@@ -110,7 +117,7 @@ class LogAction extends Action
                         ->title(__('chatter::filament/resources/actions/chatter/log-action.setup.actions.notification.success.title'))
                         ->body(__('chatter::filament/resources/actions/chatter/log-action.setup.actions.notification.success.body'))
                         ->send();
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     report($e);
                     Notification::make()
                         ->danger()
@@ -124,7 +131,13 @@ class LogAction extends Action
             ->modalIcon('heroicon-o-chat-bubble-oval-left')
             ->modalSubmitAction(function ($action) {
                 $action->label(__('chatter::filament/resources/actions/chatter/log-action.setup.submit-title'));
+
                 $action->icon('heroicon-m-paper-airplane');
+            })
+            ->after(function ($livewire) {
+                if (method_exists($livewire, 'dispatch')) {
+                    $livewire->dispatch('chatter.refresh');
+                }
             })
             ->slideOver(false);
     }

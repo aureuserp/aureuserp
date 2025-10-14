@@ -2,22 +2,23 @@
 
 namespace Webkul\Security\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Webkul\Security\Filament\Resources\TeamResource\Pages;
+use Webkul\Security\Filament\Resources\TeamResource\Pages\ManageTeams;
 use Webkul\Security\Models\Team;
 
 class TeamResource extends Resource
 {
     protected static ?string $model = Team::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-users';
 
     protected static ?int $navigationSort = 3;
 
@@ -31,11 +32,11 @@ class TeamResource extends Resource
         return __('security::filament/resources/team.navigation.group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->label(__('security::filament/resources/team.form.fields.name'))
                     ->required()
                     ->maxLength(255),
@@ -46,22 +47,22 @@ class TeamResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('security::filament/resources/team.table.columns.name'))
                     ->searchable()
                     ->limit(50)
                     ->sortable(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('security::filament/resources/team.table.actions.edit.notification.title'))
                             ->body(__('security::filament/resources/team.table.actions.edit.notification.body'))
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -70,7 +71,7 @@ class TeamResource extends Resource
                     ),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->icon('heroicon-o-plus-circle')
                     ->successNotification(
                         Notification::make()
@@ -81,11 +82,11 @@ class TeamResource extends Resource
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\TextEntry::make('name')
+        return $schema
+            ->components([
+                TextEntry::make('name')
                     ->icon('heroicon-o-user')
                     ->placeholder('—')
                     ->label(__('security::filament/resources/team.infolist.entries.name')),
@@ -95,7 +96,7 @@ class TeamResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageTeams::route('/'),
+            'index' => ManageTeams::route('/'),
         ];
     }
 }

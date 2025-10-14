@@ -2,8 +2,12 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Actions;
 
+use Exception;
 use Filament\Actions\Action;
-use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
@@ -24,25 +28,16 @@ class SendEmailAction extends Action
     {
         parent::setUp();
 
-        $userName = Auth::user()->name;
-
-        $acceptRespondUrl = URL::signedRoute('purchases.quotations.respond', [
-            'order'  => $this->getRecord()->id,
-            'action' => 'accept',
-        ]);
-
-        $declineRespondUrl = URL::signedRoute('purchases.quotations.respond', [
-            'order'  => $this->getRecord()->id,
-            'action' => 'decline',
-        ]);
-
         $this
-            ->label(__('purchases::filament/admin/clusters/orders/resources/order/actions/send-email.label'))
-            ->label(fn () => $this->getRecord()->state === OrderState::DRAFT ? __('purchases::filament/admin/clusters/orders/resources/order/actions/send-email.label') : __('purchases::filament/admin/clusters/orders/resources/order/actions/send-email.resend-label'))
-            ->form([
-                Forms\Components\Select::make('vendors')
+            ->label(
+                fn (Order $record) => $record->state === OrderState::DRAFT
+                    ? __('purchases::filament/admin/clusters/orders/resources/order/actions/send-email.label')
+                    : __('purchases::filament/admin/clusters/orders/resources/order/actions/send-email.resend-label')
+            )
+            ->schema(fn (Order $record) => [
+                Select::make('vendors')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order/actions/send-email.form.fields.to'))
-                    ->options(Partner::get()->mapWithKeys(fn ($partner) => [
+                    ->options(fn () => Partner::get()->mapWithKeys(fn ($partner) => [
                         $partner->id => $partner->email
                             ? "{$partner->name} <{$partner->email}>"
                             : $partner->name,
@@ -50,45 +45,60 @@ class SendEmailAction extends Action
                     ->multiple()
                     ->searchable()
                     ->preload()
-                    ->default(fn () => [$this->getRecord()->partner_id]),
-                Forms\Components\TextInput::make('subject')
+                    ->default([$record->partner_id]),
+
+                TextInput::make('subject')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order/actions/send-email.form.fields.subject'))
                     ->required()
-                    ->default("Purchase Order #{$this->getRecord()->name}"),
-                Forms\Components\MarkdownEditor::make('message')
+                    ->default("Purchase Order #{$record->name}"),
+
+                MarkdownEditor::make('message')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order/actions/send-email.form.fields.message'))
                     ->required()
-                    ->default(<<<MD
-Dear {$this->getRecord()->partner->name}  
+                    ->default(function () use ($record) {
+                        $userName = Auth::user()->name;
 
-Here is in attachment a request for quotation **{$this->getRecord()->name}**.  
+                        $acceptRespondUrl = URL::signedRoute('purchases.quotations.respond', [
+                            'order'  => $record->id,
+                            'action' => 'accept',
+                        ]);
 
-If you have any questions, please do not hesitate to contact us.  
+                        $declineRespondUrl = URL::signedRoute('purchases.quotations.respond', [
+                            'order'  => $record->id,
+                            'action' => 'decline',
+                        ]);
 
-[Accept]({$acceptRespondUrl}) | [Decline]({$declineRespondUrl})  
+                        return <<<MD
+Dear {$record->partner->name}
 
-Best regards,  
+Here is in attachment a request for quotation **{$record->name}**.
 
---  
-{$userName}  
-MD),
-            Forms\Components\FileUpload::make('attachment')
-                ->hiddenLabel()
-                ->disk('public')
-                ->default(function () {
-                    return PurchaseOrder::generateRFQPdf($this->getRecord());
-                })
-                ->acceptedFileTypes([
-                    'image/*',
-                    'application/pdf',
-                ])   
-                ->downloadable()
-                ->openable(),
+If you have any questions, please do not hesitate to contact us.
+
+[Accept]({$acceptRespondUrl}) | [Decline]({$declineRespondUrl})
+
+Best regards,
+
+--
+{$userName}
+MD;
+                    }),
+
+                FileUpload::make('attachment')
+                    ->hiddenLabel()
+                    ->disk('public')
+                    ->default(fn () => PurchaseOrder::generateRFQPdf($record))
+                    ->acceptedFileTypes([
+                        'image/*',
+                        'application/pdf',
+                    ])
+                    ->downloadable()
+                    ->openable(),
             ])
             ->action(function (array $data, Order $record, Component $livewire) {
                 try {
                     $record = PurchaseOrder::sendRFQ($record, $data);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     Notification::make()
                         ->body($e->getMessage())
                         ->danger()
@@ -105,8 +115,10 @@ MD),
                     ->success()
                     ->send();
             })
-            ->color(fn (): string => $this->getRecord()->state === OrderState::DRAFT ? 'primary' : 'gray')
-            ->visible(fn () => in_array($this->getRecord()->state, [
+            ->color(
+                fn (Order $record): string => $record->state === OrderState::DRAFT ? 'primary' : 'gray'
+            )
+            ->visible(fn (Order $record) => in_array($record->state, [
                 OrderState::DRAFT,
                 OrderState::SENT,
             ]));

@@ -15,7 +15,8 @@ use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Partner\Models\Partner;
 use Webkul\Product\Models\Packaging;
-use Webkul\Sale\Enums;
+use Webkul\Sale\Enums\OrderState;
+use Webkul\Sale\Enums\QtyDeliveredMethod;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
@@ -75,8 +76,8 @@ class OrderLine extends Model implements Sortable
     ];
 
     protected $casts = [
-        'cast'                 => Enums\OrderState::class,
-        'qty_delivered_method' => Enums\QtyDeliveredMethod::class,
+        'cast'                 => OrderState::class,
+        'qty_delivered_method' => QtyDeliveredMethod::class,
     ];
 
     public $sortable = [

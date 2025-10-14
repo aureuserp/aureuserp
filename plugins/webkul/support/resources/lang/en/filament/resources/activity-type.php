@@ -107,8 +107,14 @@ return [
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Activity type force deleted',
-                    'body'  => 'The activity type has been force deleted successfully.',
+                    'success' => [
+                        'title' => 'Activity type force deleted',
+                        'body'  => 'The Activity type has been force deleted successfully.',
+                    ],
+                    'error' => [
+                        'title' => 'Activity type  could not be deleted',
+                        'body'  => 'The Activity type  cannot be deleted because it is currently in use.',
+                    ],
                 ],
             ],
         ],

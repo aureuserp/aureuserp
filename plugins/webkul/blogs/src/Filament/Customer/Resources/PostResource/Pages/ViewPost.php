@@ -10,7 +10,7 @@ class ViewPost extends ViewRecord
 {
     protected static string $resource = PostResource::class;
 
-    protected static string $view = 'blogs::filament.customer.resources.post.pages.view-record';
+    protected string $view = 'blogs::filament.customer.resources.post.pages.view-record';
 
     public function getBreadcrumbs(): array
     {

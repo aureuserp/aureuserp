@@ -5,7 +5,7 @@ namespace Webkul\Account\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Move>
+ * @extends Factory<\App\Models\Move>
  */
 class MoveFactory extends Factory
 {

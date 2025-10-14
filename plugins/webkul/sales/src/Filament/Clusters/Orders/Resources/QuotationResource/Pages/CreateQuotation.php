@@ -9,14 +9,26 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Facades\SaleOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
+use Webkul\Support\Concerns\HasRepeaterColumnManager;
 
 class CreateQuotation extends CreateRecord
 {
+    use HasRepeaterColumnManager;
+
     protected static string $resource = QuotationResource::class;
 
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('edit', ['record' => $this->getRecord()]);
+    }
+
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
     }
 
     protected function getCreatedNotification(): ?Notification

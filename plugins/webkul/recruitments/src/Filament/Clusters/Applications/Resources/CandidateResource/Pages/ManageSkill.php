@@ -5,16 +5,17 @@ namespace Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateR
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource;
 use Webkul\Recruitment\Traits\CandidateSkillRelation;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageSkill extends ManageRelatedRecords
 {
-    use CandidateSkillRelation;
+    use CandidateSkillRelation, HasRecordNavigationTabs;
 
     protected static string $resource = CandidateResource::class;
 
     protected static string $relationship = 'skills';
 
-    protected static ?string $navigationIcon = 'heroicon-o-bolt';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-bolt';
 
     public static function getNavigationLabel(): string
     {

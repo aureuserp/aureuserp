@@ -2,17 +2,20 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOffResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
-use Webkul\TimeOff\Enums\State;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOffResource;
+use Webkul\TimeOff\Traits\TimeOffHelper;
 
 class EditMyTimeOff extends EditRecord
 {
+    use HasRecordNavigationTabs;
+    use TimeOffHelper;
+
     protected static string $resource = MyTimeOffResource::class;
 
     protected function getRedirectUrl(): string
@@ -33,8 +36,8 @@ class EditMyTimeOff extends EditRecord
         return [
             ChatterActions\ChatterAction::make()
                 ->setResource(static::$resource),
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make()
+            ViewAction::make(),
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()
@@ -46,52 +49,6 @@ class EditMyTimeOff extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        $user = Auth::user();
-
-        $employee = $user->employee;
-
-        if ($employee) {
-            $data['employee_id'] = $employee->id;
-            $data['department_id'] = $employee->department?->id;
-        }
-
-        if (isset($data['employee_id'])) {
-            if ($employee->calendar) {
-                $data['calendar_id'] = $employee->calendar->id;
-                $data['number_of_hours'] = $employee->calendar->hours_per_day;
-            }
-
-            $user = $employee?->user;
-
-            if ($user) {
-                $data['user_id'] = $user->id;
-
-                $data['company_id'] = $user->default_company_id;
-
-                $data['employee_company_id'] = $user->default_company_id;
-            }
-        }
-
-        if (isset($data['request_unit_half'])) {
-            $data['duration_display'] = '0.5 day';
-
-            $data['number_of_days'] = 0.5;
-        } else {
-            $startDate = Carbon::parse($data['request_date_from']);
-            $endDate = isset($data['request_date_to']) ? Carbon::parse($data['request_date_to']) : $startDate;
-
-            $data['duration_display'] = $startDate->diffInDays($endDate) + 1 .' day(s)';
-
-            $data['number_of_days'] = $startDate->diffInDays($endDate) + 1;
-        }
-
-        $data['creator_id'] = Auth::user()->id;
-
-        $data['state'] = State::CONFIRM->value;
-
-        $data['date_from'] = $data['request_date_from'];
-        $data['date_to'] = isset($data['request_date_to']) ? $data['request_date_to'] : null;
-
-        return $data;
+        return $this->mutateTimeOffData($data, $this->record?->id);
     }
 }

@@ -59,46 +59,6 @@ class StagePolicy
     }
 
     /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, Stage $stage): bool
-    {
-        return $user->can('force_delete_stage');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_stage');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, Stage $stage): bool
-    {
-        return $user->can('restore_stage');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_stage');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Stage $stage): bool
-    {
-        return $user->can('replicate_stage');
-    }
-
-    /**
      * Determine whether the user can reorder.
      */
     public function reorder(User $user): bool

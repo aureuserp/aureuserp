@@ -13,7 +13,7 @@ return [
          * `Spatie\Permission\Contracts\Permission` contract.
          */
 
-        'permission' => Spatie\Permission\Models\Permission::class,
+        'permission' => Webkul\Security\Models\Permission::class,
 
         /*
          * When using the "HasRoles" trait from this package, we need to know which

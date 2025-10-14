@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Webkul\Product\Database\Factories\PriceRuleItemFactory;
-use Webkul\Product\Enums;
+use Webkul\Product\Enums\PriceRuleApplyTo;
+use Webkul\Product\Enums\PriceRuleBase;
+use Webkul\Product\Enums\PriceRuleType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
@@ -59,9 +61,9 @@ class PriceRuleItem extends Model
     protected $casts = [
         'starts_at' => 'datetime',
         'ends_at'   => 'datetime',
-        'apply_to'  => Enums\PriceRuleApplyTo::class,
-        'base'      => Enums\PriceRuleBase::class,
-        'type'      => Enums\PriceRuleType::class,
+        'apply_to'  => PriceRuleApplyTo::class,
+        'base'      => PriceRuleBase::class,
+        'type'      => PriceRuleType::class,
     ];
 
     public function priceRule(): BelongsTo

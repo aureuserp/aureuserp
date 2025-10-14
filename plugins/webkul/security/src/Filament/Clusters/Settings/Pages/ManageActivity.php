@@ -3,9 +3,11 @@
 namespace Webkul\Security\Filament\Clusters\Settings\Pages;
 
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Placeholder;
 use Filament\Pages\SettingsPage;
+use Filament\Schemas\Components\Actions;
+use Filament\Schemas\Schema;
 use Webkul\Security\Settings\UserSettings;
 use Webkul\Support\Filament\Clusters\Settings;
 
@@ -15,7 +17,7 @@ class ManageActivity extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     protected static string $settings = UserSettings::class;
 
@@ -41,15 +43,15 @@ class ManageActivity extends SettingsPage
         return __('security::filament/clusters/manage-activity.navigation.label');
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Placeholder::make('activity_description')
+        return $schema
+            ->components([
+                Placeholder::make('activity_description')
                     ->label(__('security::filament/clusters/manage-activity.form.activity-description.label'))
                     ->content(__('security::filament/clusters/manage-activity.form.activity-description.content')),
-                Forms\Components\Actions::make([
-                    Forms\Components\Actions\Action::make('manageActivityTypes')
+                Actions::make([
+                    Action::make('manageActivityTypes')
                         ->label(__('security::filament/clusters/manage-activity.form.actions.manage-activity-types.label'))
                         ->icon('heroicon-o-arrow-top-right-on-square')
                         ->link()

@@ -5,6 +5,7 @@ namespace Webkul\Project;
 use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
+use ReflectionClass;
 use Webkul\Project\Filament\Clusters\Settings\Pages\ManageTasks;
 use Webkul\Support\Package;
 
@@ -34,11 +35,12 @@ class ProjectPlugin implements Plugin
                     ->discoverClusters(in: $this->getPluginBasePath('/Filament/Clusters'), for: 'Webkul\\Project\\Filament\\Clusters')
                     ->discoverWidgets(in: $this->getPluginBasePath('/Filament/Widgets'), for: 'Webkul\\Project\\Filament\\Widgets')
                     ->navigationItems([
-                        NavigationItem::make('Settings')
+                        NavigationItem::make('settings')
+                            ->label(fn () => __('projects::app.navigation.settings.label'))
                             ->url(fn () => ManageTasks::getUrl())
-                            ->icon('heroicon-o-wrench')
                             ->group('Project')
-                            ->sort(3),
+                            ->sort(3)
+                            ->visible(fn() => ManageTasks::canAccess()),
                     ]);
             });
     }
@@ -50,8 +52,8 @@ class ProjectPlugin implements Plugin
 
     protected function getPluginBasePath($path = null): string
     {
-        $reflector = new \ReflectionClass(get_class($this));
+        $reflector = new ReflectionClass(get_class($this));
 
-        return dirname($reflector->getFileName()).($path ?? '');
+        return dirname($reflector->getFileName()) . ($path ?? '');
     }
 }

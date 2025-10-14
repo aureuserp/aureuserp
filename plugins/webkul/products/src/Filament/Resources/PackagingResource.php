@@ -3,14 +3,25 @@
 namespace Webkul\Product\Filament\Resources;
 
 use Barryvdh\DomPDF\Facade\Pdf;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
-use Filament\Tables;
+use Filament\Support\Enums\TextSize;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -25,18 +36,18 @@ class PackagingResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->label(__('products::filament/resources/packaging.form.name'))
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('barcode')
+                TextInput::make('barcode')
                     ->label(__('products::filament/resources/packaging.form.barcode'))
                     ->maxLength(255),
-                Forms\Components\Select::make('product_id')
+                Select::make('product_id')
                     ->label(__('products::filament/resources/packaging.form.product'))
                     ->relationship(
                         'product',
@@ -55,13 +66,13 @@ class PackagingResource extends Resource
                     ->required()
                     ->searchable()
                     ->preload(),
-                Forms\Components\TextInput::make('qty')
+                TextInput::make('qty')
                     ->label(__('products::filament/resources/packaging.form.qty'))
                     ->required()
                     ->numeric()
                     ->minValue(0.00)
                     ->maxValue(99999999),
-                Forms\Components\Select::make('company_id')
+                Select::make('company_id')
                     ->label(__('products::filament/resources/packaging.form.company'))
                     ->relationship('company', 'name')
                     ->searchable()
@@ -73,65 +84,65 @@ class PackagingResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('products::filament/resources/packaging.table.columns.name'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('product.name')
+                TextColumn::make('product.name')
                     ->label(__('products::filament/resources/packaging.table.columns.product'))
                     ->searchable()
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('qty')
+                TextColumn::make('qty')
                     ->label(__('products::filament/resources/packaging.table.columns.qty'))
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('barcode')
+                TextColumn::make('barcode')
                     ->label(__('products::filament/resources/packaging.table.columns.barcode'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('company.name')
+                TextColumn::make('company.name')
                     ->label(__('products::filament/resources/packaging.table.columns.company'))
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('products::filament/resources/packaging.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('products::filament/resources/packaging.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->groups([
-                Tables\Grouping\Group::make('product.name')
+                Group::make('product.name')
                     ->label(__('products::filament/resources/packaging.table.groups.product'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('created_at')
+                Group::make('created_at')
                     ->label(__('products::filament/resources/packaging.table.groups.created-at'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('updated_at')
+                Group::make('updated_at')
                     ->label(__('products::filament/resources/packaging.table.groups.updated-at'))
                     ->date()
                     ->collapsible(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('product')
+                SelectFilter::make('product')
                     ->label(__('products::filament/resources/packaging.table.filters.product'))
                     ->relationship('product', 'name')
                     ->searchable()
                     ->preload(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('products::filament/resources/packaging.table.actions.edit.notification.title'))
                             ->body(__('products::filament/resources/packaging.table.actions.edit.notification.body')),
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->action(function (Packaging $record) {
                         try {
                             $record->delete();
@@ -150,9 +161,9 @@ class PackagingResource extends Resource
                             ->body(__('products::filament/resources/packaging.table.actions.delete.notification.success.body')),
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\BulkAction::make('print')
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('print')
                         ->label(__('products::filament/resources/packaging.table.bulk-actions.print.label'))
                         ->icon('heroicon-o-printer')
                         ->action(function ($records) {
@@ -166,7 +177,7 @@ class PackagingResource extends Resource
                                 echo $pdf->output();
                             }, 'Packaging-Barcode.pdf');
                         }),
-                    Tables\Actions\DeleteBulkAction::make()
+                    DeleteBulkAction::make()
                         ->action(function (Collection $records) {
                             try {
                                 $records->each(fn (Model $record) => $record->delete());
@@ -187,10 +198,10 @@ class PackagingResource extends Resource
                 ]),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label(__('products::filament/resources/packaging.table.empty-state-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
                         $data['creator_id'] = Auth::id();
 
                         return $data;
@@ -204,55 +215,55 @@ class PackagingResource extends Resource
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Section::make(__('products::filament/resources/packaging.infolist.sections.general.title'))
+        return $schema
+            ->components([
+                Section::make(__('products::filament/resources/packaging.infolist.sections.general.title'))
                     ->schema([
-                        Infolists\Components\TextEntry::make('name')
+                        TextEntry::make('name')
                             ->label(__('products::filament/resources/packaging.infolist.sections.general.entries.name'))
                             ->weight(FontWeight::Bold)
-                            ->size(Infolists\Components\TextEntry\TextEntrySize::Large)
+                            ->size(TextSize::Large)
                             ->columnSpan(2)
                             ->icon('heroicon-o-gift'),
 
-                        Infolists\Components\TextEntry::make('barcode')
+                        TextEntry::make('barcode')
                             ->label(__('products::filament/resources/packaging.infolist.sections.general.entries.barcode'))
                             ->icon('heroicon-o-bars-4')
                             ->placeholder('—'),
 
-                        Infolists\Components\TextEntry::make('product.name')
+                        TextEntry::make('product.name')
                             ->label(__('products::filament/resources/packaging.infolist.sections.general.entries.product'))
                             ->icon('heroicon-o-cube')
                             ->placeholder('—'),
 
-                        Infolists\Components\TextEntry::make('qty')
+                        TextEntry::make('qty')
                             ->label(__('products::filament/resources/packaging.infolist.sections.general.entries.qty'))
                             ->icon('heroicon-o-scale')
                             ->placeholder('—'),
                     ])
                     ->columns(2),
 
-                Infolists\Components\Section::make(__('products::filament/resources/packaging.infolist.sections.organization.title'))
+                Section::make(__('products::filament/resources/packaging.infolist.sections.organization.title'))
                     ->schema([
-                        Infolists\Components\TextEntry::make('company.name')
+                        TextEntry::make('company.name')
                             ->label(__('products::filament/resources/packaging.infolist.sections.organization.entries.company'))
                             ->icon('heroicon-o-building-office')
                             ->placeholder('—'),
 
-                        Infolists\Components\TextEntry::make('creator.name')
+                        TextEntry::make('creator.name')
                             ->label(__('products::filament/resources/packaging.infolist.sections.organization.entries.creator'))
                             ->icon('heroicon-o-user')
                             ->placeholder('—'),
 
-                        Infolists\Components\TextEntry::make('created_at')
+                        TextEntry::make('created_at')
                             ->label(__('products::filament/resources/packaging.infolist.sections.organization.entries.created_at'))
                             ->dateTime()
                             ->icon('heroicon-o-calendar')
                             ->placeholder('—'),
 
-                        Infolists\Components\TextEntry::make('updated_at')
+                        TextEntry::make('updated_at')
                             ->label(__('products::filament/resources/packaging.infolist.sections.organization.entries.updated_at'))
                             ->dateTime()
                             ->icon('heroicon-o-clock')

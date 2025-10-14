@@ -27,7 +27,9 @@ class ViewCreditNote extends ViewRecord
             }
 
             return $action;
-        })->toArray();
+        })
+            ->values()
+            ->all();
 
         return $predefinedActions;
     }

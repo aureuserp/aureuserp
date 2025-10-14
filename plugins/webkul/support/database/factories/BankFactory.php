@@ -9,7 +9,7 @@ use Webkul\Support\Models\Country;
 use Webkul\Support\Models\State;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Support\Models\Bank>
+ * @extends Factory<Bank>
  */
 class BankFactory extends Factory
 {

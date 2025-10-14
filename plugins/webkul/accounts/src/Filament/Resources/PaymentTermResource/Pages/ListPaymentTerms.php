@@ -2,9 +2,9 @@
 
 namespace Webkul\Account\Filament\Resources\PaymentTermResource\Pages;
 
-use Filament\Actions;
-use Filament\Resources\Components\Tab;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Tabs\Tab;
 use Webkul\Account\Filament\Resources\PaymentTermResource;
 use Webkul\Account\Models\PaymentTerm;
 
@@ -15,7 +15,7 @@ class ListPaymentTerms extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->icon('heroicon-o-plus-circle'),
         ];
     }

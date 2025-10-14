@@ -42,6 +42,16 @@ return [
                         'title'       => 'Products',
                         'add-product' => 'Add Product',
 
+                        'columns' => [
+                            'product'             => 'Product',
+                            'quantity'            => 'Quantity',
+                            'unit'                => 'Unit',
+                            'taxes'               => 'Taxes',
+                            'discount-percentage' => 'Discount Percentage',
+                            'unit-price'          => 'Unit Price',
+                            'sub-total'           => 'Sub Total',
+                        ],
+
                         'fields' => [
                             'product'             => 'Product',
                             'quantity'            => 'Quantity',

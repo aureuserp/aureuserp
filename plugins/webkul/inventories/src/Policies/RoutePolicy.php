@@ -91,14 +91,6 @@ class RoutePolicy
     }
 
     /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Route $route): bool
-    {
-        return $user->can('replicate_route');
-    }
-
-    /**
      * Determine whether the user can reorder.
      */
     public function reorder(User $user): bool

@@ -2,7 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources\RefundResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
@@ -10,9 +10,12 @@ use Webkul\Account\Facades\Account;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Account\Filament\Resources\RefundResource;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditRefund extends EditRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = RefundResource::class;
 
     protected function getRedirectUrl(): string
@@ -38,7 +41,7 @@ class EditRefund extends EditRecord
             BaseActions\ConfirmAction::make(),
             BaseActions\ResetToDraftAction::make(),
             BaseActions\SetAsCheckedAction::make(),
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 

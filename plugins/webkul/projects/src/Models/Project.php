@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Chatter\Traits\HasChatter;
@@ -42,7 +43,6 @@ class Project extends Model implements Sortable
         'description',
         'visibility',
         'color',
-        'tags',
         'sort',
         'start_date',
         'end_date',
@@ -71,7 +71,6 @@ class Project extends Model implements Sortable
         'allow_milestones'        => 'boolean',
         'start_date'              => 'date',
         'end_date'                => 'date',
-        'tags'                    => 'array',
         'is_active'               => 'boolean',
         'allow_timesheets'        => 'boolean',
         'allow_milestones'        => 'boolean',
@@ -84,7 +83,6 @@ class Project extends Model implements Sortable
         'description',
         'visibility',
         'color',
-        'tags',
         'sort',
         'start_date',
         'end_date',
@@ -147,7 +145,11 @@ class Project extends Model implements Sortable
 
     public function getIsFavoriteByUserAttribute(): bool
     {
-        return $this->favoriteUsers()->where('user_id', auth()->id())->exists();
+        if ($this->relationLoaded('favoriteUsers')) {
+            return $this->favoriteUsers->contains('id', Auth::id());
+        }
+
+        return $this->favoriteUsers()->where('user_id', Auth::id())->exists();
     }
 
     public function getRemainingHoursAttribute(): float

@@ -2,15 +2,18 @@
 
 namespace Webkul\Account\Filament\Resources\InvoiceResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Account\Filament\Resources\InvoiceResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewInvoice extends ViewRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = InvoiceResource::class;
 
     protected function getHeaderActions(): array
@@ -27,7 +30,7 @@ class ViewInvoice extends ViewRecord
                 ->setTemplate('accounts::invoice/actions/preview.index'),
             BaseActions\PrintAndSendAction::make(),
             BaseActions\CreditNoteAction::make(),
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()

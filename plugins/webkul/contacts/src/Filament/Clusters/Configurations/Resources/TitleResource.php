@@ -3,12 +3,12 @@
 namespace Webkul\Contact\Filament\Clusters\Configurations\Resources;
 
 use Webkul\Contact\Filament\Clusters\Configurations;
-use Webkul\Contact\Filament\Clusters\Configurations\Resources\TitleResource\Pages;
+use Webkul\Contact\Filament\Clusters\Configurations\Resources\TitleResource\Pages\ManageTitles;
 use Webkul\Partner\Filament\Resources\TitleResource as BaseTitleResource;
 
 class TitleResource extends BaseTitleResource
 {
-    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-academic-cap';
 
     protected static bool $shouldRegisterNavigation = true;
 
@@ -19,7 +19,7 @@ class TitleResource extends BaseTitleResource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageTitles::route('/'),
+            'index' => ManageTitles::route('/'),
         ];
     }
 }

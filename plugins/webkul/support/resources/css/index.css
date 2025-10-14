@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@import "./repeater.css";
+
+@variant dark (&:where(.dark, .dark *));
+
+@source '../../../../app/Filament';
+@source '../../resources/views';
+@source '../../../../../vendor/guava/filament-icon-picker/resources/views';

@@ -2,15 +2,14 @@
 
 namespace Webkul\Project\Filament\Resources\ProjectResource\Pages;
 
-use Filament\Forms\Form;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\MilestoneResource;
 use Webkul\Project\Filament\Resources\ProjectResource;
-use Webkul\Project\Settings\TaskSettings;
 
 class ManageMilestones extends ManageRelatedRecords
 {
@@ -18,7 +17,7 @@ class ManageMilestones extends ManageRelatedRecords
 
     protected static string $relationship = 'milestones';
 
-    protected static ?string $navigationIcon = 'heroicon-o-flag';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-flag';
 
     /**
      * @param  array<string, mixed>  $parameters
@@ -31,7 +30,7 @@ class ManageMilestones extends ManageRelatedRecords
             return false;
         }
 
-        if (! app(TaskSettings::class)->enable_milestones) {
+        if (! static::$resource::getTaskSettings()->enable_milestones) {
             return false;
         }
 
@@ -43,19 +42,19 @@ class ManageMilestones extends ManageRelatedRecords
         return __('projects::filament/resources/project/pages/manage-milestones.title');
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return MilestoneResource::form($form);
+        return MilestoneResource::form($schema);
     }
 
     public function table(Table $table): Table
     {
         return MilestoneResource::table($table)
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label(__('projects::filament/resources/project/pages/manage-milestones.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
                         $data['creator_id'] = Auth::id();
 
                         return $data;

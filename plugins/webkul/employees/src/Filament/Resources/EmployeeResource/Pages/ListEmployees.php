@@ -3,7 +3,7 @@
 namespace Webkul\Employee\Filament\Resources\EmployeeResource\Pages;
 
 use Carbon\Carbon;
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +20,7 @@ class ListEmployees extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->icon('heroicon-o-plus-circle')
                 ->label(__('employees::filament/resources/employee/pages/list-employee.header-actions.create.label')),
         ];

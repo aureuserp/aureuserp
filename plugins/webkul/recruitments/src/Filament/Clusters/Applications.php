@@ -3,14 +3,13 @@
 namespace Webkul\Recruitment\Filament\Clusters;
 
 use Filament\Clusters\Cluster;
+use Filament\Panel;
 
 class Applications extends Cluster
 {
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
-
     protected static ?int $navigationSort = 2;
 
-    public static function getSlug(): string
+    public static function getSlug(?Panel $panel = null): string
     {
         return 'recruitments/applications';
     }

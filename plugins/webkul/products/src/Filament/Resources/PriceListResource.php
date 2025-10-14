@@ -2,11 +2,17 @@
 
 namespace Webkul\Product\Filament\Resources;
 
-use Filament\Forms\Form;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Webkul\Product\Filament\Resources\PriceListResource\Pages;
+use Webkul\Product\Filament\Resources\PriceListResource\Pages\CreatePriceList;
+use Webkul\Product\Filament\Resources\PriceListResource\Pages\EditPriceList;
+use Webkul\Product\Filament\Resources\PriceListResource\Pages\ListPriceLists;
+use Webkul\Product\Filament\Resources\PriceListResource\Pages\ViewPriceList;
 use Webkul\Product\Models\PriceList;
 
 class PriceListResource extends Resource
@@ -15,17 +21,17 @@ class PriceListResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
-    protected static ?string $navigationIcon = 'heroicon-o-list-bullet';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-list-bullet';
 
     public static function getNavigationLabel(): string
     {
         return 'Price Lists';
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 //
             ]);
     }
@@ -39,13 +45,13 @@ class PriceListResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -60,10 +66,10 @@ class PriceListResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListPriceLists::route('/'),
-            'create' => Pages\CreatePriceList::route('/create'),
-            'view'   => Pages\ViewPriceList::route('/{record}'),
-            'edit'   => Pages\EditPriceList::route('/{record}/edit'),
+            'index'  => ListPriceLists::route('/'),
+            'create' => CreatePriceList::route('/create'),
+            'view'   => ViewPriceList::route('/{record}'),
+            'edit'   => EditPriceList::route('/{record}/edit'),
         ];
     }
 }

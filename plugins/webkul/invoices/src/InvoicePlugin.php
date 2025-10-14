@@ -5,6 +5,7 @@ namespace Webkul\Invoice;
 use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
+use ReflectionClass;
 use Webkul\Invoice\Filament\Clusters\Settings\Pages\Products;
 use Webkul\Support\Package;
 
@@ -34,11 +35,11 @@ class InvoicePlugin implements Plugin
                     ->discoverWidgets(in: $this->getPluginBasePath('/Filament/Widgets'), for: 'Webkul\\Invoice\\Filament\\Widgets')
                     ->navigationItems([
                         NavigationItem::make('settings')
-                            ->label('Settings')
+                            ->label(fn () => __('invoices::app.navigation.settings.label'))
                             ->url(fn () => Products::getUrl())
-                            ->icon('heroicon-o-wrench')
                             ->group('Invoices')
-                            ->sort(4),
+                            ->sort(4)
+                            ->visible(fn () => Products::canAccess()),
                     ]);
             });
     }
@@ -50,7 +51,7 @@ class InvoicePlugin implements Plugin
 
     protected function getPluginBasePath($path = null): string
     {
-        $reflector = new \ReflectionClass(get_class($this));
+        $reflector = new ReflectionClass(get_class($this));
 
         return dirname($reflector->getFileName()).($path ?? '');
     }

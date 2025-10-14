@@ -78,6 +78,7 @@ trait HasChatter
 
         if (! empty($filters['search'])) {
             $searchTerm = '%'.$filters['search'].'%';
+
             $query->where(function ($query) use ($searchTerm) {
                 $query->where('subject', 'like', $searchTerm)
                     ->orWhere('body', 'like', $searchTerm)
@@ -374,16 +375,14 @@ trait HasChatter
      */
     public function addFollower(Partner $partner): Follower
     {
-        $follower = $this->followers()->firstOrNew([
-            'partner_id' => $partner->id,
-        ]);
-
-        if (! $follower->exists) {
-            $follower->followed_at = now();
-            $follower->save();
-        }
-
-        return $follower;
+        return $this->followers()->firstOrCreate(
+            [
+                'partner_id' => $partner->id,
+            ],
+            [
+                'followed_at' => now(),
+            ],
+        );
     }
 
     /**

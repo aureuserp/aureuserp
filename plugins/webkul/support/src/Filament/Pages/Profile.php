@@ -5,23 +5,28 @@ namespace Webkul\Support\Filament\Pages;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
-use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
 
 class Profile extends Page implements HasForms
 {
     use InteractsWithForms;
 
-    protected static string $view = 'support::pages.profile';
+    protected string $view = 'support::pages.profile';
 
     protected static bool $shouldRegisterNavigation = false;
 
@@ -44,18 +49,18 @@ class Profile extends Page implements HasForms
         ];
     }
 
-    public function editProfileForm(Form $form): Form
+    public function editProfileForm(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
-                Forms\Components\Section::make(__('support::filament/pages/profile.information_section'))
+                Section::make(__('support::filament/pages/profile.information_section'))
                     ->description(__('support::filament/pages/profile.information_description'))
                     ->icon('heroicon-o-user')
                     ->schema([
-                        Forms\Components\FileUpload::make('avatar')
+                        FileUpload::make('avatar')
                             ->label(__('support::filament/pages/profile.fields.avatar'))
                             ->avatar()
-                            ->directory('avatars')
+                            ->directory('users/avatars')
                             ->visibility('public')
                             ->disk('public')
                             ->acceptedFileTypes(['image/jpeg', 'image/jpg', 'image/png', 'image/webp'])
@@ -70,9 +75,9 @@ class Profile extends Page implements HasForms
                             ->deletable(true)
                             ->downloadable(false),
 
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('name')
+                                TextInput::make('name')
                                     ->label(__('support::filament/pages/profile.fields.name'))
                                     ->required()
                                     ->maxLength(255)
@@ -80,11 +85,11 @@ class Profile extends Page implements HasForms
                                     ->validationAttribute(__('support::filament/pages/profile.fields.name'))
                                     ->rules(['required', 'string', 'max:255'])
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                    ->afterStateUpdated(function ($state, Set $set) {
                                         $set('name', trim($state));
                                     }),
 
-                                Forms\Components\TextInput::make('email')
+                                TextInput::make('email')
                                     ->label(__('support::filament/pages/profile.fields.email'))
                                     ->email()
                                     ->required()
@@ -94,7 +99,7 @@ class Profile extends Page implements HasForms
                                     ->validationAttribute(__('support::filament/pages/profile.fields.email'))
                                     ->rules(['required', 'email', 'max:255'])
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                    ->afterStateUpdated(function ($state, Set $set) {
                                         $set('email', strtolower(trim($state)));
                                     }),
                             ]),
@@ -105,25 +110,25 @@ class Profile extends Page implements HasForms
             ->operation('edit');
     }
 
-    public function editPasswordForm(Form $form): Form
+    public function editPasswordForm(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
-                Forms\Components\Section::make(__('support::filament/pages/profile.password.section'))
+                Section::make(__('support::filament/pages/profile.password.section'))
                     ->description(__('support::filament/pages/profile.password.description'))
                     ->icon('heroicon-o-lock-closed')
                     ->schema([
-                        Forms\Components\TextInput::make('current_password')
+                        TextInput::make('current_password')
                             ->label(__('support::filament/pages/profile.password.current'))
                             ->password()
                             ->revealable()
                             ->required()
-                            ->currentPassword()
                             ->autocomplete('current-password')
                             ->validationAttribute(__('support::filament/pages/profile.password.current'))
-                            ->rules(['required', 'current_password']),
+                            ->currentPassword()
+                            ->helperText(__('support::filament/pages/profile.password.current-helper')),
 
-                        Forms\Components\TextInput::make('password')
+                        TextInput::make('password')
                             ->label(__('support::filament/pages/profile.password.new'))
                             ->password()
                             ->revealable()
@@ -134,9 +139,10 @@ class Profile extends Page implements HasForms
                             ->live(debounce: 500)
                             ->confirmed()
                             ->helperText(__('support::filament/pages/profile.password.helper'))
+                            ->different('current_password')
                             ->dehydrateStateUsing(fn ($state): ?string => $state ? Hash::make($state) : null),
 
-                        Forms\Components\TextInput::make('password_confirmation')
+                        TextInput::make('password_confirmation')
                             ->label(__('support::filament/pages/profile.password.confirm'))
                             ->password()
                             ->revealable()
@@ -189,8 +195,8 @@ class Profile extends Page implements HasForms
                 ->success()
                 ->duration(3000)
                 ->send();
-
-            $this->js('setTimeout(() => window.location.reload(), 2000)');
+        } catch (ValidationException $e) {
+            throw $e;
         } catch (Exception $e) {
             Notification::make()
                 ->title(__('support::filament/pages/profile.notification.error.title'))
@@ -201,12 +207,19 @@ class Profile extends Page implements HasForms
         }
     }
 
-    public function updatePassword(): void
+    public function updatePassword(): mixed
     {
         try {
             $this->editPasswordForm->validate();
+
             $data = $this->editPasswordForm->getState();
             $user = $this->getUser();
+
+            if (Hash::check($this->passwordData['password'], $user->password)) {
+                throw ValidationException::withMessages([
+                    'passwordData.password' => [__('support::filament/pages/profile.password.errors.same-as-current')],
+                ]);
+            }
 
             $user->password = $data['password'];
             $user->save();
@@ -225,8 +238,15 @@ class Profile extends Page implements HasForms
                 ->success()
                 ->duration(3000)
                 ->send();
+                
+            if (request()->hasSession()) {
+                request()->session()->invalidate();
+                request()->session()->regenerateToken();
+            }
 
-            $this->js('setTimeout(() => window.location.reload(), 2000)');
+            return redirect()->to(filament()->getCurrentPanel()->getLoginUrl());
+        } catch (ValidationException $e) {
+            throw $e;
         } catch (Exception $e) {
             Notification::make()
                 ->title(__('support::filament/pages/profile.password.notification.error.title'))
@@ -235,6 +255,8 @@ class Profile extends Page implements HasForms
                 ->duration(5000)
                 ->send();
         }
+
+        return null;
     }
 
     protected function getUser(): Authenticatable&Model
@@ -295,7 +317,7 @@ class Profile extends Page implements HasForms
             Action::make('updateProfile')
                 ->label(__('support::filament/pages/profile.actions.save'))
                 ->color('primary')
-                ->action('updateProfile')
+                ->action('updateProfile'),
         ];
     }
 

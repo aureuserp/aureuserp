@@ -2,13 +2,14 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources\ScrapResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\ScrapState;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ScrapResource;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource;
 use Webkul\Inventory\Models\ProductQuantity;
@@ -36,7 +37,7 @@ class EditScrap extends EditRecord
         return [
             ChatterAction::make()
                 ->setResource(static::$resource),
-            Actions\Action::make('validate')
+            Action::make('validate')
                 ->label(__('inventories::filament/clusters/operations/resources/scrap/pages/edit-scrap.header-actions.validate.label'))
                 ->color('gray')
                 ->action(function (Scrap $record) {
@@ -85,7 +86,7 @@ class EditScrap extends EditRecord
                     }
 
                     $record->update([
-                        'state'     => Enums\ScrapState::DONE,
+                        'state'     => ScrapState::DONE,
                         'closed_at' => now(),
                     ]);
 
@@ -95,10 +96,10 @@ class EditScrap extends EditRecord
                         'scrap_id' => $record->id,
                     ]);
                 })
-                ->hidden(fn () => $this->getRecord()->state == Enums\ScrapState::DONE),
-            Actions\DeleteAction::make()
-                ->hidden(fn () => $this->getRecord()->state == Enums\ScrapState::DONE)
-                ->action(function (Actions\DeleteAction $action, Scrap $record) {
+                ->hidden(fn () => $this->getRecord()->state == ScrapState::DONE),
+            DeleteAction::make()
+                ->hidden(fn () => $this->getRecord()->state == ScrapState::DONE)
+                ->action(function (DeleteAction $action, Scrap $record) {
                     try {
                         $record->delete();
 

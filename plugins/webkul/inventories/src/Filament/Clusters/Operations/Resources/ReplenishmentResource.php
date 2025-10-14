@@ -2,21 +2,24 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources;
 
-use Filament\Forms\Form;
+use Filament\Actions\Action;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
 use Webkul\Inventory\Filament\Clusters\Operations;
-use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReplenishmentResource\Pages;
+use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReplenishmentResource\Pages\ManageReplenishment;
 use Webkul\Inventory\Models\OrderPoint;
 
 class ReplenishmentResource extends Resource
 {
     protected static ?string $model = OrderPoint::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-arrows-up-down';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrows-up-down';
 
     protected static ?int $navigationSort = 4;
 
@@ -25,7 +28,7 @@ class ReplenishmentResource extends Resource
 
     protected static ?string $cluster = Operations::class;
 
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getNavigationLabel(): string
     {
@@ -37,10 +40,10 @@ class ReplenishmentResource extends Resource
         return __('inventories::filament/clusters/operations/resources/replenishment.navigation.group');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
             ])
             ->columns(1);
     }
@@ -61,20 +64,20 @@ class ReplenishmentResource extends Resource
                 })->all()
             )
             ->filters([
-                Tables\Filters\QueryBuilder::make()
+                QueryBuilder::make()
                     ->constraints(collect([
                     ])->filter()->values()->all()),
-            ], layout: \Filament\Tables\Enums\FiltersLayout::Modal)
+            ], layout: FiltersLayout::Modal)
             ->filtersTriggerAction(
-                fn (Tables\Actions\Action $action) => $action
+                fn (Action $action) => $action
                     ->slideOver(),
             )
             ->filtersFormColumns(2)
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label(__('inventories::filament/clusters/operations/resources/replenishment.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
 
                         return $data;
                     })
@@ -86,14 +89,14 @@ class ReplenishmentResource extends Resource
                             ->body(__('inventories::filament/clusters/operations/resources/replenishment.table.header-actions.create.notification.body')),
                     ),
             ])
-            ->actions([
+            ->recordActions([
             ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ManageReplenishment::route('/'),
+            'index'  => ManageReplenishment::route('/'),
         ];
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Webkul\TableViews;
 
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Contracts\View\View;
@@ -27,7 +29,10 @@ class TableViewsServiceProvider extends PackageServiceProvider
             ->runsMigrations();
     }
 
-    public function packageBooted(): void {}
+    public function packageBooted(): void
+    {
+        $this->registerCustomCss();
+    }
 
     public function packageRegistered()
     {
@@ -40,5 +45,12 @@ class TableViewsServiceProvider extends PackageServiceProvider
             PanelsRenderHook::RESOURCE_PAGES_MANAGE_RELATED_RECORDS_TABLE_BEFORE,
             fn (): View => view('table-views::filament.resources.pages.list-records.favorites-views'),
         );
+    }
+
+    public function registerCustomCss()
+    {
+        FilamentAsset::register([
+            Css::make('table-views', __DIR__.'/../resources/dist/table-views.css'),
+        ], 'table-views');
     }
 }

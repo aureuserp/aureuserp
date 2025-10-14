@@ -19,7 +19,7 @@ class ListPayments extends BaseListPayments
             ...$presets,
             'vendor_payments' => PresetView::make(__('invoices::filament/clusters/vendors/resources/payments/pages/list-payment.tabs.vendor-payments'))
                 ->favorite()
-                ->default()
+                ->setAsDefault()
                 ->icon('heroicon-s-banknotes')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('partner_type', 'supplier')),
         ];

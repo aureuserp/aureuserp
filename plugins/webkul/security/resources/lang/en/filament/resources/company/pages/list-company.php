@@ -6,4 +6,12 @@ return [
             'label' => 'New Company',
         ],
     ],
+
+    'tabs' => [
+
+        'all' => 'All Companies',
+
+        'archived' => 'Archived Companies',
+
+    ],
 ];

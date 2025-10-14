@@ -3,6 +3,7 @@
 namespace Webkul\Chatter\Traits;
 
 use BackedEnum;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -56,7 +57,7 @@ trait HasLogActivity
                 'event'        => $event,
                 'properties'   => $changes,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             report($e);
 
             return null;
@@ -112,7 +113,7 @@ trait HasLogActivity
             $instance = $relatedModel->find($id);
 
             return $instance ? $instance->$attribute : null;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Error getting related value for {$relation}.{$attribute}: ".$e->getMessage());
 
             return null;
@@ -167,7 +168,7 @@ trait HasLogActivity
                     ];
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Error tracking relationship changes for {$relation}.{$attribute}: ".$e->getMessage());
         }
 
@@ -305,7 +306,7 @@ trait HasLogActivity
                     }
 
                     return $enumInstance->value;
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     return $value;
                 }
             }

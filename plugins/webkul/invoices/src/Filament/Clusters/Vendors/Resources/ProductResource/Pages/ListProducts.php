@@ -18,7 +18,7 @@ class ListProducts extends BaseListProducts
             'goods_products' => PresetView::make(__('invoices::filament/clusters/vendors/resources/product/pages/list-products.tabs.goods'))
                 ->icon('heroicon-s-squares-plus')
                 ->favorite()
-                ->default()
+                ->setAsDefault()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('type', ProductType::GOODS)),
             'services_products' => PresetView::make(__('invoices::filament/clusters/vendors/resources/product/pages/list-products.tabs.services'))
                 ->icon('heroicon-s-sparkles')

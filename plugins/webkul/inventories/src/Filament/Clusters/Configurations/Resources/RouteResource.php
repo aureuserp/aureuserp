@@ -2,16 +2,34 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
-use Filament\Tables;
+use Filament\Support\Enums\TextSize;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -19,8 +37,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Filament\Clusters\Configurations;
-use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\Pages;
-use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\RelationManagers;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\Pages\CreateRoute;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\Pages\EditRoute;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\Pages\ListRoutes;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\Pages\ManageRules;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\Pages\ViewRoute;
+use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\RelationManagers\RulesRelationManager;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\WarehouseResource\Pages\ManageRoutes;
 use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Settings\ProductSettings;
@@ -30,7 +52,7 @@ class RouteResource extends Resource
 {
     protected static ?string $model = Route::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-arrow-path';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path';
 
     protected static ?int $navigationSort = 3;
 
@@ -59,20 +81,20 @@ class RouteResource extends Resource
         return __('inventories::filament/clusters/configurations/resources/route.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make(__('inventories::filament/clusters/configurations/resources/route.form.sections.general.title'))
+        return $schema
+            ->components([
+                Section::make(__('inventories::filament/clusters/configurations/resources/route.form.sections.general.title'))
                     ->schema([
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->label(__('inventories::filament/clusters/configurations/resources/route.form.sections.general.fields.route'))
                             ->required()
                             ->maxLength(255)
                             ->autofocus()
                             ->placeholder(__('inventories::filament/clusters/configurations/resources/route.form.sections.general.fields.route-placeholder'))
                             ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;']),
-                        Forms\Components\Select::make('company_id')
+                        Select::make('company_id')
                             ->label(__('inventories::filament/clusters/configurations/resources/route.form.sections.general.fields.company'))
                             ->relationship(
                                 name: 'company',
@@ -91,39 +113,39 @@ class RouteResource extends Resource
                             ->default(Auth::user()->default_company_id),
                     ]),
 
-                Forms\Components\Section::make(__('inventories::filament/clusters/configurations/resources/route.form.sections.applicable-on.title'))
+                Section::make(__('inventories::filament/clusters/configurations/resources/route.form.sections.applicable-on.title'))
                     ->description(__('inventories::filament/clusters/configurations/resources/route.form.sections.applicable-on.description'))
                     ->schema([
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Toggle::make('product_category_selectable')
+                                Toggle::make('product_category_selectable')
                                     ->label(__('inventories::filament/clusters/configurations/resources/route.form.sections.applicable-on.fields.product-categories'))
                                     ->inline(false)
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/route.form.sections.applicable-on.fields.product-categories-hint-tooltip')),
-                                Forms\Components\Toggle::make('product_selectable')
+                                Toggle::make('product_selectable')
                                     ->label(__('inventories::filament/clusters/configurations/resources/route.form.sections.applicable-on.fields.products'))
                                     ->inline(false)
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/route.form.sections.applicable-on.fields.products-hint-tooltip')),
-                                Forms\Components\Toggle::make('packaging_selectable')
+                                Toggle::make('packaging_selectable')
                                     ->label(__('inventories::filament/clusters/configurations/resources/route.form.sections.applicable-on.fields.packaging'))
                                     ->inline(false)
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/route.form.sections.applicable-on.fields.packaging-hint-tooltip'))
                                     ->visible(fn (ProductSettings $settings): bool => $settings->enable_packagings),
                             ]),
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Toggle::make('warehouse_selectable')
+                                Toggle::make('warehouse_selectable')
                                     ->label(__('inventories::filament/clusters/configurations/resources/route.form.sections.applicable-on.fields.warehouses'))
                                     ->inline(false)
                                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/route.form.sections.applicable-on.fields.warehouses-hint-tooltip'))
                                     ->live(),
-                                Forms\Components\Select::make('warehouses')
+                                Select::make('warehouses')
                                     ->hiddenLabel()
                                     ->relationship('warehouses', 'name')
                                     ->searchable()
                                     ->preload()
                                     ->multiple()
-                                    ->visible(fn (Forms\Get $get) => $get('warehouse_selectable')),
+                                    ->visible(fn (Get $get) => $get('warehouse_selectable')),
                             ])
                             ->hiddenOn(ManageRoutes::class),
                     ])
@@ -135,30 +157,30 @@ class RouteResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('inventories::filament/clusters/configurations/resources/route.table.columns.route'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('company.name')
+                TextColumn::make('company.name')
                     ->label(__('inventories::filament/clusters/configurations/resources/route.table.columns.company'))
                     ->searchable(),
-                Tables\Columns\TextColumn::make('deleted_at')
+                TextColumn::make('deleted_at')
                     ->label(__('inventories::filament/clusters/configurations/resources/route.table.columns.deleted-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('inventories::filament/clusters/configurations/resources/route.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('inventories::filament/clusters/configurations/resources/route.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('company_id')
+                SelectFilter::make('company_id')
                     ->label(__('inventories::filament/clusters/configurations/resources/route.table.filters.company'))
                     ->relationship('company', 'name')
                     ->searchable()
@@ -166,10 +188,10 @@ class RouteResource extends Resource
             ])
             ->reorderable('sort')
             ->defaultSort('sort', 'desc')
-            ->actions([
-                Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ViewAction::make()
                     ->hidden(fn ($record) => $record->trashed()),
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->hidden(fn ($record) => $record->trashed())
                     ->successNotification(
                         Notification::make()
@@ -177,21 +199,21 @@ class RouteResource extends Resource
                             ->title(__('inventories::filament/clusters/configurations/resources/route.table.actions.edit.notification.title'))
                             ->body(__('inventories::filament/clusters/configurations/resources/route.table.actions.edit.notification.body')),
                     ),
-                Tables\Actions\RestoreAction::make()
+                RestoreAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('inventories::filament/clusters/configurations/resources/route.table.actions.restore.notification.title'))
                             ->body(__('inventories::filament/clusters/configurations/resources/route.table.actions.restore.notification.body')),
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('inventories::filament/clusters/configurations/resources/route.table.actions.delete.notification.title'))
                             ->body(__('inventories::filament/clusters/configurations/resources/route.table.actions.delete.notification.body')),
                     ),
-                Tables\Actions\ForceDeleteAction::make()
+                ForceDeleteAction::make()
                     ->action(function (Route $record) {
                         try {
                             $record->forceDelete();
@@ -210,23 +232,23 @@ class RouteResource extends Resource
                             ->body(__('inventories::filament/clusters/configurations/resources/route.table.actions.force-delete.notification.success.body')),
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\RestoreBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('inventories::filament/clusters/configurations/resources/route.table.bulk-actions.restore.notification.title'))
                                 ->body(__('inventories::filament/clusters/configurations/resources/route.table.bulk-actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteBulkAction::make()
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('inventories::filament/clusters/configurations/resources/route.table.bulk-actions.delete.notification.title'))
                                 ->body(__('inventories::filament/clusters/configurations/resources/route.table.bulk-actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteBulkAction::make()
+                    ForceDeleteBulkAction::make()
                         ->action(function (Collection $records) {
                             try {
                                 $records->each(fn (Model $record) => $record->forceDelete());
@@ -247,56 +269,56 @@ class RouteResource extends Resource
                 ]),
             ])
             ->emptyStateActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->icon('heroicon-o-plus-circle'),
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Infolists\Components\Section::make(__('inventories::filament/clusters/configurations/resources/route.infolist.sections.general.title'))
+                        Section::make(__('inventories::filament/clusters/configurations/resources/route.infolist.sections.general.title'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('name')
+                                TextEntry::make('name')
                                     ->label(__('inventories::filament/clusters/configurations/resources/route.infolist.sections.general.entries.route'))
                                     ->icon('heroicon-o-arrow-path')
-                                    ->size(Infolists\Components\TextEntry\TextEntrySize::Large)
+                                    ->size(TextSize::Large)
                                     ->weight(FontWeight::Bold),
-                                Infolists\Components\TextEntry::make('company.name')
+                                TextEntry::make('company.name')
                                     ->label(__('inventories::filament/clusters/configurations/resources/route.infolist.sections.general.entries.company'))
                                     ->icon('heroicon-o-building-office'),
                             ]),
 
-                        Infolists\Components\Section::make(__('inventories::filament/clusters/configurations/resources/route.infolist.sections.applicable-on.title'))
+                        Section::make(__('inventories::filament/clusters/configurations/resources/route.infolist.sections.applicable-on.title'))
                             ->description(__('inventories::filament/clusters/configurations/resources/route.infolist.sections.applicable-on.description'))
                             ->schema([
-                                Infolists\Components\Grid::make()
+                                Grid::make()
                                     ->schema([
-                                        Infolists\Components\IconEntry::make('product_category_selectable')
+                                        IconEntry::make('product_category_selectable')
                                             ->label(__('inventories::filament/clusters/configurations/resources/route.infolist.sections.applicable-on.entries.product-categories'))
                                             ->boolean()
                                             ->icon(fn (bool $state): string => $state ? 'heroicon-o-check-circle' : 'heroicon-o-x-circle'),
-                                        Infolists\Components\IconEntry::make('product_selectable')
+                                        IconEntry::make('product_selectable')
                                             ->label(__('inventories::filament/clusters/configurations/resources/route.infolist.sections.applicable-on.entries.products'))
                                             ->boolean()
                                             ->icon(fn (bool $state): string => $state ? 'heroicon-o-check-circle' : 'heroicon-o-x-circle'),
-                                        Infolists\Components\IconEntry::make('packaging_selectable')
+                                        IconEntry::make('packaging_selectable')
                                             ->label(__('inventories::filament/clusters/configurations/resources/route.infolist.sections.applicable-on.entries.packaging'))
                                             ->boolean()
                                             ->icon(fn (bool $state): string => $state ? 'heroicon-o-check-circle' : 'heroicon-o-x-circle'),
                                     ])
                                     ->columns(3),
 
-                                Infolists\Components\Grid::make()
+                                Grid::make()
                                     ->schema([
-                                        Infolists\Components\IconEntry::make('warehouse_selectable')
+                                        IconEntry::make('warehouse_selectable')
                                             ->label(__('inventories::filament/clusters/configurations/resources/route.infolist.sections.applicable-on.entries.warehouses'))
                                             ->boolean()
                                             ->icon(fn (bool $state): string => $state ? 'heroicon-o-check-circle' : 'heroicon-o-x-circle'),
-                                        Infolists\Components\TextEntry::make('warehouses.name')
+                                        TextEntry::make('warehouses.name')
                                             ->label(__('inventories::filament/clusters/configurations/resources/route.infolist.sections.applicable-on.entries.warehouses'))
                                             ->listWithLineBreaks()
                                             ->visible(fn ($record) => $record->warehouse_selectable)
@@ -308,20 +330,20 @@ class RouteResource extends Resource
                     ])
                     ->columnSpan(['lg' => 2]),
 
-                Infolists\Components\Group::make()
+                Group::make()
                     ->schema([
-                        Infolists\Components\Section::make(__('inventories::filament/clusters/configurations/resources/route.infolist.sections.record-information.title'))
+                        Section::make(__('inventories::filament/clusters/configurations/resources/route.infolist.sections.record-information.title'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('created_at')
+                                TextEntry::make('created_at')
                                     ->label(__('inventories::filament/clusters/configurations/resources/route.infolist.sections.record-information.entries.created-at'))
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar'),
 
-                                Infolists\Components\TextEntry::make('creator.name')
+                                TextEntry::make('creator.name')
                                     ->label(__('inventories::filament/clusters/configurations/resources/route.infolist.sections.record-information.entries.created-by'))
                                     ->icon('heroicon-m-user'),
 
-                                Infolists\Components\TextEntry::make('updated_at')
+                                TextEntry::make('updated_at')
                                     ->label(__('inventories::filament/clusters/configurations/resources/route.infolist.sections.record-information.entries.last-updated'))
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar-days'),
@@ -352,27 +374,27 @@ class RouteResource extends Resource
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewRoute::class,
-            Pages\EditRoute::class,
-            Pages\ManageRules::class,
+            ViewRoute::class,
+            EditRoute::class,
+            ManageRules::class,
         ]);
     }
 
     public static function getRelations(): array
     {
         return [
-            RelationManagers\RulesRelationManager::class,
+            RulesRelationManager::class,
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index'   => Pages\ListRoutes::route('/'),
-            'create'  => Pages\CreateRoute::route('/create'),
-            'view'    => Pages\ViewRoute::route('/{record}'),
-            'edit'    => Pages\EditRoute::route('/{record}/edit'),
-            'rules'   => Pages\ManageRules::route('/{record}/rules'),
+            'index'   => ListRoutes::route('/'),
+            'create'  => CreateRoute::route('/create'),
+            'view'    => ViewRoute::route('/{record}'),
+            'edit'    => EditRoute::route('/{record}/edit'),
+            'rules'   => ManageRules::route('/{record}/rules'),
         ];
     }
 }

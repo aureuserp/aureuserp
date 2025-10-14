@@ -2,13 +2,15 @@
 
 namespace Webkul\Recruitment\Filament\Clusters\Applications\Resources\ApplicantResource\Pages;
 
-use Filament\Actions;
 use Filament\Actions\Action;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
+use Filament\Actions\DeleteAction;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
 use Webkul\Employee\Filament\Resources\EmployeeResource;
 use Webkul\Recruitment\Enums\ApplicationStatus;
@@ -18,9 +20,12 @@ use Webkul\Recruitment\Mail\ApplicantRefuseMail;
 use Webkul\Recruitment\Models\Applicant;
 use Webkul\Recruitment\Models\RefuseReason;
 use Webkul\Support\Services\EmailService;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewApplicant extends ViewRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = ApplicantResource::class;
 
     protected function getHeaderActions(): array
@@ -47,8 +52,8 @@ class ViewApplicant extends ViewRecord
                         return RecruitmentState::NORMAL->getColor();
                     }
                 })
-                ->form([
-                    Forms\Components\ToggleButtons::make('state')
+                ->schema([
+                    ToggleButtons::make('state')
                         ->inline()
                         ->options(RecruitmentState::class),
                 ])
@@ -64,14 +69,20 @@ class ViewApplicant extends ViewRecord
                         return RecruitmentState::NORMAL->getLabel();
                     }
                 })
-                ->action(function (Applicant $record, $data) {
+                ->action(function (Applicant $record, $data, $livewire) {
                     $record->update($data);
+
+                    // Force refresh the record in the livewire component
+                    $livewire->record = $record->fresh();
 
                     Notification::make()
                         ->success()
                         ->title(__('recruitments::filament/clusters/applications/resources/applicant/pages/view-applicant.header-actions.state.notification.title'))
                         ->body(__('recruitments::filament/clusters/applications/resources/applicant/pages/view-applicant.header-actions.state.notification.body'))
                         ->send();
+
+                    // Force complete refresh
+                    $livewire->dispatch('$refresh');
                 }),
             Action::make('gotoEmployee')
                 ->tooltip(__('recruitments::filament/clusters/applications/resources/applicant/pages/edit-applicant.goto-employee'))
@@ -93,7 +104,7 @@ class ViewApplicant extends ViewRecord
 
                     return redirect(EmployeeResource::getUrl('edit', ['record' => $employee]));
                 }),
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()
@@ -104,20 +115,20 @@ class ViewApplicant extends ViewRecord
                 ->modalIcon('heroicon-s-bug-ant')
                 ->hidden(fn ($record) => $record->refuse_reason_id || $record->application_status->value === ApplicationStatus::ARCHIVED->value)
                 ->modalHeading('Refuse Reason')
-                ->form(function (Form $form, $record) {
-                    return $form->schema([
-                        Forms\Components\ToggleButtons::make('refuse_reason_id')
+                ->schema(function (Schema $schema, $record) {
+                    return $schema->components([
+                        ToggleButtons::make('refuse_reason_id')
                             ->hiddenLabel()
                             ->inline()
                             ->live()
                             ->options(RefuseReason::all()->pluck('name', 'id')),
-                        Forms\Components\Toggle::make('notify')
+                        Toggle::make('notify')
                             ->inline()
                             ->live()
                             ->default(true)
                             ->visible(fn (Get $get) => $get('refuse_reason_id'))
                             ->label('Notify'),
-                        Forms\Components\TextInput::make('email')
+                        TextInput::make('email')
                             ->visible(fn (Get $get) => $get('notify') && $get('refuse_reason_id'))
                             ->default($record->candidate->email_from)
                             ->label('Email To'),
