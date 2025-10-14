@@ -13,7 +13,7 @@ class TopCategoriesWidget extends BaseWidget
 
     protected function getHeading(): ?string
     {
-        return __('sales::filament/widgets/top-categories.heading');
+        return __('sales::filament/pages/sales-dashboard.widgets.top-categories.heading');
     }
 
     /**
@@ -34,14 +34,12 @@ class TopCategoriesWidget extends BaseWidget
     {
         return [
             Tables\Columns\TextColumn::make('name')
-                ->label(__('sales::filament/widgets/top-categories.table-columns.category'))
-                ->searchable(),
-
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-categories.column.category')),
             Tables\Columns\TextColumn::make('full_name')
-                ->label(__('sales::filament/widgets/top-categories.table-columns.category_full_name')),
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-categories.column.category_full_name')),
 
             Tables\Columns\TextColumn::make('products_count')
-                ->label(__('sales::filament/widgets/top-categories.table-columns.product_count'))
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-categories.column.product_count'))
                 ->sortable(),
         ];
     }

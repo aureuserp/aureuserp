@@ -39,5 +39,24 @@ return [
             'sent-orders'      => 'Sent Orders',
             'cancelled-orders' => 'Cancelled Orders',
         ],
+
+        'revenew-chart' => [
+            'heading' => 'Revenue Chart',
+            'label'   => 'Revenue',
+        ],
+
+        'yearly-comparison' => [
+            'heading' => 'Yearly Sales Comparison',
+            'label'   => 'Sales',
+        ],
+
+        'top-categories' => [
+            'heading' => 'Top Categories',
+            'column'  => [
+                'category'              => 'Category',
+                'category_full_name'    => 'Full Name',
+                'product_count'         => 'Product Count',
+            ],
+        ],
     ],
 ];

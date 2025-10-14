@@ -15,7 +15,7 @@ class YearlyComparisonWidget extends ChartWidget
 
     public function getHeading(): ?string
     {
-        return 'Yearly Sales Comparison';
+        return __('sales::filament/pages/sales-dashboard.widgets.yearly-comparison.heading');
     }
 
     protected function getData(): array
@@ -63,7 +63,7 @@ class YearlyComparisonWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Sales',
+                    'label' => __('sales::filament/pages/sales-dashboard.widgets.yearly-comparison.label'),
                     'data'  => [
                         $previousYearSales,
                         $currentYearSales,

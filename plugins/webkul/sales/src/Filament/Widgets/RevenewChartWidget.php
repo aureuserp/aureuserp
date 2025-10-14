@@ -18,7 +18,7 @@ class RevenewChartWidget extends ChartWidget
 
     public function getHeading(): ?string
     {
-        return 'Revenue Trends';
+        return __('sales::filament/pages/sales-dashboard.widgets.revenew-chart.heading');
     }
 
     protected function getData(): array
@@ -113,7 +113,7 @@ class RevenewChartWidget extends ChartWidget
             $labels,
             [
                 [
-                    'label'           => 'Revenue',
+                    'label'           => __('sales::filament/pages/sales-dashboard.widgets.revenew-chart.label'),
                     'data'            => $revenueData,
                     'borderColor'     => '#1e851eff',
                     'backgroundColor' => 'rgba(59,130,246,0.2)',
