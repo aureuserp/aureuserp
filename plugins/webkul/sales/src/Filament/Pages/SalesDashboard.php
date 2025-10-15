@@ -40,7 +40,7 @@ class SalesDashboard extends BaseDashboard
 
     public static function getNavigationGroup(): string
     {
-        return 'Dashboard';
+        return __('sales::filament/pages/sales-dashboard.navigation-group.title');
     }
 
     public static function getNavigationLabel(): string
