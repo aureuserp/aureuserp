@@ -6,6 +6,8 @@
         "dev": "vite"
     },
     "devDependencies": {
+        "@playwright/test": "^1.53.1",
+        "@types/node": "^24.0.3",
         "@tailwindcss/postcss": "^4.1.12",
         "@tailwindcss/vite": "^4.1.13",
         "autoprefixer": "^10.4.20",
