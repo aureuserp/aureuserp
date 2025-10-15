@@ -18,8 +18,10 @@ jobs:
         os: [ubuntu-latest]
         php-versions: ["8.3"]
         node-version: ["22.13.1"]
-        shard-index: [1, 2, 3, 4, 5, 6]
-        shard-total: [6]
+        shard-index: [1]
+        shard-total: [1]
+        # shard-index: [1, 2, 3, 4, 5, 6]
+        # shard-total: [6]
 
     name: Playwright Tests | Shard ${{ matrix.shard-index }} Of ${{ matrix.shard-total }}
 
@@ -76,8 +78,16 @@ jobs:
       - name: Install Composer Dependencies
         run: composer create-project
 
+      - name: Generate APP_KEY
+        run: php artisan key:generate --ansi
+
       - name: Running Aureus Installer
-        run: php artisan erp:install
+        run: |
+          php artisan erp:install \
+            --force \
+            --admin-name="Example" \
+            --admin-email="admin@example.com" \
+            --admin-password="admin123"
 
       - name: Start Laravel server
         run: |
