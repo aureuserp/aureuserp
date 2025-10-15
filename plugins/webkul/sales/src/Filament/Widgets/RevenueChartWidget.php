@@ -2,15 +2,16 @@
 
 namespace Webkul\Sale\Filament\Widgets;
 
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Models\Order;
 
-class RevenewChartWidget extends ChartWidget
+class RevenueChartWidget extends ChartWidget
 {
-    use InteractsWithPageFilters;
+    use InteractsWithPageFilters, HasWidgetShield;
 
     protected int|string|array $columnSpan = 'full';
 
@@ -18,7 +19,7 @@ class RevenewChartWidget extends ChartWidget
 
     public function getHeading(): ?string
     {
-        return __('sales::filament/pages/sales-dashboard.widgets.revenew-chart.heading');
+        return __('sales::filament/pages/sales-dashboard.widgets.revenue-chart.heading');
     }
 
     protected function getData(): array
@@ -113,7 +114,7 @@ class RevenewChartWidget extends ChartWidget
             $labels,
             [
                 [
-                    'label'           => __('sales::filament/pages/sales-dashboard.widgets.revenew-chart.label'),
+                    'label'           => __('sales::filament/pages/sales-dashboard.widgets.revenue-chart.label'),
                     'data'            => $revenueData,
                     'borderColor'     => '#1e851eff',
                     'backgroundColor' => 'rgba(59,130,246,0.2)',

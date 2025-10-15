@@ -2,6 +2,7 @@
 
 namespace Webkul\Sale\Filament\Widgets;
 
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Webkul\Sale\Enums\OrderState;
@@ -9,7 +10,7 @@ use Webkul\Sale\Models\Order;
 
 class YearlyComparisonWidget extends ChartWidget
 {
-    use InteractsWithPageFilters;
+    use HasWidgetShield, InteractsWithPageFilters;
 
     protected ?string $maxHeight = '450px';
 
@@ -24,7 +25,6 @@ class YearlyComparisonWidget extends ChartWidget
 
         $baseQuery = Order::query()->where('state', OrderState::SALE);
 
-        // Apply filters
         if (! empty($filters['salesperson_id'])) {
             $baseQuery->whereIn('user_id', (array) $filters['salesperson_id']);
         }

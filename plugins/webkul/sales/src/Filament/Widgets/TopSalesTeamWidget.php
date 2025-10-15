@@ -2,6 +2,7 @@
 
 namespace Webkul\Sale\Filament\Widgets;
 
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
@@ -14,7 +15,7 @@ use Webkul\Support\Models\Currency;
 
 class TopSalesTeamWidget extends BaseWidget
 {
-    use InteractsWithPageFilters;
+    use HasWidgetShield,InteractsWithPageFilters;
 
     protected static ?string $pollingInterval = '15s';
 

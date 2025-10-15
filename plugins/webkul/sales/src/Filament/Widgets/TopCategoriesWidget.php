@@ -2,13 +2,17 @@
 
 namespace Webkul\Sale\Filament\Widgets;
 
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Tables;
+use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Sale\Models\Category;
 
 class TopCategoriesWidget extends BaseWidget
 {
+    use HasWidgetShield, InteractsWithPageFilters;
+
     protected static ?string $pollingInterval = '15s';
 
     protected function getHeading(): ?string

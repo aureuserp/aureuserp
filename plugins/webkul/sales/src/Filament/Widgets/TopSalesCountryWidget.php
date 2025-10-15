@@ -2,6 +2,7 @@
 
 namespace Webkul\Sale\Filament\Widgets;
 
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Tables;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -13,7 +14,7 @@ use Webkul\Support\Models\Currency;
 
 class TopSalesCountryWidget extends BaseWidget
 {
-    use InteractsWithPageFilters;
+    use HasWidgetShield, InteractsWithPageFilters;
 
     protected static ?string $pollingInterval = '15s';
 
@@ -80,7 +81,7 @@ class TopSalesCountryWidget extends BaseWidget
                 ->label(__('sales::filament/pages/sales-dashboard.widgets.top-sales-countries.column.country'))
                 ->sortable(),
             Tables\Columns\TextColumn::make('total_products')
-                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-sales-countries.column.total_orders'))  
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-sales-countries.column.total_orders'))
                 ->sortable(),
 
             Tables\Columns\TextColumn::make('total_revenue')

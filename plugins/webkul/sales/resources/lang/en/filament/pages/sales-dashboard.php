@@ -27,12 +27,16 @@ return [
             'order'     => 'Order',
             'draft'     => 'Draft Quotation',
             'cancel'    => 'Cancel Quotation',
+            'total-revenue' => 'Total Revenue',
+            'avg-revenue'   => 'Avg. Revenue',
 
             'descriptions' => [
                 'quotation' => 'Quotations sent to customers',
                 'order'     => 'Orders confirmed by customers',
                 'draft'     => 'Draft quotations',
                 'cancel'    => 'Orders cancelled by customers',
+                'total-revenue' => 'Total revenue from orders',
+                'avg-revenue'   => 'Average revenue from orders',
             ],
         ],
 
@@ -40,11 +44,11 @@ return [
             'heading'          => 'Sales Chart',
             'confirmed-orders' => 'Confirmed Orders',
             'draft-orders'     => 'Draft Orders',
-            'sent-orders'      => 'Sent Orders',
+            'sent-orders'      => 'Sent Quotations',
             'cancelled-orders' => 'Cancelled Orders',
         ],
 
-        'revenew-chart' => [
+        'revenue-chart' => [
             'heading' => 'Revenue Chart',
             'label'   => 'Revenue',
         ],

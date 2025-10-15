@@ -3,6 +3,7 @@
 namespace Webkul\Sale\Filament\Pages;
 
 use App\Models\User;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Pages\Dashboard as BaseDashboard;
@@ -11,7 +12,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\View\LegacyComponents\Widget;
-use Webkul\Sale\Filament\Widgets\RevenewChartWidget;
+use Webkul\Sale\Filament\Widgets\RevenueChartWidget;
 use Webkul\Sale\Filament\Widgets\SalesChartWidget;
 use Webkul\Sale\Filament\Widgets\StatsOverviewWidget;
 use Webkul\Sale\Filament\Widgets\TopCategoriesWidget;
@@ -29,7 +30,7 @@ use Webkul\Support\Models\Country;
 
 class SalesDashboard extends BaseDashboard
 {
-    use HasFiltersForm;
+    use HasFiltersForm, HasPageShield;
 
     protected static string $routePath = 'sale';
 
@@ -125,7 +126,7 @@ class SalesDashboard extends BaseDashboard
         return [
             StatsOverviewWidget::class,
             SalesChartWidget::class,
-            RevenewChartWidget::class,
+            RevenueChartWidget::class,
             YearlyComparisonWidget::class,
             TopCategoriesWidget::class,
             TopCustomerWidget::class,
