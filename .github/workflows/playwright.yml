@@ -43,6 +43,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -50,6 +57,13 @@ jobs:
           extensions: curl, fileinfo, gd, intl, mbstring, openssl, pdo, pdo_mysql, tokenizer, zip
           ini-values: error_reporting=E_ALL
           tools: composer:v2
+
+      - name: Cache Node modules
+        uses: actions/cache@v4
+        with:
+          path: tests/e2e-pw/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('tests/e2e-pw/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-node-
 
       - name: Set Up Node.js
         uses: actions/setup-node@v4
