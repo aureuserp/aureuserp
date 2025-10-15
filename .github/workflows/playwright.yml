@@ -81,6 +81,18 @@ jobs:
       - name: Generate APP_KEY
         run: php artisan key:generate --ansi
 
+      - name: Wait for MySQL to be ready
+        run: |
+          echo "Waiting for MySQL service..."
+          for i in {1..20}; do
+            if mysqladmin ping -h mysql -u root -proot --silent; then
+              echo "✅ MySQL is up!"
+              break
+            fi
+            echo "⏳ MySQL not ready yet... ($i)"
+            sleep 5
+          done
+
       - name: Running Aureus Installer
         run: |
           php artisan erp:install \
