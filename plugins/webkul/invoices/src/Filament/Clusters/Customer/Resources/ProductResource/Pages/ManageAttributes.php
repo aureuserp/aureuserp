@@ -3,7 +3,7 @@
 namespace Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource\Pages;
 
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource;
-use Webkul\Product\Filament\Resources\ProductResource\Pages\ManageAttributes as BaseManageAttributes;
+use Webkul\Account\Filament\Resources\ProductResource\Pages\ManageAttributes as BaseManageAttributes;
 
 class ManageAttributes extends BaseManageAttributes
 {

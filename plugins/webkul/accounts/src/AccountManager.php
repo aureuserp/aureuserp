@@ -10,6 +10,8 @@ use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Mail\Invoice\Actions\InvoiceEmail;
+use Webkul\Account\Models\Account;
+use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\MoveLine;
@@ -294,7 +296,176 @@ class AccountManager
 
         $line->company_id = $move->company_id;
 
+        $line = $this->computeMoveLineAccountId($move, $line);
+
         return $line;
+    }
+
+    /**
+     * Compute the account_id for move line based on display type and business rules
+     */
+    public function computeMoveLineAccountId(AccountMove $move, MoveLine $line): MoveLine
+    {
+        if ($line->account_id) {
+            return $line; // Account already set
+        }
+
+        switch ($line->display_type) {
+            case DisplayType::PAYMENT_TERM:
+                $line->account_id = $this->getPaymentTermAccountId($move);
+                break;
+
+            case DisplayType::PRODUCT:
+                if ($line->product_id) {
+                    $line->account_id = $this->getProductAccountId($move, $line);
+                } elseif ($line->partner_id) {
+                    $line->account_id = $this->getMostFrequentAccountForPartner($move, $line);
+                }
+                break;
+
+            case DisplayType::LINE_SECTION:
+            case DisplayType::LINE_NOTE:
+                // These don't need accounts
+                break;
+
+            default:
+                // Fallback logic for other display types
+                $line->account_id = $this->getFallbackAccountId($move, $line);
+                break;
+        }
+
+        return $line;
+    }
+
+    /**
+     * Get account for payment term lines (receivable/payable)
+     */
+    private function getPaymentTermAccountId(AccountMove $move): ?int
+    {
+        // Check if there's already a payment term line with an account
+        $existingPaymentTermLine = MoveLine::where('move_id', $move->id)
+            ->where('display_type', DisplayType::PAYMENT_TERM)
+            ->whereNotNull('account_id')
+            ->first();
+
+        if ($existingPaymentTermLine) {
+            return $existingPaymentTermLine->account_id;
+        }
+
+        $accountType = $move->isSaleDocument(true) ? 'asset_receivable' : 'liability_payable';
+        $propertyField = $accountType === 'asset_receivable' ? 'property_account_receivable_id' : 'property_account_payable_id';
+
+        $accountId = null;
+
+        // Try partner account first
+        if ($move->partner && $move->partner->{$propertyField}) {
+            $accountId = $move->partner->{$propertyField};
+        }
+        // Try company's partner account (if company has a partner relationship)
+        elseif (method_exists($move->company, 'partner') && $move->company->partner && $move->company->partner->{$propertyField}) {
+            $accountId = $move->company->partner->{$propertyField};
+        }
+        // Fallback to default company account by type
+        else {
+            $accountId = $this->getDefaultAccountByType($move->company_id, $accountType);
+        }
+
+        // Apply fiscal position mapping if applicable
+        if ($move->fiscal_position_id && $accountId) {
+            $accountId = $this->mapAccountThroughFiscalPosition($move->fiscal_position_id, $accountId);
+        }
+
+        return $accountId;
+    }
+
+    /**
+     * Get account for product lines
+     */
+    private function getProductAccountId(AccountMove $move, MoveLine $line): ?int
+    {
+        if (! $line->product) {
+            return null;
+        }
+
+        $accountId = null;
+
+        // Get accounts from product
+        if ($move->isSaleDocument(true)) {
+            $accountId = $line->product->property_account_income_id;
+        } elseif ($move->isPurchaseDocument(true)) {
+            $accountId = $line->product->property_account_expense_id;
+        }
+
+        // If no product account, try category account (if implemented)
+        // This would require checking the product category accounts
+
+        // Apply fiscal position mapping if applicable
+        if ($move->fiscal_position_id && $accountId) {
+            $accountId = $this->mapAccountThroughFiscalPosition($move->fiscal_position_id, $accountId);
+        }
+
+        return $accountId;
+    }
+
+    /**
+     * Get most frequent account for partner (simplified version)
+     */
+    private function getMostFrequentAccountForPartner(AccountMove $move, MoveLine $line): ?int
+    {
+        // This is a simplified version - in a full implementation,
+        // you would analyze historical transactions to find the most frequent account
+        $accountType = $move->isSaleDocument(true) ? 'income' : 'expense';
+
+        return $this->getDefaultAccountByType($move->company_id, $accountType);
+    }
+
+    /**
+     * Fallback account logic
+     */
+    private function getFallbackAccountId(AccountMove $move, MoveLine $line): ?int
+    {
+        // Look for previous two accounts with same display type
+        $previousAccounts = MoveLine::where('move_id', $move->id)
+            ->where('display_type', $line->display_type)
+            ->whereNotNull('account_id')
+            ->orderBy('id', 'desc')
+            ->limit(2)
+            ->pluck('account_id');
+
+        if ($previousAccounts->count() === 1 && $move->allLines()->count() > 2) {
+            return $previousAccounts->first();
+        }
+
+        // Default to journal's default account
+        return $move->journal?->default_account_id;
+    }
+
+    /**
+     * Get default account by type for company
+     */
+    private function getDefaultAccountByType(int $companyId, string $accountType): ?int
+    {
+        return Account::where('account_type', $accountType)
+            ->where('deprecated', false)
+            ->first()?->id;
+    }
+
+    /**
+     * Map account through fiscal position
+     */
+    private function mapAccountThroughFiscalPosition(int $fiscalPositionId, int $accountId): int
+    {
+        $fiscalPosition = FiscalPosition::find($fiscalPositionId);
+        if (! $fiscalPosition) {
+            return $accountId;
+        }
+
+        // For account mapping, we would need a fiscal position account mapping table
+        // This is a simplified implementation that returns the original account
+        // In a full Odoo-like implementation, there would be a fiscal_position_accounts table
+        // that maps source accounts to destination accounts
+
+        return $accountId;
     }
 
     /**

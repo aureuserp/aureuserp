@@ -5,7 +5,7 @@ namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource\Pag
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource;
 use Webkul\Product\Enums\ProductType;
-use Webkul\Product\Filament\Resources\ProductResource\Pages\ListProducts as BaseListProducts;
+use Webkul\Account\Filament\Resources\ProductResource\Pages\ListProducts as BaseListProducts;
 use Webkul\TableViews\Filament\Components\PresetView;
 
 class ListProducts extends BaseListProducts
