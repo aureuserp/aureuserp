@@ -34,7 +34,7 @@ jobs:
         ports:
           - 3306
         options: >-
-          --health-cmd="mysqladmin ping -h localhost -p$MYSQL_ROOT_PASSWORD"
+          --health-cmd="mysqladmin ping -h localhost -proot"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
@@ -70,7 +70,7 @@ jobs:
         run: |
           cp .env.example .env
           sed -i "s|^\(DB_CONNECTION=\s*\).*$|\1mysql|" .env
-          sed -i "s|^#\?\s*DB_HOST=.*|DB_HOST=mysql|" .env
+          sed -i "s|^#\?\s*DB_HOST=.*|DB_HOST=127.0.0.1|" .env
           sed -i "s|^#\?\s*DB_PORT=.*|DB_PORT=3306|" .env
           sed -i "s|^#\?\s*DB_DATABASE=.*|DB_DATABASE=aureuserp|" .env
           sed -i "s|^#\?\s*DB_USERNAME=.*|DB_USERNAME=root|" .env
