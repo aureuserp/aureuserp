@@ -5,6 +5,7 @@ namespace Webkul\Sale\Filament\Widgets;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use Illuminate\Database\Eloquent\Builder;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Models\Order;
 
@@ -14,48 +15,14 @@ class YearlyComparisonWidget extends ChartWidget
 
     protected ?string $maxHeight = '450px';
 
-    public function getHeading(): ?string
-    {
-        return __('sales::filament/pages/sales-dashboard.widgets.yearly-comparison.heading');
-    }
-
     protected function getData(): array
     {
-        $filters = $this->filters;
-
-        $baseQuery = Order::query()->where('state', OrderState::SALE);
-
-        if (! empty($filters['salesperson_id'])) {
-            $baseQuery->whereIn('user_id', (array) $filters['salesperson_id']);
-        }
-
-        if (! empty($filters['country_id'])) {
-            $baseQuery->whereHas('partner', fn ($q) => $q->whereIn('country_id', (array) $filters['country_id']));
-        }
-
-        if (! empty($filters['product_id'])) {
-            $baseQuery->whereHas('orderLines', fn ($q) => $q->whereIn('product_id', (array) $filters['product_id']));
-        }
-
-        if (! empty($filters['customer_id'])) {
-            $baseQuery->whereIn('partner_id', (array) $filters['customer_id']);
-        }
-
-        if (! empty($filters['category_id'])) {
-            $baseQuery->whereHas('orderLines.product.category', fn ($q) => $q->whereIn('category_id', (array) $filters['category_id']));
-        }
-
-        if (! empty($filters['salesteam_id'])) {
-            $baseQuery->whereIn('team_id', (array) $filters['salesteam_id']);
-        }
-
+        $baseQuery = $this->applyFilters($this->baseQuery());
         $currentYear = now()->year;
         $previousYear = $currentYear - 1;
-
         $currentYearSales = (clone $baseQuery)
             ->whereYear('date_order', $currentYear)
             ->sum('amount_total');
-
         $previousYearSales = (clone $baseQuery)
             ->whereYear('date_order', $previousYear)
             ->sum('amount_total');
@@ -82,8 +49,46 @@ class YearlyComparisonWidget extends ChartWidget
         ];
     }
 
+    protected function baseQuery(): Builder
+    {
+        return Order::query()
+            ->where('state', OrderState::SALE);
+    }
+
+    protected function applyFilters(Builder $query): Builder
+    {
+        $filters = $this->filters;
+
+        $query->when(! empty($filters['salesperson_id']), function ($query) use ($filters) {
+            $query->whereIn('user_id', (array) $filters['salesperson_id']);
+        });
+        $query->when(! empty($filters['country_id']), function ($query) use ($filters) {
+            $query->whereHas('partner', fn ($q) => $q->whereIn('country_id', (array) $filters['country_id']));
+        });
+        $query->when(! empty($filters['product_id']), function ($query) use ($filters) {
+            $query->whereHas('orderLines', fn ($q) => $q->whereIn('product_id', (array) $filters['product_id']));
+        });
+        $query->when(! empty($filters['customer_id']), function ($query) use ($filters) {
+            $query->whereIn('partner_id', (array) $filters['customer_id']);
+        });
+        $query->when(! empty($filters['category_id']), function ($query) use ($filters) {
+            $query->whereHas('orderLines.product.category', fn ($q) => $q->whereIn('category_id', (array) $filters['category_id']));
+        });
+        $query->when(! empty($filters['salesteam_id']), function ($query) use ($filters) {
+            $query->whereIn('team_id', (array) $filters['salesteam_id']);
+        });
+
+        return $query;
+
+    }
+
     protected function getType(): string
     {
         return 'bar';
+    }
+
+    public function getHeading(): ?string
+    {
+        return __('sales::filament/pages/sales-dashboard.widgets.yearly-comparison.heading');
     }
 }

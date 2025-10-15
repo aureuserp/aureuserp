@@ -4,34 +4,35 @@ namespace Webkul\Sale\Filament\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Carbon\Carbon;
+use DateInterval;
+use DatePeriod;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Models\Order;
 
 class RevenueChartWidget extends ChartWidget
 {
-    use InteractsWithPageFilters, HasWidgetShield;
+    use HasWidgetShield, InteractsWithPageFilters;
 
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'half';
 
     protected ?string $maxHeight = '400px';
 
-    public function getHeading(): ?string
-    {
-        return __('sales::filament/pages/sales-dashboard.widgets.revenue-chart.heading');
-    }
-
+    /**
+     * Build and return the chart dataset.
+     */
     protected function getData(): array
     {
-        [$startDate, $endDate] = $this->getDateRange();
+        $query = $this->buildFilteredQuery()
+            ->where('state', OrderState::SALE);
 
-        $orders = $this->getFilteredQuery()
-            ->where('state', OrderState::SALE)
-            ->whereBetween('date_order', [$startDate, $endDate])
-            ->get(['date_order', 'amount_total']);
+        $orders = $query->get(['date_order', 'amount_total']);
 
-        [$labels, $datasets] = $this->prepareChartData($orders, $startDate, $endDate);
+        [$startDate, $endDate] = $this->getQueryDateRange($query);
+        [$labels, $datasets] = $this->buildChartDataset($orders, $startDate, $endDate);
 
         return compact('labels', 'datasets');
     }
@@ -41,9 +42,12 @@ class RevenueChartWidget extends ChartWidget
         return 'line';
     }
 
-    protected function getDateRange(): array
+    /**
+     * Builds the Order query applying all filter conditions, including date range.
+     */
+    protected function buildFilteredQuery(): Builder
     {
-        $filters = $this->filters;
+        $filters = $this->filters ?? [];
 
         $startDate = ! empty($filters['start_date'])
             ? Carbon::parse($filters['start_date'])->startOfDay()
@@ -53,75 +57,83 @@ class RevenueChartWidget extends ChartWidget
             ? Carbon::parse($filters['end_date'])->endOfDay()
             : now()->endOfDay();
 
-        return [$startDate, $endDate];
-    }
+        $query = Order::query()
+            ->when($startDate && $endDate, fn (Builder $q) => $q->whereBetween('date_order', [$startDate, $endDate])
+            )
+            ->when(! empty($filters['country_id']), function (Builder $q) use ($filters) {
+                $q->whereHas('partner', fn (Builder $sub) => $sub->whereIn('country_id', (array) $filters['country_id'])
+                );
+            })
+            ->when(! empty($filters['product_id']), function (Builder $q) use ($filters) {
+                $q->whereHas('orderLines', fn (Builder $sub) => $sub->whereIn('product_id', (array) $filters['product_id'])
+                );
+            })
+            ->when(! empty($filters['customer_id']), fn (Builder $q) => $q->whereIn('partner_id', (array) $filters['customer_id'])
+            )
+            ->when(! empty($filters['category_id']), function (Builder $q) use ($filters) {
+                $q->whereHas('orderLines.product.category', fn (Builder $sub) => $sub->whereIn('category_id', (array) $filters['category_id'])
+                );
+            })
+            ->when(! empty($filters['salesteam_id']), fn (Builder $q) => $q->whereIn('team_id', (array) $filters['salesteam_id'])
+            )
+            ->when(! empty($filters['salesperson_id']), fn (Builder $q) => $q->whereIn('user_id', (array) $filters['salesperson_id'])
+            );
 
-    protected function getFilteredQuery()
-    {
-        $filters = $this->filters;
-
-        $query = Order::query();
-
-        if (! empty($filters['country_id'])) {
-            $query->whereHas('partner', fn ($q) => $q->whereIn('country_id', (array) $filters['country_id']));
-        }
-
-        if (! empty($filters['product_id'])) {
-            $query->whereHas('orderLines', fn ($q) => $q->whereIn('product_id', (array) $filters['product_id']));
-        }
-
-        if (! empty($filters['customer_id'])) {
-            $query->whereIn('partner_id', (array) $filters['customer_id']);
-        }
-
-        if (! empty($filters['category_id'])) {
-            $query->whereHas('orderLines.product.category', fn ($q) => $q->whereIn('category_id', (array) $filters['category_id']));
-        }
-
-        if (! empty($filters['salesteam_id'])) {
-            $query->whereIn('team_id', (array) $filters['salesteam_id']);
-        }
-
-        if (! empty($filters['salesperson_id'])) {
-            $query->whereIn('user_id', (array) $filters['salesperson_id']);
-        }
+        $query->startDate = $startDate;
+        $query->endDate = $endDate;
 
         return $query;
     }
 
-    protected function prepareChartData($orders, Carbon $startDate, Carbon $endDate): array
+    /**
+     * Extracts date range info used in the query.
+     */
+    protected function getQueryDateRange(Builder $query): array
+    {
+        return [
+            $query->startDate ?? now()->subMonth()->startOfDay(),
+            $query->endDate ?? now()->endOfDay(),
+        ];
+    }
+
+    /**
+     * Transform orders into chart-ready format.
+     */
+    protected function buildChartDataset(Collection $orders, Carbon $startDate, Carbon $endDate): array
     {
         $ordersByDay = $orders->groupBy(fn ($order) => Carbon::parse($order->date_order)->format('Y-m-d'));
 
         $labels = [];
-        $revenueData = [];
+        $revenuePerDay = [];
 
-        $period = new \DatePeriod(
-            $startDate,
-            new \DateInterval('P1D'),
-            $endDate->copy()->addDay()
-        );
+        $period = new DatePeriod($startDate, new DateInterval('P1D'), $endDate->copy()->addDay());
 
-        foreach ($period as $dt) {
-            $dateKey = $dt->format('Y-m-d');
+        foreach ($period as $date) {
+            $dateKey = $date->format('Y-m-d');
             $labels[] = $dateKey;
 
             $dailyOrders = $ordersByDay[$dateKey] ?? collect();
-            $revenueData[] = $dailyOrders->sum('amount_total');
+            $revenuePerDay[] = $dailyOrders->sum('amount_total');
         }
 
-        return [
-            $labels,
+        $datasets = [
             [
-                [
-                    'label'           => __('sales::filament/pages/sales-dashboard.widgets.revenue-chart.label'),
-                    'data'            => $revenueData,
-                    'borderColor'     => '#1e851eff',
-                    'backgroundColor' => 'rgba(59,130,246,0.2)',
-                    'fill'            => true,
-                    'tension'         => 0.3,
-                ],
+                'label'           => __('sales::filament/pages/sales-dashboard.widgets.revenue-chart.label'),
+                'data'            => $revenuePerDay,
+                'borderColor'     => '#1E851E',
+                'backgroundColor' => 'rgba(59,130,246,0.2)',
+                'fill'            => true,
+                'tension'         => 0.3,
+                'pointRadius'     => 3,
+                'pointHoverRadius'=> 5,
             ],
         ];
+
+        return [$labels, $datasets];
+    }
+
+    public function getHeading(): ?string
+    {
+        return __('sales::filament/pages/sales-dashboard.widgets.revenue-chart.heading');
     }
 }

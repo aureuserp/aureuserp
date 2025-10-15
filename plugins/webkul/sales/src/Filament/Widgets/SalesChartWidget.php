@@ -11,9 +11,9 @@ use Webkul\Sale\Models\Order;
 
 class SalesChartWidget extends ChartWidget
 {
-    use InteractsWithPageFilters, HasWidgetShield;
+    use HasWidgetShield, InteractsWithPageFilters;
 
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'half';
 
     protected ?string $maxHeight = '400px';
 
@@ -60,41 +60,41 @@ class SalesChartWidget extends ChartWidget
      */
     protected function getFilteredQuery()
     {
-        $filters = $this->filters;
+        $filters = $this->filters ?? [];
 
         $query = Order::query();
 
-        if (! empty($filters['start_date'])) {
+        $query->when(! empty($filters['start_date']), function ($query) use ($filters) {
             $query->whereDate('date_order', '>=', $filters['start_date']);
-        }
+        });
 
-        if (! empty($filters['end_date'])) {
+        $query->when(! empty($filters['end_date']), function ($query) use ($filters) {
             $query->whereDate('date_order', '<=', $filters['end_date']);
-        }
+        });
 
-        if (! empty($filters['country_id'])) {
+        $query->when(! empty($filters['country_id']), function ($query) use ($filters) {
             $query->whereHas('partner', fn ($q) => $q->whereIn('country_id', (array) $filters['country_id']));
-        }
+        });
 
-        if (! empty($filters['product_id'])) {
+        $query->when(! empty($filters['product_id']), function ($query) use ($filters) {
             $query->whereHas('orderLines', fn ($q) => $q->whereIn('product_id', (array) $filters['product_id']));
-        }
+        });
 
-        if (! empty($filters['customer_id'])) {
+        $query->when(! empty($filters['customer_id']), function ($query) use ($filters) {
             $query->whereIn('partner_id', (array) $filters['customer_id']);
-        }
+        });
 
-        if (! empty($filters['category_id'])) {
+        $query->when(! empty($filters['category_id']), function ($query) use ($filters) {
             $query->whereHas('orderLines.product.category', fn ($q) => $q->whereIn('category_id', (array) $filters['category_id']));
-        }
+        });
 
-        if (! empty($filters['salesteam_id'])) {
+        $query->when(! empty($filters['salesteam_id']), function ($query) use ($filters) {
             $query->whereIn('team_id', (array) $filters['salesteam_id']);
-        }
+        });
 
-        if (! empty($filters['salesperson_id'])) {
+        $query->when(! empty($filters['salesperson_id']), function ($query) use ($filters) {
             $query->whereIn('user_id', (array) $filters['salesperson_id']);
-        }
+        });
 
         return $query;
     }

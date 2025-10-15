@@ -26,8 +26,10 @@ class TopSalesOrderWidget extends BaseWidget
 
     public function table(Table $table): Table
     {
+        $query = $this->applyFilters($this->baseQuery());
+
         return $table
-            ->query($this->baseQuery())
+            ->query($query)
             ->defaultPaginationPageOption(5)
             ->columns($this->getTableColumns());
     }
@@ -54,37 +56,37 @@ class TopSalesOrderWidget extends BaseWidget
     {
         $filters = $this->filters;
 
-        if (! empty($filters['start_date'])) {
+        $query->when(! empty($filters['start_date']), function ($query) use ($filters) {
             $query->whereHas('order', fn ($q) => $q->whereDate('create_date', '>=', $filters['start_date']));
-        }
+        });
 
-        if (! empty($filters['end_date'])) {
+        $query->when(! empty($filters['end_date']), function ($query) use ($filters) {
             $query->whereHas('order', fn ($q) => $q->whereDate('create_date', '<=', $filters['end_date']));
-        }
+        });
 
-        if (! empty($filters['salesperson_id'])) {
+        $query->when(! empty($filters['salesperson_id']), function ($query) use ($filters) {
             $query->whereHas('order', fn ($q) => $q->whereIn('user_id', (array) $filters['salesperson_id']));
-        }
+        });
 
-        if (! empty($filters['country_id'])) {
+        $query->when(! empty($filters['country_id']), function ($query) use ($filters) {
             $query->whereHas('order.partner', fn ($q) => $q->whereIn('country_id', (array) $filters['country_id']));
-        }
+        });
 
-        if (! empty($filters['product_id'])) {
+        $query->when(! empty($filters['product_id']), function ($query) use ($filters) {
             $query->whereIn('product_id', (array) $filters['product_id']);
-        }
+        });
 
-        if (! empty($filters['category_id'])) {
+        $query->when(! empty($filters['category_id']), function ($query) use ($filters) {
             $query->whereHas('product.category', fn ($q) => $q->whereIn('category_id', (array) $filters['category_id']));
-        }
+        });
 
-        if (! empty($filters['customer_id'])) {
+        $query->when(! empty($filters['customer_id']), function ($query) use ($filters) {
             $query->whereHas('order', fn ($q) => $q->whereIn('partner_id', (array) $filters['customer_id']));
-        }
+        });
 
-        if (! empty($filters['salesteam_id'])) {
+        $query->when(! empty($filters['salesteam_id']), function ($query) use ($filters) {
             $query->whereHas('order', fn ($q) => $q->whereIn('team_id', (array) $filters['salesteam_id']));
-        }
+        });
 
         return $query;
     }

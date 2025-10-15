@@ -19,17 +19,28 @@ class TopSalesTeamWidget extends BaseWidget
 
     protected static ?string $pollingInterval = '15s';
 
-    public function getHeading(): ?string
-    {
-        return __('sales::filament/pages/sales-dashboard.widgets.top-sales-teams.heading');
-    }
-
     public function table(Table $table): Table
     {
+        $query = $this->applyFilters($this->baseQuery());
+
         return $table
-            ->query($this->applyFilters($this->baseQuery()))
+            ->query($query)
             ->defaultPaginationPageOption(5)
-            ->columns($this->getTableColumns());
+            ->columns([
+                Tables\Columns\TextColumn::make('team.name')
+                    ->label(__('sales::filament/pages/sales-dashboard.widgets.top-sales-teams.column.sales_team'))
+                    ->sortable()
+                    ->default('—'),
+
+                Tables\Columns\TextColumn::make('total_orders')
+                    ->label(__('sales::filament/pages/sales-dashboard.widgets.top-sales-teams.column.total_orders'))
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('total_revenue')
+                    ->label(__('sales::filament/pages/sales-dashboard.widgets.top-sales-teams.column.total_revenue'))
+                    ->money($this->getActiveCurrency(), true)
+                    ->sortable(),
+            ]);
     }
 
     protected function baseQuery(): Builder
@@ -53,53 +64,34 @@ class TopSalesTeamWidget extends BaseWidget
     {
         $filters = $this->filters;
 
-        if (! empty($filters['start_date'])) {
+        $query->when(! empty($filters['start_date']), function ($query) use ($filters) {
             $query->whereDate('date_order', '>=', $filters['start_date']);
-        }
-        if (! empty($filters['end_date'])) {
+        });
+        $query->when(! empty($filters['end_date']), function ($query) use ($filters) {
             $query->whereDate('date_order', '<=', $filters['end_date']);
-        }
+        });
 
-        if (! empty($filters['salesperson_id'])) {
+        $query->when(! empty($filters['salesperson_id']), function ($query) use ($filters) {
             $query->whereIn('user_id', (array) $filters['salesperson_id']);
-        }
+        });
 
-        if (! empty($filters['country_id'])) {
+        $query->when(! empty($filters['country_id']), function ($query) use ($filters) {
             $query->whereHas('partner', fn ($q) => $q->whereIn('country_id', (array) $filters['country_id']));
-        }
+        });
 
-        if (! empty($filters['product_id'])) {
+        $query->when(! empty($filters['product_id']), function ($query) use ($filters) {
             $query->whereHas('orderLines', fn ($q) => $q->whereIn('product_id', (array) $filters['product_id']));
-        }
+        });
 
-        if (! empty($filters['category_id'])) {
+        $query->when(! empty($filters['category_id']), function ($query) use ($filters) {
             $query->whereHas('orderLines.product.category', fn ($q) => $q->whereIn('category_id', (array) $filters['category_id']));
-        }
+        });
 
-        if (! empty($filters['salesteam_id'])) {
+        $query->when(! empty($filters['salesteam_id']), function ($query) use ($filters) {
             $query->whereIn('team_id', (array) $filters['salesteam_id']);
-        }
+        });
 
         return $query;
-    }
-
-    protected function getTableColumns(): array
-    {
-        return [
-            Tables\Columns\TextColumn::make('team.name')
-                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-sales-teams.column.sales_team'))
-                ->sortable()
-                ->default('—'),
-
-            Tables\Columns\TextColumn::make('total_orders')
-                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-sales-teams.column.total_orders'))
-                ->sortable(),
-
-            Tables\Columns\TextColumn::make('total_revenue')
-                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-sales-teams.column.total_revenue'))
-                ->money($this->getActiveCurrency(), true)
-                ->sortable(),
-        ];
     }
 
     protected function getActiveCurrency(): ?string
@@ -110,5 +102,10 @@ class TopSalesTeamWidget extends BaseWidget
     public function getTableRecordKey($record): string
     {
         return (string) $record->team_id;
+    }
+
+    public function getHeading(): ?string
+    {
+        return __('sales::filament/pages/sales-dashboard.widgets.top-sales-teams.heading');
     }
 }

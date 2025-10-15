@@ -26,10 +26,26 @@ class TopProductsWidget extends BaseWidget
 
     public function table(Table $table): Table
     {
+        $query = $this->applyFilters($this->baseQuery());
+
         return $table
-            ->query($this->baseQuery())
+            ->query($query)
             ->defaultPaginationPageOption(5)
-            ->columns($this->getTableColumns());
+            ->columns([
+                Tables\Columns\TextColumn::make('product_id')
+                    ->label(__('sales::filament/pages/sales-dashboard.widgets.top-products.column.product'))
+                    ->formatStateUsing(fn ($state, $record) => $record->product?->name ?? '—')
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('total_qty')
+                    ->label(__('sales::filament/pages/sales-dashboard.widgets.top-products.column.total_orders'))
+                    ->sortable(),
+
+                Tables\Columns\TextColumn::make('total_revenue')
+                    ->label(__('sales::filament/pages/sales-dashboard.widgets.top-products.column.total_revenue'))
+                    ->money($this->getActiveCurrency(), true)
+                    ->sortable(),
+            ]);
     }
 
     /**
@@ -54,58 +70,39 @@ class TopProductsWidget extends BaseWidget
     {
         $filters = $this->filters;
 
-        if (! empty($filters['start_date'])) {
-            $query->whereHas('order', fn ($q) => $q->whereDate('create_date', '>=', $filters['start_date']));
-        }
+        $query->when(! empty($filters['start_date']), function ($query) use ($filters) {
+            $query->whereHas('order', fn ($q) => $q->whereDate('date_order', '>=', $filters['start_date']));
+        });
 
-        if (! empty($filters['end_date'])) {
-            $query->whereHas('order', fn ($q) => $q->whereDate('create_date', '<=', $filters['end_date']));
-        }
+        $query->when(! empty($filters['end_date']), function ($query) use ($filters) {
+            $query->whereHas('order', fn ($q) => $q->whereDate('date_order', '<=', $filters['end_date']));
+        });
 
-        if (! empty($filters['salesperson_id'])) {
+        $query->when(! empty($filters['salesperson_id']), function ($query) use ($filters) {
             $query->whereHas('order', fn ($q) => $q->whereIn('user_id', (array) $filters['salesperson_id']));
-        }
+        });
 
-        if (! empty($filters['country_id'])) {
+        $query->when(! empty($filters['country_id']), function ($query) use ($filters) {
             $query->whereHas('order.partner', fn ($q) => $q->whereIn('country_id', (array) $filters['country_id']));
-        }
+        });
 
-        if (! empty($filters['product_id'])) {
+        $query->when(! empty($filters['product_id']), function ($query) use ($filters) {
             $query->whereIn('product_id', (array) $filters['product_id']);
-        }
+        });
 
-        if (! empty($filters['category_id'])) {
+        $query->when(! empty($filters['category_id']), function ($query) use ($filters) {
             $query->whereHas('product.category', fn ($q) => $q->whereIn('category_id', (array) $filters['category_id']));
-        }
+        });
 
-        if (! empty($filters['customer_id'])) {
+        $query->when(! empty($filters['customer_id']), function ($query) use ($filters) {
             $query->whereHas('order', fn ($q) => $q->whereIn('partner_id', (array) $filters['customer_id']));
-        }
+        });
 
-        if (! empty($filters['salesteam_id'])) {
+        $query->when(! empty($filters['salesteam_id']), function ($query) use ($filters) {
             $query->whereHas('order', fn ($q) => $q->whereIn('team_id', (array) $filters['salesteam_id']));
-        }
+        });
 
         return $query;
-    }
-
-    protected function getTableColumns(): array
-    {
-        return [
-            Tables\Columns\TextColumn::make('product_id')
-                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-products.column.product'))
-                ->formatStateUsing(fn ($state, $record) => $record->product?->name ?? '—')
-                ->sortable(),
-
-            Tables\Columns\TextColumn::make('total_qty')
-                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-products.column.total_orders'))
-                ->sortable(),
-
-            Tables\Columns\TextColumn::make('total_revenue')
-                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-products.column.total_revenue'))
-                ->money($this->getActiveCurrency(), true)
-                ->sortable(),
-        ];
     }
 
     protected function getActiveCurrency(): ?string

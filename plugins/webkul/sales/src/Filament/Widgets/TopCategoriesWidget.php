@@ -15,11 +15,6 @@ class TopCategoriesWidget extends BaseWidget
 
     protected static ?string $pollingInterval = '15s';
 
-    protected function getHeading(): ?string
-    {
-        return __('sales::filament/pages/sales-dashboard.widgets.top-categories.heading');
-    }
-
     /**
      * 🔹 Table query for top categories.
      */
@@ -46,5 +41,10 @@ class TopCategoriesWidget extends BaseWidget
                 ->label(__('sales::filament/pages/sales-dashboard.widgets.top-categories.column.product_count'))
                 ->sortable(),
         ];
+    }
+
+    protected function getHeading(): ?string
+    {
+        return __('sales::filament/pages/sales-dashboard.widgets.top-categories.heading');
     }
 }

@@ -4,6 +4,7 @@ namespace Webkul\Sale\Filament\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Tables;
+use Filament\Tables\Table;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,7 +24,17 @@ class TopSalesCountryWidget extends BaseWidget
         return __('sales::filament/pages/sales-dashboard.widgets.top-sales-countries.heading');
     }
 
-    protected function getTableQuery(): Builder
+    public function table(Table $table): Table
+    {
+        $query = $this->applyFilters($this->baseQuery());
+
+        return $table
+            ->query($query)
+            ->defaultPaginationPageOption(5)
+            ->columns($this->getTableColumns());
+    }
+
+    protected function baseQuery(): Builder
     {
         $query = OrderLine::query()
             ->whereHas('order', fn ($q) => $q->where('state', OrderState::SALE))
@@ -35,13 +46,8 @@ class TopSalesCountryWidget extends BaseWidget
                 'countries.name as country_name',
                 DB::raw('SUM(sales_order_lines.product_uom_qty) as total_products'),
                 DB::raw('SUM(sales_order_lines.price_total) as total_revenue')
-            );
-
-        // Apply filters
-        $query = $this->applyFilters($query);
-
-        // Group by country
-        $query->groupBy('partners_partners.country_id', 'countries.name')
+            )
+            ->groupBy('partners_partners.country_id', 'countries.name')
             ->orderByDesc('total_revenue');
 
         return $query;
@@ -51,25 +57,33 @@ class TopSalesCountryWidget extends BaseWidget
     {
         $filters = $this->filters ?? [];
 
-        if (! empty($filters['start_date'])) {
+        $query->when(! empty($filters['start_date']), function ($query) use ($filters) {
             $query->whereHas('order', fn ($q) => $q->whereDate('date_order', '>=', $filters['start_date']));
-        }
+        });
 
-        if (! empty($filters['end_date'])) {
+        $query->when(! empty($filters['end_date']), function ($query) use ($filters) {
             $query->whereHas('order', fn ($q) => $q->whereDate('date_order', '<=', $filters['end_date']));
-        }
+        });
 
-        if (! empty($filters['salesperson_id'])) {
+        $query->when(! empty($filters['salesperson_id']), function ($query) use ($filters) {
             $query->whereHas('order', fn ($q) => $q->whereIn('user_id', (array) $filters['salesperson_id']));
-        }
+        });
 
-        if (! empty($filters['customer_id'])) {
+        $query->when(! empty($filters['customer_id']), function ($query) use ($filters) {
             $query->whereHas('order', fn ($q) => $q->whereIn('partner_id', (array) $filters['customer_id']));
-        }
+        });
 
-        if (! empty($filters['salesteam_id'])) {
+        $query->when(! empty($filters['salesperson_id']), function ($query) use ($filters) {
+            $query->whereHas('order', fn ($q) => $q->whereIn('user_id', (array) $filters['salesperson_id']));
+        });
+
+        $query->when(! empty($filters['customer_id']), function ($query) use ($filters) {
+            $query->whereHas('order', fn ($q) => $q->whereIn('partner_id', (array) $filters['customer_id']));
+        });
+
+        $query->when(! empty($filters['salesteam_id']), function ($query) use ($filters) {
             $query->whereHas('order', fn ($q) => $q->whereIn('team_id', (array) $filters['salesteam_id']));
-        }
+        });
 
         return $query;
     }
