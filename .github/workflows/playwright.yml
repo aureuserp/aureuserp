@@ -71,7 +71,7 @@ jobs:
           cp .env.example .env
           sed -i "s|^\(DB_CONNECTION=\s*\).*$|\1mysql|" .env
           sed -i "s|^#\?\s*DB_HOST=.*|DB_HOST=mysql|" .env
-          sed -i "s|^#\?\(DB_PORT=\s*\).*$|\13306|" .env
+          sed -i "s|^#\?\(DB_PORT=\s*\).*$|\1${{ job.services.mysql.ports['3306'] }}|" .env
           sed -i "s|^#\?\s*DB_DATABASE=.*|DB_DATABASE=aureuserp|" .env
           sed -i "s|^#\?\s*DB_USERNAME=.*|DB_USERNAME=root|" .env
           sed -i "s|^#\?\s*DB_PASSWORD=.*|DB_PASSWORD=root|" .env
