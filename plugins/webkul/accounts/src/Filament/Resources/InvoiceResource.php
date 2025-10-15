@@ -304,6 +304,8 @@ class InvoiceResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
                 TextColumn::make('name')
                     ->placeholder('-')
@@ -465,7 +467,7 @@ class InvoiceResource extends Resource
                             ->label(__('accounts::filament/resources/invoice.table.filters.invoice-partner-display-name')),
                         DateConstraint::make('invoice_date')
                             ->label(__('accounts::filament/resources/invoice.table.filters.invoice-date')),
-                        DateConstraint::make('invoice_due_date')
+                        DateConstraint::make('invoice_date_due')
                             ->label(__('accounts::filament/resources/invoice.table.filters.invoice-due-date')),
                         DateConstraint::make('created_at')
                             ->label(__('accounts::filament/resources/invoice.table.filters.created-at')),

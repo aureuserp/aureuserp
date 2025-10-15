@@ -69,6 +69,7 @@ class CategoryResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
             ->columns([
                 TextColumn::make('name')
                     ->label(__('products::filament/resources/category.table.columns.name'))

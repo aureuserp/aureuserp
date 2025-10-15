@@ -162,6 +162,7 @@ class WarehouseResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
             ->columns([
                 TextColumn::make('name')
                     ->label(__('inventories::filament/clusters/configurations/resources/warehouse.table.columns.name'))

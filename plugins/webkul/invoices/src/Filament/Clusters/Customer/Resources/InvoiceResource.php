@@ -2,7 +2,9 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Customer\Resources;
 
+use Filament\Actions\Action;
 use Filament\Resources\Pages\Page;
+use Filament\Schemas\Components\Utilities\Get;
 use Webkul\Account\Filament\Resources\InvoiceResource as BaseInvoiceResource;
 use Webkul\Invoice\Filament\Clusters\Customer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\CreateInvoice;
@@ -10,6 +12,7 @@ use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\Ed
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ListInvoices;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ViewInvoice;
 use Webkul\Invoice\Models\Invoice;
+use Webkul\Support\Filament\Forms\Components\Repeater;
 
 class InvoiceResource extends BaseInvoiceResource
 {
@@ -47,6 +50,23 @@ class InvoiceResource extends BaseInvoiceResource
             ViewInvoice::class,
             EditInvoice::class,
         ]);
+    }
+
+    public static function getProductRepeater(): Repeater
+    {
+        return parent::getProductRepeater()
+            ->extraItemActions([
+                Action::make('openProduct')
+                    ->tooltip('Open product')
+                    ->icon('heroicon-m-arrow-top-right-on-square')
+                    ->url(fn (array $arguments, Get $get): ?string => ProductResource::getUrl('edit', [
+                        'record' => $get("products.{$arguments['item']}.product_id"),
+                    ])
+                    )
+                    ->openUrlInNewTab()
+                    ->visible(fn (array $arguments, Get $get): bool => filled($get("products.{$arguments['item']}.product_id"))
+                    ),
+            ]);
     }
 
     public static function getPages(): array

@@ -81,6 +81,8 @@ class MilestoneResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
                 TextColumn::make('name')
                     ->label(__('projects::filament/clusters/configurations/resources/milestone.table.columns.name'))

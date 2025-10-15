@@ -3,6 +3,8 @@
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources;
 
 use Filament\Resources\Pages\Page;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Table;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Invoice\Filament\Clusters\Vendors;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource\Pages\CreateProduct;
@@ -41,6 +43,22 @@ class ProductResource extends BaseProductResource
             ManageAttributes::class,
             ManageVariants::class,
         ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        $table = parent::table($table);
+
+        $filtered = collect($table->getFilters()['queryBuilder']->getConstraints())
+            ->reject(fn ($constraint) => $constraint->getName() == 'responsible')
+            ->all();
+
+        $table = $table->filters([
+            QueryBuilder::make()
+                ->constraints($filtered),
+        ]);
+
+        return $table;
     }
 
     public static function getPages(): array

@@ -60,10 +60,10 @@ class BankAccountResource extends Resource
                     ->relationship(
                         'bank',
                         'name',
-                        modifyQueryUsing: fn(Builder $query) => $query->withTrashed(),
+                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
                     )
                     ->getOptionLabelFromRecordUsing(function ($record): string {
-                        return $record->name . ($record->trashed() ? ' (Deleted)' : '');
+                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
                     })
                     ->disableOptionWhen(function ($label) {
                         return str_contains($label, ' (Deleted)');
@@ -71,11 +71,11 @@ class BankAccountResource extends Resource
                     ->required()
                     ->searchable()
                     ->preload()
-                    ->createOptionForm(fn(Schema $schema) => BankResource::form($schema)),
+                    ->createOptionForm(fn (Schema $schema) => BankResource::form($schema)),
                 Select::make('partner_id')
                     ->label(__('partners::filament/resources/bank-account.form.account-holder'))
                     ->relationship('partner', 'name')
-                    ->default(fn($livewire) => method_exists($livewire, 'getRecord') && $livewire->getRecord()
+                    ->default(fn ($livewire) => method_exists($livewire, 'getRecord') && $livewire->getRecord()
                         ? $livewire->getRecord()->id
                         : null)
                     ->required()
@@ -87,6 +87,7 @@ class BankAccountResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
             ->columns([
                 TextColumn::make('account_number')
                     ->label(__('partners::filament/resources/bank-account.table.columns.account-number'))
@@ -151,7 +152,7 @@ class BankAccountResource extends Resource
             ])
             ->recordActions([
                 EditAction::make()
-                    ->hidden(fn($record) => $record->trashed())
+                    ->hidden(fn ($record) => $record->trashed())
                     ->successNotification(
                         Notification::make()
                             ->success()

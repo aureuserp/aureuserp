@@ -154,6 +154,8 @@ class PostResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
                 TextColumn::make('title')
                     ->label(__('blogs::filament/admin/resources/post.table.columns.title'))

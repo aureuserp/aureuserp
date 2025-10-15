@@ -45,6 +45,8 @@ class ActivityPlanResource extends BaseActivityPlanResource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
                 TextColumn::make('name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.columns.name'))

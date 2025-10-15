@@ -145,6 +145,8 @@ class QuantityResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('location.full_name')
@@ -274,7 +276,7 @@ class QuantityResource extends Resource
                                 ->multiple()
                                 ->selectable(
                                     IsRelatedToOperator::make()
-                                        ->titleAttribute('full_name')
+                                        ->titleAttribute('name')
                                         ->searchable()
                                         ->multiple()
                                         ->preload(),
@@ -310,10 +312,11 @@ class QuantityResource extends Resource
                             ->multiple()
                             ->selectable(
                                 IsRelatedToOperator::make()
-                                    ->titleAttribute('full_name')
+                                    ->titleAttribute('name')
                                     ->searchable()
                                     ->multiple()
-                                    ->preload(),
+                                    ->preload()
+                                    ->modifyQueryUsing(fn ($query) => $query->select('categories.*')->from('categories'))
                             )
                             ->icon('heroicon-o-folder'),
                         static::getTraceabilitySettings()->enable_lots_serial_numbers

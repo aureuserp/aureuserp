@@ -266,6 +266,8 @@ class TaskResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns(static::mergeCustomTableColumns([
                 TextColumn::make('id')
                     ->label(__('projects::filament/resources/task.table.columns.id'))
@@ -842,12 +844,12 @@ class TaskResource extends Resource
             ->columns(3);
     }
 
-    static private function getTimeSettings(): TimeSettings
+    private static function getTimeSettings(): TimeSettings
     {
         return once(fn () => app(TimeSettings::class));
     }
 
-    static private function getTaskSettings(): TaskSettings
+    private static function getTaskSettings(): TaskSettings
     {
         return once(fn () => app(TaskSettings::class));
     }

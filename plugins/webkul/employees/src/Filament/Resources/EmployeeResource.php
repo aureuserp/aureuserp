@@ -697,25 +697,28 @@ class EmployeeResource extends Resource
                                                             ->label(__('employees::filament/resources/employee.form.tabs.settings.fields.work-permit-scheduled-activity')),
                                                         Select::make('user_id')
                                                             ->relationship(name: 'user', titleAttribute: 'name', modifyQueryUsing: fn ($query) => $query->withTrashed())
-                                                            ->getOptionLabelFromRecordUsing(function ($record) {
+                                                            ->getOptionLabelFromRecordUsing(function ($record, $livewire) {
+                                                                $label = $record->name;
+
                                                                 if ($record->trashed()) {
-                                                                    return $record->name.' ( Deleted )';
+                                                                    $label .= ' (Deleted)';
+                                                                } elseif ($record->employee && $record->id !== $livewire->record?->user_id) {
+                                                                    $label .= ' (Assigned)';
                                                                 }
 
-                                                                if ($record->employee) {
-                                                                    return $record->name.' ( Assigned )';
-                                                                }
-
-                                                                return $record->name;
+                                                                return $label;
                                                             })
-                                                            ->disableOptionWhen(function ($value) {
+                                                            ->disableOptionWhen(function ($value, $livewire) {
                                                                 $user = User::withTrashed()->find($value);
 
                                                                 if (! $user) {
                                                                     return false;
                                                                 }
 
-                                                                return $user->trashed() || $user->employee()->exists();
+                                                                $currentEmployeeUserId = $livewire->record?->user_id ?? null;
+
+                                                                return ($user->trashed() || $user->employee()->exists())
+                                                                    && $user->id !== $currentEmployeeUserId;
                                                             })
                                                             ->searchable()
                                                             ->preload()
@@ -724,33 +727,12 @@ class EmployeeResource extends Resource
                                                             ->createOptionForm(fn (Schema $schema) => UserResource::form($schema))
                                                             ->createOptionAction(
                                                                 fn (Action $action, Get $get) => $action
-                                                                    ->fillForm(function (array $arguments) use ($get): array {
-                                                                        return [
-                                                                            'name'  => $get('name'),
-                                                                            'email' => $get('work_email'),
-                                                                        ];
-                                                                    })
+                                                                    ->fillForm(fn () => [
+                                                                        'name'  => $get('name'),
+                                                                        'email' => $get('work_email'),
+                                                                    ])
                                                                     ->modalHeading(__('employees::filament/resources/employee.form.tabs.settings.fields.create-user'))
                                                                     ->modalSubmitActionLabel(__('employees::filament/resources/employee.form.tabs.settings.fields.create-user'))
-                                                                    ->action(function (array $data, $component) {
-                                                                        $user = User::create($data);
-
-                                                                        $partner = $user->partner()->create([
-                                                                            'creator_id' => Auth::user()->id,
-                                                                            'user_id'    => $user->id,
-                                                                            'company_id' => $data['default_company_id'] ?? null,
-                                                                            'avatar'     => $data['avatar'] ?? null,
-                                                                            ...$data,
-                                                                        ]);
-
-                                                                        $user->update([
-                                                                            'partner_id' => $partner->id,
-                                                                        ]);
-
-                                                                        $component->state($user->id);
-
-                                                                        return $user;
-                                                                    })
                                                             ),
                                                         Select::make('departure_reason_id')
                                                             ->relationship('departureReason', 'name')

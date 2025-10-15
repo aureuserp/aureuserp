@@ -82,7 +82,7 @@ class ApplicantChartWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label'           => __('recruitments::filament/widgets/applicant.overview.label'),
+                    'label'           => __('recruitments::filament/widgets/applicant.heading.title'),
                     'data'            => array_values($data),
                     'backgroundColor' => array_map(fn ($key) => match ($key) {
                         __('recruitments::filament/widgets/applicant.ongoing')  => '#3b82f6',

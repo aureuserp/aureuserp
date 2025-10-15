@@ -81,12 +81,13 @@ class ActivityPlanResource extends Resource
                             ->inline(false),
                     ])->columns(2),
             ])
-                ->columns(1);
+            ->columns(1);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
             ->columns([
                 TextColumn::make('name')
                     ->label(__('sales::filament/clusters/configurations/resources/activity-plan.table.columns.name'))
@@ -297,7 +298,7 @@ class ActivityPlanResource extends Resource
                     ])
                     ->columns(2),
             ])
-                ->columns(1);
+            ->columns(1);
     }
 
     public static function getRelations(): array

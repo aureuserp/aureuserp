@@ -120,6 +120,8 @@ class TaxResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
                 TextColumn::make('name')
                     ->label(__('accounts::filament/resources/tax.table.columns.name'))
