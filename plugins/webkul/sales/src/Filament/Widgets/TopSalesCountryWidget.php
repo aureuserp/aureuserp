@@ -19,7 +19,7 @@ class TopSalesCountryWidget extends BaseWidget
 
     protected function getHeading(): ?string
     {
-        return 'Top Revenue by Country';
+        return __('sales::filament/pages/sales-dashboard.widgets.top-sales-countries.heading');
     }
 
     protected function getTableQuery(): Builder
@@ -77,14 +77,14 @@ class TopSalesCountryWidget extends BaseWidget
     {
         return [
             Tables\Columns\TextColumn::make('country_name')
-                ->label('Country')
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-sales-countries.column.country'))
                 ->sortable(),
             Tables\Columns\TextColumn::make('total_products')
-                ->label('Total Products Sold')
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-sales-countries.column.total_orders'))  
                 ->sortable(),
 
             Tables\Columns\TextColumn::make('total_revenue')
-                ->label('Total Revenue')
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-sales-countries.column.total_revenue'))
                 ->money($this->getActiveCurrency(), true)
                 ->sortable(),
         ];

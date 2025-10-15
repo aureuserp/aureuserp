@@ -20,7 +20,7 @@ class TopCustomerWidget extends BaseWidget
 
     public function getHeading(): ?string
     {
-        return 'Top Customers';
+        return __('sales::filament/pages/sales-dashboard.widgets.top-customers.heading');
     }
 
     /**
@@ -107,17 +107,17 @@ class TopCustomerWidget extends BaseWidget
     {
         return [
             Tables\Columns\TextColumn::make('partner.name')
-                ->label('Customer')
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-customers.column.customer'))
                 ->sortable()
                 ->default('—'),
 
             Tables\Columns\TextColumn::make('total_orders')
-                ->label('Total Orders')
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-customers.column.total_orders'))
                 ->sortable()
                 ->alignCenter(),
 
             Tables\Columns\TextColumn::make('total_revenue')
-                ->label('Revenue')
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-customers.column.total_revenue'))
                 ->money($this->getActiveCurrency(), true)
                 ->sortable()
                 ->alignEnd(),

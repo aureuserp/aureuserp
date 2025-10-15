@@ -58,5 +58,41 @@ return [
                 'product_count'         => 'Product Count',
             ],
         ],
+
+        'top-customers' => [
+            'heading' => 'Top Customers',
+            'column'  => [
+                'customer'      => 'Customer',
+                'total_orders'  => 'Total Orders',
+                'total_revenue' => 'Total Revenue',
+            ],
+        ],
+
+        'top-products' => [
+            'heading' => 'Top Products',
+            'column'  => [
+                'product'       => 'Product',
+                'total_orders'  => 'Total Orders',
+                'total_revenue' => 'Total Revenue',
+            ],
+        ],
+
+        'top-sales-teams' => [
+            'heading' => 'Top Sales Teams',
+            'column'  => [
+                'sales_team'    => 'Sales Team',
+                'total_orders'  => 'Total Orders',
+                'total_revenue' => 'Revenue',
+            ],
+        ],
+
+        'top-sales-countries' => [
+            'heading' => 'Top Sales Countries',
+            'column'  => [
+                'country'       => 'Country',
+                'total_orders'  => 'Total Orders',
+                'total_revenue' => 'Total Revenue',
+            ],
+        ],
     ],
 ];

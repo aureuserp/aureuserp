@@ -20,7 +20,7 @@ class TopProductsWidget extends BaseWidget
 
     protected function getHeading(): ?string
     {
-        return 'Top Products by Revenue';
+        return __('sales::filament/pages/sales-dashboard.widgets.top-products.heading');
     }
 
     public function table(Table $table): Table
@@ -92,16 +92,16 @@ class TopProductsWidget extends BaseWidget
     {
         return [
             Tables\Columns\TextColumn::make('product_id')
-                ->label('Product')
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-products.column.product'))
                 ->formatStateUsing(fn ($state, $record) => $record->product?->name ?? '—')
                 ->sortable(),
 
             Tables\Columns\TextColumn::make('total_qty')
-                ->label('Quantity Sold')
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-products.column.total_orders'))
                 ->sortable(),
 
             Tables\Columns\TextColumn::make('total_revenue')
-                ->label('Revenue')
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-products.column.total_revenue'))
                 ->money($this->getActiveCurrency(), true)
                 ->sortable(),
         ];

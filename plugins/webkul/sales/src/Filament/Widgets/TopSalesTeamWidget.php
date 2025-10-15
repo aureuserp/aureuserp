@@ -20,7 +20,7 @@ class TopSalesTeamWidget extends BaseWidget
 
     public function getHeading(): ?string
     {
-        return 'Top Sales Teams';
+        return __('sales::filament/pages/sales-dashboard.widgets.top-sales-teams.heading');
     }
 
     public function table(Table $table): Table
@@ -86,16 +86,16 @@ class TopSalesTeamWidget extends BaseWidget
     {
         return [
             Tables\Columns\TextColumn::make('team.name')
-                ->label('Sales Team')
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-sales-teams.column.sales_team'))
                 ->sortable()
                 ->default('—'),
 
             Tables\Columns\TextColumn::make('total_orders')
-                ->label('Total Orders')
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-sales-teams.column.total_orders'))
                 ->sortable(),
 
             Tables\Columns\TextColumn::make('total_revenue')
-                ->label('Revenue')
+                ->label(__('sales::filament/pages/sales-dashboard.widgets.top-sales-teams.column.total_revenue'))
                 ->money($this->getActiveCurrency(), true)
                 ->sortable(),
         ];
