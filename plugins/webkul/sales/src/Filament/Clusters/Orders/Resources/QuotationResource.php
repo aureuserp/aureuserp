@@ -959,10 +959,15 @@ class QuotationResource extends Resource
                     ->afterStateUpdated(function (Set $set, Get $get) {
                         $product = Product::withTrashed()->find($get('product_id'));
 
-                        $set('name', $product->name);
-
-                        $set('price_unit', $product->price);
+                        if ($product) {
+                            $set('name', $product->name);
+                            $set('price_unit', $product->price);
+                        } else {
+                            $set('name', null);
+                            $set('price_unit', null);
+                        }
                     })
+
                     ->required(),
                 TextInput::make('name')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.description'))

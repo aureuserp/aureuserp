@@ -196,7 +196,11 @@
                                     );
                                 @endphp
 
-                                @if ($visibleColumns->has($schemaComponent->getName()))
+                                @php
+                                    $schemaComponentName = method_exists($schemaComponent, 'getName') ? $schemaComponent->getName() : null;
+                                @endphp
+
+                                @if ($schemaComponentName && $visibleColumns->has($schemaComponentName))
                                     @if ($schemaComponent instanceof \Filament\Forms\Components\Hidden)
                                         {{ $schemaComponent }}
                                     @else
