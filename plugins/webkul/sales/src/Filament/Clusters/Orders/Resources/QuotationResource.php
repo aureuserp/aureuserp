@@ -66,6 +66,7 @@ use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource;
 use Webkul\Sale\Livewire\Summary;
 use Webkul\Sale\Models\Order;
 use Webkul\Sale\Models\OrderLine;
+use Webkul\Sale\Models\Partner;
 use Webkul\Sale\Models\Product;
 use Webkul\Sale\Settings;
 use Webkul\Sale\Settings\PriceSettings;
@@ -148,6 +149,12 @@ class QuotationResource extends Resource
                                             ->preload()
                                             ->required()
                                             ->live()
+                                            ->afterStateUpdated(function (Set $set, $state) {
+                                                $partner = $state ? Partner::find($state) : null;
+
+                                                $set('user_id', $partner?->user?->id);
+                                                $set('payment_term_id', $partner?->propertyPaymentTerm?->id);
+                                            })
                                             ->disabled(fn ($record): bool => $record?->locked || in_array($record?->state, [OrderState::CANCEL]))
                                             ->columnSpan(1)
                                             ->getOptionLabelFromRecordUsing(fn ($record): string => $record->name.($record->trashed() ? ' (Deleted)' : ''))

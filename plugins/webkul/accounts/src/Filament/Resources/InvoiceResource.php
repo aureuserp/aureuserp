@@ -56,6 +56,7 @@ use Webkul\Account\Filament\Resources\InvoiceResource\Pages\ListInvoices;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\ViewInvoice;
 use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\Move as AccountMove;
+use Webkul\Account\Models\Partner;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Invoice\Models\Product;
 use Webkul\Invoice\Settings\ProductSettings;
@@ -138,6 +139,13 @@ class InvoiceResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->live()
+                                            ->afterStateUpdated(function (Set $set, $state) {
+                                                $partner = $state ? Partner::find($state) : null;
+
+                                                $set('invoice_user_id', $partner?->user?->id);
+                                                $set('preferred_payment_method_line_id', $partner?->propertyInboundPaymentMethodLine?->id);
+                                                $set('invoice_payment_term_id', $partner?->propertyPaymentTerm?->id);
+                                            })
                                             ->disabled(fn ($record) => $record && in_array($record->state, [MoveState::POSTED, MoveState::CANCEL])),
                                     ]),
                                 DatePicker::make('invoice_date')

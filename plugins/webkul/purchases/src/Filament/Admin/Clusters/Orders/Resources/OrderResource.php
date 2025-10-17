@@ -59,6 +59,7 @@ use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource;
 use Webkul\Purchase\Livewire\Summary;
 use Webkul\Purchase\Models\Order;
 use Webkul\Purchase\Models\Product;
+use Webkul\Purchase\Models\Requisition;
 use Webkul\Purchase\Settings\OrderSettings;
 use Webkul\Purchase\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
@@ -167,7 +168,40 @@ class OrderResource extends Resource
                                     ->relationship('requisition', 'name')
                                     ->searchable()
                                     ->preload()
-                                    ->visible(static::getOrderSettings()->enable_purchase_agreements),
+                                    ->visible(static::getOrderSettings()->enable_purchase_agreements)
+                                    ->afterStateUpdated(function ($state, $set, $get) {
+                                        if (! $state) {
+                                            $set('products', []);
+
+                                            return;
+                                        }
+
+                                        $requisition = Requisition::find($state);
+                                        if (! $requisition) {
+                                            $set('products', []);
+
+                                            return;
+                                        }
+
+                                        $products = [];
+                                        foreach ($requisition->lines as $line) {
+                                            $product = $line->product;
+                                            $uom = $line->uom;
+
+                                            $products[] = [
+                                                'product_id'  => $product?->id,
+                                                'uom_id'      => $uom?->id,
+                                                'product_qty' => $line->qty,
+                                                'price_unit'  => $line->price_unit,
+                                            ];
+                                        }
+                                        $set('products', $products);
+
+                                        foreach (array_keys($products) as $key) {
+                                            self::calculateLineTotals($set, $get, "products.$key.");
+                                        }
+                                    })
+                                    ->live(),
                                 Select::make('currency_id')
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.sections.general.fields.currency'))
                                     ->relationship('currency', 'name')
