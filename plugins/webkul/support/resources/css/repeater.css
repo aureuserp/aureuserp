@@ -128,6 +128,29 @@
                 @apply @xl:px-3 @xl:py-2;
             }
         }
+         &.fo-compact {
+            & > table {
+                & > tbody {
+                    & > tr {
+                        & > td {
+                            @apply @xl:border-gray-200 @xl:px-0 @xl:py-1 @xl:dark:border-white/5 @xl:[&:not(:first-of-type)]:border-s @xl:[&:not(:last-of-type)]:border-e;
+                        }
+                    }
+                }
+            }
+
+            & .fi-input-wrp {
+                @apply @xl:bg-transparent! @xl:shadow-none @xl:ring-0!;
+            }
+
+            & .fi-fo-field-wrp-error-message {
+                @apply @xl:px-3 @xl:pb-2;
+            }
+
+            & .fi-in-entry-content {
+                @apply @xl:px-3;
+            }
+        }
     }
 
     @supports not (container-type: inline-size) {
@@ -174,6 +197,29 @@
                 @apply lg:px-3 lg:py-2;
             }
         }
+        &.fo-compact {
+            & > table {
+                & > tbody {
+                    & > tr {
+                        & > td {
+                            @apply lg:border-gray-200 lg:px-0 lg:py-1 lg:dark:border-white/5 lg:[&:not(:first-of-type)]:border-s lg:[&:not(:last-of-type)]:border-e;
+                        }
+                    }
+                }
+            }
+
+            & .fi-input-wrp {
+                @apply lg:bg-transparent! lg:shadow-none lg:ring-0!;
+            }
+
+            & .fi-fo-field-wrp-error-message {
+                @apply lg:px-3 lg:pb-2;
+            }
+
+            & .fi-in-entry-content {
+                @apply lg:px-3;
+            }
+        }
     }
 
     & .fi-fo-table-repeater-add {
@@ -185,7 +231,7 @@
         }
 
         &.fi-align-end,
-        &.fi-align-right {
+        &.fi-align-right { 
             @apply justify-end;
         }
     }

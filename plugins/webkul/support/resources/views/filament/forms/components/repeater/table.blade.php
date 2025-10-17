@@ -26,6 +26,7 @@
     $statePath = $getStatePath();
 
     $tableColumns = $getTableColumns();
+    $isCompact = $isCompact();
 
     $hasColumnManagerDropdown = $hasColumnManager();
     $columnManagerApplyAction = $getColumnManagerApplyAction();
@@ -40,7 +41,10 @@
         {{ 
             $attributes
                 ->merge($getExtraAttributes(), escape: false)
-                ->class(['fi-fo-table-repeater']) 
+                ->class([
+                    'fi-fo-table-repeater',
+                    'fo-compact' => $isCompact,
+                ]) 
         }}
     >
         @if (count($items))
@@ -153,13 +157,13 @@
                                     || $isReorderableWithDragAndDrop
                                 )
                             )
-                                <td>
+                                <td class='p-2'>
                                     @if (
                                         $reorderActionIsVisible 
                                         || $moveUpActionIsVisible 
                                         || $moveDownActionIsVisible
                                     )
-                                        <div class="fi-fo-table-repeater-actions">
+                                        <div>
                                             @if ($reorderActionIsVisible)
                                                 <div x-on:click.stop>
                                                     {{ $reorderAction->extraAttributes(['x-sortable-handle' => true], merge: true) }}
