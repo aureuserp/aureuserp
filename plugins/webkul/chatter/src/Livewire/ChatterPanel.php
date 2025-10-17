@@ -656,6 +656,7 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
                 return $this->record->activities->isEmpty() ? [] : [
                     Section::make(__('chatter::livewire/chatter-panel.activity-infolist.title'))
                         ->collapsible()
+                        ->extraAttributes(['class' => 'm-1'])
                         ->compact()
                         ->schema([
                             ActivitiesRepeatableEntry::make('activities')
@@ -678,6 +679,7 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
             <div class="flex items-center justify-center w-full">
                 <div class="flex flex-col items-center space-y-4">
                     <x-filament::loading-indicator class="w-10 h-10 text-primary-500 animate-spin" />
+
                     <p class="text-sm font-medium tracking-wide text-gray-600 dark:text-gray-300">
                         {{ __('chatter::livewire/chatter-panel.placeholders.loading') }}
                     </p>

@@ -5,9 +5,13 @@ namespace Webkul\Chatter\Filament\Actions;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Support\Enums\Width;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
+use Webkul\Chatter\Filament\Actions\Chatter\ActivityAction;
+use Webkul\Chatter\Filament\Actions\Chatter\LogAction;
+use Webkul\Chatter\Filament\Actions\Chatter\MessageAction;
 
 class ChatterAction extends Action
 {
@@ -18,6 +22,10 @@ class ChatterAction extends Action
     protected string $followerViewMail = '';
 
     protected string $messageViewMail = '';
+
+    protected array|Closure $headerActions = [];
+
+    protected bool|Closure|null $hasModalCloseButton = false;
 
     public static function getDefaultName(): ?string
     {
@@ -53,9 +61,16 @@ class ChatterAction extends Action
         return $this;
     }
 
-    public function setMessageMailView(string|Closure|null $followerViewMail): static
+    public function setMessageMailView(string|Closure|null $messageViewMail): static
     {
-        $this->followerViewMail = $followerViewMail;
+        $this->messageViewMail = $messageViewMail;
+
+        return $this;
+    }
+
+    public function headerActions(array|Closure $actions): static
+    {
+        $this->headerActions = $actions;
 
         return $this;
     }
@@ -80,16 +95,25 @@ class ChatterAction extends Action
         return $this->messageViewMail;
     }
 
+    public function getHeaderActions(): array
+    {
+        $actions = $this->evaluate($this->headerActions);
+
+        return ! is_array($actions) ? [] : $actions;
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
 
         $this
             ->hiddenLabel()
-            ->icon('heroicon-s-chat-bubble-left-right')
-            ->modalIcon('heroicon-s-chat-bubble-left-right')
+            ->icon(Heroicon::ChatBubbleLeftRight)
+            ->modalIcon(Heroicon::ChatBubbleLeftRight)
             ->slideOver()
-            ->modalContentFooter(fn (Model $record): View => tap(view('chatter::filament.widgets.chatter', [
+            ->modalIconColor('warning')
+            ->closeModalByEscaping()
+            ->modalContent(fn (Model $record): View => tap(view('chatter::filament.widgets.chatter', [
                 'record'           => $record,
                 'activityPlans'    => $this->getActivityPlans(),
                 'resource'         => $this->getResource(),
@@ -100,6 +124,31 @@ class ChatterAction extends Action
             ->badge(fn (Model $record): int => $record->unRead()->count())
             ->modalWidth(Width::TwoExtraLarge)
             ->modalSubmitAction(false)
-            ->modalCancelAction(false);
+            ->modalCancelAction(false)
+            ->registerModalActions([
+                MessageAction::make('message')
+                    ->visible(true)
+                    ->setMessageMailView($this->getMessageMailView())
+                    ->setResource($this->getResource()),
+
+                LogAction::make('log')
+                    ->visible(true),
+
+                ActivityAction::make('activity')
+                    ->visible(true)
+                    ->setActivityPlans($this->getActivityPlans()),
+            ])
+            ->headerActions([
+                MessageAction::make('message'),
+                LogAction::make('log'),
+                ActivityAction::make('activity'),
+            ]);
+    }
+
+    public function renderModal(): View
+    {
+        return view('chatter::filament.actions.chatter-action-modal', [
+            'action' => $this,
+        ]);
     }
 }
