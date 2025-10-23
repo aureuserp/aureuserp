@@ -130,10 +130,12 @@ class InvoiceResource extends Resource
                                     ->schema([
                                         Select::make('partner_id')
                                             ->label(__('accounts::filament/resources/invoice.form.section.general.fields.customer'))
+                                            ->getOptionLabelFromRecordUsing(fn ($record): string => $record->name.($record->trashed() ? ' (Deleted)' : ''))
+                                            ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                             ->relationship(
                                                 'partner',
                                                 'name',
-                                                fn ($query) => $query->where('sub_type', 'customer')->orderBy('id'),
+                                                fn (Builder $query) => $query->where('sub_type', 'customer')->orderBy('id')->withTrashed(),
                                             )
                                             ->searchable()
                                             ->preload()

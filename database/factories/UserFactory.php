@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Webkul\TimeOff\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;

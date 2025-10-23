@@ -23,7 +23,6 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
@@ -65,7 +64,6 @@ use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ViewQ
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource;
 use Webkul\Sale\Livewire\Summary;
 use Webkul\Sale\Models\Order;
-use Webkul\Sale\Models\OrderLine;
 use Webkul\Sale\Models\Product;
 use Webkul\Sale\Settings;
 use Webkul\Sale\Settings\PriceSettings;
@@ -958,6 +956,9 @@ class QuotationResource extends Resource
                             ->contains($value);
                     })
                     ->afterStateUpdated(function (Set $set, Get $get) {
+                        if (! $get('product_id')) {
+                            return;
+                        }
                         $product = Product::withTrashed()->find($get('product_id'));
 
                         $set('name', $product->name);
@@ -1010,59 +1011,102 @@ class QuotationResource extends Resource
                     ->live(onBlur: true)
                     ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount)
                     ->dehydrated(),
-                Actions::make([
-                    Action::make('add_order_line')
-                        ->tooltip(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.tooltip.add-order-line'))
-                        ->hiddenLabel()
-                        ->icon('heroicon-o-shopping-cart')
-                        ->action(function ($state, $livewire, $record) use ($parentSet, $parentGet) {
-                            $data = [
-                                'product_id'      => $state['product_id'],
-                                'product_qty'     => $state['quantity'],
-                                'price_unit'      => $state['price_unit'],
-                                'discount'        => $state['discount'],
-                                'name'            => $state['name'],
-                                'customer_lead'   => 0,
-                                'purchase_price'  => 0,
-                                'product_uom_qty' => 0,
-                            ];
+            ])
+            ->extraItemActions([
+                Action::make('add_order_line')
+                    ->tooltip(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.tooltip.add-order-line'))
+                    ->hiddenLabel()
+                    ->icon('heroicon-o-shopping-cart')
+                    ->action(function ($state, $livewire, $record, $arguments) use ($parentGet, $parentSet) {
+                        $uuid = $arguments['item'];
+                        $productData = $state[$uuid] ?? null;
 
-                            $parentSet('products', [
-                                ...$parentGet('products'),
-                                $data,
-                            ]);
-
-                            $user = Auth::user();
-
-                            $data['order_id'] = $livewire->record->id;
-                            $data['creator_id'] = $user->id;
-                            $data['company_id'] = $user?->default_company_id;
-                            $data['currency_id'] = $livewire->record->currency_id;
-                            $data['product_uom_id'] = $state['product_uom_id'];
-                            $orderLine = OrderLine::create($data);
-
-                            $record->line_id = $orderLine->id;
-
-                            $record->save();
-
-                            $livewire->refreshFormData(['products']);
-
-                            $products = collect($parentGet('products'))->values();
-
-                            $orderLineEntry = $products->first(fn ($product) => $product['id'] == $orderLine->id);
-
-                            $orderLine->update($orderLineEntry);
-
+                        if (! $productData || ! $productData['product_id']) {
                             Notification::make()
-                                ->success()
-                                ->title(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-added.title'))
-                                ->body(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-added.body'))
+                                ->danger()
+                                ->title(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.missing-product-data.title'))
+                                ->body(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.missing-product-data.body'))
                                 ->send();
-                        })
-                        ->extraAttributes([
-                            'style' => 'margin-top: 2rem;',
-                        ]),
-                ])->hidden(fn ($record) => ! $record ?? false),
+
+                            return;
+                        }
+
+                        $existingProducts = $parentGet('products') ?? [];
+                        $productExists = collect($existingProducts)->contains(function ($product) use ($productData) {
+                            return ($product['product_id'] ?? null) == $productData['product_id'];
+                        });
+
+                        if ($productExists) {
+                            Notification::make()
+                                ->warning()
+                                ->title(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-already-exists.title'))
+                                ->body(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-already-exists.body'))
+                                ->send();
+
+                            return;
+                        }
+
+                        $product = Product::withTrashed()->find($productData['product_id']);
+
+                        if (! $product) {
+                            Notification::make()
+                                ->danger()
+                                ->title(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-not-found.title'))
+                                ->send();
+
+                            return;
+                        }
+
+                        $newLineData = [
+                            'product_id'            => $productData['product_id'],
+                            'product_qty'           => $productData['quantity'] ?? 1,
+                            'price_unit'            => $productData['price_unit'] ?? 0,
+                            'discount'              => $productData['discount'] ?? 0,
+                            'name'                  => $productData['name'] ?? $product->name,
+                            'product_uom_id'        => $productData['product_uom_id'] ?? $product->uom_id,
+                            'customer_lead'         => 0,
+                            'purchase_price'        => $product->cost ?? 0,
+                            'product_uom_qty'       => 0,
+                            'price_subtotal'        => 0,
+                            'price_tax'             => 0,
+                            'price_total'           => 0,
+                            'margin'                => 0,
+                            'margin_percent'        => 0,
+                            'taxes'                 => $product->productTaxes->pluck('id')->toArray(),
+                            'product_packaging_id'  => null,
+                            'product_packaging_qty' => null,
+                        ];
+
+                        $tempState = $newLineData;
+
+                        $tempSet = function ($key, $value) use (&$tempState) {
+                            $tempState[$key] = $value;
+                        };
+
+                        $tempGet = function ($key) use (&$tempState, $parentGet) {
+                            if (str_starts_with($key, '../../')) {
+                                $parentKey = str_replace('../../', '', $key);
+
+                                return $parentGet($parentKey);
+                            }
+
+                            return $tempState[$key] ?? null;
+                        };
+
+                        static::afterProductUpdated($tempSet, $tempGet);
+
+                        $currentProducts = $parentGet('products') ?? [];
+                        $parentSet('products', [...$currentProducts, $tempState]);
+
+                        Notification::make()
+                            ->success()
+                            ->title(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-added.title'))
+                            ->body(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.product-optional.fields.actions.notifications.product-added.body'))
+                            ->send();
+                    })
+                    ->visible(
+                        fn (array $arguments, Get $get): bool => filled($get("optionalProducts.{$arguments['item']}.product_id"))
+                    ),
             ]);
     }
 
@@ -1374,7 +1418,7 @@ class QuotationResource extends Resource
         ];
     }
 
-    private static function afterProductUpdated(Set $set, Get $get): void
+    private static function afterProductUpdated($set, $get): void
     {
         if (! $get('product_id')) {
             return;
@@ -1551,7 +1595,7 @@ class QuotationResource extends Resource
         return null;
     }
 
-    private static function calculateLineTotals(Set $set, Get $get, ?string $prefix = ''): void
+    private static function calculateLineTotals($set, $get, ?string $prefix = ''): void
     {
         if (! $get($prefix.'product_id')) {
             $set($prefix.'price_unit', 0);
