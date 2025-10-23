@@ -62,6 +62,7 @@ use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ListQ
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ManageDeliveries;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ManageInvoices;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ViewQuotation;
+use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource;
 use Webkul\Sale\Livewire\Summary;
 use Webkul\Sale\Models\Order;
 use Webkul\Sale\Models\OrderLine;
@@ -376,7 +377,7 @@ class QuotationResource extends Resource
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
-                        RelationshipConstraint::make('user.name')
+                        RelationshipConstraint::make('user')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.sales-person'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -388,7 +389,7 @@ class QuotationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('utm_source_id.name')
+                        RelationshipConstraint::make('utmSource')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.utm-source'))
                             ->icon('heroicon-o-speaker-wave')
                             ->multiple()
@@ -400,7 +401,7 @@ class QuotationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('company.name')
+                        RelationshipConstraint::make('company')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.company'))
                             ->icon('heroicon-o-building-office')
                             ->multiple()
@@ -412,7 +413,7 @@ class QuotationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('partner.name')
+                        RelationshipConstraint::make('partner')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.customer'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -424,7 +425,7 @@ class QuotationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('journal.name')
+                        RelationshipConstraint::make('journal')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.journal'))
                             ->icon('heroicon-o-speaker-wave')
                             ->multiple()
@@ -436,7 +437,7 @@ class QuotationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('partnerInvoice.name')
+                        RelationshipConstraint::make('partnerInvoice')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.invoice-address'))
                             ->icon('heroicon-o-map')
                             ->multiple()
@@ -448,7 +449,7 @@ class QuotationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('partnerShipping.name')
+                        RelationshipConstraint::make('partnerShipping')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.shipping-address'))
                             ->icon('heroicon-o-map')
                             ->multiple()
@@ -460,7 +461,7 @@ class QuotationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('fiscalPosition.name')
+                        RelationshipConstraint::make('fiscalPosition')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.fiscal-position'))
                             ->multiple()
                             ->selectable(
@@ -471,7 +472,7 @@ class QuotationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('paymentTerm.name')
+                        RelationshipConstraint::make('paymentTerm')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.payment-term'))
                             ->icon('heroicon-o-currency-dollar')
                             ->multiple()
@@ -483,7 +484,7 @@ class QuotationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('currency.name')
+                        RelationshipConstraint::make('currency')
                             ->label(__('sales::filament/clusters/orders/resources/quotation.table.filters.currency'))
                             ->icon('heroicon-o-banknotes')
                             ->multiple()
@@ -1336,7 +1337,19 @@ class QuotationResource extends Resource
                     ->default(0),
             ])
             ->mutateRelationshipDataBeforeCreateUsing(fn (array $data, $record, $livewire) => static::mutateProductRelationship($data, $record, $livewire))
-            ->mutateRelationshipDataBeforeSaveUsing(fn (array $data, $record, $livewire) => static::mutateProductRelationship($data, $record, $livewire));
+            ->mutateRelationshipDataBeforeSaveUsing(fn (array $data, $record, $livewire) => static::mutateProductRelationship($data, $record, $livewire))
+            ->extraItemActions([
+                Action::make('openProduct')
+                    ->tooltip('Open product')
+                    ->icon('heroicon-m-arrow-top-right-on-square')
+                    ->url(fn (array $arguments, Get $get): ?string => ProductResource::getUrl('edit', [
+                        'record' => $get("products.{$arguments['item']}.product_id"),
+                    ])
+                    )
+                    ->openUrlInNewTab()
+                    ->visible(fn (array $arguments, Get $get): bool => filled($get("products.{$arguments['item']}.product_id"))
+                    ),
+            ]);
     }
 
     public static function mutateProductRelationship(array $data, $record): array
