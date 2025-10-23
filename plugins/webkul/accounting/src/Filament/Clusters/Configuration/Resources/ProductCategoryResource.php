@@ -11,7 +11,7 @@ use Webkul\Accounting\Filament\Clusters\Configuration\Resources\ProductCategoryR
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\ProductCategoryResource\Pages\ManageProducts;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\ProductCategoryResource\Pages\ViewProductCategory;
 use Webkul\Accounting\Models\Category;
-use Webkul\Product\Filament\Resources\CategoryResource as BaseProductCategoryResource;
+use Webkul\Account\Filament\Resources\ProductCategoryResource as BaseProductCategoryResource;
 
 class ProductCategoryResource extends BaseProductCategoryResource
 {
