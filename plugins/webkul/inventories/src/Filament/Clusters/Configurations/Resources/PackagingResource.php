@@ -14,7 +14,7 @@ use Webkul\Inventory\Filament\Clusters\Configurations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\PackagingResource\Pages\ManagePackagings;
 use Webkul\Inventory\Models\Packaging;
 use Webkul\Inventory\Settings\OperationSettings;
-use Webkul\Inventory\Settings\ProductSettings;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Filament\Resources\PackagingResource as BasePackagingResource;
