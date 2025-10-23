@@ -1,6 +1,7 @@
 <?php
 
 return [
+    Webkul\Accounting\AccountingPlugin::class,
     Webkul\Account\AccountPlugin::class,
     Webkul\Blog\BlogPlugin::class,
     Webkul\Chatter\ChatterPlugin::class,

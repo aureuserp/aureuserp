@@ -17,7 +17,7 @@ use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\MoveReversal;
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNotesResource;
+use Webkul\Account\Filament\Resources\CreditNoteResource;
 use Webkul\Support\Traits\PDFHandler;
 
 class CreditNoteAction extends Action
@@ -72,7 +72,7 @@ class CreditNoteAction extends Action
 
             AccountFacade::computeAccountMove($move);
 
-            $redirectUrl = CreditNotesResource::getUrl('edit', ['record' => $move->id]);
+            $redirectUrl = CreditNoteResource::getUrl('edit', ['record' => $move->id]);
 
             $livewire->redirect($redirectUrl, navigate: FilamentView::hasSpaMode());
         });

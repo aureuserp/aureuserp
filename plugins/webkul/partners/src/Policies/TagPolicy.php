@@ -7,7 +7,7 @@ use Webkul\Partner\Models\Tag;
 use Webkul\Security\Models\User;
 
 
-class tagPolicy
+class TagPolicy
 {
     use HandlesAuthorization;
 
