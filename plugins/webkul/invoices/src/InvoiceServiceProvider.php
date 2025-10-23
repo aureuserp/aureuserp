@@ -15,10 +15,6 @@ class InvoiceServiceProvider extends PackageServiceProvider
     {
         $package->name(static::$name)
             ->hasTranslations()
-            ->hasSettings([
-                '2025_02_26_094022_create_invoices_product_settings',
-            ])
-            ->runsSettings()
             ->hasDependencies([
                 'accounts',
             ])
