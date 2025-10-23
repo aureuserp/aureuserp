@@ -47,4 +47,9 @@ class TopCategoriesWidget extends BaseWidget
     {
         return __('sales::filament/pages/sales-dashboard.widgets.top-categories.heading');
     }
+
+    protected function getDefaultTableRecordsPerPage(): int
+    {
+        return 5;
+    }
 }
