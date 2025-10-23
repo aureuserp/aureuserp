@@ -6,6 +6,7 @@ use Webkul\Account\Models\Tax;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Webkul\Product\Models\Product as BaseProduct;
 
 class Product extends BaseProduct
@@ -57,6 +58,11 @@ class Product extends BaseProduct
         'company.name'  => 'Company',
         'creator.name'  => 'Creator',
     ];
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
 
     public function productTaxes()
     {

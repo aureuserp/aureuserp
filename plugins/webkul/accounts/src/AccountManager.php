@@ -391,13 +391,10 @@ class AccountManager
 
         // Get accounts from product
         if ($move->isSaleDocument(true)) {
-            $accountId = $line->product->property_account_income_id;
+            $accountId = $line->product->property_account_income_id ?? $line->product->category->property_account_income_id;
         } elseif ($move->isPurchaseDocument(true)) {
-            $accountId = $line->product->property_account_expense_id;
+            $accountId = $line->product->property_account_expense_id ?? $line->product->property_account_expense_id;
         }
-
-        // If no product account, try category account (if implemented)
-        // This would require checking the product category accounts
 
         // Apply fiscal position mapping if applicable
         if ($move->fiscal_position_id && $accountId) {
@@ -462,7 +459,7 @@ class AccountManager
 
         // For account mapping, we would need a fiscal position account mapping table
         // This is a simplified implementation that returns the original account
-        // In a full Odoo-like implementation, there would be a fiscal_position_accounts table
+        // In a full System-like implementation, there would be a fiscal_position_accounts table
         // that maps source accounts to destination accounts
 
         return $accountId;
