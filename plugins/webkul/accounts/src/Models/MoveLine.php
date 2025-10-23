@@ -8,7 +8,7 @@ use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveState;
-use Webkul\Invoice\Models\Product;
+use Webkul\Account\Models\Product;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;

@@ -8,13 +8,12 @@ use Webkul\Account\Filament\Resources\ProductCategoryResource\Pages\EditProductC
 use Webkul\Account\Filament\Resources\ProductCategoryResource\Pages\ListProductCategories;
 use Webkul\Account\Filament\Resources\ProductCategoryResource\Pages\ManageProducts;
 use Webkul\Account\Filament\Resources\ProductCategoryResource\Pages\ViewProductCategory;
-use Webkul\Invoice\Models\Category;
+use Webkul\Account\Models\Category;
 use Webkul\Product\Filament\Resources\CategoryResource as BaseProductCategoryResource;
 
 class ProductCategoryResource extends BaseProductCategoryResource
 {
     protected static ?string $model = Category::class;
-
 
     protected static bool $shouldRegisterNavigation = false;
 
