@@ -85,6 +85,9 @@ class AdminPanelProvider extends PanelProvider
                     ->label(__('admin.navigation.website'))
                     ->icon('icon-website'),
                 NavigationGroup::make()
+                    ->label(__('admin.navigation.plugin'))
+                    ->icon('icon-projects'),
+                NavigationGroup::make()
                     ->label(__('admin.navigation.setting'))
                     ->icon('icon-settings'),
             ])

@@ -23,4 +23,5 @@ return [
     Webkul\FullCalendar\FullCalendarPlugin::class,
     Webkul\Timesheet\TimesheetPlugin::class,
     Webkul\Website\WebsitePlugin::class,
+    Webkul\PluginManager\PluginManagerPlugin::class,
 ];
