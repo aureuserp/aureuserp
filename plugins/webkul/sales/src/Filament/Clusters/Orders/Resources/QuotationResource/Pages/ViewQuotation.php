@@ -9,11 +9,13 @@ use Webkul\Chatter\Filament\Actions as ChatterActions;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions as BaseActions;
+use Webkul\Support\Concerns\HasRepeatableEntryColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewQuotation extends ViewRecord
 {
     use HasRecordNavigationTabs;
+    use HasRepeatableEntryColumnManager;
 
     protected static string $resource = QuotationResource::class;
 

@@ -1,26 +1,163 @@
+.fi-fo-repeater {
+    @apply grid gap-y-4;
+
+    & .fi-fo-repeater-actions {
+        @apply flex gap-x-3;
+
+        &.fi-hidden {
+            @apply hidden;
+        }
+    }
+
+    & .fi-fo-repeater-items {
+        @apply items-start gap-4;
+    }
+
+    & .fi-fo-repeater-item {
+        @apply rounded-xl bg-white shadow-xs ring-1 ring-gray-950/5 dark:bg-white/5 dark:ring-white/10;
+
+        &.fi-collapsed {
+            & .fi-fo-repeater-item-header-collapsible-actions {
+                @apply -rotate-180;
+            }
+
+            & .fi-fo-repeater-item-header-collapse-action {
+                @apply pointer-events-none opacity-0;
+            }
+        }
+
+        &:not(.fi-collapsed) {
+            & .fi-fo-repeater-item-header-expand-action {
+                @apply pointer-events-none opacity-0;
+            }
+        }
+    }
+
+    & .fi-fo-repeater-item-header {
+        @apply flex items-center gap-x-3 overflow-hidden px-4 py-3;
+    }
+
+    &.fi-collapsible {
+        & .fi-fo-repeater-item-header {
+            @apply cursor-pointer select-none;
+        }
+    }
+
+    & .fi-fo-repeater-item-header-start-actions {
+        @apply flex items-center gap-x-3;
+    }
+
+    & .fi-fo-repeater-item-header-icon {
+        @apply text-gray-400 dark:text-gray-500;
+    }
+
+    & .fi-fo-repeater-item-header-label {
+        @apply text-sm font-medium text-gray-950 dark:text-white;
+
+        &.fi-truncated {
+            @apply truncate;
+        }
+    }
+
+    & .fi-fo-repeater-item-header-end-actions {
+        @apply ms-auto flex items-center gap-x-3;
+    }
+
+    & .fi-fo-repeater-item-header-collapsible-actions {
+        @apply relative transition;
+    }
+
+    & .fi-fo-repeater-item-header-collapse-action {
+        @apply transition;
+    }
+
+    & .fi-fo-repeater-item-header-expand-action {
+        @apply absolute inset-0 rotate-180 transition;
+    }
+
+    & .fi-fo-repeater-item-has-header > .fi-fo-repeater-item-content {
+        @apply border-t border-gray-100 dark:border-white/10;
+    }
+
+    & .fi-fo-repeater-item-content {
+        @apply p-4;
+    }
+
+    & .fi-fo-repeater-add-between-items-ctn {
+        @apply flex w-full justify-center;
+    }
+
+    & .fi-fo-repeater-add-between-items {
+        @apply rounded-lg bg-white dark:bg-gray-900;
+    }
+
+    & .fi-fo-repeater-label-between-items-ctn {
+        @apply relative -my-2 flex items-center;
+    }
+
+    & .fi-fo-repeater-label-between-items-divider-before {
+        @apply w-3 shrink-0 border-t border-gray-200 dark:border-white/10;
+    }
+
+    & .fi-fo-repeater-label-between-items {
+        @apply shrink-0 px-1 text-sm font-medium text-gray-500 dark:text-gray-400;
+    }
+
+    & .fi-fo-repeater-label-between-items-divider-after {
+        @apply flex-1 border-t border-gray-200 dark:border-white/10;
+    }
+
+    & .fi-fo-repeater-add {
+        @apply flex w-full justify-center;
+
+        &.fi-align-start,
+        &.fi-align-left {
+            @apply justify-start;
+        }
+
+        &.fi-align-end,
+        &.fi-align-right {
+            @apply justify-end;
+        }
+    }
+}
+
+.fi-fo-simple-repeater {
+    @apply grid gap-y-4;
+
+    & .fi-fo-simple-repeater-items {
+        @apply gap-4;
+    }
+
+    & .fi-fo-simple-repeater-item {
+        @apply flex justify-start gap-x-3;
+    }
+
+    & .fi-fo-simple-repeater-item-content {
+        @apply flex-1;
+    }
+
+    & .fi-fo-simple-repeater-item-actions {
+        @apply flex items-center gap-x-1;
+    }
+
+    & .fi-fo-simple-repeater-add {
+        @apply flex w-full justify-center;
+
+        &.fi-align-start,
+        &.fi-align-left {
+            @apply justify-start;
+        }
+
+        &.fi-align-end,
+        &.fi-align-right {
+            @apply justify-end;
+        }
+    }
+}
+
 .fi-fo-table-repeater {
-    @apply grid gap-3 p-2;
-    overflow-x: auto;
-    overflow-y: hidden;
-
-    scrollbar-width: thin;
-    scrollbar-color: rgb(156 163 175) transparent;
-
-    &::-webkit-scrollbar {
-        height: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-        @apply bg-gray-100 dark:bg-gray-800;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        @apply bg-gray-400 rounded dark:bg-gray-600;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-        @apply bg-gray-500 dark:bg-gray-500;
-    }
+    @apply grid gap-3;
 
     & > table {
         @apply block w-full bg-white divide-y divide-gray-200 shadow-sm rounded-xl ring-1 ring-gray-950/5 dark:divide-white/10 dark:bg-gray-900 dark:ring-white/10;
@@ -86,7 +223,7 @@
         @apply @container;
 
         & > table {
-            @apply @xl:table table-fixed;
+            @apply @xl:table;
 
             & > thead {
                 @apply @xl:table-header-group;
@@ -117,7 +254,7 @@
                             @apply @xl:hidden;
                         }
 
-                        & .fi-in-entry-label-content {
+                        & .fi-in-entry-label {
                             @apply @xl:hidden;
                         }
                     }
@@ -126,6 +263,30 @@
 
             & .fi-fo-table-repeater-actions {
                 @apply @xl:px-3 @xl:py-2;
+            }
+        }
+
+        &.fi-compact {
+            & > table {
+                & > tbody {
+                    & > tr {
+                        & > td {
+                            @apply @xl:border-gray-200 @xl:px-0 @xl:py-1 @xl:dark:border-white/5 @xl:[&:not(:first-of-type)]:border-s @xl:[&:not(:last-of-type)]:border-e;
+                        }
+                    }
+                }
+            }
+
+            & .fi-input-wrp {
+                @apply @xl:bg-transparent! @xl:shadow-none @xl:ring-0!;
+            }
+
+            & .fi-fo-field-wrp-error-message {
+                @apply @xl:px-3 @xl:pb-2;
+            }
+
+            & .fi-in-entry-content {
+                @apply @xl:px-3;
             }
         }
     }
@@ -163,7 +324,7 @@
                             @apply lg:hidden;
                         }
 
-                        & .fi-in-entry-label-content {
+                        & .fi-in-entry-label {
                             @apply lg:hidden;
                         }
                     }
@@ -172,6 +333,30 @@
 
             & .fi-fo-table-repeater-actions {
                 @apply lg:px-3 lg:py-2;
+            }
+        }
+
+        &.fi-compact {
+            & > table {
+                & > tbody {
+                    & > tr {
+                        & > td {
+                            @apply lg:border-gray-200 lg:px-0 lg:py-1 lg:dark:border-white/5 lg:[&:not(:first-of-type)]:border-s lg:[&:not(:last-of-type)]:border-e;
+                        }
+                    }
+                }
+            }
+
+            & .fi-input-wrp {
+                @apply lg:bg-transparent! lg:shadow-none lg:ring-0!;
+            }
+
+            & .fi-fo-field-wrp-error-message {
+                @apply lg:px-3 lg:pb-2;
+            }
+
+            & .fi-in-entry-content {
+                @apply lg:px-3;
             }
         }
     }
@@ -185,14 +370,8 @@
         }
 
         &.fi-align-end,
-        &.fi-align-right {
+        &.fi-align-right { 
             @apply justify-end;
         }
-    }
-}
-
-.fi-select-input {
-    & .fi-select-input-ctn {
-        @apply static;
     }
 }
