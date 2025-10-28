@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'activity-details' => 'Activity Details',
+    'activity'         => 'Activity',
     'created-by'       => 'Created By',
     'summary'          => 'Summary',
     'due-date'         => 'Due date',

@@ -32,7 +32,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
-use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
@@ -213,9 +212,10 @@ class CandidateResource extends Resource
                 'md' => 2,
                 'xl' => 3,
             ])
+            ->filtersFormColumns(2)
             ->filters([
                 QueryBuilder::make()
-                    ->constraintPickerColumns(5)
+                    ->constraintPickerColumns(1)
                     ->constraints([
                         RelationshipConstraint::make('company')
                             ->label(__('recruitments::filament/clusters/applications/resources/candidate.table.filters.company'))
@@ -250,9 +250,17 @@ class CandidateResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        TextConstraint::make('manager')
+                        RelationshipConstraint::make('manager')
                             ->label(__('recruitments::filament/clusters/applications/resources/candidate.table.filters.manager-name'))
-                            ->icon('heroicon-o-user'),
+                            ->icon('heroicon-o-user')
+                            ->multiple()
+                            ->selectable(
+                                IsRelatedToOperator::make()
+                                    ->titleAttribute('name')
+                                    ->searchable()
+                                    ->multiple()
+                                    ->preload(),
+                            ),
                     ]),
             ])
             ->groups([

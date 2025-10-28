@@ -41,7 +41,7 @@
             />
 
             @if ($isAdminPanel)
-                <x-filament::dropdown placement="bottom-start"  width="sm">
+                <x-filament::dropdown placement="bottom-start" teleport width="sm">
                     <x-slot name="trigger">  
                         <x-filament::icon-button
                             icon="icon-menu"

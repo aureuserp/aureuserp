@@ -29,12 +29,9 @@ use Illuminate\Support\HtmlString;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Throwable;
-use Webkul\Chatter\Filament\Actions\Chatter\ActivityAction;
 use Webkul\Chatter\Filament\Actions\Chatter\FileAction;
 use Webkul\Chatter\Filament\Actions\Chatter\FiltersAction;
 use Webkul\Chatter\Filament\Actions\Chatter\FollowerAction;
-use Webkul\Chatter\Filament\Actions\Chatter\LogAction;
-use Webkul\Chatter\Filament\Actions\Chatter\MessageAction;
 use Webkul\Chatter\Filament\Infolists\Components\Activities\ActivitiesRepeatableEntry;
 use Webkul\Chatter\Filament\Infolists\Components\Activities\ContentTextEntry as ActivityContentTextEntry;
 use Webkul\Chatter\Filament\Infolists\Components\Activities\TitleTextEntry as ActivityTitleTextEntry;
@@ -53,23 +50,13 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
 
     public Model $record;
 
-    public mixed $activityPlans = [];
+    public string $resourceClass = '';
 
-    public string $resource = '';
+    public mixed $followerViewMailPath = null;
 
-    public mixed $followerViewMail = null;
+    public bool $isFollowerActionVisible;
 
-    public mixed $messageViewMail = null;
-
-    public bool $showMessageAction;
-
-    public bool $showActivityAction;
-
-    public bool $showFollowerAction;
-
-    public bool $showLogAction;
-
-    public bool $showFileAction;
+    public bool $isFileActionVisible;
 
     public array $filters;
 
@@ -95,27 +82,22 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
 
     public function mount(
         Model $record,
-        string $resource = '',
-        mixed $activityPlans = [],
-        string|Closure|null $followerViewMail = null,
-        string|Closure|null $messageViewMail = null,
-        bool $showMessageAction = true,
-        bool $showActivityAction = true,
-        bool $showFollowerAction = true,
-        bool $showLogAction = true,
-        bool $showFileAction = true,
+        string $resourceClass = '',
+        string|Closure|null $followerViewMailPath = null,
+        bool $isFollowerActionVisible = true,
+        bool $isFileActionVisible = true,
         array $filters = [],
     ): void {
         $this->record = $record;
-        $this->activityPlans = $activityPlans;
-        $this->followerViewMail = $followerViewMail;
-        $this->messageViewMail = $messageViewMail;
-        $this->resource = $resource;
-        $this->showMessageAction = $showMessageAction;
-        $this->showActivityAction = $showActivityAction;
-        $this->showFollowerAction = $showFollowerAction;
-        $this->showLogAction = $showLogAction;
-        $this->showFileAction = $showFileAction;
+
+        $this->followerViewMailPath = $followerViewMailPath;
+
+        $this->resourceClass = $resourceClass;
+
+        $this->isFollowerActionVisible = $isFollowerActionVisible;
+
+        $this->isFileActionVisible = $isFileActionVisible;
+
         $this->filters = $filters;
     }
 
@@ -336,26 +318,10 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
         return $priorityB <=> $priorityA;
     }
 
-    public function messageAction(): MessageAction
-    {
-        return MessageAction::make('message')
-            ->visible($this->showMessageAction)
-            ->setMessageMailView($this->messageViewMail)
-            ->setResource($this->resource)
-            ->record($this->record);
-    }
-
-    public function logAction(): LogAction
-    {
-        return LogAction::make('log')
-            ->visible($this->showLogAction)
-            ->record($this->record);
-    }
-
     public function fileAction(): FileAction
     {
         return FileAction::make('file')
-            ->visible($this->showFileAction)
+            ->visible($this->isFileActionVisible)
             ->hiddenLabel()
             ->record($this->record);
     }
@@ -363,17 +329,9 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
     public function followerAction(): FollowerAction
     {
         return FollowerAction::make('follower')
-            ->visible($this->showFollowerAction)
-            ->setFollowerMailView($this->followerViewMail)
-            ->setResource($this->resource)
-            ->record($this->record);
-    }
-
-    public function activityAction(): ActivityAction
-    {
-        return ActivityAction::make('activity')
-            ->visible($this->showActivityAction)
-            ->setActivityPlans($this->activityPlans)
+            ->visible($this->isFollowerActionVisible)
+            ->setFollowerMailView($this->followerViewMailPath)
+            ->setResource($this->resourceClass)
             ->record($this->record);
     }
 
@@ -623,6 +581,7 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
                 MessageRepeatableEntry::make('messages')
                     ->state($state)
                     ->hiddenLabel()
+                    ->gap(false)
                     ->schema([
                         MessageTitleTextEntry::make('user')
                             ->hiddenLabel(),
@@ -656,6 +615,7 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
                 return $this->record->activities->isEmpty() ? [] : [
                     Section::make(__('chatter::livewire/chatter-panel.activity-infolist.title'))
                         ->collapsible()
+                        ->extraAttributes(['class' => 'm-1'])
                         ->compact()
                         ->schema([
                             ActivitiesRepeatableEntry::make('activities')

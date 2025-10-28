@@ -99,6 +99,7 @@ return [
 
     'table' => [
         'columns' => [
+            'favorite'         => 'Favorite',
             'priority'         => 'Priority',
             'vendor-reference' => 'Vendor Reference',
             'reference'        => 'Reference',

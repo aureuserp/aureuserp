@@ -218,7 +218,7 @@ class PaymentsResource extends Resource
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
-                        RelationshipConstraint::make('company.name')
+                        RelationshipConstraint::make('company')
                             ->label(__('accounts::filament/resources/payment.table.filters.company'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -230,19 +230,19 @@ class PaymentsResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('partnerBank.account_holder_name')
+                        RelationshipConstraint::make('partnerBank')
                             ->label(__('accounts::filament/resources/payment.table.filters.customer-bank-account'))
                             ->icon('heroicon-o-user')
                             ->multiple()
                             ->selectable(
                                 IsRelatedToOperator::make()
-                                    ->titleAttribute('name')
+                                    ->titleAttribute('account_number')
                                     ->label(__('accounts::filament/resources/payment.table.filters.customer-bank-account'))
                                     ->searchable()
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('pairedInternalTransferPayment.name')
+                        RelationshipConstraint::make('pairedInternalTransferPayment')
                             ->label(__('accounts::filament/resources/payment.table.filters.paired-internal-transfer-payment'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -254,7 +254,7 @@ class PaymentsResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('paymentMethodLine.name')
+                        RelationshipConstraint::make('paymentMethodLine')
                             ->label(__('accounts::filament/resources/payment.table.filters.payment-method-line'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -266,7 +266,7 @@ class PaymentsResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('paymentMethod.name')
+                        RelationshipConstraint::make('paymentMethod')
                             ->label(__('accounts::filament/resources/payment.table.filters.payment-method'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -278,7 +278,7 @@ class PaymentsResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('currency.name')
+                        RelationshipConstraint::make('currency')
                             ->label(__('accounts::filament/resources/payment.table.filters.currency'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -290,7 +290,7 @@ class PaymentsResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('partner.name')
+                        RelationshipConstraint::make('partner')
                             ->label(__('accounts::filament/resources/payment.table.filters.partner'))
                             ->icon('heroicon-o-user')
                             ->multiple()
