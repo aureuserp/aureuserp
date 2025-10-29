@@ -93,7 +93,7 @@ jobs:
           sed -i "s|^\(APP_URL=\s*\).*$|\1http://127.0.0.1:8000|" .env
           cat .env
 
-      - name: Install Composer Dependencies
+      - name: Install Composer
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Install Composer Dependencies
