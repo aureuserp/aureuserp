@@ -84,9 +84,8 @@ jobs:
         run: |
           cp .env.example .env
           sed -i "s|^\(DB_CONNECTION=\s*\).*$|\1mysql|" .env
-          sed -i "s|^#\?\s*DB_PORT=.*|DB_PORT=3306|" .env
           sed -i "s|^#\?\s*DB_PORT=.*|DB_PORT=${{ job.services.mysql.ports[3306] }}|" .env
-          sed -i "s|^#\?\s*DB_HOST=.*|DB_HOST=mysql|" .env
+          sed -i "s|^#\?\s*DB_HOST=.*|DB_HOST=127.0.0.1|" .env
           sed -i "s|^#\?\s*DB_DATABASE=.*|DB_DATABASE=aureuserp|" .env
           sed -i "s|^#\?\s*DB_USERNAME=.*|DB_USERNAME=root|" .env
           sed -i "s|^#\?\s*DB_PASSWORD=.*|DB_PASSWORD=root|" .env
@@ -103,11 +102,12 @@ jobs:
 
       - name: Wait for MySQL to be ready
         run: |
-          echo "Waiting for MySQL service on 127.0.0.1:3306..."
+          MYSQL_PORT=${{ job.services.mysql.ports[3306] }}
+          echo "Waiting for MySQL service on 127.0.0.1:${MYSQL_PORT}..."
           for i in {1..30}; do
-            if mysqladmin ping -h 127.0.0.1 -P 3306 -u root -proot --silent 2>/dev/null; then
-              echo "✅ MySQL is up!"
-              php -r "new PDO('mysql:host=127.0.0.1;port=3306;dbname=aureuserp', 'root', 'root');" && echo "✅ PHP can connect!" || echo "❌ PHP cannot connect"
+            if mysqladmin ping -h 127.0.0.1 -P ${MYSQL_PORT} -u root -proot --silent 2>/dev/null; then
+              echo "✅ MySQL is up on port ${MYSQL_PORT}!"
+              php -r "new PDO('mysql:host=127.0.0.1;port=${MYSQL_PORT};dbname=aureuserp', 'root', 'root');" && echo "✅ PHP can connect!" || echo "❌ PHP cannot connect"
               break
             fi
             echo "⏳ MySQL not ready yet... ($i/30)"
