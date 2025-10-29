@@ -101,7 +101,19 @@ jobs:
           echo "APP_KEY=$(php -r 'echo \"base64:\" . base64_encode(random_bytes(32));')" >> $GITHUB_ENV
 
       - name: Run post-autoload scripts (package discovery, optional upgrades)
-        run: php scripts/post-autoload.php
+        run: |
+          # Run with timeout (5 minutes) and capture output for debugging
+          mkdir -p build/logs
+          if timeout 300 php scripts/post-autoload.php > build/logs/post-autoload.log 2>&1; then
+            echo 'post-autoload completed successfully';
+            tail -n +1 build/logs/post-autoload.log | sed -n '1,200p';
+          else
+            echo 'post-autoload failed or timed out; showing log';
+            echo '---- post-autoload.log ----';
+            cat build/logs/post-autoload.log || true;
+            echo '---------------------------';
+            exit 1;
+          fi
 
       - name: Wait for MySQL to be ready
         run: |
