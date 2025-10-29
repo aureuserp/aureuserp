@@ -85,7 +85,7 @@ jobs:
           cp .env.example .env
           sed -i "s|^\(DB_CONNECTION=\s*\).*$|\1mysql|" .env
           sed -i "s|^#\?\s*DB_PORT=.*|DB_PORT=3306|" .env
-          sed -i "s|^#\?\s*DB_HOST=.*|DB_HOST=127.0.0.1|" .env
+          sed -i "s|^#\?\s*DB_HOST=.*|DB_HOST=mysql|" .env
           sed -i "s|^#\?\s*DB_DATABASE=.*|DB_DATABASE=aureuserp|" .env
           sed -i "s|^#\?\s*DB_USERNAME=.*|DB_USERNAME=root|" .env
           sed -i "s|^#\?\s*DB_PASSWORD=.*|DB_PASSWORD=root|" .env
@@ -97,8 +97,7 @@ jobs:
         run: composer install --no-scripts --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Generate APP_KEY (fast, non-Laravel)
-        run: |
-          echo "APP_KEY=$(php -r 'echo \"base64:\" . base64_encode(random_bytes(32));')" >> $GITHUB_ENV
+        run: php artisan key:generate
 
       - name: Wait for MySQL to be ready
         run: |
