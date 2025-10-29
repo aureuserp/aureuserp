@@ -94,13 +94,13 @@ jobs:
           cat .env
 
       - name: Install Composer
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
-
-      - name: Install Composer Dependencies
-        run: composer create-project --prefer-dist laravel/laravel temp-laravel "10.*" || true
+        run: composer install --no-scripts --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Generate APP_KEY
-        run: php artisan key:generate --ansi
+        run: php artisan key:generate --ansi --force
+
+      - name: Run post-autoload scripts (package discovery, optional upgrades)
+        run: php scripts/post-autoload.php
 
       - name: Wait for MySQL to be ready
         run: |
