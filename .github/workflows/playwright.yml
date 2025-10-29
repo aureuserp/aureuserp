@@ -96,8 +96,9 @@ jobs:
       - name: Install Composer
         run: composer install --no-scripts --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Generate APP_KEY
-        run: php artisan key:generate --ansi --force
+      - name: Generate APP_KEY (fast, non-Laravel)
+        run: |
+          echo "APP_KEY=$(php -r 'echo \"base64:\" . base64_encode(random_bytes(32));')" >> $GITHUB_ENV
 
       - name: Run post-autoload scripts (package discovery, optional upgrades)
         run: php scripts/post-autoload.php
