@@ -186,8 +186,10 @@ class TaskResource extends Resource
                                     ->preload()
                                     ->live()
                                     ->createOptionForm(fn (Schema $schema): Schema => ProjectResource::form($schema))
-                                    ->afterStateUpdated(function (Set $set) {
+                                    ->afterStateUpdated(function (Set $set, $state) {
                                         $set('milestone_id', null);
+                                        $project = $state ? Project::find($state) : null;
+                                        $set('partner_id', $project?->partner_id);
                                     }),
                                 Select::make('milestone_id')
                                     ->label(__('projects::filament/resources/task.form.sections.settings.fields.milestone'))

@@ -4,6 +4,8 @@ namespace Webkul\Purchase\Filament\Admin\Clusters\Products\Resources;
 
 use Filament\Resources\Pages\Page;
 use Filament\Schemas\Schema;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Table;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Product\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Products;
@@ -46,6 +48,22 @@ class ProductResource extends BaseProductResource
         $schema->components($components);
 
         return $schema;
+    }
+
+    public static function table(Table $table): Table
+    {
+        $table = parent::table($table);
+
+        $filtered = collect($table->getFilters()['queryBuilder']->getConstraints())
+            ->reject(fn ($constraint) => $constraint->getName() == 'responsible')
+            ->all();
+
+        $table = $table->filters([
+            QueryBuilder::make()
+                ->constraints($filtered),
+        ]);
+
+        return $table;
     }
 
     public static function infolist(Schema $schema): Schema

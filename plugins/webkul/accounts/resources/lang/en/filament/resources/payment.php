@@ -58,7 +58,7 @@ return [
             'payment-method'                   => 'Payment Method',
             'currency'                         => 'Currency',
             'partner'                          => 'Partner',
-            'partner-method-line'              => 'Partner Method Line',
+            'payment-method-line'              => 'Payment Method Line',
             'created-at'                       => 'Created At',
             'updated-at'                       => 'Updated At',
         ],

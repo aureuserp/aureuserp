@@ -28,6 +28,8 @@ class Package extends BasePackage
 
     public array $seederClasses = [];
 
+    public ?string $icon = null;
+
     public function hasInstallCommand($callable): static
     {
         $installCommand = new InstallCommand($this);
@@ -122,6 +124,13 @@ class Package extends BasePackage
         return $this;
     }
 
+    public function icon(string $icon): static
+    {
+        $this->icon = $icon;
+
+        return $this;
+    }
+
     public function delete(): void
     {
         Plugin::where('name', $this->name)->delete();
@@ -133,14 +142,17 @@ class Package extends BasePackage
 
     public function updateOrCreate(): Plugin
     {
+        $composerPath = $this->basePath('../composer.json');
+        $composerData = json_decode(file_get_contents($composerPath), true);
+
         $this->plugin = Plugin::updateOrCreate([
             'name' => $this->name,
         ], [
-            'author'         => $this->author ?? null,
-            'summary'        => $this->summary ?? null,
-            'description'    => $this->description ?? null,
+            'author'         => $composerData['authors'][0]['name'] ?? null,
+            'summary'        => $composerData['description'] ?? null,
+            'description'    => $composerData['description'] ?? null,
             'latest_version' => $this->version ?? null,
-            'license'        => $this->license ?? null,
+            'license'        => $composerData['license'] ?? null,
             'sort'           => $this->sort ?? null,
             'is_active'      => true,
             'is_installed'   => true,
@@ -171,7 +183,7 @@ class Package extends BasePackage
             if (Schema::hasTable('plugins') === false) {
                 return null;
             }
-            
+
             static::$plugins = Plugin::all()->keyBy('name');
         }
 

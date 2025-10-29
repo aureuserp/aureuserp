@@ -106,7 +106,8 @@ class InventoryServiceProvider extends PackageServiceProvider
                         DB::table($table)->delete();
                     }
                 });
-            });
+            })
+            ->icon('inventories');
     }
 
     public function packageBooted(): void

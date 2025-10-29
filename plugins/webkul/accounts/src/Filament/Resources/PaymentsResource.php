@@ -17,6 +17,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -32,6 +33,7 @@ use Webkul\Account\Filament\Resources\PaymentsResource\Pages\CreatePayments;
 use Webkul\Account\Filament\Resources\PaymentsResource\Pages\EditPayments;
 use Webkul\Account\Filament\Resources\PaymentsResource\Pages\ListPayments;
 use Webkul\Account\Filament\Resources\PaymentsResource\Pages\ViewPayments;
+use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Payment;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 
@@ -66,7 +68,7 @@ class PaymentsResource extends Resource
                                 ToggleButtons::make('payment_type')
                                     ->label(__('accounts::filament/resources/payment.form.sections.fields.payment-type'))
                                     ->options(PaymentType::class)
-                                    ->default(PaymentType::SEND->value)
+                                    ->default(PaymentType::RECEIVE->value)
                                     ->inline(true),
                                 Select::make('partner_bank_id')
                                     ->label(__('accounts::filament/resources/payment.form.sections.fields.customer-bank-account'))
@@ -89,7 +91,15 @@ class PaymentsResource extends Resource
                                     ->relationship(
                                         'partner',
                                         'name',
+                                        fn ($query) => $query->where('sub_type', 'customer')->orderBy('id'),
                                     )
+                                    ->reactive()
+                                    ->afterStateUpdated(function (Set $set, $state) {
+                                        $partner = $state ? Partner::find($state) : null;
+
+                                        $set('partner_bank_id', $partner?->bankAccounts->first()?->id);
+                                        $set('payment_method_line_id', $partner?->propertyInboundPaymentMethodLine?->id);
+                                    })
                                     ->searchable()
                                     ->preload(),
                                 Select::make('payment_method_line_id')
@@ -218,7 +228,7 @@ class PaymentsResource extends Resource
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
-                        RelationshipConstraint::make('company.name')
+                        RelationshipConstraint::make('company')
                             ->label(__('accounts::filament/resources/payment.table.filters.company'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -230,19 +240,19 @@ class PaymentsResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('partnerBank.account_holder_name')
+                        RelationshipConstraint::make('partnerBank')
                             ->label(__('accounts::filament/resources/payment.table.filters.customer-bank-account'))
                             ->icon('heroicon-o-user')
                             ->multiple()
                             ->selectable(
                                 IsRelatedToOperator::make()
-                                    ->titleAttribute('name')
+                                    ->titleAttribute('account_number')
                                     ->label(__('accounts::filament/resources/payment.table.filters.customer-bank-account'))
                                     ->searchable()
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('pairedInternalTransferPayment.name')
+                        RelationshipConstraint::make('pairedInternalTransferPayment')
                             ->label(__('accounts::filament/resources/payment.table.filters.paired-internal-transfer-payment'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -254,7 +264,7 @@ class PaymentsResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('paymentMethodLine.name')
+                        RelationshipConstraint::make('paymentMethodLine')
                             ->label(__('accounts::filament/resources/payment.table.filters.payment-method-line'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -266,7 +276,7 @@ class PaymentsResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('paymentMethod.name')
+                        RelationshipConstraint::make('paymentMethod')
                             ->label(__('accounts::filament/resources/payment.table.filters.payment-method'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -278,7 +288,7 @@ class PaymentsResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('currency.name')
+                        RelationshipConstraint::make('currency')
                             ->label(__('accounts::filament/resources/payment.table.filters.currency'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -290,7 +300,7 @@ class PaymentsResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('partner.name')
+                        RelationshipConstraint::make('partner')
                             ->label(__('accounts::filament/resources/payment.table.filters.partner'))
                             ->icon('heroicon-o-user')
                             ->multiple()

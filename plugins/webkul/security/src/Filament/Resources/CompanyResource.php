@@ -48,7 +48,6 @@ use Webkul\Security\Filament\Resources\CompanyResource\Pages\ViewCompany;
 use Webkul\Security\Filament\Resources\CompanyResource\RelationManagers\BranchesRelationManager;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
-use Webkul\Support\Models\Country;
 use Webkul\Support\Models\Currency;
 
 class CompanyResource extends Resource
@@ -361,12 +360,10 @@ class CompanyResource extends Resource
                 Tables\Filters\SelectFilter::make('is_active')
                     ->label(__('security::filament/resources/company.table.filters.status'))
                     ->options(CompanyStatus::options()),
-                SelectFilter::make('country')
+                SelectFilter::make('country_id')
                     ->label(__('security::filament/resources/company.table.filters.country'))
                     ->multiple()
-                    ->options(function () {
-                        return Country::pluck('name', 'name');
-                    }),
+                    ->relationship(name: 'country', titleAttribute: 'name'),
             ]))
             ->filtersFormColumns(2)
             ->recordActions([

@@ -183,7 +183,7 @@ trait HasLogActivity
 
             if ($oldValue !== $newValue) {
                 return [
-                    'type'      => array_key_exists($key, $original) ? 'modified' : 'added',
+                    'type'      => is_null($oldValue) ? 'added' : 'modified',
                     'old_value' => $oldValue,
                     'new_value' => $newValue,
                 ];
@@ -249,8 +249,7 @@ trait HasLogActivity
 
                     if ($oldValue !== $newValue) {
                         $changes[$key] = [
-                            'type'      => 'modified',
-                            'old_value' => $oldValue,
+                            'type'      => is_null($oldValue) ? 'added' : 'modified',                            'old_value' => $oldValue,
                             'new_value' => $newValue,
                         ];
                     }

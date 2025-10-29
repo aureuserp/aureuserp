@@ -16,7 +16,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\IconEntry;
-use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
@@ -56,11 +55,14 @@ use Webkul\Account\Filament\Resources\InvoiceResource\Pages\ListInvoices;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\ViewInvoice;
 use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\Move as AccountMove;
+use Webkul\Account\Models\Partner;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Invoice\Models\Product;
 use Webkul\Invoice\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
+use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
+use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
@@ -130,14 +132,23 @@ class InvoiceResource extends Resource
                                     ->schema([
                                         Select::make('partner_id')
                                             ->label(__('accounts::filament/resources/invoice.form.section.general.fields.customer'))
+                                            ->getOptionLabelFromRecordUsing(fn ($record): string => $record->name.($record->trashed() ? ' (Deleted)' : ''))
+                                            ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                             ->relationship(
                                                 'partner',
                                                 'name',
-                                                fn ($query) => $query->where('sub_type', 'customer')->orderBy('id'),
+                                                fn (Builder $query) => $query->where('sub_type', 'customer')->orderBy('id')->withTrashed(),
                                             )
                                             ->searchable()
                                             ->preload()
                                             ->live()
+                                            ->afterStateUpdated(function (Set $set, $state) {
+                                                $partner = $state ? Partner::find($state) : null;
+
+                                                $set('invoice_user_id', $partner?->user?->id);
+                                                $set('preferred_payment_method_line_id', $partner?->propertyInboundPaymentMethodLine?->id);
+                                                $set('invoice_payment_term_id', $partner?->propertyPaymentTerm?->id);
+                                            })
                                             ->disabled(fn ($record) => $record && in_array($record->state, [MoveState::POSTED, MoveState::CANCEL])),
                                     ]),
                                 DatePicker::make('invoice_date')
@@ -467,7 +478,7 @@ class InvoiceResource extends Resource
                             ->label(__('accounts::filament/resources/invoice.table.filters.invoice-partner-display-name')),
                         DateConstraint::make('invoice_date')
                             ->label(__('accounts::filament/resources/invoice.table.filters.invoice-date')),
-                        DateConstraint::make('invoice_due_date')
+                        DateConstraint::make('invoice_date_due')
                             ->label(__('accounts::filament/resources/invoice.table.filters.invoice-due-date')),
                         DateConstraint::make('created_at')
                             ->label(__('accounts::filament/resources/invoice.table.filters.created-at')),
@@ -565,46 +576,66 @@ class InvoiceResource extends Resource
                             ->schema([
                                 RepeatableEntry::make('lines')
                                     ->hiddenLabel()
+                                    ->columnManager()
+                                    ->live()
+                                    ->table([
+                                        InfolistTableColumn::make('name')
+                                            ->alignCenter()
+                                            ->toggleable()
+                                            ->label(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.repeater.products.entries.product')),
+                                        InfolistTableColumn::make('quantity')
+                                            ->alignCenter()
+                                            ->toggleable()
+                                            ->label(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.repeater.products.entries.quantity')),
+                                        InfolistTableColumn::make('uom')
+                                            ->alignCenter()
+                                            ->toggleable()
+                                            ->label(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.repeater.products.entries.unit'))
+                                            ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
+                                        InfolistTableColumn::make('price_unit')
+                                            ->alignCenter()
+                                            ->toggleable()
+                                            ->label(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.repeater.products.entries.unit-price')),
+                                        InfolistTableColumn::make('discount')
+                                            ->alignCenter()
+                                            ->toggleable()
+                                            ->label(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.repeater.products.entries.discount-percentage')),
+                                        InfolistTableColumn::make('taxes')
+                                            ->alignCenter()
+                                            ->toggleable()
+                                            ->label(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.repeater.products.entries.taxes')),
+                                        InfolistTableColumn::make('price_subtotal')
+                                            ->alignCenter()
+                                            ->label(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.repeater.products.entries.sub-total')),
+                                    ])
                                     ->schema([
                                         TextEntry::make('name')
-                                            ->placeholder('-')
-                                            ->label(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.repeater.products.entries.product'))
-                                            ->icon('heroicon-o-cube'),
+                                            ->placeholder('-'),
                                         TextEntry::make('quantity')
+                                            ->placeholder('-'),
+                                        TextEntry::make('uom')
                                             ->placeholder('-')
-                                            ->label(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.repeater.products.entries.quantity'))
-                                            ->icon('heroicon-o-hashtag'),
-                                        TextEntry::make('uom.name')
-                                            ->placeholder('-')
-                                            ->visible(fn (ProductSettings $settings) => $settings->enable_uom)
-                                            ->label(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.repeater.products.entries.unit'))
-                                            ->icon('heroicon-o-scale'),
+                                            ->formatStateUsing(fn ($state) => $state['name'])
+                                            ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
                                         TextEntry::make('price_unit')
                                             ->placeholder('-')
-                                            ->label(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.repeater.products.entries.unit-price'))
-                                            ->icon('heroicon-o-banknotes')
                                             ->money(fn ($record) => $record->currency?->name),
                                         TextEntry::make('discount')
                                             ->placeholder('-')
-                                            ->label(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.repeater.products.entries.discount-percentage'))
-                                            ->icon('heroicon-o-tag')
                                             ->suffix('%'),
-                                        TextEntry::make('taxes.name')
+                                        TextEntry::make('taxes')
                                             ->badge()
                                             ->state(function ($record): array {
                                                 return $record->taxes->map(fn ($tax) => [
                                                     'name' => $tax->name,
                                                 ])->toArray();
                                             })
-                                            ->icon('heroicon-o-receipt-percent')
+
                                             ->formatStateUsing(fn ($state) => $state['name'])
                                             ->placeholder('-')
-                                            ->label(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.repeater.products.entries.taxes'))
                                             ->weight(FontWeight::Bold),
                                         TextEntry::make('price_subtotal')
                                             ->placeholder('-')
-                                            ->label(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.repeater.products.entries.sub-total'))
-                                            ->icon('heroicon-o-calculator')
                                             ->money(fn ($record) => $record->currency?->name),
                                     ])->columns(5),
                                 Livewire::make(InvoiceSummary::class, function ($record) {
@@ -740,6 +771,7 @@ class InvoiceResource extends Resource
         return Repeater::make('products')
             ->relationship('lines')
             ->hiddenLabel()
+            ->compact()
             ->live(onBlur: true)
             ->reactive()
             ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.title'))

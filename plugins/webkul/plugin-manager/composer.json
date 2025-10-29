@@ -1,0 +1,30 @@
+{
+    "name": "webkul/plugin-manager",
+    "description": "Plugin Manager for Aureus ERP",
+    "authors": [
+        {
+            "name": "Aureus ERP",
+            "email": "support@aureuserp.in"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Webkul\\PluginManager\\PluginManagerServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Webkul\\PluginManager\\": "src/",
+            "Webkul\\PluginManager\\Database\\Factories\\": "database/factories/",
+            "Webkul\\PluginManager\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webkul\\PluginManager\\Tests\\": "tests/"
+        }
+    }
+}

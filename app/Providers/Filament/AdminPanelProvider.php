@@ -47,8 +47,8 @@ class AdminPanelProvider extends PanelProvider
             ->maxContentWidth(Width::Full)
             ->userMenuItems([
                 'profile' => Action::make('profile')
-                    ->label(fn() => filament()->auth()->user()?->name)
-                    ->url(fn(): string => Profile::getUrl()),
+                    ->label(fn () => filament()->auth()->user()?->name)
+                    ->url(fn (): string => Profile::getUrl()),
             ])
             ->navigationGroups([
                 NavigationGroup::make()
@@ -84,6 +84,9 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make()
                     ->label(__('admin.navigation.website'))
                     ->icon('icon-website'),
+                NavigationGroup::make()
+                    ->label(__('admin.navigation.plugin'))
+                    ->icon('icon-plugin'),
                 NavigationGroup::make()
                     ->label(__('admin.navigation.setting'))
                     ->icon('icon-settings'),

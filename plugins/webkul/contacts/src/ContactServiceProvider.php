@@ -16,7 +16,8 @@ class ContactServiceProvider extends PackageServiceProvider
         $package->name(static::$name)
             ->hasTranslations()
             ->hasInstallCommand(function (InstallCommand $command) {})
-            ->hasUninstallCommand(function (UninstallCommand $command) {});
+            ->hasUninstallCommand(function (UninstallCommand $command) {})
+            ->icon('contacts');
     }
 
     public function packageBooted(): void

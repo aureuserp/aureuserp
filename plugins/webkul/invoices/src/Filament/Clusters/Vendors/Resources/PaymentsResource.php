@@ -3,13 +3,16 @@
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources;
 
 use Filament\Forms;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Filament\Resources\PaymentsResource as BasePaymentsResource;
 use Webkul\Invoice\Filament\Clusters\Vendors;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\PaymentsResource\Pages\CreatePayments;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\PaymentsResource\Pages\EditPayments;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\PaymentsResource\Pages\ListPayments;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\PaymentsResource\Pages\ViewPayments;
+use Webkul\Invoice\Models\Partner;
 use Webkul\Invoice\Models\Payment;
 
 class PaymentsResource extends BasePaymentsResource
@@ -48,15 +51,22 @@ class PaymentsResource extends BasePaymentsResource
         if ($group) {
             $fields = $group->getChildComponents();
 
-            $fields[1] = $fields[1]->label(__('invoices::filament/resources/payment.form.sections.fields.vender-bank-account'));
+            $fields[0] = $fields[0]->default(PaymentType::SEND->value);
+            $fields[1] = $fields[1]->label(__('invoices::filament/resources/payment.form.sections.fields.vendor-bank-account'));
 
             $fields[2] = Forms\Components\Select::make('partner_id')
-                ->label(__('invoices::filament/resources/payment.form.sections.fields.vender'))
+                ->label(__('invoices::filament/resources/payment.form.sections.fields.vendor'))
                 ->relationship(
                     'partner',
                     'name',
                     fn ($query) => $query->where('sub_type', 'supplier')->orderBy('id')
-                )
+                )->reactive()
+                ->afterStateUpdated(function (Set $set, $state) {
+                    $partner = $state ? Partner::find($state) : null;
+
+                    $set('partner_bank_id', $partner?->bankAccounts->first()?->id);
+                    $set('payment_method_line_id', $partner?->propertyOutboundPaymentMethodLine?->id);
+                })
                 ->searchable()
                 ->preload();
 
@@ -78,8 +88,8 @@ class PaymentsResource extends BasePaymentsResource
         if ($group) {
             $fields = $group->getChildComponents();
 
-            $fields[2] = $fields[2]->label(__('invoices::filament/resources/payment.form.sections.fields.vender-bank-account'));
-            $fields[3] = $fields[3]->label(__('invoices::filament/resources/payment.form.sections.fields.vender'));
+            $fields[2] = $fields[2]->label(__('invoices::filament/resources/payment.form.sections.fields.vendor-bank-account'));
+            $fields[3] = $fields[3]->label(__('invoices::filament/resources/payment.form.sections.fields.vendor'));
 
             $group->childComponents($fields);
             $components[0]->childComponents([$group]);
