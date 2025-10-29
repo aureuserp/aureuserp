@@ -85,12 +85,14 @@ jobs:
           cp .env.example .env
           sed -i "s|^\(DB_CONNECTION=\s*\).*$|\1mysql|" .env
           sed -i "s|^#\?\s*DB_PORT=.*|DB_PORT=3306|" .env
+          sed -i "s|^#\?\s*DB_PORT=.*|DB_PORT=${{ job.services.mysql.ports[3306] }}|" .env
           sed -i "s|^#\?\s*DB_HOST=.*|DB_HOST=mysql|" .env
           sed -i "s|^#\?\s*DB_DATABASE=.*|DB_DATABASE=aureuserp|" .env
           sed -i "s|^#\?\s*DB_USERNAME=.*|DB_USERNAME=root|" .env
           sed -i "s|^#\?\s*DB_PASSWORD=.*|DB_PASSWORD=root|" .env
           sed -i "s|^\(APP_DEBUG=\s*\).*$|\1false|" .env
           sed -i "s|^\(APP_URL=\s*\).*$|\1http://127.0.0.1:8000|" .env
+          echo "=== Final .env configuration ==="
           cat .env
 
       - name: Install Composer
@@ -101,14 +103,15 @@ jobs:
 
       - name: Wait for MySQL to be ready
         run: |
-          echo "Waiting for MySQL service..."
-          for i in {1..20}; do
-            if mysqladmin ping -h mysql -u root -proot --silent; then
+          echo "Waiting for MySQL service on 127.0.0.1:3306..."
+          for i in {1..30}; do
+            if mysqladmin ping -h 127.0.0.1 -P 3306 -u root -proot --silent 2>/dev/null; then
               echo "✅ MySQL is up!"
+              php -r "new PDO('mysql:host=127.0.0.1;port=3306;dbname=aureuserp', 'root', 'root');" && echo "✅ PHP can connect!" || echo "❌ PHP cannot connect"
               break
             fi
-            echo "⏳ MySQL not ready yet... ($i)"
-            sleep 5
+            echo "⏳ MySQL not ready yet... ($i/30)"
+            sleep 3
           done
 
       - name: Running Aureus Installer
