@@ -20,6 +20,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Carbon;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\TimeOff\Enums\State;
 use Webkul\TimeOff\Filament\Clusters\Management;
 use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource\Pages\CreateTimeOff;
@@ -31,6 +32,7 @@ use Webkul\TimeOff\Traits\TimeOffHelper;
 
 class TimeOffResource extends Resource
 {
+    use HasResourcePermissionQuery;
     use TimeOffHelper;
 
     protected static ?string $model = Leave::class;
@@ -114,6 +116,7 @@ class TimeOffResource extends Resource
                     Action::make('approve')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
+                        ->visible(fn ($record): bool => auth()->user()->can('approve', $record))
                         ->hidden(fn ($record) => $record->state === State::VALIDATE_TWO->value)
                         ->action(function ($record) {
                             if ($record->state === State::VALIDATE_ONE->value) {
@@ -137,6 +140,7 @@ class TimeOffResource extends Resource
                         }),
                     Action::make('refuse')
                         ->icon('heroicon-o-x-circle')
+                        ->visible(fn ($record): bool => auth()->user()->can('approve', $record))
                         ->hidden(fn ($record) => $record->state === State::REFUSE->value)
                         ->color('danger')
                         ->action(function ($record) {
