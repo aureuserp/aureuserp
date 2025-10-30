@@ -17,7 +17,6 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
@@ -61,6 +60,8 @@ use Webkul\Purchase\Settings\OrderSettings;
 use Webkul\Purchase\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
+use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
+use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
 
 class PurchaseAgreementResource extends Resource
 {
@@ -227,6 +228,7 @@ class PurchaseAgreementResource extends Resource
         return Repeater::make('lines')
             ->hiddenLabel()
             ->relationship()
+            ->compact()
             ->table([
                 TableColumn::make('product_id')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.columns.product'))
@@ -595,19 +597,22 @@ class PurchaseAgreementResource extends Resource
                             ->icon('heroicon-o-cube')
                             ->schema([
                                 RepeatableEntry::make('lines')
-                                    ->schema([
-                                        TextEntry::make('product.name')
+                                    ->table([
+                                        InfolistTableColumn::make('product.name')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.products.entries.product')),
-
-                                        TextEntry::make('qty')
+                                        InfolistTableColumn::make('qty')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.products.entries.quantity')),
-
+                                        InfolistTableColumn::make('uom.name')
+                                            ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.products.entries.uom')),
+                                        InfolistTableColumn::make('price_unit')
+                                            ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.products.entries.unit-price')),
+                                    ])
+                                    ->schema([
+                                        TextEntry::make('product.name'),
+                                        TextEntry::make('qty'),
                                         TextEntry::make('uom.name')
-                                            ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.entries.unit'))
                                             ->visible(static::getProductSettings()->enable_uom),
-
                                         TextEntry::make('price_unit')
-                                            ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.products.entries.unit-price'))
                                             ->money(fn ($record) => $record->requisition->currency->code ?? 'USD'),
                                     ])
                                     ->columns([

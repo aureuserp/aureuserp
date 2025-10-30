@@ -26,6 +26,7 @@
     $statePath = $getStatePath();
 
     $tableColumns = $getTableColumns();
+    $isCompact = $isCompact();
 
     $hasColumnManagerDropdown = $hasColumnManager();
     $columnManagerApplyAction = $getColumnManagerApplyAction();
@@ -40,7 +41,10 @@
         {{ 
             $attributes
                 ->merge($getExtraAttributes(), escape: false)
-                ->class(['fi-fo-table-repeater']) 
+                ->class([
+                    'fi-fo-table-repeater',
+                    'fi-compact' => $isCompact,
+                ]) 
         }}
     >
         @if (count($items))
@@ -54,7 +58,7 @@
                                 || $isReorderableWithDragAndDrop
                             )
                         )
-                            <th class="fi-fo-table-repeater-empty-header-cell"></th>
+                            <th class="fi-fo-table-repeater-empty-header-cell" style="width: 45px"></th>
                         @endif
 
                         @foreach ($tableColumns as $tableColumn)
@@ -86,7 +90,7 @@
                             || $isCloneable 
                             || $isDeletable
                         )
-                            <th class="text-center !w-[50px] align-middle fi-fo-table-repeater-empty-header-cell">
+                            <th class="text-center align-middle fi-fo-table-repeater-empty-header-cell" style="width: 75px">
                                 @if ($hasColumnManagerDropdown)
                                     <x-filament::dropdown
                                         shift
@@ -153,13 +157,13 @@
                                     || $isReorderableWithDragAndDrop
                                 )
                             )
-                                <td>
+                                <td class='p-2'>
                                     @if (
                                         $reorderActionIsVisible 
                                         || $moveUpActionIsVisible 
                                         || $moveDownActionIsVisible
                                     )
-                                        <div class="fi-fo-table-repeater-actions">
+                                        <div>
                                             @if ($reorderActionIsVisible)
                                                 <div x-on:click.stop>
                                                     {{ $reorderAction->extraAttributes(['x-sortable-handle' => true], merge: true) }}
@@ -234,7 +238,7 @@
                                         || $cloneActionIsVisible 
                                         || $deleteActionIsVisible
                                     )
-                                        <div class="flex flex-col items-center gap-2">
+                                        <div class="flex flex-row items-center justify-center gap-2">
                                             @foreach ($visibleExtraItemActions as $extraItemAction)
                                                 <div x-on:click.stop>
                                                     {{ $extraItemAction(['item' => $itemKey]) }}

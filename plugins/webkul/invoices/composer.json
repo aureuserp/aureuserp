@@ -1,6 +1,6 @@
 {
     "name": "webkul/invoices",
-    "description": "",
+    "description": "Invoice generation and management",
     "authors": [
         {
             "name": "Aureus ERP",

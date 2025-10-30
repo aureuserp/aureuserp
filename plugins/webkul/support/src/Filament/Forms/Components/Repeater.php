@@ -26,6 +26,11 @@ class Repeater extends BaseRepeater
         return (string) parent::getDefaultView();
     }
 
+    public function isReorderableWithDragAndDrop(): bool
+    {
+        return $this->evaluate($this->isReorderableWithDragAndDrop) && $this->isReorderable();
+    }
+
     public function table(array|Closure|null $columns): static
     {
         $this->isRepeaterHasTableView = true;
