@@ -129,8 +129,6 @@ class AccountManager
         $record->amount_total_in_currency_signed = 0;
         $record->amount_residual_signed = 0;
 
-        $newTaxEntries = [];
-
         $record = $this->computePartnerDisplayInfo($record);
 
         $record = $this->computeInvoiceCurrencyRate($record);
@@ -144,6 +142,8 @@ class AccountManager
         $record = $this->computeInvoiceDateDue($record);
 
         $signMultiplier = $this->getSignMultiplier($record);
+
+        $newTaxEntries = [];
 
         foreach ($record->lines as $line) {
             $line = $this->computeMoveLine($record, $line);
@@ -166,9 +166,7 @@ class AccountManager
 
         $record->save();
 
-        $this->computeTaxLines($record, $newTaxEntries);
-
-        $this->computePaymentTermLine($record);
+        $this->syncDynamicLines($record, $newTaxEntries);
 
         $record->refresh();
 
@@ -268,6 +266,122 @@ class AccountManager
         return $move;
     }
 
+    private function syncDynamicLines(AccountMove $move, array $newTaxEntries): void
+    {
+        $this->syncTaxLines($move, $newTaxEntries);
+
+        $this->syncDynamicLine($move);
+    }
+
+    /**
+     * Update tax lines for the move
+     */
+    private function syncTaxLines(AccountMove $move, array $newTaxEntries): void
+    {
+        $existingTaxLines = MoveLine::where('move_id', $move->id)
+            ->where('display_type', 'tax')
+            ->get()
+            ->keyBy('tax_line_id');
+
+        foreach ($newTaxEntries as $taxId => $taxData) {
+            $tax = Tax::find($taxId);
+
+            if (! $tax) {
+                continue;
+            }
+
+            $currentTaxAmount = $taxData['tax_amount'];
+
+            if ($move->isOutbound()) {
+                $debit = $currentTaxAmount;
+                $credit = 0;
+                $balance = $currentTaxAmount;
+                $amountCurrency = $currentTaxAmount;
+            } else {
+                $debit = 0;
+                $credit = $currentTaxAmount;
+                $balance = -$currentTaxAmount;
+                $amountCurrency = -$currentTaxAmount;
+            }
+
+            $taxLineData = [
+                'name'                     => $tax->name,
+                'move_id'                  => $move->id,
+                'move_name'                => $move->name,
+                'display_type'             => DisplayType::TAX,
+                'currency_id'              => $move->currency_id,
+                'partner_id'               => $move->partner_id,
+                'company_id'               => $move->company_id,
+                'company_currency_id'      => $move->company_currency_id,
+                'commercial_partner_id'    => $move->partner_id,
+                'journal_id'               => $move->journal_id,
+                'parent_state'             => $move->state,
+                'date'                     => now(),
+                'creator_id'               => $move->creator_id,
+                'debit'                    => $debit,
+                'credit'                   => $credit,
+                'balance'                  => $balance,
+                'amount_currency'          => $amountCurrency,
+                'tax_base_amount'          => $taxData['tax_base_amount'],
+                'tax_line_id'              => $taxId,
+                'tax_group_id'             => $tax->tax_group_id,
+            ];
+
+            if (isset($existingTaxLines[$taxId])) {
+                $existingTaxLines[$taxId]->update($taxLineData);
+
+                unset($existingTaxLines[$taxId]);
+            } else {
+                MoveLine::create($taxLineData);
+            }
+        }
+
+        $existingTaxLines->each->delete();
+    }
+
+    /**
+     * Update or create the payment term line
+     */
+    private function syncDynamicLine(AccountMove $move, $moveType = 'payment_term'): void
+    {
+        $amount = abs($move->amount_total);
+
+        if ($move->isOutbound()) {
+            $debit = 0;
+            $credit = $amount;
+            $balance = -$amount;
+        } else {
+            $debit = $amount;
+            $credit = 0;
+            $balance = $amount;
+        }
+
+        MoveLine::updateOrCreate([
+            'move_id'      => $move->id,
+            'display_type' => DisplayType::PAYMENT_TERM,
+        ], [
+            'move_id'                  => $move->id,
+            'move_name'                => $move->name,
+            'display_type'             => DisplayType::PAYMENT_TERM,
+            'currency_id'              => $move->currency_id,
+            'partner_id'               => $move->partner_id,
+            'date_maturity'            => $move->invoice_date_due,
+            'company_id'               => $move->company_id,
+            'company_currency_id'      => $move->company_currency_id,
+            'commercial_partner_id'    => $move->partner_id,
+            'journal_id'               => $move->journal_id,
+            'parent_state'             => $move->state,
+            'date'                     => now(),
+            'creator_id'               => $move->creator_id,
+            'debit'                    => $debit,
+            'credit'                   => $credit,
+            'balance'                  => $balance,
+            'amount_currency'          => $balance,
+            'amount_residual'          => $balance,
+            'amount_residual_currency' => $balance,
+        ]);
+    }
+
     /**
      * Collect line totals and tax information
      */
@@ -301,25 +415,69 @@ class AccountManager
         return $line;
     }
 
-    /**
-     * Compute the account_id for move line based on display type and business rules
-     */
     public function computeMoveLineAccountId(AccountMove $move, MoveLine $line): MoveLine
     {
-        if ($line->account_id) {
-            return $line; // Account already set
-        }
+        $accountId = null;
 
         switch ($line->display_type) {
             case DisplayType::PAYMENT_TERM:
-                $line->account_id = $this->getPaymentTermAccountId($move);
+                // Check existing payment term line
+                $existingAccount = MoveLine::where('move_id', $move->id)
+                    ->where('display_type', DisplayType::PAYMENT_TERM)
+                    ->whereNotNull('account_id')
+                    ->value('account_id');
+
+                if ($existingAccount) {
+                    $accountId = $existingAccount;
+                } else {
+                    // Determine account type and property field
+                    $isSale = $move->isSaleDocument(true);
+
+                    $accountType = $isSale ? 'asset_receivable' : 'liability_payable';
+
+                    $propertyField = $isSale ? 'property_account_receivable_id' : 'property_account_payable_id';
+
+                    // Try partner account, then company partner account, then default
+                    $accountId = $move->partner?->{$propertyField}
+                        ?? (method_exists($move->company, 'partner') ? $move->company->partner?->{$propertyField} : null)
+                        ?? Account::where('account_type', $accountType)->where('deprecated', false)->value('id');
+
+                    // Apply fiscal position mapping
+                    if ($move->fiscal_position_id && $accountId) {
+                        $fiscalPosition = FiscalPosition::find($move->fiscal_position_id);
+                        if ($fiscalPosition) {
+                            // TODO: Implement fiscal position account mapping from fiscal_position_accounts table
+                            $accountId = $accountId; // Placeholder for actual mapping
+                        }
+                    }
+                }
                 break;
 
             case DisplayType::PRODUCT:
-                if ($line->product_id) {
-                    $line->account_id = $this->getProductAccountId($move, $line);
+                if ($line->product_id && $line->product) {
+                    $isSale = $move->isSaleDocument(true);
+                    $isPurchase = $move->isPurchaseDocument(true);
+
+                    if ($isSale) {
+                        $accountId = $line->product->property_account_income_id 
+                            ?? $line->product->category?->property_account_income_id;
+                    } elseif ($isPurchase) {
+                        $accountId = $line->product->property_account_expense_id 
+                            ?? $line->product->category?->property_account_expense_id;
+                    }
+
+                    // Apply fiscal position mapping
+                    if ($move->fiscal_position_id && $accountId) {
+                        $fiscalPosition = FiscalPosition::find($move->fiscal_position_id);
+
+                        if ($fiscalPosition) {
+                            // TODO: Implement fiscal position account mapping from fiscal_position_accounts table
+                            $accountId = $accountId; // Placeholder for actual mapping
+                        }
+                    }
                 } elseif ($line->partner_id) {
-                    $line->account_id = $this->getMostFrequentAccountForPartner($move, $line);
+                    $accountType = $move->isSaleDocument(true) ? 'income' : 'expense';
+                    $accountId = Account::where('account_type', $accountType)->where('deprecated', false)->value('id');
                 }
                 break;
 
@@ -329,140 +487,26 @@ class AccountManager
                 break;
 
             default:
-                // Fallback logic for other display types
-                $line->account_id = $this->getFallbackAccountId($move, $line);
+                // Check for previous accounts with same display type
+                $previousAccounts = MoveLine::where('move_id', $move->id)
+                    ->where('display_type', $line->display_type)
+                    ->whereNotNull('account_id')
+                    ->orderBy('id', 'desc')
+                    ->limit(2)
+                    ->pluck('account_id');
+
+                if ($previousAccounts->count() === 1 && $move->allLines()->count() > 2) {
+                    $accountId = $previousAccounts->first();
+                } else {
+                    $accountId = $move->journal?->default_account_id;
+                }
+
                 break;
         }
 
+        $line->account_id = $accountId;
+
         return $line;
-    }
-
-    /**
-     * Get account for payment term lines (receivable/payable)
-     */
-    private function getPaymentTermAccountId(AccountMove $move): ?int
-    {
-        // Check if there's already a payment term line with an account
-        $existingPaymentTermLine = MoveLine::where('move_id', $move->id)
-            ->where('display_type', DisplayType::PAYMENT_TERM)
-            ->whereNotNull('account_id')
-            ->first();
-
-        if ($existingPaymentTermLine) {
-            return $existingPaymentTermLine->account_id;
-        }
-
-        $accountType = $move->isSaleDocument(true) ? 'asset_receivable' : 'liability_payable';
-        $propertyField = $accountType === 'asset_receivable' ? 'property_account_receivable_id' : 'property_account_payable_id';
-
-        $accountId = null;
-
-        // Try partner account first
-        if ($move->partner && $move->partner->{$propertyField}) {
-            $accountId = $move->partner->{$propertyField};
-        }
-        // Try company's partner account (if company has a partner relationship)
-        elseif (method_exists($move->company, 'partner') && $move->company->partner && $move->company->partner->{$propertyField}) {
-            $accountId = $move->company->partner->{$propertyField};
-        }
-        // Fallback to default company account by type
-        else {
-            $accountId = $this->getDefaultAccountByType($move->company_id, $accountType);
-        }
-
-        // Apply fiscal position mapping if applicable
-        if ($move->fiscal_position_id && $accountId) {
-            $accountId = $this->mapAccountThroughFiscalPosition($move->fiscal_position_id, $accountId);
-        }
-
-        return $accountId;
-    }
-
-    /**
-     * Get account for product lines
-     */
-    private function getProductAccountId(AccountMove $move, MoveLine $line): ?int
-    {
-        if (! $line->product) {
-            return null;
-        }
-
-        $accountId = null;
-
-        // Get accounts from product
-        if ($move->isSaleDocument(true)) {
-            $accountId = $line->product->property_account_income_id ?? $line->product->category->property_account_income_id;
-        } elseif ($move->isPurchaseDocument(true)) {
-            $accountId = $line->product->property_account_expense_id ?? $line->product->property_account_expense_id;
-        }
-
-        // Apply fiscal position mapping if applicable
-        if ($move->fiscal_position_id && $accountId) {
-            $accountId = $this->mapAccountThroughFiscalPosition($move->fiscal_position_id, $accountId);
-        }
-
-        return $accountId;
-    }
-
-    /**
-     * Get most frequent account for partner (simplified version)
-     */
-    private function getMostFrequentAccountForPartner(AccountMove $move, MoveLine $line): ?int
-    {
-        // This is a simplified version - in a full implementation,
-        // you would analyze historical transactions to find the most frequent account
-        $accountType = $move->isSaleDocument(true) ? 'income' : 'expense';
-
-        return $this->getDefaultAccountByType($move->company_id, $accountType);
-    }
-
-    /**
-     * Fallback account logic
-     */
-    private function getFallbackAccountId(AccountMove $move, MoveLine $line): ?int
-    {
-        // Look for previous two accounts with same display type
-        $previousAccounts = MoveLine::where('move_id', $move->id)
-            ->where('display_type', $line->display_type)
-            ->whereNotNull('account_id')
-            ->orderBy('id', 'desc')
-            ->limit(2)
-            ->pluck('account_id');
-
-        if ($previousAccounts->count() === 1 && $move->allLines()->count() > 2) {
-            return $previousAccounts->first();
-        }
-
-        // Default to journal's default account
-        return $move->journal?->default_account_id;
-    }
-
-    /**
-     * Get default account by type for company
-     */
-    private function getDefaultAccountByType(int $companyId, string $accountType): ?int
-    {
-        return Account::where('account_type', $accountType)
-            ->where('deprecated', false)
-            ->first()?->id;
-    }
-
-    /**
-     * Map account through fiscal position
-     */
-    private function mapAccountThroughFiscalPosition(int $fiscalPositionId, int $accountId): int
-    {
-        $fiscalPosition = FiscalPosition::find($fiscalPositionId);
-        if (! $fiscalPosition) {
-            return $accountId;
-        }
-
-        // For account mapping, we would need a fiscal position account mapping table
-        // This is a simplified implementation that returns the original account
-        // In a full System-like implementation, there would be a fiscal_position_accounts table
-        // that maps source accounts to destination accounts
-
-        return $accountId;
     }
 
     /**
@@ -549,7 +593,7 @@ class AccountManager
     private function computeMoveLineAmountCurrency(MoveLine $line): MoveLine
     {
         if (is_null($line->amount_currency)) {
-            $line->amount_currency = round($line->balance * $line->currency_rate, 2);
+            $line->amount_currency = round($line->balance * $line->move->currency_rate, 2);
         }
 
         if ($line->currency_id === $line->company->currency_id) {
@@ -557,115 +601,6 @@ class AccountManager
         }
 
         return $line;
-    }
-
-    /**
-     * Update tax lines for the move
-     */
-    private function computeTaxLines(AccountMove $move, array $newTaxEntries): void
-    {
-        $existingTaxLines = MoveLine::where('move_id', $move->id)
-            ->where('display_type', 'tax')
-            ->get()
-            ->keyBy('tax_line_id');
-
-        foreach ($newTaxEntries as $taxId => $taxData) {
-            $tax = Tax::find($taxId);
-
-            if (! $tax) {
-                continue;
-            }
-
-            $currentTaxAmount = $taxData['tax_amount'];
-
-            if ($move->isOutbound()) {
-                $debit = $currentTaxAmount;
-                $credit = 0;
-                $balance = $currentTaxAmount;
-                $amountCurrency = $currentTaxAmount;
-            } else {
-                $debit = 0;
-                $credit = $currentTaxAmount;
-                $balance = -$currentTaxAmount;
-                $amountCurrency = -$currentTaxAmount;
-            }
-
-            $taxLineData = [
-                'name'                     => $tax->name,
-                'move_id'                  => $move->id,
-                'move_name'                => $move->name,
-                'display_type'             => DisplayType::TAX,
-                'currency_id'              => $move->currency_id,
-                'partner_id'               => $move->partner_id,
-                'company_id'               => $move->company_id,
-                'company_currency_id'      => $move->company_currency_id,
-                'commercial_partner_id'    => $move->partner_id,
-                'journal_id'               => $move->journal_id,
-                'parent_state'             => $move->state,
-                'date'                     => now(),
-                'creator_id'               => $move->creator_id,
-                'debit'                    => $debit,
-                'credit'                   => $credit,
-                'balance'                  => $balance,
-                'amount_currency'          => $amountCurrency,
-                'tax_base_amount'          => $taxData['tax_base_amount'],
-                'tax_line_id'              => $taxId,
-                'tax_group_id'             => $tax->tax_group_id,
-            ];
-
-            if (isset($existingTaxLines[$taxId])) {
-                $existingTaxLines[$taxId]->update($taxLineData);
-
-                unset($existingTaxLines[$taxId]);
-            } else {
-                MoveLine::create($taxLineData);
-            }
-        }
-
-        $existingTaxLines->each->delete();
-    }
-
-    /**
-     * Update or create the payment term line
-     */
-    private function computePaymentTermLine($move): void
-    {
-        $amount = abs($move->amount_total);
-
-        if ($move->isOutbound()) {
-            $debit = 0;
-            $credit = $amount;
-            $balance = -$amount;
-        } else {
-            $debit = $amount;
-            $credit = 0;
-            $balance = $amount;
-        }
-
-        MoveLine::updateOrCreate([
-            'move_id'      => $move->id,
-            'display_type' => DisplayType::PAYMENT_TERM,
-        ], [
-            'move_id'                  => $move->id,
-            'move_name'                => $move->name,
-            'display_type'             => DisplayType::PAYMENT_TERM,
-            'currency_id'              => $move->currency_id,
-            'partner_id'               => $move->partner_id,
-            'date_maturity'            => $move->invoice_date_due,
-            'company_id'               => $move->company_id,
-            'company_currency_id'      => $move->company_currency_id,
-            'commercial_partner_id'    => $move->partner_id,
-            'journal_id'               => $move->journal_id,
-            'parent_state'             => $move->state,
-            'date'                     => now(),
-            'creator_id'               => $move->creator_id,
-            'debit'                    => $debit,
-            'credit'                   => $credit,
-            'balance'                  => $balance,
-            'amount_currency'          => $balance,
-            'amount_residual'          => $balance,
-            'amount_residual_currency' => $balance,
-        ]);
     }
 
     private function preparePayloadForSendByEmail($record, $partner, $data)
@@ -687,7 +622,7 @@ class AccountManager
      */
     private function getSignMultiplier(AccountMove $record): int
     {
-        if ($record->isOutbound()) {
+        if ($record->isEntry() || $record->isOutbound()) {
             return -1;
         }
 

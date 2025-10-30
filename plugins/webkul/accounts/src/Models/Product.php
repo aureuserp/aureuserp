@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Models;
 
+use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Models\Tax;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
@@ -58,6 +59,32 @@ class Product extends BaseProduct
         'company.name'  => 'Company',
         'creator.name'  => 'Creator',
     ];
+
+    public function propertyAccountIncome(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'property_account_income_id')
+            ->where('deprecated', false)
+            ->whereNotIn('account_type', [
+                AccountType::ASSET_RECEIVABLE,
+                AccountType::LIABILITY_PAYABLE,
+                AccountType::ASSET_CASH,
+                AccountType::LIABILITY_CREDIT_CARD,
+                AccountType::OFF_BALANCE,
+            ]);
+    }
+
+    public function propertyAccountExpense(): BelongsTo
+    {
+        return $this->belongsTo(Account::class, 'property_account_expense_id')
+            ->where('deprecated', false)
+            ->whereNotIn('account_type', [
+                AccountType::ASSET_RECEIVABLE,
+                AccountType::LIABILITY_PAYABLE,
+                AccountType::ASSET_CASH,
+                AccountType::LIABILITY_CREDIT_CARD,
+                AccountType::OFF_BALANCE,
+            ]);
+    }
 
     public function category(): BelongsTo
     {

@@ -9,7 +9,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 use Webkul\Account\Enums\MoveState;
-use Webkul\Account\Facades\Account;
+use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\Partner;
 use Webkul\Support\Traits\PDFHandler;
@@ -86,7 +86,7 @@ class PrintAndSendAction extends Action
         $this->modalSubmitActionLabel(__('accounts::filament/resources/invoice/actions/print-and-send.modal.action.submit.title'));
         $this->modalIcon('heroicon-m-paper-airplane');
         $this->icon('heroicon-o-envelope');
-        $this->action(fn (Move $record, array $data) => Account::printAndSend($record, $data));
+        $this->action(fn (Move $record, array $data) => AccountFacade::printAndSend($record, $data));
         $this->modalSubmitAction(function ($action) {
             $action->label(__('accounts::filament/resources/invoice/actions/print-and-send.modal.action.submit.title'));
             $action->icon('heroicon-m-paper-airplane');

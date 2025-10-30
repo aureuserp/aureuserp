@@ -6,7 +6,7 @@ use Filament\Actions\Action;
 use Livewire\Component;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
-use Webkul\Account\Facades\Account;
+use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Move;
 
 class CancelAction extends Action
@@ -24,7 +24,7 @@ class CancelAction extends Action
             ->label(__('accounts::filament/resources/invoice/actions/cancel-action.title'))
             ->color('gray')
             ->action(function (Move $record, Component $livewire): void {
-                $record = Account::cancel($record);
+                $record = AccountFacade::cancel($record);
 
                 $livewire->refreshFormData(['state', 'parent_state']);
             })

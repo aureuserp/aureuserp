@@ -6,7 +6,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Account\Facades\Account;
+use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Account\Filament\Resources\RefundResource;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
@@ -62,6 +62,6 @@ class EditRefund extends EditRecord
 
     protected function afterSave(): void
     {
-        Account::computeAccountMove($this->getRecord());
+        AccountFacade::computeAccountMove($this->getRecord());
     }
 }

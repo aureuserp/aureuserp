@@ -5,7 +5,7 @@ namespace Webkul\Account\Filament\Resources\InvoiceResource\Actions;
 use Filament\Actions\Action;
 use Livewire\Component;
 use Webkul\Account\Enums\MoveState;
-use Webkul\Account\Facades\Account;
+use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Move;
 
 class ResetToDraftAction extends Action
@@ -24,7 +24,7 @@ class ResetToDraftAction extends Action
             ->color('gray')
             ->icon('heroicon-o-arrow-path')
             ->action(function (Move $record, Component $livewire): void {
-                $record = Account::resetToDraft($record);
+                $record = AccountFacade::resetToDraft($record);
 
                 $record->save();
 
