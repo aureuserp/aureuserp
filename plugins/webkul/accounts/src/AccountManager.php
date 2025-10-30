@@ -129,25 +129,11 @@ class AccountManager
         $record->amount_total_in_currency_signed = 0;
         $record->amount_residual_signed = 0;
 
-        $record = $this->computePartnerDisplayInfo($record);
-
-        $record = $this->computeInvoiceCurrencyRate($record);
-
-        $record = $this->computeJournalId($record);
-
-        $record = $this->computePartnerShippingId($record);
-
-        $record = $this->computeCommercialPartnerId($record);
-
-        $record = $this->computeInvoiceDateDue($record);
-
         $signMultiplier = $this->getSignMultiplier($record);
 
         $newTaxEntries = [];
 
         foreach ($record->lines as $line) {
-            $line = $this->computeMoveLine($record, $line);
-
             [$line, $amountTax] = $this->computeMoveLineTotals($line, $newTaxEntries);
 
             $record->amount_untaxed += floatval($line->price_subtotal);
@@ -171,99 +157,6 @@ class AccountManager
         $record->refresh();
 
         return $record;
-    }
-
-    public function computePartnerDisplayInfo(AccountMove $record): AccountMove
-    {
-        $vendorDisplayName = $record->partner?->name;
-
-        if (! $vendorDisplayName) {
-            if ($record->invoice_source_email) {
-                $vendorDisplayName = "@From: {$record->invoice_source_email}";
-            } else {
-                $vendorDisplayName = "#Created by: {$record->createdBy->name}";
-            }
-        }
-
-        $record->invoice_partner_display_name = $vendorDisplayName;
-
-        return $record;
-    }
-
-    public function computeInvoiceCurrencyRate(AccountMove $record): AccountMove
-    {
-        $record->invoice_currency_rate = 1;
-
-        return $record;
-    }
-
-    public function computeJournalId(AccountMove $record): AccountMove
-    {
-        if (! in_array($record->journal?->type, $record->getValidJournalTypes())) {
-            $record->journal_id = $this->searchDefaultJournal($record)?->id;
-        }
-
-        return $record;
-    }
-
-    public function searchDefaultJournal(AccountMove $record): ?Journal
-    {
-        $validJournalTypes = $record->getValidJournalTypes();
-
-        return Journal::where('company_id', $record->company_id)
-            ->whereIn('type', $validJournalTypes)
-            ->first();
-    }
-
-    public function computeCommercialPartnerId(AccountMove $record): AccountMove
-    {
-        $record->commercial_partner_id = $record->partner_id;
-
-        return $record;
-    }
-
-    public function computePartnerShippingId(AccountMove $record): AccountMove
-    {
-        $record->partner_shipping_id = $record->partner_id;
-
-        return $record;
-    }
-
-    public static function computeInvoiceDateDue(AccountMove $move): AccountMove
-    {
-        $dateMaturity = now();
-
-        if ($move->invoicePaymentTerm) {
-            $dueTerm = $move->invoicePaymentTerm->dueTerm;
-
-            if ($dueTerm) {
-                switch ($dueTerm->delay_type) {
-                    case Enums\DelayType::DAYS_AFTER->value:
-                        $dateMaturity = $dateMaturity->addDays((int) $dueTerm->nb_days);
-
-                        break;
-
-                    case Enums\DelayType::DAYS_AFTER_END_OF_MONTH->value:
-                        $dateMaturity = $dateMaturity->endOfMonth()->addDays((int) $dueTerm->nb_days);
-
-                        break;
-
-                    case Enums\DelayType::DAYS_AFTER_END_OF_NEXT_MONTH->value:
-                        $dateMaturity = $dateMaturity->addMonth()->endOfMonth()->addDays((int) $dueTerm->days_next_month);
-
-                        break;
-
-                    case DelayType::DAYS_END_OF_MONTH_NO_THE->value:
-                        $dateMaturity = $dateMaturity->endOfMonth();
-
-                        break;
-                }
-            }
-        }
-
-        $move->invoice_date_due = $dateMaturity;
-
-        return $move;
     }
 
     private function syncDynamicLines(AccountMove $move, array $newTaxEntries): void
@@ -380,133 +273,6 @@ class AccountManager
             'amount_residual'          => $balance,
             'amount_residual_currency' => $balance,
         ]);
-    }
-
-    /**
-     * Collect line totals and tax information
-     */
-    public function computeMoveLine(AccountMove $move, MoveLine $line): MoveLine
-    {
-        $line->move_name = $move->name;
-
-        $line->name = $line->product->name;
-
-        $line->parent_state = $move->state;
-
-        $line->date_maturity = $move->invoice_date_due;
-
-        $line->discount_date = $line->discount > 0 ? now() : null;
-
-        $line->uom_id = $line->uom_id ?? $line->product->uom_id;
-
-        $line->partner_id = $move->partner_id;
-
-        $line->journal_id = $move->journal_id;
-
-        $line->currency_id = $move->currency_id;
-
-        // Todo:: check this
-        $line->company_currency_id = $move->currency_id;
-
-        $line->company_id = $move->company_id;
-
-        $line = $this->computeMoveLineAccountId($move, $line);
-
-        return $line;
-    }
-
-    public function computeMoveLineAccountId(AccountMove $move, MoveLine $line): MoveLine
-    {
-        $accountId = null;
-
-        switch ($line->display_type) {
-            case DisplayType::PAYMENT_TERM:
-                // Check existing payment term line
-                $existingAccount = MoveLine::where('move_id', $move->id)
-                    ->where('display_type', DisplayType::PAYMENT_TERM)
-                    ->whereNotNull('account_id')
-                    ->value('account_id');
-
-                if ($existingAccount) {
-                    $accountId = $existingAccount;
-                } else {
-                    // Determine account type and property field
-                    $isSale = $move->isSaleDocument(true);
-
-                    $accountType = $isSale ? 'asset_receivable' : 'liability_payable';
-
-                    $propertyField = $isSale ? 'property_account_receivable_id' : 'property_account_payable_id';
-
-                    // Try partner account, then company partner account, then default
-                    $accountId = $move->partner?->{$propertyField}
-                        ?? (method_exists($move->company, 'partner') ? $move->company->partner?->{$propertyField} : null)
-                        ?? Account::where('account_type', $accountType)->where('deprecated', false)->value('id');
-
-                    // Apply fiscal position mapping
-                    if ($move->fiscal_position_id && $accountId) {
-                        $fiscalPosition = FiscalPosition::find($move->fiscal_position_id);
-                        if ($fiscalPosition) {
-                            // TODO: Implement fiscal position account mapping from fiscal_position_accounts table
-                            $accountId = $accountId; // Placeholder for actual mapping
-                        }
-                    }
-                }
-                break;
-
-            case DisplayType::PRODUCT:
-                if ($line->product_id && $line->product) {
-                    $isSale = $move->isSaleDocument(true);
-                    $isPurchase = $move->isPurchaseDocument(true);
-
-                    if ($isSale) {
-                        $accountId = $line->product->property_account_income_id 
-                            ?? $line->product->category?->property_account_income_id;
-                    } elseif ($isPurchase) {
-                        $accountId = $line->product->property_account_expense_id 
-                            ?? $line->product->category?->property_account_expense_id;
-                    }
-
-                    // Apply fiscal position mapping
-                    if ($move->fiscal_position_id && $accountId) {
-                        $fiscalPosition = FiscalPosition::find($move->fiscal_position_id);
-
-                        if ($fiscalPosition) {
-                            // TODO: Implement fiscal position account mapping from fiscal_position_accounts table
-                            $accountId = $accountId; // Placeholder for actual mapping
-                        }
-                    }
-                } elseif ($line->partner_id) {
-                    $accountType = $move->isSaleDocument(true) ? 'income' : 'expense';
-                    $accountId = Account::where('account_type', $accountType)->where('deprecated', false)->value('id');
-                }
-                break;
-
-            case DisplayType::LINE_SECTION:
-            case DisplayType::LINE_NOTE:
-                // These don't need accounts
-                break;
-
-            default:
-                // Check for previous accounts with same display type
-                $previousAccounts = MoveLine::where('move_id', $move->id)
-                    ->where('display_type', $line->display_type)
-                    ->whereNotNull('account_id')
-                    ->orderBy('id', 'desc')
-                    ->limit(2)
-                    ->pluck('account_id');
-
-                if ($previousAccounts->count() === 1 && $move->allLines()->count() > 2) {
-                    $accountId = $previousAccounts->first();
-                } else {
-                    $accountId = $move->journal?->default_account_id;
-                }
-
-                break;
-        }
-
-        $line->account_id = $accountId;
-
-        return $line;
     }
 
     /**

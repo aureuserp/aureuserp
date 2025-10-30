@@ -10,6 +10,7 @@ use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Enums\DelayType;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
@@ -345,6 +346,15 @@ class Move extends Model implements Sortable
         ] : [MoveType::IN_INVOICE, MoveType::IN_REFUND]);
     }
 
+    public function directionSign()
+    {
+        if ($this->isEntry() || $this->isOutbound()) {
+            return -1;
+        }
+
+        return 1;
+    }
+
     public function getValidJournalTypes()
     {
         if ($this->isSaleDocument(true)) {
@@ -365,17 +375,123 @@ class Move extends Model implements Sortable
     {
         parent::boot();
 
-        static::creating(function ($model) {
-            $model->creator_id = auth()->id();
+        static::creating(function ($move) {
+            $move->creator_id = auth()->id();
         });
 
-        static::created(function ($model) {
-            $model->updateSequencePrefix();
+        static::created(function ($move) {
+            $move->updateSequencePrefix();
 
-            $model->updateQuietly([
-                'name' => $model->sequence_prefix.'/'.$model->id,
+            $move->updateQuietly([
+                'name' => $move->sequence_prefix.'/'.$move->id,
             ]);
         });
+
+        static::saving(function ($move) {
+            $move->computePartnerDisplayInfo();
+
+            $move->computePartnerShippingId();
+
+            $move->computeCommercialPartnerId();
+
+            $move->computeJournalId();
+
+            $move->computeInvoiceCurrencyRate();
+
+            $move->computeInvoiceDateDue();
+        });
+
+        static::saved(function ($move) {
+            $move->allLines->each(function ($line) {
+                $line->fireModelEvent('saving');
+                
+                $line->saveQuietly();
+            });
+
+            $move->computeTotals();
+        });
+    }
+
+    public function computePartnerDisplayInfo()
+    {
+        $vendorDisplayName = $this->partner?->name;
+
+        if (! $vendorDisplayName) {
+            if ($this->invoice_source_email) {
+                $vendorDisplayName = "@From: {$this->invoice_source_email}";
+            } else {
+                $vendorDisplayName = "#Created by: {$this->createdBy->name}";
+            }
+        }
+
+        $this->invoice_partner_display_name = $vendorDisplayName;
+    }
+
+    public function computeInvoiceCurrencyRate()
+    {
+        $this->invoice_currency_rate = 1;
+    }
+
+    public function computePartnerShippingId()
+    {
+        $this->partner_shipping_id = $this->partner_id;
+    }
+
+    public function computeCommercialPartnerId()
+    {
+        $this->commercial_partner_id = $this->partner_id;
+    }
+
+    public function computeInvoiceDateDue()
+    {
+        $dateMaturity = now();
+
+        if ($this->invoicePaymentTerm) {
+            $dueTerm = $this->invoicePaymentTerm->dueTerm;
+
+            if ($dueTerm) {
+                switch ($dueTerm->delay_type) {
+                    case DelayType::DAYS_AFTER->value:
+                        $dateMaturity = $dateMaturity->addDays((int) $dueTerm->nb_days);
+
+                        break;
+
+                    case DelayType::DAYS_AFTER_END_OF_MONTH->value:
+                        $dateMaturity = $dateMaturity->endOfMonth()->addDays((int) $dueTerm->nb_days);
+
+                        break;
+
+                    case DelayType::DAYS_AFTER_END_OF_NEXT_MONTH->value:
+                        $dateMaturity = $dateMaturity->addMonth()->endOfMonth()->addDays((int) $dueTerm->days_next_month);
+
+                        break;
+
+                    case DelayType::DAYS_END_OF_MONTH_NO_THE->value:
+                        $dateMaturity = $dateMaturity->endOfMonth();
+
+                        break;
+                }
+            }
+        }
+
+        $this->invoice_date_due = $dateMaturity;
+    }
+
+
+    public function computeJournalId()
+    {
+        if (! in_array($this->journal?->type, $this->getValidJournalTypes())) {
+            $this->journal_id = $this->searchDefaultJournal($this)?->id;
+        }
+    }
+
+    public function searchDefaultJournal()
+    {
+        $validJournalTypes = $this->getValidJournalTypes();
+
+        return Journal::where('company_id', $this->company_id)
+            ->whereIn('type', $validJournalTypes)
+            ->first();
     }
 
     /**
@@ -407,5 +523,33 @@ class Move extends Model implements Sortable
 
                 break;
         }
+    }
+
+    public function computeTotals()
+    {
+
+    }
+
+    public function prepareProductBaseLineForTaxesComputation(MoveLine $line)
+    {
+        $isInvoice = $this->isInvoice(true);
+
+        $sign = $isInvoice ? $this->directionSign() : 1;
+
+        if ($isInvoice) {
+            $rate = $this->invoice_currency_rate;
+        } else {
+            $rate = $line->balance ? abs($line->amount_currency) / abs($line->balance) : 0.0;
+        }
+
+        return Tax::prepareBaseLineForTaxesComputation(
+            $line,
+            priceUnit: $isInvoice ? $line->price_unit : $line->amount_currency,
+            quantity: $isInvoice ? $line->quantity : 1.0,
+            discount: $isInvoice ? $line->discount : 0.0,
+            rate: $rate,
+            sign: $sign,
+            specialMode: $isInvoice ? false : 'total_excluded',
+        );
     }
 }

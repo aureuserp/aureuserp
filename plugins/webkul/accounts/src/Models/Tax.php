@@ -93,8 +93,19 @@ class Tax extends Model implements Sortable
 
         static::created(function (self $tax) {
             $tax->attachDistributionForInvoice($tax);
+
             $tax->attachDistributionForRefund($tax);
         });
+    }
+
+    protected static function prepareBaseLineForTaxesComputation(MoveLine $line, ...$args)
+    {
+        dd($line, $args);
+    }
+
+    protected static function addTaxDetailsInBaseLine()
+    {
+
     }
 
     private function attachDistributionForInvoice(self $tax)
