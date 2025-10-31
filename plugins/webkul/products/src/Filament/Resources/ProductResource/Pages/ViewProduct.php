@@ -23,7 +23,7 @@ class ViewProduct extends ViewRecord
     {
         return [
             ChatterAction::make()
-                ->setResource(static::$resource),
+                ->resource(static::$resource),
             Action::make('print')
                 ->label(__('products::filament/resources/product/pages/edit-product.header-actions.print.label'))
                 ->color('gray')

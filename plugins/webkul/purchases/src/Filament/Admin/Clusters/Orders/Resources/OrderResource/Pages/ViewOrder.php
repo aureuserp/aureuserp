@@ -40,7 +40,7 @@ class ViewOrder extends ViewRecord
         return [
             ChatterAction::make()
                 ->record(\Webkul\Purchase\Models\Order::find($this->getRecord()->id))
-                ->setResource(static::$resource),
+                ->resource(static::$resource),
             DeleteAction::make()
                 ->hidden(fn () => $this->getRecord()->state == OrderState::DONE)
                 ->action(function (DeleteAction $action, Order $record) {

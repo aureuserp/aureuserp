@@ -20,7 +20,7 @@ class ViewPurchaseAgreement extends ViewRecord
     {
         return [
             ChatterAction::make()
-                ->setResource(static::$resource),
+                ->resource(static::$resource),
             DeleteAction::make()
                 ->hidden(fn () => $this->getRecord()->state == RequisitionState::CLOSED)
                 ->successNotification(

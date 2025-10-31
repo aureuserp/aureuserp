@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Facades\Account;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Account\Filament\Resources\RefundResource;
-use Webkul\Chatter\Filament\Actions as ChatterActions;
+use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditRefund extends EditRecord
@@ -34,8 +34,8 @@ class EditRefund extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            ChatterActions\ChatterAction::make()
-                ->setResource($this->getResource()),
+            ChatterAction::make()
+                ->resource(static::$resource),
             BaseActions\PayAction::make(),
             BaseActions\CancelAction::make(),
             BaseActions\ConfirmAction::make(),

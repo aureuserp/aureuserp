@@ -23,6 +23,11 @@ class Applicant extends Model
 
     protected $table = 'recruitments_applicants';
 
+    public function getModelTitle(): string
+    {
+        return __('recruitments::models/applicant.title');
+    }
+
     protected $fillable = [
         'source_id',
         'medium_id',

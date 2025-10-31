@@ -84,6 +84,11 @@ class PurchaseAgreementResource extends Resource
         return __('purchases::filament/admin/clusters/orders/resources/purchase-agreement.navigation.title');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('purchases::filament/admin/clusters/orders/resources/purchase-agreement.navigation.title');
+    }
+
     public static function isDiscovered(): bool
     {
         if (app()->runningInConsole()) {

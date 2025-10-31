@@ -29,6 +29,11 @@ class Requisition extends Model
      */
     protected $table = 'purchases_requisitions';
 
+    public function getModelTitle(): string
+    {
+        return __('purchases::models/requisition.title');
+    }
+
     /**
      * Fillable.
      *
@@ -59,20 +64,23 @@ class Requisition extends Model
         'type'  => RequisitionType::class,
     ];
 
-    protected array $logAttributes = [
-        'name',
-        'type',
-        'state',
-        'reference',
-        'starts_at',
-        'ends_at',
-        'description',
-        'currency.name' => 'Currency',
-        'partner.name'  => 'Partner',
-        'user.name'     => 'Buyer',
-        'company.name'  => 'Company',
-        'creator.name'  => 'Creator',
-    ];
+    public function getLogAttributeLabels(): array
+    {
+        return [
+            'name'          => trans('purchases::models/requisition.log-attributes.name'),
+            'type'          => trans('purchases::models/requisition.log-attributes.type'),
+            'state'         => trans('purchases::models/requisition.log-attributes.state'),
+            'reference'     => trans('purchases::models/requisition.log-attributes.reference'),
+            'starts_at'     => trans('purchases::models/requisition.log-attributes.starts_at'),
+            'ends_at'       => trans('purchases::models/requisition.log-attributes.ends_at'),
+            'description'   => trans('purchases::models/requisition.log-attributes.description'),
+            'currency.name' => trans('purchases::models/requisition.log-attributes.currency'),
+            'partner.name'  => trans('purchases::models/requisition.log-attributes.partner'),
+            'user.name'     => trans('purchases::models/requisition.log-attributes.buyer'),
+            'company.name'  => trans('purchases::models/requisition.log-attributes.company'),
+            'creator.name'  => trans('purchases::models/requisition.log-attributes.creator'),
+        ];
+    }
 
     public function partner(): BelongsTo
     {

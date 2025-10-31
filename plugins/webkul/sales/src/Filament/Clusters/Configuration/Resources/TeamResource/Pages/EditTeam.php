@@ -6,7 +6,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Webkul\Chatter\Filament\Actions as ChatterActions;
+use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\TeamResource;
 
 class EditTeam extends EditRecord
@@ -29,8 +29,8 @@ class EditTeam extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            ChatterActions\ChatterAction::make()
-                ->setResource(static::$resource),
+            ChatterAction::make()
+                ->resource(static::$resource),
             ViewAction::make(),
             DeleteAction::make()
                 ->successNotification(

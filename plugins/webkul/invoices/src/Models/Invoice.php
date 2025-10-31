@@ -7,6 +7,11 @@ use Webkul\Account\Models\MoveLine;
 
 class Invoice extends BaseMove
 {
+    public function getModelTitle(): string
+    {
+        return __('invoices::models/invoice.title');
+    }
+
     public function paymentTermLine()
     {
         return $this->hasOne(MoveLine::class, 'move_id')

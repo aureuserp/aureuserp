@@ -6,7 +6,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Account\Filament\Resources\RefundResource;
-use Webkul\Chatter\Filament\Actions as ChatterActions;
+use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewRefund extends ViewRecord
@@ -18,8 +18,8 @@ class ViewRefund extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            ChatterActions\ChatterAction::make()
-                ->setResource($this->getResource()),
+            ChatterAction::make()
+                ->resource(static::$resource),
             BaseActions\PayAction::make(),
             BaseActions\CancelAction::make(),
             BaseActions\ConfirmAction::make(),

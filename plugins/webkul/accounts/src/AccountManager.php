@@ -231,7 +231,7 @@ class AccountManager
 
     public static function computeInvoiceDateDue(AccountMove $move): AccountMove
     {
-        $dateMaturity = now();
+        $dateMaturity = today();
 
         if ($move->invoicePaymentTerm) {
             $dueTerm = $move->invoicePaymentTerm->dueTerm;
