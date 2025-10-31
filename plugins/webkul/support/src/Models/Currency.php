@@ -29,4 +29,12 @@ class Currency extends Model
     {
         return $this->hasMany(CurrencyRate::class);
     }
+
+    /**
+     * TODO: Implement proper rounding logic.
+     */
+    public function round(float $amount): float
+    {
+        return $amount;
+    }
 }

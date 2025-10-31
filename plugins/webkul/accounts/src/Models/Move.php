@@ -22,6 +22,7 @@ use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UtmCampaign;
 use Webkul\Support\Models\UTMMedium;
 use Webkul\Support\Models\UTMSource;
+use Webkul\Account\Facades\Tax as TaxFacade;
 
 class Move extends Model implements Sortable
 {
@@ -542,7 +543,7 @@ class Move extends Model implements Sortable
             $rate = $line->balance ? abs($line->amount_currency) / abs($line->balance) : 0.0;
         }
 
-        return Tax::prepareBaseLineForTaxesComputation(
+        return TaxFacade::prepareBaseLineForTaxesComputation(
             $line,
             priceUnit: $isInvoice ? $line->price_unit : $line->amount_currency,
             quantity: $isInvoice ? $line->quantity : 1.0,

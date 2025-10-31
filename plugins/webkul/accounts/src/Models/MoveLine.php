@@ -15,6 +15,7 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
+use Webkul\Account\Facades\Tax as TaxFacade;
 
 class MoveLine extends Model implements Sortable
 {
@@ -105,6 +106,11 @@ class MoveLine extends Model implements Sortable
     }
 
     public function currency()
+    {
+        return $this->belongsTo(Currency::class);
+    }
+
+    public function companyCurrency()
     {
         return $this->belongsTo(Currency::class);
     }
@@ -335,5 +341,9 @@ class MoveLine extends Model implements Sortable
         }
 
         $baseLine = $this->move->prepareProductBaseLineForTaxesComputation($this);
+
+        $baseLine = TaxFacade::addTaxDetailsInBaseLine($baseLine, $this->company);
+
+        dd($baseLine);
     }
 }

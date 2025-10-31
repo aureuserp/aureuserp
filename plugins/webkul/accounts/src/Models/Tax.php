@@ -12,6 +12,8 @@ use Webkul\Account\Enums\RepartitionType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
+use Webkul\Support\Models\Currency;
+use Webkul\Partner\Models\Partner;
 
 class Tax extends Model implements Sortable
 {
@@ -96,16 +98,6 @@ class Tax extends Model implements Sortable
 
             $tax->attachDistributionForRefund($tax);
         });
-    }
-
-    protected static function prepareBaseLineForTaxesComputation(MoveLine $line, ...$args)
-    {
-        dd($line, $args);
-    }
-
-    protected static function addTaxDetailsInBaseLine()
-    {
-
     }
 
     private function attachDistributionForInvoice(self $tax)
