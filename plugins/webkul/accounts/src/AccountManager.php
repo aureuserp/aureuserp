@@ -10,6 +10,8 @@ use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Mail\Invoice\Actions\InvoiceEmail;
+use Webkul\Account\Models\Account;
+use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\MoveLine;
@@ -127,25 +129,11 @@ class AccountManager
         $record->amount_total_in_currency_signed = 0;
         $record->amount_residual_signed = 0;
 
-        $newTaxEntries = [];
-
-        $record = $this->computePartnerDisplayInfo($record);
-
-        $record = $this->computeInvoiceCurrencyRate($record);
-
-        $record = $this->computeJournalId($record);
-
-        $record = $this->computePartnerShippingId($record);
-
-        $record = $this->computeCommercialPartnerId($record);
-
-        $record = $this->computeInvoiceDateDue($record);
-
         $signMultiplier = $this->getSignMultiplier($record);
 
-        foreach ($record->lines as $line) {
-            $line = $this->computeMoveLine($record, $line);
+        $newTaxEntries = [];
 
+        foreach ($record->lines as $line) {
             [$line, $amountTax] = $this->computeMoveLineTotals($line, $newTaxEntries);
 
             $record->amount_untaxed += floatval($line->price_subtotal);
@@ -164,137 +152,127 @@ class AccountManager
 
         $record->save();
 
-        $this->computeTaxLines($record, $newTaxEntries);
-
-        $this->computePaymentTermLine($record);
+        $this->syncDynamicLines($record, $newTaxEntries);
 
         $record->refresh();
 
         return $record;
     }
 
-    public function computePartnerDisplayInfo(AccountMove $record): AccountMove
+    private function syncDynamicLines(AccountMove $move, array $newTaxEntries): void
     {
-        $vendorDisplayName = $record->partner?->name;
+        $this->syncTaxLines($move, $newTaxEntries);
 
-        if (! $vendorDisplayName) {
-            if ($record->invoice_source_email) {
-                $vendorDisplayName = "@From: {$record->invoice_source_email}";
-            } else {
-                $vendorDisplayName = "#Created by: {$record->createdBy->name}";
-            }
-        }
-
-        $record->invoice_partner_display_name = $vendorDisplayName;
-
-        return $record;
-    }
-
-    public function computeInvoiceCurrencyRate(AccountMove $record): AccountMove
-    {
-        $record->invoice_currency_rate = 1;
-
-        return $record;
-    }
-
-    public function computeJournalId(AccountMove $record): AccountMove
-    {
-        if (! in_array($record->journal?->type, $record->getValidJournalTypes())) {
-            $record->journal_id = $this->searchDefaultJournal($record)?->id;
-        }
-
-        return $record;
-    }
-
-    public function searchDefaultJournal(AccountMove $record): ?Journal
-    {
-        $validJournalTypes = $record->getValidJournalTypes();
-
-        return Journal::where('company_id', $record->company_id)
-            ->whereIn('type', $validJournalTypes)
-            ->first();
-    }
-
-    public function computeCommercialPartnerId(AccountMove $record): AccountMove
-    {
-        $record->commercial_partner_id = $record->partner_id;
-
-        return $record;
-    }
-
-    public function computePartnerShippingId(AccountMove $record): AccountMove
-    {
-        $record->partner_shipping_id = $record->partner_id;
-
-        return $record;
-    }
-
-    public static function computeInvoiceDateDue(AccountMove $move): AccountMove
-    {
-        $dateMaturity = now();
-
-        if ($move->invoicePaymentTerm) {
-            $dueTerm = $move->invoicePaymentTerm->dueTerm;
-
-            if ($dueTerm) {
-                switch ($dueTerm->delay_type) {
-                    case Enums\DelayType::DAYS_AFTER->value:
-                        $dateMaturity = $dateMaturity->addDays((int) $dueTerm->nb_days);
-
-                        break;
-
-                    case Enums\DelayType::DAYS_AFTER_END_OF_MONTH->value:
-                        $dateMaturity = $dateMaturity->endOfMonth()->addDays((int) $dueTerm->nb_days);
-
-                        break;
-
-                    case Enums\DelayType::DAYS_AFTER_END_OF_NEXT_MONTH->value:
-                        $dateMaturity = $dateMaturity->addMonth()->endOfMonth()->addDays((int) $dueTerm->days_next_month);
-
-                        break;
-
-                    case DelayType::DAYS_END_OF_MONTH_NO_THE->value:
-                        $dateMaturity = $dateMaturity->endOfMonth();
-
-                        break;
-                }
-            }
-        }
-
-        $move->invoice_date_due = $dateMaturity;
-
-        return $move;
+        $this->syncDynamicLine($move);
     }
 
     /**
-     * Collect line totals and tax information
+     * Update tax lines for the move
      */
-    public function computeMoveLine(AccountMove $move, MoveLine $line): MoveLine
+    private function syncTaxLines(AccountMove $move, array $newTaxEntries): void
     {
-        $line->move_name = $move->name;
+        $existingTaxLines = MoveLine::where('move_id', $move->id)
+            ->where('display_type', 'tax')
+            ->get()
+            ->keyBy('tax_line_id');
 
-        $line->name = $line->product->name;
+        foreach ($newTaxEntries as $taxId => $taxData) {
+            $tax = Tax::find($taxId);
 
-        $line->parent_state = $move->state;
+            if (! $tax) {
+                continue;
+            }
 
-        $line->date_maturity = $move->invoice_date_due;
+            $currentTaxAmount = $taxData['tax_amount'];
 
-        $line->discount_date = $line->discount > 0 ? now() : null;
+            if ($move->isOutbound()) {
+                $debit = $currentTaxAmount;
+                $credit = 0;
+                $balance = $currentTaxAmount;
+                $amountCurrency = $currentTaxAmount;
+            } else {
+                $debit = 0;
+                $credit = $currentTaxAmount;
+                $balance = -$currentTaxAmount;
+                $amountCurrency = -$currentTaxAmount;
+            }
 
-        $line->uom_id = $line->uom_id ?? $line->product->uom_id;
+            $taxLineData = [
+                'name'                     => $tax->name,
+                'move_id'                  => $move->id,
+                'move_name'                => $move->name,
+                'display_type'             => DisplayType::TAX,
+                'currency_id'              => $move->currency_id,
+                'partner_id'               => $move->partner_id,
+                'company_id'               => $move->company_id,
+                'company_currency_id'      => $move->company_currency_id,
+                'commercial_partner_id'    => $move->partner_id,
+                'journal_id'               => $move->journal_id,
+                'parent_state'             => $move->state,
+                'date'                     => now(),
+                'creator_id'               => $move->creator_id,
+                'debit'                    => $debit,
+                'credit'                   => $credit,
+                'balance'                  => $balance,
+                'amount_currency'          => $amountCurrency,
+                'tax_base_amount'          => $taxData['tax_base_amount'],
+                'tax_line_id'              => $taxId,
+                'tax_group_id'             => $tax->tax_group_id,
+            ];
 
-        $line->partner_id = $move->partner_id;
+            if (isset($existingTaxLines[$taxId])) {
+                $existingTaxLines[$taxId]->update($taxLineData);
 
-        $line->journal_id = $move->journal_id;
+                unset($existingTaxLines[$taxId]);
+            } else {
+                MoveLine::create($taxLineData);
+            }
+        }
 
-        $line->currency_id = $move->currency_id;
+        $existingTaxLines->each->delete();
+    }
 
-        // Todo:: check this
-        $line->company_currency_id = $move->currency_id;
+    /**
+     * Update or create the payment term line
+     */
+    private function syncDynamicLine(AccountMove $move, $moveType = 'payment_term'): void
+    {
+        $amount = abs($move->amount_total);
 
-        $line->company_id = $move->company_id;
+        if ($move->isOutbound()) {
+            $debit = 0;
+            $credit = $amount;
+            $balance = -$amount;
+        } else {
+            $debit = $amount;
+            $credit = 0;
+            $balance = $amount;
+        }
 
-        return $line;
+        MoveLine::updateOrCreate([
+            'move_id'      => $move->id,
+            'display_type' => DisplayType::PAYMENT_TERM,
+        ], [
+            'move_id'                  => $move->id,
+            'move_name'                => $move->name,
+            'display_type'             => DisplayType::PAYMENT_TERM,
+            'currency_id'              => $move->currency_id,
+            'partner_id'               => $move->partner_id,
+            'date_maturity'            => $move->invoice_date_due,
+            'company_id'               => $move->company_id,
+            'company_currency_id'      => $move->company_currency_id,
+            'commercial_partner_id'    => $move->partner_id,
+            'journal_id'               => $move->journal_id,
+            'parent_state'             => $move->state,
+            'date'                     => now(),
+            'creator_id'               => $move->creator_id,
+            'debit'                    => $debit,
+            'credit'                   => $credit,
+            'balance'                  => $balance,
+            'amount_currency'          => $balance,
+            'amount_residual'          => $balance,
+            'amount_residual_currency' => $balance,
+        ]);
     }
 
     /**
@@ -381,7 +359,7 @@ class AccountManager
     private function computeMoveLineAmountCurrency(MoveLine $line): MoveLine
     {
         if (is_null($line->amount_currency)) {
-            $line->amount_currency = round($line->balance * $line->currency_rate, 2);
+            $line->amount_currency = round($line->balance * $line->move->currency_rate, 2);
         }
 
         if ($line->currency_id === $line->company->currency_id) {
@@ -389,115 +367,6 @@ class AccountManager
         }
 
         return $line;
-    }
-
-    /**
-     * Update tax lines for the move
-     */
-    private function computeTaxLines(AccountMove $move, array $newTaxEntries): void
-    {
-        $existingTaxLines = MoveLine::where('move_id', $move->id)
-            ->where('display_type', 'tax')
-            ->get()
-            ->keyBy('tax_line_id');
-
-        foreach ($newTaxEntries as $taxId => $taxData) {
-            $tax = Tax::find($taxId);
-
-            if (! $tax) {
-                continue;
-            }
-
-            $currentTaxAmount = $taxData['tax_amount'];
-
-            if ($move->isOutbound()) {
-                $debit = $currentTaxAmount;
-                $credit = 0;
-                $balance = $currentTaxAmount;
-                $amountCurrency = $currentTaxAmount;
-            } else {
-                $debit = 0;
-                $credit = $currentTaxAmount;
-                $balance = -$currentTaxAmount;
-                $amountCurrency = -$currentTaxAmount;
-            }
-
-            $taxLineData = [
-                'name'                     => $tax->name,
-                'move_id'                  => $move->id,
-                'move_name'                => $move->name,
-                'display_type'             => DisplayType::TAX,
-                'currency_id'              => $move->currency_id,
-                'partner_id'               => $move->partner_id,
-                'company_id'               => $move->company_id,
-                'company_currency_id'      => $move->company_currency_id,
-                'commercial_partner_id'    => $move->partner_id,
-                'journal_id'               => $move->journal_id,
-                'parent_state'             => $move->state,
-                'date'                     => now(),
-                'creator_id'               => $move->creator_id,
-                'debit'                    => $debit,
-                'credit'                   => $credit,
-                'balance'                  => $balance,
-                'amount_currency'          => $amountCurrency,
-                'tax_base_amount'          => $taxData['tax_base_amount'],
-                'tax_line_id'              => $taxId,
-                'tax_group_id'             => $tax->tax_group_id,
-            ];
-
-            if (isset($existingTaxLines[$taxId])) {
-                $existingTaxLines[$taxId]->update($taxLineData);
-
-                unset($existingTaxLines[$taxId]);
-            } else {
-                MoveLine::create($taxLineData);
-            }
-        }
-
-        $existingTaxLines->each->delete();
-    }
-
-    /**
-     * Update or create the payment term line
-     */
-    private function computePaymentTermLine($move): void
-    {
-        $amount = abs($move->amount_total);
-
-        if ($move->isOutbound()) {
-            $debit = 0;
-            $credit = $amount;
-            $balance = -$amount;
-        } else {
-            $debit = $amount;
-            $credit = 0;
-            $balance = $amount;
-        }
-
-        MoveLine::updateOrCreate([
-            'move_id'      => $move->id,
-            'display_type' => DisplayType::PAYMENT_TERM,
-        ], [
-            'move_id'                  => $move->id,
-            'move_name'                => $move->name,
-            'display_type'             => DisplayType::PAYMENT_TERM,
-            'currency_id'              => $move->currency_id,
-            'partner_id'               => $move->partner_id,
-            'date_maturity'            => $move->invoice_date_due,
-            'company_id'               => $move->company_id,
-            'company_currency_id'      => $move->company_currency_id,
-            'commercial_partner_id'    => $move->partner_id,
-            'journal_id'               => $move->journal_id,
-            'parent_state'             => $move->state,
-            'date'                     => now(),
-            'creator_id'               => $move->creator_id,
-            'debit'                    => $debit,
-            'credit'                   => $credit,
-            'balance'                  => $balance,
-            'amount_currency'          => $balance,
-            'amount_residual'          => $balance,
-            'amount_residual_currency' => $balance,
-        ]);
     }
 
     private function preparePayloadForSendByEmail($record, $partner, $data)
@@ -519,7 +388,7 @@ class AccountManager
      */
     private function getSignMultiplier(AccountMove $record): int
     {
-        if ($record->isOutbound()) {
+        if ($record->isEntry() || $record->isOutbound()) {
             return -1;
         }
 

@@ -15,21 +15,12 @@ class InvoiceServiceProvider extends PackageServiceProvider
     {
         $package->name(static::$name)
             ->hasTranslations()
-            ->hasMigrations([
-                '2025_02_04_082243_alter_products_products_table',
-            ])
-            ->runsMigrations()
-            ->hasSettings([
-                '2025_02_26_094022_create_invoices_product_settings',
-            ])
-            ->runsSettings()
             ->hasDependencies([
                 'accounts',
             ])
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->installDependencies()
-                    ->runsMigrations()
                     ->runsSeeders();
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {})

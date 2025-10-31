@@ -105,7 +105,7 @@ class UninstallCommand extends Command
                 $migrationInstance = require $migrationPath;
 
                 if (is_object($migrationInstance) && method_exists($migrationInstance, 'down')) {
-                    $this->info("🗑️ Rolling back setting migration: {$migration}");
+                    $this->info("🗑️ Rolling back setting migration: {$setting}");
 
                     $migrationInstance->down();
                 }

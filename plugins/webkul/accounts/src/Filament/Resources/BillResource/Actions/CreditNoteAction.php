@@ -16,7 +16,7 @@ use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\MoveReversal;
-use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource;
+use Webkul\Account\Filament\Resources\RefundResource;
 
 class CreditNoteAction extends Action
 {

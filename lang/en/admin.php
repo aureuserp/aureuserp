@@ -7,6 +7,7 @@ return [
         'sale'        => 'Sales',
         'purchase'    => 'Purchase',
         'invoice'     => 'Invoices',
+        'accounting'  => 'Accounting',
         'inventory'   => 'Inventory',
         'project'     => 'Project',
         'employee'    => 'Employees',

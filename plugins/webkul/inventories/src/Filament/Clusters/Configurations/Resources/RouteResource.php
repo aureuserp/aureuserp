@@ -45,7 +45,7 @@ use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\Pa
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource\RelationManagers\RulesRelationManager;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\WarehouseResource\Pages\ManageRoutes;
 use Webkul\Inventory\Models\Route;
-use Webkul\Inventory\Settings\ProductSettings;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
 
 class RouteResource extends Resource

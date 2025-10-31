@@ -28,49 +28,25 @@ enum AccountType: string implements HasLabel
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::ASSET_RECEIVABLE      => __('accounts::enums/account-type.asset-receivable'),
-            self::ASSET_CASH            => __('accounts::enums/account-type.asset-cash'),
-            self::ASSET_CURRENT         => __('accounts::enums/account-type.asset-current'),
-            self::ASSET_NON_CURRENT     => __('accounts::enums/account-type.asset-non-current'),
-            self::ASSET_PREPAYMENTS     => __('accounts::enums/account-type.asset-prepayments'),
-            self::ASSET_FIXED           => __('accounts::enums/account-type.asset-fixed'),
-            self::LIABILITY_PAYABLE     => __('accounts::enums/account-type.liability-payable'),
-            self::LIABILITY_CREDIT_CARD => __('accounts::enums/account-type.liability-credit-card'),
-            self::LIABILITY_CURRENT     => __('accounts::enums/account-type.liability-current'),
-            self::LIABILITY_NON_CURRENT => __('accounts::enums/account-type.liability-non-current'),
-            self::EQUITY                => __('accounts::enums/account-type.equity'),
-            self::EQUITY_UNAFFECTED     => __('accounts::enums/account-type.equity-unaffected'),
-            self::INCOME                => __('accounts::enums/account-type.income'),
-            self::INCOME_OTHER          => __('accounts::enums/account-type.income-other'),
-            self::EXPENSE               => __('accounts::enums/account-type.expense'),
-            self::EXPENSE_DEPRECIATION  => __('accounts::enums/account-type.expense-depreciation'),
-            self::EXPENSE_DIRECT_COST   => __('accounts::enums/account-type.expense-direct-cost'),
-            self::OFF_BALANCE           => __('accounts::enums/account-type.off-balance'),
+            self::ASSET_RECEIVABLE      => __('accounts::enums/account-type.assets.options.receivable'),
+            self::ASSET_CASH            => __('accounts::enums/account-type.assets.options.cash'),
+            self::ASSET_CURRENT         => __('accounts::enums/account-type.assets.options.current'),
+            self::ASSET_NON_CURRENT     => __('accounts::enums/account-type.assets.options.non-current'),
+            self::ASSET_PREPAYMENTS     => __('accounts::enums/account-type.assets.options.prepayments'),
+            self::ASSET_FIXED           => __('accounts::enums/account-type.assets.options.fixed'),
+            self::LIABILITY_PAYABLE     => __('accounts::enums/account-type.liabilities.options.payable'),
+            self::LIABILITY_CREDIT_CARD => __('accounts::enums/account-type.liabilities.options.credit-card'),
+            self::LIABILITY_CURRENT     => __('accounts::enums/account-type.liabilities.options.current'),
+            self::LIABILITY_NON_CURRENT => __('accounts::enums/account-type.liabilities.options.non-current'),
+            self::EQUITY                => __('accounts::enums/account-type.equity.options.equity'),
+            self::EQUITY_UNAFFECTED     => __('accounts::enums/account-type.equity.options.unaffected'),
+            self::INCOME                => __('accounts::enums/account-type.income.options.income'),
+            self::INCOME_OTHER          => __('accounts::enums/account-type.income.options.other'),
+            self::EXPENSE               => __('accounts::enums/account-type.expenses.options.expense'),
+            self::EXPENSE_DEPRECIATION  => __('accounts::enums/account-type.expenses.options.depreciation'),
+            self::EXPENSE_DIRECT_COST   => __('accounts::enums/account-type.expenses.options.direct-cost'),
+            self::OFF_BALANCE           => __('accounts::enums/account-type.off-balance.options.off-balance'),
         };
-    }
-
-    public static function options(): array
-    {
-        return [
-            self::ASSET_RECEIVABLE->value      => __('accounts::enums/account-type.asset-receivable'),
-            self::ASSET_CASH->value            => __('accounts::enums/account-type.asset-cash'),
-            self::ASSET_CURRENT->value         => __('accounts::enums/account-type.asset-current'),
-            self::ASSET_NON_CURRENT->value     => __('accounts::enums/account-type.asset-non-current'),
-            self::ASSET_PREPAYMENTS->value     => __('accounts::enums/account-type.asset-prepayments'),
-            self::ASSET_FIXED->value           => __('accounts::enums/account-type.asset-fixed'),
-            self::LIABILITY_PAYABLE->value     => __('accounts::enums/account-type.liability-payable'),
-            self::LIABILITY_CREDIT_CARD->value => __('accounts::enums/account-type.liability-credit-card'),
-            self::LIABILITY_CURRENT->value     => __('accounts::enums/account-type.liability-current'),
-            self::LIABILITY_NON_CURRENT->value => __('accounts::enums/account-type.liability-non-current'),
-            self::EQUITY->value                => __('accounts::enums/account-type.equity'),
-            self::EQUITY_UNAFFECTED->value     => __('accounts::enums/account-type.equity-unaffected'),
-            self::INCOME->value                => __('accounts::enums/account-type.income'),
-            self::INCOME_OTHER->value          => __('accounts::enums/account-type.income-other'),
-            self::EXPENSE->value               => __('accounts::enums/account-type.expense'),
-            self::EXPENSE_DEPRECIATION->value  => __('accounts::enums/account-type.expense-depreciation'),
-            self::EXPENSE_DIRECT_COST->value   => __('accounts::enums/account-type.expense-direct-cost'),
-            self::OFF_BALANCE->value           => __('accounts::enums/account-type.off-balance'),
-        ];
     }
 
     public static function assets(): array
@@ -124,6 +100,18 @@ enum AccountType: string implements HasLabel
     {
         return [
             self::OFF_BALANCE->value => self::OFF_BALANCE->getLabel(),
+        ];
+    }
+
+    public static function groupedOptions(): array
+    {
+        return [
+            __('accounts::enums/account-type.assets.label') => self::assets(),
+            __('accounts::enums/account-type.liabilities.label') => self::liabilities(),
+            __('accounts::enums/account-type.equity.label') => self::equity(),
+            __('accounts::enums/account-type.income.label') => self::income(),
+            __('accounts::enums/account-type.expenses.label') => self::expenses(),
+            __('accounts::enums/account-type.off-balance.label') => self::offBalance(),
         ];
     }
 }

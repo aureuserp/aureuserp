@@ -12,6 +12,8 @@ use Webkul\Account\Enums\RepartitionType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
+use Webkul\Support\Models\Currency;
+use Webkul\Partner\Models\Partner;
 
 class Tax extends Model implements Sortable
 {
@@ -93,6 +95,7 @@ class Tax extends Model implements Sortable
 
         static::created(function (self $tax) {
             $tax->attachDistributionForInvoice($tax);
+
             $tax->attachDistributionForRefund($tax);
         });
     }

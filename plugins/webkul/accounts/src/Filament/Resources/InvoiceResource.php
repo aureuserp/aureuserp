@@ -57,8 +57,8 @@ use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\Partner;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
-use Webkul\Invoice\Models\Product;
-use Webkul\Invoice\Settings\ProductSettings;
+use Webkul\Account\Models\Product;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -786,7 +786,7 @@ class InvoiceResource extends Resource
                     ->toggleable(),
                 TableColumn::make('quantity')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.quantity'))
-                    ->width(150)
+                    ->width(100)
                     ->markAsRequired()
                     ->toggleable(),
                 TableColumn::make('uom_id')
@@ -796,19 +796,19 @@ class InvoiceResource extends Resource
                     ->toggleable(),
                 TableColumn::make('taxes')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.taxes'))
-                    ->width(250)
+                    ->width(150)
                     ->toggleable(),
                 TableColumn::make('discount')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.discount-percentage'))
-                    ->width(150)
+                    ->width(100)
                     ->toggleable(isToggledHiddenByDefault: true),
                 TableColumn::make('price_unit')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.unit-price'))
-                    ->width(150)
+                    ->width(100)
                     ->markAsRequired(),
                 TableColumn::make('price_subtotal')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.sub-total'))
-                    ->width(150)
+                    ->width(100)
                     ->toggleable(),
             ])
             ->itemLabel(function ($state) {
