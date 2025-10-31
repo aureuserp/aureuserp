@@ -228,15 +228,9 @@ class TaxManager
             $taxesData[$tax->id]['tax_amount'] = $taxAmount;
 
             if ($roundingMethod == 'round_per_line') {
-                // taxes_data[tax.id]['tax_amount'] = float_round(taxes_data[tax.id]['tax_amount'], precision_rounding=precision_rounding or self.env.company.currency_id.rounding)
-                $taxesData[$tax->id]['tax_amount'] = round($taxesData[$tax->id]['tax_amount'], 4);
             }
 
-            // if tax.has_negative_factor:
-            //     reverse_charge_taxes_data[tax.id]['tax_amount'] = -taxes_data[tax.id]['tax_amount']
-            // sorted_taxes._propagate_extra_taxes_base(tax, taxes_data, special_mode=special_mode)
             if ($tax->has_negative_factor) {
-                // $sortedTaxes->propagateExtraTaxesBase($tax, $reverseChargeTaxesData, $specialMode);
                 $this->propagateExtraTaxesBase($sortedTaxes, $tax, $taxesData, $specialMode);
             }
         };
@@ -267,7 +261,6 @@ class TaxManager
             }
         }
 
-        // group into batches like Odoo
         foreach ($results['sorted_taxes'] as $tax) {
             $results['batch_per_tax'][$tax->id] = [$tax];
         }
@@ -282,7 +275,7 @@ class TaxManager
                 if (collect($taxesData[$tax->id]['batch'])->pluck('id')->contains($taxBefore->id)) {
                     break;
                 }
-                
+
                 yield $taxBefore;
             }
         };
