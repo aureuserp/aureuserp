@@ -14,6 +14,7 @@ return [
         'time-off'    => 'Time Off',
         'recruitment' => 'Recruitments',
         'website'     => 'Website',
+        'plugin'      => 'Plugins',
         'setting'     => 'Settings',
     ],
 ];

@@ -10,7 +10,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\IconEntry;
-use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
@@ -62,6 +61,8 @@ use Webkul\Partner\Filament\Resources\PartnerResource;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
+use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
+use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
 use Webkul\Support\Models\UOM;
 use Webkul\TableViews\Filament\Components\PresetView;
 
@@ -489,61 +490,82 @@ class OperationResource extends Resource
                         Tab::make(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.title'))
                             ->schema([
                                 RepeatableEntry::make('moves')
+                                    ->columnManager()
+                                    ->columnManagerColumns(2)
+                                    ->table([
+                                        InfolistTableColumn::make('product.name')
+                                            ->alignStart()
+                                            ->width(250)
+                                            ->toggleable()
+                                            ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.product')),
+                                        InfolistTableColumn::make('finalLocation.full_name')
+                                            ->alignStart()
+                                            ->width(150)
+                                            ->toggleable()
+                                            ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.final-location')),
+                                        InfolistTableColumn::make('description_picking')
+                                            ->alignStart()
+                                            ->width(150)
+                                            ->toggleable()
+                                            ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.description')),
+                                        InfolistTableColumn::make('scheduled_at')
+                                            ->alignStart()
+                                            ->width(150)
+                                            ->toggleable()
+                                            ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.scheduled-at')),
+                                        InfolistTableColumn::make('deadline')
+                                            ->alignStart()
+                                            ->width(150)
+                                            ->toggleable()
+                                            ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.deadline')),
+                                        InfolistTableColumn::make('productPackaging.name')
+                                            ->alignStart()
+                                            ->width(150)
+                                            ->toggleable()
+                                            ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.packaging')),
+                                        InfolistTableColumn::make('product_qty')
+                                            ->alignStart()
+                                            ->width(100)
+                                            ->toggleable()
+                                            ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.demand')),
+                                        InfolistTableColumn::make('quantity')
+                                            ->alignStart()
+                                            ->width(100)
+                                            ->toggleable()
+                                            ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.quantity')),
+                                        InfolistTableColumn::make('uom.name')
+                                            ->alignStart()
+                                            ->width(100)
+                                            ->toggleable()
+                                            ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.unit')),
+                                        InfolistTableColumn::make('is_picked')
+                                            ->alignStart()
+                                            ->width(100)
+                                            ->toggleable()
+                                            ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.picked')),
+                                    ])
                                     ->schema([
-                                        Grid::make(5)
-                                            ->schema([
-                                                TextEntry::make('product.name')
-                                                    ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.product'))
-                                                    ->icon('heroicon-o-cube'),
-
-                                                TextEntry::make('finalLocation.full_name')
-                                                    ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.final-location'))
-                                                    ->icon('heroicon-o-map-pin')
-                                                    ->placeholder('—')
-                                                    ->visible(static::getWarehouseSettings()->enable_locations),
-
-                                                TextEntry::make('description_picking')
-                                                    ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.description'))
-                                                    ->icon('heroicon-o-document-text')
-                                                    ->placeholder('—'),
-
-                                                TextEntry::make('scheduled_at')
-                                                    ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.scheduled-at'))
-                                                    ->dateTime()
-                                                    ->icon('heroicon-o-calendar')
-                                                    ->placeholder('—'),
-
-                                                TextEntry::make('deadline')
-                                                    ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.deadline'))
-                                                    ->dateTime()
-                                                    ->icon('heroicon-o-clock')
-                                                    ->placeholder('—'),
-
-                                                TextEntry::make('productPackaging.name')
-                                                    ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.packaging'))
-                                                    ->icon('heroicon-o-gift')
-                                                    ->visible(static::getProductSettings()->enable_packagings)
-                                                    ->placeholder('—'),
-
-                                                TextEntry::make('product_qty')
-                                                    ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.demand'))
-                                                    ->icon('heroicon-o-calculator'),
-
-                                                TextEntry::make('quantity')
-                                                    ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.quantity'))
-                                                    ->icon('heroicon-o-scale')
-                                                    ->placeholder('—'),
-
-                                                TextEntry::make('uom.name')
-                                                    ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.unit'))
-                                                    ->icon('heroicon-o-beaker')
-                                                    ->visible(static::getProductSettings()->enable_uom),
-
-                                                IconEntry::make('is_picked')
-                                                    ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.picked'))
-                                                    ->icon(fn (bool $state): string => $state ? 'heroicon-o-check-circle' : 'heroicon-o-x-circle')
-                                                    ->color(fn (bool $state): string => $state ? 'success' : 'danger'),
-                                            ]),
+                                        TextEntry::make('product.name'),
+                                        TextEntry::make('finalLocation.full_name')
+                                            ->placeholder('—')
+                                            ->visible(static::getWarehouseSettings()->enable_locations),
+                                        TextEntry::make('description_picking')
+                                            ->placeholder('—'),
+                                        TextEntry::make('scheduled_at')
+                                            ->date()
+                                            ->placeholder('—'),
+                                        TextEntry::make('deadline')
+                                            ->date()
+                                            ->placeholder('—'),
+                                        TextEntry::make('productPackaging.name')
+                                            ->visible(static::getProductSettings()->enable_packagings)
+                                            ->placeholder('—'),
+                                        TextEntry::make('product_qty'),
+                                        TextEntry::make('quantity')
+                                            ->placeholder('—'),
+                                        TextEntry::make('uom.name')
+                                            ->visible(static::getProductSettings()->enable_uom),
+                                        IconEntry::make('is_picked'),
                                     ]),
                             ]),
 
@@ -601,6 +623,7 @@ class OperationResource extends Resource
     {
         return Repeater::make('moves')
             ->hiddenLabel()
+            ->compact()
             ->relationship(
                 modifyQueryUsing: fn (Builder $query) => $query->with([
                     'product' => fn ($q) => $q->withTrashed(),

@@ -23,6 +23,7 @@ class InvoiceServiceProvider extends PackageServiceProvider
                     ->installDependencies()
                     ->runsSeeders();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {});
+            ->hasUninstallCommand(function (UninstallCommand $command) {})
+            ->icon('invoices');
     }
 }

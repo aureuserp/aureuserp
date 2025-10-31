@@ -38,7 +38,8 @@ class WebsiteServiceProvider extends PackageServiceProvider
                 '2025_03_10_094021_create_website_contact_settings',
             ])
             ->runsSettings()
-            ->hasUninstallCommand(function (UninstallCommand $command) {});
+            ->hasUninstallCommand(function (UninstallCommand $command) {})
+            ->icon('website');
     }
 
     public function packageBooted(): void

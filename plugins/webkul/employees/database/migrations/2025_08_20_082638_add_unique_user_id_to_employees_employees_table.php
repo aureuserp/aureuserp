@@ -19,10 +19,5 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
-        Schema::table('employees_employees', function (Blueprint $table) {
-            $table->dropUnique(['user_id']);
-        });
-    }
+    public function down(): void {}
 };

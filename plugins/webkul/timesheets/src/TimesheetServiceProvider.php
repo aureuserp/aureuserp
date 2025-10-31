@@ -22,7 +22,8 @@ class TimesheetServiceProvider extends PackageServiceProvider
                 $command
                     ->installDependencies();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {});
+            ->hasUninstallCommand(function (UninstallCommand $command) {})
+            ->icon('timesheet');
     }
 
     public function packageBooted(): void

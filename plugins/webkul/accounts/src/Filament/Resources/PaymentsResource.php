@@ -17,6 +17,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -32,6 +33,7 @@ use Webkul\Account\Filament\Resources\PaymentsResource\Pages\CreatePayments;
 use Webkul\Account\Filament\Resources\PaymentsResource\Pages\EditPayments;
 use Webkul\Account\Filament\Resources\PaymentsResource\Pages\ListPayments;
 use Webkul\Account\Filament\Resources\PaymentsResource\Pages\ViewPayments;
+use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Payment;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 
@@ -66,7 +68,7 @@ class PaymentsResource extends Resource
                                 ToggleButtons::make('payment_type')
                                     ->label(__('accounts::filament/resources/payment.form.sections.fields.payment-type'))
                                     ->options(PaymentType::class)
-                                    ->default(PaymentType::SEND->value)
+                                    ->default(PaymentType::RECEIVE->value)
                                     ->inline(true),
                                 Select::make('partner_bank_id')
                                     ->label(__('accounts::filament/resources/payment.form.sections.fields.customer-bank-account'))
@@ -89,7 +91,15 @@ class PaymentsResource extends Resource
                                     ->relationship(
                                         'partner',
                                         'name',
+                                        fn ($query) => $query->where('sub_type', 'customer')->orderBy('id'),
                                     )
+                                    ->reactive()
+                                    ->afterStateUpdated(function (Set $set, $state) {
+                                        $partner = $state ? Partner::find($state) : null;
+
+                                        $set('partner_bank_id', $partner?->bankAccounts->first()?->id);
+                                        $set('payment_method_line_id', $partner?->propertyInboundPaymentMethodLine?->id);
+                                    })
                                     ->searchable()
                                     ->preload(),
                                 Select::make('payment_method_line_id')
