@@ -80,9 +80,6 @@ class ListPlugins extends ListRecords
                         'description'    => data_get($composer, 'description', $package->description ?? ''),
                         'latest_version' => data_get($composer, 'version', '1.0.0'),
                         'license'        => data_get($composer, 'license', 'MIT'),
-                        'is_active'      => true,
-                        'is_installed'   => false,
-                        'sort'           => 1,
                     ]
                 );
 
