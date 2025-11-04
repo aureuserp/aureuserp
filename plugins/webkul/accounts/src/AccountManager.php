@@ -118,43 +118,15 @@ class AccountManager
 
     public function computeAccountMove(AccountMove $record): AccountMove
     {
-        $record->amount_untaxed = 0;
-        $record->amount_tax = 0;
-        $record->amount_total = 0;
-        $record->amount_residual = 0;
-        $record->amount_untaxed_signed = 0;
-        $record->amount_untaxed_in_currency_signed = 0;
-        $record->amount_tax_signed = 0;
-        $record->amount_total_signed = 0;
-        $record->amount_total_in_currency_signed = 0;
-        $record->amount_residual_signed = 0;
-
-        $signMultiplier = $this->getSignMultiplier($record);
-
-        $newTaxEntries = [];
-
         foreach ($record->lines as $line) {
-            [$line, $amountTax] = $this->computeMoveLineTotals($line, $newTaxEntries);
-
-            $record->amount_untaxed += floatval($line->price_subtotal);
-            $record->amount_tax += floatval($amountTax);
-            $record->amount_total += floatval($line->price_total);
-
-            $record->amount_untaxed_signed += floatval($line->price_subtotal) * $signMultiplier;
-            $record->amount_untaxed_in_currency_signed += floatval($line->price_subtotal) * $signMultiplier;
-            $record->amount_tax_signed += floatval($amountTax) * $signMultiplier;
-            $record->amount_total_signed += floatval($line->price_total) * $signMultiplier;
-            $record->amount_total_in_currency_signed += floatval($line->price_total) * $signMultiplier;
-
-            $record->amount_residual += floatval($line->price_total);
-            $record->amount_residual_signed += floatval($line->price_total) * $signMultiplier;
+            $line->computeTotals();
+            
+            $line->save();
         }
 
+        $record->computeTotals();
+
         $record->save();
-
-        $this->syncDynamicLines($record, $newTaxEntries);
-
-        $record->refresh();
 
         return $record;
     }
@@ -273,100 +245,6 @@ class AccountManager
             'amount_residual'          => $balance,
             'amount_residual_currency' => $balance,
         ]);
-    }
-
-    /**
-     * Collect line totals and tax information
-     */
-    public function computeMoveLineTotals(MoveLine $line, array &$newTaxEntries): array
-    {
-        $subTotal = $line->price_unit * $line->quantity;
-
-        if ($line->discount > 0) {
-            $discountAmount = $subTotal * ($line->discount / 100);
-
-            $subTotal = $subTotal - $discountAmount;
-        }
-
-        $taxIds = $line->taxes->pluck('id')->toArray();
-
-        [$subTotal, $taxAmount, $taxesComputed] = TaxFacade::collect($taxIds, $subTotal, $line->quantity);
-
-        foreach ($taxesComputed as $taxComputed) {
-            $taxId = $taxComputed['tax_id'];
-
-            if (! isset($newTaxEntries[$taxId])) {
-                $newTaxEntries[$taxId] = [
-                    'tax_id'          => $taxId,
-                    'tax_base_amount' => 0,
-                    'tax_amount'      => 0,
-                ];
-            }
-
-            $newTaxEntries[$taxId]['tax_base_amount'] += $subTotal;
-
-            $newTaxEntries[$taxId]['tax_amount'] += $taxComputed['tax_amount'];
-        }
-
-        $line->price_subtotal = round($subTotal, 4);
-        $line->price_total = $subTotal + $taxAmount;
-
-        $line = $this->computeMoveLineBalance($line);
-
-        $line = $this->computeMoveLineCreditAndDebit($line);
-
-        $line = $this->computeMoveLineAmountCurrency($line);
-
-        $line->save();
-
-        return [
-            $line,
-            $taxAmount,
-        ];
-    }
-
-    /**
-     * Compute line balance based on document type
-     */
-    private function computeMoveLineBalance(MoveLine $line): MoveLine
-    {
-        $line->balance = $line->move->isInbound()
-            ? -$line->price_subtotal
-            : $line->price_subtotal;
-
-        return $line;
-    }
-
-    /**
-     * Compute debit and credit based on balance and move type
-     */
-    private function computeMoveLineCreditAndDebit(MoveLine $line): MoveLine
-    {
-        if (! $line->move->is_storno) {
-            $line->debit = $line->balance > 0.0 ? $line->balance : 0.0;
-            $line->credit = $line->balance < 0.0 ? -$line->balance : 0.0;
-        } else {
-            $line->debit = $line->balance < 0.0 ? $line->balance : 0.0;
-            $line->credit = $line->balance > 0.0 ? -$line->balance : 0.0;
-        }
-
-        return $line;
-    }
-
-    /**
-     * Compute amount in currency
-     */
-    private function computeMoveLineAmountCurrency(MoveLine $line): MoveLine
-    {
-        if (is_null($line->amount_currency)) {
-            $line->amount_currency = round($line->balance * $line->move->currency_rate, 2);
-        }
-
-        if ($line->currency_id === $line->company->currency_id) {
-            $line->amount_currency = $line->balance;
-        }
-
-        return $line;
     }
 
     private function preparePayloadForSendByEmail($record, $partner, $data)

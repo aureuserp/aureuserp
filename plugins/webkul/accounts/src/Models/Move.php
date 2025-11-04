@@ -401,16 +401,6 @@ class Move extends Model implements Sortable
 
             $move->computeInvoiceDateDue();
         });
-
-        static::saved(function ($move) {
-            $move->allLines->each(function ($line) {
-                $line->fireModelEvent('saving');
-                
-                $line->saveQuietly();
-            });
-
-            $move->computeTotals();
-        });
     }
 
     public function computePartnerDisplayInfo()
@@ -526,11 +516,6 @@ class Move extends Model implements Sortable
         }
     }
 
-    public function computeTotals()
-    {
-
-    }
-
     public function prepareProductBaseLineForTaxesComputation(MoveLine $line)
     {
         $isInvoice = $this->isInvoice(true);
@@ -552,5 +537,14 @@ class Move extends Model implements Sortable
             sign: $sign,
             specialMode: $isInvoice ? false : 'total_excluded',
         );
+    }
+
+    public function syncDynamicLines()
+    {
+
+    }
+
+    public function computeTotals()
+    {
     }
 }

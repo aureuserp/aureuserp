@@ -78,6 +78,6 @@ class EditInvoice extends EditRecord
 
     protected function afterSave(): void
     {
-        // AccountFacade::computeAccountMove($this->getRecord());
+        AccountFacade::computeAccountMove($this->getRecord());
     }
 }

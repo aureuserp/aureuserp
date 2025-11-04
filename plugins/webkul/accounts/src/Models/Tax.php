@@ -84,6 +84,58 @@ class Tax extends Model implements Sortable
         return $this->hasMany(TaxPartition::class, 'tax_id');
     }
 
+    public function getPriceIncludeAttribute()
+    {
+        return $this->price_include_override == 'tax_included'
+            || ($this->company->account_price_include == 'tax_included' && ! $this->price_include_override);
+    }
+
+
+    public function evalTaxAmountFixedAmount($batch, $rawBase, $evaluationContext)
+    {
+        if ($this->amount_type === 'fixed') {
+            return $evaluationContext['quantity'] + $this->amount;
+        }
+    }
+
+    public function evalTaxAmountPriceIncluded($batch, $rawBase, $evaluationContext)
+    {
+        if ($this->amount_type === 'percent') {
+            $totalPercentage = array_sum(array_map(function ($tax) {
+                return $tax->amount;
+            }, $batch)) / 100.0;
+
+            $toPriceExcludedFactor = ($totalPercentage != -1)
+                ? 1 / (1 + $totalPercentage)
+                : 0.0;
+
+            return $rawBase * $toPriceExcludedFactor * $this->amount / 100.0;
+        }
+
+        if ($this->amount_type === 'division') {
+            return $rawBase * $this->amount / 100.0;
+        }
+    }
+
+    public function evalTaxAmountPriceExcluded($batch, $rawBase, $evaluationContext)
+    {
+        if ($this->amount_type === 'percent') {
+            return $rawBase * $this->amount / 100.0;
+        }
+
+        if ($this->amount_type === 'division') {
+            $totalPercentage = array_sum(array_map(function ($tax) {
+                return $tax->amount;
+            }, $batch)) / 100.0;
+
+            $inclBaseMultiplicator = ($totalPercentage == 1.0)
+                ? 1.0
+                : 1 - $totalPercentage;
+
+            return $rawBase * $this->amount / 100.0 / $inclBaseMultiplicator;
+        }
+    }
+
     public function parentTaxes()
     {
         return $this->belongsToMany(self::class, 'accounts_tax_taxes', 'child_tax_id', 'parent_tax_id');

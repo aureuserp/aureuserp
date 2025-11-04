@@ -224,35 +224,184 @@ class TaxManager
 
         $reverseChargeTaxesData = [];
 
-        $addTaxAmountToResults = function ($tax, $taxAmount) use ($sortedTaxes, $taxesData, $roundingMethod, $specialMode) {
-            $taxesData[$tax->id]['tax_amount'] = $taxAmount;
-
-            if ($roundingMethod == 'round_per_line') {
-            }
+        foreach ($sortedTaxes as $tax) {
+            $taxesData[$tax->id] = $this->prepareTaxExtraData($tax, [
+                'group' => $batchingResults['group_per_tax'][$tax->id] ?? null,
+                'batch' => $batchingResults['batch_per_tax'][$tax->id],
+            ], $specialMode);
 
             if ($tax->has_negative_factor) {
-                $this->propagateExtraTaxesBase($sortedTaxes, $tax, $taxesData, $specialMode);
+                $reverseChargeTaxesData[$tax->id] = array_merge($taxesData[$tax->id], [
+                    'is_reverse_charge' => true,
+                ]);
             }
-        };
+        }
 
-        // $addTaxAmountToResults = function
+        $rawBase = $quantity * $priceUnit;
+
+        if ($roundingMethod === 'round_per_line') {
+            // $rawBase = $this->floatRound(
+            //     $rawBase,
+            //     $precisionRounding ?: $this->env->company->currency_id->rounding
+            // );
+        }
+
+        $evaluationContext = [
+            // 'product' => $sortedTaxes->evalTaxesComputationTurnToProductValues(product: $product),
+            'product' => $product,
+            'price_unit' => $priceUnit,
+            'quantity' => $quantity,
+            'raw_base' => $rawBase,
+            'special_mode' => $specialMode,
+            'precision_rounding' => $precisionRounding,
+        ];
+
+        foreach ($sortedTaxes->reverse() as $tax) {
+            $this->evalTaxAmount(
+                [$tax, 'evalTaxAmountFixedAmount'],
+                $tax,
+                $taxesData,
+                $reverseChargeTaxesData,
+                $manualTaxAmounts,
+                $rawBase,
+                $evaluationContext,
+                $sortedTaxes,
+                $roundingMethod,
+                $specialMode
+            );
+        }
+
+        foreach ($sortedTaxes->reverse() as $tax) {
+            if ($taxesData[$tax->id]['price_include']) {
+                $this->evalTaxAmount(
+                    [$tax, 'evalTaxAmountPriceIncluded'],
+                    $tax,
+                    $taxesData,
+                    $reverseChargeTaxesData,
+                    $manualTaxAmounts,
+                    $rawBase,
+                    $evaluationContext,
+                    $sortedTaxes,
+                    $roundingMethod,
+                    $specialMode
+                );
+            }
+        }
+
+        foreach ($sortedTaxes as $tax) {
+            if (! $taxesData[$tax->id]['price_include']) {
+                $this->evalTaxAmount(
+                    [$tax, 'evalTaxAmountPriceExcluded'],
+                    $tax,
+                    $taxesData,
+                    $reverseChargeTaxesData,
+                    $manualTaxAmounts,
+                    $rawBase,
+                    $evaluationContext,
+                    $sortedTaxes,
+                    $roundingMethod,
+                    $specialMode
+                );
+            }
+        }
+
+        foreach ($sortedTaxes->reverse() as $tax) {
+            $taxData = $taxesData[$tax->id];
+
+            if (!array_key_exists('tax_amount', $taxData)) {
+                continue;
+            }
+
+            if ($manualTaxAmounts && isset($manualTaxAmounts[(string) $tax->id]['base_amount_currency'])) {
+                $base = $manualTaxAmounts[(string) $tax->id]['base_amount_currency'];
+            } else {
+                $totalTaxAmount = 0;
+
+                foreach ($taxData['batch'] as $otherTax) {
+                    $totalTaxAmount += $taxesData[$otherTax->id]['tax_amount'];
+                }
+
+                $base = $rawBase + $taxData['extra_base_for_base'];
+                
+                if ($taxData['price_include'] && in_array($specialMode, [false, 'total_included'], true)) {
+                    $base -= $totalTaxAmount;
+                }
+            }
+
+            $taxData['base'] = $base;
+
+            $taxesData[$tax->id] = $taxData;
+
+            if ($tax->has_negative_factor) {
+                $reverseChargeTaxData = $reverseChargeTaxesData[$tax->id];
+
+                $reverseChargeTaxData['base'] = $base;
+
+                $reverseChargeTaxesData[$tax->id] = $reverseChargeTaxData;
+            }
+        }
+
+        $taxesDataList = [];
+
+        foreach ($taxesData as $taxData) {
+            if (array_key_exists('tax_amount', $taxData)) {
+                $taxesDataList[] = $taxData;
+
+                $tax = $taxData['tax'];
+
+                if ($tax->has_negative_factor) {
+                    $taxesDataList[] = $reverseChargeTaxesData[$tax->id];
+                }
+            }
+        }
+
+        if ($taxesDataList) {
+            $totalExcluded = $taxesDataList[0]['base'];
+
+            $taxAmount = array_sum(array_column($taxesDataList, 'tax_amount'));
+
+            $totalIncluded = $totalExcluded + $taxAmount;
+        } else {
+            $totalIncluded = $totalExcluded = $rawBase;
+        }
+
+        $taxesDataResult = [];
+
+        foreach ($taxesDataList as $taxData) {
+            $taxesDataResult[] = [
+                'tax' => $taxData['tax'],
+                // 'group' => $batchingResults['group_per_tax'][$taxData['tax']->id] ?? $this->env['account.tax'],
+                'group' => $batchingResults['group_per_tax'][$taxData['tax']->id] ?? null,
+                'batch' => $batchingResults['batch_per_tax'][$taxData['tax']->id],
+                'tax_amount' => $taxData['tax_amount'],
+                'base_amount' => $taxData['base'],
+                'is_reverse_charge' => $taxData['is_reverse_charge'] ?? false,
+            ];
+        }
+
+        return [
+            'total_excluded' => $totalExcluded,
+            'total_included' => $totalIncluded,
+            'taxes_data' => $taxesDataResult,
+        ];
     }
 
     protected function batchForTaxesComputation(mixed $taxes, string|bool $specialMode = false): array
     {
-        
         $results = [
             'batch_per_tax' => [],
             'group_per_tax' => [],
             'sorted_taxes' => collect(),
         ];
 
-        $taxes = $taxes->orderBy('sequence')->get();
+        $taxes = $taxes->sortBy('sequence');
 
         foreach ($taxes as $tax) {
             if ($tax->amount_type === 'group') {
                 $children = $tax->childrenTaxes()->orderBy('sequence')->get();
+
                 $results['sorted_taxes'] = $results['sorted_taxes']->merge($children);
+
                 foreach ($children as $child) {
                     $results['group_per_tax'][$child->id] = $tax;
                 }
@@ -270,7 +419,7 @@ class TaxManager
 
     public static function propagateExtraTaxesBase($taxes, $tax, array &$taxesData, string|bool $specialMode = false): void
     {
-        $getTaxBefore = function () use ($taxes, $tax, &$taxesData) {
+        $getTaxBefore = function ($taxes, $tax, &$taxesData) {
             foreach ($taxes as $taxBefore) {
                 if (collect($taxesData[$tax->id]['batch'])->pluck('id')->contains($taxBefore->id)) {
                     break;
@@ -280,7 +429,7 @@ class TaxManager
             }
         };
 
-        $getTaxAfter = function () use ($taxes, $tax, &$taxesData) {
+        $getTaxAfter = function ($taxes, $tax, &$taxesData) {
             foreach ($taxes->reverse() as $taxAfter) {
                 if (collect($taxesData[$tax->id]['batch'])->pluck('id')->contains($taxAfter->id)) {
                     break;
@@ -290,7 +439,7 @@ class TaxManager
             }
         };
 
-        $addExtraBase = function ($otherTax, int $sign) use (&$taxesData, $tax) {
+        $addExtraBase = function ($otherTax, int $sign, &$taxesData, $tax) {
             if (!isset($taxesData[$tax->id]['tax_amount'])) {
                 return;
             }
@@ -307,43 +456,125 @@ class TaxManager
         if ($tax->price_include) {
             if ($specialMode === false || $specialMode === 'total_included') {
                 if (!$tax->include_base_amount) {
-                    foreach ($getTaxAfter() as $otherTax) {
+                    foreach ($getTaxAfter($taxes, $tax, $taxesData) as $otherTax) {
                         if ($otherTax->price_include) {
-                            $addExtraBase($otherTax, -1);
+                            $addExtraBase($otherTax, -1, $taxesData, $tax);
                         }
                     }
                 }
 
-                foreach ($getTaxBefore() as $otherTax) {
-                    $addExtraBase($otherTax, -1);
+                foreach ($getTaxBefore($taxes, $tax, $taxesData) as $otherTax) {
+                    $addExtraBase($otherTax, -1, $taxesData, $tax);
                 }
             } else {
-                foreach ($getTaxAfter() as $otherTax) {
+                foreach ($getTaxAfter($taxes, $tax, $taxesData) as $otherTax) {
                     if (!$otherTax->price_include || $tax->include_base_amount) {
-                        $addExtraBase($otherTax, 1);
+                        $addExtraBase($otherTax, 1, $taxesData, $tax);
                     }
                 }
             }
         } else {
             if ($specialMode === false || $specialMode === 'total_excluded') {
                 if ($tax->include_base_amount) {
-                    foreach ($getTaxAfter() as $otherTax) {
+                    foreach ($getTaxAfter($taxes, $tax, $taxesData) as $otherTax) {
                         if ($otherTax->is_base_affected) {
-                            $addExtraBase($otherTax, 1);
+                            $addExtraBase($otherTax, 1, $taxesData, $tax);
                         }
                     }
                 }
             } else {
                 if (!$tax->include_base_amount) {
-                    foreach ($getTaxAfter() as $otherTax) {
-                        $addExtraBase($otherTax, -1);
+                    foreach ($getTaxAfter($taxes, $tax, $taxesData) as $otherTax) {
+                        $addExtraBase($otherTax, -1, $taxesData, $tax);
                     }
                 }
 
-                foreach ($getTaxBefore() as $otherTax) {
-                    $addExtraBase($otherTax, -1);
+                foreach ($getTaxBefore($taxes, $tax, $taxesData) as $otherTax) {
+                    $addExtraBase($otherTax, -1, $taxesData, $tax);
                 }
             }
+        }
+    }
+
+    protected function prepareTaxExtraData($tax, $kwargs = [], $specialMode = false)
+    {
+        if ($specialMode === 'total_included') {
+            $priceInclude = true;
+        } elseif ($specialMode === 'total_excluded') {
+            $priceInclude = false;
+        } else {
+            $priceInclude = $tax->price_include;
+        }
+
+        return array_merge($kwargs, [
+            'tax' => $tax,
+            'price_include' => $priceInclude,
+            'extra_base_for_tax' => 0.0,
+            'extra_base_for_base' => 0.0,
+        ]);
+    }
+
+    protected function addTaxAmountToResults(
+        $tax,
+        float $taxAmount,
+        &$taxesData,
+        &$reverseChargeTaxesData,
+        $sortedTaxes,
+        $roundingMethod,
+        bool|string $specialMode
+    ) {
+        $taxesData[$tax->id]['tax_amount'] = $taxAmount;
+
+        if ($roundingMethod === 'round_per_line') {
+            // TODO: rounding logic if needed
+            $taxesData[$tax->id]['tax_amount'] = $taxesData[$tax->id]['tax_amount'];
+        }
+
+        if ($tax->has_negative_factor) {
+            $reverseChargeTaxesData[$tax->id]['tax_amount'] = -$taxesData[$tax->id]['tax_amount'];
+        }
+
+        $this->propagateExtraTaxesBase($sortedTaxes, $tax, $taxesData, $specialMode);
+    }
+
+    protected function evalTaxAmount(
+        callable $taxAmountFunction,
+        $tax,
+        &$taxesData,
+        &$reverseChargeTaxesData,
+        $manualTaxAmounts,
+        &$rawBase,
+        &$evaluationContext,
+        $sortedTaxes,
+        $roundingMethod,
+        $specialMode
+    ) {
+        $isAlreadyComputed = array_key_exists('tax_amount', $taxesData[$tax->id]);
+
+        if ($isAlreadyComputed) {
+            return;
+        }
+
+        if ($manualTaxAmounts && isset($manualTaxAmounts[(string)$tax->id])) {
+            $taxAmount = $manualTaxAmounts[(string)$tax->id]['tax_amount_currency'];
+        } else {
+            $taxAmount = $taxAmountFunction(
+                $taxesData[$tax->id]['batch'],
+                $rawBase + $taxesData[$tax->id]['extra_base_for_tax'],
+                $evaluationContext
+            );
+        }
+
+        if ($taxAmount !== null) {
+            $this->addTaxAmountToResults(
+                $tax,
+                $taxAmount,
+                $taxesData,
+                $reverseChargeTaxesData,
+                $sortedTaxes,
+                $roundingMethod,
+                $specialMode
+            );
         }
     }
 }

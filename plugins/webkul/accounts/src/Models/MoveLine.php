@@ -207,7 +207,7 @@ class MoveLine extends Model implements Sortable
 
             $moveLine->computeAccountId();
 
-            $moveLine->computeTotals();
+            $moveLine->computeDisplayType();
         });
     }
 
@@ -215,6 +215,21 @@ class MoveLine extends Model implements Sortable
     {
         //Todo: compute name for other cases
         $this->name = $this->product?->name ?? null;
+    }
+
+    public function computeDisplayType()
+    {
+        if ($this->move->isInvoice()) {
+            if ($this->tax_line_id) {
+                $this->display_type = DisplayType::TAX;
+            } elseif (in_array($this->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE])) {
+                $this->display_type = DisplayType::PAYMENT_TERM;
+            } else {
+                $this->display_type = DisplayType::PRODUCT;
+            }
+        } else {
+            $this->display_type = DisplayType::PRODUCT;
+        }
     }
 
     public function computeDateMaturity()
@@ -344,6 +359,47 @@ class MoveLine extends Model implements Sortable
 
         $baseLine = TaxFacade::addTaxDetailsInBaseLine($baseLine, $this->company);
 
-        dd($baseLine);
+        $this->price_subtotal = $baseLine['tax_details']['raw_total_excluded_currency'];
+
+        $this->price_total = $baseLine['tax_details']['raw_total_included_currency'];
+
+        $this->computeBalance();
+
+        $this->computeCreditAndDebit();
+
+        $this->computeAmountCurrency();
+    }
+
+    private function computeBalance()
+    {
+        if (in_array($this->display_type, [DisplayType::LINE_SECTION, DisplayType::LINE_NOTE])) {
+            $this->balance = 0.0;
+        } elseif (! $this->move->isInvoice(true)) {
+            // TODO: Handle other move types if needed
+        } else {
+            $this->balance = 0;
+        }
+    }
+
+    private function computeCreditAndDebit()
+    {
+        if (! $this->move->is_storno) {
+            $this->debit = $this->balance > 0.0 ? $this->balance : 0.0;
+            $this->credit = $this->balance < 0.0 ? -$this->balance : 0.0;
+        } else {
+            $this->debit = $this->balance < 0.0 ? $this->balance : 0.0;
+            $this->credit = $this->balance > 0.0 ? -$this->balance : 0.0;
+        }
+    }
+
+    private function computeAmountCurrency()
+    {
+        if (is_null($this->amount_currency)) {
+            $this->amount_currency = round($this->balance * $this->move->currency_rate, 2);
+        }
+
+        if ($this->currency_id === $this->company->currency_id) {
+            $this->amount_currency = $this->balance;
+        }
     }
 }
