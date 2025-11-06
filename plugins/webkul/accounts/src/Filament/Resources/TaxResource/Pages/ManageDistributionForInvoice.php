@@ -14,7 +14,7 @@ class ManageDistributionForInvoice extends ManageRelatedRecords
 
     protected static string $resource = TaxResource::class;
 
-    protected static string $relationship = 'distributionForInvoice';
+    protected static string $relationship = 'invoiceRepartitionLines';
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document';
 

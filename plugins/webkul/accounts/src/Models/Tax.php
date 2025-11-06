@@ -74,14 +74,21 @@ class Tax extends Model implements Sortable
         return $this->belongsTo(User::class, 'creator_id');
     }
 
-    public function distributionForInvoice()
+    public function childrenTaxes()
     {
-        return $this->hasMany(TaxPartition::class, 'tax_id');
+        return $this->belongsToMany(self::class, 'accounts_tax_taxes', 'parent_tax_id', 'child_tax_id');
     }
 
-    public function distributionForRefund()
+    public function invoiceRepartitionLines()
     {
-        return $this->hasMany(TaxPartition::class, 'tax_id');
+        return $this->hasMany(TaxPartition::class, 'tax_id')
+            ->where('document_type', DocumentType::INVOICE);
+    }
+
+    public function refundRepartitionLines()
+    {
+        return $this->hasMany(TaxPartition::class, 'tax_id')
+            ->where('document_type', DocumentType::REFUND);
     }
 
     public function getPriceIncludeAttribute()
@@ -146,15 +153,15 @@ class Tax extends Model implements Sortable
         parent::boot();
 
         static::created(function (self $tax) {
-            $tax->attachDistributionForInvoice($tax);
+            $tax->attachInvoiceRepartitionLines($tax);
 
-            $tax->attachDistributionForRefund($tax);
+            $tax->attachRefundRepartitionLines($tax);
         });
     }
 
-    private function attachDistributionForInvoice(self $tax)
+    private function attachInvoiceRepartitionLines(self $tax)
     {
-        $distributionForInvoices = [
+        $invoiceRepartitionLines = [
             [
                 'tax_id'             => $tax->id,
                 'company_id'         => $tax->company_id,
@@ -183,12 +190,12 @@ class Tax extends Model implements Sortable
             ],
         ];
 
-        DB::table('accounts_tax_partition_lines')->insert($distributionForInvoices);
+        DB::table('accounts_tax_partition_lines')->insert($invoiceRepartitionLines);
     }
 
-    private function attachDistributionForRefund(self $tax)
+    private function attachRefundRepartitionLines(self $tax)
     {
-        $distributionForRefunds = [
+        $refundRepartitionLines = [
             [
                 'tax_id'             => $tax->id,
                 'company_id'         => $tax->company_id,
@@ -217,6 +224,6 @@ class Tax extends Model implements Sortable
             ],
         ];
 
-        DB::table('accounts_tax_partition_lines')->insert($distributionForRefunds);
+        DB::table('accounts_tax_partition_lines')->insert($refundRepartitionLines);
     }
 }

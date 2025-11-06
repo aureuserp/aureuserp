@@ -46,9 +46,9 @@ class PaymentTerm extends Model implements Sortable
         return $this->belongsTo(User::class, 'creator_id');
     }
 
-    public function dueTerm()
+    public function dueTerms()
     {
-        return $this->hasOne(PaymentDueTerm::class, 'payment_id');
+        return $this->hasMany(PaymentDueTerm::class, 'payment_id');
     }
 
     protected static function boot()
@@ -56,7 +56,7 @@ class PaymentTerm extends Model implements Sortable
         parent::boot();
 
         static::created(function ($paymentTerm) {
-            $paymentTerm->dueTerm()->create([
+            $paymentTerm->dueTerms()->create([
                 'value'           => DueTermValue::PERCENT->value,
                 'value_amount'    => 100,
                 'delay_type'      => DelayType::DAYS_AFTER->value,

@@ -574,7 +574,7 @@ class InvoiceResource extends Resource
                         Tab::make(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.title'))
                             ->icon('heroicon-o-list-bullet')
                             ->schema([
-                                RepeatableEntry::make('lines')
+                                RepeatableEntry::make('invoiceLines')
                                     ->hiddenLabel()
                                     ->columnManager()
                                     ->live()
@@ -769,7 +769,7 @@ class InvoiceResource extends Resource
     public static function getProductRepeater(): Repeater
     {
         return Repeater::make('products')
-            ->relationship('lines')
+            ->relationship('invoiceLines')
             ->hiddenLabel()
             ->compact()
             ->live(onBlur: true)

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\AccountType;
@@ -76,6 +77,7 @@ class MoveLine extends Model implements Sortable
     ];
 
     protected $casts = [
+        'analytic_distribution' => 'array',
         'parent_state' => MoveState::class,
         'display_type' => DisplayType::class,
     ];
@@ -193,9 +195,7 @@ class MoveLine extends Model implements Sortable
 
             $moveLine->journal_id = $moveLine->move->journal_id;
 
-            $moveLine->company_currency_id = $moveLine->move->company_currency_id;//Todo: check this
-
-            $moveLine->computeName();
+            $moveLine->company_currency_id = $moveLine->move->company->currency_id;
 
             $moveLine->computeDateMaturity();
 
@@ -208,57 +208,105 @@ class MoveLine extends Model implements Sortable
             $moveLine->computeAccountId();
 
             $moveLine->computeDisplayType();
+
+            $moveLine->computeName();
         });
     }
 
     public function computeName()
     {
-        //Todo: compute name for other cases
-        $this->name = $this->product?->name ?? null;
-    }
-
-    public function computeDisplayType()
-    {
-        if ($this->move->isInvoice()) {
-            if ($this->tax_line_id) {
-                $this->display_type = DisplayType::TAX;
-            } elseif (in_array($this->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE])) {
-                $this->display_type = DisplayType::PAYMENT_TERM;
-            } else {
-                $this->display_type = DisplayType::PRODUCT;
+        $getName = function ($line) {
+            $values = [];
+            
+            if (! $line->product) {
+                return false;
             }
-        } else {
-            $this->display_type = DisplayType::PRODUCT;
+
+            if ($line->journal->type === JournalType::SALE) {
+                $values[] = $line->product->display_name;
+
+                if ($line->product->description_sale) {
+                    $values[] = $line->product->description_sale;
+                }
+            } elseif ($line->journal->type === JournalType::PURCHASE) {
+                $values[] = $line->product->display_name;
+
+                if ($line->product->description_purchase) {
+                    $values[] = $line->product->description_purchase;
+                }
+            }
+            
+            return implode("\n", $values);
+        };
+
+        $allLines = $this->move->lines->merge(collect([$this]));
+
+        $paymentTermLines = $allLines->filter(function ($l) {
+            return $l->display_type === DisplayType::PAYMENT_TERM;
+        })->sortBy(function ($l) {
+            return $l->date_maturity ?? '9999-12-31';
+        });
+
+        $termByMove = $paymentTermLines->groupBy('move_id');
+
+        if ($this->move->inalterable_hash !== false && $this->move->inalterable_hash !== null) {
+            return;
         }
-    }
 
-    public function computeDateMaturity()
-    {
-        //Todo: Should be computed based on payment terms
-        $this->date_maturity = $this->move->invoice_date_due;
-    }
+        if ($this->display_type === DisplayType::PAYMENT_TERM) {
+            $termLines = $termByMove->get($this->move->id, collect());
 
-    public function computeDiscountDate()
-    {
-        //Todo: Should be computed based on early payment discounts
-    }
+            $nTerms = $this->move->invoicePaymentTerm?->dueTerms->count() ?? 0;
+            
+            if ($this->move->payment_reference && $this->move->ref && $this->move->payment_reference !== $this->move->ref) {
+                $name = "{$this->move->ref} - {$this->move->payment_reference}";
+            } else {
+                $name = $this->move->payment_reference ?? '';
+            }
 
-    public function computeUOMId()
-    {
-        if ($this->move->isPurchaseDocument()) {
-            $this->uom_id = $this->uom_id ?? $this->product?->uom_po_id;
-        } else {
-            $this->uom_id = $this->uom_id ?? $this->product?->uom_id;
+            if ($nTerms > 1) {
+                $index = $termLines->search(function ($line) {
+                    return $line->id === $this->id;
+                });
+
+                $index = $index !== false ? $index : $termLines->count();
+
+                $number = $index + 1;
+
+                $name = ltrim("{$name}s installment #{$number}s");
+            }
+            
+            $originalName = $this->getOriginal('name');
+            $originalMoveRef = $this->move->getOriginal('ref');
+            $originalMovePaymentRef = $this->move->getOriginal('payment_reference');
+            
+            $shouldUpdateName = $nTerms > 1 
+                || !$this->name 
+                || $originalName === $originalMovePaymentRef
+                || ($originalMovePaymentRef && $originalMoveRef && $originalName === "{$originalMoveRef} - {$originalMovePaymentRef}");
+            
+            if ($shouldUpdateName) {
+                $this->name = $name;
+            }
         }
-    }
 
-    public function computeCurrencyId()
-    {
-        if ($this->display_type === DisplayType::COGS) {
-        } elseif ($this->move->isInvoice(true)) {
-            $this->currency_id = $this->move->currency_id;
-        } else {
-            $this->currency_id = $this->currency_id ?? $this->company_currency_id;
+        if (! $this->product_id || in_array($this->display_type, [DisplayType::LINE_SECTION, DisplayType::LINE_NOTE])) {
+            return;
+        }
+
+        $originalName = $this->getOriginal('name');
+        $originalGetName = false;
+        
+        if ($this->exists) {
+            $originalLine = clone $this;
+
+            $originalLine->setRawAttributes($this->getOriginal());
+
+            $originalGetName = $getName($originalLine);
+        }
+
+        if (!$this->name || $originalName === $originalGetName) {
+            $this->name = $getName($this);
         }
     }
 
@@ -333,7 +381,7 @@ class MoveLine extends Model implements Sortable
                     ->limit(2)
                     ->pluck('account_id');
 
-                if ($previousAccounts->count() === 1 && $this->move->allLines()->count() > 2) {
+                if ($previousAccounts->count() === 1 && $this->move->lines()->count() > 2) {
                     $accountId = $previousAccounts->first();
                 } else {
                     $accountId = $this->move->journal?->default_account_id;
@@ -343,6 +391,51 @@ class MoveLine extends Model implements Sortable
         }
 
         $this->account_id = $accountId;
+    }
+
+    public function computeDisplayType()
+    {
+        if ($this->move->isInvoice()) {
+            if ($this->tax_line_id) {
+                $this->display_type = DisplayType::TAX;
+            } elseif (in_array($this->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE])) {
+                $this->display_type = DisplayType::PAYMENT_TERM;
+            } else {
+                $this->display_type = DisplayType::PRODUCT;
+            }
+        } else {
+            $this->display_type = DisplayType::PRODUCT;
+        }
+    }
+
+    public function computeDateMaturity()
+    {
+        //Todo: Should be computed based on payment terms
+        $this->date_maturity = $this->move->invoice_date_due;
+    }
+
+    public function computeDiscountDate()
+    {
+        //Todo: Should be computed based on early payment discounts
+    }
+
+    public function computeUOMId()
+    {
+        if ($this->move->isPurchaseDocument()) {
+            $this->uom_id = $this->uom_id ?? $this->product?->uom_po_id;
+        } else {
+            $this->uom_id = $this->uom_id ?? $this->product?->uom_id;
+        }
+    }
+
+    public function computeCurrencyId()
+    {
+        if ($this->display_type === DisplayType::COGS) {
+        } elseif ($this->move->isInvoice(true)) {
+            $this->currency_id = $this->move->currency_id;
+        } else {
+            $this->currency_id = $this->currency_id ?? $this->company_currency_id;
+        }
     }
 
     public function computeTotals()
@@ -370,18 +463,18 @@ class MoveLine extends Model implements Sortable
         $this->computeAmountCurrency();
     }
 
-    private function computeBalance()
+    public function computeBalance()
     {
         if (in_array($this->display_type, [DisplayType::LINE_SECTION, DisplayType::LINE_NOTE])) {
             $this->balance = 0.0;
         } elseif (! $this->move->isInvoice(true)) {
             // TODO: Handle other move types if needed
         } else {
-            $this->balance = 0;
+            $this->balance = $this->balance;
         }
     }
 
-    private function computeCreditAndDebit()
+    public function computeCreditAndDebit()
     {
         if (! $this->move->is_storno) {
             $this->debit = $this->balance > 0.0 ? $this->balance : 0.0;
@@ -392,7 +485,7 @@ class MoveLine extends Model implements Sortable
         }
     }
 
-    private function computeAmountCurrency()
+    public function computeAmountCurrency()
     {
         if (is_null($this->amount_currency)) {
             $this->amount_currency = round($this->balance * $this->move->currency_rate, 2);

@@ -11,6 +11,7 @@ use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\DelayType;
+use Webkul\Account\Enums\DisplayType;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
@@ -295,13 +296,13 @@ class Move extends Model implements Sortable
 
     public function lines()
     {
-        return $this->hasMany(MoveLine::class, 'move_id')
-            ->where('display_type', 'product');
+        return $this->hasMany(MoveLine::class, 'move_id');
     }
 
-    public function allLines()
+    public function invoiceLines()
     {
-        return $this->hasMany(MoveLine::class, 'move_id');
+        return $this->hasMany(MoveLine::class, 'move_id')
+            ->where('display_type', 'product');
     }
 
     public function taxLines()
@@ -347,13 +348,13 @@ class Move extends Model implements Sortable
         ] : [MoveType::IN_INVOICE, MoveType::IN_REFUND]);
     }
 
-    public function directionSign()
+    public function getDirectionSignAttribute()
     {
         if ($this->isEntry() || $this->isOutbound()) {
-            return -1;
+            return 1;
         }
 
-        return 1;
+        return -1;
     }
 
     public function getValidJournalTypes()
@@ -485,6 +486,88 @@ class Move extends Model implements Sortable
             ->first();
     }
 
+    public function computeTotals()
+    {
+        $totalUntaxed = $totalUntaxedCurrency = 0.0;
+
+        $totalTax = $totalTaxCurrency = 0.0;
+
+        $totalResidual = $totalResidualCurrency = 0.0;
+
+        $total = $totalCurrency = 0.0;
+
+        foreach ($this->lines as $line) {
+            if ($this->isInvoice(true)) {
+                if (
+                    $line->display_type == DisplayType::TAX ||
+                    (
+                        $line->display_type == DisplayType::ROUNDING &&
+                        $line->tax_repartition_line_id
+                    )
+                ) {
+                    $totalTax += $line->balance;
+
+                    $totalTaxCurrency += $line->amount_currency;
+
+                    $total += $line->balance;
+
+                    $totalCurrency += $line->amount_currency;
+                } elseif (in_array($line->display_type, [
+                    DisplayType::PRODUCT,
+                    DisplayType::ROUNDING
+                ])) {
+                    $totalUntaxed += $line->balance;
+
+                    $totalUntaxedCurrency += $line->amount_currency;
+
+                    $total += $line->balance;
+
+                    $totalCurrency += $line->amount_currency;
+                }
+            } elseif ($line->display_type == DisplayType::PAYMENT_TERM) {
+                    $totalResidual += $line->amount_residual;
+
+                    $totalResidualCurrency += $line->amount_residual_currency;
+            } else {
+                if ($line->debit) {
+                    $total += $line->balance;
+
+                    $totalCurrency += $line->amount_currency;
+                }
+            }
+        }
+
+        $sign = $this->direction_sign;
+
+        $this->amount_untaxed = $sign * $totalUntaxedCurrency;
+
+        $this->amount_tax = $sign * $totalTaxCurrency;
+
+        $this->amount_total = $sign * $totalCurrency;
+
+        $this->amount_residual = -$sign * $totalResidualCurrency;
+
+        $this->amount_untaxed_signed = -$totalUntaxed;
+
+        $this->amount_untaxed_in_currency_signed = -$totalUntaxedCurrency;
+
+        $this->amount_tax_signed = -$totalTax;
+
+        if ($this->move_type == MoveType::ENTRY) {
+            $this->amount_total_signed = abs($total);
+        } else {
+            $this->amount_total_signed = -$total;
+        }
+
+        $this->amount_residual_signed = $totalResidual;
+        
+        if ($this->move_type == MoveType::ENTRY) {
+            $this->amount_total_in_currency_signed = abs($this->amount_total);
+        } else {
+            $this->amount_total_in_currency_signed = -($sign * $this->amount_total);
+        }
+    }
+
     /**
      * Update the full name without triggering additional events
      */
@@ -520,7 +603,7 @@ class Move extends Model implements Sortable
     {
         $isInvoice = $this->isInvoice(true);
 
-        $sign = $isInvoice ? $this->directionSign() : 1;
+        $sign = $isInvoice ? $this->direction_sign : 1;
 
         if ($isInvoice) {
             $rate = $this->invoice_currency_rate;
@@ -541,10 +624,132 @@ class Move extends Model implements Sortable
 
     public function syncDynamicLines()
     {
+        $this->syncTaxLines();
 
+        $this->syncPaymentTermLines();
     }
 
-    public function computeTotals()
+    public function syncPaymentTermLines()
     {
+    }
+
+    public function syncTaxLines()
+    {
+        if (! $this->isInvoice(true)) {
+            return;
+        }
+
+        if ($this->state !== MoveState::DRAFT) {
+            return;
+        }
+
+        $taxLines = $this->lines->whereNotNull('tax_repartition_line_id');
+
+        $roundFromTaxLines = ! $this->isInvoice(true) && $taxLines->isNotEmpty();
+
+        [$baseLinesValues, $taxLinesValues] = $this->getRoundedBaseAndTaxLines($roundFromTaxLines);
+        
+        $baseLinesValues = TaxFacade::addAccountingDataInBaseLinesTaxDetails(
+            $baseLinesValues, 
+            $this->company, 
+            $this->always_tax_exigible
+        );
+        
+        $taxResults = TaxFacade::prepareTaxLines(
+            $baseLinesValues, 
+            $this->company, 
+            $taxLinesValues
+        );
+
+
+        foreach ($taxResults['base_lines_to_update'] as $baseLine) {
+            $baseLine['record']->update([
+                'amount_currency' => $baseLine['amount_currency'],
+                'balance' => $baseLine['balance'],
+            ]);
+        }
+
+        foreach ($taxResults['tax_lines_to_delete'] as $taxLineVals) {
+            $taxLineVals['record']->delete();
+        }
+
+        foreach ($taxResults['tax_lines_to_add'] as $taxLineVals) {
+            unset($taxLineVals['tax_ids']);
+            
+            $taxMoveLine = MoveLine::create(array_merge($taxLineVals, [
+                'display_type' => DisplayType::TAX,
+                'move_id' => $this->id,
+            ]));
+
+            $taxMoveLine->computeCreditAndDebit();
+
+            $taxMoveLine->save();
+        }
+
+        foreach ($taxResults['tax_lines_to_update'] as $taxLineVals) {
+            unset($taxLineVals['tax_ids']);
+
+            $taxMoveLine = $taxLineVals['record']->update($taxLineVals);
+
+            $taxMoveLine->computeCreditAndDebit();
+
+            $taxMoveLine->save();
+        }
+    }
+
+    // TODO: Move implement this in future
+    protected function getRoundedBaseAndTaxLines($roundFromTaxLines = true)
+    {
+        $baseAmls = $this->lines->where('display_type', DisplayType::PRODUCT);
+        
+        $baseLines = [];
+
+        foreach ($baseAmls as $line) {
+            $baseLines[] = $this->prepareProductBaseLineForTaxesComputation($line);
+        }
+
+        $taxLines = [];
+        
+        $cashRoundingAmls = $this->lines
+            ->where('display_type', DisplayType::ROUNDING)
+            ->whereNull('tax_repartition_line_id');
+
+        foreach ($cashRoundingAmls as $line) {
+            $baseLines[] = $this->prepareCashRoundingBaseLineForTaxesComputation($line);
+        }
+        
+        $baseLines = TaxFacade::addTaxDetailsInBaseLines($baseLines, $this->company);
+        
+        $taxAmls = $this->lines->whereNotNull('tax_repartition_line_id');
+
+        foreach ($taxAmls as $taxLine) {
+            $taxLines[] = TaxFacade::prepareTaxLineForTaxesComputation($taxLine);
+        }
+        
+        $baseLines = TaxFacade::roundBaseLinesTaxDetails(
+            $baseLines, 
+            $this->company, 
+            $roundFromTaxLines ? $taxLines : []
+        );
+
+        return [$baseLines, $taxLines];
+    }
+
+    public function prepareCashRoundingBaseLineForTaxesComputation(MoveLine $line)
+    {
+        $sign = $this->direction_sign;
+
+        $rate = $this->invoice_currency_rate;
+
+        return TaxFacade::prepareBaseLineForTaxesComputation(
+            $line,
+            priceUnit: $sign * $line->amount_currency,
+            quantity: 1.0,
+            sign: $sign,
+            specialMode: 'total_excluded',
+            special_type: 'cash_rounding',
+            is_refund: in_array($this->move_type, [MoveType::OUT_REFUND, MoveType::IN_REFUND]),
+            rate: $rate,
+        );
     }
 }

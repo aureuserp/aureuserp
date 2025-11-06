@@ -118,7 +118,9 @@ class AccountManager
 
     public function computeAccountMove(AccountMove $record): AccountMove
     {
-        foreach ($record->lines as $line) {
+        foreach ($record->invoiceLines as $line) {
+            $line->move->syncDynamicLines();
+
             $line->computeTotals();
             
             $line->save();
