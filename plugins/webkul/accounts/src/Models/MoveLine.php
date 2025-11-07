@@ -77,6 +77,8 @@ class MoveLine extends Model implements Sortable
     ];
 
     protected $casts = [
+        'date_maturity' => 'date',
+        'invoice_date' => 'date',
         'analytic_distribution' => 'array',
         'parent_state' => MoveState::class,
         'display_type' => DisplayType::class,
@@ -175,6 +177,19 @@ class MoveLine extends Model implements Sortable
     public function fullReconcile()
     {
         return $this->belongsTo(FullReconcile::class);
+    }
+
+    public function getTermKeyAttribute()
+    {
+        if ($this->display_type === DisplayType::PAYMENT_TERM) {
+            return [
+                'move_id' => $this->move_id,
+                'date_maturity' => $this->date_maturity ? $this->date_maturity->toDateString() : null,
+                'discount_date' => $this->discount_date,
+            ];
+        }
+
+        return null;
     }
 
     /**
@@ -436,31 +451,6 @@ class MoveLine extends Model implements Sortable
         } else {
             $this->currency_id = $this->currency_id ?? $this->company_currency_id;
         }
-    }
-
-    public function computeTotals()
-    {
-        if (! in_array($this->display_type, [DisplayType::PRODUCT, DisplayType::COGS])) {
-            $this->price_total = 0.0;
-
-            $this->price_subtotal = 0.0;
-
-            return;
-        }
-
-        $baseLine = $this->move->prepareProductBaseLineForTaxesComputation($this);
-
-        $baseLine = TaxFacade::addTaxDetailsInBaseLine($baseLine, $this->company);
-
-        $this->price_subtotal = $baseLine['tax_details']['raw_total_excluded_currency'];
-
-        $this->price_total = $baseLine['tax_details']['raw_total_included_currency'];
-
-        $this->computeBalance();
-
-        $this->computeCreditAndDebit();
-
-        $this->computeAmountCurrency();
     }
 
     public function computeBalance()

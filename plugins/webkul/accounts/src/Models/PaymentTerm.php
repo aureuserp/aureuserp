@@ -51,6 +51,108 @@ class PaymentTerm extends Model implements Sortable
         return $this->hasMany(PaymentDueTerm::class, 'payment_id');
     }
 
+    public function computeTerms(
+        $dateRef,
+        $currency,
+        $company,
+        $taxAmount,
+        $taxAmountCurrency,
+        $sign,
+        $untaxedAmount,
+        $untaxedAmountCurrency,
+        $cashRounding = null
+    )
+    {
+        $companyCurrency = $company->currency;
+
+        $totalAmount = $taxAmount + $untaxedAmount;
+
+        $totalAmountCurrency = $taxAmountCurrency + $untaxedAmountCurrency;
+
+        $rate = $totalAmount ? abs($totalAmountCurrency / $totalAmount) : 0.0;
+
+        $paymentTerm = [
+            'total_amount' => $totalAmount,
+            'discount_percentage' => $this->early_discount ? $this->discount_percentage : 0.0,
+            'discount_date' => $this->early_discount ? $dateRef->copy()->addDays($this->discount_days ?? 0) : false,
+            'discount_balance' => 0,
+            'lines' => [],
+        ];
+
+        if ($this->early_discount) {
+            $discountPercentage = $this->discount_percentage / 100.0;
+
+            if (in_array($this->early_pay_discount_computation, ['excluded', 'mixed'])) {
+                $paymentTerm['discount_balance'] = $companyCurrency->round($totalAmount - $untaxedAmount * $discountPercentage);
+
+                $paymentTerm['discount_amount_currency'] = $currency->round($totalAmountCurrency - $untaxedAmountCurrency * $discountPercentage);
+            } else {
+                $paymentTerm['discount_balance'] = $companyCurrency->round($totalAmount * (1 - $discountPercentage));
+
+                $paymentTerm['discount_amount_currency'] = $currency->round($totalAmountCurrency * (1 - $discountPercentage));
+            }
+
+            if ($cashRounding) {
+                $cashRoundingDifferenceCurrency = $cashRounding->computeDifference($currency, $paymentTerm['discount_amount_currency']);
+
+                if (!$currency->isZero($cashRoundingDifferenceCurrency)) {
+                    $paymentTerm['discount_amount_currency'] += $cashRoundingDifferenceCurrency;
+                    $paymentTerm['discount_balance'] = $rate ? $companyCurrency->round($paymentTerm['discount_amount_currency'] / $rate) : 0.0;
+                }
+            }
+        }
+
+        $residualAmount = $totalAmount;
+
+        $residualAmountCurrency = $totalAmountCurrency;
+
+        foreach ($this->dueTerms as $i => $line) {
+            $termVals = [
+                'date' => $line->getDueDate($dateRef),
+                'company_amount' => 0,
+                'foreign_amount' => 0,
+            ];
+
+            $onBalanceLine = $i === count($this->dueTerms) - 1;
+
+            if ($onBalanceLine) {
+                $termVals['company_amount'] = $residualAmount;
+
+                $termVals['foreign_amount'] = $residualAmountCurrency;
+            } elseif ($line->value === 'fixed') {
+                $termVals['company_amount'] = $rate ? $sign * $companyCurrency->round($line->value_amount / $rate) : 0.0;
+
+                $termVals['foreign_amount'] = $sign * $currency->round($line->value_amount);
+            } else {
+                $lineAmount = $companyCurrency->round($totalAmount * ($line->value_amount / 100.0));
+
+                $lineAmountCurrency = $currency->round($totalAmountCurrency * ($line->value_amount / 100.0));
+
+                $termVals['company_amount'] = $lineAmount;
+
+                $termVals['foreign_amount'] = $lineAmountCurrency;
+            }
+
+            if ($cashRounding && !$onBalanceLine) {
+                $cashRoundingDifferenceCurrency = $cashRounding->computeDifference($currency, $termVals['foreign_amount']);
+
+                if (!$currency->isZero($cashRoundingDifferenceCurrency)) {
+                    $termVals['foreign_amount'] += $cashRoundingDifferenceCurrency;
+
+                    $termVals['company_amount'] = $rate ? $companyCurrency->round($termVals['foreign_amount'] / $rate) : 0.0;
+                }
+            }
+
+            $residualAmount -= $termVals['company_amount'];
+
+            $residualAmountCurrency -= $termVals['foreign_amount'];
+            
+            $paymentTerm['lines'][] = $termVals;
+        }
+
+        return $paymentTerm;
+    }
+
     protected static function boot()
     {
         parent::boot();

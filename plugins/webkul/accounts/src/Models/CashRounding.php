@@ -36,4 +36,18 @@ class CashRounding extends Model
     {
         return $this->belongsTo(Account::class, 'loss_account_id');
     }
+
+    public function computeDifference(float $amount): float
+    {
+        $roundedAmount = $this->round($amount);
+
+        $difference = $roundedAmount - $amount;
+
+        return $this->round($difference);
+    }
+
+    public function round(float $amount): float
+    {
+        return float_round($amount, precisionRounding: $this->rounding, roundingMethod: $this->rounding_method);
+    }
 }
