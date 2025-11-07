@@ -66,6 +66,7 @@ class PaymentTermResource extends Resource
                                     ->columnSpan(1),
                             ])->columns(2),
                         Group::make()
+                            ->hidden()
                             ->schema([
                                 Toggle::make('early_discount')
                                     ->live()
@@ -216,9 +217,11 @@ class PaymentTermResource extends Resource
                                     ->icon('heroicon-o-briefcase')
                                     ->placeholder('—'),
                                 IconEntry::make('early_discount')
+                                    ->hidden()
                                     ->label(__('accounts::filament/resources/payment-term.infolist.sections.entries.early-discount'))
                                     ->boolean(),
                                 Group::make()
+                                    ->visible(fn (Get $get) => $get('early_discount'))
                                     ->schema([
                                         TextEntry::make('discount_percentage')
                                             ->suffix('%')
@@ -231,6 +234,7 @@ class PaymentTermResource extends Resource
                                             ->placeholder('—'),
                                     ])->columns(2),
                                 TextEntry::make('early_pay_discount')
+                                    ->visible(fn (Get $get) => $get('early_discount'))
                                     ->label(__('accounts::filament/resources/payment-term.infolist.sections.entries.reduced-tax'))
                                     ->placeholder('—'),
                                 TextEntry::make('note')
