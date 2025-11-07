@@ -338,7 +338,7 @@ class JournalResource extends Resource
                                             ->icon('heroicon-o-building-office'),
                                     ]),
                             ])->columnSpan(1),
-                    ]),
+                    ])->columnSpanFull(),
             ]);
     }
 

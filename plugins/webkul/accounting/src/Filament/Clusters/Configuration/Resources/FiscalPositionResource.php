@@ -2,12 +2,13 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Configuration\Resources;
 
+use Filament\Pages\Page;
+use Webkul\Account\Filament\Resources\FiscalPositionResource as BaseFiscalPositionResource;
 use Webkul\Accounting\Filament\Clusters\Configuration;
-use Webkul\Accounting\Filament\Clusters\Configuration\Resources\FiscalPositionResource\Pages\ListFiscalPositions;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\FiscalPositionResource\Pages\CreateFiscalPosition;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\FiscalPositionResource\Pages\EditFiscalPosition;
+use Webkul\Accounting\Filament\Clusters\Configuration\Resources\FiscalPositionResource\Pages\ListFiscalPositions;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\FiscalPositionResource\Pages\ViewFiscalPosition;
-use Webkul\Account\Filament\Resources\FiscalPositionResource as BaseFiscalPositionResource;
 
 class FiscalPositionResource extends BaseFiscalPositionResource
 {
@@ -30,13 +31,21 @@ class FiscalPositionResource extends BaseFiscalPositionResource
         return __('accounting::filament/clusters/configurations/resources/fiscal-position.navigation.group');
     }
 
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            ViewFiscalPosition::class,
+            EditFiscalPosition::class,
+        ]);
+    }
+
     public static function getPages(): array
     {
         return [
-            'index' => ListFiscalPositions::route('/'),
+            'index'  => ListFiscalPositions::route('/'),
             'create' => CreateFiscalPosition::route('/create'),
-            'edit' => EditFiscalPosition::route('/{record}/edit'),
-            'view' => ViewFiscalPosition::route('/{record}'),
+            'edit'   => EditFiscalPosition::route('/{record}/edit'),
+            'view'   => ViewFiscalPosition::route('/{record}'),
         ];
     }
 }

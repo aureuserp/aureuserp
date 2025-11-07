@@ -1,34 +1,31 @@
 <?php
 
-use InvalidArgumentException;
-use AssertionError;
-
-if (!function_exists('float_check_precision')) {
+if (! function_exists('float_check_precision')) {
     function float_check_precision($precisionDigits = null, $precisionRounding = null)
     {
-        if (!is_null($precisionRounding) && is_null($precisionDigits)) {
+        if (! is_null($precisionRounding) && is_null($precisionDigits)) {
             if ($precisionRounding <= 0) {
                 throw new AssertionError("precision_rounding must be positive, got {$precisionRounding}");
             }
-        } elseif (!is_null($precisionDigits) && is_null($precisionRounding)) {
-            if (!is_int($precisionDigits) && (float)$precisionDigits != floor($precisionDigits)) {
+        } elseif (! is_null($precisionDigits) && is_null($precisionRounding)) {
+            if (! is_int($precisionDigits) && (float) $precisionDigits != floor($precisionDigits)) {
                 throw new AssertionError("precision_digits must be a non-negative integer, got {$precisionDigits}");
             }
-            
+
             if ($precisionDigits < 0) {
                 throw new AssertionError("precision_digits must be a non-negative integer, got {$precisionDigits}");
             }
 
             $precisionRounding = pow(10, -$precisionDigits);
         } else {
-            throw new AssertionError("exactly one of precision_digits and precision_rounding must be specified");
+            throw new AssertionError('exactly one of precision_digits and precision_rounding must be specified');
         }
 
         return $precisionRounding;
     }
 }
 
-if (!function_exists('float_round')) {
+if (! function_exists('float_round')) {
     function float_round($value, $precisionDigits = null, $precisionRounding = null, $roundingMethod = 'HALF-UP')
     {
         $roundingFactor = float_check_precision($precisionDigits, $precisionRounding);

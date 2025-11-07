@@ -5,20 +5,17 @@ namespace Webkul\Account\Filament\Resources\TaxResource\Pages;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
-use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\QueryException;
 use Webkul\Account\Filament\Resources\TaxResource;
 use Webkul\Account\Models\Tax;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditTax extends EditRecord
 {
-    protected static string $resource = TaxResource::class;
+    use HasRecordNavigationTabs;
 
-    public static function getSubNavigationPosition(): SubNavigationPosition
-    {
-        return SubNavigationPosition::Top;
-    }
+    protected static string $resource = TaxResource::class;
 
     protected function getSavedNotification(): ?Notification
     {

@@ -7,9 +7,12 @@ use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Support\Filament\Resources\CurrencyResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditCurrency extends EditRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = CurrencyResource::class;
 
     protected function getRedirectUrl(): string
