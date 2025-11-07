@@ -74,7 +74,7 @@ class PaymentTerm extends Model implements Sortable
         $paymentTerm = [
             'total_amount' => $totalAmount,
             'discount_percentage' => $this->early_discount ? $this->discount_percentage : 0.0,
-            'discount_date' => $this->early_discount ? $dateRef->copy()->addDays($this->discount_days ?? 0) : false,
+            'discount_date' => $this->early_discount ? $dateRef->copy()->addDays($this->discount_days ?? 0) : null,
             'discount_balance' => 0,
             'lines' => [],
         ];

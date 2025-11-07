@@ -184,7 +184,7 @@ class MoveLine extends Model implements Sortable
         if ($this->display_type === DisplayType::PAYMENT_TERM) {
             return [
                 'move_id' => $this->move_id,
-                'date_maturity' => $this->date_maturity ? $this->date_maturity->toDateString() : null,
+                'date_maturity' => $this->date_maturity?->toDateString(),
                 'discount_date' => $this->discount_date,
             ];
         }
@@ -211,10 +211,6 @@ class MoveLine extends Model implements Sortable
             $moveLine->journal_id = $moveLine->move->journal_id;
 
             $moveLine->company_currency_id = $moveLine->move->company->currency_id;
-
-            $moveLine->computeDateMaturity();
-
-            $moveLine->computeDiscountDate();
 
             $moveLine->computeUOMId();
 
@@ -421,17 +417,6 @@ class MoveLine extends Model implements Sortable
         } else {
             $this->display_type = DisplayType::PRODUCT;
         }
-    }
-
-    public function computeDateMaturity()
-    {
-        //Todo: Should be computed based on payment terms
-        $this->date_maturity = $this->move->invoice_date_due;
-    }
-
-    public function computeDiscountDate()
-    {
-        //Todo: Should be computed based on early payment discounts
     }
 
     public function computeUOMId()

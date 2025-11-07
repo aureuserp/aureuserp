@@ -275,10 +275,6 @@ class AccountManager
             return;
         }
 
-        if ($move->state !== MoveState::DRAFT) {
-            return;
-        }
-
         $taxLines = $move->lines->whereNotNull('tax_repartition_line_id');
 
         $roundFromTaxLines = ! $move->isInvoice(true) && $taxLines->isNotEmpty();
@@ -296,7 +292,6 @@ class AccountManager
             $move->company, 
             $taxLinesValues
         );
-
 
         foreach ($taxResults['base_lines_to_update'] as $baseLine) {
             $baseLine['record']->update([
@@ -341,8 +336,6 @@ class AccountManager
 
         $neededTerms = $this->prepareNeededTerms($move);
 
-        dd($neededTerms);
-
         $existingLines = $move->lines
             ->where('display_type', DisplayType::PAYMENT_TERM)
             ->keyBy(fn ($line) => json_encode($line->term_key ?? []));
@@ -375,17 +368,16 @@ class AccountManager
         }
 
         foreach ($neededMapping as $keyStr => $needed) {
-            $attributes = array_merge($needed['values'], ['term_key' => $needed['key']]);
+            $attributes = array_merge($needed['values'], $needed['key']);
 
             if ($existingLines->has($keyStr)) {
-                $moveLine = $existingLines[$keyStr]->update($attributes);
+                $existingLines[$keyStr]->update($attributes);
 
-                $moveLine->computeCreditAndDebit();
+                $existingLines[$keyStr]->computeCreditAndDebit();
 
-                $moveLine->save();
+                $existingLines[$keyStr]->save();
             } else {
                 $moveLine = MoveLine::create(array_merge($attributes, [
-                    'move_id' => $move->id,
                     'display_type' => DisplayType::PAYMENT_TERM,
                 ]));
 
@@ -526,10 +518,10 @@ class AccountManager
                 foreach ($invoicePaymentTerms['lines'] as $termLine) {
                     $key = [
                         'move_id' => $move->id,
-                        'date_maturity' => $termLine['date'] ?? null,
-                        'discount_date' => $invoicePaymentTerms['discount_date'] ?? null,
+                        'date_maturity' => $termLine['date']?->toDateString(),
+                        'discount_date' => $invoicePaymentTerms['discount_date']?->toDateString(),
                     ];
-                    
+
                     $values = [
                         'balance' => $termLine['company_amount'],
                         'amount_currency' => $termLine['foreign_amount'],
@@ -551,7 +543,7 @@ class AccountManager
             } else {
                 $key = [
                     'move_id' => $move->id,
-                    'date_maturity' => $move->invoice_date_due,
+                    'date_maturity' => $move->invoice_date_due?->toDateString(),
                     'discount_date' => false,
                     'discount_balance' => 0.0,
                     'discount_amount_currency' => 0.0
