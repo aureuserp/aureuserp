@@ -6,6 +6,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Webkul\Account\Enums\DueTermValue;
 use Webkul\Account\Filament\Resources\PaymentTermResource;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
@@ -38,12 +39,34 @@ class EditPaymentTerm extends EditRecord
     {
         return Notification::make()
             ->success()
-            ->title(__('accounts::filament/resources/payment-term/pages/edit-payment-term.notification.title'))
-            ->body(__('accounts::filament/resources/payment-term/pages/edit-payment-term.notification.body'));
+            ->title(__('accounts::filament/resources/payment-term/pages/edit-payment-term.notification.success.title'))
+            ->body(__('accounts::filament/resources/payment-term/pages/edit-payment-term.notification.success.body'));
     }
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
         return $data;
+    }
+
+    protected function beforeSave(): void
+    {
+        $this->validateDueTerms($this->data['dueTerms'] ?? []);
+    }
+
+    protected function validateDueTerms(array $dueTerms): void
+    {
+        $totalPercent = collect($dueTerms)
+            ->where('value', DueTermValue::PERCENT)
+            ->sum('value_amount');
+
+        if ($totalPercent != 100) {
+            Notification::make()
+                ->danger()
+                ->title(__('accounts::filament/resources/payment-term/pages/edit-payment-term.notification.validation-error.title'))
+                ->body(__('accounts::filament/resources/payment-term/pages/edit-payment-term.notification.validation-error.body'))
+                ->send();
+
+            $this->halt();
+        }
     }
 }

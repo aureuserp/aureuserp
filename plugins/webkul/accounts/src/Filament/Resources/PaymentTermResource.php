@@ -25,12 +25,16 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
+use Webkul\Account\Enums\DelayType;
+use Webkul\Account\Enums\DueTermValue;
 use Webkul\Account\Enums\EarlyPayDiscount;
 use Webkul\Account\Filament\Resources\PaymentTermResource\Pages\CreatePaymentTerm;
 use Webkul\Account\Filament\Resources\PaymentTermResource\Pages\EditPaymentTerm;
@@ -39,6 +43,10 @@ use Webkul\Account\Filament\Resources\PaymentTermResource\Pages\ManagePaymentDue
 use Webkul\Account\Filament\Resources\PaymentTermResource\Pages\ViewPaymentTerm;
 use Webkul\Account\Filament\Resources\PaymentTermResource\RelationManagers\PaymentDueTermRelationManager;
 use Webkul\Account\Models\PaymentTerm;
+use Webkul\Support\Filament\Forms\Components\Repeater;
+use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
+use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
+use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
 
 class PaymentTermResource extends Resource
 {
@@ -49,6 +57,8 @@ class PaymentTermResource extends Resource
     protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
 
     protected static bool $shouldRegisterNavigation = false;
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema
     {
@@ -101,6 +111,63 @@ class PaymentTermResource extends Resource
                             ])->columns(2),
                         RichEditor::make('note')
                             ->label(__('accounts::filament/resources/payment-term.form.sections.fields.note')),
+                    ]),
+                Tabs::make()
+                    ->schema([
+                        Tab::make(__('accounts::filament/resources/payment-term.form.tabs.due-terms.title'))
+                            ->icon('heroicon-o-list-bullet')
+                            ->schema([
+                                Repeater::make('dueTerms')
+                                    ->hiddenLabel()
+                                    ->relationship('dueTerms')
+                                    ->compact()
+                                    ->reactive()
+                                    ->addActionLabel(__('Add Due Term'))
+                                    ->table([
+                                        TableColumn::make('value')
+                                            ->label(__('accounts::filament/resources/payment-term.form.tabs.due-terms.repeater.due-terms.fields.value'))
+                                            ->width(150),
+                                        TableColumn::make('value_amount')
+                                            ->label(__('accounts::filament/resources/payment-term.form.tabs.due-terms.repeater.due-terms.fields.due'))
+                                            ->width(100),
+                                        TableColumn::make('delay_type')
+                                            ->label(__('accounts::filament/resources/payment-term.form.tabs.due-terms.repeater.due-terms.fields.delay-type'))
+                                            ->width(150),
+                                        TableColumn::make('days_next_month')
+                                            ->label(__('accounts::filament/resources/payment-term.form.tabs.due-terms.repeater.due-terms.fields.days-on-the-next-month'))
+                                            ->width(100),
+                                        TableColumn::make('nb_days')
+                                            ->label(__('accounts::filament/resources/payment-term.form.tabs.due-terms.repeater.due-terms.fields.days'))
+                                            ->width(80),
+                                    ])
+
+                                    ->schema([
+                                        Select::make('value')
+                                            ->options(DueTermValue::class)
+                                            ->native(false)
+                                            ->required(),
+
+                                        TextInput::make('value_amount')
+                                            ->numeric()
+                                            ->required()
+                                            ->default(0)
+                                            ->minValue(0)
+                                            ->maxValue(100),
+
+                                        Select::make('delay_type')
+                                            ->options(DelayType::class)
+                                            ->native(false)
+                                            ->required(),
+
+                                        TextInput::make('days_next_month')
+                                            ->default(10)
+                                            ->numeric(),
+
+                                        TextInput::make('nb_days')
+                                            ->default(0)
+                                            ->numeric(),
+                                    ]),
+                            ]),
                     ]),
             ])->columns(1);
     }
@@ -244,6 +311,55 @@ class PaymentTermResource extends Resource
                                     ->placeholder('—'),
                             ]),
                     ]),
+                Tabs::make()
+                    ->tabs([
+                        Tab::make(__('accounts::filament/resources/payment-term.infolist.tabs.due-terms.title'))
+                            ->icon('heroicon-o-list-bullet')
+                            ->schema([
+                                RepeatableEntry::make('dueTerms')
+                                    ->hiddenLabel()
+                                    ->live()
+                                    ->table([
+                                        InfolistTableColumn::make('value')
+                                            ->alignCenter()
+                                            ->label(__('accounts::filament/resources/payment-term.infolist.tabs.due-terms.repeater.due-terms.entries.value')),
+
+                                        InfolistTableColumn::make('value_amount')
+                                            ->alignCenter()
+                                            ->label(__('accounts::filament/resources/payment-term.infolist.tabs.due-terms.repeater.due-terms.entries.due')),
+
+                                        InfolistTableColumn::make('delay_type')
+                                            ->alignCenter()
+                                            ->label(__('accounts::filament/resources/payment-term.infolist.tabs.due-terms.repeater.due-terms.entries.delay-type')),
+
+                                        InfolistTableColumn::make('days_next_month')
+                                            ->alignCenter()
+                                            ->label(__('accounts::filament/resources/payment-term.infolist.tabs.due-terms.repeater.due-terms.entries.days-on-the-next-month')),
+
+                                        InfolistTableColumn::make('nb_days')
+                                            ->alignCenter()
+                                            ->label(__('accounts::filament/resources/payment-term.infolist.tabs.due-terms.repeater.due-terms.entries.days')),
+                                    ])
+                                    ->schema([
+                                        TextEntry::make('value')
+                                            ->placeholder('-')
+                                            ->formatStateUsing(fn ($state) => DueTermValue::options()[$state] ?? $state),
+
+                                        TextEntry::make('value_amount')
+                                            ->placeholder('-'),
+
+                                        TextEntry::make('delay_type')
+                                            ->placeholder('-')
+                                            ->formatStateUsing(fn ($state) => DelayType::options()[$state] ?? $state),
+
+                                        TextEntry::make('days_next_month')
+                                            ->placeholder('-'),
+
+                                        TextEntry::make('nb_days')
+                                            ->placeholder('-'),
+                                    ]),
+                            ]),
+                    ]),
             ])->columns(1);
     }
 
@@ -256,17 +372,17 @@ class PaymentTermResource extends Resource
         ]);
     }
 
-    public static function getRelations(): array
-    {
-        $relations = [
-            RelationGroup::make('due_terms', [
-                PaymentDueTermRelationManager::class,
-            ])
-                ->icon('heroicon-o-banknotes'),
-        ];
+    // public static function getRelations(): array
+    // {
+    //     $relations = [
+    //         RelationGroup::make('due_terms', [
+    //             PaymentDueTermRelationManager::class,
+    //         ])
+    //             ->icon('heroicon-o-banknotes'),
+    //     ];
 
-        return $relations;
-    }
+    //     return $relations;
+    // }
 
     public static function getPages(): array
     {

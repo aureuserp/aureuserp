@@ -13,6 +13,24 @@ return [
                 'status'               => 'Status',
             ],
         ],
+
+        'tabs' => [
+            'due-terms' => [
+                'title' => 'Due Terms',
+
+                'repeater' => [
+                    'due-terms' => [
+                        'fields' => [
+                            'value'                  => 'Value',
+                            'due'                    => 'Due',
+                            'delay-type'             => 'Delay Type',
+                            'days-on-the-next-month' => 'Days on the next month',
+                            'days'                   => 'Days',
+                        ],
+                    ],
+                ],
+            ],
+        ],
     ],
 
     'table' => [
@@ -91,6 +109,24 @@ return [
                 'reduced-tax'          => 'Reduced tax',
                 'note'                 => 'Note',
                 'status'               => 'Status',
+            ],
+        ],
+
+        'tabs' => [
+            'due-terms' => [
+                'title' => 'Due Terms',
+
+                'repeater' => [
+                    'due-terms' => [
+                        'entries' => [
+                            'value'                  => 'Value',
+                            'due'                    => 'Due',
+                            'delay-type'             => 'Delay Type',
+                            'days-on-the-next-month' => 'Days on the next month',
+                            'days'                   => 'Days',
+                        ],
+                    ],
+                ],
             ],
         ],
     ],
