@@ -46,6 +46,8 @@ class TaxResource extends Resource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
 
     protected static bool $shouldRegisterNavigation = false;
+    
+    protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
 

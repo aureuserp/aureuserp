@@ -38,6 +38,8 @@ class CurrencyResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     public static function getNavigationLabel(): string
     {
         return __('support::filament/resources/currency.navigation.title');

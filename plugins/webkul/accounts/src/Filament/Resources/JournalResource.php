@@ -45,6 +45,9 @@ class JournalResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
+
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -104,7 +107,6 @@ class JournalResource extends Resource
                                                 return in_array($get('type'), [
                                                     JournalType::BANK->value,
                                                     JournalType::CASH->value,
-                                                    JournalType::BANK->value,
                                                     JournalType::CREDIT_CARD->value,
                                                 ]);
                                             })
@@ -118,7 +120,6 @@ class JournalResource extends Resource
                                                 return in_array($get('type'), [
                                                     JournalType::BANK->value,
                                                     JournalType::CASH->value,
-                                                    JournalType::BANK->value,
                                                     JournalType::CREDIT_CARD->value,
                                                 ]);
                                             })
