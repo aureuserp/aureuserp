@@ -194,6 +194,9 @@ class OrderResource extends Resource
                                                 'uom_id'      => $uom?->id,
                                                 'product_qty' => $line->qty,
                                                 'price_unit'  => $line->price_unit,
+                                                'planned_at'  => now(),
+                                                'taxes'       => $product->productTaxes->pluck('id')->toArray(),
+                                                'discount'    => 0
                                             ];
                                         }
                                         $set('products', $products);
