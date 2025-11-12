@@ -24,14 +24,14 @@
                 <x-filament::icon-button
                     wire:click="pinMessage({{ $getRecord()->id }})"
                     :icon="$getRecord()->pinned_at ? 'icon-un-pin' : 'icon-pin'"
-                    color="success"
+                    color="gray"
                     :tooltip="$getRecord()->pinned_at 
                         ? __('chatter::views/filament/infolists/components/messages/title-text-entry.unpin') 
                         : __('chatter::views/filament/infolists/components/messages/title-text-entry.pin')"
                     :label="$getRecord()->pinned_at 
                         ? __('chatter::views/filament/infolists/components/messages/title-text-entry.unpin') 
                         : __('chatter::views/filament/infolists/components/messages/title-text-entry.pin')"
-                    class="!p-1.5"
+                    class="!p-1.5  [&>svg]:stroke-current"
                 />
             </div>
         </div>

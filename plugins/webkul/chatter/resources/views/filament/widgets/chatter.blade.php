@@ -4,5 +4,6 @@
     :follower-view-mail-path="$followerMailViewPath"
     :is-follower-action-visible="$isFileActionVisible"
     :is-file-action-visible="$isFollowerActionVisible"
+    :activity-plans="$activityPlans"
     lazy
 />

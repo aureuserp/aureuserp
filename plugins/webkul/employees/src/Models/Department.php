@@ -21,6 +21,11 @@ class Department extends Model
 
     protected $table = 'employees_departments';
 
+    public function getModelTitle(): string
+    {
+        return __('employees::models/department.title');
+    }
+
     protected $fillable = [
         'name',
         'manager_id',

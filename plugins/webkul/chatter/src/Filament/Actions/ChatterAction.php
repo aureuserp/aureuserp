@@ -290,6 +290,7 @@ class ChatterAction extends Action
                 'followerMailViewPath'    => $this->getFollowerMailViewPath(),
                 'isFileActionVisible'     => $this->isFileActionVisible(),
                 'isFollowerActionVisible' => $this->isFollowerActionVisible(),
+                'activityPlans'           => $this->getActivityPlans(),
                 'chatterAction'           => $this,
             ]),
             fn () => $record->markAsRead()

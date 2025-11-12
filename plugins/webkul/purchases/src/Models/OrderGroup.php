@@ -36,9 +36,6 @@ class OrderGroup extends Model
     protected $casts = [
     ];
 
-    protected array $logAttributes = [
-    ];
-
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class);

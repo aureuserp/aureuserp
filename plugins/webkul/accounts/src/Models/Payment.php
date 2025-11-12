@@ -20,6 +20,11 @@ class Payment extends Model
 
     protected $table = 'accounts_account_payments';
 
+    public function getModelTitle(): string
+    {
+        return __('accounts::models/payment.title');
+    }
+
     protected $fillable = [
         'move_id',
         'journal_id',
@@ -50,22 +55,25 @@ class Payment extends Model
         'payment_token_id',
     ];
 
-    protected array $logAttributes = [
-        'name',
-        'move.name'          => 'Move',
-        'company.name'       => 'Company',
-        'partner.name'       => 'Partner',
-        'partner_type'       => 'Partner Type',
-        'paymentMethod.name' => 'Payment Method',
-        'currency.name'      => 'Currency',
-        'paymentToken',
-        'sourcePayment.name'      => 'Source Payment',
-        'paymentTransaction.name' => 'Payment Transaction',
-        'destinationAccount.name' => 'Destination Account',
-        'outstandingAccount.name' => 'Outstanding Account',
-        'is_sent'                 => 'Is Sent',
-        'state'                   => 'State',
-    ];
+    protected function getLogAttributeLabels(): array
+    {
+        return [
+            'name'                    => __('accounts::models/payment.log-attributes.name'),
+            'move.name'               => __('accounts::models/payment.log-attributes.move'),
+            'company.name'            => __('accounts::models/payment.log-attributes.company'),
+            'partner.name'            => __('accounts::models/payment.log-attributes.partner'),
+            'partner_type'            => __('accounts::models/payment.log-attributes.partner_type'),
+            'paymentMethod.name'      => __('accounts::models/payment.log-attributes.payment_method'),
+            'currency.name'           => __('accounts::models/payment.log-attributes.currency'),
+            'paymentToken'            => __('accounts::models/payment.log-attributes.payment_token'),
+            'sourcePayment.name'      => __('accounts::models/payment.log-attributes.source_payment'),
+            'paymentTransaction.name' => __('accounts::models/payment.log-attributes.payment_transaction'),
+            'destinationAccount.name' => __('accounts::models/payment.log-attributes.destination_account'),
+            'outstandingAccount.name' => __('accounts::models/payment.log-attributes.outstanding_account'),
+            'is_sent'                 => __('accounts::models/payment.log-attributes.is_sent'),
+            'state'                   => __('accounts::models/payment.log-attributes.state'),
+        ];
+    }
 
     public function move()
     {
