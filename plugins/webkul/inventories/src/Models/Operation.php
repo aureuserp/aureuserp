@@ -18,11 +18,12 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Purchase\Models\Order as PurchaseOrder;
 use Webkul\Sale\Models\Order as SaleOrder;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 
 class Operation extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope;
 
     /**
      * Table name.

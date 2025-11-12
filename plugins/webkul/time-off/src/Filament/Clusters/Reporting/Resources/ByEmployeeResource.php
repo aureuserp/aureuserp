@@ -11,7 +11,6 @@ use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Page
 use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Pages\ViewByEmployee;
 use Webkul\TimeOff\Models\Leave;
 
-
 class ByEmployeeResource extends BaseByEmployeeResource
 {
     protected static ?string $model = Leave::class;

@@ -3,9 +3,6 @@
 namespace Webkul\Sale\Filament\Clusters\ToInvoice\Resources;
 
 use Filament\Resources\Pages\Page;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Sale\Enums\InvoiceStatus;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
@@ -15,7 +12,7 @@ use Webkul\Sale\Filament\Clusters\ToInvoice\Resources\OrderToInvoiceResource\Pag
 use Webkul\Sale\Filament\Clusters\ToInvoice\Resources\OrderToInvoiceResource\Pages\ViewOrderToInvoice;
 use Webkul\Sale\Models\Order;
 
-class OrderToInvoiceResource extends Resource
+class OrderToInvoiceResource extends QuotationResource
 {
     protected static ?string $model = Order::class;
 
@@ -31,24 +28,6 @@ class OrderToInvoiceResource extends Resource
     public static function getNavigationLabel(): string
     {
         return __('sales::filament/clusters/to-invoice/resources/order-to-invoice.navigation.title');
-    }
-
-    public static function form(Schema $schema): Schema
-    {
-        return QuotationResource::form($schema);
-    }
-
-    public static function table(Table $table): Table
-    {
-        return QuotationResource::table($table)
-            ->modifyQueryUsing(function ($query) {
-                $query->where('invoice_status', InvoiceStatus::TO_INVOICE);
-            });
-    }
-
-    public static function infolist(Schema $schema): Schema
-    {
-        return QuotationResource::infolist($schema);
     }
 
     public static function getRecordSubNavigation(Page $page): array
@@ -70,7 +49,12 @@ class OrderToInvoiceResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
-            ->orderByDesc('id');
+        $query = parent::getEloquentQuery();
+
+        $query = static::getModel()::applyPermissionScope($query);
+
+        $query = $query->where('invoice_status', InvoiceStatus::TO_INVOICE);
+
+        return $query->orderByDesc('id');
     }
 }

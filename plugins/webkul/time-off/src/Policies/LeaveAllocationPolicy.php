@@ -4,11 +4,12 @@ namespace Webkul\TimeOff\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasScopedPermissions;
 use Webkul\TimeOff\Models\LeaveAllocation;
 
 class LeaveAllocationPolicy
 {
-    use HandlesAuthorization;
+    use HandlesAuthorization, HasScopedPermissions;
 
     /**
      * Determine whether the user can view any models.
@@ -56,5 +57,16 @@ class LeaveAllocationPolicy
     public function deleteAny(User $user): bool
     {
         return $user->can('delete_any_my::allocation');
+    }
+     /**
+     * Determine whether the user can approve the leave.
+     */
+    public function approve(User $user, LeaveAllocation $leaveAllocation): bool
+    {
+        if (! $user->can('approve_time::off')) {
+            return false;
+        }
+
+        return $this->hasAccess($user, $leaveAllocation);
     }
 }

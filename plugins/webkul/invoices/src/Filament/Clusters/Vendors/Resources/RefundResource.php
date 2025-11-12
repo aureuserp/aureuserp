@@ -12,10 +12,13 @@ use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\Edit
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\ListRefunds;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\ViewRefund;
 use Webkul\Invoice\Models\Refund;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 
 class RefundResource extends BaseRefundResource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = Refund::class;
 
     protected static ?int $navigationSort = 2;

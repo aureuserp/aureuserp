@@ -44,7 +44,7 @@ class LeavePolicy
             return false;
         }
 
-        return $this->hasAccess($user, $leave, 'employee');
+        return $this->hasAccess($user, $leave);
     }
 
     /**
@@ -56,7 +56,7 @@ class LeavePolicy
             return false;
         }
 
-        return $this->hasAccess($user, $leave, 'employee');
+        return $this->hasAccess($user, $leave);
     }
 
     /**
@@ -65,5 +65,17 @@ class LeavePolicy
     public function deleteAny(User $user): bool
     {
         return $user->can('delete_any_time::off');
+    }
+
+    /**
+     * Determine whether the user can approve the leave.
+     */
+    public function approve(User $user, Leave $leave): bool
+    {
+        if (! $user->can('approve_time::off')) {
+            return false;
+        }
+
+        return $this->hasAccess($user, $leave);
     }
 }
