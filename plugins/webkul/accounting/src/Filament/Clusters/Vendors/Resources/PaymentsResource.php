@@ -4,6 +4,7 @@ namespace Webkul\Accounting\Filament\Clusters\Vendors\Resources;
 
 use Filament\Forms;
 use Filament\Schemas\Schema;
+use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Filament\Resources\PaymentsResource as BasePaymentsResource;
 use Webkul\Accounting\Filament\Clusters\Vendors;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentsResource\Pages\CreatePayments;
@@ -47,6 +48,7 @@ class PaymentsResource extends BasePaymentsResource
 
         if ($group) {
             $fields = $group->getChildComponents();
+            $fields[0] = $fields[0]->default(PaymentType::SEND->value);
 
             $fields[1] = $fields[1]->label(__('accounting::filament/resources/payment.form.sections.fields.vender-bank-account'));
 

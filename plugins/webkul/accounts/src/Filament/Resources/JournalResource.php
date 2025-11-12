@@ -35,6 +35,7 @@ use Webkul\Account\Filament\Resources\JournalResource\Pages\CreateJournal;
 use Webkul\Account\Filament\Resources\JournalResource\Pages\EditJournal;
 use Webkul\Account\Filament\Resources\JournalResource\Pages\ListJournals;
 use Webkul\Account\Filament\Resources\JournalResource\Pages\ViewJournal;
+use Webkul\Account\Filament\Resources\JournalResource\RelationManagers;
 use Webkul\Account\Models\Journal;
 
 class JournalResource extends Resource
@@ -46,7 +47,6 @@ class JournalResource extends Resource
     protected static bool $shouldRegisterNavigation = false;
 
     protected static ?string $recordTitleAttribute = 'name';
-
 
     public static function form(Schema $schema): Schema
     {
@@ -199,7 +199,6 @@ class JournalResource extends Resource
                     ->label(__('accounts::filament/resources/journal.table.columns.name')),
                 TextColumn::make('type')
                     ->searchable()
-                    ->formatStateUsing(fn ($state) => JournalType::options()[$state] ?? $state)
                     ->sortable()
                     ->label(__('accounts::filament/resources/journal.table.columns.type')),
                 TextColumn::make('code')
@@ -210,7 +209,7 @@ class JournalResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->label(__('accounts::filament/resources/journal.table.columns.currency')),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->searchable()
                     ->sortable()
                     ->label(__('accounts::filament/resources/journal.table.columns.created-by')),
@@ -341,6 +340,13 @@ class JournalResource extends Resource
                             ])->columnSpan(1),
                     ])->columnSpanFull(),
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            RelationManagers\MovesRelationManager::class,
+        ];
     }
 
     public static function getPages(): array

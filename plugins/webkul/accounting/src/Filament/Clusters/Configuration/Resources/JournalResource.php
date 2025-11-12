@@ -2,15 +2,18 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Configuration\Resources;
 
+use Webkul\Account\Filament\Resources\JournalResource as BaseJournalResource;
 use Webkul\Accounting\Filament\Clusters\Configuration;
-use Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource\Pages\ListJournals;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource\Pages\CreateJournal;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource\Pages\EditJournal;
+use Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource\Pages\ListJournals;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource\Pages\ViewJournal;
-use Webkul\Account\Filament\Resources\JournalResource as BaseJournalResource;
+use Webkul\Accounting\Models\Journal;
 
 class JournalResource extends BaseJournalResource
 {
+    protected static ?string $model = Journal::class;
+
     protected static bool $shouldRegisterNavigation = true;
 
     protected static ?string $cluster = Configuration::class;
@@ -33,10 +36,10 @@ class JournalResource extends BaseJournalResource
     public static function getPages(): array
     {
         return [
-            'index' => ListJournals::route('/'),
+            'index'  => ListJournals::route('/'),
             'create' => CreateJournal::route('/create'),
-            'edit' => EditJournal::route('/{record}/edit'),
-            'view' => ViewJournal::route('/{record}'),
+            'edit'   => EditJournal::route('/{record}/edit'),
+            'view'   => ViewJournal::route('/{record}'),
         ];
     }
 }
