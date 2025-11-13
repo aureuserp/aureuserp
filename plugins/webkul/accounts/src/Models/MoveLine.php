@@ -305,7 +305,7 @@ class MoveLine extends Model implements Sortable
 
     public function computeAccountId()
     {
-        if ($this->payment_id) {
+        if ($this->payment_id || $this->tax_line_id) {
             return;
         }
 

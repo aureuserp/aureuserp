@@ -54,4 +54,24 @@ class EditTax extends EditRecord
                 ),
         ];
     }
+
+    protected function beforeSave(): void
+    {
+        $data = $this->data;
+
+        try {
+            TaxResource::validateRepartitionData(
+                $data['invoiceRepartitionLines'] ?? [],
+                $data['refundRepartitionLines'] ?? []
+            );
+        } catch (\Exception $e) {
+            Notification::make()
+                ->danger()
+                ->title('Invalid Repartition Lines')
+                ->body($e->getMessage())
+                ->send();
+
+            $this->halt();
+        }
+    }
 }

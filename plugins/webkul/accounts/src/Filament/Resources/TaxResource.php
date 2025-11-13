@@ -8,6 +8,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -21,6 +22,8 @@ use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
@@ -30,6 +33,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Webkul\Account\Enums\AmountType;
+use Webkul\Account\Enums\RepartitionType;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Enums\TaxScope;
 use Webkul\Account\Enums\TypeTaxUse;
@@ -38,6 +42,8 @@ use Webkul\Account\Filament\Resources\TaxResource\Pages\EditTax;
 use Webkul\Account\Filament\Resources\TaxResource\Pages\ListTaxes;
 use Webkul\Account\Filament\Resources\TaxResource\Pages\ViewTax;
 use Webkul\Account\Models\Tax;
+use Webkul\Support\Filament\Forms\Components\Repeater;
+use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 
 class TaxResource extends Resource
 {
@@ -46,7 +52,7 @@ class TaxResource extends Resource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
 
     protected static bool $shouldRegisterNavigation = false;
-    
+
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
@@ -64,13 +70,16 @@ class TaxResource extends Resource
                                     ->required(),
                                 Select::make('type_tax_use')
                                     ->options(TypeTaxUse::options())
+                                    ->native(false)
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.tax-type'))
                                     ->required(),
                                 Select::make('amount_type')
+                                    ->native(false)
                                     ->options(AmountType::options())
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.tax-computation'))
                                     ->required(),
                                 Select::make('tax_scope')
+                                    ->native(false)
                                     ->options(TaxScope::options())
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.tax-scope')),
                                 Toggle::make('is_active')
@@ -91,13 +100,17 @@ class TaxResource extends Resource
                                 Select::make('tax_group_id')
                                     ->relationship('taxGroup', 'name')
                                     ->required()
+                                    ->native(false)
                                     ->createOptionForm(fn (Schema $schema): Schema => TaxGroupResource::form($schema))
                                     ->label(__('accounts::filament/resources/tax.form.sections.field-set.advanced-options.fields.tax-group')),
                                 Select::make('country_id')
+                                    ->searchable()
+                                    ->preload()
                                     ->relationship('country', 'name')
                                     ->label(__('accounts::filament/resources/tax.form.sections.field-set.advanced-options.fields.country')),
                                 Select::make('price_include_override')
                                     ->options(TaxIncludeOverride::class)
+                                    ->native(false)
                                     ->default(TaxIncludeOverride::DEFAULT->value)
                                     ->label(__('accounts::filament/resources/tax.form.sections.field-set.advanced-options.fields.include-in-price'))
                                     ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('Overrides the Company\'s default on whether the price you use on the product and invoices includes this tax.')),
@@ -110,10 +123,149 @@ class TaxResource extends Resource
                                     ->label(__('accounts::filament/resources/tax.form.sections.field-set.advanced-options.fields.is-base-affected'))
                                     ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('If set, taxes with a lower sequence might affect this one, provided they try to do it.')),
                             ]),
-                        RichEditor::make('description')
-                            ->label(__('accounts::filament/resources/tax.form.sections.field-set.fields.description')),
-                        RichEditor::make('invoice_legal_notes')
-                            ->label(__('accounts::filament/resources/tax.form.sections.field-set.fields.legal-notes')),
+                    ]),
+
+                Tabs::make('Tax Configuration')
+                    ->tabs([
+                        Tab::make('Repartition Lines')
+                            ->icon('heroicon-o-banknotes')
+                            ->schema([
+                                Section::make('Invoice & Refund Distribution')
+                                    ->description('Define how this tax affects accounts for invoices and refunds.')
+                                    ->schema([
+                                        Group::make()
+                                            ->schema([
+                                                Repeater::make('invoiceRepartitionLines')
+                                                    ->label('Invoice Repartition Lines')
+                                                    ->relationship('invoiceRepartitionLines')
+                                                    ->minItems(1)
+                                                    ->compact()
+                                                    ->default([
+                                                        ['repartition_type' => 'base', 'factor_percent' => null, 'account_id' => null],
+                                                        ['repartition_type' => 'tax', 'factor_percent' => 100],
+                                                    ])
+                                                    ->schema([
+                                                        Hidden::make('document_type')
+                                                            ->default('invoice'),
+                                                        Select::make('repartition_type')
+                                                            ->label('Type')
+                                                            ->options(RepartitionType::options())
+                                                            ->required()
+                                                            ->native(false)
+                                                            ->reactive()
+                                                            ->afterStateUpdated(function ($state, callable $set) {
+                                                                if ($state === 'base') {
+                                                                    $set('account_id', null);
+                                                                    $set('factor_percent', null);
+                                                                }
+                                                            }),
+
+                                                        TextInput::make('factor_percent')
+                                                            ->label('Factor %')
+                                                            ->numeric()
+                                                            ->minValue(0)
+                                                            ->maxValue(100)
+                                                            ->required(fn (callable $get) => $get('repartition_type') !== 'base')
+                                                            ->disabled(fn (callable $get) => $get('repartition_type') === 'base'),
+
+                                                        Select::make('account_id')
+                                                            ->label('Account')
+                                                            ->relationship('account', 'name')
+                                                            ->required(fn (callable $get) => $get('repartition_type') !== 'base')
+                                                            ->preload()
+                                                            ->searchable()
+                                                            ->disabled(fn (callable $get) => $get('repartition_type') === 'base'),
+                                                    ])
+                                                    ->columns(3)
+                                                    ->reorderable('sort')
+                                                    ->table([
+                                                        TableColumn::make('repartition_type')
+                                                            ->label('Type')
+                                                            ->width('30%'),
+                                                        TableColumn::make('factor_percent')
+                                                            ->label('Factor %')
+                                                            ->width(100),
+                                                        TableColumn::make('account_id')
+                                                            ->label('Account')
+                                                            ->width('clamp(200px, 14rem, 30rem)'),
+                                                    ]),
+                                            ])
+                                            ->columnSpan(1),
+
+                                        Group::make()
+                                            ->schema([
+                                                Repeater::make('refundRepartitionLines')
+                                                    ->label('Refund Repartition Lines')
+                                                    ->relationship('refundRepartitionLines')
+                                                    ->minItems(1)
+                                                    ->compact()
+                                                    ->default([
+                                                        ['repartition_type' => 'base', 'factor_percent' => null, 'account_id' => null],
+                                                        ['repartition_type' => 'tax', 'factor_percent' => 100],
+                                                    ])
+                                                    ->schema([
+                                                        Hidden::make('document_type')
+                                                            ->default('refund'),
+                                                        Select::make('repartition_type')
+                                                            ->label('Type')
+                                                            ->options(RepartitionType::options())
+                                                            ->required()
+                                                            ->native(false)
+                                                            ->reactive()
+                                                            ->afterStateUpdated(function ($state, callable $set) {
+                                                                if ($state === 'base') {
+                                                                    $set('account_id', null);
+                                                                    $set('factor_percent', null);
+                                                                }
+                                                            }),
+
+                                                        TextInput::make('factor_percent')
+                                                            ->label('Factor %')
+                                                            ->numeric()
+                                                            ->minValue(0)
+                                                            ->maxValue(100)
+                                                            ->required(fn (callable $get) => $get('repartition_type') !== 'base')
+                                                            ->disabled(fn (callable $get) => $get('repartition_type') === 'base'),
+
+                                                        Select::make('account_id')
+                                                            ->label('Account')
+                                                            ->relationship('account', 'name')
+                                                            ->required(fn (callable $get) => $get('repartition_type') !== 'base')
+                                                            ->preload()
+                                                            ->searchable()
+                                                            ->disabled(fn (callable $get) => $get('repartition_type') === 'base'),
+                                                    ])
+                                                    ->columns(3)
+                                                    ->reorderable('sort')
+                                                    ->table([
+                                                        TableColumn::make('repartition_type')
+                                                            ->label('Type')
+                                                            ->width('30%'),
+                                                        TableColumn::make('factor_percent')
+                                                            ->label('Factor %')
+                                                            ->width(100),
+                                                        TableColumn::make('account_id')
+                                                            ->label('Account')
+                                                            ->width('clamp(200px, 14rem, 30rem)'),
+                                                    ]),
+                                            ])
+                                            ->columnSpan(1),
+                                    ])
+                                    ->columns([
+                                        'default' => 1,
+                                        '2xl'     => 2,
+                                    ]),
+
+                            ]),
+
+                        Tab::make('Descriptions')
+                            ->icon('heroicon-o-document-text')
+                            ->schema([
+                                RichEditor::make('description')
+                                    ->label(__('accounts::filament/resources/tax.form.sections.field-set.fields.description')),
+                                RichEditor::make('invoice_legal_notes')
+                                    ->label(__('accounts::filament/resources/tax.form.sections.field-set.fields.legal-notes')),
+                            ]),
                     ]),
             ])
             ->columns(1);
@@ -344,5 +496,62 @@ class TaxResource extends Resource
             'view'   => ViewTax::route('/{record}'),
             'edit'   => EditTax::route('/{record}/edit'),
         ];
+    }
+
+    public static function validateRepartitionData(array $invoiceLines, array $refundLines): void
+    {
+        $invoice = collect($invoiceLines)->values();
+        $refund = collect($refundLines)->values();
+
+        if (
+            $invoice->where('repartition_type', 'base')->count() !== 1 ||
+            $refund->where('repartition_type', 'base')->count() !== 1
+        ) {
+            throw new \Exception('Each must contain exactly one BASE repartition line.');
+        }
+
+        if (
+            $invoice->where('repartition_type', 'tax')->isEmpty() ||
+            $refund->where('repartition_type', 'tax')->isEmpty()
+        ) {
+            throw new \Exception('Each must contain at least one TAX repartition line.');
+        }
+
+        if ($invoice->count() !== $refund->count()) {
+            throw new \Exception('Invoice and refund must have the same number of repartition lines.');
+        }
+
+        foreach ($invoice as $index => $invLine) {
+
+            $refLine = $refund[$index] ?? null;
+
+            $invPercent = (float) ($invLine['factor_percent'] ?? 0);
+            $refPercent = (float) ($refLine['factor_percent'] ?? 0);
+
+            if (
+                ! $refLine ||
+                $invLine['repartition_type'] !== $refLine['repartition_type'] ||
+                $invPercent !== $refPercent
+
+            ) {
+                throw new \Exception('Line #'.($index + 1).' does not match between Invoice and Refund.');
+            }
+        }
+
+        $positive = $invoice
+            ->filter(fn ($l) => $l['repartition_type'] === 'tax' && is_numeric($l['factor_percent'] ?? null) && $l['factor_percent'] > 0)
+            ->sum(fn ($l) => (float) $l['factor_percent']);
+
+        $negative = $invoice
+            ->filter(fn ($l) => $l['repartition_type'] === 'tax' && is_numeric($l['factor_percent'] ?? null) && $l['factor_percent'] < 0)
+            ->sum(fn ($l) => (float) $l['factor_percent']);
+
+        if (bccomp(number_format($positive, 2, '.', ''), '100', 2) !== 0) {
+            throw new \Exception("Invoice total positive TAX percentages must equal 100% (got {$positive}%).");
+        }
+
+        if ($negative && bccomp(number_format($negative, 2, '.', ''), '-100', 2) !== 0) {
+            throw new \Exception("Invoice total negative TAX percentages must equal -100% (got {$negative}%).");
+        }
     }
 }
