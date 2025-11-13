@@ -43,7 +43,7 @@ class CashRounding extends Model
 
         $difference = $roundedAmount - $amount;
 
-        return $this->round($difference);
+        return $difference;
     }
 
     public function round(float $amount): float

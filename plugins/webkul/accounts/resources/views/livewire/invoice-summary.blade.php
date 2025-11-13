@@ -90,11 +90,18 @@
                     </div>
                 @endif
 
+                @if ($rounding != 0)
+                    <div class="invoice-item">
+                        <span>Cash Rounding</span>
+                        <span>{{ money($rounding, $currency?->name) }}</span>
+                    </div>
+                @endif
+
                 <div class="divider"></div>
 
                 <div class="invoice-item font-bold">
                     <span>Total</span>
-                    <span>{{ money($grandTotal, $currency?->name) }}</span>
+                    <span>{{ money($grandTotal + ($rounding ?? 0), $currency?->name) }}</span>
                 </div>
             </div>
         </div>

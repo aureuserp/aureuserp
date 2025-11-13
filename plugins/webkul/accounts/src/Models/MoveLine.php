@@ -305,7 +305,7 @@ class MoveLine extends Model implements Sortable
 
     public function computeAccountId()
     {
-        if ($this->payment_id || $this->tax_line_id) {
+        if ($this->payment_id || $this->tax_line_id || $this->display_type == DisplayType::ROUNDING) {
             return;
         }
 
@@ -392,6 +392,9 @@ class MoveLine extends Model implements Sortable
 
     public function computeDisplayType()
     {
+        if ($this->display_type) {
+            return;
+        }
         if ($this->move->isInvoice()) {
             if ($this->tax_line_id) {
                 $this->display_type = DisplayType::TAX;

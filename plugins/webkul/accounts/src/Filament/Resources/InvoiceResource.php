@@ -56,8 +56,8 @@ use Webkul\Account\Filament\Resources\InvoiceResource\Pages\ViewInvoice;
 use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\Partner;
-use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Account\Models\Product;
+use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
@@ -192,6 +192,7 @@ class InvoiceResource extends Resource
                                     return [
                                         'currency' => Currency::find($get('currency_id')),
                                         'products' => $get('products'),
+                                        'rounding' => $get('invoice_cash_rounding_id') ? self::calculateRounding($get) : 0,
                                     ];
                                 })
                                     ->visible(fn (Get $get) => $get('currency_id') && $get('products'))
@@ -239,6 +240,15 @@ class InvoiceResource extends Resource
                                             ->preload()
                                             ->searchable()
                                             ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fieldset.payment-method')),
+                                        Select::make('invoice_cash_rounding_id')
+                                            ->label('Cash Rounding')
+                                            ->relationship('invoiceCashRounding', 'name')
+                                            ->searchable()
+                                            ->preload()
+                                            ->reactive()
+                                            ->live()
+                                            ->hint('Select how rounding differences should be handled.')
+                                            ->nullable(),
                                         Toggle::make('auto_post')
                                             ->default(0)
                                             ->inline(false)
@@ -639,6 +649,12 @@ class InvoiceResource extends Resource
                                             ->money(fn ($record) => $record->currency?->name),
                                     ])->columns(5),
                                 Livewire::make(InvoiceSummary::class, function ($record) {
+                                    $rounding = 0;
+                                    if ($record->invoiceCashRounding) {
+                                        $total = $record->amount_total;
+                                        $rounding = $record->invoiceCashRounding->computeDifference($total);
+                                    }
+
                                     return [
                                         'currency'   => $record->currency,
                                         'amountTax'  => $record->amount_tax ?? 0,
@@ -648,6 +664,7 @@ class InvoiceResource extends Resource
                                                 'taxes' => $item->taxes->pluck('id')->toArray() ?? [],
                                             ];
                                         })->toArray(),
+                                        'rounding'   => $rounding,
                                     ];
                                 }),
                             ]),
@@ -1062,6 +1079,27 @@ class InvoiceResource extends Resource
         $set('price_tax', $taxAmount);
 
         $set('price_total', $subTotal + $taxAmount);
+    }
+
+    private static function calculateRounding(Get $get): float
+    {
+        $cashRoundingId = $get('invoice_cash_rounding_id');
+        if (! $cashRoundingId) {
+            return 0;
+        }
+
+        $cashRounding = \Webkul\Account\Models\CashRounding::find($cashRoundingId);
+        if (! $cashRounding) {
+            return 0;
+        }
+
+        $products = $get('products') ?? [];
+        $total = 0;
+        foreach ($products as $product) {
+            $total += floatval($product['price_total'] ?? 0);
+        }
+
+        return $cashRounding->computeDifference($total);
     }
 
     public static function getEloquentQuery(): Builder
