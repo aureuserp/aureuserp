@@ -14,6 +14,11 @@ class CurrencyRate extends Model
         'currency_id',
         'creator_id',
         'company_id',
+        'created_at',
+    ];
+
+    protected $casts = [
+        'rate' => 'decimal:6',
     ];
 
     public function currency()

@@ -39,6 +39,21 @@ return [
                     'status' => 'Status',
                 ],
             ],
+
+            'rates' => [
+                'title'       => 'Currency Rates',
+                'description' => 'Manage historic exchange rates for this currency relative to the base currency (USD).',
+
+                'fields' => [
+                    'name'             => 'Rate Name',
+                    'name-placeholder' => 'e.g., EUR Rate - 2025-01-01',
+                    'rate'             => 'Exchange Rate',
+                    'date'             => 'Effective Date',
+                ],
+
+                'add-rate'   => 'Add Rate',
+                'item-label' => 'Rate',
+            ],
         ],
     ],
 
@@ -121,6 +136,16 @@ return [
 
                 'entries' => [
                     'status' => 'Status',
+                ],
+            ],
+
+            'rates' => [
+                'title'       => 'Currency Rates',
+
+                'entries' => [
+                    'name'             => 'Rate Name',
+                    'rate'             => 'Exchange Rate',
+                    'date'             => 'Effective Date',
                 ],
             ],
         ],
