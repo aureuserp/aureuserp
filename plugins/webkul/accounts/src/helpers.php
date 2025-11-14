@@ -1,8 +1,5 @@
 <?php
 
-use InvalidArgumentException;
-use AssertionError;
-
 if (!function_exists('float_check_precision')) {
     function float_check_precision($precisionDigits = null, $precisionRounding = null)
     {

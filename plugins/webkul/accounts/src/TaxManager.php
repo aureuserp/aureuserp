@@ -854,10 +854,12 @@ class TaxManager
         $rawBase = $quantity * $priceUnit;
 
         if ($roundingMethod === 'round_per_line') {
-            // $rawBase = $this->floatRound(
-            //     $rawBase,
-            //     $precisionRounding ?: $this->env->company->currency_id->rounding
-            // );
+            $rawBase = float_round(
+                $rawBase,
+                $precisionRounding
+                //TODO: Check if we need to use default currency rounding from config
+                // $precisionRounding ?: $this->env->company->currency_id->rounding
+            );
         }
 
         $evaluationContext = [
@@ -880,6 +882,7 @@ class TaxManager
                 $rawBase,
                 $evaluationContext,
                 $sortedTaxes,
+                $precisionRounding,
                 $roundingMethod,
                 $specialMode
             );
@@ -896,6 +899,7 @@ class TaxManager
                     $rawBase,
                     $evaluationContext,
                     $sortedTaxes,
+                    $precisionRounding,
                     $roundingMethod,
                     $specialMode
                 );
@@ -913,6 +917,7 @@ class TaxManager
                     $rawBase,
                     $evaluationContext,
                     $sortedTaxes,
+                    $precisionRounding,
                     $roundingMethod,
                     $specialMode
                 );
@@ -984,8 +989,7 @@ class TaxManager
         foreach ($taxesDataList as $taxData) {
             $taxesDataResult[] = [
                 'tax' => $taxData['tax'],
-                // 'group' => $batchingResults['group_per_tax'][$taxData['tax']->id] ?? $this->env['account.tax'],
-                'group' => $batchingResults['group_per_tax'][$taxData['tax']->id] ?? null,
+                'group' => $batchingResults['group_per_tax'][$taxData['tax']->id] ?? new Tax(),
                 'batch' => $batchingResults['batch_per_tax'][$taxData['tax']->id],
                 'tax_amount' => $taxData['tax_amount'],
                 'base_amount' => $taxData['base'],
@@ -1160,6 +1164,7 @@ class TaxManager
         &$rawBase,
         &$evaluationContext,
         $sortedTaxes,
+        $precisionRounding,
         $roundingMethod,
         $specialMode
     ) {

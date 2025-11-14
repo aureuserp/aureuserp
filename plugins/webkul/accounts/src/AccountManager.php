@@ -482,7 +482,7 @@ class AccountManager
 
             $untaxedAmount = $untaxedAmountCurrency;
 
-            $sign = $move->direction_sign;
+            // $sign = $move->direction_sign;
             
             [$baseLines, $taxLines] = $this->getRoundedBaseAndTaxLines($move, false);
 
