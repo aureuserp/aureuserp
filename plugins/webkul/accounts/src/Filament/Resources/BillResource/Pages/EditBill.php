@@ -6,7 +6,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Account\Facades\Account;
+use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\BillResource;
 use Webkul\Account\Filament\Resources\BillResource\Actions\CreditNoteAction;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
@@ -66,6 +66,6 @@ class EditBill extends EditRecord
 
     protected function afterSave(): void
     {
-        Account::computeAccountMove($this->getRecord());
+        AccountFacade::computeAccountMove($this->getRecord());
     }
 }

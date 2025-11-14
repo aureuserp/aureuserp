@@ -7,9 +7,12 @@ use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Account\Filament\Resources\CashRoundingResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditCashRounding extends EditRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = CashRoundingResource::class;
 
     protected function getRedirectUrl(): string

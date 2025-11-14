@@ -13,7 +13,7 @@ class ManagePaymentDueTerm extends ManageRelatedRecords
 
     protected static string $resource = PaymentTermResource::class;
 
-    protected static string $relationship = 'dueTerm';
+    protected static string $relationship = 'dueTerms';
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 

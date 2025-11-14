@@ -43,9 +43,9 @@ use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\Partner;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource;
-use Webkul\Invoice\Models\Product;
-use Webkul\Invoice\Settings\ProductSettings;
+use Webkul\Account\Filament\Resources\InvoiceResource;
+use Webkul\Account\Models\Product;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -340,7 +340,7 @@ class BillResource extends Resource
                         Tab::make(__('accounts::filament/resources/bill.infolist.tabs.invoice-lines.title'))
                             ->icon('heroicon-o-list-bullet')
                             ->schema([
-                                RepeatableEntry::make('lines')
+                                RepeatableEntry::make('invoiceLines')
                                     ->columnManager()
                                     ->columnManagerColumns(2)
                                     ->live()
@@ -494,7 +494,7 @@ class BillResource extends Resource
     public static function getProductRepeater(): Repeater
     {
         return Repeater::make('products')
-            ->relationship('lines')
+            ->relationship('invoiceLines')
             ->hiddenLabel()
             ->live()
             ->reactive()

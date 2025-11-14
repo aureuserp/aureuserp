@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Account\Enums\DelayType;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
@@ -35,6 +36,7 @@ class Move extends Model implements Sortable
         'campaign_id',
         'tax_cash_basis_origin_move_id',
         'auto_post_origin_id',
+        'origin_payment_id',
         'secure_sequence_number',
         'invoice_payment_term_id',
         'partner_id',
@@ -141,6 +143,8 @@ class Move extends Model implements Sortable
     ];
 
     protected $casts = [
+        'invoice_date'     => 'date',
+        'date'             => 'date',
         'invoice_date_due' => 'datetime',
         'state'            => MoveState::class,
         'payment_state'    => PaymentState::class,
@@ -252,6 +256,25 @@ class Move extends Model implements Sortable
         return $this->belongsTo(PaymentMethodLine::class, 'preferred_payment_method_line_id');
     }
 
+    public function getResourceUrl(?string $page = 'edit'): ?string
+    {
+        if (! $this->id || ! $this->move_type) {
+            return null;
+        }
+
+        $resourceClass = match ($this->move_type) {
+            \Webkul\Account\Enums\MoveType::OUT_INVOICE => \Webkul\Account\Filament\Resources\InvoiceResource::class,
+            \Webkul\Account\Enums\MoveType::OUT_REFUND  => \Webkul\Account\Filament\Resources\CreditNoteResource::class,
+            \Webkul\Account\Enums\MoveType::IN_INVOICE  => \Webkul\Account\Filament\Resources\BillResource::class,
+            \Webkul\Account\Enums\MoveType::IN_REFUND   => \Webkul\Account\Filament\Resources\RefundResource::class,
+            default                                     => null,
+        };
+
+        return $resourceClass
+            ? $resourceClass::getUrl($page, ['record' => $this->id])
+            : null;
+    }
+
     public function getTotalDiscountAttribute()
     {
         return $this->lines()
@@ -293,13 +316,13 @@ class Move extends Model implements Sortable
 
     public function lines()
     {
-        return $this->hasMany(MoveLine::class, 'move_id')
-            ->where('display_type', 'product');
+        return $this->hasMany(MoveLine::class, 'move_id');
     }
 
-    public function allLines()
+    public function invoiceLines()
     {
-        return $this->hasMany(MoveLine::class, 'move_id');
+        return $this->hasMany(MoveLine::class, 'move_id')
+            ->where('display_type', 'product');
     }
 
     public function taxLines()
@@ -345,6 +368,15 @@ class Move extends Model implements Sortable
         ] : [MoveType::IN_INVOICE, MoveType::IN_REFUND]);
     }
 
+    public function getDirectionSignAttribute()
+    {
+        if ($this->isEntry() || $this->isOutbound()) {
+            return 1;
+        }
+
+        return -1;
+    }
+
     public function getValidJournalTypes()
     {
         if ($this->isSaleDocument(true)) {
@@ -365,17 +397,112 @@ class Move extends Model implements Sortable
     {
         parent::boot();
 
-        static::creating(function ($model) {
-            $model->creator_id = auth()->id();
+        static::creating(function ($move) {
+            $move->creator_id = auth()->id();
         });
 
-        static::created(function ($model) {
-            $model->updateSequencePrefix();
+        static::created(function ($move) {
+            $move->updateSequencePrefix();
 
-            $model->updateQuietly([
-                'name' => $model->sequence_prefix.'/'.$model->id,
+            $move->updateQuietly([
+                'name' => $move->sequence_prefix.'/'.$move->id,
             ]);
         });
+
+        static::saving(function ($move) {
+            $move->computePartnerDisplayInfo();
+
+            $move->computePartnerShippingId();
+
+            $move->computeCommercialPartnerId();
+
+            $move->computeJournalId();
+
+            $move->computeInvoiceCurrencyRate();
+
+            $move->computeInvoiceDateDue();
+        });
+    }
+
+    public function computePartnerDisplayInfo()
+    {
+        $vendorDisplayName = $this->partner?->name;
+
+        if (! $vendorDisplayName) {
+            if ($this->invoice_source_email) {
+                $vendorDisplayName = "@From: {$this->invoice_source_email}";
+            } else {
+                $vendorDisplayName = "#Created by: {$this->createdBy->name}";
+            }
+        }
+
+        $this->invoice_partner_display_name = $vendorDisplayName;
+    }
+
+    public function computeInvoiceCurrencyRate()
+    {
+        $this->invoice_currency_rate = 1;
+    }
+
+    public function computePartnerShippingId()
+    {
+        $this->partner_shipping_id = $this->partner_id;
+    }
+
+    public function computeCommercialPartnerId()
+    {
+        $this->commercial_partner_id = $this->partner_id;
+    }
+
+    public function computeInvoiceDateDue()
+    {
+        $dateMaturity = now();
+
+        if ($this->invoicePaymentTerm) {
+            $dueTerm = $this->invoicePaymentTerm->dueTerm;
+
+            if ($dueTerm) {
+                switch ($dueTerm->delay_type) {
+                    case DelayType::DAYS_AFTER->value:
+                        $dateMaturity = $dateMaturity->addDays((int) $dueTerm->nb_days);
+
+                        break;
+
+                    case DelayType::DAYS_AFTER_END_OF_MONTH->value:
+                        $dateMaturity = $dateMaturity->endOfMonth()->addDays((int) $dueTerm->nb_days);
+
+                        break;
+
+                    case DelayType::DAYS_AFTER_END_OF_NEXT_MONTH->value:
+                        $dateMaturity = $dateMaturity->addMonth()->endOfMonth()->addDays((int) $dueTerm->days_next_month);
+
+                        break;
+
+                    case DelayType::DAYS_END_OF_MONTH_NO_THE->value:
+                        $dateMaturity = $dateMaturity->endOfMonth();
+
+                        break;
+                }
+            }
+        }
+
+        $this->invoice_date_due = $dateMaturity;
+    }
+
+    public function computeJournalId()
+    {
+        if (! in_array($this->journal?->type, $this->getValidJournalTypes())) {
+            $this->journal_id = $this->searchDefaultJournal($this)?->id;
+        }
+    }
+
+    public function searchDefaultJournal()
+    {
+        $validJournalTypes = $this->getValidJournalTypes();
+
+        return Journal::where('company_id', $this->company_id)
+            ->whereIn('type', $validJournalTypes)
+            ->first();
     }
 
     /**

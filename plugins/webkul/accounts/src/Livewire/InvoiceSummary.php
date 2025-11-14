@@ -21,19 +21,25 @@ class InvoiceSummary extends Component
     public $amountTax = 0;
 
     #[Reactive]
+    public $rounding = 0;
+
+    #[Reactive]
     public $currency = null;
 
-    public function mount($currency, $products)
+    public function mount($currency, $products, $rounding = 0)
     {
         $this->currency = $currency;
 
         $this->products = $products ?? [];
+
+        $this->rounding = $rounding ?? 0;
     }
 
     public function render()
     {
         return view('accounts::livewire/invoice-summary', [
             'products' => $this->products,
+            'rounding' => $this->rounding,
         ]);
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\Currency;
 
 class JournalSeeder extends Seeder
 {
@@ -20,13 +21,15 @@ class JournalSeeder extends Seeder
 
         $company = Company::first();
 
+        $currency = Currency::first();
+
         $journals = [
             [
                 'id'                       => 1,
                 'default_account_id'       => 27,
                 'suspense_account_id'      => null,
                 'sort'                     => 5,
-                'currency_id'              => null,
+                'currency_id'              => $currency?->id,
                 'company_id'               => $company?->id,
                 'profit_account_id'        => null,
                 'loss_account_id'          => null,
@@ -52,7 +55,7 @@ class JournalSeeder extends Seeder
                 'default_account_id'       => 33,
                 'suspense_account_id'      => null,
                 'sort'                     => 6,
-                'currency_id'              => null,
+                'currency_id'              => $currency?->id,
                 'company_id'               => $company?->id,
                 'profit_account_id'        => null,
                 'loss_account_id'          => null,
@@ -78,7 +81,7 @@ class JournalSeeder extends Seeder
                 'default_account_id'       => null,
                 'suspense_account_id'      => null,
                 'sort'                     => 9,
-                'currency_id'              => null,
+                'currency_id'              => $currency?->id,
                 'company_id'               => $company?->id,
                 'profit_account_id'        => null,
                 'loss_account_id'          => null,
@@ -104,7 +107,7 @@ class JournalSeeder extends Seeder
                 'default_account_id'       => null,
                 'suspense_account_id'      => null,
                 'sort'                     => 10,
-                'currency_id'              => null,
+                'currency_id'              => $currency?->id,
                 'company_id'               => $company?->id,
                 'profit_account_id'        => null,
                 'loss_account_id'          => null,
@@ -130,7 +133,7 @@ class JournalSeeder extends Seeder
                 'default_account_id'       => 46,
                 'suspense_account_id'      => 47,
                 'sort'                     => null,
-                'currency_id'              => null,
+                'currency_id'              => $currency?->id,
                 'company_id'               => $company?->id,
                 'profit_account_id'        => null,
                 'loss_account_id'          => null,
@@ -157,7 +160,7 @@ class JournalSeeder extends Seeder
                 'default_account_id'       => null,
                 'suspense_account_id'      => null,
                 'sort'                     => null,
-                'currency_id'              => null,
+                'currency_id'              => $currency?->id,
                 'company_id'               => $company?->id,
                 'profit_account_id'        => null,
                 'loss_account_id'          => null,

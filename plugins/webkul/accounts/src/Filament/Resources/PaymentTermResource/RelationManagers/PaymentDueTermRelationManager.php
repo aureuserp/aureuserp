@@ -9,7 +9,7 @@ class PaymentDueTermRelationManager extends RelationManager
 {
     use PaymentDueTerm;
 
-    protected static string $relationship = 'dueTerm';
+    protected static string $relationship = 'dueTerms';
 
     protected static ?string $title = 'Due Terms';
 }

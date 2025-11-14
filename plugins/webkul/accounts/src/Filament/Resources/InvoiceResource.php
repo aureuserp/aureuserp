@@ -56,9 +56,9 @@ use Webkul\Account\Filament\Resources\InvoiceResource\Pages\ViewInvoice;
 use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\Partner;
+use Webkul\Account\Models\Product;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
-use Webkul\Invoice\Models\Product;
-use Webkul\Invoice\Settings\ProductSettings;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -192,6 +192,7 @@ class InvoiceResource extends Resource
                                     return [
                                         'currency' => Currency::find($get('currency_id')),
                                         'products' => $get('products'),
+                                        'rounding' => $get('invoice_cash_rounding_id') ? self::calculateRounding($get) : 0,
                                     ];
                                 })
                                     ->visible(fn (Get $get) => $get('currency_id') && $get('products'))
@@ -239,6 +240,15 @@ class InvoiceResource extends Resource
                                             ->preload()
                                             ->searchable()
                                             ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fieldset.payment-method')),
+                                        Select::make('invoice_cash_rounding_id')
+                                            ->label('Cash Rounding')
+                                            ->relationship('invoiceCashRounding', 'name')
+                                            ->searchable()
+                                            ->preload()
+                                            ->reactive()
+                                            ->live()
+                                            ->hint('Select how rounding differences should be handled.')
+                                            ->nullable(),
                                         Toggle::make('auto_post')
                                             ->default(0)
                                             ->inline(false)
@@ -574,7 +584,7 @@ class InvoiceResource extends Resource
                         Tab::make(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.title'))
                             ->icon('heroicon-o-list-bullet')
                             ->schema([
-                                RepeatableEntry::make('lines')
+                                RepeatableEntry::make('invoiceLines')
                                     ->hiddenLabel()
                                     ->columnManager()
                                     ->live()
@@ -639,6 +649,13 @@ class InvoiceResource extends Resource
                                             ->money(fn ($record) => $record->currency?->name),
                                     ])->columns(5),
                                 Livewire::make(InvoiceSummary::class, function ($record) {
+                                    $rounding = 0;
+                                    if ($record->invoiceCashRounding) {
+                                        $total = $record->amount_total ?? 0;
+                                        
+                                        $rounding = $record->invoiceCashRounding->computeDifference($record->currency, $total);
+                                    }
+
                                     return [
                                         'currency'   => $record->currency,
                                         'amountTax'  => $record->amount_tax ?? 0,
@@ -648,6 +665,7 @@ class InvoiceResource extends Resource
                                                 'taxes' => $item->taxes->pluck('id')->toArray() ?? [],
                                             ];
                                         })->toArray(),
+                                        'rounding'   => $rounding,
                                     ];
                                 }),
                             ]),
@@ -769,7 +787,7 @@ class InvoiceResource extends Resource
     public static function getProductRepeater(): Repeater
     {
         return Repeater::make('products')
-            ->relationship('lines')
+            ->relationship('invoiceLines')
             ->hiddenLabel()
             ->compact()
             ->live(onBlur: true)
@@ -786,7 +804,7 @@ class InvoiceResource extends Resource
                     ->toggleable(),
                 TableColumn::make('quantity')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.quantity'))
-                    ->width(150)
+                    ->width(100)
                     ->markAsRequired()
                     ->toggleable(),
                 TableColumn::make('uom_id')
@@ -796,19 +814,19 @@ class InvoiceResource extends Resource
                     ->toggleable(),
                 TableColumn::make('taxes')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.taxes'))
-                    ->width(250)
+                    ->width(150)
                     ->toggleable(),
                 TableColumn::make('discount')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.discount-percentage'))
-                    ->width(150)
+                    ->width(100)
                     ->toggleable(isToggledHiddenByDefault: true),
                 TableColumn::make('price_unit')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.unit-price'))
-                    ->width(150)
+                    ->width(100)
                     ->markAsRequired(),
                 TableColumn::make('price_subtotal')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.sub-total'))
-                    ->width(150)
+                    ->width(100)
                     ->toggleable(),
             ])
             ->itemLabel(function ($state) {
@@ -1062,6 +1080,33 @@ class InvoiceResource extends Resource
         $set('price_tax', $taxAmount);
 
         $set('price_total', $subTotal + $taxAmount);
+    }
+
+    private static function calculateRounding(Get $get): float
+    {
+        $cashRoundingId = $get('invoice_cash_rounding_id');
+
+        if (! $cashRoundingId) {
+            return 0;
+        }
+
+        $cashRounding = \Webkul\Account\Models\CashRounding::find($cashRoundingId);
+
+        if (! $cashRounding) {
+            return 0;
+        }
+
+        $products = $get('products') ?? [];
+
+        $total = 0;
+
+        foreach ($products as $product) {
+            $total += floatval($product['price_total'] ?? 0);
+        }
+
+        $currency = \Webkul\Support\Models\Currency::find($get('currency_id'));
+
+        return $cashRounding->computeDifference($currency, $total);
     }
 
     public static function getEloquentQuery(): Builder

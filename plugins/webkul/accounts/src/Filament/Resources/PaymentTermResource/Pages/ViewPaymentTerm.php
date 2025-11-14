@@ -5,18 +5,15 @@ namespace Webkul\Account\Filament\Resources\PaymentTermResource\Pages;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
-use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Account\Filament\Resources\PaymentTermResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewPaymentTerm extends ViewRecord
 {
-    protected static string $resource = PaymentTermResource::class;
+    use HasRecordNavigationTabs;
 
-    public static function getSubNavigationPosition(): SubNavigationPosition
-    {
-        return SubNavigationPosition::Top;
-    }
+    protected static string $resource = PaymentTermResource::class;
 
     protected function getHeaderActions(): array
     {

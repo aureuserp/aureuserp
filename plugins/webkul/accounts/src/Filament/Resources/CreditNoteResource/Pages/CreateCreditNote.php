@@ -4,7 +4,7 @@ namespace Webkul\Account\Filament\Resources\CreditNoteResource\Pages;
 
 use Filament\Notifications\Notification;
 use Webkul\Account\Enums\MoveType;
-use Webkul\Account\Facades\Account;
+use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\CreditNoteResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\CreateInvoice as CreateRecord;
 
@@ -36,6 +36,6 @@ class CreateCreditNote extends CreateRecord
 
     protected function afterCreate(): void
     {
-        Account::computeAccountMove($this->getRecord());
+        AccountFacade::computeAccountMove($this->getRecord());
     }
 }

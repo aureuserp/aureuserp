@@ -10,7 +10,7 @@ class DistributionForInvoiceRelationManager extends RelationManager
 {
     use TaxPartition;
 
-    protected static string $relationship = 'distributionForInvoice';
+    protected static string $relationship = 'invoiceRepartitionLines';
 
     protected static ?string $title = 'Distribution for Invoice';
 
