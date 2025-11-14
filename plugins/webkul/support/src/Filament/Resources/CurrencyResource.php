@@ -2,16 +2,20 @@
 
 namespace Webkul\Support\Filament\Resources;
 
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
+use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
+use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
@@ -24,6 +28,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\QueryException;
+use Webkul\Support\Filament\Forms\Components\Repeater;
+use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Resources\CurrencyResource\Pages\CreateCurrency;
 use Webkul\Support\Filament\Resources\CurrencyResource\Pages\EditCurrency;
 use Webkul\Support\Filament\Resources\CurrencyResource\Pages\ListCurrencies;
@@ -110,6 +116,46 @@ class CurrencyResource extends Resource
                             ->columnSpan(['lg' => 1]),
                     ])
                     ->columns(3),
+                Section::make(__('support::filament/resources/currency.form.sections.rates.title'))
+                    ->description(__('support::filament/resources/currency.form.sections.rates.description'))
+                    ->schema([
+                        Repeater::make('rates')
+                            ->relationship('rates')
+                            ->hiddenLabel()
+                            ->compact()
+                            ->minItems(1)
+                            ->addActionLabel(__('support::filament/resources/currency.form.sections.rates.add-rate'))
+                            ->deleteAction(function (Action $action) {
+                                return $action->requiresConfirmation();
+                            })
+                            ->cloneable()
+                            ->table([
+                                TableColumn::make('name')
+                                    ->label(__('support::filament/resources/currency.form.sections.rates.fields.name')),
+                                TableColumn::make('rate')
+                                    ->label(__('support::filament/resources/currency.form.sections.rates.fields.rate')),
+                                TableColumn::make('created_at')
+                                    ->label(__('support::filament/resources/currency.form.sections.rates.fields.date')),
+                            ])
+                            ->schema([
+                                TextInput::make('name')
+                                    ->label(__('support::filament/resources/currency.form.sections.rates.fields.name'))
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->placeholder(__('support::filament/resources/currency.form.sections.rates.fields.name-placeholder')),
+                                TextInput::make('rate')
+                                    ->label(__('support::filament/resources/currency.form.sections.rates.fields.rate'))
+                                    ->required()
+                                    ->numeric()
+                                    ->step(0.000001)
+                                    ->minValue(0)
+                                    ->default(1.000000),
+                                DateTimePicker::make('created_at')
+                                    ->label(__('support::filament/resources/currency.form.sections.rates.fields.date'))
+                                    ->default(now())
+                                    ->required(),
+                            ]),
+                    ]),
             ])
             ->columns(1);
     }
@@ -261,7 +307,30 @@ class CurrencyResource extends Resource
                                         IconEntry::make('active')
                                             ->label(__('support::filament/resources/currency.infolist.sections.status-and-configuration-information.entries.status')),
                                     ]),
-                            ])->columnSpan(1),
+                            ])
+                            ->columnSpan(1),
+                    ]),
+                Section::make(__('support::filament/resources/currency.infolist.sections.rates.title'))
+                    ->schema([
+                        RepeatableEntry::make('rates')
+                            ->hiddenLabel()
+                            ->table([
+                                InfolistTableColumn::make('name')
+                                    ->label(__('support::filament/resources/currency.infolist.sections.rates.entries.name')),
+                                InfolistTableColumn::make('rate')
+                                    ->label(__('support::filament/resources/currency.infolist.sections.rates.entries.rate')),
+                                InfolistTableColumn::make('created_at')
+                                    ->label(__('support::filament/resources/currency.infolist.sections.rates.entries.date')),
+                            ])
+                            ->schema([
+                                TextEntry::make('name')
+                                    ->placeholder('-'),
+                                TextEntry::make('rate')
+                                    ->placeholder('-'),
+                                TextEntry::make('created_at')
+                                    ->placeholder('-')
+                                    ->dateTime(),
+                            ]),
                     ]),
             ])
             ->columns(1);
