@@ -6,11 +6,11 @@ use Filament\Support\Contracts\HasLabel;
 
 enum RoundingMethod: string implements HasLabel
 {
-    case UP = 'up';
+    case UP = 'UP';
 
-    case DOWN = 'down';
+    case DOWN = 'DOWN';
 
-    case HALF_UP = 'half_up';
+    case HALF_UP = 'HALF-UP';
 
     public function getLabel(): ?string
     {

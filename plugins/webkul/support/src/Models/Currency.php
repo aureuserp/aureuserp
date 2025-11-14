@@ -30,6 +30,48 @@ class Currency extends Model
         return $this->hasMany(CurrencyRate::class);
     }
 
+    public function convert(float $fromAmount, Currency $toCurrency, ?Company $company = null, $date = null, bool $round = true): float
+    {
+        $base = $this ?? $toCurrency;
+
+        $toCurrency = $toCurrency ?? $this;
+
+        if ($fromAmount) {
+            $rate = $this->getConversionRate($base, $toCurrency, $company, $date);
+
+            $toAmount = $fromAmount * $rate;
+        } else {
+            return 0.0;
+        }
+
+        return $round ? $toCurrency->round($toAmount) : $toAmount;
+    }
+
+    public function getConversionRate($fromCurrency, $toCurrency, $company = null, $date = null)
+    {
+        if ($fromCurrency->id === $toCurrency->id) {
+            return 1;
+        }
+
+        $company = $company ?? auth()->user()->company ?? null;
+
+        $date = $date ?? now()->toDateString();
+
+        $rateRecord = $fromCurrency->rates
+            ->where('company_id', $company->id ?? null)
+            ->whereDate('name', '<=', $date)
+            ->sortByDesc('name')
+            ->first();
+
+        if (! $rateRecord) {
+            return 1;
+        }
+
+        $inverseRate = $rateRecord->inverse_rate ?? (1 / $rateRecord->rate);
+
+        return $inverseRate;
+    }
+
     /**
      * TODO: Implement proper rounding logic.
      */

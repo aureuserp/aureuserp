@@ -16,6 +16,10 @@ class CurrencyRate extends Model
         'company_id',
     ];
 
+    protected $casts = [
+        'name' => 'date',
+    ];
+
     public function currency()
     {
         return $this->belongsTo(Currency::class);
@@ -29,5 +33,14 @@ class CurrencyRate extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function getInverseRateAttribute()
+    {
+        if ($this->rate == 0) {
+            return null;
+        }
+
+        return 1 / $this->rate;
     }
 }

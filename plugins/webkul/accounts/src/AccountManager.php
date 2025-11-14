@@ -5,6 +5,7 @@ namespace Webkul\Account;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
@@ -140,62 +141,9 @@ class AccountManager
             $line->save();
         }
 
-        $record = $this->computeMoveTotals($record);
-
-        $this->applyCashRounding($record);
-
-        $record->load('lines');
-
-        $this->syncPaymentTermLines($record);
-
-        $record = $this->computeMoveTotals($record);
-
         $record->save();
 
         return $record;
-    }
-
-    public function applyCashRounding(Move $move)
-    {
-        $cashRounding = $move->invoiceCashRounding;
-
-        if (! $cashRounding) {
-            return;
-        }
-
-        $difference = $cashRounding->computeDifference($move->amount_total);
-
-        if (abs($difference) < 0.00001) {
-            return;
-        }
-
-        $accountId = $difference > 0
-            ? $cashRounding->profit_account_id
-            : $cashRounding->loss_account_id;
-
-        $move->lines()
-            ->where('display_type', DisplayType::ROUNDING)
-            ->delete();
-
-        $roundingLine = new MoveLine([
-            'move_id'         => $move->id,
-            'display_type'    => DisplayType::ROUNDING,
-            'account_id'      => $accountId,
-            'name'            => 'Cash Rounding Adjustment',
-            'balance'         => -$difference,
-            'amount_currency' => -$difference,
-            'id'              => null, // Ensure no ID is set for new line
-        ]);
-
-        if ($difference < 0) {
-            $roundingLine->debit = abs($difference);
-            $roundingLine->credit = 0;
-        } else {
-            $roundingLine->credit = abs($difference);
-            $roundingLine->debit = 0;
-        }
-        $roundingLine->save();
-        Log::info($roundingLine);
     }
 
     public function computeMoveTotals(Move $move): Move
@@ -313,6 +261,8 @@ class AccountManager
     {
         $this->syncTaxLines($move);
 
+        $this->syncRoundingLines($move);
+
         $this->syncPaymentTermLines($move);
     }
 
@@ -375,11 +325,164 @@ class AccountManager
         }
     }
 
+    public function syncRoundingLines(Move $move)
+    {
+        if ($move->state === MoveState::POSTED) {
+            return;
+        }
+
+        $computeCashRounding = function ($move, $totalAmountCurrency) {
+            $difference = $move->invoiceCashRounding->computeDifference($move->currency, $totalAmountCurrency);
+
+            if ($move->currency->id === $move->company->currency->id) {
+                $diffAmountCurrency = $diffBalance = $difference;
+            } else {
+                $diffAmountCurrency = $difference;
+
+                $diffBalance = $move->currency->convert(
+                    $diffAmountCurrency, 
+                    $move->company->currency, 
+                    $move->company, 
+                    $move->invoice_date ?? $move->date
+                );
+            }
+            
+            return [$diffBalance, $diffAmountCurrency];
+        };
+
+        $applyCashRounding = function ($move, $diffBalance, $diffAmountCurrency, $cashRoundingLine) {
+            $roundingLineVals = [
+                'balance' => $diffBalance,
+                'amount_currency' => $diffAmountCurrency,
+                'partner_id' => $move->partner_id,
+                'move_id' => $move->id,
+                'currency_id' => $move->currency_id,
+                'company_id' => $move->company_id,
+                'company_currency_id' => $move->company->currency_id,
+                'display_type' => DisplayType::ROUNDING,
+            ];
+
+            if ($move->invoiceCashRounding->strategy === 'biggest_tax') {
+                $biggestTaxLine = null;
+
+                $taxLines = $move->lines->filter(function ($line) {
+                    return $line->tax_repartition_line_id !== null;
+                });
+                
+                foreach ($taxLines as $taxLine) {
+                    if (! $biggestTaxLine || abs($taxLine->balance) > abs($biggestTaxLine->balance)) {
+                        $biggestTaxLine = $taxLine;
+                    }
+                }
+
+                if (! $biggestTaxLine) {
+                    return null;
+                }
+
+                $roundingLineVals['name'] = "Tax Rounding ({$biggestTaxLine->name})";
+
+                $roundingLineVals['account_id'] = $biggestTaxLine->account_id;
+
+                $roundingLineVals['tax_repartition_line_id'] = $biggestTaxLine->tax_repartition_line_id;
+
+                $roundingLineVals['tax_ids'] = $biggestTaxLine->taxes->pluck('id')->toArray();
+            } elseif ($move->invoiceCashRounding->strategy === 'add_invoice_line') {
+                if ($diffBalance > 0.0 && $move->invoiceCashRounding->loss_account_id) {
+                    $accountId = $move->invoiceCashRounding->loss_account_id;
+                } else {
+                    $accountId = $move->invoiceCashRounding->profit_account_id;
+                }
+                
+                $roundingLineVals['name'] = $move->invoiceCashRounding->name;
+
+                $roundingLineVals['account_id'] = $accountId;
+
+                $roundingLineVals['tax_ids'] = [];
+            }
+
+            if ($cashRoundingLine) {
+                $cashRoundingLine->update($roundingLineVals);
+
+                return $cashRoundingLine;
+            } else {
+                return MoveLine::create($roundingLineVals);
+            }
+        };
+
+        $existingCashRoundingLine = $move->lines->filter(function ($line) {
+            return $line->display_type === DisplayType::ROUNDING;
+        })->first();
+
+        if (! $move->invoiceCashRounding) {
+            if ($existingCashRoundingLine) {
+                $existingCashRoundingLine->delete();
+            }
+
+            return;
+        }
+
+        if ($move->invoiceCashRounding && $existingCashRoundingLine) {
+            $strategy = $move->invoiceCashRounding->strategy;
+
+            $oldStrategy = $existingCashRoundingLine->tax_line_id ? 'biggest_tax' : 'add_invoice_line';
+            
+            if ($strategy !== $oldStrategy) {
+                $existingCashRoundingLine->delete();
+                
+                $existingCashRoundingLine = null;
+            }
+        }
+
+        $othersLines = $move->lines->filter(function ($line) {
+            return !in_array($line->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE]);
+        });
+        
+        if ($existingCashRoundingLine) {
+            $othersLines = $othersLines->reject(function ($line) use ($existingCashRoundingLine) {
+                return $line->id === $existingCashRoundingLine->id;
+            });
+        }
+        
+        $totalAmountCurrency = $othersLines->sum('amount_currency');
+
+        [$diffBalance, $diffAmountCurrency] = $computeCashRounding($move, $totalAmountCurrency);
+
+        if ($move->currency->isZero($diffBalance) && $move->currency->isZero($diffAmountCurrency)) {
+            if ($existingCashRoundingLine) {
+                $existingCashRoundingLine->delete();
+            }
+
+            return;
+        }
+
+        if ($existingCashRoundingLine) {
+            $balanceCompare = float_compare(
+                $existingCashRoundingLine->balance, 
+                $diffBalance, 
+                precisionRounding: $move->currency->rounding
+            );
+
+            $amountCompare = float_compare(
+                $existingCashRoundingLine->amount_currency, 
+                $diffAmountCurrency, 
+                precisionRounding: $move->currency->rounding
+            );
+            
+            if ($balanceCompare === 0 && $amountCompare === 0) {
+                return;
+            }
+        }
+
+        $applyCashRounding($move, $diffBalance, $diffAmountCurrency, $existingCashRoundingLine);
+    }
+
     public function syncPaymentTermLines(Move $move)
     {
         if (! $move->isInvoice(true)) {
             return;
         }
+
+        $move->refresh();
 
         $neededTerms = $this->prepareNeededTerms($move);
 
@@ -528,7 +631,7 @@ class AccountManager
 
             $untaxedAmount = $untaxedAmountCurrency;
 
-            // $sign = $move->direction_sign;
+            $sign = $move->direction_sign;
             
             [$baseLines, $taxLines] = $this->getRoundedBaseAndTaxLines($move, false);
 
@@ -546,17 +649,6 @@ class AccountManager
                 $taxAmountCurrency += $sign * $taxLineVals['amount_currency'];
 
                 $taxAmount += $sign * $taxLineVals['balance'];
-            }
-            // Include cash rounding lines (non-tax repartition rounding adjustments)
-            $roundingLines = $move->lines
-                ->where('display_type', DisplayType::ROUNDING)
-                ->whereNull('tax_repartition_line_id');
-
-            Log::info($roundingLines);
-            foreach ($roundingLines as $roundLine) {
-                // classify rounding as untaxed (your computeMoveTotals treats non-tax rounding as untaxed)
-                $untaxedAmountCurrency += $sign * ($roundLine->amount_currency ?? 0.0);
-                $untaxedAmount += $sign * ($roundLine->balance ?? 0.0);
             }
 
             if ($move->invoice_payment_term_id) {

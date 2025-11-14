@@ -53,6 +53,7 @@ class SupportServiceProvider extends PackageServiceProvider
                 '2025_04_04_061507_add_address_columns_in_companies_table',
                 '2025_04_04_062023_alter_companies_table',
                 '2025_10_10_080114_create_currency_rates_table',
+                '2025_11_14_102615_alter_currency_rates_table',
             ])
             ->runsMigrations()
             ->hasCommands([

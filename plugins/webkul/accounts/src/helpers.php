@@ -1,5 +1,40 @@
 <?php
 
+if (! function_exists('float_is_zero')) {
+    function float_is_zero($value, $precisionDigits = null, $precisionRounding = null)
+    {
+        $epsilon = float_check_precision($precisionDigits, $precisionRounding);
+
+        if ($value == 0.0) {
+            return true;
+        }
+
+        return abs(float_round($value, precisionRounding: $epsilon)) < $epsilon;
+    }
+}
+
+if (! function_exists('float_compare')) {
+    function float_compare($value1, $value2, $precisionDigits = null, $precisionRounding = null)
+    {
+        $roundingFactor = float_check_precision($precisionDigits, $precisionRounding);
+
+        if ($value1 == $value2) {
+            return 0;
+        }
+
+        $value1 = float_round($value1, precisionRounding: $roundingFactor);
+        $value2 = float_round($value2, precisionRounding: $roundingFactor);
+
+        $delta = $value1 - $value2;
+
+        if (float_is_zero($delta, null, precisionRounding: $roundingFactor)) {
+            return 0;
+        }
+
+        return $delta < 0.0 ? -1 : 1;
+    }
+}
+
 if (! function_exists('float_check_precision')) {
     function float_check_precision($precisionDigits = null, $precisionRounding = null)
     {

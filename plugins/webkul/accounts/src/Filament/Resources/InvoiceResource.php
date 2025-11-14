@@ -651,8 +651,9 @@ class InvoiceResource extends Resource
                                 Livewire::make(InvoiceSummary::class, function ($record) {
                                     $rounding = 0;
                                     if ($record->invoiceCashRounding) {
-                                        $total = $record->amount_total;
-                                        $rounding = $record->invoiceCashRounding->computeDifference($total);
+                                        $total = $record->amount_total ?? 0;
+                                        
+                                        $rounding = $record->invoiceCashRounding->computeDifference($record->currency, $total);
                                     }
 
                                     return [
@@ -1084,22 +1085,28 @@ class InvoiceResource extends Resource
     private static function calculateRounding(Get $get): float
     {
         $cashRoundingId = $get('invoice_cash_rounding_id');
+
         if (! $cashRoundingId) {
             return 0;
         }
 
         $cashRounding = \Webkul\Account\Models\CashRounding::find($cashRoundingId);
+
         if (! $cashRounding) {
             return 0;
         }
 
         $products = $get('products') ?? [];
+
         $total = 0;
+
         foreach ($products as $product) {
             $total += floatval($product['price_total'] ?? 0);
         }
 
-        return $cashRounding->computeDifference($total);
+        $currency = \Webkul\Support\Models\Currency::find($get('currency_id'));
+
+        return $cashRounding->computeDifference($currency, $total);
     }
 
     public static function getEloquentQuery(): Builder

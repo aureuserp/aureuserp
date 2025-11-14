@@ -725,7 +725,7 @@ class TaxManager
 
     public function addTaxDetailsInBaseLine(array $baseLine, $company, $roundingMethod = null)
     {
-        $priceUnitAfterDiscount = $baseLine['price_unit'] * (1 - ($baseLine['discount'] / 100));
+        $priceUnitAfterDiscount = $baseLine['priceUnit'] * (1 - ($baseLine['discount'] / 100));
 
         $taxesComputation = $this->getTaxDetails(
             taxes : $baseLine['taxes'],
