@@ -2,12 +2,13 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Configuration\Resources;
 
+use Filament\Pages\Page;
+use Webkul\Account\Filament\Resources\PaymentTermResource as BasePaymentTermResource;
 use Webkul\Accounting\Filament\Clusters\Configuration;
-use Webkul\Accounting\Filament\Clusters\Configuration\Resources\PaymentTermResource\Pages\ListPaymentTerms;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\PaymentTermResource\Pages\CreatePaymentTerm;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\PaymentTermResource\Pages\EditPaymentTerm;
+use Webkul\Accounting\Filament\Clusters\Configuration\Resources\PaymentTermResource\Pages\ListPaymentTerms;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\PaymentTermResource\Pages\ViewPaymentTerm;
-use Webkul\Account\Filament\Resources\PaymentTermResource as BasePaymentTermResource;
 
 class PaymentTermResource extends BasePaymentTermResource
 {
@@ -30,13 +31,21 @@ class PaymentTermResource extends BasePaymentTermResource
         return __('accounting::filament/clusters/configurations/resources/payment-term.navigation.group');
     }
 
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            ViewPaymentTerm::class,
+            EditPaymentTerm::class,
+        ]);
+    }
+
     public static function getPages(): array
     {
         return [
-            'index' => ListPaymentTerms::route('/'),
+            'index'  => ListPaymentTerms::route('/'),
             'create' => CreatePaymentTerm::route('/create'),
-            'edit' => EditPaymentTerm::route('/{record}/edit'),
-            'view' => ViewPaymentTerm::route('/{record}'),
+            'edit'   => EditPaymentTerm::route('/{record}/edit'),
+            'view'   => ViewPaymentTerm::route('/{record}'),
         ];
     }
 }

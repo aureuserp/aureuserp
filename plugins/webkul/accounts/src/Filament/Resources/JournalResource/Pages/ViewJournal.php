@@ -7,9 +7,12 @@ use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Account\Filament\Resources\JournalResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewJournal extends ViewRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = JournalResource::class;
 
     protected function getHeaderActions(): array

@@ -4,21 +4,17 @@ namespace Webkul\Account;
 
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Account\Enums\DelayType;
+use Illuminate\Support\Facades\Log;
 use Webkul\Account\Enums\DisplayType;
-use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Mail\Invoice\Actions\InvoiceEmail;
 use Webkul\Account\Models\Move;
-use Webkul\Account\Models\Account;
-use Webkul\Account\Models\FiscalPosition;
-use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Partner;
-use Webkul\Account\Models\Tax;
 use Webkul\Support\Services\EmailService;
 
 class AccountManager
@@ -140,15 +136,66 @@ class AccountManager
 
         foreach ($record->invoiceLines as $line) {
             $line = $this->computeMoveLineTotals($line);
-            
+
             $line->save();
         }
+
+        $record = $this->computeMoveTotals($record);
+
+        $this->applyCashRounding($record);
+
+        $record->load('lines');
+
+        $this->syncPaymentTermLines($record);
 
         $record = $this->computeMoveTotals($record);
 
         $record->save();
 
         return $record;
+    }
+
+    public function applyCashRounding(Move $move)
+    {
+        $cashRounding = $move->invoiceCashRounding;
+
+        if (! $cashRounding) {
+            return;
+        }
+
+        $difference = $cashRounding->computeDifference($move->amount_total);
+
+        if (abs($difference) < 0.00001) {
+            return;
+        }
+
+        $accountId = $difference > 0
+            ? $cashRounding->profit_account_id
+            : $cashRounding->loss_account_id;
+
+        $move->lines()
+            ->where('display_type', DisplayType::ROUNDING)
+            ->delete();
+
+        $roundingLine = new MoveLine([
+            'move_id'         => $move->id,
+            'display_type'    => DisplayType::ROUNDING,
+            'account_id'      => $accountId,
+            'name'            => 'Cash Rounding Adjustment',
+            'balance'         => -$difference,
+            'amount_currency' => -$difference,
+            'id'              => null, // Ensure no ID is set for new line
+        ]);
+
+        if ($difference < 0) {
+            $roundingLine->debit = abs($difference);
+            $roundingLine->credit = 0;
+        } else {
+            $roundingLine->credit = abs($difference);
+            $roundingLine->debit = 0;
+        }
+        $roundingLine->save();
+        Log::info($roundingLine);
     }
 
     public function computeMoveTotals(Move $move): Move
@@ -179,7 +226,7 @@ class AccountManager
                     $totalCurrency += $line->amount_currency;
                 } elseif (in_array($line->display_type, [
                     DisplayType::PRODUCT,
-                    DisplayType::ROUNDING
+                    DisplayType::ROUNDING,
                 ])) {
                     $totalUntaxed += $line->balance;
 
@@ -225,7 +272,7 @@ class AccountManager
         }
 
         $move->amount_residual_signed = $totalResidual;
-        
+
         if ($move->move_type == MoveType::ENTRY) {
             $move->amount_total_in_currency_signed = abs($move->amount_total);
         } else {
@@ -280,23 +327,23 @@ class AccountManager
         $roundFromTaxLines = ! $move->isInvoice(true) && $taxLines->isNotEmpty();
 
         [$baseLinesValues, $taxLinesValues] = $this->getRoundedBaseAndTaxLines($move, $roundFromTaxLines);
-        
+
         $baseLinesValues = TaxFacade::addAccountingDataInBaseLinesTaxDetails(
-            $baseLinesValues, 
-            $move->company, 
+            $baseLinesValues,
+            $move->company,
             $move->always_tax_exigible
         );
-        
+
         $taxResults = TaxFacade::prepareTaxLines(
-            $baseLinesValues, 
-            $move->company, 
+            $baseLinesValues,
+            $move->company,
             $taxLinesValues
         );
 
         foreach ($taxResults['base_lines_to_update'] as $baseLine) {
             $baseLine['record']->update([
                 'amount_currency' => $baseLine['amount_currency'],
-                'balance' => $baseLine['balance'],
+                'balance'         => $baseLine['balance'],
             ]);
         }
 
@@ -306,10 +353,10 @@ class AccountManager
 
         foreach ($taxResults['tax_lines_to_add'] as $taxLineVals) {
             unset($taxLineVals['tax_ids']);
-            
+
             $taxMoveLine = MoveLine::create(array_merge($taxLineVals, [
                 'display_type' => DisplayType::TAX,
-                'move_id' => $move->id,
+                'move_id'      => $move->id,
             ]));
 
             $taxMoveLine->computeCreditAndDebit();
@@ -342,18 +389,18 @@ class AccountManager
 
         $neededMapping = collect($neededTerms)->mapWithKeys(function ($data) {
             $key = [
-                'move_id' => $data['move_id'],
+                'move_id'       => $data['move_id'],
                 'date_maturity' => $data['date_maturity'],
                 'discount_date' => $data['discount_date'],
             ];
 
             return [json_encode($key) => [
-                'key' => $key,
+                'key'    => $key,
                 'values' => [
-                    'balance' => $data['balance'],
-                    'amount_currency' => $data['amount_currency'],
-                    'discount_date' => $data['discount_date'],
-                    'discount_balance' => $data['discount_balance'],
+                    'balance'                  => $data['balance'],
+                    'amount_currency'          => $data['amount_currency'],
+                    'discount_date'            => $data['discount_date'],
+                    'discount_balance'         => $data['discount_balance'],
                     'discount_amount_currency' => $data['discount_amount_currency'],
                 ],
             ]];
@@ -388,11 +435,10 @@ class AccountManager
         }
     }
 
-
     protected function getRoundedBaseAndTaxLines(Move $move, $roundFromTaxLines = true)
     {
         $baseAmls = $move->lines->where('display_type', DisplayType::PRODUCT);
-        
+
         $baseLines = [];
 
         foreach ($baseAmls as $line) {
@@ -400,26 +446,26 @@ class AccountManager
         }
 
         $taxLines = [];
-        
+
         $cashRoundingAmls = $move->lines
             ->where('display_type', DisplayType::ROUNDING)
             ->whereNull('tax_repartition_line_id');
 
         foreach ($cashRoundingAmls as $line) {
-            $baseLines[] = $move->prepareCashRoundingBaseLineForTaxesComputation($move, $line);
+            $baseLines[] = $this->prepareCashRoundingBaseLineForTaxesComputation($move, $line);
         }
-        
+
         $baseLines = TaxFacade::addTaxDetailsInBaseLines($baseLines, $move->company);
-        
+
         $taxAmls = $move->lines->whereNotNull('tax_repartition_line_id');
 
         foreach ($taxAmls as $taxLine) {
             $taxLines[] = TaxFacade::prepareTaxLineForTaxesComputation($taxLine);
         }
-        
+
         $baseLines = TaxFacade::roundBaseLinesTaxDetails(
-            $baseLines, 
-            $move->company, 
+            $baseLines,
+            $move->company,
             $roundFromTaxLines ? $taxLines : []
         );
 
@@ -470,12 +516,12 @@ class AccountManager
     public function prepareNeededTerms(AccountMove $move)
     {
         $neededTerms = [];
-        
+
         $sign = $move->isInbound(true) ? 1 : -1;
-        
+
         if ($move->isInvoice(true) && $move->invoiceLines()->exists()) {
             $taxAmountCurrency = 0.0;
-            
+
             $taxAmount = $taxAmountCurrency;
 
             $untaxedAmountCurrency = 0.0;
@@ -495,14 +541,25 @@ class AccountManager
 
                 $untaxedAmount += $sign * $baseLine['balance'];
             }
-            
+
             foreach ($taxResults['tax_lines_to_add'] as $taxLineVals) {
                 $taxAmountCurrency += $sign * $taxLineVals['amount_currency'];
 
                 $taxAmount += $sign * $taxLineVals['balance'];
             }
+            // Include cash rounding lines (non-tax repartition rounding adjustments)
+            $roundingLines = $move->lines
+                ->where('display_type', DisplayType::ROUNDING)
+                ->whereNull('tax_repartition_line_id');
 
-            if ($move->invoice_payment_term_id) { 
+            Log::info($roundingLines);
+            foreach ($roundingLines as $roundLine) {
+                // classify rounding as untaxed (your computeMoveTotals treats non-tax rounding as untaxed)
+                $untaxedAmountCurrency += $sign * ($roundLine->amount_currency ?? 0.0);
+                $untaxedAmount += $sign * ($roundLine->balance ?? 0.0);
+            }
+
+            if ($move->invoice_payment_term_id) {
                 $invoicePaymentTerms = $move->invoicePaymentTerm->computeTerms(
                     dateRef: $move->invoice_date ?? $move->date ?? now(),
                     currency: $move->currency,
@@ -517,22 +574,22 @@ class AccountManager
 
                 foreach ($invoicePaymentTerms['lines'] as $termLine) {
                     $key = [
-                        'move_id' => $move->id,
+                        'move_id'       => $move->id,
                         'date_maturity' => $termLine['date']?->toDateString(),
                         'discount_date' => $invoicePaymentTerms['discount_date']?->toDateString(),
                     ];
 
                     $values = [
-                        'balance' => $termLine['company_amount'],
-                        'amount_currency' => $termLine['foreign_amount'],
-                        'discount_date' => $invoicePaymentTerms['discount_date'] ?? null,
-                        'discount_balance' => $invoicePaymentTerms['discount_balance'] ?? 0.0,
+                        'balance'                  => $termLine['company_amount'],
+                        'amount_currency'          => $termLine['foreign_amount'],
+                        'discount_date'            => $invoicePaymentTerms['discount_date'] ?? null,
+                        'discount_balance'         => $invoicePaymentTerms['discount_balance'] ?? 0.0,
                         'discount_amount_currency' => $invoicePaymentTerms['discount_amount_currency'] ?? 0.0,
                     ];
-                    
+
                     $keyStr = json_encode($key);
 
-                    if (!isset($neededTerms[$keyStr])) {
+                    if (! isset($neededTerms[$keyStr])) {
                         $neededTerms[$keyStr] = array_merge($key, $values);
                     } else {
                         $neededTerms[$keyStr]['balance'] += $values['balance'];
@@ -542,22 +599,22 @@ class AccountManager
                 }
             } else {
                 $key = [
-                    'move_id' => $move->id,
-                    'date_maturity' => $move->invoice_date_due?->toDateString(),
-                    'discount_date' => false,
-                    'discount_balance' => 0.0,
-                    'discount_amount_currency' => 0.0
+                    'move_id'                  => $move->id,
+                    'date_maturity'            => $move->invoice_date_due?->toDateString(),
+                    'discount_date'            => false,
+                    'discount_balance'         => 0.0,
+                    'discount_amount_currency' => 0.0,
                 ];
-                
+
                 $keyStr = json_encode($key);
 
                 $neededTerms[$keyStr] = array_merge($key, [
-                    'balance' => $untaxedAmount + $taxAmount,
+                    'balance'         => $untaxedAmount + $taxAmount,
                     'amount_currency' => $untaxedAmountCurrency + $taxAmountCurrency,
                 ]);
             }
         }
-        
+
         return $neededTerms;
     }
 }

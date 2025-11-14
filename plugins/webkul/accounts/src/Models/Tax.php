@@ -4,16 +4,12 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Enums\DocumentType;
-use Webkul\Account\Enums\RepartitionType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
-use Webkul\Support\Models\Currency;
-use Webkul\Partner\Models\Partner;
 
 class Tax extends Model implements Sortable
 {
@@ -97,7 +93,6 @@ class Tax extends Model implements Sortable
             || ($this->company->account_price_include == 'tax_included' && ! $this->price_include_override);
     }
 
-
     public function evalTaxAmountFixedAmount($batch, $rawBase, $evaluationContext)
     {
         if ($this->amount_type === 'fixed') {
@@ -152,78 +147,14 @@ class Tax extends Model implements Sortable
     {
         parent::boot();
 
-        static::created(function (self $tax) {
-            $tax->attachInvoiceRepartitionLines($tax);
-
-            $tax->attachRefundRepartitionLines($tax);
+        static::saved(function (self $tax) {
+            try {
+                if ($tax->invoiceRepartitionLines()->exists() && $tax->refundRepartitionLines()->exists()) {
+                    TaxPartition::validateRepartitionLines($tax->id);
+                }
+            } catch (\Exception $e) {
+                throw $e;
+            }
         });
-    }
-
-    private function attachInvoiceRepartitionLines(self $tax)
-    {
-        $invoiceRepartitionLines = [
-            [
-                'tax_id'             => $tax->id,
-                'company_id'         => $tax->company_id,
-                'sort'               => 1,
-                'creator_id'         => $tax->creator_id,
-                'repartition_type'   => RepartitionType::BASE->value,
-                'document_type'      => DocumentType::INVOICE->value,
-                'use_in_tax_closing' => false,
-                'factor_percent'     => null,
-                'factor'             => null,
-                'created_at'         => now(),
-                'updated_at'         => now(),
-            ],
-            [
-                'tax_id'             => $tax->id,
-                'company_id'         => $tax->company_id,
-                'sort'               => 1,
-                'creator_id'         => $tax->creator_id,
-                'repartition_type'   => RepartitionType::TAX->value,
-                'document_type'      => DocumentType::INVOICE->value,
-                'use_in_tax_closing' => false,
-                'factor_percent'     => 100,
-                'factor'             => 1,
-                'created_at'         => now(),
-                'updated_at'         => now(),
-            ],
-        ];
-
-        DB::table('accounts_tax_partition_lines')->insert($invoiceRepartitionLines);
-    }
-
-    private function attachRefundRepartitionLines(self $tax)
-    {
-        $refundRepartitionLines = [
-            [
-                'tax_id'             => $tax->id,
-                'company_id'         => $tax->company_id,
-                'sort'               => 1,
-                'creator_id'         => $tax->creator_id,
-                'repartition_type'   => RepartitionType::BASE->value,
-                'document_type'      => DocumentType::REFUND->value,
-                'use_in_tax_closing' => false,
-                'factor_percent'     => null,
-                'factor'             => null,
-                'created_at'         => now(),
-                'updated_at'         => now(),
-            ],
-            [
-                'tax_id'             => $tax->id,
-                'company_id'         => $tax->company_id,
-                'sort'               => 1,
-                'creator_id'         => $tax->creator_id,
-                'repartition_type'   => RepartitionType::TAX->value,
-                'document_type'      => DocumentType::REFUND->value,
-                'use_in_tax_closing' => false,
-                'factor_percent'     => 100,
-                'factor'             => 1,
-                'created_at'         => now(),
-                'updated_at'         => now(),
-            ],
-        ];
-
-        DB::table('accounts_tax_partition_lines')->insert($refundRepartitionLines);
     }
 }

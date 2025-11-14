@@ -8,9 +8,12 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\PartnerResource;
 use Webkul\Partner\Filament\Resources\BankAccountResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageBankAccounts extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = PartnerResource::class;
 
     protected static string $relationship = 'bankAccounts';

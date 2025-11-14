@@ -40,7 +40,7 @@ class PaymentTermResource extends BasePaymentTermResource
         return $page->generateNavigationItems([
             ViewPaymentTerm::class,
             EditPaymentTerm::class,
-            ManagePaymentDueTerm::class,
+            // ManagePaymentDueTerm::class,
         ]);
     }
 
@@ -51,7 +51,7 @@ class PaymentTermResource extends BasePaymentTermResource
             'create'            => CreatePaymentTerm::route('/create'),
             'view'              => ViewPaymentTerm::route('/{record}'),
             'edit'              => EditPaymentTerm::route('/{record}/edit'),
-            'payment-due-terms' => ManagePaymentDueTerm::route('/{record}/payment-due-terms'),
+            // 'payment-due-terms' => ManagePaymentDueTerm::route('/{record}/payment-due-terms'),
         ];
     }
 }

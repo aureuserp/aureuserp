@@ -6,17 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
-use Webkul\Account\Enums\JournalType;
-use Webkul\Account\Enums\DisplayType;
-use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\AccountType;
-use Webkul\Account\Models\Product;
+use Webkul\Account\Enums\DisplayType;
+use Webkul\Account\Enums\JournalType;
+use Webkul\Account\Enums\MoveState;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
-use Webkul\Account\Facades\Tax as TaxFacade;
 
 class MoveLine extends Model implements Sortable
 {
@@ -77,11 +75,11 @@ class MoveLine extends Model implements Sortable
     ];
 
     protected $casts = [
-        'date_maturity' => 'date',
-        'invoice_date' => 'date',
+        'date_maturity'         => 'date',
+        'invoice_date'          => 'date',
         'analytic_distribution' => 'array',
-        'parent_state' => MoveState::class,
-        'display_type' => DisplayType::class,
+        'parent_state'          => MoveState::class,
+        'display_type'          => DisplayType::class,
     ];
 
     public $sortable = [
@@ -183,7 +181,7 @@ class MoveLine extends Model implements Sortable
     {
         if ($this->display_type === DisplayType::PAYMENT_TERM) {
             return [
-                'move_id' => $this->move_id,
+                'move_id'       => $this->move_id,
                 'date_maturity' => $this->date_maturity?->toDateString(),
                 'discount_date' => $this->discount_date,
             ];
@@ -212,6 +210,8 @@ class MoveLine extends Model implements Sortable
 
             $moveLine->company_currency_id = $moveLine->move->company->currency_id;
 
+            $moveLine->date = $moveLine->move->date;
+
             $moveLine->computeUOMId();
 
             $moveLine->computeCurrencyId();
@@ -228,7 +228,7 @@ class MoveLine extends Model implements Sortable
     {
         $getName = function ($line) {
             $values = [];
-            
+
             if (! $line->product) {
                 return false;
             }
@@ -246,7 +246,7 @@ class MoveLine extends Model implements Sortable
                     $values[] = $line->product->description_purchase;
                 }
             }
-            
+
             return implode("\n", $values);
         };
 
@@ -265,40 +265,22 @@ class MoveLine extends Model implements Sortable
         }
 
         if ($this->display_type === DisplayType::PAYMENT_TERM) {
+            $move = $this->move()->with('invoicePaymentTerm.dueTerms')->first();
+            $nTerms = $move?->invoicePaymentTerm?->dueTerms?->count() ?? 0;
+
+            $baseName = $move->payment_reference ?? $move->ref ?? $move->name ?? 'Payment Term';
+
+            if ($nTerms <= 1) {
+                $this->name = $baseName;
+
+                return;
+            }
+
             $termLines = $termByMove->get($this->move->id, collect());
+            $index = $termLines->search(fn ($line) => $line->id === $this->id) ?: 0;
+            $number = $index + 1;
 
-            $nTerms = $this->move->invoicePaymentTerm?->dueTerms->count() ?? 0;
-            
-            if ($this->move->payment_reference && $this->move->ref && $this->move->payment_reference !== $this->move->ref) {
-                $name = "{$this->move->ref} - {$this->move->payment_reference}";
-            } else {
-                $name = $this->move->payment_reference ?? '';
-            }
-
-            if ($nTerms > 1) {
-                $index = $termLines->search(function ($line) {
-                    return $line->id === $this->id;
-                });
-
-                $index = $index !== false ? $index : $termLines->count();
-
-                $number = $index + 1;
-
-                $name = ltrim("{$name}s installment #{$number}s");
-            }
-            
-            $originalName = $this->getOriginal('name');
-            $originalMoveRef = $this->move->getOriginal('ref');
-            $originalMovePaymentRef = $this->move->getOriginal('payment_reference');
-            
-            $shouldUpdateName = $nTerms > 1 
-                || !$this->name 
-                || $originalName === $originalMovePaymentRef
-                || ($originalMovePaymentRef && $originalMoveRef && $originalName === "{$originalMoveRef} - {$originalMovePaymentRef}");
-            
-            if ($shouldUpdateName) {
-                $this->name = $name;
-            }
+            $this->name = "{$baseName} - Installment #{$number}";
         }
 
         if (! $this->product_id || in_array($this->display_type, [DisplayType::LINE_SECTION, DisplayType::LINE_NOTE])) {
@@ -307,7 +289,7 @@ class MoveLine extends Model implements Sortable
 
         $originalName = $this->getOriginal('name');
         $originalGetName = false;
-        
+
         if ($this->exists) {
             $originalLine = clone $this;
 
@@ -316,13 +298,17 @@ class MoveLine extends Model implements Sortable
             $originalGetName = $getName($originalLine);
         }
 
-        if (!$this->name || $originalName === $originalGetName) {
+        if (! $this->name || $originalName === $originalGetName) {
             $this->name = $getName($this);
         }
     }
 
     public function computeAccountId()
     {
+        if ($this->payment_id || $this->tax_line_id || $this->display_type == DisplayType::ROUNDING) {
+            return;
+        }
+
         $accountId = null;
 
         switch ($this->display_type) {
@@ -406,6 +392,9 @@ class MoveLine extends Model implements Sortable
 
     public function computeDisplayType()
     {
+        if ($this->display_type) {
+            return;
+        }
         if ($this->move->isInvoice()) {
             if ($this->tax_line_id) {
                 $this->display_type = DisplayType::TAX;

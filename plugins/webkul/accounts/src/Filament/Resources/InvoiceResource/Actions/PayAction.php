@@ -10,7 +10,6 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\DisplayType;
-use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
@@ -40,24 +39,39 @@ class PayAction extends Action
                         ->schema([
                             TextInput::make('amount')
                                 ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.amount'))
-                                ->prefix(fn ($record) => $record->currency->symbol ?? '')
-                                ->formatStateUsing(fn ($record) => number_format($record->lines->sum('price_total'), 2, '.', ''))
-                                ->dehydrateStateUsing(fn ($state) => (float) str_replace(',', '', $state))
+                                ->prefix(fn($record) => $record->currency->symbol ?? '')
+                                ->formatStateUsing(fn($record) => number_format($record->lines->sum('price_total'), 2, '.', ''))
+                                ->dehydrateStateUsing(fn($state) => (float) str_replace(',', '', $state))
                                 ->required(),
                             Select::make('payment_method_line_id')
+                                ->label('Payment Method')
+                                ->required()
+                                ->searchable()
+                                ->preload()
                                 ->relationship(
                                     name: 'paymentMethodLine',
                                     titleAttribute: 'name',
-                                    modifyQueryUsing: function ($query) {
+                                    modifyQueryUsing: function ($query, ?Move $record) {
+
+                                        if (! $record) {
+                                            return $query;
+                                        }
+
+                                        $paymentType = $record->isSaleDocument(true)
+                                            ? \Webkul\Account\Enums\PaymentType::RECEIVE->value
+                                            : \Webkul\Account\Enums\PaymentType::SEND->value;
+
                                         return $query
-                                            ->whereHas('paymentMethod', fn ($q) => $q->where('payment_type', PaymentType::RECEIVE->value))
-                                            ->whereHas('journal', fn ($q) => $q->where('type', JournalType::BANK->value));
+                                            ->whereHas('paymentMethod', fn($q) => $q->where('payment_type', $paymentType))
+                                            ->whereHas(
+                                                'journal',
+                                                fn($q) => $q->whereIn('type', [
+                                                    \Webkul\Account\Enums\JournalType::BANK->value,
+                                                    \Webkul\Account\Enums\JournalType::CASH->value,
+                                                ])
+                                            );
                                     }
-                                )
-                                ->required()
-                                ->label('Payment Method')
-                                ->searchable()
-                                ->preload(),
+                                ),
                             DatePicker::make('payment_date')
                                 ->native(false)
                                 ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.payment-date'))
@@ -123,7 +137,7 @@ class PayAction extends Action
             'source_currency_id'     => $record->currency_id,
             'company_id'             => $record->company_id,
             'partner_id'             => $record->partner_id,
-            'payment_type'           => $paymentMethodLine?->paymentMethod?->payment_type,
+            'payment_type'           => $this->getPaymentType($record),
             'payment_date'           => now(),
             'source_amount'          => $data['amount'],
             'source_amount_currency' => $data['amount'],
@@ -150,12 +164,11 @@ class PayAction extends Action
             'source_currency_id'             => $record->currency_id,
             'company_id'                     => $record->company_id,
             'partner_id'                     => $record->partner_id,
-            'payment_type'                   => $record->paymentMethodLine()->findOrFail($data['payment_method_line_id'])->paymentMethod->payment_type,
+            'payment_type'                   => $this->getPaymentType($record),
             'source_amount'                  => $data['amount'],
             'source_amount_currency'         => $data['amount'],
-            'name'                           => str_replace('INV', 'P'.$paymentMethodLine?->journal?->code, $record->name),
+            'name'                           => str_replace('INV', 'P' . $paymentMethodLine?->journal?->code, $record->name),
             'state'                          => PaymentState::PAID,
-            'payment_type'                   => $paymentMethodLine?->paymentMethod?->payment_type,
             'partner_type'                   => $record->partner->sub_type,
             'memo'                           => $data['communication'],
             'amount_company_currency_signed' => $data['amount'],
@@ -179,8 +192,8 @@ class PayAction extends Action
             'origin_payment_id'                 => $payment->id,
             'partner_shipping_id'               => null,
             'invoice_user_id'                   => null,
-            'sequence_prefix'                   => str_replace('INV', 'P'.$paymentMethodLine?->journal?->code, $record->name),
-            'name'                              => str_replace('INV', 'P'.$paymentMethodLine?->journal?->code, $record->name),
+            'sequence_prefix'                   => str_replace('INV', 'P' . $paymentMethodLine?->journal?->code, $record->name),
+            'name'                              => str_replace('INV', 'P' . $paymentMethodLine?->journal?->code, $record->name),
             'reference'                         => $record->reference,
             'move_type'                         => MoveType::ENTRY,
             'state'                             => MoveState::POSTED,
@@ -210,6 +223,8 @@ class PayAction extends Action
 
     private function createMoveLine(Move $record, Move $newMove, Payment $payment, array $data)
     {
+        $paymentMethodLine = $record->paymentMethodLine()->findOrFail($data['payment_method_line_id']);
+
         MoveLine::create([
             'move_id'                  => $newMove->id,
             'company_id'               => $newMove->company_id,
@@ -217,6 +232,7 @@ class PayAction extends Action
             'currency_id'              => $newMove->currency_id,
             'partner_id'               => $newMove->partner_id,
             'payment_id'               => $payment->id,
+            'account_id'               => $paymentMethodLine->journal->default_account_id,
             'move_name'                => $newMove->name,
             'parent_state'             => $newMove->state,
             'reference'                => $newMove->reference,
@@ -243,6 +259,7 @@ class PayAction extends Action
             'currency_id'              => $newMove->currency_id,
             'partner_id'               => $newMove->partner_id,
             'payment_id'               => $payment->id,
+            'account_id'               => $record->paymentTermLine->account_id,
             'move_name'                => $newMove->name,
             'parent_state'             => $newMove->state,
             'reference'                => $newMove->reference,
@@ -261,5 +278,11 @@ class PayAction extends Action
             'price_subtotal'           => -$data['amount'],
             'price_total'              => -$data['amount'],
         ]);
+    }
+    private function getPaymentType(Move $record): string
+    {
+        return $record->isSaleDocument(true)
+            ? PaymentType::RECEIVE->value  // inbound payment
+            : PaymentType::SEND->value;    // outbound payment
     }
 }

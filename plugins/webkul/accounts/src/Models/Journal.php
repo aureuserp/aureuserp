@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Account\Enums\JournalType;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -49,6 +50,10 @@ class Journal extends Model implements Sortable
     public $sortable = [
         'order_column_name'  => 'sort',
         'sort_when_creating' => true,
+    ];
+
+    protected $casts = [
+        'type' => JournalType::class,
     ];
 
     public function bankAccount()
@@ -147,5 +152,10 @@ class Journal extends Model implements Sortable
         return PaymentMethod::where('type', 'inbound')
             ->where('active', true)
             ->get();
+    }
+
+    public function moveLines()
+    {
+        return $this->hasMany(MoveLine::class, 'journal_id');
     }
 }

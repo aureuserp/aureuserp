@@ -6,12 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Account\Enums\DelayType;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
-use Webkul\Account\Enums\DelayType;
-use Webkul\Account\Enums\DisplayType;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
@@ -23,7 +22,6 @@ use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UtmCampaign;
 use Webkul\Support\Models\UTMMedium;
 use Webkul\Support\Models\UTMSource;
-use Webkul\Account\Facades\Tax as TaxFacade;
 
 class Move extends Model implements Sortable
 {
@@ -38,6 +36,7 @@ class Move extends Model implements Sortable
         'campaign_id',
         'tax_cash_basis_origin_move_id',
         'auto_post_origin_id',
+        'origin_payment_id',
         'secure_sequence_number',
         'invoice_payment_term_id',
         'partner_id',
@@ -144,8 +143,8 @@ class Move extends Model implements Sortable
     ];
 
     protected $casts = [
-        'invoice_date' => 'date',
-        'date' => 'date',
+        'invoice_date'     => 'date',
+        'date'             => 'date',
         'invoice_date_due' => 'datetime',
         'state'            => MoveState::class,
         'payment_state'    => PaymentState::class,
@@ -255,6 +254,25 @@ class Move extends Model implements Sortable
     public function paymentMethodLine()
     {
         return $this->belongsTo(PaymentMethodLine::class, 'preferred_payment_method_line_id');
+    }
+
+    public function getResourceUrl(?string $page = 'edit'): ?string
+    {
+        if (! $this->id || ! $this->move_type) {
+            return null;
+        }
+
+        $resourceClass = match ($this->move_type) {
+            \Webkul\Account\Enums\MoveType::OUT_INVOICE => \Webkul\Account\Filament\Resources\InvoiceResource::class,
+            \Webkul\Account\Enums\MoveType::OUT_REFUND  => \Webkul\Account\Filament\Resources\CreditNoteResource::class,
+            \Webkul\Account\Enums\MoveType::IN_INVOICE  => \Webkul\Account\Filament\Resources\BillResource::class,
+            \Webkul\Account\Enums\MoveType::IN_REFUND   => \Webkul\Account\Filament\Resources\RefundResource::class,
+            default                                     => null,
+        };
+
+        return $resourceClass
+            ? $resourceClass::getUrl($page, ['record' => $this->id])
+            : null;
     }
 
     public function getTotalDiscountAttribute()
@@ -470,7 +488,6 @@ class Move extends Model implements Sortable
 
         $this->invoice_date_due = $dateMaturity;
     }
-
 
     public function computeJournalId()
     {
