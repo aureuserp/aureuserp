@@ -141,6 +141,8 @@ class AccountManager
             $line->save();
         }
 
+        $record = $this->computeMoveTotals($record);
+
         $record->save();
 
         return $record;
@@ -253,6 +255,8 @@ class AccountManager
         $line->computeCreditAndDebit();
 
         $line->computeAmountCurrency();
+
+        $line->computeAmountResidual();
 
         return $line;
     }
@@ -532,6 +536,8 @@ class AccountManager
                 ]));
 
                 $moveLine->computeCreditAndDebit();
+
+                $moveLine->computeAmountResidual();
 
                 $moveLine->save();
             }

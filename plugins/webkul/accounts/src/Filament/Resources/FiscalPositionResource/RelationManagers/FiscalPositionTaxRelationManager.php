@@ -9,7 +9,7 @@ class FiscalPositionTaxRelationManager extends RelationManager
 {
     use FiscalPositionTax;
 
-    protected static string $relationship = 'fiscalPositionTaxes';
+    protected static string $relationship = 'taxes';
 
     protected static ?string $title = 'Fiscal Position Taxes';
 }

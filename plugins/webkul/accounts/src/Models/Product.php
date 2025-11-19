@@ -86,6 +86,29 @@ class Product extends BaseProduct
             ]);
     }
 
+    public function getAccounts(): array
+    {
+        return [
+            'income' => $this->property_account_income_id ?? $this->product->category?->property_account_income_id,
+            'expense' => $this->property_account_expense_id ?? $this->product->category?->property_account_expense_id,
+        ];
+    }
+
+    public function getAccountsWithFiscalPosition($fiscalPosition = null)
+    {
+        $accounts = $this->getAccounts();
+        
+        $fiscalPosition = $fiscalPosition ?? new FiscalPosition();
+        
+        $result = [];
+
+        foreach ($accounts as $key => $account) {
+            $result[$key] = $fiscalPosition->mapAccount($account);
+        }
+        
+        return $result;
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);

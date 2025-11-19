@@ -421,6 +421,8 @@ class Move extends Model implements Sortable
             $move->computeInvoiceCurrencyRate();
 
             $move->computeInvoiceDateDue();
+
+            $move->computeTaxes();
         });
     }
 
@@ -487,6 +489,11 @@ class Move extends Model implements Sortable
         }
 
         $this->invoice_date_due = $dateMaturity;
+    }
+
+    public function computeTaxes()
+    {
+
     }
 
     public function computeJournalId()

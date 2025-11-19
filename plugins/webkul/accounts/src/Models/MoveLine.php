@@ -15,6 +15,7 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
+use Illuminate\Support\Facades\DB;
 
 class MoveLine extends Model implements Sortable
 {
@@ -325,20 +326,18 @@ class MoveLine extends Model implements Sortable
 
                     $accountType = $isSale ? 'asset_receivable' : 'liability_payable';
 
-                    $propertyField = $isSale ? 'property_account_receivable_id' : 'property_account_payable_id';
+                    $propertyField = $isSale ? 'propertyAccountReceivable' : 'propertyAccountPayable';
 
-                    $accountId = $this->move->partner?->{$propertyField}
+                    $account = $this->move->partner?->{$propertyField}
                         ?? (method_exists($this->move->company, 'partner') ? $this->move->company->partner?->{$propertyField} : null)
-                        ?? Account::where('account_type', $accountType)->where('deprecated', false)->value('id');
+                        ?? Account::where('account_type', $accountType)->where('deprecated', false)->first();
 
-                    if ($this->move->fiscal_position_id && $accountId) {
-                        $fiscalPosition = FiscalPosition::find($this->move->fiscal_position_id);
-
-                        if ($fiscalPosition) {
-                            // TODO: Implement fiscal position account mapping from fiscal_position_accounts table
-                            $accountId = $accountId; // Placeholder for actual mapping
-                        }
+                    if ($this->move->fiscalPosition && $account) {
+                        $account = $this->move->fiscalPosition->mapAccount($account);
+                        dd($account);
                     }
+
+                    $accountId = $account?->id;
                 }
                 break;
 
@@ -363,6 +362,7 @@ class MoveLine extends Model implements Sortable
 
                     $accountId = Account::where('account_type', $accountType)->where('deprecated', false)->value('id');
                 }
+
                 break;
 
             case DisplayType::LINE_SECTION:
@@ -458,5 +458,73 @@ class MoveLine extends Model implements Sortable
         if ($this->currency_id === $this->company->currency_id) {
             $this->amount_currency = $this->balance;
         }
+    }
+
+    public function computeAmountResidual()
+    {
+        $shouldCompute = $this->account->reconcile
+            || in_array($this->account->account_type, [
+                AccountType::ASSET_CASH,
+                AccountType::LIABILITY_CREDIT_CARD,
+            ]);
+
+        if (! $shouldCompute) {
+            $this->amount_residual = 0.0;
+            $this->amount_residual_currency = 0.0;
+            $this->reconciled = false;
+
+            return $this;
+        }
+
+        $debit = PartialReconcile::select(
+                DB::raw("COALESCE(SUM(amount), 0) AS amount"),
+                DB::raw("COALESCE(SUM(debit_amount_currency), 0) AS amount_currency"),
+                'currencies.decimal_places'
+            )
+            ->join('currencies', 'currencies.id', '=', 'accounts_partial_reconciles.debit_currency_id')
+            ->where('debit_move_id', $this->id)
+            ->groupBy('currencies.decimal_places')
+            ->first();
+
+        $credit = PartialReconcile::select(
+                DB::raw("COALESCE(SUM(amount), 0) AS amount"),
+                DB::raw("COALESCE(SUM(credit_amount_currency), 0) AS amount_currency"),
+                'currencies.decimal_places'
+            )
+            ->join('currencies', 'currencies.id', '=', 'accounts_partial_reconciles.credit_currency_id')
+            ->where('credit_move_id', $this->id)
+            ->groupBy('currencies.decimal_places')
+            ->first();
+
+        $debitAmount = $debit->amount ?? 0.0;
+
+        $debitAmountCurrency = 0.0;
+
+        if (isset($debit->amount_currency)) {
+            $dp = $debit->decimal_places ?? 2;
+
+            $debitAmountCurrency = round($debit->amount_currency, $dp);
+        }
+
+        $creditAmount = $credit->amount ?? 0.0;
+
+        $creditAmountCurrency = 0.0;
+
+        if (isset($credit->amount_currency)) {
+            $dp = $credit->decimal_places ?? 2;
+
+            $creditAmountCurrency = round($credit->amount_currency, $dp);
+        }
+
+        $companyCurrency = $this->company_currency ?? $this->company->currency;
+
+        $foreignCurrency = $this->currency ?? $companyCurrency;
+
+        $this->amount_residual = $companyCurrency->round($this->balance - $debitAmount + $creditAmount);
+
+        $this->amount_residual_currency = $foreignCurrency->round($this->amount_currency - $debitAmountCurrency + $creditAmountCurrency);
+
+        $this->reconciled = $companyCurrency->isZero($this->amount_residual)
+            && $foreignCurrency->isZero($this->amount_residual_currency);
     }
 }

@@ -29,12 +29,12 @@ class PartialReconcile extends Model
 
     public function debitMove()
     {
-        return $this->belongsTo(Move::class, 'debit_move_id');
+        return $this->belongsTo(MoveLine::class, 'debit_move_id');
     }
 
     public function creditMove()
     {
-        return $this->belongsTo(Move::class, 'credit_move_id');
+        return $this->belongsTo(MoveLine::class, 'credit_move_id');
     }
 
     public function fullReconcile()

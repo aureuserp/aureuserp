@@ -863,7 +863,6 @@ class TaxManager
         }
 
         $evaluationContext = [
-            // 'product' => $sortedTaxes->evalTaxesComputationTurnToProductValues(product: $product),
             'product' => $product,
             'price_unit' => $priceUnit,
             'quantity' => $quantity,

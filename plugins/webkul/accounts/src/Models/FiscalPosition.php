@@ -56,8 +56,24 @@ class FiscalPosition extends Model implements Sortable
         return $this->belongsTo(User::class, 'creator_id');
     }
 
-    public function fiscalPositionTaxes()
+    public function taxes()
     {
         return $this->hasMany(FiscalPositionTax::class, 'fiscal_position_id');
+    }
+
+    public function accounts()
+    {
+        return $this->hasMany(FiscalPositionAccount::class, 'fiscal_position_id');
+    }
+
+    public function mapAccount($account)
+    {
+        $mapping = $this->accounts()
+            ->where('account_source_id', $account->id)
+            ->first();
+        
+        return $mapping 
+            ? Account::find($mapping->account_destination_id) 
+            : $account;
     }
 }

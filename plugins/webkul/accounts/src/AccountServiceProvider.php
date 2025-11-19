@@ -40,6 +40,7 @@ class AccountServiceProvider extends PackageServiceProvider
                 '2025_02_03_055709_create_accounts_account_journals_table',
                 '2025_02_03_121847_create_accounts_fiscal_positions_table',
                 '2025_02_03_131858_create_accounts_fiscal_position_taxes_table',
+                '2025_02_03_131860_create_accounts_fiscal_position_accounts_table',
                 '2025_02_03_144139_create_accounts_cash_roundings_table',
                 '2025_02_04_082243_alter_products_products_table',
                 '2025_02_04_104958_create_accounts_product_taxes_table',
@@ -71,6 +72,7 @@ class AccountServiceProvider extends PackageServiceProvider
                 '2025_08_04_062050_alter_accounts_taxes_table',
                 '2025_08_01_091957_alter_accounts_payment_terms_table',
                 '2025_10_23_082243_alter_products_categories_table',
+                '2025_11_19_081920_alter_accounts_account_move_lines_table',
             ])
             ->runsMigrations()
             ->hasDependencies([
