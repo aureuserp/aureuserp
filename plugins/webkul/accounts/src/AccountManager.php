@@ -185,6 +185,10 @@ class AccountManager
                     $total += $line->balance;
 
                     $totalCurrency += $line->amount_currency;
+                } elseif ($line->display_type == DisplayType::PAYMENT_TERM) {
+                    $totalResidual += $line->amount_residual;
+
+                    $totalResidualCurrency += $line->amount_residual_currency;
                 }
             } elseif ($line->display_type == DisplayType::PAYMENT_TERM) {
                 $totalResidual += $line->amount_residual;

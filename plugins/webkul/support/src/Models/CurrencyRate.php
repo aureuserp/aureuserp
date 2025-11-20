@@ -18,11 +18,8 @@ class CurrencyRate extends Model
     ];
 
     protected $casts = [
-        'rate' => 'decimal:6',
-    ];
-
-    protected $casts = [
         'name' => 'date',
+        'rate' => 'decimal:6',
     ];
 
     public function currency()

@@ -314,53 +314,45 @@ class MoveLine extends Model implements Sortable
 
         switch ($this->display_type) {
             case DisplayType::PAYMENT_TERM:
-                $existingAccount = MoveLine::where('move_id', $this->move->id)
-                    ->where('display_type', DisplayType::PAYMENT_TERM)
-                    ->whereNotNull('account_id')
-                    ->value('account_id');
+                $isSale = $this->move->isSaleDocument(true);
 
-                if ($existingAccount) {
-                    $accountId = $existingAccount;
-                } else {
-                    $isSale = $this->move->isSaleDocument(true);
+                $accountType = $isSale ? AccountType::ASSET_RECEIVABLE : AccountType::LIABILITY_PAYABLE;
 
-                    $accountType = $isSale ? 'asset_receivable' : 'liability_payable';
+                $propertyField = $isSale ? 'propertyAccountReceivable' : 'propertyAccountPayable';
 
-                    $propertyField = $isSale ? 'propertyAccountReceivable' : 'propertyAccountPayable';
+                $account = $this->move->partner?->{$propertyField}
+                    ?? (method_exists($this->move->company, 'partner') ? $this->move->company->partner?->{$propertyField} : null)
+                    ?? Account::where('account_type', $accountType)->where('deprecated', false)->first();
 
-                    $account = $this->move->partner?->{$propertyField}
-                        ?? (method_exists($this->move->company, 'partner') ? $this->move->company->partner?->{$propertyField} : null)
-                        ?? Account::where('account_type', $accountType)->where('deprecated', false)->first();
-
-                    if ($this->move->fiscalPosition && $account) {
-                        $account = $this->move->fiscalPosition->mapAccount($account);
-                        dd($account);
-                    }
-
-                    $accountId = $account?->id;
+                if ($this->move->fiscalPosition && $account) {
+                    $account = $this->move->fiscalPosition->mapAccount($account);
                 }
+
+                $accountId = $account?->id;
+
                 break;
 
             case DisplayType::PRODUCT:
-                if ($this->product_id && $this->product) {
+                if ($this->product) {
+                    $accounts = $this->product->getAccountsFromFiscalPosition($this->move->fiscalPosition);
+
                     if ($this->move->isSaleDocument(true)) {
-                        $accountId = $this->product->property_account_income_id ?? $this->product->category?->property_account_income_id;
+                        $account = $accounts['income'] ?? $this->account;
                     } elseif ($this->move->isPurchaseDocument(true)) {
-                        $accountId = $this->product->property_account_expense_id ?? $this->product->category?->property_account_expense_id;
+                        $account = $accounts['expense'] ?? $this->account;
                     }
 
-                    if ($this->move->fiscal_position_id && $accountId) {
-                        $fiscalPosition = FiscalPosition::find($this->move->fiscal_position_id);
-
-                        if ($fiscalPosition) {
-                            // TODO: Implement fiscal position account mapping from fiscal_position_accounts table
-                            $accountId = $accountId; // Placeholder for actual mapping
-                        }
-                    }
-                } elseif ($this->partner_id) {
+                    $accountId = $account?->id;
+                } elseif ($this->partner) {
                     $accountType = $this->move->isSaleDocument(true) ? AccountType::INCOME : AccountType::EXPENSE;
 
-                    $accountId = Account::where('account_type', $accountType)->where('deprecated', false)->value('id');
+                    $account = Account::where('account_type', $accountType)->where('deprecated', false)->first();
+
+                    $accountId = (new Account)->getMostFrequentAccountsForPartner(
+                        companyId: $this->move->company_id,
+                        partnerId: $this->partner_id,
+                        moveType: $this->move->type,
+                    );
                 }
 
                 break;
@@ -376,13 +368,15 @@ class MoveLine extends Model implements Sortable
                     ->whereNotNull('account_id')
                     ->orderBy('id', 'desc')
                     ->limit(2)
-                    ->pluck('account_id');
+                    ->get();
 
                 if ($previousAccounts->count() === 1 && $this->move->lines()->count() > 2) {
-                    $accountId = $previousAccounts->first();
+                    $account = $previousAccounts->first();
                 } else {
-                    $accountId = $this->move->journal?->default_account_id;
+                    $account = $this->move->journal?->defaultAccount;
                 }
+
+                $accountId = $account?->id;
 
                 break;
         }

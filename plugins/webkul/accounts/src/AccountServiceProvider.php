@@ -29,6 +29,7 @@ class AccountServiceProvider extends PackageServiceProvider
                 '2025_01_29_134156_create_accounts_incoterms_table',
                 '2025_01_29_134157_create_accounts_tax_groups_table',
                 '2025_01_30_054952_create_accounts_accounts_table',
+                '2025_01_30_054955_create_accounts_account_companies_table',
                 '2025_01_30_061945_create_accounts_account_tags_table',
                 '2025_01_30_083208_create_accounts_taxes_table',
                 '2025_01_30_123324_create_accounts_tax_partition_lines_table',

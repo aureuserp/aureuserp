@@ -89,12 +89,12 @@ class Product extends BaseProduct
     public function getAccounts(): array
     {
         return [
-            'income' => $this->property_account_income_id ?? $this->product->category?->property_account_income_id,
-            'expense' => $this->property_account_expense_id ?? $this->product->category?->property_account_expense_id,
+            'income' => $this->propertyAccountIncome ?? $this->category?->propertyAccountIncome,
+            'expense' => $this->propertyAccountExpense ?? $this->category?->propertyAccountExpense,
         ];
     }
 
-    public function getAccountsWithFiscalPosition($fiscalPosition = null)
+    public function getAccountsFromFiscalPosition($fiscalPosition = null)
     {
         $accounts = $this->getAccounts();
         
