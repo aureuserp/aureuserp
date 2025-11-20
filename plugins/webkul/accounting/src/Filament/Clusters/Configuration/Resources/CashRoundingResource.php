@@ -2,12 +2,9 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Configuration\Resources;
 
+use Webkul\Account\Filament\Resources\CashRoundingResource as BaseCashRoundingResource;
 use Webkul\Accounting\Filament\Clusters\Configuration;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\CashRoundingResource\Pages\ListCashRoundings;
-use Webkul\Accounting\Filament\Clusters\Configuration\Resources\CashRoundingResource\Pages\CreateCashRounding;
-use Webkul\Accounting\Filament\Clusters\Configuration\Resources\CashRoundingResource\Pages\EditCashRounding;
-use Webkul\Accounting\Filament\Clusters\Configuration\Resources\CashRoundingResource\Pages\ViewCashRounding;
-use Webkul\Account\Filament\Resources\CashRoundingResource as BaseCashRoundingResource;
 
 class CashRoundingResource extends BaseCashRoundingResource
 {
@@ -34,9 +31,6 @@ class CashRoundingResource extends BaseCashRoundingResource
     {
         return [
             'index' => ListCashRoundings::route('/'),
-            'create' => CreateCashRounding::route('/create'),
-            'edit' => EditCashRounding::route('/{record}/edit'),
-            'view' => ViewCashRounding::route('/{record}'),
         ];
     }
 }

@@ -66,12 +66,12 @@ class JournalResource extends Resource
                                                             ->schema([
                                                                 Toggle::make('refund_order')
                                                                     ->hidden(function (Get $get) {
-                                                                        return ! in_array($get('type'), [JournalType::SALE->value, JournalType::PURCHASE->value]);
+                                                                        return ! in_array($get('type'), [JournalType::SALE, JournalType::PURCHASE]);
                                                                     })
                                                                     ->label(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.accounting-information.fields.dedicated-credit-note-sequence')),
                                                                 Toggle::make('payment_order')
                                                                     ->hidden(function (Get $get) {
-                                                                        return ! in_array($get('type'), [JournalType::BANK->value, JournalType::CASH->value, JournalType::CREDIT_CARD->value]);
+                                                                        return ! in_array($get('type'), [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD]);
                                                                     })
                                                                     ->label(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.accounting-information.fields.dedicated-payment-sequence')),
                                                                 TextInput::make('code')
@@ -85,11 +85,59 @@ class JournalResource extends Resource
                                                                 ColorPicker::make('color')
                                                                     ->label(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.accounting-information.fields.color'))
                                                                     ->hexColor(),
-                                                            ]),
-                                                    ]),
+                                                                // Inside Fieldset::make('Accounting Information') -> schema([...])
+                                                                Select::make('default_account_id')
+                                                                    ->label(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.accounting-information.fields.default-account'))
+                                                                    ->relationship('defaultAccount', 'name')
+                                                                    ->preload()
+                                                                    ->searchable()
+                                                                    ->required(),
+
+                                                                Select::make('profit_account_id')
+                                                                    ->label(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.accounting-information.fields.profit-account'))
+                                                                    ->relationship('profitAccount', 'name')
+                                                                    ->preload()
+                                                                    ->searchable()
+                                                                    ->visible(fn (Get $get) => in_array($get('type'), [
+                                                                        JournalType::CASH,
+                                                                        JournalType::SALE,
+                                                                        JournalType::BANK,
+                                                                    ])),
+
+                                                                Select::make('loss_account_id')
+                                                                    ->label(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.accounting-information.fields.loss-account'))
+                                                                    ->relationship('lossAccount', 'name')
+                                                                    ->preload()
+                                                                    ->searchable()
+                                                                    ->visible(fn (Get $get) => in_array($get('type'), [
+                                                                        JournalType::CASH,
+                                                                        JournalType::BANK,
+                                                                        JournalType::PURCHASE,
+                                                                    ])),
+
+                                                                Select::make('suspense_account_id')
+                                                                    ->label(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.accounting-information.fields.suspense-account'))
+                                                                    ->relationship('suspenseAccount', 'name')
+                                                                    ->preload()
+                                                                    ->searchable()
+                                                                    ->visible(fn (Get $get) => in_array($get('type'), [
+                                                                        JournalType::BANK,
+                                                                        JournalType::CASH,
+                                                                        JournalType::CREDIT_CARD,
+                                                                    ])),
+
+                                                                Select::make('bank_account_id')
+                                                                    ->label(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.accounting-information.fields.bank-account'))
+                                                                    ->relationship('bankAccount', 'account_number')
+                                                                    ->preload()
+                                                                    ->searchable()
+                                                                    ->visible(fn (Get $get) => $get('type') === JournalType::BANK),
+
+                                                            ])->columnSpanFull(),
+                                                    ])->columns(2),
                                                 Fieldset::make(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.bank-account-number.title'))
                                                     ->visible(function (Get $get) {
-                                                        return $get('type') === JournalType::BANK->value;
+                                                        return $get('type') === JournalType::BANK;
                                                     })
                                                     ->schema([
                                                         Group::make()
@@ -105,9 +153,9 @@ class JournalResource extends Resource
                                         Tab::make(__('accounts::filament/resources/journal.form.tabs.incoming-payments.title'))
                                             ->visible(function (Get $get) {
                                                 return in_array($get('type'), [
-                                                    JournalType::BANK->value,
-                                                    JournalType::CASH->value,
-                                                    JournalType::CREDIT_CARD->value,
+                                                    JournalType::BANK,
+                                                    JournalType::CASH,
+                                                    JournalType::CREDIT_CARD,
                                                 ]);
                                             })
                                             ->schema([
@@ -118,9 +166,9 @@ class JournalResource extends Resource
                                         Tab::make(__('accounts::filament/resources/journal.form.tabs.outgoing-payments.title'))
                                             ->visible(function (Get $get) {
                                                 return in_array($get('type'), [
-                                                    JournalType::BANK->value,
-                                                    JournalType::CASH->value,
-                                                    JournalType::CREDIT_CARD->value,
+                                                    JournalType::BANK,
+                                                    JournalType::CASH,
+                                                    JournalType::CREDIT_CARD,
                                                 ]);
                                             })
                                             ->schema([
@@ -145,7 +193,7 @@ class JournalResource extends Resource
                                                             ]),
                                                     ]),
                                                 Fieldset::make(__('accounts::filament/resources/journal.form.tabs.advanced-settings.fields.payment-communication'))
-                                                    ->visible(fn (Get $get) => $get('type') === JournalType::SALE->value)
+                                                    ->visible(fn (Get $get) => $get('type') === JournalType::SALE)
                                                     ->schema([
                                                         Select::make('invoice_reference_type')
                                                             ->options(CommunicationType::options())
@@ -170,7 +218,7 @@ class JournalResource extends Resource
                                                     ->required(),
                                                 Select::make('type')
                                                     ->label(__('accounts::filament/resources/journal.form.general.fields.type'))
-                                                    ->options(JournalType::options())
+                                                    ->options(JournalType::class)
                                                     ->required()
                                                     ->live(),
                                                 Select::make('company_id')
@@ -252,13 +300,13 @@ class JournalResource extends Resource
                                                     ->schema([
                                                         IconEntry::make('refund_order')
                                                             ->boolean()
-                                                            ->visible(fn ($record) => in_array($record->type, [JournalType::SALE->value, JournalType::PURCHASE->value]))
+                                                            ->visible(fn ($record) => in_array($record->type, [JournalType::SALE, JournalType::PURCHASE]))
                                                             ->placeholder('-')
                                                             ->label(__('accounts::filament/resources/journal.infolist.tabs.journal-entries.field-set.accounting-information.entries.dedicated-credit-note-sequence')),
                                                         IconEntry::make('payment_order')
                                                             ->boolean()
                                                             ->placeholder('-')
-                                                            ->visible(fn ($record) => in_array($record->type, [JournalType::BANK->value, JournalType::CASH->value, JournalType::CREDIT_CARD->value]))
+                                                            ->visible(fn ($record) => in_array($record->type, [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD]))
                                                             ->label(__('accounts::filament/resources/journal.infolist.tabs.journal-entries.field-set.accounting-information.entries.dedicated-payment-sequence')),
                                                         TextEntry::make('code')
                                                             ->placeholder('-')
@@ -269,9 +317,46 @@ class JournalResource extends Resource
                                                         ColorEntry::make('color')
                                                             ->placeholder('-')
                                                             ->label(__('accounts::filament/resources/journal.infolist.tabs.journal-entries.field-set.accounting-information.entries.color')),
-                                                    ])->columns(2),
+                                                        // Inside accounting-information Fieldset in infolist
+                                                        TextEntry::make('defaultAccount.name')
+                                                            ->placeholder('-')
+                                                            ->label(__('accounts::filament/resources/journal.infolist.tabs.journal-entries.field-set.accounting-information.entries.default-account')),
+
+                                                        TextEntry::make('profitAccount.name')
+                                                            ->placeholder('-')
+                                                            ->label(__('accounts::filament/resources/journal.infolist.tabs.journal-entries.field-set.accounting-information.entries.profit-account'))
+                                                            ->visible(fn (Get $get) => in_array($get('type'), [
+                                                                JournalType::CASH,
+                                                                JournalType::SALE,
+                                                                JournalType::BANK,
+                                                            ])),
+
+                                                        TextEntry::make('lossAccount.name')
+                                                            ->placeholder('-')
+                                                            ->label(__('accounts::filament/resources/journal.infolist.tabs.journal-entries.field-set.accounting-information.entries.loss-account'))
+                                                            ->visible(fn (Get $get) => in_array($get('type'), [
+                                                                JournalType::CASH,
+                                                                JournalType::BANK,
+                                                                JournalType::PURCHASE,
+                                                            ])),
+
+                                                        TextEntry::make('suspenseAccount.name')
+                                                            ->placeholder('-')
+                                                            ->label(__('accounts::filament/resources/journal.infolist.tabs.journal-entries.field-set.accounting-information.entries.suspense-account'))
+                                                            ->visible(fn ($record) => in_array($record->type, [
+                                                                JournalType::BANK,
+                                                                JournalType::CASH,
+                                                                JournalType::CREDIT_CARD,
+                                                            ])),
+
+                                                        TextEntry::make('bankAccount.account_number')
+                                                            ->placeholder('-')
+                                                            ->label(__('accounts::filament/resources/journal.infolist.tabs.journal-entries.field-set.bank-account.entries.account-number'))
+                                                            ->visible(fn ($record) => $record->type === JournalType::BANK),
+
+                                                    ])->columnSpanFull(),
                                                 Section::make(__('accounts::filament/resources/journal.infolist.tabs.journal-entries.field-set.bank-account.title'))
-                                                    ->visible(fn ($record) => $record->type === JournalType::BANK->value)
+                                                    ->visible(fn ($record) => $record->type === JournalType::BANK)
                                                     ->schema([
                                                         TextEntry::make('bankAccount.account_number')
                                                             ->placeholder('-')
@@ -279,7 +364,7 @@ class JournalResource extends Resource
                                                     ]),
                                             ]),
                                         Tab::make(__('accounts::filament/resources/journal.infolist.tabs.incoming-payments.title'))
-                                            ->visible(fn ($record) => in_array($record->type, [JournalType::BANK->value, JournalType::CASH->value, JournalType::CREDIT_CARD->value]))
+                                            ->visible(fn ($record) => in_array($record->type, [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD]))
                                             ->schema([
                                                 TextEntry::make('relation_notes')
                                                     ->placeholder('-')
@@ -287,7 +372,7 @@ class JournalResource extends Resource
                                                     ->markdown(),
                                             ]),
                                         Tab::make(__('accounts::filament/resources/journal.infolist.tabs.outgoing-payments.title'))
-                                            ->visible(fn ($record) => in_array($record->type, [JournalType::BANK->value, JournalType::CASH->value, JournalType::CREDIT_CARD->value]))
+                                            ->visible(fn ($record) => in_array($record->type, [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD]))
                                             ->schema([
                                                 TextEntry::make('relation_notes')
                                                     ->placeholder('-')
@@ -308,7 +393,7 @@ class JournalResource extends Resource
                                                             ->label(__('accounts::filament/resources/journal.infolist.tabs.advanced-settings.entries.auto-check-on-post')),
                                                     ]),
                                                 Fieldset::make(__('accounts::filament/resources/journal.infolist.tabs.advanced-settings.payment-communication.title'))
-                                                    ->visible(fn ($record) => $record->type === JournalType::SALE->value)
+                                                    ->visible(fn ($record) => $record->type === JournalType::SALE)
                                                     ->schema([
                                                         TextEntry::make('invoice_reference_type')
                                                             ->placeholder('-')
