@@ -9,14 +9,15 @@ return [
 
     'form' => [
         'fields' => [
-            'name'                 => 'Name',
-            'foreign-vat'          => 'Foreign VAT',
-            'country'              => 'Country',
-            'country-group'        => 'Country Group',
-            'zip-from'             => 'Zip From',
-            'zip-to'               => 'Zip To',
-            'detect-automatically' => 'Detect Automatically',
-            'notes'                => 'Notes',
+            'name'                   => 'Name',
+            'foreign-vat'            => 'Foreign VAT',
+            'country'                => 'Country',
+            'country-group'          => 'Country Group',
+            'zip-from'               => 'Zip From',
+            'zip-to'                 => 'Zip To',
+            'detect-automatically'   => 'Detect Automatically',
+            'notes'                  => 'Notes',
+            'company'                => 'Company',
         ],
     ],
 

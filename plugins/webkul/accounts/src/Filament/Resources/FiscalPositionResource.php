@@ -72,6 +72,13 @@ class FiscalPositionResource extends Resource
                                 TextInput::make('zip_to')
                                     ->label(__('accounts::filament/resources/fiscal-position.form.fields.zip-to'))
                                     ->required(),
+                                Select::make('company_id')
+                                    ->relationship('company', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->label(__('accounts::filament/resources/fiscal-position.form.fields.company'))
+                                    ->required(),
+
                                 Toggle::make('auto_reply')
                                     ->inline(false)
                                     ->label(__('accounts::filament/resources/fiscal-position.form.fields.detect-automatically')),
