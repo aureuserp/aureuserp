@@ -78,7 +78,7 @@ class FiscalPositionResource extends Resource
                             ])->columns(2),
                         RichEditor::make('notes')
                             ->label(__('accounts::filament/resources/fiscal-position.form.fields.notes')),
-                    ]),
+                    ])->columnSpanFull(),
             ]);
     }
 
@@ -192,7 +192,7 @@ class FiscalPositionResource extends Resource
                             ->label(__('accounts::filament/resources/fiscal-position.infolist.entries.notes'))
                             ->placeholder('-')
                             ->markdown(),
-                    ]),
+                    ])->columnSpanFull(),
             ]);
     }
 
