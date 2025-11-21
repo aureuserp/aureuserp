@@ -29,6 +29,7 @@ use Webkul\Account\Filament\Resources\FiscalPositionResource\Pages\EditFiscalPos
 use Webkul\Account\Filament\Resources\FiscalPositionResource\Pages\ListFiscalPositions;
 use Webkul\Account\Filament\Resources\FiscalPositionResource\Pages\ManageFiscalPositionTax;
 use Webkul\Account\Filament\Resources\FiscalPositionResource\Pages\ViewFiscalPosition;
+use Webkul\Account\Filament\Resources\FiscalPositionResource\RelationManagers\FiscalPositionAccountRelationManager;
 use Webkul\Account\Filament\Resources\FiscalPositionResource\RelationManagers\FiscalPositionTaxRelationManager;
 use Webkul\Account\Models\FiscalPosition;
 
@@ -72,13 +73,20 @@ class FiscalPositionResource extends Resource
                                 TextInput::make('zip_to')
                                     ->label(__('accounts::filament/resources/fiscal-position.form.fields.zip-to'))
                                     ->required(),
+                                Select::make('company_id')
+                                    ->relationship('company', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->label(__('accounts::filament/resources/fiscal-position.form.fields.company'))
+                                    ->required(),
+
                                 Toggle::make('auto_reply')
                                     ->inline(false)
                                     ->label(__('accounts::filament/resources/fiscal-position.form.fields.detect-automatically')),
                             ])->columns(2),
                         RichEditor::make('notes')
                             ->label(__('accounts::filament/resources/fiscal-position.form.fields.notes')),
-                    ]),
+                    ])->columnSpanFull(),
             ]);
     }
 
@@ -192,7 +200,7 @@ class FiscalPositionResource extends Resource
                             ->label(__('accounts::filament/resources/fiscal-position.infolist.entries.notes'))
                             ->placeholder('-')
                             ->markdown(),
-                    ]),
+                    ])->columnSpanFull(),
             ]);
     }
 
@@ -210,6 +218,7 @@ class FiscalPositionResource extends Resource
         return [
             RelationGroup::make('distribution_for_invoice', [
                 FiscalPositionTaxRelationManager::class,
+                FiscalPositionAccountRelationManager::class,
             ])
                 ->icon('heroicon-o-banknotes'),
         ];

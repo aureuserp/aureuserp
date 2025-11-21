@@ -20,10 +20,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Webkul\Account\Enums\RoundingMethod;
 use Webkul\Account\Enums\RoundingStrategy;
-use Webkul\Account\Filament\Resources\CashRoundingResource\Pages\CreateCashRounding;
-use Webkul\Account\Filament\Resources\CashRoundingResource\Pages\EditCashRounding;
 use Webkul\Account\Filament\Resources\CashRoundingResource\Pages\ListCashRoundings;
-use Webkul\Account\Filament\Resources\CashRoundingResource\Pages\ViewCashRounding;
 use Webkul\Account\Models\CashRounding;
 
 class CashRoundingResource extends Resource
@@ -63,8 +60,22 @@ class CashRoundingResource extends Resource
                                     ->label(__('accounts::filament/resources/cash-rounding.form.fields.rounding-method'))
                                     ->required()
                                     ->autofocus(),
-                            ]),
-                    ])->columns(2),
+                                Select::make('profit_account_id')
+                                    ->label(__('Profit Account'))
+                                    ->relationship('profitAccount', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+
+                                Select::make('loss_account_id')
+                                    ->label(__('Loss Account'))
+                                    ->relationship('lossAccount', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+
+                            ])->columns(2),
+                    ])->columnSpanFull(),
             ]);
     }
 
@@ -156,8 +167,20 @@ class CashRoundingResource extends Resource
                                     ->label(__('accounts::filament/resources/cash-rounding.infolist.entries.rounding-method'))
                                     ->icon('heroicon-o-adjustments-horizontal')
                                     ->formatStateUsing(fn (string $state): string => RoundingMethod::options()[$state]),
+                                TextEntry::make('profit_account_id')
+                                    ->label(__('Profit Account'))
+                                    ->formatStateUsing(function ($record) {
+                                        return $record->profitAccount?->name;
+                                    }),
+
+                                TextEntry::make('loss_account_id')
+                                    ->label(__('Loss Account'))
+                                    ->formatStateUsing(function ($record) {
+                                        return $record->lossAccount?->name;
+                                    }),
+
                             ])->columns(2),
-                    ])->columns(2),
+                    ])->columnSpanFull(),
             ]);
     }
 
@@ -165,9 +188,6 @@ class CashRoundingResource extends Resource
     {
         return [
             'index'  => ListCashRoundings::route('/'),
-            'create' => CreateCashRounding::route('/create'),
-            'view'   => ViewCashRounding::route('/{record}'),
-            'edit'   => EditCashRounding::route('/{record}/edit'),
         ];
     }
 }

@@ -15,6 +15,7 @@ return [
                 'deprecated'    => 'Deprecated',
                 'reconcile'     => 'Allow Reconcile',
                 'non-trade'     => 'Non Trade',
+                'companies'     => 'Companies',
             ],
         ],
     ],
@@ -34,11 +35,11 @@ return [
         ],
 
         'filters' => [
-            'account-type'    => 'Account Type',
-            'allow-reconcile' => 'Allow Reconcile',
-            'currency'        => 'Currency',
+            'account-type'     => 'Account Type',
+            'allow-reconcile'  => 'Allow Reconcile',
+            'currency'         => 'Currency',
             'account-journals' => 'Journals',
-            'non-trade'       => 'Non Trade',
+            'non-trade'        => 'Non Trade',
         ],
 
         'actions' => [
