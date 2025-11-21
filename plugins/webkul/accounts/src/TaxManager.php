@@ -184,6 +184,7 @@ class TaxManager
                 if (!isset($mapTotalPerTaxKeyForTaxLineKey[$taxLineKey])) {
                     $mapTotalPerTaxKeyForTaxLineKey[$taxLineKey] = [];
                 }
+
                 $mapTotalPerTaxKeyForTaxLineKey[$taxLineKey][$taxRoundingKey] = true;
                 
                 if (!isset($totalPerTax[$taxRoundingKey])) {
@@ -208,12 +209,14 @@ class TaxManager
                 $totalPerTax[$taxRoundingKey]['raw_base_amount_currency'] += $taxData['raw_base_amount_currency'];
                 $totalPerTax[$taxRoundingKey]['base_amount'] += $taxData['base_amount'];
                 $totalPerTax[$taxRoundingKey]['raw_base_amount'] += $taxData['raw_base_amount'];
+
                 if (!$baseLine['special_type']) {
                     $totalPerTax[$taxRoundingKey]['base_lines'][] = $baseLineIndex;
                 }
 
                 if ($index === 0) {
                     $baseRoundingKey = json_encode([$currency->id, $baseLine['is_refund']]);
+
                     if (!isset($totalPerBase[$baseRoundingKey])) {
                         $totalPerBase[$baseRoundingKey] = [
                             'base_amount_currency' => 0.0,
@@ -223,10 +226,12 @@ class TaxManager
                             'base_lines' => [],
                         ];
                     }
+
                     $totalPerBase[$baseRoundingKey]['base_amount_currency'] += $taxData['base_amount_currency'];
                     $totalPerBase[$baseRoundingKey]['raw_base_amount_currency'] += $taxData['raw_base_amount_currency'];
                     $totalPerBase[$baseRoundingKey]['base_amount'] += $taxData['base_amount'];
                     $totalPerBase[$baseRoundingKey]['raw_base_amount'] += $taxData['raw_base_amount'];
+
                     if (!$baseLine['special_type']) {
                         $totalPerBase[$baseRoundingKey]['base_lines'][] = $baseLineIndex;
                     }
@@ -237,6 +242,7 @@ class TaxManager
 
             if (empty($taxesData)) {
                 $taxRoundingKey = json_encode([null, $currency->id, $baseLine['is_refund'], false]);
+
                 if (!isset($totalPerTax[$taxRoundingKey])) {
                     $totalPerTax[$taxRoundingKey] = [
                         'base_amount_currency' => 0.0,
@@ -250,15 +256,18 @@ class TaxManager
                         'base_lines' => [],
                     ];
                 }
+
                 $totalPerTax[$taxRoundingKey]['base_amount_currency'] += $taxDetails['total_excluded_currency'];
                 $totalPerTax[$taxRoundingKey]['raw_base_amount_currency'] += $taxDetails['raw_total_excluded_currency'];
                 $totalPerTax[$taxRoundingKey]['base_amount'] += $taxDetails['total_excluded'];
                 $totalPerTax[$taxRoundingKey]['raw_base_amount'] += $taxDetails['raw_total_excluded'];
+
                 if (!$baseLine['special_type']) {
                     $totalPerTax[$taxRoundingKey]['base_lines'][] = $baseLineIndex;
                 }
 
                 $baseRoundingKey = json_encode([$currency->id, $baseLine['is_refund']]);
+
                 if (!isset($totalPerBase[$baseRoundingKey])) {
                     $totalPerBase[$baseRoundingKey] = [
                         'base_amount_currency' => 0.0,
@@ -272,6 +281,7 @@ class TaxManager
                 $totalPerBase[$baseRoundingKey]['raw_base_amount_currency'] += $taxDetails['raw_total_excluded_currency'];
                 $totalPerBase[$baseRoundingKey]['base_amount'] += $taxDetails['total_excluded'];
                 $totalPerBase[$baseRoundingKey]['raw_base_amount'] += $taxDetails['raw_total_excluded'];
+
                 if (!$baseLine['special_type']) {
                     $totalPerBase[$baseRoundingKey]['base_lines'][] = $baseLineIndex;
                 }
@@ -304,11 +314,11 @@ class TaxManager
             $totalPerTaxLineKey = [];
             
             foreach ($taxLines as $taxLine) {
-                $taxRep = $taxLine['tax_repartition_line_id'];
+                $taxRepartitionLine = $taxLine['taxRepartitionLine'];
                 $sign = $taxLine['sign'];
-                $tax = $taxRep->tax_id;
+                $tax = $taxRepartitionLine->tax;
                 $currency = $taxLine['currency'];
-                $taxLineKey = json_encode([$tax->id, $currency->id, $taxRep->document_type === 'refund']);
+                $taxLineKey = json_encode([$tax->id, $currency->id, $taxRepartitionLine->document_type === 'refund']);
                 
                 if (!isset($totalPerTaxLineKey[$taxLineKey])) {
                     $totalPerTaxLineKey[$taxLineKey] = [
@@ -316,6 +326,7 @@ class TaxManager
                         'tax_amount' => 0.0,
                     ];
                 }
+
                 $totalPerTaxLineKey[$taxLineKey]['tax_amount_currency'] += $sign * $taxLine['amount_currency'];
                 $totalPerTaxLineKey[$taxLineKey]['tax_amount'] += $sign * $taxLine['balance'];
             }
@@ -339,6 +350,7 @@ class TaxManager
                 
                 $biggestKey = null;
                 $biggestAmount = null;
+
                 foreach ($roundingKeys as $roundingKey) {
                     if ($biggestAmount === null || $totalPerTax[$roundingKey]['raw_tax_amount_currency'] > $biggestAmount) {
                         $biggestAmount = $totalPerTax[$roundingKey]['raw_tax_amount_currency'];
@@ -360,6 +372,7 @@ class TaxManager
 
             $maxBaseLineIndex = null;
             $maxAmount = null;
+            
             foreach ($taxAmounts['base_lines'] as $blIndex) {
                 if ($maxAmount === null || $baseLines[$blIndex]['tax_details']['total_included_currency'] > $maxAmount) {
                     $maxAmount = $baseLines[$blIndex]['tax_details']['total_included_currency'];
@@ -381,9 +394,11 @@ class TaxManager
             $deltaTaxAmount = $taxAmounts['raw_tax_amount'] - $taxAmounts['tax_amount'];
 
             $foundTaxDataIndex = null;
+
             foreach ($baseLines[$maxBaseLineIndex]['tax_details']['taxes_data'] as $tdIndex => $td) {
                 if ($td['tax']->id === $taxId && $td['is_reverse_charge'] === $isReverseCharge) {
                     $foundTaxDataIndex = $tdIndex;
+
                     break;
                 }
             }
@@ -420,6 +435,7 @@ class TaxManager
                 $baseLines[$baseLineIndex]['tax_details']['delta_total_excluded'] += $deltaBaseAmount;
 
                 $baseRoundingKey = json_encode([$currency->id, $baseLines[$baseLineIndex]['is_refund']]);
+
                 if (isset($totalPerBase[$baseRoundingKey])) {
                     $totalPerBase[$baseRoundingKey]['base_amount_currency'] += $deltaBaseAmountCurrency;
                     $totalPerBase[$baseRoundingKey]['base_amount'] += $deltaBaseAmount;
@@ -434,6 +450,7 @@ class TaxManager
 
             $maxBaseLineIndex = null;
             $maxAmount = null;
+
             foreach ($baseAmounts['base_lines'] as $blIndex) {
                 if ($maxAmount === null || $baseLines[$blIndex]['tax_details']['total_included_currency'] > $maxAmount) {
                     $maxAmount = $baseLines[$blIndex]['tax_details']['total_included_currency'];
@@ -548,7 +565,6 @@ class TaxManager
                 $taxRepartitionsData[] = $taxRepartitionData;
             }
 
-            // Sort by largest absolute amount first
             usort($taxRepartitionsData, function ($a, $b) {
                 $absA = abs($a['tax_amount_currency']);
                 $absB = abs($b['tax_amount_currency']);
@@ -558,7 +574,6 @@ class TaxManager
                 return abs($b['tax_amount']) <=> abs($a['tax_amount']);
             });
 
-            // Distribute rounding differences
             foreach ([
                 ['tax_amount_currency', $currency],
                 ['tax_amount', $companyCurrency],
@@ -587,7 +602,6 @@ class TaxManager
             $taxesData[$taxIndex]['tax_reps_data'] = $taxRepartitionsData;
         }
 
-        // Handle base-affected taxes (reverse iteration)
         $subsequentTaxes = collect();
 
         foreach (array_reverse($taxesData, true) as $taxIndex => $taxData) {
@@ -856,9 +870,7 @@ class TaxManager
         if ($roundingMethod === 'round_per_line') {
             $rawBase = float_round(
                 $rawBase,
-                $precisionRounding
-                //TODO: Check if we need to use default currency rounding from config
-                // $precisionRounding ?: $this->env->company->currency_id->rounding
+                $precisionRounding ?: filament()->auth()->user()->company->currency->rounding
             );
         }
 
@@ -1137,14 +1149,17 @@ class TaxManager
         &$taxesData,
         &$reverseChargeTaxesData,
         $sortedTaxes,
+        $precisionRounding=0.01,
         $roundingMethod,
         bool|string $specialMode
     ) {
         $taxesData[$tax->id]['tax_amount'] = $taxAmount;
 
         if ($roundingMethod === 'round_per_line') {
-            // TODO: rounding logic if needed
-            $taxesData[$tax->id]['tax_amount'] = $taxesData[$tax->id]['tax_amount'];
+            $taxesData[$tax->id]['tax_amount'] = float_round(
+                $taxesData[$tax->id]['tax_amount'],
+                precisionRounding: $precisionRounding ?? $tax->company->currency->rounding
+            );
         }
 
         if ($tax->has_negative_factor) {
@@ -1190,6 +1205,7 @@ class TaxManager
                 $taxesData,
                 $reverseChargeTaxesData,
                 $sortedTaxes,
+                $precisionRounding,
                 $roundingMethod,
                 $specialMode
             );

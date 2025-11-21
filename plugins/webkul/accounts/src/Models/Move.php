@@ -4,6 +4,7 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Enums\DelayType;
@@ -331,6 +332,11 @@ class Move extends Model implements Sortable
             ->where('display_type', 'tax');
     }
 
+    public function matchedPayments()
+    {
+        return $this->belongsToMany(Tax::class, 'accounts_accounts_move_payment', 'move_id', 'payment_id');
+    }
+
     public function paymentTermLine()
     {
         return $this->hasOne(MoveLine::class, 'move_id')
@@ -390,6 +396,11 @@ class Move extends Model implements Sortable
         }
     }
 
+    public function getInvoiceInPaymentState()
+    {
+        return 'paid';
+    }
+
     /**
      * Bootstrap any application services.
      */
@@ -422,7 +433,7 @@ class Move extends Model implements Sortable
 
             $move->computeInvoiceDateDue();
 
-            $move->computeTaxes();
+            $move->computePaymentState();
         });
     }
 
@@ -491,11 +502,6 @@ class Move extends Model implements Sortable
         $this->invoice_date_due = $dateMaturity;
     }
 
-    public function computeTaxes()
-    {
-
-    }
-
     public function computeJournalId()
     {
         if (! in_array($this->journal?->type, $this->getValidJournalTypes())) {
@@ -541,5 +547,187 @@ class Move extends Model implements Sortable
 
                 break;
         }
+    }
+
+    public function computePaymentState()
+    {
+        $debitResults = PartialReconcile::select(
+            'source_line.id as source_line_id',
+            'source_line.move_id as source_move_id',
+            'account.account_type as source_line_account_type',
+            DB::raw('JSON_ARRAYAGG(opposite_move.move_type) as opposite_move_types'),
+            DB::raw("
+                CASE 
+                    WHEN SUM(opposite_move.origin_payment_id IS NOT NULL) = 0 
+                        THEN TRUE
+                    ELSE MIN(COALESCE(payment.is_matched, 0))
+                END AS all_payments_matched
+            "),
+            DB::raw('MAX(payment.id IS NOT NULL) as has_payment'),
+            DB::raw('MAX(opposite_move.statement_line_id IS NOT NULL) as has_statement_line')
+        )
+            ->from('accounts_partial_reconciles as partial_reconciles')
+            ->join('accounts_account_move_lines as source_line', 'source_line.id', '=', 'partial_reconciles.debit_move_id')
+            ->join('accounts_accounts as account', 'account.id', '=', 'source_line.account_id')
+            ->join('accounts_account_move_lines as opposite_line', 'opposite_line.id', '=', 'partial_reconciles.credit_move_id')
+            ->join('accounts_account_moves as opposite_move', 'opposite_move.id', '=', 'opposite_line.move_id')
+            ->leftJoin('accounts_account_payments as payment', 'payment.id', '=', 'opposite_move.origin_payment_id')
+            ->where('source_line.move_id', $this->id)
+            ->whereColumn('opposite_line.move_id', '!=', 'source_line.move_id')
+            ->groupBy('source_line.id', 'source_line.move_id', 'account.account_type')
+            ->get();
+
+        $creditResults = PartialReconcile::select(
+            'source_line.id as source_line_id',
+            'source_line.move_id as source_move_id',
+            'account.account_type as source_line_account_type',
+            DB::raw('JSON_ARRAYAGG(opposite_move.move_type) as opposite_move_types'),
+            DB::raw("
+                CASE 
+                    WHEN SUM(opposite_move.origin_payment_id IS NOT NULL) = 0 
+                        THEN TRUE
+                    ELSE MIN(COALESCE(payment.is_matched, 0))
+                END AS all_payments_matched
+            "),
+            DB::raw('MAX(payment.id IS NOT NULL) as has_payment'),
+            DB::raw('MAX(opposite_move.statement_line_id IS NOT NULL) as has_statement_line')
+        )
+            ->from('accounts_partial_reconciles as partial_reconciles')
+            ->join('accounts_account_move_lines as source_line', 'source_line.id', '=', 'partial_reconciles.credit_move_id')
+            ->join('accounts_accounts as account', 'account.id', '=', 'source_line.account_id')
+            ->join('accounts_account_move_lines as opposite_line', 'opposite_line.id', '=', 'partial_reconciles.debit_move_id')
+            ->join('accounts_account_moves as opposite_move', 'opposite_move.id', '=', 'opposite_line.move_id')
+            ->leftJoin('accounts_account_payments as payment', 'payment.id', '=', 'opposite_move.origin_payment_id')
+            ->where('source_line.move_id', $this->id)
+            ->whereColumn('opposite_line.move_id', '!=', 'source_line.move_id')
+            ->groupBy('source_line.id', 'source_line.move_id', 'account.account_type')
+            ->get();
+
+        $allResults = $debitResults->merge($creditResults);
+
+        $paymentData = [];
+        
+        foreach ($allResults as $row) {
+            $oppositeMoveTypes = $row->opposite_move_types;
+
+            if (is_string($oppositeMoveTypes)) {
+                $oppositeMoveTypes = str_replace(['{', '}'], '', $oppositeMoveTypes);
+
+                $oppositeMoveTypes = $oppositeMoveTypes ? explode(',', $oppositeMoveTypes) : [];
+            }
+            
+            $paymentData[] = [
+                'source_line_id' => $row->source_line_id,
+                'source_move_id' => $row->source_move_id,
+                'source_line_account_type' => $row->source_line_account_type,
+                'opposite_move_types' => $oppositeMoveTypes,
+                'all_payments_matched' => $row->all_payments_matched === true,
+                'has_payment' => $row->has_payment === true,
+                'has_statement_line' => $row->has_statement_line === true,
+            ];
+        }
+
+        $currencies = $this->lines->pluck('currency_id')->unique();
+
+        $currency = $currencies->count() === 1 
+            ? Currency::find($currencies->first()) 
+            : $this->company->currency_id;
+        
+        $reconciliationVals = $paymentData;
+
+        $paymentStateNeeded = $this->isInvoice(true);
+
+        if ($paymentStateNeeded) {
+            $reconciliationVals = array_filter($reconciliationVals, function ($row) {
+                return in_array($row['source_line_account_type'], ['asset_receivable', 'liability_payable']);
+            });
+        }
+
+        $newPaymentState = $this->payment_state !== 'blocked' ? 'not_paid' : 'blocked';
+        
+        if ($this->state === MoveState::POSTED && $paymentStateNeeded) {
+            if ($currency->isZero($this->amount_residual)) {
+                $hasPaymentOrStatementLine = false;
+
+                foreach ($reconciliationVals as $row) {
+                    if ($row['has_payment'] || $row['has_statement_line']) {
+                        $hasPaymentOrStatementLine = true;
+
+                        break;
+                    }
+                }
+                
+                if ($hasPaymentOrStatementLine) {
+                    $allPaymentsMatched = true;
+
+                    foreach ($reconciliationVals as $row) {
+                        if (!$row['all_payments_matched']) {
+                            $allPaymentsMatched = false;
+
+                            break;
+                        }
+                    }
+                    
+                    if ($allPaymentsMatched) {
+                        $newPaymentState = 'paid';
+                    } else {
+                        $newPaymentState = $this->getInvoiceInPaymentState();
+                    }
+                } else {
+                    $newPaymentState = 'paid';
+
+                    $reverseMoveTypes = [];
+
+                    foreach ($reconciliationVals as $row) {
+                        foreach ($row['opposite_move_types'] as $moveType) {
+                            $reverseMoveTypes[$moveType] = true;
+                        }
+                    }
+
+                    $reverseMoveTypes = array_keys($reverseMoveTypes);
+
+                    sort($reverseMoveTypes);
+
+                    $inReverse = in_array($this->move_type, [MoveType::IN_INVOICE, MoveType::IN_RECEIPT])
+                        && (
+                            $reverseMoveTypes === [MoveType::IN_REFUND] 
+                            || (
+                                count($reverseMoveTypes) === 2
+                                && in_array(MoveType::IN_REFUND, $reverseMoveTypes)
+                                && in_array(MoveType::ENTRY, $reverseMoveTypes)
+                            )
+                        );
+
+                    $outReverse = in_array($this->move_type, [MoveType::OUT_INVOICE, MoveType::OUT_RECEIPT])
+                        && (
+                            $reverseMoveTypes === [MoveType::OUT_REFUND] 
+                            || (
+                                count($reverseMoveTypes) === 2
+                                && in_array(MoveType::OUT_REFUND, $reverseMoveTypes)
+                                && in_array(MoveType::ENTRY, $reverseMoveTypes)
+                            )
+                        );
+
+                    $miscReverse = in_array($this->move_type, [MoveType::ENTRY, MoveType::OUT_REFUND, MoveType::IN_REFUND])
+                        && $reverseMoveTypes === ['entry'];
+                    
+                    if ($inReverse || $outReverse || $miscReverse) {
+                        $newPaymentState = 'reversed';
+                    }
+                }
+            } elseif ($this->matchedPayments->filter(function ($payment) {
+                return !$payment->move_id && $payment->state === 'in_process';
+            })->isNotEmpty()) {
+                $newPaymentState = $this->getInvoiceInPaymentState();
+            } elseif (!empty($reconciliationVals)) {
+                $newPaymentState = 'partial';
+            } elseif ($this->matchedPayments->filter(function ($payment) {
+                return !$payment->move_id && $payment->state === 'paid';
+            })->isNotEmpty()) {
+                $newPaymentState = $this->getInvoiceInPaymentState();
+            }
+        }
+        
+        $this->payment_state = $newPaymentState;
     }
 }

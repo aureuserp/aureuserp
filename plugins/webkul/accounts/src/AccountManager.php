@@ -550,29 +550,29 @@ class AccountManager
 
     protected function getRoundedBaseAndTaxLines(Move $move, $roundFromTaxLines = true)
     {
-        $baseAmls = $move->lines->where('display_type', DisplayType::PRODUCT);
+        $baseMoveLines = $move->lines->where('display_type', DisplayType::PRODUCT);
 
         $baseLines = [];
 
-        foreach ($baseAmls as $line) {
+        foreach ($baseMoveLines as $line) {
             $baseLines[] = $this->prepareProductBaseLineForTaxesComputation($line);
         }
 
         $taxLines = [];
 
-        $cashRoundingAmls = $move->lines
+        $cashRoundingMoveLines = $move->lines
             ->where('display_type', DisplayType::ROUNDING)
             ->whereNull('tax_repartition_line_id');
 
-        foreach ($cashRoundingAmls as $line) {
+        foreach ($cashRoundingMoveLines as $line) {
             $baseLines[] = $this->prepareCashRoundingBaseLineForTaxesComputation($move, $line);
         }
 
         $baseLines = TaxFacade::addTaxDetailsInBaseLines($baseLines, $move->company);
 
-        $taxAmls = $move->lines->whereNotNull('tax_repartition_line_id');
+        $taxMoveLines = $move->lines->whereNotNull('tax_repartition_line_id');
 
-        foreach ($taxAmls as $taxLine) {
+        foreach ($taxMoveLines as $taxLine) {
             $taxLines[] = TaxFacade::prepareTaxLineForTaxesComputation($taxLine);
         }
 
