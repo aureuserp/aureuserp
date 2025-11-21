@@ -21,8 +21,8 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Filament\Resources\AccountResource\Pages\ManageAccounts;
@@ -87,6 +87,13 @@ class AccountResource extends Resource
                                     ->preload()
                                     ->label(__('accounts::filament/resources/account.form.sections.fields.currency'))
                                     ->searchable(),
+                                Select::make('companies')
+                                    ->label(__('accounts::filament/resources/account.form.sections.fields.companies'))
+                                    ->relationship('companies', 'name')
+                                    ->multiple()
+                                    ->preload()
+                                    ->searchable()
+                                    ->required(),
                                 Toggle::make('deprecated')
                                     ->inline(false)
                                     ->label(__('accounts::filament/resources/account.form.sections.fields.deprecated')),
