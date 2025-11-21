@@ -29,6 +29,8 @@ return [
                     'recipient-bank'    => 'Recipient Bank',
                     'due-date'          => 'Due Date',
                     'payment-term'      => 'Payment Term',
+                    'journal'          => 'Journal',
+                    'currency'         => 'Currency',
                 ],
             ],
         ],
@@ -67,30 +69,22 @@ return [
 
             'other-information' => [
                 'title'    => 'Other Information',
+
                 'fieldset' => [
                     'accounting' => [
                         'title' => 'Accounting',
 
                         'fields' => [
+                            'company'  => 'Company',
                             'incoterm'          => 'Incoterm',
                             'incoterm-location' => 'Incoterm Location',
-                        ],
-                    ],
-
-                    'secured' => [
-                        'title'  => 'Secured',
-                        'fields' => [
                             'payment-method' => 'Payment Method',
+                            'fiscal-position'   => 'Fiscal Position',
+                            'fiscal-position-tooltip' => 'Fiscal positions are used to adapt taxes and accounts based on the customer location.',
+                            'cash-rounding'     => 'Cash Rounding Method',
+                            'cash-rounding-tooltip' => 'Specifies the smallest cash-payable unit of the currency.',
                             'auto-post'      => 'Auto Post',
                             'checked'        => 'Checked',
-                        ],
-                    ],
-
-                    'additional-information' => [
-                        'title'  => 'Additional Information',
-                        'fields' => [
-                            'company'  => 'Company',
-                            'currency' => 'Currency',
                         ],
                     ],
                 ],
@@ -106,6 +100,7 @@ return [
         'section' => [
             'general' => [
                 'title'   => 'General',
+
                 'entries' => [
                     'vendor-invoice'    => 'Vendor Invoice',
                     'vendor'            => 'Vendor',
@@ -116,6 +111,8 @@ return [
                     'recipient-bank'    => 'Recipient Bank',
                     'due-date'          => 'Due Date',
                     'payment-term'      => 'Payment Term',
+                    'journal'          => 'Journal',
+                    'currency'         => 'Currency',
                 ],
             ],
         ],
@@ -149,25 +146,14 @@ return [
                         'title' => 'Accounting',
 
                         'entries' => [
+                            'company'  => 'Company',
                             'incoterm'          => 'Incoterm',
                             'incoterm-location' => 'Incoterm Location',
-                        ],
-                    ],
-
-                    'secured' => [
-                        'title'   => 'Secured',
-                        'entries' => [
                             'payment-method' => 'Payment Method',
-                            'auto-post'      => 'Auto Post',
                             'checked'        => 'Checked',
-                        ],
-                    ],
-
-                    'additional-information' => [
-                        'title'   => 'Additional Information',
-                        'entries' => [
-                            'company'  => 'Company',
-                            'currency' => 'Currency',
+                            'fiscal-position'   => 'Fiscal Position',
+                            'cash-rounding'     => 'Cash Rounding Method',
+                            'checked'        => 'Checked',
                         ],
                     ],
                 ],

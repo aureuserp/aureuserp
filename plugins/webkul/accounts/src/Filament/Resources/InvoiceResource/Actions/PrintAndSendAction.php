@@ -37,9 +37,13 @@ class PrintAndSendAction extends Action
             });
 
         $this->beforeFormFilled(function (Move $record, Action $action) {
+            $money = function ($amount, $currency) {
+                return money($amount, $currency);
+            };
+
             $description = "
                     <p>Dear {$record->partner->name},</p>
-                    <p>Your invoice <strong>{$record->name}</strong> from <strong>{$record->company->name}</strong> for <strong>{$record->currency->symbol} {$record->amount_total}</strong> is now available. Kindly arrange payment at your earliest convenience.</p>
+                    <p>Your invoice <strong>{$record->name}</strong> from <strong>{$record->company->name}</strong> for <strong>{$money($record->amount_total, $record->currency->name)}</strong> is now available. Kindly arrange payment at your earliest convenience.</p>
                     <p>When making the payment, please reference <strong>{$record->name}</strong> for account <strong>".($record->partnerBank->bank->name ?? 'N/A').'</strong>.</p>
                     <p>If you have any questions, feel free to reach out.</p>
                     <p><strong>Best regards,</strong><br>Administrator</p>

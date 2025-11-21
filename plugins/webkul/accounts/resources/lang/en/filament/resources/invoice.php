@@ -19,12 +19,15 @@ return [
         'section' => [
             'general' => [
                 'title'  => 'General',
+
                 'fields' => [
                     'customer-invoice' => 'Customer Invoice',
                     'customer'         => 'Customer',
                     'invoice-date'     => 'Invoice Date',
                     'due-date'         => 'Due Date',
                     'payment-term'     => 'Payment Term',
+                    'journal'          => 'Journal',
+                    'currency' => 'Currency',
                 ],
             ],
         ],
@@ -63,9 +66,11 @@ return [
 
             'other-information' => [
                 'title'    => 'Other Information',
+
                 'fieldset' => [
                     'invoice' => [
                         'title'  => 'Invoice',
+
                         'fields' => [
                             'customer-reference' => 'Customer Reference',
                             'sales-person'       => 'Sales Person',
@@ -78,29 +83,17 @@ return [
                     'accounting' => [
                         'title' => 'Accounting',
 
-                        'fieldset' => [
+                        'fields' => [
+                            'company'  => 'Company',
                             'incoterm'          => 'Incoterm',
                             'incoterm-location' => 'Incoterm Location',
+                            'fiscal-position'   => 'Fiscal Position',
+                            'fiscal-position-tooltip' => 'Fiscal positions are used to adapt taxes and accounts based on the customer location.',
+                            'cash-rounding'     => 'Cash Rounding Method',
+                            'cash-rounding-tooltip' => 'Specifies the smallest cash-payable unit of the currency.',
                             'payment-method'    => 'Payment Method',
                             'auto-post'         => 'Auto Post',
                             'checked'           => 'Checked',
-                        ],
-                    ],
-
-                    'additional-information' => [
-                        'title'  => 'Additional Information',
-                        'fields' => [
-                            'company'  => 'Company',
-                            'currency' => 'Currency',
-                        ],
-                    ],
-
-                    'marketing' => [
-                        'title'  => 'Marketing',
-                        'fields' => [
-                            'campaign' => 'Campaign',
-                            'medium'   => 'Medium',
-                            'source'   => 'Source',
                         ],
                     ],
                 ],
@@ -186,6 +179,8 @@ return [
                     'invoice-date'     => 'Invoice Date',
                     'due-date'         => 'Due Date',
                     'payment-term'     => 'Payment Term',
+                    'journal'          => 'Journal',
+                    'currency'         => 'Currency',
                 ],
             ],
         ],
@@ -216,6 +211,7 @@ return [
                 'fieldset' => [
                     'invoice' => [
                         'title'   => 'Invoice',
+
                         'entries' => [
                             'customer-reference' => 'Customer Reference',
                             'sales-person'       => 'Sales Person',
@@ -228,30 +224,15 @@ return [
                     'accounting' => [
                         'title' => 'Accounting',
 
-                        'fieldset' => [
+                        'entries' => [
+                            'company'  => 'Company',
                             'incoterm'          => 'Incoterm',
                             'incoterm-location' => 'Incoterm Location',
                             'payment-method'    => 'Payment Method',
+                            'cash-rounding'     => 'Cash Rounding Method',
+                            'fiscal-position'   => 'Fiscal Position',
                             'auto-post'         => 'Auto Post',
                             'checked'           => 'Checked',
-                        ],
-                    ],
-
-                    'additional-information' => [
-                        'title'   => 'Additional Information',
-
-                        'entries' => [
-                            'company'  => 'Company',
-                            'currency' => 'Currency',
-                        ],
-                    ],
-
-                    'marketing' => [
-                        'title'   => 'Marketing',
-                        'entries' => [
-                            'campaign' => 'Campaign',
-                            'medium'   => 'Medium',
-                            'source'   => 'Source',
                         ],
                     ],
                 ],

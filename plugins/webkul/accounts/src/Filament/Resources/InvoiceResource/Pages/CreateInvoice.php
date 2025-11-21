@@ -5,6 +5,8 @@ namespace Webkul\Account\Filament\Resources\InvoiceResource\Pages;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Webkul\Account\Enums\MoveType;
+use Webkul\Account\Models\Journal;
+use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\InvoiceResource;
 use Webkul\Support\Concerns\HasRepeaterColumnManager;
@@ -35,6 +37,19 @@ class CreateInvoice extends CreateRecord
             ->success()
             ->title(__('accounts::filament/resources/invoice/pages/create-invoice.notification.title'))
             ->body(__('accounts::filament/resources/invoice/pages/create-invoice.notification.body'));
+    }
+
+    public function mount(): void
+    {
+        parent::mount();
+
+        $journal = Journal::where('type', JournalType::SALE)
+            ->where('company_id', filament()->auth()->user()->default_company_id)
+            ->first();
+            
+        $this->data['journal_id'] = $journal?->id;
+
+        $this->form->fill($this->data);
     }
 
     protected function mutateFormDataBeforeCreate(array $data): array

@@ -1125,7 +1125,7 @@ class TaxManager
         }
     }
 
-    protected function prepareTaxExtraData($tax, $kwargs = [], $specialMode = false)
+    protected function prepareTaxExtraData($tax, $args = [], $specialMode = false)
     {
         if ($specialMode === 'total_included') {
             $priceInclude = true;
@@ -1135,38 +1135,12 @@ class TaxManager
             $priceInclude = $tax->price_include;
         }
 
-        return array_merge($kwargs, [
+        return array_merge($args, [
             'tax' => $tax,
             'price_include' => $priceInclude,
             'extra_base_for_tax' => 0.0,
             'extra_base_for_base' => 0.0,
         ]);
-    }
-
-    protected function addTaxAmountToResults(
-        $tax,
-        float $taxAmount,
-        &$taxesData,
-        &$reverseChargeTaxesData,
-        $sortedTaxes,
-        $precisionRounding=0.01,
-        $roundingMethod,
-        bool|string $specialMode
-    ) {
-        $taxesData[$tax->id]['tax_amount'] = $taxAmount;
-
-        if ($roundingMethod === 'round_per_line') {
-            $taxesData[$tax->id]['tax_amount'] = float_round(
-                $taxesData[$tax->id]['tax_amount'],
-                precisionRounding: $precisionRounding ?? $tax->company->currency->rounding
-            );
-        }
-
-        if ($tax->has_negative_factor) {
-            $reverseChargeTaxesData[$tax->id]['tax_amount'] = -$taxesData[$tax->id]['tax_amount'];
-        }
-
-        $this->propagateExtraTaxesBase($sortedTaxes, $tax, $taxesData, $specialMode);
     }
 
     protected function evalTaxAmount(
@@ -1182,6 +1156,34 @@ class TaxManager
         $roundingMethod,
         $specialMode
     ) {
+        $addTaxAmountToResults = function(
+            $tax,
+            float $taxAmount
+        ) use (
+            &$taxesData,
+            &$reverseChargeTaxesData,
+            $sortedTaxes,
+            $precisionRounding,
+            $roundingMethod,
+            $specialMode
+        ) {
+            $taxesData[$tax->id]['tax_amount'] = $taxAmount;
+
+            if ($roundingMethod === 'round_per_line') {
+                $taxesData[$tax->id]['tax_amount'] = float_round(
+                    $taxesData[$tax->id]['tax_amount'],
+                    precisionRounding: $precisionRounding ?? $tax->company->currency->rounding
+                );
+            }
+
+            if ($tax->has_negative_factor) {
+                $reverseChargeTaxesData[$tax->id]['tax_amount'] =
+                    -$taxesData[$tax->id]['tax_amount'];
+            }
+
+            $this->propagateExtraTaxesBase($sortedTaxes, $tax, $taxesData, $specialMode);
+        };
+
         $isAlreadyComputed = array_key_exists('tax_amount', $taxesData[$tax->id]);
 
         if ($isAlreadyComputed) {
@@ -1199,16 +1201,7 @@ class TaxManager
         }
 
         if ($taxAmount !== null) {
-            $this->addTaxAmountToResults(
-                $tax,
-                $taxAmount,
-                $taxesData,
-                $reverseChargeTaxesData,
-                $sortedTaxes,
-                $precisionRounding,
-                $roundingMethod,
-                $specialMode
-            );
+            $addTaxAmountToResults($tax, $taxAmount);
         }
     }
 }

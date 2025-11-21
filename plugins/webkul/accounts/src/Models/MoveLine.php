@@ -222,6 +222,9 @@ class MoveLine extends Model implements Sortable
             $moveLine->computeDisplayType();
 
             $moveLine->computeName();
+
+            //TODO: check
+            $moveLine->computeTaxTagInvert();
         });
     }
 
@@ -419,6 +422,11 @@ class MoveLine extends Model implements Sortable
         } else {
             $this->currency_id = $this->currency_id ?? $this->company_currency_id;
         }
+    }
+
+    public function computeTaxTagInvert()
+    {
+        $this->tax_tag_invert = true;
     }
 
     public function computeBalance()

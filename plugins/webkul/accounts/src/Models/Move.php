@@ -315,6 +315,15 @@ class Move extends Model implements Sortable
         return $types;
     }
 
+    public function getDirectionSignAttribute()
+    {
+        if ($this->isEntry() || $this->isOutbound()) {
+            return 1;
+        }
+
+        return -1;
+    }
+
     public function lines()
     {
         return $this->hasMany(MoveLine::class, 'move_id');
@@ -334,7 +343,7 @@ class Move extends Model implements Sortable
 
     public function matchedPayments()
     {
-        return $this->belongsToMany(Tax::class, 'accounts_accounts_move_payment', 'move_id', 'payment_id');
+        return $this->belongsToMany(Tax::class, 'accounts_accounts_move_payment', 'invoice_id', 'payment_id');
     }
 
     public function paymentTermLine()
@@ -372,15 +381,6 @@ class Move extends Model implements Sortable
             MoveType::IN_REFUND,
             MoveType::IN_RECEIPT,
         ] : [MoveType::IN_INVOICE, MoveType::IN_REFUND]);
-    }
-
-    public function getDirectionSignAttribute()
-    {
-        if ($this->isEntry() || $this->isOutbound()) {
-            return 1;
-        }
-
-        return -1;
     }
 
     public function getValidJournalTypes()

@@ -35,6 +35,8 @@ class AccountManager
     {
         $record->state = MoveState::POSTED;
 
+        $record->posted_before = true;
+
         $record->save();
 
         $record = $this->computeAccountMove($record);
@@ -279,6 +281,8 @@ class AccountManager
         if (! $move->isInvoice(true)) {
             return;
         }
+
+        $move->refresh();
 
         $taxLines = $move->lines->whereNotNull('tax_repartition_line_id');
 
@@ -573,7 +577,7 @@ class AccountManager
         $taxMoveLines = $move->lines->whereNotNull('tax_repartition_line_id');
 
         foreach ($taxMoveLines as $taxLine) {
-            $taxLines[] = TaxFacade::prepareTaxLineForTaxesComputation($taxLine);
+            $taxLines[] = TaxFacade::prepareTaxLineForTaxesComputation($taxLine, sign: $move->direction_sign);
         }
 
         $baseLines = TaxFacade::roundBaseLinesTaxDetails(
@@ -654,6 +658,7 @@ class AccountManager
 
                 $untaxedAmount += $sign * $baseLine['balance'];
             }
+            dd($sign, $baseLine, $untaxedAmount);
 
             foreach ($taxResults['tax_lines_to_add'] as $taxLineVals) {
                 $taxAmountCurrency += $sign * $taxLineVals['amount_currency'];

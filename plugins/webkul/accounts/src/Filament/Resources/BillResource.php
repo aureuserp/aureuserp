@@ -108,7 +108,7 @@ class BillResource extends Resource
                             Action::make('payment_state')
                                 ->icon(fn ($record) => $record->payment_state->getIcon())
                                 ->color(fn ($record) => $record->payment_state->getColor())
-                                ->visible(fn ($record) => $record && in_array($record->payment_state, [PaymentState::PAID, PaymentState::REVERSED]))
+                                ->visible(fn ($record) => in_array($record?->payment_state, [PaymentState::PAID, PaymentState::REVERSED]))
                                 ->label(fn ($record) => $record->payment_state->getLabel())
                                 ->size(Size::ExtraLarge->value),
                         ]),
@@ -130,60 +130,102 @@ class BillResource extends Resource
                                                 $partner = $state ? Partner::find($state) : null;
 
                                                 $set('partner_bank_id', $partner?->bankAccounts->first()?->id);
+
                                                 $set('preferred_payment_method_line_id', $partner?->propertyOutboundPaymentMethodLine?->id);
+
                                                 $set('invoice_payment_term_id', $partner?->propertySupplierPaymentTerm?->id);
                                             })
-                                            ->disabled(fn ($record) => $record && in_array($record->state, [MoveState::POSTED, MoveState::CANCEL])),
+                                            ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
+                                        TextInput::make('reference')
+                                            ->label(__('accounts::filament/resources/bill.form.section.general.fields.bill-reference'))
+                                            ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
                                     ]),
-                                DatePicker::make('invoice_date')
-                                    ->label(__('accounts::filament/resources/bill.form.section.general.fields.bill-date'))
-                                    ->default(now())
-                                    ->native(false)
-                                    ->disabled(fn ($record) => $record && in_array($record->state, [MoveState::POSTED, MoveState::CANCEL])),
-                                TextInput::make('reference')
-                                    ->label(__('accounts::filament/resources/bill.form.section.general.fields.bill-reference'))
-                                    ->disabled(fn ($record) => $record && in_array($record->state, [MoveState::POSTED, MoveState::CANCEL])),
-                                DatePicker::make('date')
-                                    ->label(__('accounts::filament/resources/bill.form.section.general.fields.accounting-date'))
-                                    ->default(now())
-                                    ->native(false)
-                                    ->disabled(fn ($record) => $record && in_array($record->state, [MoveState::POSTED, MoveState::CANCEL])),
-                                TextInput::make('payment_reference')
-                                    ->label(__('accounts::filament/resources/bill.form.section.general.fields.payment-reference'))
-                                    ->disabled(fn ($record) => $record && in_array($record->state, [MoveState::POSTED, MoveState::CANCEL])),
-                                Select::make('partner_bank_id')
-                                    ->relationship(
-                                        'partnerBank',
-                                        'account_number',
-                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
-                                    )
-                                    ->getOptionLabelFromRecordUsing(function ($record): string {
-                                        return $record->account_number.($record->trashed() ? ' (Deleted)' : '');
-                                    })
-                                    ->disableOptionWhen(function ($label) {
-                                        return str_contains($label, ' (Deleted)');
-                                    })
-                                    ->searchable()
-                                    ->preload()
-                                    ->label(__('accounts::filament/resources/bill.form.section.general.fields.recipient-bank'))
-                                    ->createOptionForm(fn ($form) => BankAccountResource::form($form))
-                                    ->disabled(fn ($record) => $record && in_array($record->state, [MoveState::POSTED, MoveState::CANCEL])),
-                                DatePicker::make('invoice_date_due')
-                                    ->required()
-                                    ->default(now())
-                                    ->native(false)
-                                    ->live()
-                                    ->hidden(fn (Get $get) => $get('invoice_payment_term_id') !== null)
-                                    ->label(__('accounts::filament/resources/bill.form.section.general.fields.due-date')),
-                                Select::make('invoice_payment_term_id')
-                                    ->relationship('invoicePaymentTerm', 'name')
-                                    ->required(fn (Get $get) => $get('invoice_date_due') === null)
-                                    ->live()
-                                    ->searchable()
-                                    ->preload()
-                                    ->label(__('accounts::filament/resources/bill.form.section.general.fields.payment-term')),
-                            ])->columns(2),
+
+                                Group::make()
+                                    ->schema([
+                                        DatePicker::make('invoice_date')
+                                            ->label(__('accounts::filament/resources/bill.form.section.general.fields.bill-date'))
+                                            ->native(false)
+                                            ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
+                                        DatePicker::make('date')
+                                            ->label(__('accounts::filament/resources/bill.form.section.general.fields.accounting-date'))
+                                            ->default(now())
+                                            ->native(false)
+                                            ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
+                                        TextInput::make('payment_reference')
+                                            ->label(__('accounts::filament/resources/bill.form.section.general.fields.payment-reference'))
+                                            ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
+                                        Select::make('partner_bank_id')
+                                            ->relationship(
+                                                'partnerBank',
+                                                'account_number',
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('partner_id', $get('partner_id'))->withTrashed(),
+                                            )
+                                            ->getOptionLabelFromRecordUsing(function ($record): string {
+                                                return $record->account_number.' - '.$record->bank->name.($record->trashed() ? ' (Deleted)' : '');
+                                            })
+                                            ->disableOptionWhen(function ($label) {
+                                                return str_contains($label, ' (Deleted)');
+                                            })
+                                            ->searchable()
+                                            ->preload()
+                                            ->label(__('accounts::filament/resources/bill.form.section.general.fields.recipient-bank'))
+                                            ->createOptionForm(fn (Schema $form, Get $get) => BankAccountResource::form($form)->fill([
+                                                'partner_id' => $get('partner_id'),
+                                            ]))
+                                            ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
+
+                                        Group::make()
+                                            ->schema([
+                                                DatePicker::make('invoice_date_due')
+                                                    ->required()
+                                                    ->default(now())
+                                                    ->native(false)
+                                                    ->live()
+                                                    ->hidden(fn (Get $get) => $get('invoice_payment_term_id') !== null)
+                                                    ->label(__('accounts::filament/resources/bill.form.section.general.fields.due-date')),
+                                                Select::make('invoice_payment_term_id')
+                                                    ->relationship('invoicePaymentTerm', 'name')
+                                                    ->required(fn (Get $get) => $get('invoice_date_due') === null)
+                                                    ->live()
+                                                    ->searchable()
+                                                    ->preload()
+                                                    ->label(__('accounts::filament/resources/bill.form.section.general.fields.payment-term'))
+                                                    ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
+                                            ])
+                                            ->columns(2),
+                                            
+                                        Group::make()
+                                            ->schema([
+                                                Select::make('journal_id')
+                                                    ->relationship('journal', 'name')
+                                                    ->searchable()
+                                                    ->preload()
+                                                    ->required()
+                                                    ->label(__('accounts::filament/resources/bill.form.section.general.fields.journal'))
+                                                    ->createOptionForm(fn ($form) => JournalResource::form($form))
+                                                    ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
+
+                                                Select::make('currency_id')
+                                                    ->label(__('accounts::filament/resources/bill.form.section.general.fields.currency'))
+                                                    ->relationship(
+                                                        'currency',
+                                                        'name',
+                                                        modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                                    )
+                                                    ->required()
+                                                    ->searchable()
+                                                    ->preload()
+                                                    ->live()
+                                                    ->reactive()
+                                                    ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
+                                            ])
+                                            ->columns(2),
+                                    ]),
+                            ])
+                            ->columns(2),
                     ]),
+
                 Tabs::make()
                     ->schema([
                         Tab::make(__('accounts::filament/resources/bill.form.tabs.invoice-lines.title'))
@@ -199,39 +241,14 @@ class BillResource extends Resource
                                     ->live()
                                     ->reactive(),
                             ]),
+
                         Tab::make(__('accounts::filament/resources/bill.form.tabs.other-information.title'))
                             ->icon('heroicon-o-information-circle')
                             ->schema([
                                 Fieldset::make(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.title'))
                                     ->schema([
-                                        Select::make('invoice_incoterm_id')
-                                            ->relationship('invoiceIncoterm', 'name')
-                                            ->searchable()
-                                            ->preload()
-                                            ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.incoterm')),
-                                        TextInput::make('incoterm_location')
-                                            ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.incoterm-location')),
-                                    ]),
-                                Fieldset::make(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.secured.title'))
-                                    ->schema([
-                                        Select::make('preferred_payment_method_line_id')
-                                            ->relationship('paymentMethodLine', 'name')
-                                            ->preload()
-                                            ->searchable()
-                                            ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.secured.fields.payment-method')),
-                                        Toggle::make('auto_post')
-                                            ->default(0)
-                                            ->inline(false)
-                                            ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.secured.fields.auto-post'))
-                                            ->disabled(fn ($record) => $record && in_array($record->state, [MoveState::POSTED, MoveState::CANCEL])),
-                                        Toggle::make('checked')
-                                            ->inline(false)
-                                            ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.secured.fields.checked')),
-                                    ]),
-                                Fieldset::make(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.additional-information.title'))
-                                    ->schema([
                                         Select::make('company_id')
-                                            ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.additional-information.fields.company'))
+                                            ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.company'))
                                             ->relationship('company', 'name')
                                             ->searchable()
                                             ->preload()
@@ -244,25 +261,50 @@ class BillResource extends Resource
                                                 }
                                             })
                                             ->default(Auth::user()->default_company_id),
-                                        Select::make('currency_id')
-                                            ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.additional-information.fields.currency'))
-                                            ->relationship('currency', 'name')
-                                            ->required()
+                                        Select::make('invoice_incoterm_id')
+                                            ->relationship('invoiceIncoterm', 'name')
                                             ->searchable()
                                             ->preload()
-                                            ->live()
+                                            ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.incoterm')),
+                                        TextInput::make('incoterm_location')
+                                            ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.incoterm-location')),
+                                        Select::make('preferred_payment_method_line_id')
+                                            ->relationship('paymentMethodLine', 'name')
+                                            ->preload()
+                                            ->searchable()
+                                            ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.payment-method')),
+                                        Select::make('fiscal_position_id')
+                                            ->relationship('fiscalPosition', 'name')
+                                            ->preload()
+                                            ->searchable()
+                                            ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.fiscal-position'))
+                                            ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.fiscal-position-tooltip'))
+                                            ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
+                                        Select::make('invoice_cash_rounding_id')
+                                            ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.cash-rounding'))
+                                            ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.cash-rounding-tooltip'))
+                                            ->relationship('invoiceCashRounding', 'name')
+                                            ->searchable()
+                                            ->preload()
                                             ->reactive()
-                                            ->default(Auth::user()->defaultCompany?->currency_id),
-                                    ]),
-                            ]),
+                                            ->live()
+                                            ->nullable()
+                                            ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
+                                        Toggle::make('checked')
+                                            ->inline(false)
+                                            ->label(__('accounts::filament/resources/bill.form.tabs.other-information.fieldset.accounting.fields.checked')),
+                                    ])
+                                    ->columns(1),
+                            ])
+                            ->columns(2),
+
                         Tab::make(__('accounts::filament/resources/bill.form.tabs.term-and-conditions.title'))
                             ->icon('heroicon-o-clipboard-document-list')
                             ->schema([
                                 RichEditor::make('narration')
                                     ->hiddenLabel(),
                             ]),
-                    ])
-                    ->persistTabInQueryString(),
+                    ]),
             ])
             ->columns(1);
     }
@@ -332,8 +374,17 @@ class BillResource extends Resource
                                     ->placeholder('-')
                                     ->icon('heroicon-o-calendar-days')
                                     ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.payment-term')),
+                                TextEntry::make('journal.name')
+                                    ->placeholder('-')
+                                    ->icon('heroicon-o-arrow-path')
+                                    ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.journal')),
+                                TextEntry::make('currency.name')
+                                    ->placeholder('-')
+                                    ->icon('heroicon-o-arrow-path')
+                                    ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.currency')),
                             ])->columns(2),
                     ]),
+
                 Tabs::make()
                     ->columnSpan('full')
                     ->tabs([
@@ -418,56 +469,39 @@ class BillResource extends Resource
                                     ];
                                 }),
                             ]),
+
                         Tab::make(__('accounts::filament/resources/bill.infolist.tabs.other-information.title'))
                             ->icon('heroicon-o-information-circle')
                             ->schema([
-                                Section::make(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.accounting.title'))
-                                    ->icon('heroicon-o-calculator')
+                                Fieldset::make(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.accounting.title'))
                                     ->schema([
-                                        Grid::make()
-                                            ->schema([
-                                                TextEntry::make('invoiceIncoterm.name')
-                                                    ->placeholder('-')
-                                                    ->label(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.accounting.entries.incoterm'))
-                                                    ->icon('heroicon-o-globe-alt'),
-                                                TextEntry::make('incoterm_location')
-                                                    ->placeholder('-')
-                                                    ->label(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.accounting.entries.incoterm-location'))
-                                                    ->icon('heroicon-o-map-pin'),
-                                            ])->columns(2),
-                                    ]),
-                                Section::make(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.secured.title'))
-                                    ->icon('heroicon-o-shield-check')
-                                    ->schema([
-                                        Grid::make()
-                                            ->schema([
-                                                TextEntry::make('paymentMethodLine.name')
-                                                    ->placeholder('-')
-                                                    ->label(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.secured.entries.payment-method'))
-                                                    ->icon('heroicon-o-credit-card'),
-                                                IconEntry::make('auto_post')
-                                                    ->boolean()
-                                                    ->placeholder('-')
-                                                    ->icon('heroicon-o-arrow-path')
-                                                    ->label(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.secured.entries.auto-post')),
-                                            ])->columns(2),
-                                    ]),
-                                Section::make(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.additional-information.title'))
-                                    ->icon('heroicon-o-puzzle-piece')
-                                    ->schema([
-                                        Grid::make()
-                                            ->schema([
-                                                TextEntry::make('company.name')
-                                                    ->placeholder('-')
-                                                    ->icon('heroicon-o-building-office')
-                                                    ->label(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.additional-information.entries.company')),
-                                                TextEntry::make('currency.name')
-                                                    ->placeholder('-')
-                                                    ->icon('heroicon-o-arrow-path')
-                                                    ->label(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.additional-information.entries.currency')),
-                                            ])->columns(2),
-                                    ]),
-                            ]),
+                                        TextEntry::make('company.name')
+                                            ->placeholder('-')
+                                            ->label(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.accounting.entries.company')),
+                                        TextEntry::make('invoiceIncoterm.name')
+                                            ->placeholder('-')
+                                            ->label(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.accounting.entries.incoterm')),
+                                        TextEntry::make('incoterm_location')
+                                            ->placeholder('-')
+                                            ->label(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.accounting.entries.incoterm-location')),
+                                        TextEntry::make('fiscalPosition.name')
+                                            ->placeholder('-')
+                                            ->label(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.accounting.entries.fiscal-position')),
+                                        TextEntry::make('cashRounding.name')
+                                            ->placeholder('-')
+                                            ->label(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.accounting.entries.cash-rounding')),
+                                        TextEntry::make('paymentMethodLine.name')
+                                            ->placeholder('-')
+                                            ->label(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.accounting.entries.payment-method')),
+                                        IconEntry::make('checked')
+                                            ->boolean()
+                                            ->placeholder('-')
+                                            ->label(__('accounts::filament/resources/bill.infolist.tabs.other-information.fieldset.accounting.entries.checked')),
+                                    ])
+                                    ->columns(1),
+                            ])
+                            ->columns(2),
+
                         Tab::make(__('accounts::filament/resources/bill.infolist.tabs.term-and-conditions.title'))
                             ->icon('heroicon-o-clipboard-document-list')
                             ->schema([
@@ -577,7 +611,7 @@ class BillResource extends Resource
                             ->contains($value);
                     })
                     ->dehydrated()
-                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductUpdated($set, $get))
                     ->required(),
                 TextInput::make('quantity')
@@ -588,7 +622,7 @@ class BillResource extends Resource
                     ->maxValue(99999999999)
                     ->live(onBlur: true)
                     ->dehydrated()
-                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductQtyUpdated($set, $get)),
                 Select::make('uom_id')
                     ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.fields.unit'))
@@ -601,7 +635,7 @@ class BillResource extends Resource
                     ->live()
                     ->selectablePlaceholder(false)
                     ->dehydrated()
-                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterUOMUpdated($set, $get))
                     ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
                 Select::make('taxes')
@@ -617,7 +651,7 @@ class BillResource extends Resource
                     ->multiple()
                     ->preload()
                     ->dehydrated()
-                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateHydrated(fn (Get $get, Set $set) => self::calculateLineTotals($set, $get))
                     ->afterStateUpdated(fn (Get $get, Set $set) => self::calculateLineTotals($set, $get))
                     ->live(),
@@ -629,7 +663,7 @@ class BillResource extends Resource
                     ->maxValue(99999999999)
                     ->live(onBlur: true)
                     ->dehydrated()
-                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
                 TextInput::make('price_unit')
                     ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.fields.unit-price'))
@@ -640,13 +674,13 @@ class BillResource extends Resource
                     ->required()
                     ->live(onBlur: true)
                     ->dehydrated()
-                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
                 TextInput::make('price_subtotal')
                     ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.fields.sub-total'))
                     ->default(0)
                     ->dehydrated()
-                    ->disabled(fn ($record) => $record && in_array($record->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
                 Hidden::make('product_uom_qty')
                     ->default(0),
                 Hidden::make('price_tax')

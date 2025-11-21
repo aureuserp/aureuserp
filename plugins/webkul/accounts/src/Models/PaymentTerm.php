@@ -51,6 +51,12 @@ class PaymentTerm extends Model implements Sortable
         return $this->hasMany(PaymentDueTerm::class, 'payment_id');
     }
 
+    //TODO: we will implement it later
+    public function getEarlyDiscountAttribute()
+    {
+        return false;
+    }
+
     public function computeTerms(
         $dateRef,
         $currency,
