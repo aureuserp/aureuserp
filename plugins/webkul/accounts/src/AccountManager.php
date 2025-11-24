@@ -16,6 +16,7 @@ use Webkul\Account\Models\Move;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Partner;
+use Webkul\Account\Models\PaymentRegister;
 use Webkul\Support\Services\EmailService;
 
 class AccountManager
@@ -329,11 +330,11 @@ class AccountManager
         foreach ($taxResults['tax_lines_to_update'] as $taxLineVals) {
             unset($taxLineVals['tax_ids']);
 
-            $taxMoveLine = $taxLineVals['record']->update($taxLineVals);
+            $taxLineVals['record']->update($taxLineVals);
 
-            $taxMoveLine->computeCreditAndDebit();
+            $taxLineVals['record']->computeCreditAndDebit();
 
-            $taxMoveLine->save();
+            $taxLineVals['record']->save();
         }
     }
 
@@ -504,7 +505,7 @@ class AccountManager
 
         $neededMapping = collect($neededTerms)->mapWithKeys(function ($data) {
             $key = [
-                'move_id'       => $data['move_id'],
+                'move_id' => $data['move_id'],
                 'date_maturity' => $data['date_maturity'],
                 'discount_date' => $data['discount_date'],
             ];
@@ -536,6 +537,8 @@ class AccountManager
                 $existingLines[$keyStr]->update($attributes);
 
                 $existingLines[$keyStr]->computeCreditAndDebit();
+
+                $existingLines[$keyStr]->computeAmountResidual();
 
                 $existingLines[$keyStr]->save();
             } else {
@@ -645,7 +648,7 @@ class AccountManager
 
             $untaxedAmount = $untaxedAmountCurrency;
 
-            $sign = $move->direction_sign;
+            // $sign = $move->direction_sign;
             
             [$baseLines, $taxLines] = $this->getRoundedBaseAndTaxLines($move, false);
 
@@ -654,16 +657,15 @@ class AccountManager
             $taxResults = TaxFacade::prepareTaxLines($baseLines, $move->company);
 
             foreach ($taxResults['base_lines_to_update'] as $baseLine) {
-                $untaxedAmountCurrency += $sign * $baseLine['amount_currency'];
+                $untaxedAmountCurrency += $sign * abs($baseLine['amount_currency']);
 
-                $untaxedAmount += $sign * $baseLine['balance'];
+                $untaxedAmount += $sign * abs($baseLine['balance']);
             }
-            dd($sign, $baseLine, $untaxedAmount);
 
             foreach ($taxResults['tax_lines_to_add'] as $taxLineVals) {
-                $taxAmountCurrency += $sign * $taxLineVals['amount_currency'];
+                $taxAmountCurrency += $sign * abs($taxLineVals['amount_currency']);
 
-                $taxAmount += $sign * $taxLineVals['balance'];
+                $taxAmount += $sign * abs($taxLineVals['balance']);
             }
 
             if ($move->invoice_payment_term_id) {
@@ -723,5 +725,10 @@ class AccountManager
         }
 
         return $neededTerms;
+    }
+
+    public function createPayments(PaymentRegister $paymentRegister)
+    {
+
     }
 }

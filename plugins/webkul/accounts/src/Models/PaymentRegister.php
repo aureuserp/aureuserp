@@ -88,7 +88,7 @@ class PaymentRegister extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function registerMoveLines()
+    public function lines()
     {
         return $this->belongsToMany(MoveLine::class, 'accounts_account_payment_register_move_lines', 'payment_register_id', 'move_line_id');
     }

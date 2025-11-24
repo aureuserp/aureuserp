@@ -21,7 +21,7 @@ class ProductResource extends BaseProductResource
 
     protected static bool $shouldRegisterNavigation = true;
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 6;
 
     public static function getModelLabel(): string
     {

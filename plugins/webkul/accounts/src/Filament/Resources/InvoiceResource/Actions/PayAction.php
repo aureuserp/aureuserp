@@ -143,7 +143,7 @@ class PayAction extends Action
             'source_amount_currency' => $data['amount'],
         ]);
 
-        $paymentRegister->registerMoveLines()->sync($record->paymentTermLine->id);
+        $paymentRegister->lines()->sync($record->paymentTermLine->id);
 
         return $paymentRegister;
     }

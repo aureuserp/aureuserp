@@ -178,6 +178,11 @@ class MoveLine extends Model implements Sortable
         return $this->belongsTo(FullReconcile::class);
     }
 
+    public function taxRepartitionLine()
+    {
+        return $this->belongsTo(TaxPartition::class, 'tax_repartition_line_id');
+    }
+
     public function getTermKeyAttribute()
     {
         if ($this->display_type === DisplayType::PAYMENT_TERM) {

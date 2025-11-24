@@ -344,7 +344,7 @@ class InventoryManager
         if (! $isSupplierSource) {
             $productQuantities = ProductQuantity::with(['location', 'lot', 'package'])
                 ->where('product_id', $record->product_id)
-                // Todo: Fix this to handle nesting
+                // TODO: Fix this to handle nesting
                 ->whereHas('location', function (Builder $query) use ($record) {
                     $query->where('id', $record->source_location_id)
                         ->orWhere('parent_id', $record->source_location_id);

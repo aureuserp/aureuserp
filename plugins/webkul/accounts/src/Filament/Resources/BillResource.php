@@ -338,51 +338,64 @@ class BillResource extends Resource
                             ])->columns(2),
                         Grid::make()
                             ->schema([
-                                TextEntry::make('partner.name')
-                                    ->placeholder('-')
-                                    ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.vendor'))
-                                    ->visible(fn ($record) => $record->partner_id !== null)
-                                    ->icon('heroicon-o-user'),
-                                TextEntry::make('invoice_partner_display_name')
-                                    ->placeholder('-')
-                                    ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.vendor'))
-                                    ->visible(fn ($record) => $record->partner_id === null)
-                                    ->icon('heroicon-o-user'),
-                                TextEntry::make('invoice_date')
-                                    ->date()
-                                    ->icon('heroicon-o-calendar')
-                                    ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.bill-date')),
-                                TextEntry::make('reference')
-                                    ->placeholder('-')
-                                    ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.bill-reference')),
-                                TextEntry::make('date')
-                                    ->icon('heroicon-o-calendar')
-                                    ->placeholder('-')
-                                    ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.accounting-date')),
-                                TextEntry::make('payment_reference')
-                                    ->placeholder('-')
-                                    ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.payment-reference')),
-                                TextEntry::make('partnerBank.account_number')
-                                    ->placeholder('-')
-                                    ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.recipient-bank')),
-                                TextEntry::make('invoice_date_due')
-                                    ->icon('heroicon-o-clock')
-                                    ->placeholder('-')
-                                    ->date()
-                                    ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.due-date')),
-                                TextEntry::make('invoicePaymentTerm.name')
-                                    ->placeholder('-')
-                                    ->icon('heroicon-o-calendar-days')
-                                    ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.payment-term')),
-                                TextEntry::make('journal.name')
-                                    ->placeholder('-')
-                                    ->icon('heroicon-o-arrow-path')
-                                    ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.journal')),
-                                TextEntry::make('currency.name')
-                                    ->placeholder('-')
-                                    ->icon('heroicon-o-arrow-path')
-                                    ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.currency')),
-                            ])->columns(2),
+                                Grid::make()
+                                    ->schema([
+                                        TextEntry::make('partner.name')
+                                            ->placeholder('-')
+                                            ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.vendor'))
+                                            ->visible(fn ($record) => $record->partner_id !== null)
+                                            ->icon('heroicon-o-user'),
+                                        TextEntry::make('reference')
+                                            ->placeholder('-')
+                                            ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.bill-reference')),
+                                    ])
+                                    ->columns(1),
+                                Grid::make()
+                                    ->schema([
+                                        TextEntry::make('invoice_partner_display_name')
+                                            ->placeholder('-')
+                                            ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.vendor'))
+                                            ->visible(fn ($record) => $record->partner_id === null)
+                                            ->icon('heroicon-o-user'),
+                                        TextEntry::make('invoice_date')
+                                            ->date()
+                                            ->icon('heroicon-o-calendar')
+                                            ->placeholder('-')
+                                            ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.bill-date')),
+                                        TextEntry::make('date')
+                                            ->icon('heroicon-o-calendar')
+                                            ->placeholder('-')
+                                            ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.accounting-date')),
+                                        TextEntry::make('payment_reference')
+                                            ->placeholder('-')
+                                            ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.payment-reference')),
+                                        TextEntry::make('partnerBank.account_number')
+                                            ->placeholder('-')
+                                            ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.recipient-bank')),
+                                        TextEntry::make('invoice_date_due')
+                                            ->icon('heroicon-o-clock')
+                                            ->placeholder('-')
+                                            ->date()
+                                            ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.due-date')),
+                                        TextEntry::make('invoicePaymentTerm.name')
+                                            ->placeholder('-')
+                                            ->icon('heroicon-o-calendar-days')
+                                            ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.payment-term')),
+                                        Grid::make()
+                                            ->schema([
+                                                TextEntry::make('journal.name')
+                                                    ->placeholder('-')
+                                                    ->icon('heroicon-o-arrow-path')
+                                                    ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.journal')),
+                                                TextEntry::make('currency.name')
+                                                    ->placeholder('-')
+                                                    ->icon('heroicon-o-arrow-path')
+                                                    ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.currency')),
+                                            ]),
+                                    ])
+                                    ->columns(1),
+                            ])
+                            ->columns(2),
                     ]),
 
                 Tabs::make()
@@ -539,6 +552,8 @@ class BillResource extends Resource
             ->defaultItems(0)
             ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
             ->deleteAction(fn (Action $action) => $action->requiresConfirmation())
+            ->deletable(fn ($record): bool => ! in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL]))
+            ->addable(fn ($record): bool => ! in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL]))
             ->table([
                 TableColumn::make('product_id')
                     ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.columns.product'))

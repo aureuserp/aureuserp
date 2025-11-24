@@ -200,7 +200,7 @@ class SaleManager
 
         $line->price_reduce_taxexcl = $line->price_unit - ($line->price_unit * ($line->discount / 100));
 
-        $line->price_reduce_taxinc = round($line->price_reduce_taxexcl + ($line->price_reduce_taxexcl * ($line->taxes->sum('amount') / 100)), 2); // Todo:: This calculation is wrong
+        $line->price_reduce_taxinc = round($line->price_reduce_taxexcl + ($line->price_reduce_taxexcl * ($line->taxes->sum('amount') / 100)), 2); // TODO:: This calculation is wrong
 
         $line->state = $line->order->state;
 

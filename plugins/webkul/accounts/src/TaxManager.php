@@ -711,7 +711,7 @@ class TaxManager
 
                 unset($taxLinesMapping[$groupingKey]);
 
-                $taxLinesToUpdate[] = [$taxLine, $amounts['grouping_key'], $amounts];
+                $taxLinesToUpdate[] = array_merge($taxLine, $amounts['grouping_key'], $amounts);
 
                 $processedKeys[] = $groupingKey;
             } else {
@@ -823,13 +823,13 @@ class TaxManager
     public function prepareTaxLineRepartitionGroupingKey($taxLine)
     {
         return [
-            'taxRepartitionLine' => $taxLine['taxRepartitionLine']->id,
             'partner_id' => $taxLine['partner']->id,
             'currency_id' => $taxLine['currency']->id,
-            'group_tax_id' => $taxLine['groupTax']->id,
             'analytic_distribution' => $taxLine['analytic_distribution'],
             'account_id' => $taxLine['account']->id,
             'tax_ids' => $taxLine['taxes']->pluck('id')->toArray(),
+            'tax_repartition_line_id' => $taxLine['taxRepartitionLine']->id,
+            'group_tax_id' => $taxLine['groupTax']->id,
         ];
     }
 
