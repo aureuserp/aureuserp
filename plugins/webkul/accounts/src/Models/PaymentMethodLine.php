@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Accounting\Models\Journal;
 use Webkul\Security\Models\User;
 
 class PaymentMethodLine extends Model implements Sortable
@@ -46,5 +47,22 @@ class PaymentMethodLine extends Model implements Sortable
     public function journal()
     {
         return $this->belongsTo(Journal::class);
+    }
+
+    public function defaultAccount()
+    {
+        return $this->hasOneThrough(
+            Account::class,
+            Journal::class,
+            'id',
+            'id',
+            'journal_id',
+            'default_account_id'
+        );
+    }
+
+    public function computeName()
+    {
+        $this->name = $this->paymentMethod->name;
     }
 }

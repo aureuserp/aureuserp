@@ -101,61 +101,72 @@ class Journal extends Model implements Sortable
         return $this->belongsToMany(Account::class, 'accounts_journal_accounts', 'journal_id', 'account_id');
     }
 
-    public function getAvailablePaymentMethodLines(string $paymentType): mixed
+    public function moveLines()
     {
-        if (! $this->exists) {
-            return PaymentMethodLine::query()->whereNull('id')->get();
-        }
-
-        return match ($paymentType) {
-            'inbound'  => $this->inboundPaymentMethodLines,
-            'outbound' => $this->outboundPaymentMethodLines,
-            default    => throw new InvalidArgumentException('Invalid payment type'),
-        };
+        return $this->hasMany(MoveLine::class, 'journal_id');
     }
 
     public function inboundPaymentMethodLines(): HasMany
     {
-        return $this->hasMany(PaymentMethodLine::class)->where('type', 'inbound');
+        return $this->hasMany(PaymentMethodLine::class)
+            ->whereHas('paymentMethod', function ($q) {
+                $q->where('payment_type', 'inbound');
+            });
     }
 
     public function outboundPaymentMethodLines(): HasMany
     {
-        return $this->hasMany(PaymentMethodLine::class)->where('type', 'outbound');
+        return $this->hasMany(PaymentMethodLine::class)
+            ->whereHas('paymentMethod', function ($q) {
+                $q->where('payment_type', 'outbound');
+            });
     }
-
-    public function computeInboundPaymentMethodLines(): void
+    protected static function boot()
     {
-        if (! in_array($this->type, ['bank', 'cash', 'credit'])) {
-            $this->inboundPaymentMethodLines()->delete();
+        parent::boot();
 
-            return;
-        }
+        static::saving(function ($move) {
+            $move->syncInboundPaymentMethodLines();
 
-        DB::transaction(function () {
-            $this->inboundPaymentMethodLines()->delete();
-
-            $defaultMethods = $this->getDefaultInboundPaymentMethods();
-
-            foreach ($defaultMethods as $method) {
-                $this->inboundPaymentMethodLines()->create([
-                    'name'              => $method->name,
-                    'payment_method_id' => $method->id,
-                    'type'              => 'inbound',
-                ]);
-            }
+            $move->syncOutboundPaymentMethodLines();
         });
     }
 
-    protected function getDefaultInboundPaymentMethods(): mixed
+    public function syncInboundPaymentMethodLines()
     {
-        return PaymentMethod::where('type', 'inbound')
-            ->where('active', true)
-            ->get();
+        $this->inboundPaymentMethodLines()->delete();
+
+        if (in_array($this->type, [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD])) {
+            $defaultMethods = PaymentMethod::where('code', 'manual')
+                ->where('payment_type', 'inbound')
+                ->get();
+
+            foreach ($defaultMethods as $method) {
+                $this->inboundPaymentMethodLines()->updateOrCreate([
+                    'payment_method_id' => $method->id,
+                ], [
+                    'name' => $method->name,
+                ]);
+            }
+        }
     }
 
-    public function moveLines()
+    public function syncOutboundPaymentMethodLines()
     {
-        return $this->hasMany(MoveLine::class, 'journal_id');
+        $this->outboundPaymentMethodLines()->delete();
+
+        if (in_array($this->type, [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD])) {
+            $defaultMethods = PaymentMethod::where('code', 'manual')
+                ->where('payment_type', 'outbound')
+                ->get();
+
+            foreach ($defaultMethods as $method) {
+                $this->outboundPaymentMethodLines()->updateOrCreate([
+                    'payment_method_id' => $method->id,
+                ], [
+                    'name' => $method->name,
+                ]);
+            }
+        }
     }
 }

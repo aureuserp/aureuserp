@@ -12,7 +12,12 @@ class PaymentMethod extends Model
 
     protected $table = 'accounts_payment_methods';
 
-    protected $fillable = ['code', 'payment_type', 'name', 'created_by'];
+    protected $fillable = [
+        'code',
+        'payment_type',
+        'name',
+        'created_by'
+    ];
 
     public function createdBy()
     {

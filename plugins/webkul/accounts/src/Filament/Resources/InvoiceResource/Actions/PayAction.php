@@ -33,7 +33,14 @@ class PayAction extends Action
         $this
             ->label(__('accounts::filament/resources/invoice/actions/pay-action.title'))
             ->color('success')
+            ->modal(fn () => new PaymentRegister())
             ->schema(function (Schema $schema) {
+                $paymentRegister = (new PaymentRegister);
+                $paymentRegister->lines = $this->getRecord()->lines;
+                $paymentRegister->computeAvailableJournalIds();
+
+                dd($paymentRegister);
+                
                 return $schema->components([
                     Group::make()
                         ->schema([
@@ -116,9 +123,12 @@ class PayAction extends Action
                 $record->update(['payment_state' => PaymentState::PAID]);
             })
             ->hidden(function (Move $record) {
-                return
-                    $record->state != MoveState::POSTED
-                    || ! in_array($record->payment_state, [PaymentState::NOT_PAID, PaymentState::PARTIAL, PaymentState::IN_PAYMENT]);
+                return $record->state != MoveState::POSTED
+                    || ! in_array($record->payment_state, [
+                        PaymentState::NOT_PAID,
+                        PaymentState::PARTIAL,
+                        PaymentState::IN_PAYMENT
+                    ]);
             });
     }
 
