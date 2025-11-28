@@ -16,6 +16,8 @@ use Webkul\Account\Models\Move;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Partner;
+use Webkul\Account\Models\Payment;
+use Webkul\Support\Models\Currency;
 use Webkul\Account\Models\PaymentRegister;
 use Webkul\Support\Services\EmailService;
 
@@ -729,6 +731,275 @@ class AccountManager
 
     public function createPayments(PaymentRegister $paymentRegister)
     {
+        $batches = [];
+        
+        foreach ($paymentRegister->batches as $batch) {
+            $batchAccount = $paymentRegister->getBatchAccount($batch);
 
+            if ($paymentRegister->is_single_batch && ! $batchAccount?->can_send_money) {
+                continue;
+            }
+
+            $batches[] = $batch;
+        }
+
+        if (empty($batches)) {
+            throw new \Exception(
+                "To record payments with " . $paymentRegister->paymentMethodLine->name . ", the recipient bank account must be manually validated. You should go on the partner bank account in order to validate it."
+            );
+        }
+
+        $firstBatchResult = $batches[0];
+
+        $editMode = $paymentRegister->is_single_batch
+            && (
+                count($firstBatchResult['lines']) == 1
+                || $paymentRegister->group_payment
+            );
+
+        $paymentsToProcess = [];
+
+        if ($editMode) {
+            $paymentVals = $this->createPaymentValsFromFirstBatch($paymentRegister, $firstBatchResult);
+
+            $paymentsToProcessValues = [
+                'create_vals' => $paymentVals,
+                'to_reconcile' => $firstBatchResult['lines'],
+                'batch' => $firstBatchResult,
+            ];
+
+            if ($paymentRegister->writeoff_is_exchange_account && $paymentRegister->currency_id == $paymentRegister->company_currency_id) {
+                $totalBatchResidual = $firstBatchResult['lines']->sum('amount_residual_currency');
+
+                $paymentsToProcessValues['rate'] = $paymentRegister->amount ? abs($totalBatchResidual / $paymentRegister->amount) : 0.0;
+            }
+
+            $paymentsToProcess[] = $paymentsToProcessValues;
+        } else {
+            if (! $paymentRegister->group_payment) {
+                $linesToPay = in_array($paymentRegister->installments_mode, ['next', 'overdue', 'before_date']) 
+                    ? $paymentRegister->getTotalAmountsToPay($batches)['lines'] 
+                    : $paymentRegister->lines;
+
+                $newBatches = [];
+                
+                foreach ($batches as $batchResult) {
+                    foreach ($batchResult['lines'] as $line) {
+                        if (! $linesToPay->contains($line)) {
+                            continue;
+                        }
+
+                        $newBatches[] = array_merge($batchResult, [
+                            'payment_values' => array_merge($batchResult['payment_values'], [
+                                'payment_type' => $line->balance > 0 ? 'inbound' : 'outbound'
+                            ]),
+                            'lines' => $line,
+                        ]);
+                    }
+                }
+
+                $batches = $newBatches;
+            }
+
+            foreach ($batches as $batchResult) {
+                $paymentsToProcess[] = [
+                    'create_vals' => $this->createPaymentValsFromBatch($paymentRegister, $batchResult),
+                    'to_reconcile' => $batchResult['lines'],
+                    'batch' => $batchResult,
+                ];
+            }
+        }
+
+        $this->initiatePayments($paymentRegister, $paymentsToProcess, $editMode);
+
+        $this->postPayments($paymentsToProcess, $editMode);
+
+        $this->reconcilePayments($paymentsToProcess, $editMode);
+    }
+
+    public function createPaymentValsFromFirstBatch($paymentRegister, $batchResult)
+    {
+        $paymentVals = [
+            'date' => $paymentRegister->payment_date,
+            'amount' => $paymentRegister->amount,
+            'payment_type' => $paymentRegister->payment_type,
+            'partner_type' => $paymentRegister->partner_type,
+            'memo' => $paymentRegister->communication,
+            'journal_id' => $paymentRegister->journal_id,
+            'company_id' => $paymentRegister->company_id,
+            'currency_id' => $paymentRegister->currency_id,
+            'partner_id' => $paymentRegister->partner_id,
+            'partner_bank_id' => $paymentRegister->partner_bank_id,
+            'payment_method_line_id' => $paymentRegister->payment_method_line_id,
+            'destination_account_id' => $paymentRegister->lines[0]->account_id,
+            'write_off_line_vals' => [],
+        ];
+
+        if ($paymentRegister->payment_difference_handling == 'reconcile') {
+            if (! $paymentRegister->currency->isZero($paymentRegister->payment_difference)) {
+                if ($paymentRegister->writeoff_is_exchange_account) {
+                    if ($paymentRegister->currency_id != $paymentRegister->company_currency_id) {
+                        $paymentVals['force_balance'] = $batchResult['lines']->sum('amount_residual');
+                    }
+                } else {
+                    if ($paymentRegister->payment_type == 'inbound') {
+                        $writeOffAmountCurrency = $paymentRegister->payment_difference;
+                    } else {
+                        $writeOffAmountCurrency = -$paymentRegister->payment_difference;
+                    }
+
+                    $paymentVals['write_off_line_vals'][] = [
+                        'name' => 'Write Off',
+                        'account_id' => $paymentRegister->writeoff_account_id,
+                        'partner_id' => $paymentRegister->partner_id,
+                        'currency_id' => $paymentRegister->currency_id,
+                        'amount_currency' => $writeOffAmountCurrency,
+                        'balance' => $paymentRegister->currency->convert(
+                            $writeOffAmountCurrency, 
+                            $paymentRegister->company->currency, 
+                            $paymentRegister->company, 
+                            $paymentRegister->payment_date
+                        ),
+                    ];
+                }
+            }
+        }
+
+        return $paymentVals;
+    }
+
+    public function createPaymentValsFromBatch($paymentRegister, $batch)
+    {
+        $batchValues = $this->getWizardValuesFromBatch($batch);
+
+        if ($batchValues['payment_type'] == 'inbound') {
+            $partnerBankId = $paymentRegister->journal->bank_account_id;
+        } else {
+            $partnerBankId = $batch['payment_values']['partner_bank_id'];
+        }
+
+        $paymentMethodLine = $paymentRegister->paymentMethodLine;
+
+        if ($batchValues['payment_type'] != $paymentMethodLine->payment_type) {
+            $paymentMethodLine = $paymentRegister->journal->getAvailablePaymentMethodLines($batchValues['payment_type'])->first();
+        }
+
+        $paymentVals = [
+            'date' => $paymentRegister->payment_date,
+            'amount' => $batchValues['source_amount_currency'],
+            'payment_type' => $batchValues['payment_type'],
+            'partner_type' => $batchValues['partner_type'],
+            'memo' => $paymentRegister->getCommunication($batch['lines']),
+            'journal_id' => $paymentRegister->journal_id,
+            'company_id' => $paymentRegister->company_id,
+            'currency_id' => $batchValues['source_currency_id'],
+            'partner_id' => $batchValues['partner_id'],
+            'payment_method_line_id' => $paymentMethodLine,
+            'destination_account_id' => $batch['lines'][0]->account_id,
+            'write_off_line_vals' => [],
+        ];
+
+        if ($partnerBankId) {
+            $paymentVals['partner_bank_id'] = $partnerBankId;
+        }
+
+        return $paymentVals;
+    }
+
+    public function initiatePayments($paymentRegister, $paymentsToProcess, $editMode = false)
+    {
+        $payments = Payment::insert(array_column($paymentsToProcess, 'create_vals'));
+
+        foreach ($payments as $index => $payment) {
+            $paymentsToProcess[$index]['payment'] = $payment;
+
+            if ($editMode && $payment->move_id) {
+                $lines = $paymentsToProcess[$index]['to_reconcile'];
+
+                if ($payment->currency_id != $lines->first()->currency_id) {
+                    list($liquidityLines, $counterpartLines, $writeoffLines) = $payment->seekForLines();
+                    $sourceBalance = abs($lines->sum('amount_residual'));
+                    
+                    if ($liquidityLines[0]->balance) {
+                        $paymentRate = $liquidityLines[0]->amount_currency / $liquidityLines[0]->balance;
+                    } else {
+                        $paymentRate = 0.0;
+                    }
+                    
+                    $sourceBalanceConverted = abs($sourceBalance) * $paymentRate;
+
+                    $paymentBalance = abs($counterpartLines->sum('balance'));
+                    $paymentAmountCurrency = abs($counterpartLines->sum('amount_currency'));
+                    
+                    if (!$payment->currency->isZero($sourceBalanceConverted - $paymentAmountCurrency)) {
+                        continue;
+                    }
+
+                    $deltaBalance = $sourceBalance - $paymentBalance;
+
+                    if ($paymentRegister->companyCurrency->isZero($deltaBalance)) {
+                        continue;
+                    }
+
+                    $debitLines = $liquidityLines->merge($counterpartLines)->filter(function($line) {
+                        return $line->debit > 0;
+                    });
+
+                    $creditLines = $liquidityLines->merge($counterpartLines)->filter(function($line) {
+                        return $line->credit > 0;
+                    });
+
+                    if ($debitLines->isNotEmpty() && $creditLines->isNotEmpty()) {
+                        $payment->move->update([
+                            'line_ids' => [
+                                ['id' => $debitLines[0]->id, 'debit' => $debitLines[0]->debit + $deltaBalance],
+                                ['id' => $creditLines[0]->id, 'credit' => $creditLines[0]->credit + $deltaBalance],
+                            ]
+                        ]);
+                    }
+                }
+            }
+        }
+        
+        return $payments;
+    }
+
+    public function postPayments($paymentsToProcess, $editMode = false)
+    {
+        foreach ($paymentsToProcess as $vals) {
+            $vals['payment']->actionPost();
+        }
+    }
+
+    public function reconcilePayments($paymentsToProcess, $editMode = false)
+    {
+        foreach ($paymentsToProcess as $vals) {
+            $payment = $vals['payment'];
+
+            $paymentLines = $payment->move->lines->filter(function($line) {
+                return $line->parent_state == 'posted' 
+                    && in_array($line->account_type, Payment::getValidPaymentAccountTypes())
+                    && !$line->reconciled;
+            });
+
+            $lines = $vals['to_reconcile'];
+
+            $extraContext = isset($vals['rate']) ? ['forced_rate_from_register_payment' => $vals['rate']] : [];
+
+            foreach ($paymentLines->pluck('account_id')->unique() as $accountId) {
+                $paymentLines->merge($lines)
+                    ->withContext($extraContext)
+                    ->filter(function($line) use ($accountId) {
+                        return $line->account_id == $accountId
+                            && !$line->reconciled
+                            && $line->parent_state == 'posted';
+                    })
+                    ->reconcile();
+            }
+            
+            foreach ($lines as $line) {
+                $line->move->matchedPayments()->attach($payment->id);
+            }
+        }
     }
 }

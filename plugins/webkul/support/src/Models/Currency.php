@@ -80,6 +80,11 @@ class Currency extends Model
         return $amount;
     }
 
+    public function compareAmounts($amount1, $amount2)
+    {
+        return float_compare($amount1, $amount2, precisionRounding: $this->rounding);
+    }
+
     public function isZero($amount)
     {
         return $this->floatIsZero($amount, precisionRounding: $this->rounding);

@@ -145,9 +145,11 @@ class InvoiceResource extends Resource
                                             ->afterStateUpdated(function (Set $set, $state) {
                                                 $partner = $state ? Partner::find($state) : null;
 
-                                                $set('invoice_user_id', $partner?->user?->id);
-                                                $set('preferred_payment_method_line_id', $partner?->propertyInboundPaymentMethodLine?->id);
-                                                $set('invoice_payment_term_id', $partner?->propertyPaymentTerm?->id);
+                                                $set('invoice_user_id', $partner?->user_id);
+
+                                                $set('preferred_payment_method_line_id', $partner?->property_inbound_payment_method_line_id);
+                                                
+                                                $set('invoice_payment_term_id', $partner?->property_payment_term_id);
                                             })
                                             ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
                                     ]),

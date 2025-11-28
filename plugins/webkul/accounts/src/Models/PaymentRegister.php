@@ -95,41 +95,130 @@ class PaymentRegister extends Model
         return $this->belongsToMany(MoveLine::class, 'accounts_account_payment_register_move_lines', 'payment_register_id', 'move_line_id');
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::retrieved(function ($paymentRegister) {
+            $paymentRegister->computeBatches();
+
+            $paymentRegister->computeIsSingleBatch();
+
+            $paymentRegister->computeWriteoffIsExchangeAccount();
+
+            $paymentRegister->computeInstallmentsMode();
+
+            $paymentRegister->computeAvailableJournalIds();
+
+            $paymentRegister->computeShowRequirePartnerBank();
+        });
+
+        static::saving(function ($paymentRegister) {
+            $paymentRegister->computeGroupPayment();
+
+            $paymentRegister->computePaymentDifferenceHandling();
+        });
+    }
+
+    public function setLinesAttribute($lines)
+    {
+        $validLines = collect();
+
+        foreach ($lines as $line) {
+            if (! in_array($line->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE])) {
+                continue;
+            }
+
+            if ($line->currency?->isZero($line->amount_residual_currency)) {
+                continue;
+            }
+
+            if ($line->company->currency?->isZero($line->amount_residual)) {
+                continue;
+            }
+
+            $validLines->push($line);
+        }
+
+        $this->lines = $validLines;
+    }
+
+    public function computeIsSingleBatch()
+    {
+        $this->is_single_batch = count($this->batches) == 1;
+    }
+
+    public function computeGroupPayment()
+    {
+        if ($this->is_single_batch && $this->lines->count() > 1) {
+            $this->group_payment = true;
+        } else {
+            $this->group_payment = false;
+        }
+    }
+
+    public function computeWriteoffIsExchangeAccount()
+    {
+        $this->writeoff_is_exchange_account = $this->is_single_batch
+            && $this->currency_id != $this->source_currency_id
+            && $this->writeoff_account_id
+            && in_array($this->writeoff_account_id, [
+                $this->company->expense_currency_exchange_account_id,
+                $this->company->income_currency_exchange_account_id,
+            ]);
+    }
+
+    public function computeInstallmentsMode()
+    {
+        if (! $this->journal_id || ! $this->currency_id) {
+            return;
+        }
+
+        $totalAmountValues = $this->getTotalAmountsToPay($this->batches);
+
+        if ($this->currency->compareAmounts($this->amount, $totalAmountValues['full_amount']) == 0) {
+            $this->installments_mode = 'full';
+        } elseif ($this->currency->compareAmounts($this->amount, $totalAmountValues['amount_by_default']) == 0) {
+            $this->installments_mode = $totalAmountValues['installment_mode'];
+        } else {
+            $this->installments_mode = 'full';
+        }
+    }
+
     public function computeAvailableJournalIds()
     {
         $availableJournals = collect();
 
-        $batches = $this->prepareBatches();
+        $this->computeBatches();
 
-        foreach ($batches as $batch) {
+        foreach ($this->batches as $batch) {
             $availableJournals = $availableJournals->merge($this->getBatchAvailableJournals($batch));
         }
 
         $this->available_journal_ids = $availableJournals->pluck('id')->unique()->toArray();
     }
 
-    public function getBatchAvailableJournals($batchResult)
+    public function computeShowRequirePartnerBank()
     {
-        $paymentType = $batchResult['payment_values']['payment_type'];
-
-        $companyId = $batchResult['lines']->first()->company_id;
-        
-        $journals = Journal::where('company_id', $companyId)
-            ->whereIn('type', [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD])
-            ->get();
-        
-        if ($paymentType == 'inbound') {
-            return $journals->filter(function($journal) {
-                return $journal->inboundPaymentMethodLines->isNotEmpty();
-            });
+        if ($this->journal->type == JournalType::CASH) {
+            $this->show_partner_bank_account = false;
         } else {
-            return $journals->filter(function($journal) {
-                return $journal->outboundPaymentMethodLines->isNotEmpty();
-            });
+            $this->show_partner_bank_account = in_array($this->paymentMethodLine->code, Payment::getMethodCodesUsingBankAccount());
+        }
+
+        $this->require_partner_bank_account = in_array($this->paymentMethodLine->code, Payment::getMethodCodesNeedingBankAccount());
+    }
+
+    public function computePaymentDifferenceHandling()
+    {
+        if ($this->is_single_batch) {
+            $this->payment_difference_handling = 'open';
+        } else {
+            $this->payment_difference_handling = false;
         }
     }
 
-    public function prepareBatches()
+    public function computeBatches()
     {
         $lines = $this->lines;
 
@@ -251,7 +340,28 @@ class PaymentRegister extends Model
             $batchVals[] = $vals;
         }
 
-        return $batchVals;
+        $this->batches = $batchVals;
+    }
+
+    public function getBatchAvailableJournals($batchResult)
+    {
+        $paymentType = $batchResult['payment_values']['payment_type'];
+
+        $companyId = $batchResult['lines']->first()->company_id;
+        
+        $journals = Journal::where('company_id', $companyId)
+            ->whereIn('type', [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD])
+            ->get();
+        
+        if ($paymentType == 'inbound') {
+            return $journals->filter(function($journal) {
+                return $journal->inboundPaymentMethodLines->isNotEmpty();
+            });
+        } else {
+            return $journals->filter(function($journal) {
+                return $journal->outboundPaymentMethodLines->isNotEmpty();
+            });
+        }
     }
 
     public function getLineBatchKey($line)
@@ -271,5 +381,188 @@ class PaymentRegister extends Model
             'partner_bank_id' => $partnerBankAccount?->id,
             'partner_type' => $line->account->account_type == AccountType::ASSET_RECEIVABLE ? 'customer' : 'supplier',
         ];
+    }
+
+    public function getBatchAccount($batch)
+    {
+        $partnerBankId = $batch['payment_values']['partner_bank_id'];
+
+        $availablePartnerBanks = $this->getBatchAvailablePartnerBanks($batch, $this->journal);
+
+        if ($partnerBankId && $availablePartnerBanks->pluck('id')->contains($partnerBankId)) {
+            return BankAccount::find($partnerBankId);
+        } else {
+            return $availablePartnerBanks->first();
+        }
+    }
+
+    public function getBatchAvailablePartnerBanks($batch, $journal)
+    {
+        $paymentValues = $batch['payment_values'];
+
+        if ($paymentValues['payment_type'] == 'inbound') {
+            return $journal->bank_account_id;
+        } else {
+            $company = $batch['lines']->sortBy(fn($line) => count($line->company->parents->pluck('id')))->first()->company;
+
+            return $batch['lines']->first()->partner->bankAccounts
+                ->filter(function ($bankAccount) use ($company) {
+                    return ! $bankAccount->company_id || $bankAccount->company_id == $company->id;
+                });
+        }
+    }
+
+    public function getTotalAmountsToPay($batchResults)
+    {
+        $nextPaymentDate = $this->getNextPaymentDateInContext();
+
+        $amountPerLineCommon = [];
+
+        $amountPerLineFullAmount = [];
+
+        $firstInstallmentMode = false;
+
+        $allLines = collect();
+        
+        foreach ($batchResults as $batchResult) {
+            $allLines = $allLines->merge($batchResult['lines']);
+        }
+        
+        $allLines = $allLines->sortBy(function($line) {
+            return [$line->move_id, $line->date_maturity];
+        });
+        
+        foreach ($allLines->groupBy('move_id') as $lines) {
+            $installments = $lines->first()->move->getInstallmentsData(
+                $lines,
+                paymentDate: $this->payment_date,
+                nextPaymentDate: $nextPaymentDate
+            );
+
+            $lastInstallmentMode = false;
+            
+            foreach ($installments as $installment) {
+                $line = $installment['line'];
+                
+                if (
+                    $line->display_type == 'payment_term'
+                    && in_array($installment['type'], ['overdue', 'next', 'before_date'])
+                ) {
+                    if ($installment['type'] == 'overdue') {
+                        $amountPerLineCommon[] = $installment;
+                    } elseif ($installment['type'] == 'before_date') {
+                        $amountPerLineCommon[] = $installment;
+                        $firstInstallmentMode = 'before_date';
+                    } elseif ($installment['type'] == 'next') {
+                        if (in_array($lastInstallmentMode, ['next', 'overdue', 'before_date'])) {
+                            $amountPerLineFullAmount[] = $installment;
+                        } elseif (!$lastInstallmentMode) {
+                            $amountPerLineCommon[] = $installment;
+
+                            $firstInstallmentMode = 'next';
+                        }
+                    }
+
+                    $lastInstallmentMode = $installment['type'];
+
+                    $firstInstallmentMode = $firstInstallmentMode ?: $lastInstallmentMode;
+
+                    continue;
+                }
+
+                $amountPerLineCommon[] = $installment;
+            }
+        }
+
+        $common = $this->convertToCurrentCurrency($amountPerLineCommon);
+
+        $fullAmount = $this->convertToCurrentCurrency($amountPerLineFullAmount);
+
+        $lines = collect();
+
+        foreach ($amountPerLineCommon as $value) {
+            $lines->push($value['line']);
+        }
+
+        return [
+            'amount_by_default' => abs($common),
+            'full_amount' => abs($common + $fullAmount),
+            'amount_for_difference' => abs($common),
+            'full_amount_for_difference' => abs($common + $fullAmount),
+            'installment_mode' => $firstInstallmentMode,
+            'lines' => $lines,
+        ];
+    }
+
+    public function convertToCurrentCurrency($installments)
+    {
+        $totalPerCurrency = [];
+        
+        foreach ($installments as $installment) {
+            $line = $installment['line'];
+
+            if (!isset($totalPerCurrency[$line->currency_id])) {
+                $totalPerCurrency[$line->currency_id] = [
+                    'amount_residual' => 0.0,
+                    'amount_residual_currency' => 0.0,
+                ];
+            }
+            
+            $totalPerCurrency[$line->currency_id]['amount_residual'] += $installment['amount_residual'];
+
+            $totalPerCurrency[$line->currency_id]['amount_residual_currency'] += $installment['amount_residual_currency'];
+        }
+
+        $totalAmount = 0.0;
+
+        foreach ($totalPerCurrency as $currency => $amounts) {
+            $amountResidual = $amounts['amount_residual'];
+
+            $amountResidualCurrency = $amounts['amount_residual_currency'];
+            
+            if ($currency == $this->currency) {
+                $totalAmount += $amountResidualCurrency;
+            } elseif ($currency != $this->company->currency && $this->currency == $this->company->currency) {
+                $totalAmount += Currency::find($currency)
+                    ->convert(
+                        $amountResidualCurrency, 
+                        $this->company->currency, 
+                        $this->company, 
+                        $this->payment_date
+                    );
+            } elseif ($currency == $this->company->currency && $this->currency != $this->company->currency) {
+                $totalAmount += Currency::find($this->company->currency)
+                    ->convert(
+                        $amountResidual, 
+                        $this->currency, 
+                        $this->company, 
+                        $this->payment_date
+                    );
+            } else {
+                $totalAmount += Currency::find($this->company->currency)
+                    ->convert(
+                        $amountResidual, 
+                        $this->currency, 
+                        $this->company, 
+                        $this->payment_date
+                    );
+            }
+        }
+        
+        return $totalAmount;
+    }
+
+    public function getCommunication($lines)
+    {
+        if ($lines->pluck('move_id')->unique()->count() == 1) {
+            $move = $lines->first()->move;
+            
+            $label = $move->payment_reference ?: ($move->ref ?: $move->name);
+        } else {
+            //TODO: need to calculate the Batch sequence number
+            $label = 'Batch';
+        }
+
+        return $label;
     }
 }

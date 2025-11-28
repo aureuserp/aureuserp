@@ -730,4 +730,66 @@ class Move extends Model implements Sortable
         
         $this->payment_state = $newPaymentState;
     }
+
+    public function getInstallmentsData($lines, $paymentDate = null, $nextPaymentDate = null)
+    {
+        $paymentDate = $paymentDate ?: now()->toDateString();
+
+        $termLines = $lines->sortBy(function($line) {
+            return [$line->date_maturity, $line->date];
+        });
+        
+        $sign = $this->direction_sign;
+
+        $installments = [];
+
+        $firstInstallmentMode = false;
+
+        $currentInstallmentMode = false;
+        
+        $i = 1;
+
+        foreach ($termLines as $line) {
+            $installment = [
+                'number' => $i,
+                'line' => $line,
+                'date_maturity' => $line->date_maturity ?: $line->date,
+                'amount_residual_currency' => $line->amount_residual_currency,
+                'amount_residual' => $line->amount_residual,
+                'amount_residual_currency_unsigned' => -$sign * $line->amount_residual_currency,
+                'amount_residual_unsigned' => -$sign * $line->amount_residual,
+                'type' => 'other',
+                'reconciled' => $line->reconciled,
+            ];
+
+            $installments[] = $installment;
+
+            if ($line->reconciled) {
+                $i++;
+
+                continue;
+            }
+
+            if ($line->display_type == 'payment_term') {
+                if ($nextPaymentDate && ($line->date_maturity ?: $line->date) <= $nextPaymentDate) {
+                    $currentInstallmentMode = 'before_date';
+                } elseif (($line->date_maturity ?: $line->date) < $paymentDate) {
+                    $firstInstallmentMode = $currentInstallmentMode = 'overdue';
+                } elseif (!$firstInstallmentMode) {
+                    $firstInstallmentMode = 'next';
+                    $currentInstallmentMode = 'next';
+                } elseif ($currentInstallmentMode == 'overdue') {
+                    $currentInstallmentMode = 'next';
+                }
+
+                $installment['type'] = $currentInstallmentMode;
+
+                $installments[count($installments) - 1] = $installment;
+            }
+            
+            $i++;
+        }
+
+        return $installments;
+    }
 }

@@ -9,6 +9,7 @@ use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Partner\Models\Partner;
 use Webkul\Payment\Models\PaymentToken;
+use Webkul\Account\Enums\AccountType;
 use Webkul\Payment\Models\PaymentTransaction;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -145,5 +146,15 @@ class Payment extends Model
     public function accountMovePayment()
     {
         return $this->belongsToMany(Move::class, 'accounts_accounts_move_payment', 'payment_id', 'invoice_id');
+    }
+
+    public function getMethodCodesUsingBankAccount()
+    {
+        return ['manual'];
+    }
+
+    public function getMethodCodesNeedingBankAccount()
+    {
+        return [];
     }
 }

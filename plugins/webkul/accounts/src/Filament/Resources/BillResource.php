@@ -131,9 +131,9 @@ class BillResource extends Resource
 
                                                 $set('partner_bank_id', $partner?->bankAccounts->first()?->id);
 
-                                                $set('preferred_payment_method_line_id', $partner?->propertyOutboundPaymentMethodLine?->id);
+                                                $set('preferred_payment_method_line_id', $partner?->property_outbound_payment_method_line_id);
 
-                                                $set('invoice_payment_term_id', $partner?->propertySupplierPaymentTerm?->id);
+                                                $set('invoice_payment_term_id', $partner?->property_supplier_payment_term_id);
                                             })
                                             ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
                                         TextInput::make('reference')

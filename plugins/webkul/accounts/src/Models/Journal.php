@@ -121,6 +121,16 @@ class Journal extends Model implements Sortable
                 $q->where('payment_type', 'outbound');
             });
     }
+
+    public function getAvailablePaymentMethodLines(string $paymentType)
+    {
+        if ($paymentType == 'inbound') {
+            return $this->inboundPaymentMethodLines;
+        } else {
+            return $this->outboundPaymentMethodLines;
+        }
+    }
+
     protected static function boot()
     {
         parent::boot();

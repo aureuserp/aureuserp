@@ -8,7 +8,9 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Filament\Schemas\Components\Utilities\Get;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
@@ -18,6 +20,7 @@ use Webkul\Account\Models\Move;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Payment;
 use Webkul\Account\Models\PaymentRegister;
+use Webkul\Accounting\Models\Journal;
 
 class PayAction extends Action
 {
@@ -36,20 +39,26 @@ class PayAction extends Action
             ->modal(fn () => new PaymentRegister())
             ->schema(function (Schema $schema) {
                 $paymentRegister = (new PaymentRegister);
+
                 $paymentRegister->lines = $this->getRecord()->lines;
+                
                 $paymentRegister->computeAvailableJournalIds();
 
-                dd($paymentRegister);
-                
                 return $schema->components([
                     Group::make()
                         ->schema([
-                            TextInput::make('amount')
-                                ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.amount'))
-                                ->prefix(fn($record) => $record->currency->symbol ?? '')
-                                ->formatStateUsing(fn($record) => number_format($record->lines->sum('price_total'), 2, '.', ''))
-                                ->dehydrateStateUsing(fn($state) => (float) str_replace(',', '', $state))
-                                ->required(),
+                            Select::make('journal_id')
+                                ->relationship(
+                                    'journal',
+                                    'name',
+                                    modifyQueryUsing: fn (Builder $query) => $query->whereIn('id', $paymentRegister->available_journal_ids)
+                                )
+                                ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.journal'))
+                                ->searchable()
+                                ->preload()
+                                ->required()
+                                ->live(),
+
                             Select::make('payment_method_line_id')
                                 ->label('Payment Method')
                                 ->required()
@@ -58,42 +67,68 @@ class PayAction extends Action
                                 ->relationship(
                                     name: 'paymentMethodLine',
                                     titleAttribute: 'name',
-                                    modifyQueryUsing: function ($query, ?Move $record) {
+                                    modifyQueryUsing: function (Builder $query, Get $get) {
+                                        $journal = Journal::find($get('journal_id'));
 
-                                        if (! $record) {
-                                            return $query;
+                                        if (! $journal) {
+                                            return $query->whereRaw('1 = 0');
                                         }
 
-                                        $paymentType = $record->isSaleDocument(true)
-                                            ? \Webkul\Account\Enums\PaymentType::RECEIVE->value
-                                            : \Webkul\Account\Enums\PaymentType::SEND->value;
+                                        $paymentMethodLineIds = $journal->getAvailablePaymentMethodLines(
+                                            $this->getRecord()->isSaleDocument(true)
+                                                ? 'inbound'
+                                                : 'outbound'
+                                        )->pluck('id');
 
-                                        return $query
-                                            ->whereHas('paymentMethod', fn($q) => $q->where('payment_type', $paymentType))
-                                            ->whereHas(
-                                                'journal',
-                                                fn($q) => $q->whereIn('type', [
-                                                    \Webkul\Account\Enums\JournalType::BANK->value,
-                                                    \Webkul\Account\Enums\JournalType::CASH->value,
-                                                ])
-                                            );
+                                        $query->whereIn('id', $paymentMethodLineIds);
                                     }
                                 ),
-                            DatePicker::make('payment_date')
-                                ->native(false)
-                                ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.payment-date'))
-                                ->default(now())
-                                ->required(),
                             Select::make('partner_bank_id')
                                 ->relationship(
                                     'partnerBank',
                                     'account_number',
                                 )
                                 ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.partner-bank-account'))
-                                ->default(function ($record) {
-                                    return $record?->partner?->bankAccounts?->first()?->id;
-                                })
+                                ->default(fn ($record) => $record->partner?->bankAccounts?->first()?->id)
                                 ->searchable()
+                                ->required(),
+                        ]),
+                    Group::make()
+                        ->schema([
+                            Group::make()
+                                ->schema([
+                                    TextInput::make('amount')
+                                        ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.amount'))
+                                        ->prefix(fn($record) => $record->currency->symbol ?? '')
+                                        ->formatStateUsing(fn($record) => number_format($record->lines->sum('price_total'), 2, '.', ''))
+                                        ->dehydrateStateUsing(fn($state) => (float) str_replace(',', '', $state))
+                                        ->required(),
+                                    Select::make('currency_id')
+                                        ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.currency'))
+                                        ->relationship(
+                                            'currency',
+                                            'name',
+                                            modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                        )
+                                        ->default(function ($record, Get $get) {
+                                            $journal = Journal::find($get('journal_id'));
+
+                                            if (! $journal) {
+                                                return $record->currency_id;
+                                            }
+
+                                            return $journal->currency_id ?? $record->currency_id;
+                                        })
+                                        ->required()
+                                        ->searchable()
+                                        ->preload()
+                                        ->required(),
+                                ])
+                                ->columns(2),
+                            DatePicker::make('payment_date')
+                                ->native(false)
+                                ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.payment-date'))
+                                ->default(now())
                                 ->required(),
                             TextInput::make('communication')
                                 ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.communication'))
@@ -101,8 +136,9 @@ class PayAction extends Action
                                     return $record->name;
                                 })
                                 ->required(),
-                        ])->columns(2),
-                ]);
+                        ])
+                ])
+                ->columns(2);
             })
             ->action(function (Move $record, $data): void {
                 $this->registerPayment($record, $data);
