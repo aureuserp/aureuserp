@@ -76,6 +76,10 @@ class AccountServiceProvider extends PackageServiceProvider
                 '2025_11_19_081920_alter_accounts_account_move_lines_table',
             ])
             ->runsMigrations()
+            ->hasSettings([
+                '2025_12_02_094021_create_accounts_default_accounts_settings',
+            ])
+            ->runsSettings()
             ->hasDependencies([
                 'products',
             ])

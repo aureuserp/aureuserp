@@ -30,7 +30,7 @@ class Currency extends Model
         return $this->hasMany(CurrencyRate::class);
     }
 
-    public function convert(float $fromAmount, Currency $toCurrency, ?Company $company = null, $date = null, bool $round = true): float
+    public function convert(float|int $fromAmount, Currency $toCurrency, ?Company $company = null, $date = null, bool $round = true): float
     {
         $base = $this ?? $toCurrency;
 

@@ -55,6 +55,11 @@ class PaymentRegister extends Model
         return $this->belongsTo(BankAccount::class, 'partner_bank_id');
     }
 
+    public function currency()
+    {
+        return $this->belongsTo(Currency::class, 'currency_id');
+    }
+
     public function customUserCurrency()
     {
         return $this->belongsTo(Currency::class, 'custom_user_currency_id');
@@ -117,6 +122,8 @@ class PaymentRegister extends Model
             $paymentRegister->computeGroupPayment();
 
             $paymentRegister->computePaymentDifferenceHandling();
+
+            $paymentRegister->computeFromLines();
         });
     }
 
@@ -189,8 +196,6 @@ class PaymentRegister extends Model
     {
         $availableJournals = collect();
 
-        $this->computeBatches();
-
         foreach ($this->batches as $batch) {
             $availableJournals = $availableJournals->merge($this->getBatchAvailableJournals($batch));
         }
@@ -203,10 +208,10 @@ class PaymentRegister extends Model
         if ($this->journal->type == JournalType::CASH) {
             $this->show_partner_bank_account = false;
         } else {
-            $this->show_partner_bank_account = in_array($this->paymentMethodLine->code, Payment::getMethodCodesUsingBankAccount());
+            $this->show_partner_bank_account = in_array($this->paymentMethodLine->code, (new Payment)->getMethodCodesUsingBankAccount());
         }
 
-        $this->require_partner_bank_account = in_array($this->paymentMethodLine->code, Payment::getMethodCodesNeedingBankAccount());
+        $this->require_partner_bank_account = in_array($this->paymentMethodLine->code, (new Payment)->getMethodCodesNeedingBankAccount());
     }
 
     public function computePaymentDifferenceHandling()
@@ -215,6 +220,35 @@ class PaymentRegister extends Model
             $this->payment_difference_handling = 'open';
         } else {
             $this->payment_difference_handling = false;
+        }
+    }
+
+    public function computeFromLines()
+    {
+        $batch = $this->batches[0];
+
+        $valuesFromBatch = $this->getValuesFromBatch($batch);
+
+        if (count($this->batches) == 1) {
+            $this->fill($valuesFromBatch);
+
+            $this->is_single_batch = true;
+        } else {
+            $companyId = $this->batches
+                ? $batch['lines']->sortBy(fn($line) => count($line->company->parents->pluck('id')))->first()->company_id
+                : null;
+
+            $this->fill([
+                'company_id' => $companyId,
+                'partner_id' => null,
+                'partner_type' => null,
+                'payment_type' => $valuesFromBatch['payment_type'],
+                'source_currency_id' => null,
+                'source_amount' => null,
+                'source_amount_currency' => null,
+            ]);
+
+            $this->is_single_batch = false;
         }
     }
 
@@ -292,10 +326,10 @@ class PaymentRegister extends Model
 
             $batchKey = $vals['payment_values'];
             
-            $merge = in_array($batchKey['partner_id'], $partnerUniqueInbound)
+            $shouldMerge = in_array($batchKey['partner_id'], $partnerUniqueInbound)
                 && in_array($batchKey['partner_id'], $partnerUniqueOutbound);
             
-            if ($merge) {
+            if ($shouldMerge) {
                 for ($j = $i + 1; $j < count($batchKeys); $j++) {
                     $otherKey = $batchKeys[$j];
 
@@ -329,7 +363,7 @@ class PaymentRegister extends Model
 
             $vals['payment_values']['payment_type'] = $balance > 0.0 ? 'inbound' : 'outbound';
             
-            if ($merge) {
+            if ($shouldMerge) {
                 $partnerBanks = $banksPerPartner[$batchKey['partner_id']];
 
                 $vals['partner_bank_id'] = $partnerBanks[$vals['payment_values']['payment_type']][0];
@@ -401,7 +435,7 @@ class PaymentRegister extends Model
         $paymentValues = $batch['payment_values'];
 
         if ($paymentValues['payment_type'] == 'inbound') {
-            return $journal->bank_account_id;
+            return collect($journal->bankAccount);
         } else {
             $company = $batch['lines']->sortBy(fn($line) => count($line->company->parents->pluck('id')))->first()->company;
 
@@ -494,6 +528,12 @@ class PaymentRegister extends Model
         ];
     }
 
+    //TODO: need to pass context
+    public function getNextPaymentDateInContext()
+    {
+        return $this->payment_date;
+    }
+
     public function convertToCurrentCurrency($installments)
     {
         $totalPerCurrency = [];
@@ -520,18 +560,18 @@ class PaymentRegister extends Model
 
             $amountResidualCurrency = $amounts['amount_residual_currency'];
             
-            if ($currency == $this->currency) {
+            if ($currency == $this->currency->id) {
                 $totalAmount += $amountResidualCurrency;
-            } elseif ($currency != $this->company->currency && $this->currency == $this->company->currency) {
-                $totalAmount += Currency::find($currency)
+            } elseif ($currency != $this->company->currency_id && $this->currency_id == $this->company->currency_id) {
+                $totalAmount += Currency::find($currency->id)
                     ->convert(
                         $amountResidualCurrency, 
                         $this->company->currency, 
                         $this->company, 
                         $this->payment_date
                     );
-            } elseif ($currency == $this->company->currency && $this->currency != $this->company->currency) {
-                $totalAmount += Currency::find($this->company->currency)
+            } elseif ($currency == $this->company->currency_id && $this->currency_id != $this->company->currency_id) {
+                $totalAmount += Currency::find($this->company->currency_id)
                     ->convert(
                         $amountResidual, 
                         $this->currency, 
@@ -539,7 +579,7 @@ class PaymentRegister extends Model
                         $this->payment_date
                     );
             } else {
-                $totalAmount += Currency::find($this->company->currency)
+                $totalAmount += Currency::find($this->company->currency_id)
                     ->convert(
                         $amountResidual, 
                         $this->currency, 
@@ -564,5 +604,32 @@ class PaymentRegister extends Model
         }
 
         return $label;
+    }
+
+    public function getValuesFromBatch($batch)
+    {
+        $paymentValues = $batch['payment_values'];
+
+        $lines = $batch['lines'];
+
+        $company = $lines->sortBy(fn($line) => count($line->company->parents->pluck('id')))->first()->company;
+
+        $sourceAmount = abs($lines->sum('amount_residual'));
+
+        if ($paymentValues['currency_id'] == $company->currency_id) {
+            $sourceAmountCurrency = $sourceAmount;
+        } else {
+            $sourceAmountCurrency = abs($lines->sum('amount_residual_currency'));
+        }
+
+        return [
+            'company_id' => $company->id,
+            'partner_id' => $paymentValues['partner_id'],
+            'partner_type' => $paymentValues['partner_type'],
+            'payment_type' => $paymentValues['payment_type'],
+            'source_currency_id' => $paymentValues['currency_id'],
+            'source_amount' => $sourceAmount,
+            'source_amount_currency' => $sourceAmountCurrency,
+        ];
     }
 }

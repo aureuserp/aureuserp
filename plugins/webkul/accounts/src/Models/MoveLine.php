@@ -222,6 +222,8 @@ class MoveLine extends Model implements Sortable
 
             $moveLine->computeCurrencyId();
 
+            $moveLine->computePaymentId();
+
             $moveLine->computeAccountId();
 
             $moveLine->computeDisplayType();
@@ -297,6 +299,7 @@ class MoveLine extends Model implements Sortable
         }
 
         $originalName = $this->getOriginal('name');
+        
         $originalGetName = false;
 
         if ($this->exists) {
@@ -310,6 +313,11 @@ class MoveLine extends Model implements Sortable
         if (! $this->name || $originalName === $originalGetName) {
             $this->name = $getName($this);
         }
+    }
+
+    public function computePaymentId()
+    {
+        $this->payment_id = $this->move->origin_payment_id;
     }
 
     public function computeAccountId()

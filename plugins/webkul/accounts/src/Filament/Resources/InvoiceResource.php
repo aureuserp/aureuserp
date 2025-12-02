@@ -554,6 +554,12 @@ class InvoiceResource extends Resource
 
     public static function infolist(Schema $schema): Schema
     {
+        $paymentRegister = \Webkul\Account\Models\PaymentRegister::find(1);
+
+        \Webkul\Account\Facades\Account::createPayments($paymentRegister);
+        
+        dd($paymentRegister);
+
         return $schema
             ->columns(1)
             ->components([

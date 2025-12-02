@@ -142,6 +142,11 @@ class Company extends Model implements Sortable
         return $parents;
     }
 
+    public function getParentsAttribute()
+    {
+        return $this->parents();
+    }
+
     /**
      * Scope a query to only include active companies.
      */

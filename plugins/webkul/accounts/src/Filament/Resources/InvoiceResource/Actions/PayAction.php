@@ -42,6 +42,7 @@ class PayAction extends Action
 
                 $paymentRegister->lines = $this->getRecord()->lines;
                 
+                $paymentRegister->computeBatches();
                 $paymentRegister->computeAvailableJournalIds();
 
                 return $schema->components([
@@ -141,6 +142,7 @@ class PayAction extends Action
                 ->columns(2);
             })
             ->action(function (Move $record, $data): void {
+                dd($data);
                 $this->registerPayment($record, $data);
 
                 $payment = $this->createPayment($record, $data);
@@ -221,7 +223,7 @@ class PayAction extends Action
             'date'                           => now(),
         ]);
 
-        $payment->accountMovePayment()->sync($record->id);
+        $payment->invoices()->sync($record->id);
 
         return $payment;
     }
@@ -325,6 +327,7 @@ class PayAction extends Action
             'price_total'              => -$data['amount'],
         ]);
     }
+
     private function getPaymentType(Move $record): string
     {
         return $record->isSaleDocument(true)

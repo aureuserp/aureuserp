@@ -413,11 +413,9 @@ class Move extends Model implements Sortable
         });
 
         static::created(function ($move) {
-            $move->updateSequencePrefix();
+            $move->computeName();
 
-            $move->updateQuietly([
-                'name' => $move->sequence_prefix.'/'.$move->id,
-            ]);
+            $move->save();
         });
 
         static::saving(function ($move) {
@@ -435,6 +433,31 @@ class Move extends Model implements Sortable
 
             $move->computePaymentState();
         });
+    }
+
+    public function computeName()
+    {
+        $prefix = '';
+
+        if (
+            $this->journal->refund_sequence 
+            && in_array($this->move_type, [MoveType::OUT_REFUND, MoveType::IN_REFUND])
+        ) {
+            $prefix .= 'R';
+        }
+
+        if ($this->journal->payment_sequence && $this->origin_payment_id) {
+            $prefix .= 'P';
+        }
+
+        $this->sequence_prefix = sprintf(
+            '%s%s/%s',
+            $prefix,
+            $this->journal->code,
+            $this->date->format('Y'),
+        );
+
+        $this->name = $this->sequence_prefix.'/'.$this->id;
     }
 
     public function computePartnerDisplayInfo()
@@ -521,32 +544,36 @@ class Move extends Model implements Sortable
     /**
      * Update the full name without triggering additional events
      */
-    public function updateSequencePrefix()
+    public function getSequencePrefix()
     {
+        $sequence = '';
+
         $suffix = date('Y').'/'.date('m');
 
         switch ($this->move_type) {
             case MoveType::OUT_INVOICE:
-                $this->sequence_prefix = 'INV/'.$suffix;
+                $sequence = 'INV/'.$suffix;
 
                 break;
             case MoveType::OUT_REFUND:
-                $this->sequence_prefix = 'RINV/'.$suffix;
+                $sequence = 'RINV/'.$suffix;
 
                 break;
             case MoveType::IN_INVOICE:
-                $this->sequence_prefix = 'BILL/'.$suffix;
+                $sequence = 'BILL/'.$suffix;
 
                 break;
             case MoveType::IN_REFUND:
-                $this->sequence_prefix = 'RBILL/'.$suffix;
+                $sequence = 'RBILL/'.$suffix;
 
                 break;
             default:
-                $this->sequence_prefix = $suffix;
+                $sequence = $suffix;
 
                 break;
         }
+
+        return $sequence;
     }
 
     public function computePaymentState()
