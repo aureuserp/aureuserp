@@ -201,7 +201,7 @@ class AccountManager
 
                 $totalResidualCurrency += $line->amount_residual_currency;
             } else {
-                if ($line->debit) {
+                if ((float) $line->debit) {
                     $total += $line->balance;
 
                     $totalCurrency += $line->amount_currency;
@@ -907,7 +907,7 @@ class AccountManager
         return $paymentVals;
     }
 
-    public function initiatePayments($paymentRegister, $paymentsToProcess, $editMode = false)
+    public function initiatePayments($paymentRegister, &$paymentsToProcess, $editMode = false)
     {
         $accountingInstalled = (new Move)->getInvoiceInPaymentState() == 'in_payment';
 
@@ -923,7 +923,7 @@ class AccountManager
             unset($vals['write_off_line_vals'], $vals['force_balance'], $vals['lines']);
 
             //TODO: change this to create after testing
-            $payment = Payment::updateOrCreate($vals);
+            $vals['payment'] = $payment = Payment::updateOrCreate($vals);
 
             if (
                 ! $accountingInstalled
@@ -940,7 +940,9 @@ class AccountManager
                 || ! $lines !== null
             ) {
                 $payment->generateJournalEntry($writeOffLineVals, $forceBalanceVals, $lines);
-                
+
+                $payment->refresh();
+
                 $moveVals = collect($vals)
                     ->filter(function ($value, $fieldName) use($payment) {
                         return in_array($fieldName, $payment->moveRelatedFields);
@@ -991,6 +993,7 @@ class AccountManager
                     $debitLines->isNotEmpty()
                     && $creditLines->isNotEmpty()
                 ) {
+                    //TODO: handle write-off lines if any
                     $payment->move->update([
                         'line_ids' => [
                             ['id' => $debitLines[0]->id, 'debit' => $debitLines[0]->debit + $deltaBalance],
@@ -1005,7 +1008,33 @@ class AccountManager
     public function postPayments($paymentsToProcess, $editMode = false)
     {
         foreach ($paymentsToProcess as $vals) {
-            $vals['payment']->actionPost();
+            $this->postPayment($vals['payment']);
+        }
+    }
+
+    public function postPayment(Payment $payment)
+    {
+        if ($payment->require_partner_bank_account && ! $payment->partnerBank->can_send_money) {
+            throw new \Exception(__(
+                "To record payments with :method_name, the recipient bank account must be manually validated. " .
+                "You should go on the partner bank account of :partner in order to validate it.",
+                [
+                    'method_name' => $payment->paymentMethodLine->name,
+                    'partner' => $payment->partner->display_name,
+                ]
+            ));
+        }
+
+        if ($payment->outstandingAccount->account_type === AccountType::ASSET_CASH) {
+            $payment->state = 'paid';
+
+            $payment->save();
+        }
+
+        if (in_array($payment->state, [null, 'draft', 'in_process'])) {
+            $payment->state = 'in_process';
+
+            $payment->save();
         }
     }
 

@@ -16,6 +16,7 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Account\Settings\DefaultAccountSettings;
+use Webkul\Account\Facades\Account as AccountFacade;
 
 class Payment extends Model
 {
@@ -210,7 +211,6 @@ class Payment extends Model
         });
     }
 
-    //TODO:: needs to be updated to fetch name from payment method or journal
     public function computeName()
     {
         $this->name = $this->move?->name;
@@ -386,10 +386,13 @@ class Payment extends Model
 
             MoveLine::create($lineVals);
         }
-        
-        $this->move_id = $move->id;
 
-        $this->state = 'in_process';
+        AccountFacade::computeAccountMove($move);
+
+        parent::updateQuietly([
+            'move_id' => $move->id,
+            'state' => 'in_process',
+        ]);
     }
 
     public function prepareMoveLineDefaultVals($writeOffLineVals = null, $forceBalance = null)

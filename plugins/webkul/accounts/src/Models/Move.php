@@ -541,41 +541,6 @@ class Move extends Model implements Sortable
             ->first();
     }
 
-    /**
-     * Update the full name without triggering additional events
-     */
-    public function getSequencePrefix()
-    {
-        $sequence = '';
-
-        $suffix = date('Y').'/'.date('m');
-
-        switch ($this->move_type) {
-            case MoveType::OUT_INVOICE:
-                $sequence = 'INV/'.$suffix;
-
-                break;
-            case MoveType::OUT_REFUND:
-                $sequence = 'RINV/'.$suffix;
-
-                break;
-            case MoveType::IN_INVOICE:
-                $sequence = 'BILL/'.$suffix;
-
-                break;
-            case MoveType::IN_REFUND:
-                $sequence = 'RBILL/'.$suffix;
-
-                break;
-            default:
-                $sequence = $suffix;
-
-                break;
-        }
-
-        return $sequence;
-    }
-
     public function computePaymentState()
     {
         $debitResults = PartialReconcile::select(
