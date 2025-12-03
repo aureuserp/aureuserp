@@ -600,13 +600,9 @@ class AccountManager
     {
         $isInvoice = $line->move->isInvoice(true);
 
-        $sign = $isInvoice ? $line->move->direction_sign : 1;
-
-        if ($isInvoice) {
-            $rate = $line->move->invoice_currency_rate;
-        } else {
-            $rate = $line->balance ? abs($line->amount_currency) / abs($line->balance) : 0.0;
-        }
+        $rate = $isInvoice
+            ? $line->move->invoice_currency_rate
+            : ($line->balance ? abs($line->amount_currency) / abs($line->balance) : 0.0);
 
         return TaxFacade::prepareBaseLineForTaxesComputation(
             $line,
@@ -614,7 +610,7 @@ class AccountManager
             quantity: $isInvoice ? $line->quantity : 1.0,
             discount: $isInvoice ? $line->discount : 0.0,
             rate: $rate,
-            sign: $sign,
+            sign: $isInvoice ? $line->move->direction_sign : 1,
             specialMode: $isInvoice ? false : 'total_excluded',
         );
     }
@@ -1011,31 +1007,29 @@ class AccountManager
     public function reconcilePayments($paymentsToProcess, $editMode = false)
     {
         foreach ($paymentsToProcess as $values) {
-            $payment = $values['payment'];
-
-            $paymentLines = $payment->move->lines->filter(function($line) {
+            $paymentLines = $values['payment']->move->lines->filter(function($line) {
                 return $line->parent_state == 'posted' 
                     && in_array($line->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE])
                     && ! $line->reconciled;
             });
 
-            $lines = $values['to_reconcile'];
-
-            $extraContext = isset($values['rate']) ? ['forced_rate_from_register_payment' => $values['rate']] : [];
+            $extraContext = isset($values['rate'])
+                ? ['forced_rate_from_register_payment' => $values['rate']]
+                : [];
 
             foreach ($paymentLines->pluck('account_id')->unique() as $accountId) {
-                $paymentLines->merge($lines)
+                $paymentLines->merge($values['to_reconcile'])
                     ->withContext($extraContext)
                     ->filter(function($line) use ($accountId) {
                         return $line->account_id == $accountId
-                            && !$line->reconciled
+                            && ! $line->reconciled
                             && $line->parent_state == 'posted';
                     })
                     ->reconcile();
             }
             
-            foreach ($lines as $line) {
-                $line->move->matchedPayments()->attach($payment->id);
+            foreach ($values['to_reconcile'] as $line) {
+                $line->move->matchedPayments()->attach($values['payment']->id);
             }
         }
     }
