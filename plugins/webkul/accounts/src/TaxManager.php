@@ -520,6 +520,58 @@ class TaxManager
         );
     }
 
+    public function addTaxDetailsInBaseLine(array $baseLine, $company, $roundingMethod = null)
+    {
+        $priceUnitAfterDiscount = $baseLine['priceUnit'] * (1 - ($baseLine['discount'] / 100));
+
+        $taxesComputation = $this->getTaxDetails(
+            taxes : $baseLine['taxes'],
+            priceUnit : $priceUnitAfterDiscount,
+            quantity : $baseLine['quantity'],
+            precisionRounding : $baseLine['currency']->rounding ?? 2,
+            roundingMethod : $roundingMethod ?? $company->tax_calculation_rounding_method,
+            product : $baseLine['product'],
+            specialMode : $baseLine['special_mode'],
+            manualTaxAmounts : $baseLine['manual_tax_amounts'],
+        );
+
+        $rate = $baseLine['rate'] ?: 1.0;
+
+        $taxDetails = [
+            'raw_total_excluded_currency' => $taxesComputation['total_excluded'],
+            'raw_total_excluded'          => $rate ? $taxesComputation['total_excluded'] / $rate : 0.0,
+            'raw_total_included_currency' => $taxesComputation['total_included'],
+            'raw_total_included'          => $rate ? $taxesComputation['total_included'] / $rate : 0.0,
+            'taxes_data'                  => [],
+        ];
+
+        if ($company->tax_calculation_rounding_method === 'round_per_line') {
+            $taxDetails['raw_total_excluded'] = $company->currency->round($taxDetails['raw_total_excluded']);
+            $taxDetails['raw_total_included'] = $company->currency->round($taxDetails['raw_total_included']);
+        }
+
+        foreach ($taxesComputation['taxes_data'] as $taxData) {
+            $taxAmount  = $rate ? $taxData['tax_amount'] / $rate : 0.0;
+            $baseAmount = $rate ? $taxData['base_amount'] / $rate : 0.0;
+
+            if ($company->tax_calculation_rounding_method === 'round_per_line') {
+                $taxAmount  = $company->currency->round($taxAmount);
+                $baseAmount = $company->currency->round($baseAmount);
+            }
+
+            $taxDetails['taxes_data'][] = array_merge($taxData, [
+                'raw_tax_amount_currency' => $taxData['tax_amount'],
+                'raw_tax_amount'          => $taxAmount,
+                'raw_base_amount_currency'=> $taxData['base_amount'],
+                'raw_base_amount'         => $baseAmount,
+            ]);
+        }
+
+        $baseLine['tax_details'] = $taxDetails;
+
+        return $baseLine;
+    }
+
     public function addAccountingDataToBaseLineTaxDetails($baseLine, $company, $includeCabaTags = false)
     {
         $companyCurrency = $company->currency;
@@ -743,58 +795,6 @@ class TaxManager
         ];
     }
 
-    public function addTaxDetailsInBaseLine(array $baseLine, $company, $roundingMethod = null)
-    {
-        $priceUnitAfterDiscount = $baseLine['priceUnit'] * (1 - ($baseLine['discount'] / 100));
-
-        $taxesComputation = $this->getTaxDetails(
-            taxes : $baseLine['taxes'],
-            priceUnit : $priceUnitAfterDiscount,
-            quantity : $baseLine['quantity'],
-            precisionRounding : $baseLine['currency']->rounding ?? 2,
-            roundingMethod : $roundingMethod ?? $company->tax_calculation_rounding_method,
-            product : $baseLine['product'],
-            specialMode : $baseLine['special_mode'],
-            manualTaxAmounts : $baseLine['manual_tax_amounts'],
-        );
-
-        $rate = $baseLine['rate'] ?: 1.0;
-
-        $taxDetails = [
-            'raw_total_excluded_currency' => $taxesComputation['total_excluded'],
-            'raw_total_excluded'          => $rate ? $taxesComputation['total_excluded'] / $rate : 0.0,
-            'raw_total_included_currency' => $taxesComputation['total_included'],
-            'raw_total_included'          => $rate ? $taxesComputation['total_included'] / $rate : 0.0,
-            'taxes_data'                  => [],
-        ];
-
-        if ($company->tax_calculation_rounding_method === 'round_per_line') {
-            $taxDetails['raw_total_excluded'] = $company->currency->round($taxDetails['raw_total_excluded']);
-            $taxDetails['raw_total_included'] = $company->currency->round($taxDetails['raw_total_included']);
-        }
-
-        foreach ($taxesComputation['taxes_data'] as $taxData) {
-            $taxAmount  = $rate ? $taxData['tax_amount'] / $rate : 0.0;
-            $baseAmount = $rate ? $taxData['base_amount'] / $rate : 0.0;
-
-            if ($company->tax_calculation_rounding_method === 'round_per_line') {
-                $taxAmount  = $company->currency->round($taxAmount);
-                $baseAmount = $company->currency->round($baseAmount);
-            }
-
-            $taxDetails['taxes_data'][] = array_merge($taxData, [
-                'raw_tax_amount_currency' => $taxData['tax_amount'],
-                'raw_tax_amount'          => $taxAmount,
-                'raw_base_amount_currency'=> $taxData['base_amount'],
-                'raw_base_amount'         => $baseAmount,
-            ]);
-        }
-
-        $baseLine['tax_details'] = $taxDetails;
-
-        return $baseLine;
-    }
-
     public function prepareBaseLineGroupingKey($baseLine)
     {
         return [
@@ -810,15 +810,12 @@ class TaxManager
 
     public function prepareBaseLineTaxRepartitionGroupingKey($baseLine, $baseLineGroupingKey, $taxData, $taxRepartitionData)
     {
-        $tax = $taxData['tax'];
-        $taxRep = $taxRepartitionData['tax_rep'];
-
         return array_merge($baseLineGroupingKey, [
-            'tax_repartition_line_id' => $taxRep->id,
+            'tax_repartition_line_id' => $taxRepartitionData['tax_rep']->id,
             'partner_id' => $baseLine['partner']->id,
             'currency_id' => $baseLine['currency']->id,
             'group_tax_id' => $taxData['group']?->id ?? null,
-            'analytic_distribution' => ($tax->analytic || !$taxRep->use_in_tax_closing)
+            'analytic_distribution' => ($taxData['tax']->analytic || !$taxRepartitionData['tax_rep']->use_in_tax_closing)
                 ? $baseLineGroupingKey['analytic_distribution']
                 : [],
             'account_id' => $taxRepartitionData['account']?->id ?: $baseLineGroupingKey['account_id'],
@@ -1183,8 +1180,7 @@ class TaxManager
             }
 
             if ($tax->has_negative_factor) {
-                $reverseChargeTaxesData[$tax->id]['tax_amount'] =
-                    -$taxesData[$tax->id]['tax_amount'];
+                $reverseChargeTaxesData[$tax->id]['tax_amount'] = -$taxesData[$tax->id]['tax_amount'];
             }
 
             $this->propagateExtraTaxesBase($sortedTaxes, $tax, $taxesData, $specialMode);
