@@ -253,7 +253,6 @@ class Payment extends Model
     {
         if (! $this->move) {
             $this->is_reconciled = false;
-
             $this->is_matched = false;
 
             return;
@@ -263,7 +262,6 @@ class Payment extends Model
 
         if (! $this->outstanding_account_id) {
             $this->is_reconciled = false;
-
             $this->is_matched = $this->state === 'paid';
 
             return;
@@ -271,7 +269,6 @@ class Payment extends Model
 
         if (! $this->currency_id || !$this->id || !$this->move_id) {
             $this->is_reconciled = false;
-
             $this->is_matched = false;
             
             return;
@@ -279,7 +276,6 @@ class Payment extends Model
 
         if ($this->currency->isZero($this->amount)) {
             $this->is_reconciled = true;
-
             $this->is_matched = true;
 
             return;
@@ -289,24 +285,16 @@ class Payment extends Model
             ? 'amount_residual'
             : 'amount_residual_currency';
 
-        if (
-            $this->journal->default_account_id
+        $this->is_matched = $this->journal->default_account_id 
             && $liquidity->pluck('account_id')->contains($this->journal->default_account_id)
-        ) {
-            $this->is_matched = true;
-        } else {
-            $sumResidual = $liquidity->sum($residualField);
-
-            $this->is_matched = $this->currency->isZero($sumResidual);
-        }
+                ? true
+                : $this->currency->isZero($liquidity->sum($residualField));
 
         $reconcileLines = $counterpart
             ->merge($writeoff)
             ->filter(fn($line) => $line->account->reconcile);
 
-        $sumReconcile = $reconcileLines->sum($residualField);
-
-        $this->is_reconciled = $this->currency->isZero($sumReconcile);
+        $this->is_reconciled = $this->currency->isZero($reconcileLines->sum($residualField));
     }
 
     public function computeOutstandingAccountId()
@@ -324,41 +312,41 @@ class Payment extends Model
             return;
         }
 
-        if ($this->partner_type === 'customer') {
-            if ($this->partner_id) {
-                $this->destination_account_id = $this->partner->property_account_receivable_id;
-            } else {
-                $this->destination_account_id = Account::where('account_type', AccountType::ASSET_RECEIVABLE)
-                    ->where('deprecated', false)
-                    ->first()
-                    ?->id;
-            }
-        } elseif ($this->partner_type === 'supplier') {
-            if ($this->partner_id) {
-                $this->destination_account_id = $this->partner->property_account_payable_id;
-            } else {
-                $this->destination_account_id = Account::where('account_type', AccountType::LIABILITY_PAYABLE)
-                    ->where('deprecated', false)
-                    ->first()
-                    ?->id;
-            }
+        $accountMapping = [
+            'customer' => [
+                'partner_property' => 'property_account_receivable_id',
+                'account_type' => AccountType::ASSET_RECEIVABLE,
+            ],
+            'supplier' => [
+                'partner_property' => 'property_account_payable_id',
+                'account_type' => AccountType::LIABILITY_PAYABLE,
+            ],
+        ];
+
+        if (! isset($accountMapping[$this->partner_type])) {
+            return;
         }
+
+        $mapping = $accountMapping[$this->partner_type];
+
+        $this->destination_account_id = $this->partner_id
+            ? $this->partner->{$mapping['partner_property']}
+            : Account::where('account_type', $mapping['account_type'])
+                ->where('deprecated', false)
+                ->first()
+                ?->id;
     }
 
     public function computeAmountCompanyCurrencySigned()
     {
-        if ($this->move_id) {
-            [$liquidity] = $this->seekForLines();
-
-            $this->amount_company_currency_signed = $liquidity->pluck('balance')->sum();
-        } else {
-            $this->amount_company_currency_signed = $this->currency->convert(
+        $this->amount_company_currency_signed = $this->move_id
+            ? $this->seekForLines()[0]->sum('balance')
+            : $this->currency->convert(
                 fromAmount: $this->amount,
                 toCurrency: $this->company->currency,
                 company: $this->company,
                 date: $this->date
             );
-        }
     }
 
     public function generateJournalEntry($writeOffLineVals = null, $forceBalance = null, $lines = null)
@@ -381,11 +369,7 @@ class Payment extends Model
 
         $lines = $lines ?: $this->prepareMoveLineDefaultVals($writeOffLineVals, $forceBalance);
 
-        foreach ($lines as $lineVals) {
-            $lineVals['move_id'] = $move->id;
-
-            MoveLine::create($lineVals);
-        }
+        collect($lines)->each(fn($lineVals) => MoveLine::create($lineVals + ['move_id' => $move->id]));
 
         AccountFacade::computeAccountMove($move);
 
@@ -397,8 +381,6 @@ class Payment extends Model
 
     public function prepareMoveLineDefaultVals($writeOffLineVals = null, $forceBalance = null)
     {
-        $writeOffLineVals = $writeOffLineVals ?: [];
-
         if (! $this->outstanding_account_id) {
             throw new \Exception(
                 "You can't create a new payment without an outstanding payments/receipts account set either on the company or the " . 
@@ -408,53 +390,45 @@ class Payment extends Model
 
         $writeOffLineValsList = $writeOffLineVals ?: [];
 
-        $writeOffAmountCurrency = array_sum(array_column($writeOffLineValsList, 'amount_currency'));
+        $writeOffAmountCurrency = collect($writeOffLineValsList)->sum('amount_currency');
+        $writeOffBalance = collect($writeOffLineValsList)->sum('balance');
 
-        $writeOffBalance = array_sum(array_column($writeOffLineValsList, 'balance'));
+        $liquidityAmountCurrency = match ($this->payment_type) {
+            'inbound' => $this->amount,
+            'outbound' => -$this->amount,
+            default => 0.0,
+        };
 
-        if ($this->payment_type == 'inbound') {
-            $liquidityAmountCurrency = $this->amount;
-        } elseif ($this->payment_type == 'outbound') {
-            $liquidityAmountCurrency = -$this->amount;
-        } else {
-            $liquidityAmountCurrency = 0.0;
-        }
-
-        if (!$writeOffLineVals && $forceBalance !== null) {
-            $sign = $liquidityAmountCurrency > 0 ? 1 : -1;
-
-            $liquidityBalance = $sign * abs($forceBalance);
-        } else {
-            $liquidityBalance = $this->currency->convert(
+        $liquidityBalance = !$writeOffLineVals && $forceBalance !== null
+            ? ($liquidityAmountCurrency > 0 ? 1 : -1) * abs($forceBalance)
+            : $this->currency->convert(
                 $liquidityAmountCurrency,
                 $this->company->currency,
                 $this->company,
                 $this->date
             );
-        }
         
         $counterpartAmountCurrency = -$liquidityAmountCurrency - $writeOffAmountCurrency;
         $counterpartBalance = -$liquidityBalance - $writeOffBalance;
-        $currencyId = $this->currency_id;
 
-        $counterpartLineName = $liquidityLineName = collect($this->getAmlDefaultDisplayNameList())->pluck('value')->implode('');
+        $lineName = $liquidityLineName = collect($this->getAmlDefaultDisplayNameList())->pluck('value')->implode('');
 
         $lineValsList = [
             [
                 'name' => $liquidityLineName,
                 'date_maturity' => $this->date,
                 'amount_currency' => $liquidityAmountCurrency,
-                'currency_id' => $currencyId,
+                'currency_id' => $this->currency_id,
                 'debit' => $liquidityBalance > 0.0 ? $liquidityBalance : 0.0,
                 'credit' => $liquidityBalance < 0.0 ? -$liquidityBalance : 0.0,
                 'balance' => $liquidityBalance,
                 'partner_id' => $this->partner_id,
                 'account_id' => $this->outstanding_account_id,
             ], [
-                'name' => $counterpartLineName,
+                'name' => $lineName,
                 'date_maturity' => $this->date,
                 'amount_currency' => $counterpartAmountCurrency,
-                'currency_id' => $currencyId,
+                'currency_id' => $this->currency_id,
                 'debit' => $counterpartBalance > 0.0 ? $counterpartBalance : 0.0,
                 'credit' => $counterpartBalance < 0.0 ? -$counterpartBalance : 0.0,
                 'balance' => $counterpartBalance,
@@ -476,6 +450,7 @@ class Payment extends Model
             [$liquidityLines, $counterpartLines, $writeoffLines] = $pay->seekForLines();
             
             $writeOffLineVals = [];
+
             if ($liquidityLines->isNotEmpty() && $counterpartLines->isNotEmpty() && $writeoffLines->isNotEmpty()) {
                 $writeOffLineVals[] = [
                     'name' => $writeoffLines[0]->name,
@@ -498,15 +473,13 @@ class Payment extends Model
                     : $lineValsList[1]
             ];
             
-            foreach ($writeoffLines as $line) {
-                $lineIdsCommands[] = ['delete' => $line->id];
-            }
+            $lineIdsCommands = array_merge(
+                $lineIdsCommands,
+                $writeoffLines->map(fn($line) => ['delete' => $line->id])->all(),
+                array_slice($lineValsList, 2)
+            );
             
-            for ($i = 2; $i < count($lineValsList); $i++) {
-                $lineIdsCommands[] = $lineValsList[$i];
-            }
-            
-            $pay->move->withContext(['skip_invoice_sync' => true])->update([
+            $pay->move->update([
                 'partner_id' => $pay->partner_id,
                 'currency_id' => $pay->currency_id,
                 'partner_bank_id' => $pay->partner_bank_id,
@@ -537,7 +510,7 @@ class Payment extends Model
         }
 
         if ($lines[2]->count() == 1) {
-            for ($i = 0; $i <= 1; $i++) {
+            foreach ([0, 1] as $i) {
                 if ($lines[$i]->isEmpty()) {
                     $lines[$i] = $lines[2];
 

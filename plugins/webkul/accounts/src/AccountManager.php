@@ -19,6 +19,7 @@ use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Payment;
 use Webkul\Support\Models\Currency;
+use Illuminate\Support\Arr;
 use Webkul\Account\Models\PaymentRegister;
 use Webkul\Support\Services\EmailService;
 
@@ -732,17 +733,14 @@ class AccountManager
 
     public function createPayments(PaymentRegister $paymentRegister)
     {
-        $batches = [];
-        
-        foreach ($paymentRegister->batches as $batch) {
-            $batchAccount = $paymentRegister->getBatchAccount($batch);
-
-            if ($paymentRegister->require_partner_bank_account && (! $batchAccount || ! $batchAccount->can_send_money)) {
-                continue;
-            }
-
-            $batches[] = $batch;
-        }
+        $batches = collect($paymentRegister->batches)
+            ->filter(function ($batch) use ($paymentRegister) {
+                $batchAccount = $paymentRegister->getBatchAccount($batch);
+                return !$paymentRegister->require_partner_bank_account 
+                    || ($batchAccount && $batchAccount->can_send_money);
+            })
+            ->values()
+            ->all();
 
         if (empty($batches)) {
             throw new \Exception(
@@ -753,10 +751,7 @@ class AccountManager
         $firstBatchResult = $batches[0];
 
         $editMode = $paymentRegister->is_single_batch
-            && (
-                count($firstBatchResult['lines']) == 1
-                || $paymentRegister->group_payment
-            );
+            && (count($firstBatchResult['lines']) == 1 || $paymentRegister->group_payment);
 
         $paymentsToProcess = [];
 
@@ -782,24 +777,18 @@ class AccountManager
                     ? $paymentRegister->getTotalAmountsToPay($batches)['lines'] 
                     : $paymentRegister->lines;
 
-                $newBatches = [];
-                
-                foreach ($batches as $batchResult) {
-                    foreach ($batchResult['lines'] as $line) {
-                        if (! $linesToPay->contains($line)) {
-                            continue;
-                        }
-
-                        $newBatches[] = array_merge($batchResult, [
-                            'payment_values' => array_merge($batchResult['payment_values'], [
-                                'payment_type' => $line->balance > 0 ? 'inbound' : 'outbound'
-                            ]),
-                            'lines' => $line,
-                        ]);
-                    }
-                }
-
-                $batches = $newBatches;
+                $batches = collect($batches)
+                    ->flatMap(function ($batchResult) use ($linesToPay) {
+                        return collect($batchResult['lines'])
+                            ->filter(fn($line) => $linesToPay->contains($line))
+                            ->map(fn($line) => array_merge($batchResult, [
+                                'payment_values' => array_merge($batchResult['payment_values'], [
+                                    'payment_type' => $line->balance > 0 ? 'inbound' : 'outbound'
+                                ]),
+                                'lines' => $line,
+                            ]));
+                    })
+                    ->all();
             }
 
             foreach ($batches as $batchResult) {
@@ -836,33 +825,32 @@ class AccountManager
             'write_off_line_vals' => [],
         ];
 
-        if ($paymentRegister->payment_difference_handling == 'reconcile') {
-            if (! $paymentRegister->currency->isZero($paymentRegister->payment_difference)) {
-                if ($paymentRegister->writeoff_is_exchange_account) {
-                    if ($paymentRegister->currency_id != $paymentRegister->company_currency_id) {
-                        $paymentVals['force_balance'] = $batchResult['lines']->sum('amount_residual');
-                    }
-                } else {
-                    if ($paymentRegister->payment_type == 'inbound') {
-                        $writeOffAmountCurrency = $paymentRegister->payment_difference;
-                    } else {
-                        $writeOffAmountCurrency = -$paymentRegister->payment_difference;
-                    }
-
-                    $paymentVals['write_off_line_vals'][] = [
-                        'name' => 'Write Off',
-                        'account_id' => $paymentRegister->writeoff_account_id,
-                        'partner_id' => $paymentRegister->partner_id,
-                        'currency_id' => $paymentRegister->currency_id,
-                        'amount_currency' => $writeOffAmountCurrency,
-                        'balance' => $paymentRegister->currency->convert(
-                            $writeOffAmountCurrency, 
-                            $paymentRegister->company->currency, 
-                            $paymentRegister->company, 
-                            $paymentRegister->payment_date
-                        ),
-                    ];
+        if (
+            $paymentRegister->payment_difference_handling == 'reconcile'
+            && ! $paymentRegister->currency->isZero($paymentRegister->payment_difference)
+        ) {
+            if ($paymentRegister->writeoff_is_exchange_account) {
+                if ($paymentRegister->currency_id != $paymentRegister->company_currency_id) {
+                    $paymentVals['force_balance'] = $batchResult['lines']->sum('amount_residual');
                 }
+            } else {
+                $writeOffAmountCurrency = $paymentRegister->payment_type == 'inbound'
+                    ? $paymentRegister->payment_difference
+                    : -$paymentRegister->payment_difference;
+
+                $paymentVals['write_off_line_vals'][] = [
+                    'name' => 'Write Off',
+                    'account_id' => $paymentRegister->writeoff_account_id,
+                    'partner_id' => $paymentRegister->partner_id,
+                    'currency_id' => $paymentRegister->currency_id,
+                    'amount_currency' => $writeOffAmountCurrency,
+                    'balance' => $paymentRegister->currency->convert(
+                        $writeOffAmountCurrency, 
+                        $paymentRegister->company->currency, 
+                        $paymentRegister->company, 
+                        $paymentRegister->payment_date
+                    ),
+                ];
             }
         }
 
@@ -873,17 +861,13 @@ class AccountManager
     {
         $batchValues = $paymentRegister->getValuesFromBatch($batch);
 
-        if ($batchValues['payment_type'] == 'inbound') {
-            $partnerBankId = $paymentRegister->journal->bank_account_id;
-        } else {
-            $partnerBankId = $batch['payment_values']['partner_bank_id'];
-        }
+        $partnerBankId = $batchValues['payment_type'] == 'inbound'
+            ? $paymentRegister->journal->bank_account_id
+            : data_get($batch, 'payment_values.partner_bank_id');
 
-        $paymentMethodLine = $paymentRegister->paymentMethodLine;
-
-        if ($batchValues['payment_type'] != $paymentMethodLine->payment_type) {
-            $paymentMethodLine = $paymentRegister->journal->getAvailablePaymentMethodLines($batchValues['payment_type'])->first();
-        }
+        $paymentMethodLine = $batchValues['payment_type'] != $paymentRegister->paymentMethodLine->payment_type
+            ? $paymentRegister->journal->getAvailablePaymentMethodLines($batchValues['payment_type'])->first()
+            : $paymentRegister->paymentMethodLine;
 
         $paymentVals = [
             'date' => $paymentRegister->payment_date,
@@ -900,11 +884,7 @@ class AccountManager
             'write_off_line_vals' => [],
         ];
 
-        if ($partnerBankId) {
-            $paymentVals['partner_bank_id'] = $partnerBankId;
-        }
-
-        return $paymentVals;
+        return array_filter($paymentVals + ['partner_bank_id' => $partnerBankId], fn($value) => $value !== null);
     }
 
     public function initiatePayments($paymentRegister, &$paymentsToProcess, $editMode = false)
@@ -913,94 +893,84 @@ class AccountManager
 
         foreach ($paymentsToProcess as $index => $processItem) {
             $vals = $processItem['create_vals'];
-            
-            $forceBalanceVals = $vals['force_balance'] ?? null;
+        
+            $forceBalanceVals = data_get($vals, 'force_balance');
+            $writeOffLineVals = data_get($vals, 'write_off_line_vals');
+            $lines = data_get($vals, 'lines');
 
-            $writeOffLineVals = $vals['write_off_line_vals'] ?? null;
-
-            $lines = $vals['lines'] ?? null;
-
-            unset($vals['write_off_line_vals'], $vals['force_balance'], $vals['lines']);
+            $vals = Arr::except($vals, ['write_off_line_vals', 'force_balance', 'lines']);
 
             //TODO: change this to create after testing
             $vals['payment'] = $payment = Payment::updateOrCreate($vals);
 
-            if (
-                ! $accountingInstalled
-                && ! $payment->outstanding_account_id
-            ) {
+            if (! $accountingInstalled && ! $payment->outstanding_account_id) {
                 $payment->update([
                     'outstanding_account_id' => $payment->getOutstandingAccount($payment->payment_type)->id
                 ]);
             }
 
-            if (
-                ! $writeOffLineVals !== null
-                || ! $forceBalanceVals !== null
-                || ! $lines !== null
-            ) {
+            if (filled($writeOffLineVals) || filled($forceBalanceVals) || filled($lines)) {
                 $payment->generateJournalEntry($writeOffLineVals, $forceBalanceVals, $lines);
 
                 $payment->refresh();
 
-                $moveVals = collect($vals)
-                    ->filter(function ($value, $fieldName) use($payment) {
-                        return in_array($fieldName, $payment->moveRelatedFields);
-                    })
-                    ->toArray();
+                $moveVals = Arr::only($vals, $payment->moveRelatedFields);
                 
-                if (! empty($moveVals)) {
+                if (filled($moveVals)) {
                     $payment->move->update($moveVals);
                 }
             }
 
             $paymentsToProcess[$index]['payment'] = $payment;
 
-            if ($editMode && $payment->move_id) {
-                $lines = $processItem['to_reconcile'];
+            if (! $editMode || ! $payment->move_id) {
+                continue;
+            }
 
-                if ($payment->currency_id == $lines->first()->currency_id) {
-                    continue;
-                }
+            $lines = $processItem['to_reconcile'];
 
-                [$liquidityLines, $counterpartLines, $writeoffLines] = $payment->seekForLines();
-                
-                $sourceBalance = abs($lines->sum('amount_residual'));
+            if ($payment->currency_id == $lines->first()->currency_id) {
+                continue;
+            }
 
-                $paymentRate = $liquidityLines[0]->balance ? $liquidityLines[0]->amount_currency / $liquidityLines[0]->balance : 0.0;
+            [$liquidityLines, $counterpartLines] = $payment->seekForLines();
+            
+            $sourceBalance = abs($lines->sum('amount_residual'));
 
-                $sourceBalanceConverted = abs($sourceBalance) * $paymentRate;
+            $paymentRate = $liquidityLines[0]->balance
+                ? $liquidityLines[0]->amount_currency / $liquidityLines[0]->balance
+                : 0.0;
 
-                $paymentBalance = abs($counterpartLines->sum('balance'));
+            $sourceBalanceConverted = abs($sourceBalance) * $paymentRate;
 
-                $paymentAmountCurrency = abs($counterpartLines->sum('amount_currency'));
-                
-                if (! $payment->currency->isZero($sourceBalanceConverted - $paymentAmountCurrency)) {
-                    continue;
-                }
+            $paymentBalance = abs($counterpartLines->sum('balance'));
 
-                $deltaBalance = $sourceBalance - $paymentBalance;
+            $paymentAmountCurrency = abs($counterpartLines->sum('amount_currency'));
+            
+            if (! $payment->currency->isZero($sourceBalanceConverted - $paymentAmountCurrency)) {
+                continue;
+            }
 
-                if ($paymentRegister->companyCurrency->isZero($deltaBalance)) {
-                    continue;
-                }
+            $deltaBalance = $sourceBalance - $paymentBalance;
 
-                $debitLines = $liquidityLines->merge($counterpartLines)->filter(fn($line) => $line->debit > 0);
+            if ($paymentRegister->companyCurrency->isZero($deltaBalance)) {
+                continue;
+            }
 
-                $creditLines = $liquidityLines->merge($counterpartLines)->filter(fn($line) => $line->credit > 0);
+            $mergedLines = $liquidityLines->merge($counterpartLines);
 
-                if (
-                    $debitLines->isNotEmpty()
-                    && $creditLines->isNotEmpty()
-                ) {
-                    //TODO: handle write-off lines if any
-                    $payment->move->update([
-                        'line_ids' => [
-                            ['id' => $debitLines[0]->id, 'debit' => $debitLines[0]->debit + $deltaBalance],
-                            ['id' => $creditLines[0]->id, 'credit' => $creditLines[0]->credit + $deltaBalance],
-                        ]
-                    ]);
-                }
+            $debitLines = $mergedLines->filter(fn($line) => $line->debit > 0);
+
+            $creditLines = $mergedLines->filter(fn($line) => $line->credit > 0);
+
+            if ($debitLines->isNotEmpty() && $creditLines->isNotEmpty()) {
+                //TODO: handle write-off lines if any
+                $payment->move->update([
+                    'line_ids' => [
+                        ['id' => $debitLines[0]->id, 'debit' => $debitLines[0]->debit + $deltaBalance],
+                        ['id' => $creditLines[0]->id, 'credit' => $creditLines[0]->credit + $deltaBalance],
+                    ]
+                ]);
             }
         }
     }

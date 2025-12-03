@@ -360,10 +360,6 @@ class MoveLine extends Model implements Sortable
 
                     $accountId = $account?->id;
                 } elseif ($this->partner) {
-                    $accountType = $this->move->isSaleDocument(true) ? AccountType::INCOME : AccountType::EXPENSE;
-
-                    $account = Account::where('account_type', $accountType)->where('deprecated', false)->first();
-
                     $accountId = (new Account)->getMostFrequentAccountsForPartner(
                         companyId: $this->move->company_id,
                         partnerId: $this->partner_id,
@@ -386,13 +382,9 @@ class MoveLine extends Model implements Sortable
                     ->limit(2)
                     ->get();
 
-                if ($previousAccounts->count() === 1 && $this->move->lines()->count() > 2) {
-                    $account = $previousAccounts->first();
-                } else {
-                    $account = $this->move->journal?->defaultAccount;
-                }
-
-                $accountId = $account?->id;
+                $accountId = $previousAccounts->count() === 1 && $this->move->lines()->count() > 2
+                    ? $previousAccounts->first()?->id
+                    : $this->move->journal?->defaultAccount?->id;
 
                 break;
         }
@@ -405,6 +397,7 @@ class MoveLine extends Model implements Sortable
         if ($this->display_type) {
             return;
         }
+
         if ($this->move->isInvoice()) {
             if ($this->tax_line_id) {
                 $this->display_type = DisplayType::TAX;
@@ -420,11 +413,13 @@ class MoveLine extends Model implements Sortable
 
     public function computeUOMId()
     {
-        if ($this->move->isPurchaseDocument()) {
-            $this->uom_id = $this->uom_id ?? $this->product?->uom_po_id;
-        } else {
-            $this->uom_id = $this->uom_id ?? $this->product?->uom_id;
+        if ($this->uom_id) {
+            return;
         }
+
+        $this->uom_id = $this->move->isPurchaseDocument()
+            ? $this->product?->uom_po_id
+            : $this->product?->uom_id;
     }
 
     public function computeCurrencyId()
