@@ -5,6 +5,7 @@ namespace Webkul\Account\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Support\Models\Currency;
+use Webkul\Security\Models\User;
 
 class PartialReconcile extends Model
 {
@@ -50,5 +51,51 @@ class PartialReconcile extends Model
     public function debitCurrency()
     {
         return $this->belongsTo(Currency::class, 'debit_currency_id');
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+    
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($partialReconcile) {
+            $partialReconcile->computeCreatedBy();
+        });
+
+        static::saving(function ($partialReconcile) {
+            $partialReconcile->computeDebitCurrencyId();
+
+            $partialReconcile->computeCreditCurrencyId();
+
+            $partialReconcile->computeMaxDate();
+        });
+    }
+
+    public function computeCreatedBy()
+    {
+        $this->created_by = filament()->auth()->user()->id ?? null;
+    }
+
+    public function computeDebitCurrencyId()
+    {
+        $this->debit_currency_id = $this->debitMove->currency_id;
+    }
+
+    public function computeCreditCurrencyId()
+    {
+        $this->credit_currency_id = $this->creditMove->currency_id;
+    }
+
+    public function computeMaxDate()
+    {
+        $debitDate = $this->debitMove->move->date;
+        
+        $creditDate = $this->creditMove->move->date;
+
+        $this->max_date = ($debitDate > $creditDate) ? $debitDate : $creditDate;
     }
 }

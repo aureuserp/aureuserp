@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Enums\DelayType;
+use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
@@ -708,13 +709,13 @@ class Move extends Model implements Sortable
                     }
                 }
             } elseif ($this->matchedPayments->filter(function ($payment) {
-                return !$payment->move_id && $payment->state === 'in_process';
+                return ! $payment->move_id && $payment->state === 'in_process';
             })->isNotEmpty()) {
                 $newPaymentState = $this->getInvoiceInPaymentState();
-            } elseif (!empty($reconciliationVals)) {
+            } elseif (! empty($reconciliationVals)) {
                 $newPaymentState = 'partial';
             } elseif ($this->matchedPayments->filter(function ($payment) {
-                return !$payment->move_id && $payment->state === 'paid';
+                return ! $payment->move_id && $payment->state === 'paid';
             })->isNotEmpty()) {
                 $newPaymentState = $this->getInvoiceInPaymentState();
             }
@@ -730,7 +731,7 @@ class Move extends Model implements Sortable
         $termLines = $lines->sortBy(function($line) {
             return [$line->date_maturity, $line->date];
         });
-        
+
         $sign = $this->direction_sign;
 
         $installments = [];
@@ -762,12 +763,12 @@ class Move extends Model implements Sortable
                 continue;
             }
 
-            if ($line->display_type == 'payment_term') {
+            if ($line->display_type == DisplayType::PAYMENT_TERM) {
                 if ($nextPaymentDate && ($line->date_maturity ?: $line->date) <= $nextPaymentDate) {
                     $currentInstallmentMode = 'before_date';
                 } elseif (($line->date_maturity ?: $line->date) < $paymentDate) {
                     $firstInstallmentMode = $currentInstallmentMode = 'overdue';
-                } elseif (!$firstInstallmentMode) {
+                } elseif (! $firstInstallmentMode) {
                     $firstInstallmentMode = 'next';
                     $currentInstallmentMode = 'next';
                 } elseif ($currentInstallmentMode == 'overdue') {

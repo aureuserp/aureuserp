@@ -15,16 +15,38 @@ use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Mail\Invoice\Actions\InvoiceEmail;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\Move as AccountMove;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Payment;
 use Webkul\Support\Models\Currency;
 use Illuminate\Support\Arr;
+use Webkul\Account\Models\FullReconcile;
+use Webkul\Account\Models\PartialReconcile;
 use Webkul\Account\Models\PaymentRegister;
+use Webkul\Accounting\Models\Journal;
 use Webkul\Support\Services\EmailService;
+use Webkul\Account\Settings\DefaultAccountSettings;
 
 class AccountManager
 {
+
+    protected array $context = [];
+
+    public function setContext(array $context): self
+    {
+        $this->context = array_merge($this->context, $context);
+
+        return $this;
+    }
+
+    public function getContext(string $key)
+    {
+        return Arr::get($this->context, $key);
+    }
+
     public function cancel(AccountMove $record): AccountMove
     {
         $record->state = MoveState::CANCEL;
@@ -896,8 +918,7 @@ class AccountManager
 
             $vals = Arr::except($vals, ['write_off_line_vals', 'force_balance', 'lines']);
 
-            //TODO: change this to create after testing
-            $vals['payment'] = $payment = Payment::updateOrCreate($vals);
+            $vals['payment'] = $payment = Payment::create($vals);
 
             if (! $accountingInstalled && ! $payment->outstanding_account_id) {
                 $payment->update([
@@ -905,7 +926,11 @@ class AccountManager
                 ]);
             }
 
-            if (filled($writeOffLineVals) || filled($forceBalanceVals) || filled($lines)) {
+            if (
+                ! $writeOffLineVals !== null
+                || ! $forceBalanceVals !== null
+                || ! $lines !== null
+            ) {
                 $payment->generateJournalEntry($writeOffLineVals, $forceBalanceVals, $lines);
 
                 $payment->refresh();
@@ -930,7 +955,7 @@ class AccountManager
             }
 
             [$liquidityLines, $counterpartLines] = $payment->seekForLines();
-            
+
             $sourceBalance = abs($lines->sum('amount_residual'));
 
             $paymentRate = $liquidityLines[0]->balance
@@ -960,12 +985,12 @@ class AccountManager
             $creditLines = $mergedLines->filter(fn($line) => $line->credit > 0);
 
             if ($debitLines->isNotEmpty() && $creditLines->isNotEmpty()) {
-                //TODO: handle write-off lines if any
-                $payment->move->update([
-                    'line_ids' => [
-                        ['id' => $debitLines[0]->id, 'debit' => $debitLines[0]->debit + $deltaBalance],
-                        ['id' => $creditLines[0]->id, 'credit' => $creditLines[0]->credit + $deltaBalance],
-                    ]
+                $debitLines[0]->update([
+                    'debit' => $debitLines[0]->debit + $deltaBalance,
+                ]);
+
+                $creditLines[0]->update([
+                    'credit' => $creditLines[0]->credit + $deltaBalance,
                 ]);
             }
         }
@@ -975,6 +1000,8 @@ class AccountManager
     {
         foreach ($paymentsToProcess as $vals) {
             $this->postPayment($vals['payment']);
+
+            $this->confirm($vals['payment']->move);
         }
     }
 
@@ -1007,30 +1034,752 @@ class AccountManager
     public function reconcilePayments($paymentsToProcess, $editMode = false)
     {
         foreach ($paymentsToProcess as $values) {
-            $paymentLines = $values['payment']->move->lines->filter(function($line) {
-                return $line->parent_state == 'posted' 
-                    && in_array($line->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE])
+            $payment = $values['payment']->refresh();
+
+            $paymentLines = $payment->move->lines->filter(function($line) {
+                return $line->parent_state == MoveState::POSTED 
+                    && in_array($line->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE])
                     && ! $line->reconciled;
             });
 
-            $extraContext = isset($values['rate'])
-                ? ['forced_rate_from_register_payment' => $values['rate']]
-                : [];
-
             foreach ($paymentLines->pluck('account_id')->unique() as $accountId) {
-                $paymentLines->merge($values['to_reconcile'])
-                    ->withContext($extraContext)
+                $lines = $paymentLines->merge($values['to_reconcile'])
                     ->filter(function($line) use ($accountId) {
                         return $line->account_id == $accountId
                             && ! $line->reconciled
-                            && $line->parent_state == 'posted';
-                    })
-                    ->reconcile();
+                            && $line->parent_state == MoveState::POSTED;
+                    });
+
+                $this->reconcile($lines);
             }
             
             foreach ($values['to_reconcile'] as $line) {
-                $line->move->matchedPayments()->attach($values['payment']->id);
+                $line->move->matchedPayments()->attach($payment->id);
             }
+        }
+    }
+    public function reconcile($lines): array
+    {
+        $lines->load([
+            'account',
+            'partner',
+            'currency',
+            'move',
+            'company',
+            'matchedDebits',
+            'matchedCredits'
+        ]);
+
+        $this->isReconciliationAllowedForLines($lines);
+        
+        $this->reconcilePlan([$lines]);
+
+        dd($lines);
+    }
+
+    protected function reconcilePlan(array $reconciliationPlan): array
+    {
+        $allPartialReconciles = [];
+        $allFullReconciles = [];
+        
+        foreach ($reconciliationPlan as $lines) {
+            $plan = $this->prepareReconciliationPlan($lines);
+            
+            $results = $this->processReconciliationNode($plan);
+
+            $allPartialReconciles = array_merge($allPartialReconciles, $results['partial_reconciles']);
+
+            $allFullReconciles = array_merge($allFullReconciles, $results['full_reconciles']);
+        }
+        
+        return [
+            'partial_reconciles' => $allPartialReconciles,
+            'full_reconciles' => $allFullReconciles,
+        ];
+    }
+    
+    protected function prepareReconciliationPlan($lines): array
+    {
+        $sortedLines = $lines->sortBy(function ($line) {
+            return [
+                $line->date_maturity ?? $line->date,
+                $line->currency_id,
+                $line->amount_currency,
+                $line->balance,
+            ];
+        });
+        
+        $plan = [
+            'lines' => $sortedLines,
+            'line_ids' => $sortedLines->pluck('id')->toArray(),
+        ];
+        
+        if (($currencies = $sortedLines->pluck('currency_id')->unique())->count() > 1) {
+            $plan['nodes'] = [];
+
+            foreach ($currencies as $currencyId) {
+                $currencyLines = $sortedLines->filter(fn($line) => $line->currency_id == $currencyId);
+
+                $plan['nodes'][] = [
+                    'lines' => $currencyLines,
+                    'line_ids' => $currencyLines->pluck('id')->toArray(),
+                ];
+            }
+        }
+        
+        return $plan;
+    }
+    
+    protected function processReconciliationNode(array $plan): array
+    {
+        $allPartialReconciles = [];
+
+        $allFullReconciles = [];
+
+        $fullyReconciledIds = [];
+        
+        foreach ($plan['nodes'] ?? [] as $childNode) {
+            $childResults = $this->processReconciliationNode($childNode);
+
+            $allPartialReconciles = array_merge($allPartialReconciles, $childResults['partial_reconciles']);
+
+            $allFullReconciles = array_merge($allFullReconciles, $childResults['full_reconciles']);
+
+            $fullyReconciledIds = array_merge($fullyReconciledIds, $childResults['fully_reconciled_ids']);
+        }
+        
+        if (! empty($plan['lines'])) {
+            $remainingLines = $plan['lines']->reject(fn($line) => in_array($line->id, $fullyReconciledIds));
+
+            if ($remainingLines->isNotEmpty()) {
+                $lineValuesMapping = $remainingLines->mapWithKeys(fn($line) => [
+                    $line->id => [
+                        'line' => $line,
+                        'amount_residual' => $line->amount_residual,
+                        'amount_residual_currency' => $line->amount_residual_currency,
+                    ]
+                ])->toArray();
+
+                $results = $this->prepareReconciliationLines(array_values($lineValuesMapping));
+
+                foreach ($results['partials_values_list'] as $partialResult) {
+                    $partialValues = $partialResult['partial_values'];
+                    
+                    $partial = PartialReconcile::create([
+                        'debit_move_id' => $partialValues['debit_move_id'],
+                        'credit_move_id' => $partialValues['credit_move_id'],
+                        'amount' => $partialValues['amount'],
+                        'debit_amount_currency' => $partialValues['debit_amount_currency'],
+                        'credit_amount_currency' => $partialValues['credit_amount_currency'],
+                        'company_id' => $remainingLines->first()->company_id,
+                    ]);
+                    
+                    $allPartialReconciles[] = $partial;
+                    
+                    $debitLine = MoveLine::find($partialValues['debit_move_id']);
+                    $creditLine = MoveLine::find($partialValues['credit_move_id']);
+                    
+                    $debitLine->amount_residual -= $partialValues['amount'];
+                    $debitLine->amount_residual_currency -= $partialValues['debit_amount_currency'];
+                    $debitLine->save();
+                    
+                    $creditLine->amount_residual += $partialValues['amount'];
+                    $creditLine->amount_residual_currency += $partialValues['credit_amount_currency'];
+                    $creditLine->save();
+
+                    $this->computeMoveTotals($debitLine->move->refresh())->save();
+
+                    $this->computeMoveTotals($creditLine->move->refresh())->save();
+
+                    if (! empty($partialResult['exchange_values'])) {
+                        $exchangeMoves = $this->createExchangeDifferenceMoves([$partialResult['exchange_values']]);
+                        
+                        if (! empty($exchangeMoves)) {
+                            $partial->update(['exchange_move_id' => $exchangeMoves[0]->id]);
+                        }
+                    }
+                }
+                
+                if (! empty($allPartialReconciles)) {
+                    $this->updateMatchingNumbers($allPartialReconciles);
+                }
+                
+                $fulls = $this->createFullReconciles($remainingLines);
+
+                $allFullReconciles = array_merge($allFullReconciles, $fulls);
+                
+                $fullyReconciledIds = array_merge($fullyReconciledIds, $results['fully_reconciled_line_ids']);
+            }
+        }
+        
+        return [
+            'partial_reconciles' => $allPartialReconciles,
+            'full_reconciles' => $allFullReconciles,
+            'fully_reconciled_ids' => $fullyReconciledIds,
+        ];
+    }
+    
+    protected function prepareReconciliationLines(array $valuesList): array
+    {
+        $debitValuesList = array_values(array_filter($valuesList, fn($values) => 
+            $values['line']->balance > 0.0 || $values['line']->amount_currency > 0.0
+        ));
+        
+        $creditValuesList = array_values(array_filter($valuesList, fn($values) => 
+            $values['line']->balance < 0.0 || $values['line']->amount_currency < 0.0
+        ));
+
+        $debitIndex = 0;
+        $creditIndex = 0;
+        $debitValues = null;
+        $creditValues = null;
+        $fullyReconciledLineIds = [];
+        $partialsValuesList = [];
+        
+        while (true) {
+            if (! $debitValues) {
+                if ($debitIndex >= count($debitValuesList)) {
+                    break;
+                }
+
+                $debitValues = $debitValuesList[$debitIndex++];
+            }
+            
+            if (! $creditValues) {
+                if ($creditIndex >= count($creditValuesList)) {
+                    break;
+                }
+
+                $creditValues = $creditValuesList[$creditIndex++];
+            }
+            
+            $results = $this->prepareSinglePartial($debitValues, $creditValues);
+            
+            if (! empty($results['partial_values'])) {
+                $partialsValuesList[] = $results;
+            }
+            
+            if ($results['debit_values'] === null) {
+                $fullyReconciledLineIds[] = $debitValues['line']->id;
+
+                $debitValues = null;
+            } else {
+                $debitValues = $results['debit_values'];
+            }
+            
+            if ($results['credit_values'] === null) {
+                $fullyReconciledLineIds[] = $creditValues['line']->id;
+
+                $creditValues = null;
+            } else {
+                $creditValues = $results['credit_values'];
+            }
+        }
+
+        return [
+            'partials_values_list' => $partialsValuesList,
+            'fully_reconciled_line_ids' => $fullyReconciledLineIds,
+        ];
+    }
+
+    protected function prepareSinglePartial(array $debitValues, array $creditValues): array
+    {
+        $debitLine = $debitValues['line'];
+        $creditLine = $creditValues['line'];
+        
+        $debitCurrency = $debitLine->currency;
+        $creditCurrency = $creditLine->currency;
+        $companyCurrency = $debitLine->company->currency;
+        
+        $remainingDebitAmount = $debitValues['amount_residual'];
+        $remainingCreditAmount = $creditValues['amount_residual'];
+        $remainingDebitAmountCurrency = $debitValues['amount_residual_currency'];
+        $remainingCreditAmountCurrency = $creditValues['amount_residual_currency'];
+        
+        $debitAvailableResiduals = $this->prepareLineResidualAmounts($debitValues, $creditCurrency);
+        $creditAvailableResiduals = $this->prepareLineResidualAmounts($creditValues, $debitCurrency);
+        
+        $reconciliationCurrency = null;
+
+        if (
+            $debitCurrency->id != $companyCurrency->id 
+            && isset($debitAvailableResiduals[$debitCurrency->id])
+            && isset($creditAvailableResiduals[$debitCurrency->id])
+        ) {
+            $reconciliationCurrency = $debitCurrency;
+        } elseif (
+            $creditCurrency->id != $companyCurrency->id
+            && isset($debitAvailableResiduals[$creditCurrency->id])
+            && isset($creditAvailableResiduals[$creditCurrency->id])
+        ) {
+            $reconciliationCurrency = $creditCurrency;
+        } else {
+            $reconciliationCurrency = $companyCurrency;
+        }
+
+        $debitReconValues = $debitAvailableResiduals[$reconciliationCurrency->id] ?? null;
+        $creditReconValues = $creditAvailableResiduals[$reconciliationCurrency->id] ?? null;
+
+        $res = [
+            'debit_values' => $debitValues,
+            'credit_values' => $creditValues,
+        ];
+
+        if (! $debitReconValues) {
+            $res['debit_values'] = null;
+        }
+
+        if (! $creditReconValues) {
+            $res['credit_values'] = null;
+        }
+
+        if (! $debitReconValues || ! $creditReconValues) {
+            return $res;
+        }
+
+        $reconDebitAmount = $debitReconValues['residual'];
+        $reconCreditAmount = -$creditReconValues['residual'];
+        
+        $minReconAmount = min($reconDebitAmount, $reconCreditAmount);
+        $debitFullyMatched = $reconDebitAmount <= $reconCreditAmount;
+        $creditFullyMatched = $reconDebitAmount >= $reconCreditAmount;
+        
+        if ($reconciliationCurrency->id == $companyCurrency->id) {
+            $debitRate = $debitAvailableResiduals[$debitCurrency->id]['rate'] ?? null;
+            $creditRate = $creditAvailableResiduals[$creditCurrency->id]['rate'] ?? null;
+            
+            $partialAmount = $minReconAmount;
+            
+            if ($debitRate) {
+                $partialDebitAmountCurrency = $debitCurrency->round($debitRate * $minReconAmount);
+                $partialDebitAmountCurrency = min($partialDebitAmountCurrency, $remainingDebitAmountCurrency);
+            } else {
+                $partialDebitAmountCurrency = 0.0;
+            }
+            
+            if ($creditRate) {
+                $partialCreditAmountCurrency = $creditCurrency->round($creditRate * $minReconAmount);
+                $partialCreditAmountCurrency = min($partialCreditAmountCurrency, -$remainingCreditAmountCurrency);
+            } else {
+                $partialCreditAmountCurrency = 0.0;
+            }
+        } else {
+            $debitRate = $debitReconValues['rate'] ?? null;
+            $creditRate = $creditReconValues['rate'] ?? null;
+            
+            $partialAmount = $minReconAmount;
+            
+            if ($debitRate) {
+                $partialDebitAmount = $companyCurrency->round($minReconAmount / $debitRate);
+                $partialAmount = min($partialDebitAmount, $remainingDebitAmount);
+            }
+            
+            if ($creditRate) {
+                $partialCreditAmount = $companyCurrency->round($minReconAmount / $creditRate);
+                $partialAmount = min($partialCreditAmount, -$remainingCreditAmount);
+            }
+            
+            $partialDebitAmountCurrency = $minReconAmount;
+            $partialCreditAmountCurrency = $minReconAmount;
+        }
+        
+        $remainingDebitAmount -= $partialAmount;
+        $remainingCreditAmount += $partialAmount;
+        $remainingDebitAmountCurrency -= $partialDebitAmountCurrency;
+        $remainingCreditAmountCurrency += $partialCreditAmountCurrency;
+        
+        $res['partial_values'] = [
+            'amount' => $partialAmount,
+            'debit_amount_currency' => $partialDebitAmountCurrency,
+            'credit_amount_currency' => $partialCreditAmountCurrency,
+            'debit_move_id' => $debitLine->id,
+            'credit_move_id' => $creditLine->id,
+        ];
+        
+        $debitValues['amount_residual'] = $remainingDebitAmount;
+        $debitValues['amount_residual_currency'] = $remainingDebitAmountCurrency;
+        $creditValues['amount_residual'] = $remainingCreditAmount;
+        $creditValues['amount_residual_currency'] = $remainingCreditAmountCurrency;
+        
+        if ($debitFullyMatched) {
+            $res['debit_values'] = null;
+        } else {
+            $res['debit_values'] = $debitValues;
+        }
+        
+        if ($creditFullyMatched) {
+            $res['credit_values'] = null;
+        } else {
+            $res['credit_values'] = $creditValues;
+        }
+        
+        $exchangeValues = $this->checkExchangeDifference($debitValues, $creditValues, $debitFullyMatched, $creditFullyMatched);
+
+        if ($exchangeValues) {
+            $res['exchange_values'] = $exchangeValues;
+        }
+        
+        return $res;
+    }
+
+    protected function prepareLineResidualAmounts(array $lineValues, $counterpartCurrency): array
+    {
+        $getConversionRate = function ($currency, $line): float {
+            if (
+                $line->currency_id != $line->company->currency->id 
+                && ! $line->company->currency->isZero($line->balance) 
+                && ! $line->currency->isZero($line->amount_currency)
+            ) {
+                return abs($line->amount_currency / $line->balance);
+            }
+            
+            return $currency->rate ?? 1.0;
+        };
+
+        $line = $lineValues['line'];
+        $remainingAmount = $lineValues['amount_residual'];
+        $remainingAmountCurrency = $lineValues['amount_residual_currency'];
+        
+        $availableResidualPerCurrency = [];
+        
+        if (! $line->company->currency->isZero($remainingAmount)) {
+            $availableResidualPerCurrency[$line->company->currency->id] = [
+                'residual' => $remainingAmount,
+                'rate' => 1.0,
+            ];
+        }
+        
+        if (
+            $line->currency->id != $line->company->currency->id
+            && ! $line->currency->isZero($remainingAmountCurrency)
+        ) {
+            $rate = abs($remainingAmountCurrency / $remainingAmount);
+
+            $availableResidualPerCurrency[$line->currency->id] = [
+                'residual' => $remainingAmountCurrency,
+                'rate' => $rate,
+            ];
+        }
+        
+        if (
+            $counterpartCurrency->id != $line->company->currency->id 
+            && $line->currency->id == $line->company->currency->id 
+            && ! $line->company->currency->isZero($remainingAmount)
+        ) {
+            $rate = $getConversionRate($counterpartCurrency, $line);
+
+            $residualInForeign = $counterpartCurrency->round($remainingAmount * $rate);
+            
+            if (! $counterpartCurrency->isZero($residualInForeign)) {
+                $availableResidualPerCurrency[$counterpartCurrency->id] = [
+                    'residual' => $residualInForeign,
+                    'rate' => $rate,
+                ];
+            }
+        }
+        
+        return $availableResidualPerCurrency;
+    }
+
+    protected function checkExchangeDifference($debitValues, $creditValues, bool $debitFullyMatched, bool $creditFullyMatched): ?array
+    {
+        $linesToFix = [];
+        
+        if ($debitFullyMatched && $debitValues) {
+            $companyCurrency = $debitValues['line']->company->currency;
+
+            if (! $companyCurrency->isZero($debitValues['amount_residual'])) {
+                $linesToFix[] = [
+                    'line' => $debitValues['line'],
+                    'amount_residual' => $debitValues['amount_residual'],
+                ];
+            }
+        }
+        
+        if ($creditFullyMatched && $creditValues) {
+            $companyCurrency = $creditValues['line']->company->currency;
+
+            if (! $companyCurrency->isZero($creditValues['amount_residual'])) {
+                $linesToFix[] = [
+                    'line' => $creditValues['line'],
+                    'amount_residual' => $creditValues['amount_residual'],
+                ];
+            }
+        }
+        
+        if (! empty($linesToFix)) {
+            return $this->prepareExchangeDifferenceMoveVals($linesToFix);
+        }
+        
+        return null;
+    }
+
+    protected function prepareExchangeDifferenceMoveVals(array $amountsList): ?array
+    {
+        if (empty($amountsList)) {
+            return null;
+        }
+        
+        $defaultAccountsSettings = new DefaultAccountSettings();
+
+        if (
+            ! $journalId = $defaultAccountsSettings->currency_exchange_journal_id
+            || ! $expenseAccountId = $defaultAccountsSettings->expense_currency_exchange_account_id
+            || ! $incomeAccountId = $defaultAccountsSettings->income_currency_exchange_account_id
+        ) {
+            throw new \Exception('Exchange difference journal and accounts must be configured');
+        }
+        
+        $moveValues = [
+            'move_type' => MoveType::ENTRY,
+            'date' => now()->format('Y-m-d'),
+            'journal_id' => $journalId,
+            'lines' => [],
+        ];
+        
+        $toReconcile = [];
+        
+        $sequence = 0;
+        
+        foreach ($amountsList as $item) {
+            $line = $item['line'];
+
+            $amountResidual = $item['amount_residual'];
+            
+            if ($line->company->currency->isZero($amountResidual)) {
+                continue;
+            }
+            
+            $moveValues['lines'][] = [
+                'name' => 'Currency exchange rate difference',
+                'debit' => $amountResidual < 0 ? abs($amountResidual) : 0,
+                'credit' => $amountResidual > 0 ? $amountResidual : 0,
+                'amount_currency' => 0,
+                'account_id' => $line->account_id,
+                'currency_id' => $line->currency_id,
+                'partner_id' => $line->partner_id,
+            ];
+            
+            $moveValues['lines'][] = [
+                'name' => 'Currency exchange rate difference',
+                'debit' => $amountResidual > 0 ? $amountResidual : 0,
+                'credit' => $amountResidual < 0 ? abs($amountResidual) : 0,
+                'amount_currency' => 0,
+                'account_id' => $amountResidual < 0
+                    ? $incomeAccountId
+                    : $expenseAccountId,
+                'currency_id' => $line->currency_id,
+                'partner_id' => $line->partner_id,
+            ];
+            
+            $toReconcile[] = [
+                'source_line' => $line,
+                'sequence' => $sequence,
+            ];
+            
+            $sequence += 2;
+        }
+        
+        return [
+            'move_values' => $moveValues,
+            'to_reconcile' => $toReconcile,
+        ];
+    }
+
+    protected function createFullReconciles($lines): array
+    {
+        $lines->each->refresh();
+
+        $fullReconciles = [];
+
+        $lines->load([
+            'matchedDebits',
+            'matchedCredits',
+            'company.currency',
+            'currency',
+        ]);
+        
+        $groups = $lines->groupBy(function($line) {
+            return $line->matching_number ?? 'auto_' . $line->id;
+        });
+        
+        foreach ($groups as $groupKey => $groupLines) {
+            $allReconciled = $groupLines->every(fn($line) => 
+                $line->company->currency->isZero($line->amount_residual) 
+                && $line->currency->isZero($line->amount_residual_currency)
+            );
+            
+            if ($allReconciled) {
+                $exchangeLinesToFix = $groupLines
+                    ->filter(fn($line) => 
+                        ! $line->company->currency->isZero($line->amount_residual) 
+                        || ! $line->currency->isZero($line->amount_residual_currency)
+                    )
+                    ->map(fn($line) => [
+                        'line' => $line,
+                        'amount_residual' => ! $line->company->currency->isZero($line->amount_residual)
+                            ? $line->amount_residual
+                            : $line->amount_residual_currency,
+                    ])
+                    ->all();
+                
+                $exchangeMoveId = null;
+
+                if (!empty($exchangeLinesToFix)) {
+                    $exchangeDiffValues = $this->prepareExchangeDifferenceMoveVals($exchangeLinesToFix);
+
+                    if ($exchangeDiffValues) {
+                        $exchangeMoves = $this->createExchangeDifferenceMoves([$exchangeDiffValues]);
+
+                        $exchangeMoveId = $exchangeMoves[0]->id ?? null;
+                    }
+                }
+                
+                $partialReconcileIds = $groupLines
+                    ->flatMap(fn($line) => $line->matchedCredits->pluck('id')->merge($line->matchedDebits->pluck('id')))
+                    ->unique()
+                    ->all();
+                
+                $fullReconcile = FullReconcile::create(['exchange_move_id' => $exchangeMoveId]);
+                
+                PartialReconcile::whereIn('id', $partialReconcileIds)
+                    ->update(['full_reconcile_id' => $fullReconcile->id]);
+                
+                foreach ($groupLines as $line) {
+                    $line->reconciled = true;
+
+                    $line->full_reconcile_id = $fullReconcile->id;
+
+                    $line->matching_number = (string) $fullReconcile->id; 
+
+                    $line->save();
+                }
+                
+                $fullReconciles[] = $fullReconcile;
+            }
+        }
+        
+        return $fullReconciles;
+    }
+    
+    protected function updateMatchingNumbers(array $partials): void
+    {
+        if (empty($partials)) {
+            return;
+        }
+        
+        $lineIds = collect($partials)
+            ->flatMap(fn ($partial) => [$partial->debit_move_id, $partial->credit_move_id])
+            ->unique()
+            ->values();
+        
+        $lines = MoveLine::with(['matchedDebits', 'matchedCredits', 'fullReconcile'])
+            ->whereIn('id', $lineIds)
+            ->get();
+        
+        $allPartials = $lines
+            ->flatMap(fn ($line) => $line->matchedDebits->merge($line->matchedCredits))
+            ->unique('id')
+            ->sortBy('id')
+            ->values();
+        
+        $number2lines = [];
+        $line2number = [];
+        
+        foreach ($allPartials as $partial) {
+            $debitMinId = $line2number[$partial->debit_move_id] ?? null;
+            $creditMinId = $line2number[$partial->credit_move_id] ?? null;
+            
+            if ($debitMinId && $creditMinId) {
+                if ($debitMinId != $creditMinId) {
+                    $minMinId = min($debitMinId, $creditMinId);
+                    $maxMinId = max($debitMinId, $creditMinId);
+                    
+                    foreach ($number2lines[$maxMinId] as $lineId) {
+                        $line2number[$lineId] = $minMinId;
+                    }
+
+                    $number2lines[$minMinId] = array_merge(
+                        $number2lines[$minMinId], 
+                        $number2lines[$maxMinId]
+                    );
+
+                    unset($number2lines[$maxMinId]);
+                }
+            } elseif ($debitMinId) {
+                $number2lines[$debitMinId][] = $partial->credit_move_id;
+                $line2number[$partial->credit_move_id] = $debitMinId;
+            } elseif ($creditMinId) {
+                $number2lines[$creditMinId][] = $partial->debit_move_id;
+                $line2number[$partial->debit_move_id] = $creditMinId;
+            } else {
+                $number2lines[$partial->id] = [$partial->debit_move_id, $partial->credit_move_id];
+                $line2number[$partial->debit_move_id] = $partial->id;
+                $line2number[$partial->credit_move_id] = $partial->id;
+            }
+        }
+        
+        foreach ($lines as $line) {
+            if (isset($line2number[$line->id])) {
+                $matchingNumber = $line2number[$line->id];
+                
+                if ($line->full_reconcile_id) {
+                    $line->matching_number = (string) $line->full_reconcile_id;
+                } else {
+                    $line->matching_number = 'P' . $matchingNumber;
+                }
+            } else {
+                $line->matching_number = null;
+            }
+
+            $line->save();
+        }
+    }
+
+    public function isReconciliationAllowedForLines($lines)
+    {
+        if ($lines->isEmpty()) {
+            return;
+        }
+
+        if ($lines->contains(fn($line) => $line->reconciled)) {
+            throw new \Exception(__("You are trying to reconcile some entries that are already reconciled."));
+        }
+
+        if ($lines->contains(fn($line) => $line->parent_state != MoveState::POSTED)) {
+            throw new \Exception(__("You can only reconcile posted entries."));
+        }
+
+        $accounts = $lines->pluck('account')->unique();
+
+        if ($accounts->count() > 1) {
+            throw new \Exception(__(
+                "Entries are not from the same account: :accounts",
+                ['accounts' => $accounts->pluck('display_name')->implode(', ')]
+            ));
+        }
+        
+        if ($lines->pluck('partner_id')->unique()->count() > 1) {
+            throw new \Exception('All lines must have the same partner');
+        }
+
+        if ($lines->pluck('company')->unique()->count() > 1) {
+            throw new \Exception(__(
+                "Entries don't belong to the same company: :companies",
+                ['companies' => $lines->pluck('company')->pluck('display_name')->implode(', ')]
+            ));
+        }
+
+        $account = $accounts->first();
+
+        if (
+            ! $account->reconcile
+            && ! in_array($account->account_type, [AccountType::ASSET_CASH, AccountType::LIABILITY_CREDIT_CARD])
+        ) {
+            throw new \Exception(__(
+                "Account :account does not allow reconciliation. First change the configuration of this account to allow it.",
+                ['account' => $account->display_name]
+            ));
         }
     }
 }

@@ -173,14 +173,24 @@ class MoveLine extends Model implements Sortable
         return $this->belongsTo(Payment::class);
     }
 
+    public function taxRepartitionLine()
+    {
+        return $this->belongsTo(TaxPartition::class, 'tax_repartition_line_id');
+    }
+
     public function fullReconcile()
     {
         return $this->belongsTo(FullReconcile::class);
     }
 
-    public function taxRepartitionLine()
+    public function matchedDebits()
     {
-        return $this->belongsTo(TaxPartition::class, 'tax_repartition_line_id');
+        return $this->hasMany(PartialReconcile::class, 'credit_move_id');
+    }
+
+    public function matchedCredits()
+    {
+        return $this->hasMany(PartialReconcile::class, 'debit_move_id');
     }
 
     public function getTermKeyAttribute()
@@ -511,9 +521,9 @@ class MoveLine extends Model implements Sortable
         $debitAmountCurrency = 0.0;
 
         if (isset($debit->amount_currency)) {
-            $dp = $debit->decimal_places ?? 2;
+            $decimalPlaces = $debit->decimal_places ?? 2;
 
-            $debitAmountCurrency = round($debit->amount_currency, $dp);
+            $debitAmountCurrency = round($debit->amount_currency, $decimalPlaces);
         }
 
         $creditAmount = $credit->amount ?? 0.0;
@@ -521,12 +531,12 @@ class MoveLine extends Model implements Sortable
         $creditAmountCurrency = 0.0;
 
         if (isset($credit->amount_currency)) {
-            $dp = $credit->decimal_places ?? 2;
+            $decimalPlaces = $credit->decimal_places ?? 2;
 
-            $creditAmountCurrency = round($credit->amount_currency, $dp);
+            $creditAmountCurrency = round($credit->amount_currency, $decimalPlaces);
         }
 
-        $companyCurrency = $this->company_currency ?? $this->company->currency;
+        $companyCurrency = $this->companyCurrency ?? $this->company->currency;
 
         $foreignCurrency = $this->currency ?? $companyCurrency;
 

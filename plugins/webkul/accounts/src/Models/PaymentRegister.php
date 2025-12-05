@@ -11,6 +11,8 @@ use Webkul\Account\Enums\JournalType;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Account\Enums\AccountType;
+use Webkul\Account\Enums\MoveType;
+use Webkul\Account\Enums\DisplayType;
 
 class PaymentRegister extends Model
 {
@@ -195,6 +197,35 @@ class PaymentRegister extends Model
             ->pluck('id')
             ->unique()
             ->toArray();
+    }
+
+    public function computePaymentMethodLineId()
+    {
+        if ($this->journal) {
+            $availablePaymentMethodLines = $this->journal->getAvailablePaymentMethodLines($this->payment_type);
+        } else {
+            $availablePaymentMethodLines = false;
+        }
+
+        if ($availablePaymentMethodLines && $availablePaymentMethodLines->contains($this->payment_method_line_id)) {
+            return;
+        }
+
+        if ($availablePaymentMethodLines) {
+            $movePaymentMethodLines = $this->lines->pluck('move')->pluck('paymentMethodLine')->unique();
+
+            if ($movePaymentMethodLines->count() == 1 && $availablePaymentMethodLines->pluck('id')->contains($movePaymentMethodLines->first()->id)) {
+                $this->paymentMethodLine = $movePaymentMethodLines->first();
+
+                $this->payment_method_line_id = $movePaymentMethodLines->first()->id;
+            } else {
+                $this->paymentMethodLine = $availablePaymentMethodLines->first();
+
+                $this->payment_method_line_id = $availablePaymentMethodLines->first()->id;
+            }
+        } else {
+            $this->payment_method_line_id = null;
+        }
     }
 
     public function computeShowRequirePartnerBank()
@@ -432,11 +463,12 @@ class PaymentRegister extends Model
 
             $lastInstallmentMode = false;
             
+            dd($installments);
             foreach ($installments as $installment) {
                 $line = $installment['line'];
                 
                 if (
-                    $line->display_type == 'payment_term'
+                    $line->display_type == DisplayType::PAYMENT_TERM
                     && in_array($installment['type'], ['overdue', 'next', 'before_date'])
                 ) {
                     if ($installment['type'] == 'overdue') {

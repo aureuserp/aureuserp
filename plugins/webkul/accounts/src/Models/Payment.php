@@ -227,6 +227,10 @@ class Payment extends Model
             $this->state = 'draft';
         }
 
+        if (! $this->move) {
+            return;
+        }
+
         if ($this->state === 'in_process' && $this->outstanding_account_id) {
             [$liquidity] = $this->seekForLines();
 
