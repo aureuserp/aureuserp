@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\TimeOff\Database\Factories;
+namespace Webkul\Payment\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
