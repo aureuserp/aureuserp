@@ -501,7 +501,7 @@ class Payment extends Model
         $validLiquidityAccounts = $this->getValidLiquidityAccounts();
         
         foreach ($this->move->lines as $line) {
-            if ($validLiquidityAccounts->contains($line->account_id)) {
+            if ($validLiquidityAccounts->pluck('id')->contains($line->account_id)) {
                 $lines[0]->push($line);
             } elseif (
                 in_array($line->account->account_type, $validAccountTypes)

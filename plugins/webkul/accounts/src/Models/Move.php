@@ -333,24 +333,24 @@ class Move extends Model implements Sortable
     public function invoiceLines()
     {
         return $this->hasMany(MoveLine::class, 'move_id')
-            ->where('display_type', 'product');
+            ->where('display_type', DisplayType::PRODUCT);
     }
 
     public function taxLines()
     {
         return $this->hasMany(MoveLine::class, 'move_id')
-            ->where('display_type', 'tax');
+            ->where('display_type', DisplayType::TAX);
+    }
+
+    public function paymentTermLines()
+    {
+        return $this->hasMany(MoveLine::class, 'move_id')
+            ->where('display_type', DisplayType::PAYMENT_TERM);
     }
 
     public function matchedPayments()
     {
         return $this->belongsToMany(Tax::class, 'accounts_accounts_move_payment', 'invoice_id', 'payment_id');
-    }
-
-    public function paymentTermLine()
-    {
-        return $this->hasOne(MoveLine::class, 'move_id')
-            ->where('display_type', 'payment_term');
     }
 
     public function isInvoice($includeReceipts = false)

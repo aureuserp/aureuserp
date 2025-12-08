@@ -4,15 +4,14 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Webkul\Account\Enums\AccountType;
+use Webkul\Account\Enums\DisplayType;
+use Webkul\Account\Enums\JournalType;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
-use Webkul\Account\Enums\JournalType;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
-use Webkul\Account\Enums\AccountType;
-use Webkul\Account\Enums\MoveType;
-use Webkul\Account\Enums\DisplayType;
 
 class PaymentRegister extends Model
 {
@@ -113,19 +112,17 @@ class PaymentRegister extends Model
 
             $paymentRegister->computeWriteoffIsExchangeAccount();
 
-            $paymentRegister->computeInstallmentsMode();
-
             $paymentRegister->computeAvailableJournalIds();
 
             $paymentRegister->computeShowRequirePartnerBank();
         });
 
         static::saving(function ($paymentRegister) {
+            // $paymentRegister->computeBatches();
+
             $paymentRegister->computeGroupPayment();
 
             $paymentRegister->computePaymentDifferenceHandling();
-
-            $paymentRegister->computeFromLines();
         });
     }
 
@@ -190,10 +187,62 @@ class PaymentRegister extends Model
         }
     }
 
+    public function computeInstallmentsSwitchValues(): array
+    {
+        if (! $this->journal_id || ! $this->currency_id) {
+            return [
+                'installments_switch_amount' => 0.0,
+                'installments_switch_html'   => null,
+            ];
+        }
+
+        $totalAmountValues = $this->getTotalAmountsToPay($this->batches);
+        $htmlLines = [];
+        $switchAmount = 0.0;
+
+        if ($this->installments_mode === 'full') {
+            if (
+                $this->currency->isZero($totalAmountValues['full_amount'] - $this->amount)
+                && $this->currency->isZero($totalAmountValues['full_amount'] - $totalAmountValues['amount_by_default'])
+            ) {
+                $switchAmount = 0.0;
+            } else {
+                $switchAmount = $totalAmountValues['amount_by_default'];
+                $htmlLines[] = __('This is the full amount.');
+                $htmlLines[] = __('Consider paying in installments instead.');
+            }
+        } elseif ($this->installments_mode === 'overdue') {
+            $switchAmount = $totalAmountValues['full_amount'];
+            $htmlLines[] = __('This is the overdue amount.');
+            $htmlLines[] = __('Consider paying the full amount.');
+        } elseif ($this->installments_mode === 'before_date') {
+            $switchAmount = $totalAmountValues['full_amount'];
+            $nextPaymentDate = $this->getNextPaymentDateInContext();
+            $htmlLines[] = __('Total for the installments before :date.', ['date' => $nextPaymentDate ?? now()->format('Y-m-d')]);
+            $htmlLines[] = __('Consider paying the full amount.');
+        } elseif ($this->installments_mode === 'next') {
+            $switchAmount = $totalAmountValues['full_amount'];
+            $htmlLines[] = __('This is the next unreconciled installment.');
+            $htmlLines[] = __('Consider paying the full amount.');
+        }
+
+        if ($this->custom_user_amount) {
+            $htmlText = null;
+        } else {
+            $htmlText = implode('<br/>', $htmlLines);
+        }
+
+        return [
+            'installments_switch_amount' => $switchAmount,
+            'installments_switch_html'   => $htmlText,
+            'total_amounts'              => $totalAmountValues,
+        ];
+    }
+
     public function computeAvailableJournalIds()
     {
         $this->available_journal_ids = collect($this->batches)
-            ->flatMap(fn($batch) => $this->getBatchAvailableJournals($batch))
+            ->flatMap(fn ($batch) => $this->getBatchAvailableJournals($batch))
             ->pluck('id')
             ->unique()
             ->toArray();
@@ -258,16 +307,16 @@ class PaymentRegister extends Model
             $this->is_single_batch = true;
         } else {
             $companyId = $this->batches
-                ? $batch['lines']->sortBy(fn($line) => count($line->company->parents->pluck('id')))->first()->company_id
+                ? $batch['lines']->sortBy(fn ($line) => count($line->company->parents->pluck('id')))->first()->company_id
                 : null;
 
             $this->fill([
-                'company_id' => $companyId,
-                'partner_id' => null,
-                'partner_type' => null,
-                'payment_type' => $valuesFromBatch['payment_type'],
-                'source_currency_id' => null,
-                'source_amount' => null,
+                'company_id'             => $companyId,
+                'partner_id'             => null,
+                'partner_type'           => null,
+                'payment_type'           => $valuesFromBatch['payment_type'],
+                'source_currency_id'     => null,
+                'source_amount'          => null,
                 'source_amount_currency' => null,
             ]);
 
@@ -289,58 +338,58 @@ class PaymentRegister extends Model
 
         $batches = [];
         $banksPerPartner = [];
-        
+
         foreach ($lines as $line) {
             $batchKey = $this->getLineBatchKey($line);
             $batchKeyString = json_encode($batchKey);
-            
-            if (!isset($batches[$batchKeyString])) {
+
+            if (! isset($batches[$batchKeyString])) {
                 $batches[$batchKeyString] = [
-                    'lines' => collect(),
+                    'lines'          => collect(),
                     'payment_values' => $batchKey,
                 ];
             }
-            
+
             $batches[$batchKeyString]['lines']->push($line);
-            
+
             $partnerId = $batchKey['partner_id'];
             $direction = $line->balance > 0.0 ? 'inbound' : 'outbound';
 
             if (! isset($banksPerPartner[$partnerId])) {
                 $banksPerPartner[$partnerId] = ['inbound' => [], 'outbound' => []];
             }
-            
+
             if (! in_array($batchKey['partner_bank_id'], $banksPerPartner[$partnerId][$direction])) {
                 $banksPerPartner[$partnerId][$direction][] = $batchKey['partner_bank_id'];
             }
         }
 
         $partnerUniqueInbound = collect($banksPerPartner)
-            ->filter(fn($banks) => count($banks['inbound']) == 1)
+            ->filter(fn ($banks) => count($banks['inbound']) == 1)
             ->keys()
             ->all();
 
         $partnerUniqueOutbound = collect($banksPerPartner)
-            ->filter(fn($banks) => count($banks['outbound']) == 1)
+            ->filter(fn ($banks) => count($banks['outbound']) == 1)
             ->keys()
             ->all();
 
         $batchVals = [];
         $seenKeys = [];
         $batchKeys = array_keys($batches);
-        
+
         foreach ($batchKeys as $i => $key) {
             if (in_array($key, $seenKeys)) {
                 continue;
             }
-            
+
             $vals = $batches[$key];
             $lines = $vals['lines'];
             $batchKey = $vals['payment_values'];
-            
+
             $shouldMerge = in_array($batchKey['partner_id'], $partnerUniqueInbound)
                 && in_array($batchKey['partner_id'], $partnerUniqueOutbound);
-            
+
             if ($shouldMerge) {
                 for ($j = $i + 1; $j < count($batchKeys); $j++) {
                     $otherKey = $batchKeys[$j];
@@ -348,23 +397,23 @@ class PaymentRegister extends Model
                     if (in_array($otherKey, $seenKeys)) {
                         continue;
                     }
-                    
+
                     $otherVals = $batches[$otherKey];
 
                     $allMatch = collect($vals['payment_values'])
-                        ->filter(fn($v, $k) => !in_array($k, ['partner_bank_id', 'payment_type']))
-                        ->every(fn($v, $k) => $otherVals['payment_values'][$k] == $v);
-                    
+                        ->filter(fn ($v, $k) => ! in_array($k, ['partner_bank_id', 'payment_type']))
+                        ->every(fn ($v, $k) => $otherVals['payment_values'][$k] == $v);
+
                     if ($allMatch) {
                         $lines = $lines->merge($otherVals['lines']);
                         $seenKeys[] = $otherKey;
                     }
                 }
             }
-            
+
             $balance = $lines->sum('balance');
             $vals['payment_values']['payment_type'] = $balance > 0.0 ? 'inbound' : 'outbound';
-            
+
             if ($shouldMerge) {
                 $partnerBanks = $banksPerPartner[$batchKey['partner_id']];
 
@@ -372,7 +421,7 @@ class PaymentRegister extends Model
 
                 $vals['lines'] = $lines;
             }
-            
+
             $batchVals[] = $vals;
         }
 
@@ -384,11 +433,11 @@ class PaymentRegister extends Model
         $paymentType = $batchResult['payment_values']['payment_type'];
 
         $companyId = $batchResult['lines']->first()->company_id;
-    
-        $paymentMethodRelation = $paymentType == 'inbound' 
-            ? 'inboundPaymentMethodLines' 
+
+        $paymentMethodRelation = $paymentType == 'inbound'
+            ? 'inboundPaymentMethodLines'
             : 'outboundPaymentMethodLines';
-        
+
         return Journal::where('company_id', $companyId)
             ->whereIn('type', [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD])
             ->whereHas($paymentMethodRelation)
@@ -398,9 +447,9 @@ class PaymentRegister extends Model
     public function getLineBatchKey($line)
     {
         return [
-            'partner_id' => $line->partner_id,
-            'account_id' => $line->account_id,
-            'currency_id' => $line->currency_id,
+            'partner_id'      => $line->partner_id,
+            'account_id'      => $line->account_id,
+            'currency_id'     => $line->currency_id,
             'partner_bank_id' => $line->move->isInvoice(true)
                 ? $line->move->partnerBank?->id
                 : null,
@@ -428,12 +477,12 @@ class PaymentRegister extends Model
         }
 
         $company = $batch['lines']
-            ->sortBy(fn($line) => $line->company->parents->count())
+            ->sortBy(fn ($line) => $line->company->parents->count())
             ->first()
             ->company;
 
         return $batch['lines']->first()->partner->bankAccounts
-            ->filter(fn($bankAccount) => ! $bankAccount->company_id || $bankAccount->company_id == $company->id);
+            ->filter(fn ($bankAccount) => ! $bankAccount->company_id || $bankAccount->company_id == $company->id);
     }
 
     public function getTotalAmountsToPay($batchResults)
@@ -450,10 +499,10 @@ class PaymentRegister extends Model
             ->pluck('lines')
             ->flatten()
             ->sortBy([
-                fn($line) => $line->move_id,
-                fn($line) => $line->date_maturity
+                fn ($line) => $line->move_id,
+                fn ($line) => $line->date_maturity,
             ]);
-        
+
         foreach ($allLines->groupBy('move_id') as $lines) {
             $installments = $lines->first()->move->getInstallmentsData(
                 $lines,
@@ -462,11 +511,10 @@ class PaymentRegister extends Model
             );
 
             $lastInstallmentMode = false;
-            
-            dd($installments);
+
             foreach ($installments as $installment) {
                 $line = $installment['line'];
-                
+
                 if (
                     $line->display_type == DisplayType::PAYMENT_TERM
                     && in_array($installment['type'], ['overdue', 'next', 'before_date'])
@@ -479,7 +527,7 @@ class PaymentRegister extends Model
                     } elseif ($installment['type'] == 'next') {
                         if (in_array($lastInstallmentMode, ['next', 'overdue', 'before_date'])) {
                             $amountPerLineFullAmount[] = $installment;
-                        } elseif (!$lastInstallmentMode) {
+                        } elseif (! $lastInstallmentMode) {
                             $amountPerLineCommon[] = $installment;
 
                             $firstInstallmentMode = 'next';
@@ -504,16 +552,16 @@ class PaymentRegister extends Model
         $lines = collect($amountPerLineCommon)->pluck('line');
 
         return [
-            'amount_by_default' => abs($common),
-            'full_amount' => abs($common + $fullAmount),
-            'amount_for_difference' => abs($common),
+            'amount_by_default'          => abs($common),
+            'full_amount'                => abs($common + $fullAmount),
+            'amount_for_difference'      => abs($common),
             'full_amount_for_difference' => abs($common + $fullAmount),
-            'installment_mode' => $firstInstallmentMode,
-            'lines' => $lines,
+            'installment_mode'           => $firstInstallmentMode,
+            'lines'                      => $lines,
         ];
     }
 
-    //TODO: need to pass context
+    // TODO: need to pass context
     public function getNextPaymentDateInContext()
     {
         return $this->payment_date;
@@ -523,34 +571,34 @@ class PaymentRegister extends Model
     {
         $totalPerCurrency = collect($installments)
             ->groupBy('line.currency_id')
-            ->map(fn($group) => [
-                'amount_residual' => $group->sum('amount_residual'),
+            ->map(fn ($group) => [
+                'amount_residual'          => $group->sum('amount_residual'),
                 'amount_residual_currency' => $group->sum('amount_residual_currency'),
             ]);
 
         return $totalPerCurrency->reduce(function ($totalAmount, $amounts, $currency) {
             $amountResidual = $amounts['amount_residual'];
             $amountResidualCurrency = $amounts['amount_residual_currency'];
-            
+
             if ($currency == $this->currency->id) {
                 return $totalAmount + $amountResidualCurrency;
             }
-            
+
             if ($currency != $this->company->currency_id && $this->currency_id == $this->company->currency_id) {
                 return $totalAmount + Currency::find($currency)
                     ->convert(
-                        $amountResidualCurrency, 
-                        $this->company->currency, 
-                        $this->company, 
+                        $amountResidualCurrency,
+                        $this->company->currency,
+                        $this->company,
                         $this->payment_date
                     );
             }
-            
+
             return $totalAmount + Currency::find($this->company->currency_id)
                 ->convert(
-                    $amountResidual, 
-                    $this->currency, 
-                    $this->company, 
+                    $amountResidual,
+                    $this->currency,
+                    $this->company,
                     $this->payment_date
                 );
         }, 0.0);
@@ -560,10 +608,10 @@ class PaymentRegister extends Model
     {
         if ($lines->pluck('move_id')->unique()->count() == 1) {
             $move = $lines->first()->move;
-            
+
             $label = $move->payment_reference ?: ($move->ref ?: $move->name);
         } else {
-            //TODO: need to calculate the Batch sequence number
+            // TODO: need to calculate the Batch sequence number later
             $label = 'Batch';
         }
 
@@ -574,15 +622,15 @@ class PaymentRegister extends Model
     {
         $paymentValues = $batch['payment_values'];
 
-        $company = $batch['lines']->sortBy(fn($line) => count($line->company->parents->pluck('id')))->first()->company;
+        $company = $batch['lines']->sortBy(fn ($line) => count($line->company->parents->pluck('id')))->first()->company;
 
         return [
-            'company_id' => $company->id,
-            'partner_id' => $paymentValues['partner_id'],
-            'partner_type' => $paymentValues['partner_type'],
-            'payment_type' => $paymentValues['payment_type'],
-            'source_currency_id' => $paymentValues['currency_id'],
-            'source_amount' => $sourceAmount = abs($batch['lines']->sum('amount_residual')),
+            'company_id'             => $company->id,
+            'partner_id'             => $paymentValues['partner_id'],
+            'partner_type'           => $paymentValues['partner_type'],
+            'payment_type'           => $paymentValues['payment_type'],
+            'source_currency_id'     => $paymentValues['currency_id'],
+            'source_amount'          => $sourceAmount = abs($batch['lines']->sum('amount_residual')),
             'source_amount_currency' => $paymentValues['currency_id'] == $company->currency_id
                 ? $sourceAmount
                 : abs($batch['lines']->sum('amount_residual_currency')),

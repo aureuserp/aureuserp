@@ -525,8 +525,7 @@ class AccountManager
 
         $neededTerms = $this->prepareNeededTerms($move);
 
-        $existingLines = $move->lines
-            ->where('display_type', DisplayType::PAYMENT_TERM)
+        $existingLines = $move->paymentTermLines
             ->keyBy(fn ($line) => json_encode($line->term_key ?? []));
 
         $neededMapping = collect($neededTerms)->mapWithKeys(function ($data) {
@@ -1058,7 +1057,7 @@ class AccountManager
             }
         }
     }
-    public function reconcile($lines): array
+    public function reconcile($lines)
     {
         $lines->load([
             'account',
@@ -1073,8 +1072,6 @@ class AccountManager
         $this->isReconciliationAllowedForLines($lines);
         
         $this->reconcilePlan([$lines]);
-
-        dd($lines);
     }
 
     protected function reconcilePlan(array $reconciliationPlan): array
@@ -1599,63 +1596,80 @@ class AccountManager
             'currency',
         ]);
         
-        $groups = $lines->groupBy(function($line) {
-            return $line->matching_number ?? 'auto_' . $line->id;
-        });
-        
+        $groups = $lines->groupBy(fn($line) => $line->matching_number ?? 'auto_' . $line->id);
+
         foreach ($groups as $groupKey => $groupLines) {
-            $allReconciled = $groupLines->every(fn($line) => 
+            $groupFullyReconciled = $groupLines->every(fn($line) => 
                 $line->company->currency->isZero($line->amount_residual) 
                 && $line->currency->isZero($line->amount_residual_currency)
             );
             
-            if ($allReconciled) {
-                $exchangeLinesToFix = $groupLines
-                    ->filter(fn($line) => 
-                        ! $line->company->currency->isZero($line->amount_residual) 
-                        || ! $line->currency->isZero($line->amount_residual_currency)
-                    )
-                    ->map(fn($line) => [
-                        'line' => $line,
-                        'amount_residual' => ! $line->company->currency->isZero($line->amount_residual)
-                            ? $line->amount_residual
-                            : $line->amount_residual_currency,
-                    ])
-                    ->all();
-                
-                $exchangeMoveId = null;
+            if (! $groupFullyReconciled) {
+                continue;
+            }
 
-                if (!empty($exchangeLinesToFix)) {
-                    $exchangeDiffValues = $this->prepareExchangeDifferenceMoveVals($exchangeLinesToFix);
+            $invoiceMoves = $groupLines->pluck('move')
+                ->filter(fn($move) => $move->isInvoice(true))
+                ->unique();
+        
+            $allInvoiceLinesReconciled = $invoiceMoves->every(function($move) {
+                return $move->paymentTermLines->every(fn($line) => 
+                    $line->company->currency->isZero($line->amount_residual)
+                    && $line->currency->isZero($line->amount_residual_currency)
+                );
+            });
+            
+            $exchangeLinesToFix = $groupLines
+                ->filter(fn($line) => 
+                    ! $line->company->currency->isZero($line->amount_residual) 
+                    || ! $line->currency->isZero($line->amount_residual_currency)
+                )
+                ->map(fn($line) => [
+                    'line' => $line,
+                    'amount_residual' => ! $line->company->currency->isZero($line->amount_residual)
+                        ? $line->amount_residual
+                        : $line->amount_residual_currency,
+                ])
+                ->all();
+            
+            $exchangeMoveId = null;
 
-                    if ($exchangeDiffValues) {
-                        $exchangeMoves = $this->createExchangeDifferenceMoves([$exchangeDiffValues]);
+            if (! empty($exchangeLinesToFix)) {
+                $exchangeDiffValues = $this->prepareExchangeDifferenceMoveVals($exchangeLinesToFix);
 
-                        $exchangeMoveId = $exchangeMoves[0]->id ?? null;
-                    }
+                if ($exchangeDiffValues) {
+                    $exchangeMoves = $this->createExchangeDifferenceMoves([$exchangeDiffValues]);
+
+                    $exchangeMoveId = $exchangeMoves[0]->id ?? null;
                 }
-                
-                $partialReconcileIds = $groupLines
-                    ->flatMap(fn($line) => $line->matchedCredits->pluck('id')->merge($line->matchedDebits->pluck('id')))
-                    ->unique()
-                    ->all();
-                
+            }
+            
+            $partialReconcileIds = $groupLines
+                ->flatMap(fn($line) => $line->matchedCredits->pluck('id')->merge($line->matchedDebits->pluck('id')))
+                ->unique()
+                ->all();
+            
+            $fullReconcile = null;
+
+            if ($allInvoiceLinesReconciled) {
                 $fullReconcile = FullReconcile::create(['exchange_move_id' => $exchangeMoveId]);
-                
+            
                 PartialReconcile::whereIn('id', $partialReconcileIds)
                     ->update(['full_reconcile_id' => $fullReconcile->id]);
-                
-                foreach ($groupLines as $line) {
-                    $line->reconciled = true;
+            
+                $fullReconciles[] = $fullReconcile;
+            }
+            
+            foreach ($groupLines as $line) {
+                $line->reconciled = true;
 
+                if ($fullReconcile) {
                     $line->full_reconcile_id = $fullReconcile->id;
 
-                    $line->matching_number = (string) $fullReconcile->id; 
-
-                    $line->save();
+                    $line->matching_number = (string) $fullReconcile->id;
                 }
-                
-                $fullReconciles[] = $fullReconcile;
+
+                $line->save();
             }
         }
         
@@ -1734,6 +1748,11 @@ class AccountManager
 
             $line->save();
         }
+    }
+
+    //TODO: Implement this method
+    public function createExchangeDifferenceMoves(array $exchangeValuesList): array
+    {
     }
 
     public function isReconciliationAllowedForLines($lines)

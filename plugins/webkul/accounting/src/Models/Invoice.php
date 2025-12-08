@@ -7,9 +7,9 @@ use Webkul\Account\Models\MoveLine;
 
 class Invoice extends BaseMove
 {
-    public function paymentTermLine()
+    public function paymentTermLines()
     {
-        return $this->hasOne(MoveLine::class, 'move_id')
+        return $this->hasMany(MoveLine::class, 'move_id')
             ->where('display_type', 'payment_term');
     }
 

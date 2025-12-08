@@ -4,18 +4,21 @@ namespace Webkul\Account\Filament\Resources\InvoiceResource\Actions;
 
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Group;
-use Filament\Schemas\Schema;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
+use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\PaymentRegister;
 use Webkul\Accounting\Models\Journal;
+use Webkul\Account\Facades\Account as AccountFacade;
 
 class PayAction extends Action
 {
@@ -31,18 +34,28 @@ class PayAction extends Action
         $this
             ->label(__('accounts::filament/resources/invoice/actions/pay-action.title'))
             ->color('success')
-            ->modal(fn () => new PaymentRegister())
+            ->modal(fn () => new PaymentRegister)
             ->schema(function (Schema $schema) {
                 $paymentRegister = (new PaymentRegister);
 
                 $paymentRegister->lines = $this->getRecord()->lines;
                 $paymentRegister->company = $this->getRecord()->company;
                 $paymentRegister->currency = $this->getRecord()->currency;
+                $paymentRegister->currency_id = $this->getRecord()->currency_id;
                 $paymentRegister->payment_type = $this->getRecord()->isSaleDocument(true)
                     ? 'inbound'
                     : 'outbound';
                 $paymentRegister->computeBatches();
                 $paymentRegister->computeAvailableJournalIds();
+                $paymentRegister->journal_id = $paymentRegister->available_journal_ids[0] ?? null;
+                $paymentRegister->journal = Journal::find($paymentRegister->journal_id);
+
+                // Compute payment method line
+                $paymentRegister->computePaymentMethodLineId();
+
+                $amountsToPay = $paymentRegister->getTotalAmountsToPay($paymentRegister->batches);
+                $paymentRegister->amount = $amountsToPay['amount_by_default'];
+                $paymentRegister->computeInstallmentsMode();
 
                 return $schema->components([
                     Group::make()
@@ -58,8 +71,13 @@ class PayAction extends Action
                                 ->preload()
                                 ->required()
                                 ->live()
-                                ->default(fn() => $paymentRegister->available_journal_ids[0] ?? null)
-                                ->afterStateUpdated(function (Set $set, Get $get) {
+                                ->default(fn () => $paymentRegister->available_journal_ids[0] ?? null)
+                                ->afterStateUpdated(function (Set $set, Get $get) use ($paymentRegister) {
+                                    $paymentRegister->journal_id = $get('journal_id');
+                                    $paymentRegister->journal = Journal::find($get('journal_id'));
+                                    $paymentRegister->computePaymentMethodLineId();
+
+                                    $set('payment_method_line_id', $paymentRegister->payment_method_line_id);
                                     $set('partner_bank_id', null);
                                 }),
 
@@ -68,6 +86,8 @@ class PayAction extends Action
                                 ->required()
                                 ->searchable()
                                 ->preload()
+                                ->live()
+                                ->default($paymentRegister->payment_method_line_id)
                                 ->relationship(
                                     name: 'paymentMethodLine',
                                     titleAttribute: 'name',
@@ -86,7 +106,13 @@ class PayAction extends Action
 
                                         $query->whereIn('id', $paymentMethodLineIds);
                                     }
-                                ),
+                                )
+                                ->afterStateUpdated(function (Set $set, Get $get) use ($paymentRegister) {
+                                    $paymentRegister->payment_method_line_id = $get('payment_method_line_id');
+                                    $paymentRegister->paymentMethodLine = \Webkul\Account\Models\PaymentMethodLine::find($get('payment_method_line_id'));
+                                    $paymentRegister->journal = Journal::find($get('journal_id'));
+                                    $paymentRegister->computeShowRequirePartnerBank();
+                                }),
                             Select::make('partner_bank_id')
                                 ->relationship(
                                     'partnerBank',
@@ -101,8 +127,26 @@ class PayAction extends Action
                                 })
                                 ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.partner-bank-account'))
                                 ->searchable()
-                                ->required()
                                 ->preload()
+                                ->required(function (Get $get) use ($paymentRegister) {
+                                    $journal = Journal::find($get('journal_id'));
+
+                                    if (! $journal) {
+                                        return false;
+                                    }
+
+                                    $paymentRegister->journal = $journal;
+                                    $paymentRegister->payment_method_line_id = $get('payment_method_line_id');
+                                    $paymentRegister->paymentMethodLine = \Webkul\Account\Models\PaymentMethodLine::find($get('payment_method_line_id'));
+
+                                    if (! $paymentRegister->paymentMethodLine) {
+                                        return false;
+                                    }
+
+                                    $paymentRegister->computeShowRequirePartnerBank();
+
+                                    return $paymentRegister->require_partner_bank_account && $paymentRegister->show_partner_bank_account;
+                                })
                                 ->visible(function (Get $get) use ($paymentRegister) {
                                     $journal = Journal::find($get('journal_id'));
 
@@ -111,7 +155,13 @@ class PayAction extends Action
                                     }
 
                                     $paymentRegister->journal = $journal;
-                                    $paymentRegister->computePaymentMethodLineId();
+                                    $paymentRegister->payment_method_line_id = $get('payment_method_line_id');
+                                    $paymentRegister->paymentMethodLine = \Webkul\Account\Models\PaymentMethodLine::find($get('payment_method_line_id'));
+
+                                    if (! $paymentRegister->paymentMethodLine) {
+                                        return false;
+                                    }
+
                                     $paymentRegister->computeShowRequirePartnerBank();
 
                                     return $paymentRegister->show_partner_bank_account;
@@ -124,10 +174,16 @@ class PayAction extends Action
                                     }
 
                                     $paymentRegister->journal = $journal;
+                                    $paymentRegister->payment_method_line_id = $get('payment_method_line_id');
+                                    $paymentRegister->paymentMethodLine = \Webkul\Account\Models\PaymentMethodLine::find($get('payment_method_line_id'));
+
+                                    if (! $paymentRegister->paymentMethodLine) {
+                                        return true;
+                                    }
+
                                     $paymentRegister->computeShowRequirePartnerBank();
 
                                     return ! $paymentRegister->require_partner_bank_account;
-
                                 }),
                         ]),
 
@@ -135,17 +191,51 @@ class PayAction extends Action
                         ->schema([
                             Group::make()
                                 ->schema([
+                                    Hidden::make('installments_mode')
+                                        ->default($paymentRegister->installments_mode),
                                     TextInput::make('amount')
                                         ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.amount'))
-                                        ->prefix(fn($record) => $record->currency->symbol ?? '')
-                                        // ->formatStateUsing(fn($record) => number_format($record->lines->sum('price_total'), 2, '.', ''))
-                                        // ->dehydrateStateUsing(fn($state) => (float) str_replace(',', '', $state))
-                                        ->default(function ($record) use($paymentRegister) {
-                                            $result = $paymentRegister->getTotalAmountsToPay($paymentRegister->batches);
-
-                                            dd($result);
+                                        ->prefix(fn ($record) => $record->currency->symbol ?? '')
+                                        ->default($paymentRegister->amount)
+                                        ->required()
+                                        ->live(onBlur: true)
+                                        ->afterStateUpdated(function (Set $set, $state) use ($paymentRegister) {
+                                            $paymentRegister->amount = $state;
+                                            $paymentRegister->computeInstallmentsMode();
+                                            $set('installments_mode', $paymentRegister->installments_mode);
                                         })
-                                        ->required(),
+                                        ->helperText(function (Get $get) use ($paymentRegister) {
+                                            $paymentRegister->amount = $get('amount') ?? $paymentRegister->amount;
+                                            $paymentRegister->installments_mode = $get('installments_mode') ?? $paymentRegister->installments_mode;
+
+                                            $switchValues = $paymentRegister->computeInstallmentsSwitchValues();
+
+                                            if (! $switchValues['installments_switch_html']) {
+                                                return null;
+                                            }
+
+                                            return new \Illuminate\Support\HtmlString($switchValues['installments_switch_html']);
+                                        })
+                                        ->hintAction(
+                                            Action::make('toggleInstallments')
+                                                ->label(function (Get $get) use ($paymentRegister) {
+                                                    $installmentsMode = $get('installments_mode') ?? $paymentRegister->installments_mode;
+
+                                                    return $installmentsMode === 'full' ? 'installments' : 'full amount';
+                                                })
+                                                ->link()
+                                                ->action(function (Set $set, Get $get) use ($paymentRegister) {
+                                                    $switchValues = $paymentRegister->computeInstallmentsSwitchValues();
+
+                                                    if ($switchValues['installments_switch_amount'] > 0) {
+                                                        $paymentRegister->amount = $switchValues['installments_switch_amount'];
+                                                        $paymentRegister->computeInstallmentsMode();
+
+                                                        $set('amount', $paymentRegister->amount);
+                                                        $set('installments_mode', $paymentRegister->installments_mode);
+                                                    }
+                                                })
+                                        ),
                                     Select::make('currency_id')
                                         ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.currency'))
                                         ->relationship(
@@ -179,19 +269,34 @@ class PayAction extends Action
                                     return $record->name;
                                 })
                                 ->required(),
-                        ])
+                        ]),
                 ])
-                ->columns(2);
+                    ->columns(2);
             })
             ->action(function (Move $record, $data): void {
-                dd($data);
+                $lineIds = $record->paymentTermLines
+                    ->filter(fn($line) => ! $line->reconciled)
+                    ->pluck('id')
+                    ->toArray();
+
+                $paymentRegister = PaymentRegister::create($data);
+
+                $paymentRegister->lines()->sync($lineIds);
+
+                $paymentRegister->refresh();
+
+                $paymentRegister->computeFromLines();
+
+                $paymentRegister->save();
+
+                AccountFacade::createPayments($paymentRegister);
             })
             ->hidden(function (Move $record) {
                 return $record->state != MoveState::POSTED
                     || ! in_array($record->payment_state, [
                         PaymentState::NOT_PAID,
                         PaymentState::PARTIAL,
-                        PaymentState::IN_PAYMENT
+                        PaymentState::IN_PAYMENT,
                     ]);
             });
     }
