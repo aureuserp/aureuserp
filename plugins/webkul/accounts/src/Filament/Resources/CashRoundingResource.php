@@ -46,10 +46,12 @@ class CashRoundingResource extends Resource
                                 TextInput::make('rounding')
                                     ->label(__('accounts::filament/resources/cash-rounding.form.fields.rounding-precision'))
                                     ->required()
-                                    ->numeric()
                                     ->default(0.01)
-                                    ->minValue(0)
-                                    ->maxValue(99999999999),
+                                    ->rules([
+                                        'numeric',
+                                        'min:0',
+                                        'max:99999999999',
+                                    ]),
                                 Select::make('strategy')
                                     ->options(RoundingStrategy::class)
                                     ->default(RoundingStrategy::BIGGEST_TAX->value)
