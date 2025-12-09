@@ -5,8 +5,6 @@ namespace Webkul\Account\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Enums\JournalType;
@@ -139,9 +137,9 @@ class Journal extends Model implements Sortable
         static::saving(function ($journal) {
             $journal->computeSuspenseAccountId();
 
-            $journal->syncInboundPaymentMethodLines();
+            // $journal->syncInboundPaymentMethodLines();
 
-            $journal->syncOutboundPaymentMethodLines();
+            // $journal->syncOutboundPaymentMethodLines();
         });
     }
 

@@ -9,7 +9,6 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\ColorEntry;
@@ -36,8 +35,11 @@ use Webkul\Account\Filament\Resources\JournalResource\Pages\CreateJournal;
 use Webkul\Account\Filament\Resources\JournalResource\Pages\EditJournal;
 use Webkul\Account\Filament\Resources\JournalResource\Pages\ListJournals;
 use Webkul\Account\Filament\Resources\JournalResource\Pages\ViewJournal;
-use Webkul\Account\Filament\Resources\JournalResource\RelationManagers;
 use Webkul\Account\Models\Journal;
+use Webkul\Support\Filament\Forms\Components\Repeater;
+use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
+use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
+use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
 
 class JournalResource extends Resource
 {
@@ -160,31 +162,108 @@ class JournalResource extends Resource
                                                     ]),
                                             ]),
                                         Tab::make(__('accounts::filament/resources/journal.form.tabs.incoming-payments.title'))
-                                            ->visible(function (Get $get) {
-                                                return in_array($get('type'), [
-                                                    JournalType::BANK,
-                                                    JournalType::CASH,
-                                                    JournalType::CREDIT_CARD,
-                                                ]);
-                                            })
+                                            ->visible(fn (Get $get) => in_array($get('type'), [
+                                                JournalType::BANK,
+                                                JournalType::CASH,
+                                                JournalType::CREDIT_CARD,
+                                            ]))
                                             ->schema([
-                                                Textarea::make('relation_notes')
-                                                    ->label(__('accounts::filament/resources/journal.form.tabs.incoming-payments.fields.relation-notes'))
-                                                    ->placeholder(__('accounts::filament/resources/journal.form.tabs.incoming-payments.fields.relation-notes-placeholder')),
+                                                Repeater::make('inboundPaymentMethodLines')
+                                                    ->hiddenLabel()
+                                                    ->relationship('inboundPaymentMethodLines')
+                                                    ->compact()
+                                                    ->reactive()
+                                                    ->addActionLabel(__('Add Inbound Payment Method'))
+                                                    ->table([
+                                                        TableColumn::make('payment_method_id')
+                                                            ->label(__('Payment Method'))
+                                                            ->width(200),
+
+                                                        TableColumn::make('payment_account_id')
+                                                            ->label(__('Outstanding Receipts Accounts'))
+                                                            ->width(200),
+
+                                                        TableColumn::make('name')
+                                                            ->label(__('Display Name'))
+                                                            ->width(200),
+                                                    ])
+                                                    ->schema([
+                                                        Select::make('payment_method_id')
+                                                            ->label(__('Payment Method'))
+                                                            ->relationship(
+                                                                name: 'paymentMethod',
+                                                                titleAttribute: 'name',
+                                                                modifyQueryUsing: fn ($query) => $query->where('payment_type', 'inbound')
+                                                            )
+                                                            ->searchable()
+                                                            ->preload()
+                                                            ->required(),
+
+                                                        Select::make('payment_account_id')
+                                                            ->label(__('Outstanding Receipts Accounts'))
+                                                            ->relationship('paymentAccount', 'name')
+                                                            ->searchable()
+                                                            ->preload()
+                                                            ->required(),
+
+                                                        TextInput::make('name')
+                                                            ->label(__('Display Name'))
+                                                            ->maxLength(255)
+                                                            ->required(),
+                                                    ])
+                                                    ->columns(2),
                                             ]),
                                         Tab::make(__('accounts::filament/resources/journal.form.tabs.outgoing-payments.title'))
-                                            ->visible(function (Get $get) {
-                                                return in_array($get('type'), [
-                                                    JournalType::BANK,
-                                                    JournalType::CASH,
-                                                    JournalType::CREDIT_CARD,
-                                                ]);
-                                            })
+                                            ->visible(fn (Get $get) => in_array($get('type'), [
+                                                JournalType::BANK,
+                                                JournalType::CASH,
+                                                JournalType::CREDIT_CARD,
+                                            ]))
                                             ->schema([
-                                                Textarea::make('relation_notes')
-                                                    ->label('Relation Notes')
-                                                    ->label(__('accounts::filament/resources/journal.form.tabs.outgoing-payments.fields.relation-notes'))
-                                                    ->label(__('accounts::filament/resources/journal.form.tabs.outgoing-payments.fields.relation-notes-placeholder')),
+                                                Repeater::make('outboundPaymentMethodLines')
+                                                    ->hiddenLabel()
+                                                    ->relationship('outboundPaymentMethodLines')
+                                                    ->compact()
+                                                    ->reactive()
+                                                    ->addActionLabel(__('Add Outbound Payment Method'))
+                                                    ->table([
+                                                        TableColumn::make('payment_method_id')
+                                                            ->label(__('Payment Method'))
+                                                            ->width(200),
+
+                                                        TableColumn::make('payment_account_id')
+                                                            ->label(__('Outstanding Payments Accounts'))
+                                                            ->width(200),
+
+                                                        TableColumn::make('name')
+                                                            ->label(__('Display Name'))
+                                                            ->width(200),
+                                                    ])
+                                                    ->schema([
+                                                        Select::make('payment_method_id')
+                                                            ->label(__('Payment Method'))
+                                                            ->relationship(
+                                                                name: 'paymentMethod',
+                                                                titleAttribute: 'name',
+                                                                modifyQueryUsing: fn ($query) => $query->where('payment_type', 'outbound')
+                                                            )
+                                                            ->searchable()
+                                                            ->preload()
+                                                            ->required(),
+
+                                                        Select::make('payment_account_id')
+                                                            ->label(__('Payment Account'))
+                                                            ->relationship('paymentAccount', 'name')
+                                                            ->searchable()
+                                                            ->preload()
+                                                            ->required(),
+
+                                                        TextInput::make('name')
+                                                            ->label(__('Display Name'))
+                                                            ->maxLength(255)
+                                                            ->required(),
+                                                    ])
+                                                    ->columns(2),
                                             ]),
                                         Tab::make(__('accounts::filament/resources/journal.form.tabs.advanced-settings.title'))
                                             ->schema([
@@ -372,21 +451,74 @@ class JournalResource extends Resource
                                                             ->label(__('accounts::filament/resources/journal.infolist.tabs.journal-entries.field-set.bank-account.entries.account-number')),
                                                     ]),
                                             ]),
-                                        Tab::make(__('accounts::filament/resources/journal.infolist.tabs.incoming-payments.title'))
-                                            ->visible(fn ($record) => in_array($record->type, [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD]))
+                                        Tab::make(__('accounts::filament/resources/journal.form.tabs.incoming-payments.title'))
+                                            ->visible(fn (Get $get) => in_array($get('type'), [
+                                                JournalType::BANK,
+                                                JournalType::CASH,
+                                                JournalType::CREDIT_CARD,
+                                            ]))
                                             ->schema([
-                                                TextEntry::make('relation_notes')
-                                                    ->placeholder('-')
-                                                    ->label(__('accounts::filament/resources/journal.infolist.tabs.incoming-payments.entries.relation-notes'))
-                                                    ->markdown(),
+                                                RepeatableEntry::make('inboundPaymentMethodLines')
+                                                    ->hiddenLabel()
+                                                    ->table([
+                                                        InfolistTableColumn::make('paymentMethod.name')
+                                                            ->alignCenter()
+                                                            ->label(__('Payment Method')),
+
+                                                        InfolistTableColumn::make('paymentAccount.name')
+                                                            ->alignCenter()
+                                                            ->label(__('Outstanding Receipts Account')),
+
+                                                        InfolistTableColumn::make('name')
+                                                            ->alignCenter()
+                                                            ->label(__('Display Name')),
+                                                    ])
+                                                    ->schema([
+                                                        TextEntry::make('paymentMethod.name')
+                                                            ->label(__('Payment Method')),
+
+                                                        TextEntry::make('paymentAccount.name')
+                                                            ->label(__('Outstanding Receipts Account')),
+
+                                                        TextEntry::make('name')
+                                                            ->label(__('Display Name'))
+                                                            ->placeholder('-'),
+                                                    ]),
                                             ]),
-                                        Tab::make(__('accounts::filament/resources/journal.infolist.tabs.outgoing-payments.title'))
-                                            ->visible(fn ($record) => in_array($record->type, [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD]))
+                                        Tab::make(__('accounts::filament/resources/journal.form.tabs.outgoing-payments.title'))
+                                            ->visible(fn (Get $get) => in_array($get('type'), [
+                                                JournalType::BANK,
+                                                JournalType::CASH,
+                                                JournalType::CREDIT_CARD,
+                                            ]))
                                             ->schema([
-                                                TextEntry::make('relation_notes')
-                                                    ->placeholder('-')
-                                                    ->label(__('accounts::filament/resources/journal.infolist.tabs.outgoing-payments.entries.relation-notes'))
-                                                    ->markdown(),
+                                                RepeatableEntry::make('outboundPaymentMethodLines')
+                                                    ->hiddenLabel()
+                                                    ->live()
+                                                    ->table([
+                                                        InfolistTableColumn::make('paymentMethod.name')
+                                                            ->alignCenter()
+                                                            ->label(__('Payment Method')),
+
+                                                        InfolistTableColumn::make('paymentAccount.name')
+                                                            ->alignCenter()
+                                                            ->label(__('Outstanding Payments Account')),
+
+                                                        InfolistTableColumn::make('name')
+                                                            ->alignCenter()
+                                                            ->label(__('Display Name')),
+                                                    ])
+                                                    ->schema([
+                                                        TextEntry::make('paymentMethod.name')
+                                                            ->label(__('Payment Method')),
+
+                                                        TextEntry::make('paymentAccount.name')
+                                                            ->label(__('Payment Account')),
+
+                                                        TextEntry::make('name')
+                                                            ->label(__('Display Name'))
+                                                            ->placeholder('-'),
+                                                    ]),
                                             ]),
                                         Tab::make(__('accounts::filament/resources/journal.infolist.tabs.advanced-settings.title'))
                                             ->schema([
@@ -438,9 +570,7 @@ class JournalResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            RelationManagers\MovesRelationManager::class,
-        ];
+        return [];
     }
 
     public static function getPages(): array
