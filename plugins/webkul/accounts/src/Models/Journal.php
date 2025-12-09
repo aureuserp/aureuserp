@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Enums\JournalType;
+use Webkul\Account\Settings\DefaultAccountSettings;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
-use Webkul\Account\Settings\DefaultAccountSettings;
 use Webkul\Support\Models\Currency;
 
 class Journal extends Model implements Sortable
@@ -136,10 +136,6 @@ class Journal extends Model implements Sortable
 
         static::saving(function ($journal) {
             $journal->computeSuspenseAccountId();
-
-            // $journal->syncInboundPaymentMethodLines();
-
-            // $journal->syncOutboundPaymentMethodLines();
         });
     }
 
@@ -156,41 +152,39 @@ class Journal extends Model implements Sortable
         }
     }
 
-    public function syncInboundPaymentMethodLines()
+    /**
+     * Get default inbound payment method lines data
+     */
+    public static function getDefaultInboundPaymentMethodLines(): array
     {
-        $this->inboundPaymentMethodLines()->delete();
+        $defaultMethods = PaymentMethod::where('code', 'manual')
+            ->where('payment_type', 'inbound')
+            ->get();
 
-        if (in_array($this->type, [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD])) {
-            $defaultMethods = PaymentMethod::where('code', 'manual')
-                ->where('payment_type', 'inbound')
-                ->get();
-
-            foreach ($defaultMethods as $method) {
-                $this->inboundPaymentMethodLines()->updateOrCreate([
-                    'payment_method_id' => $method->id,
-                ], [
-                    'name' => $method->name,
-                ]);
-            }
-        }
+        return $defaultMethods->map(function ($method) {
+            return [
+                'payment_method_id'  => $method->id,
+                'name'               => $method->name,
+                'payment_account_id' => null,
+            ];
+        })->toArray();
     }
 
-    public function syncOutboundPaymentMethodLines()
+    /**
+     * Get default outbound payment method lines data
+     */
+    public static function getDefaultOutboundPaymentMethodLines(): array
     {
-        $this->outboundPaymentMethodLines()->delete();
+        $defaultMethods = PaymentMethod::where('code', 'manual')
+            ->where('payment_type', 'outbound')
+            ->get();
 
-        if (in_array($this->type, [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD])) {
-            $defaultMethods = PaymentMethod::where('code', 'manual')
-                ->where('payment_type', 'outbound')
-                ->get();
-
-            foreach ($defaultMethods as $method) {
-                $this->outboundPaymentMethodLines()->updateOrCreate([
-                    'payment_method_id' => $method->id,
-                ], [
-                    'name' => $method->name,
-                ]);
-            }
-        }
+        return $defaultMethods->map(function ($method) {
+            return [
+                'payment_method_id'  => $method->id,
+                'name'               => $method->name,
+                'payment_account_id' => null,
+            ];
+        })->toArray();
     }
 }

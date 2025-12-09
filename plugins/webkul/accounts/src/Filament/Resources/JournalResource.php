@@ -23,6 +23,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -84,11 +85,21 @@ class JournalResource extends Resource
                                                                     ->label(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.accounting-information.fields.currency'))
                                                                     ->relationship('currency', 'name')
                                                                     ->preload()
-                                                                    ->searchable(),
+                                                                    ->searchable()
+                                                                    ->live()
+                                                                    ->afterStateUpdated(function (Set $set, Get $get) {
+                                                                        $journalType = $get('type');
+
+                                                                        if (! in_array($journalType, [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD])) {
+                                                                            return;
+                                                                        }
+
+                                                                        $set('inboundPaymentMethodLines', Journal::getDefaultInboundPaymentMethodLines());
+                                                                        $set('outboundPaymentMethodLines', Journal::getDefaultOutboundPaymentMethodLines());
+                                                                    }),
                                                                 ColorPicker::make('color')
                                                                     ->label(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.accounting-information.fields.color'))
                                                                     ->hexColor(),
-                                                                // Inside Fieldset::make('Accounting Information') -> schema([...])
                                                                 Select::make('default_account_id')
                                                                     ->label(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.accounting-information.fields.default-account'))
                                                                     ->relationship('defaultAccount', 'name')
@@ -179,12 +190,12 @@ class JournalResource extends Resource
                                                             ->label(__('Payment Method'))
                                                             ->width(200),
 
-                                                        TableColumn::make('payment_account_id')
-                                                            ->label(__('Outstanding Receipts Accounts'))
-                                                            ->width(200),
-
                                                         TableColumn::make('name')
                                                             ->label(__('Display Name'))
+                                                            ->width(200),
+
+                                                        TableColumn::make('payment_account_id')
+                                                            ->label(__('Outstanding Receipts Accounts'))
                                                             ->width(200),
                                                     ])
                                                     ->schema([
@@ -203,8 +214,7 @@ class JournalResource extends Resource
                                                             ->label(__('Outstanding Receipts Accounts'))
                                                             ->relationship('paymentAccount', 'name')
                                                             ->searchable()
-                                                            ->preload()
-                                                            ->required(),
+                                                            ->preload(),
 
                                                         TextInput::make('name')
                                                             ->label(__('Display Name'))
@@ -231,12 +241,12 @@ class JournalResource extends Resource
                                                             ->label(__('Payment Method'))
                                                             ->width(200),
 
-                                                        TableColumn::make('payment_account_id')
-                                                            ->label(__('Outstanding Payments Accounts'))
-                                                            ->width(200),
-
                                                         TableColumn::make('name')
                                                             ->label(__('Display Name'))
+                                                            ->width(200),
+
+                                                        TableColumn::make('payment_account_id')
+                                                            ->label(__('Outstanding Payments Accounts'))
                                                             ->width(200),
                                                     ])
                                                     ->schema([
@@ -251,17 +261,16 @@ class JournalResource extends Resource
                                                             ->preload()
                                                             ->required(),
 
-                                                        Select::make('payment_account_id')
-                                                            ->label(__('Payment Account'))
-                                                            ->relationship('paymentAccount', 'name')
-                                                            ->searchable()
-                                                            ->preload()
-                                                            ->required(),
-
                                                         TextInput::make('name')
                                                             ->label(__('Display Name'))
                                                             ->maxLength(255)
                                                             ->required(),
+
+                                                        Select::make('payment_account_id')
+                                                            ->label(__('Payment Account'))
+                                                            ->relationship('paymentAccount', 'name')
+                                                            ->searchable()
+                                                            ->preload(),
                                                     ])
                                                     ->columns(2),
                                             ]),
@@ -308,7 +317,16 @@ class JournalResource extends Resource
                                                     ->label(__('accounts::filament/resources/journal.form.general.fields.type'))
                                                     ->options(JournalType::class)
                                                     ->required()
-                                                    ->live(),
+                                                    ->live()
+                                                    ->afterStateUpdated(function ($state, Set $set) {
+                                                        if (in_array($state, [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD])) {
+                                                            $set('inboundPaymentMethodLines', Journal::getDefaultInboundPaymentMethodLines());
+                                                            $set('outboundPaymentMethodLines', Journal::getDefaultOutboundPaymentMethodLines());
+                                                        } else {
+                                                            $set('inboundPaymentMethodLines', []);
+                                                            $set('outboundPaymentMethodLines', []);
+                                                        }
+                                                    }),
                                                 Select::make('company_id')
                                                     ->label(__('accounts::filament/resources/journal.form.general.fields.company'))
                                                     ->disabled()
