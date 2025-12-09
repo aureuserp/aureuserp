@@ -13,6 +13,7 @@ use Webkul\Account\Enums\JournalType;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Webkul\Account\Settings\DefaultAccountSettings;
 use Webkul\Support\Models\Currency;
 
 class Journal extends Model implements Sortable
@@ -135,11 +136,26 @@ class Journal extends Model implements Sortable
     {
         parent::boot();
 
-        static::saving(function ($move) {
-            $move->syncInboundPaymentMethodLines();
+        static::saving(function ($journal) {
+            $journal->computeSuspenseAccountId();
 
-            $move->syncOutboundPaymentMethodLines();
+            $journal->syncInboundPaymentMethodLines();
+
+            $journal->syncOutboundPaymentMethodLines();
         });
+    }
+
+    public function computeSuspenseAccountId()
+    {
+        if (! in_array($this->type, [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD])) {
+            $this->suspense_account_id = null;
+        } elseif ($this->suspense_account_id) {
+            $this->suspense_account_id = $this->suspense_account_id;
+        } elseif ($accountId = (new DefaultAccountSettings)->account_journal_suspense_account_id) {
+            $this->suspense_account_id = $accountId;
+        } else {
+            $this->suspense_account_id = null;
+        }
     }
 
     public function syncInboundPaymentMethodLines()

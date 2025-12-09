@@ -28,6 +28,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\CommunicationStandard;
 use Webkul\Account\Enums\CommunicationType;
 use Webkul\Account\Enums\JournalType;
@@ -95,7 +96,11 @@ class JournalResource extends Resource
 
                                                                 Select::make('profit_account_id')
                                                                     ->label(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.accounting-information.fields.profit-account'))
-                                                                    ->relationship('profitAccount', 'name')
+                                                                    ->relationship(
+                                                                        'profitAccount',
+                                                                        'name',
+                                                                        modifyQueryUsing: fn ($query) => $query->where('deprecated', false)->whereIn('account_type', [AccountType::INCOME, AccountType::INCOME_OTHER])
+                                                                    )
                                                                     ->preload()
                                                                     ->searchable()
                                                                     ->visible(fn (Get $get) => in_array($get('type'), [
@@ -106,7 +111,11 @@ class JournalResource extends Resource
 
                                                                 Select::make('loss_account_id')
                                                                     ->label(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.accounting-information.fields.loss-account'))
-                                                                    ->relationship('lossAccount', 'name')
+                                                                    ->relationship(
+                                                                        'lossAccount',
+                                                                        'name',
+                                                                        modifyQueryUsing: fn ($query) => $query->where('deprecated', false)->where('account_type', AccountType::EXPENSE)
+                                                                    )
                                                                     ->preload()
                                                                     ->searchable()
                                                                     ->visible(fn (Get $get) => in_array($get('type'), [

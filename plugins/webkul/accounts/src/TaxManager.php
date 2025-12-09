@@ -529,6 +529,7 @@ class TaxManager
             priceUnit : $priceUnitAfterDiscount,
             quantity : $baseLine['quantity'],
             precisionRounding : $baseLine['currency']->rounding ?? 2,
+            //TODO: get from configuration
             roundingMethod : $roundingMethod ?? $company->tax_calculation_rounding_method,
             product : $baseLine['product'],
             specialMode : $baseLine['special_mode'],
@@ -545,6 +546,7 @@ class TaxManager
             'taxes_data'                  => [],
         ];
 
+        //TODO: get from configuration
         if ($company->tax_calculation_rounding_method === 'round_per_line') {
             $taxDetails['raw_total_excluded'] = $company->currency->round($taxDetails['raw_total_excluded']);
             $taxDetails['raw_total_included'] = $company->currency->round($taxDetails['raw_total_included']);
@@ -554,6 +556,7 @@ class TaxManager
             $taxAmount  = $rate ? $taxData['tax_amount'] / $rate : 0.0;
             $baseAmount = $rate ? $taxData['base_amount'] / $rate : 0.0;
 
+            //TODO: get from configuration
             if ($company->tax_calculation_rounding_method === 'round_per_line') {
                 $taxAmount  = $company->currency->round($taxAmount);
                 $baseAmount = $company->currency->round($baseAmount);

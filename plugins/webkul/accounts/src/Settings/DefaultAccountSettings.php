@@ -16,7 +16,7 @@ class DefaultAccountSettings extends Settings
 
     public ?int $account_discount_income_allocation_id;
 
-    public int $suspense_account_id;
+    public int $account_journal_suspense_account_id;
 
     public int $transfer_account_id;
 
