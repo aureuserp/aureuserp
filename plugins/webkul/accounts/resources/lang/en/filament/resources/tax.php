@@ -12,6 +12,22 @@ return [
                 'amount'          => 'Amount',
             ],
 
+            'repeater' => [
+                'invoice-repartition-lines' => [
+                    'label' => 'Invoice Repartition Lines',
+                ],
+
+                'refund-repartition-lines' => [
+                    'label' => 'Refund Repartition Lines',
+                ],
+
+                'fields' => [
+                    'type'           => 'Type',
+                    'factor-percent' => 'Factor %',
+                    'account'        => 'Account',
+                ],
+            ],
+
             'field-set' => [
                 'advanced-options' => [
                     'title' => 'Advanced Options',
@@ -91,6 +107,24 @@ return [
                     'error' => [
                         'title' => 'Taxes could not be deleted',
                         'body'  => 'The taxes cannot be deleted because they are currently in use.',
+                    ],
+                ],
+            ],
+        ],
+
+        'pages' => [
+            'create' => [
+                'notifications' => [
+                    'invalid-repartition-lines' => [
+                        'title' => 'Invalid Repartition Lines',
+                    ],
+                ],
+            ],
+
+            'edit' => [
+                'notifications' => [
+                    'invalid-repartition-lines' => [
+                        'title' => 'Invalid Repartition Lines',
                     ],
                 ],
             ],

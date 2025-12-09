@@ -27,7 +27,7 @@ return [
                     'due-date'         => 'Due Date',
                     'payment-term'     => 'Payment Term',
                     'journal'          => 'Journal',
-                    'currency' => 'Currency',
+                    'currency'         => 'Currency',
                 ],
             ],
         ],
@@ -84,16 +84,16 @@ return [
                         'title' => 'Accounting',
 
                         'fields' => [
-                            'company'  => 'Company',
-                            'incoterm'          => 'Incoterm',
-                            'incoterm-location' => 'Incoterm Location',
-                            'fiscal-position'   => 'Fiscal Position',
+                            'company'                 => 'Company',
+                            'incoterm'                => 'Incoterm',
+                            'incoterm-location'       => 'Incoterm Location',
+                            'fiscal-position'         => 'Fiscal Position',
                             'fiscal-position-tooltip' => 'Fiscal positions are used to adapt taxes and accounts based on the customer location.',
-                            'cash-rounding'     => 'Cash Rounding Method',
-                            'cash-rounding-tooltip' => 'Specifies the smallest cash-payable unit of the currency.',
-                            'payment-method'    => 'Payment Method',
-                            'auto-post'         => 'Auto Post',
-                            'checked'           => 'Checked',
+                            'cash-rounding'           => 'Cash Rounding Method',
+                            'cash-rounding-tooltip'   => 'Specifies the smallest cash-payable unit of the currency.',
+                            'payment-method'          => 'Payment Method',
+                            'auto-post'               => 'Auto Post',
+                            'checked'                 => 'Checked',
                         ],
                     ],
                 ],
@@ -123,6 +123,10 @@ return [
             'total'            => 'Total',
             'amount-due'       => 'Amount Due',
             'invoice-currency' => 'Invoice Currency',
+        ],
+
+        'summarizers' => [
+            'total' => 'Total',
         ],
 
         'groups' => [
@@ -225,7 +229,7 @@ return [
                         'title' => 'Accounting',
 
                         'entries' => [
-                            'company'  => 'Company',
+                            'company'           => 'Company',
                             'incoterm'          => 'Incoterm',
                             'incoterm-location' => 'Incoterm Location',
                             'payment-method'    => 'Payment Method',

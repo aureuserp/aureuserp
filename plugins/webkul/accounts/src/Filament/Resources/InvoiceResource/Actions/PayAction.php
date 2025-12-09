@@ -12,13 +12,12 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
-use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\PaymentRegister;
 use Webkul\Accounting\Models\Journal;
-use Webkul\Account\Facades\Account as AccountFacade;
 
 class PayAction extends Action
 {
@@ -82,7 +81,7 @@ class PayAction extends Action
                                 }),
 
                             Select::make('payment_method_line_id')
-                                ->label('Payment Method')
+                                ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.payment-method'))
                                 ->required()
                                 ->searchable()
                                 ->preload()
@@ -275,7 +274,7 @@ class PayAction extends Action
             })
             ->action(function (Move $record, $data): void {
                 $lineIds = $record->paymentTermLines
-                    ->filter(fn($line) => ! $line->reconciled)
+                    ->filter(fn ($line) => ! $line->reconciled)
                     ->pluck('id')
                     ->toArray();
 

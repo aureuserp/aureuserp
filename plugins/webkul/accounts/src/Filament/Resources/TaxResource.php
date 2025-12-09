@@ -136,7 +136,7 @@ class TaxResource extends Resource
                                         Group::make()
                                             ->schema([
                                                 Repeater::make('invoiceRepartitionLines')
-                                                    ->label('Invoice Repartition Lines')
+                                                    ->label(__('accounts::filament/resources/tax.form.sections.repeater.invoice-repartition-lines.label'))
                                                     ->relationship('invoiceRepartitionLines')
                                                     ->minItems(1)
                                                     ->compact()
@@ -148,7 +148,7 @@ class TaxResource extends Resource
                                                         Hidden::make('document_type')
                                                             ->default('invoice'),
                                                         Select::make('repartition_type')
-                                                            ->label('Type')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.type'))
                                                             ->options(RepartitionType::options())
                                                             ->required()
                                                             ->native(false)
@@ -161,7 +161,7 @@ class TaxResource extends Resource
                                                             }),
 
                                                         TextInput::make('factor_percent')
-                                                            ->label('Factor %')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.factor-percent'))
                                                             ->numeric()
                                                             ->minValue(0)
                                                             ->maxValue(100)
@@ -169,7 +169,7 @@ class TaxResource extends Resource
                                                             ->disabled(fn (callable $get) => $get('repartition_type') === 'base'),
 
                                                         Select::make('account_id')
-                                                            ->label('Account')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.account'))
                                                             ->relationship('account', 'name')
                                                             ->required(fn (callable $get) => $get('repartition_type') !== 'base')
                                                             ->preload()
@@ -180,13 +180,13 @@ class TaxResource extends Resource
                                                     ->reorderable('sort')
                                                     ->table([
                                                         TableColumn::make('repartition_type')
-                                                            ->label('Type')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.type'))
                                                             ->width('30%'),
                                                         TableColumn::make('factor_percent')
-                                                            ->label('Factor %')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.factor-percent'))
                                                             ->width(100),
                                                         TableColumn::make('account_id')
-                                                            ->label('Account')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.account'))
                                                             ->width('clamp(200px, 14rem, 30rem)'),
                                                     ]),
                                             ])
@@ -195,7 +195,7 @@ class TaxResource extends Resource
                                         Group::make()
                                             ->schema([
                                                 Repeater::make('refundRepartitionLines')
-                                                    ->label('Refund Repartition Lines')
+                                                    ->label(__('accounts::filament/resources/tax.form.sections.repeater.refund-repartition-lines.label'))
                                                     ->relationship('refundRepartitionLines')
                                                     ->minItems(1)
                                                     ->compact()
@@ -207,7 +207,7 @@ class TaxResource extends Resource
                                                         Hidden::make('document_type')
                                                             ->default('refund'),
                                                         Select::make('repartition_type')
-                                                            ->label('Type')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.type'))
                                                             ->options(RepartitionType::options())
                                                             ->required()
                                                             ->native(false)
@@ -220,7 +220,7 @@ class TaxResource extends Resource
                                                             }),
 
                                                         TextInput::make('factor_percent')
-                                                            ->label('Factor %')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.factor-percent'))
                                                             ->numeric()
                                                             ->minValue(0)
                                                             ->maxValue(100)
@@ -228,7 +228,7 @@ class TaxResource extends Resource
                                                             ->disabled(fn (callable $get) => $get('repartition_type') === 'base'),
 
                                                         Select::make('account_id')
-                                                            ->label('Account')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.account'))
                                                             ->relationship('account', 'name')
                                                             ->required(fn (callable $get) => $get('repartition_type') !== 'base')
                                                             ->preload()
@@ -239,13 +239,13 @@ class TaxResource extends Resource
                                                     ->reorderable('sort')
                                                     ->table([
                                                         TableColumn::make('repartition_type')
-                                                            ->label('Type')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.type'))
                                                             ->width('30%'),
                                                         TableColumn::make('factor_percent')
-                                                            ->label('Factor %')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.factor-percent'))
                                                             ->width(100),
                                                         TableColumn::make('account_id')
-                                                            ->label('Account')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.account'))
                                                             ->width('clamp(200px, 14rem, 30rem)'),
                                                     ]),
                                             ])

@@ -102,11 +102,11 @@ class FiscalPositionResource extends Resource
                                     ->addActionLabel(__('Add Tax Mapping'))
                                     ->table([
                                         TableColumn::make('tax_source_id')
-                                            ->label(__('accounts::traits/fiscal-position-tax.table.columns.tax-source'))
+                                            ->label(__('accounts::filament/resources/fiscal-position.form.tabs.tax-mapping.table.columns.tax-source'))
                                             ->width(200),
 
                                         TableColumn::make('tax_destination_id')
-                                            ->label(__('accounts::traits/fiscal-position-tax.table.columns.tax-destination'))
+                                            ->label(__('accounts::filament/resources/fiscal-position.form.tabs.tax-mapping.table.columns.tax-destination'))
                                             ->width(200),
                                     ])
                                     ->schema([
@@ -135,11 +135,10 @@ class FiscalPositionResource extends Resource
                                     ->addActionLabel(__('Add Account Mapping'))
                                     ->table([
                                         TableColumn::make('account_source_id')
-                                            ->label('Source Account')
+                                            ->label(__('accounts::filament/resources/fiscal-position.form.tabs.account-mapping.table.columns.source-account'))
                                             ->width(200),
-
                                         TableColumn::make('account_destination_id')
-                                            ->label('Destination Account')
+                                            ->label(__('accounts::filament/resources/fiscal-position.form.tabs.account-mapping.table.columns.destination-account'))
                                             ->width(200),
                                     ])
                                     ->schema([
@@ -285,11 +284,11 @@ class FiscalPositionResource extends Resource
                                     ->table([
                                         InfolistTableColumn::make('taxSource.name')
                                             ->alignCenter()
-                                            ->label(__('accounts::traits/fiscal-position-tax.table.columns.tax-source')),
+                                            ->label(__('accounts::filament/resources/fiscal-position.form.tabs.tax-mapping.table.columns.tax-source')),
 
                                         InfolistTableColumn::make('taxDestination.name')
                                             ->alignCenter()
-                                            ->label(__('accounts::traits/fiscal-position-tax.table.columns.tax-destination')),
+                                            ->label(__('accounts::filament/resources/fiscal-position.form.tabs.tax-mapping.table.columns.tax-destination')),
                                     ])
                                     ->schema([
                                         TextEntry::make('taxSource.name')
@@ -307,11 +306,11 @@ class FiscalPositionResource extends Resource
                                     ->table([
                                         InfolistTableColumn::make('accountSource.name')
                                             ->alignCenter()
-                                            ->label('Source Account'),
+                                            ->label(__('accounts::filament/resources/fiscal-position.form.tabs.account-mapping.table.columns.source-account')),
 
                                         InfolistTableColumn::make('accountDestination.name')
                                             ->alignCenter()
-                                            ->label('Destination Account'),
+                                            ->label(__('accounts::filament/resources/fiscal-position.form.tabs.account-mapping.table.columns.destination-account')),
                                     ])
                                     ->schema([
                                         TextEntry::make('accountSource.name')

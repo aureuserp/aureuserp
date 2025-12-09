@@ -19,6 +19,25 @@ return [
             'notes'                  => 'Notes',
             'company'                => 'Company',
         ],
+        'tabs' => [
+            'account-mapping' => [
+                'table' => [
+                    'columns' => [
+                        'source-account'      => 'Source Account',
+                        'destination-account' => 'Destination Account',
+                    ],
+                ],
+
+            ],
+            'tax-mapping' => [
+                'table' => [
+                    'columns' => [
+                        'tax-source'      => 'Tax Source',
+                        'tax-destination' => 'Tax Destination',
+                    ],
+                ],
+            ],
+        ],
     ],
 
     'table' => [

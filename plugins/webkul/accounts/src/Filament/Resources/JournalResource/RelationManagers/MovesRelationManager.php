@@ -20,7 +20,7 @@ class MovesRelationManager extends RelationManager
             ->defaultGroup('move_id')
             ->groups([
                 Tables\Grouping\Group::make('move_id')
-                    ->label('Journal Entry')
+                    ->label(__('accounts::filament/resources/journal.table.relation-managers.moves-relation-manager.columns.journal-entry'))
                     ->titlePrefixedWithLabel(false)
                     ->getTitleFromRecordUsing(fn ($record) => $record->move_name)
                     ->collapsible(),
@@ -39,17 +39,17 @@ class MovesRelationManager extends RelationManager
                     ->openUrlInNewTab(),
 
                 Tables\Columns\TextColumn::make('account.name')
-                    ->label('Account')
+                    ->label(__('accounts::filament/resources/journal.table.relation-managers.moves-relation-manager.columns.account'))
                     ->sortable()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('partner.name')
-                    ->label('Partner')
+                    ->label(__('accounts::filament/resources/journal.table.relation-managers.moves-relation-manager.columns.partner'))
                     ->sortable()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Label')
+                    ->label(__('accounts::filament/resources/journal.table.relation-managers.moves-relation-manager.columns.label'))
                     ->sortable()
                     ->searchable(),
 
