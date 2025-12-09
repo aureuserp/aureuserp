@@ -166,8 +166,8 @@ class PaymentRegister extends Model
             && $this->currency_id != $this->source_currency_id
             && $this->writeoff_account_id
             && in_array($this->writeoff_account_id, [
-                new DefaultAccountSettings()->expense_currency_exchange_account_id,
-                new DefaultAccountSettings()->income_currency_exchange_account_id,
+                (new DefaultAccountSettings())->expense_currency_exchange_account_id,
+                (new DefaultAccountSettings())->income_currency_exchange_account_id,
             ]);
     }
 

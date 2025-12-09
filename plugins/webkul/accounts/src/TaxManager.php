@@ -525,7 +525,7 @@ class TaxManager
     {
         $priceUnitAfterDiscount = $baseLine['priceUnit'] * (1 - ($baseLine['discount'] / 100));
 
-        $defaultRoundingMethod = new TaxesSettings()->tax_calculation_rounding_method;
+        $defaultRoundingMethod = (new TaxesSettings())->tax_calculation_rounding_method;
 
         $taxesComputation = $this->getTaxDetails(
             taxes : $baseLine['taxes'],
