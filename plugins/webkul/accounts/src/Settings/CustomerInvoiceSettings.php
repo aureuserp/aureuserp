@@ -6,9 +6,9 @@ use Spatie\LaravelSettings\Settings;
 
 class CustomerInvoiceSettings extends Settings
 {
-    public int $group_cash_rounding;
+    public bool $group_cash_rounding;
     
-    public int $incoterm_id;
+    public ?int $incoterm_id;
 
     public static function group(): string
     {

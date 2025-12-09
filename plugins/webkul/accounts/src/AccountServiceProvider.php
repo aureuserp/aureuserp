@@ -79,6 +79,8 @@ class AccountServiceProvider extends PackageServiceProvider
             ->runsMigrations()
             ->hasSettings([
                 '2025_12_02_094021_create_accounts_default_accounts_settings',
+                '2025_12_02_094021_create_accounts_taxes_settings',
+                '2025_12_02_094021_create_customer_invoice_settings',
             ])
             ->runsSettings()
             ->hasDependencies([

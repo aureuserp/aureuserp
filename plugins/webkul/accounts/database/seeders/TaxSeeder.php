@@ -46,8 +46,7 @@ class TaxSeeder extends Seeder
                 'created_at'                       => now(),
                 'updated_at'                       => now(),
                 'formula'                          => 'price_unit * 0.10',
-            ],
-            [
+            ], [
                 'company_id'                       => $company?->id,
                 'sort'                             => 1,
                 'tax_group_id'                     => $taxGroup?->id,

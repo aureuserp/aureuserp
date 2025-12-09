@@ -185,7 +185,7 @@ class Payment extends Model
     //TODO: need to fetch company outstanding account based on payment type
     public function getOutstandingAccount($paymentType)
     {
-        $transferAccountId = (new DefaultAccountSettings())->transfer_account_id;
+        $transferAccountId = new DefaultAccountSettings()->transfer_account_id;
 
         return Account::find($transferAccountId);
     }
@@ -505,7 +505,7 @@ class Payment extends Model
                 $lines[0]->push($line);
             } elseif (
                 in_array($line->account->account_type, $validAccountTypes)
-                || $line->account_id == $line->company->transfer_account_id
+                || $line->account_id == new DefaultAccountSettings()->transfer_account_id
             ) {
                 $lines[1]->push($line);
             } else {

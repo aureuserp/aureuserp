@@ -1751,7 +1751,7 @@ class AccountManager
     }
 
     //TODO: Implement this method
-    public function createExchangeDifferenceMoves(array $exchangeValuesList): array
+    public function createExchangeDifferenceMoves(array $exchangeValuesList)
     {
     }
 

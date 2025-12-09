@@ -145,7 +145,7 @@ class Journal extends Model implements Sortable
             $this->suspense_account_id = null;
         } elseif ($this->suspense_account_id) {
             $this->suspense_account_id = $this->suspense_account_id;
-        } elseif ($accountId = (new DefaultAccountSettings)->account_journal_suspense_account_id) {
+        } elseif ($accountId = new DefaultAccountSettings()->account_journal_suspense_account_id) {
             $this->suspense_account_id = $accountId;
         } else {
             $this->suspense_account_id = null;

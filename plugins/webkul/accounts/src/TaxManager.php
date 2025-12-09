@@ -11,6 +11,7 @@ use Webkul\Support\Models\Currency;
 use Webkul\Partner\Models\Partner;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Models\TaxPartition;
+use Webkul\Account\Settings\TaxesSettings;
 
 class TaxManager
 {
@@ -524,13 +525,14 @@ class TaxManager
     {
         $priceUnitAfterDiscount = $baseLine['priceUnit'] * (1 - ($baseLine['discount'] / 100));
 
+        $defaultRoundingMethod = new TaxesSettings()->tax_calculation_rounding_method;
+
         $taxesComputation = $this->getTaxDetails(
             taxes : $baseLine['taxes'],
             priceUnit : $priceUnitAfterDiscount,
             quantity : $baseLine['quantity'],
             precisionRounding : $baseLine['currency']->rounding ?? 2,
-            //TODO: get from configuration
-            roundingMethod : $roundingMethod ?? $company->tax_calculation_rounding_method,
+            roundingMethod : $roundingMethod ?? $defaultRoundingMethod,
             product : $baseLine['product'],
             specialMode : $baseLine['special_mode'],
             manualTaxAmounts : $baseLine['manual_tax_amounts'],
@@ -546,8 +548,7 @@ class TaxManager
             'taxes_data'                  => [],
         ];
 
-        //TODO: get from configuration
-        if ($company->tax_calculation_rounding_method === 'round_per_line') {
+        if ($defaultRoundingMethod === 'round_per_line') {
             $taxDetails['raw_total_excluded'] = $company->currency->round($taxDetails['raw_total_excluded']);
             $taxDetails['raw_total_included'] = $company->currency->round($taxDetails['raw_total_included']);
         }
@@ -556,8 +557,7 @@ class TaxManager
             $taxAmount  = $rate ? $taxData['tax_amount'] / $rate : 0.0;
             $baseAmount = $rate ? $taxData['base_amount'] / $rate : 0.0;
 
-            //TODO: get from configuration
-            if ($company->tax_calculation_rounding_method === 'round_per_line') {
+            if ($defaultRoundingMethod === 'round_per_line') {
                 $taxAmount  = $company->currency->round($taxAmount);
                 $baseAmount = $company->currency->round($baseAmount);
             }
