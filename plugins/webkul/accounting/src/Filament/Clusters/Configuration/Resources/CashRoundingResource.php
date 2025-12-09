@@ -10,6 +10,8 @@ class CashRoundingResource extends BaseCashRoundingResource
 {
     protected static bool $shouldRegisterNavigation = true;
 
+    protected static ?int $navigationSort = 9;
+
     protected static ?string $cluster = Configuration::class;
 
     public static function getModelLabel(): string

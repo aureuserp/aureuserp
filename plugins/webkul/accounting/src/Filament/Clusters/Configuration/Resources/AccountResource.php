@@ -10,6 +10,8 @@ class AccountResource extends BaseAccountResource
 {
     protected static bool $shouldRegisterNavigation = true;
 
+    protected static ?int $navigationSort = 3;
+
     protected static ?string $cluster = Configuration::class;
 
     public static function getModelLabel(): string

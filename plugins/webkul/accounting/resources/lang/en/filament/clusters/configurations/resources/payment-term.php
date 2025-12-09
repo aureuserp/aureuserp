@@ -5,6 +5,6 @@ return [
 
     'navigation' => [
         'title' => 'Payment Terms',
-        'group' => 'Accounting',
+        'group' => 'Invoicing',
     ],
 ];

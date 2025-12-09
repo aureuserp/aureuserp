@@ -16,7 +16,7 @@ class ProductAttributeResource extends AttributeResource
 
     protected static bool $shouldRegisterNavigation = true;
 
-    protected static ?int $navigationSort = 9;
+    protected static ?int $navigationSort = 10;
 
     protected static ?string $cluster = Configuration::class;
 

@@ -13,6 +13,8 @@ class CurrencyResource extends BaseCurrencyResource
 {
     protected static bool $shouldRegisterNavigation = true;
 
+    protected static ?int $navigationSort = 5;
+
     protected static ?string $cluster = Configuration::class;
 
     public static function getModelLabel(): string

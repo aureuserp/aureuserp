@@ -21,6 +21,8 @@ class ProductCategoryResource extends BaseProductCategoryResource
 
     protected static bool $shouldRegisterNavigation = true;
 
+    protected static ?int $navigationSort = 11;
+
     public static function getNavigationGroup(): ?string
     {
         return __('accounting::filament/clusters/configurations/resources/product-category.navigation.group');

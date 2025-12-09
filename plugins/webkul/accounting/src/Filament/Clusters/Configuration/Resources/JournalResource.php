@@ -16,6 +16,8 @@ class JournalResource extends BaseJournalResource
 
     protected static bool $shouldRegisterNavigation = true;
 
+    protected static ?int $navigationSort = 4;
+
     protected static ?string $cluster = Configuration::class;
 
     public static function getModelLabel(): string

@@ -14,6 +14,8 @@ class PaymentTermResource extends BasePaymentTermResource
 {
     protected static bool $shouldRegisterNavigation = true;
 
+    protected static ?int $navigationSort = 1;
+
     protected static ?string $cluster = Configuration::class;
 
     public static function getModelLabel(): string
