@@ -29,6 +29,7 @@ use Webkul\Account\Models\PaymentRegister;
 use Webkul\Accounting\Models\Journal;
 use Webkul\Support\Services\EmailService;
 use Webkul\Account\Settings\DefaultAccountSettings;
+use Webkul\Account\Enums\PaymentType;
 
 class AccountManager
 {
@@ -800,7 +801,7 @@ class AccountManager
                             ->filter(fn($line) => $linesToPay->contains($line))
                             ->map(fn($line) => array_merge($batchResult, [
                                 'payment_values' => array_merge($batchResult['payment_values'], [
-                                    'payment_type' => $line->balance > 0 ? 'inbound' : 'outbound'
+                                    'payment_type' => $line->balance > 0 ? PaymentType::RECEIVE : PaymentType::SEND
                                 ]),
                                 'lines' => $line,
                             ]));
@@ -851,7 +852,7 @@ class AccountManager
                     $paymentVals['force_balance'] = $batchResult['lines']->sum('amount_residual');
                 }
             } else {
-                $writeOffAmountCurrency = $paymentRegister->payment_type == 'inbound'
+                $writeOffAmountCurrency = $paymentRegister->payment_type == PaymentType::RECEIVE
                     ? $paymentRegister->payment_difference
                     : -$paymentRegister->payment_difference;
 
@@ -878,7 +879,7 @@ class AccountManager
     {
         $batchValues = $paymentRegister->getValuesFromBatch($batch);
 
-        $partnerBankId = $batchValues['payment_type'] == 'inbound'
+        $partnerBankId = $batchValues['payment_type'] == PaymentType::RECEIVE
             ? $paymentRegister->journal->bank_account_id
             : data_get($batch, 'payment_values.partner_bank_id');
 

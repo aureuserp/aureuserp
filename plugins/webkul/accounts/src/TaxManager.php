@@ -876,7 +876,7 @@ class TaxManager
         if ($roundingMethod === 'round_per_line') {
             $rawBase = float_round(
                 $rawBase,
-                $precisionRounding ?: filament()->auth()->user()->company->currency->rounding
+                precisionRounding: $precisionRounding ?: filament()->auth()->user()->company->currency->rounding
             );
         }
 

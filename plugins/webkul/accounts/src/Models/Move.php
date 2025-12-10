@@ -13,6 +13,7 @@ use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Enums\AccountType;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
@@ -346,6 +347,12 @@ class Move extends Model implements Sortable
     {
         return $this->hasMany(MoveLine::class, 'move_id')
             ->where('display_type', DisplayType::PAYMENT_TERM);
+    }
+
+    public function roundingLines()
+    {
+        return $this->hasMany(MoveLine::class, 'move_id')
+            ->where('display_type', DisplayType::ROUNDING);
     }
 
     public function matchedPayments()
@@ -784,5 +791,74 @@ class Move extends Model implements Sortable
         }
 
         return $installments;
+    }
+
+    public function getReconcilablePayments()
+    {
+        $paymentVals = [
+            'outstanding' => false,
+            'content' => [],
+            'move_id' => $this->id,
+            'title' => $this->isInbound() ? 'Outstanding debits' : 'Outstanding credits',
+        ];
+
+        if (
+            $this->state != MoveState::POSTED
+            || ! in_array($this->payment_state, [PaymentState::NOT_PAID, PaymentState::PARTIAL])
+            || ! $this->isInvoice(true)
+        ) {
+            return $paymentVals;
+        }
+
+        $paymentTermLines = $this->lines->filter(function($line) {
+            return in_array($line->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE]);
+        });
+
+        $filters = [
+            ['account_id', 'in', $paymentTermLines->pluck('account_id')->toArray()],
+            ['parent_state', MoveState::POSTED],
+            ['partner_id', $this->commercial_partner_id],
+            ['reconciled', false],
+        ];
+
+        $filters[] = $this->isInbound() ? ['balance', '<', 0.0]: ['balance', '>', 0.0];
+        
+        $outstandingLines = MoveLine::where($filters)
+            ->where(function($query) {
+                $query->where('amount_residual', '!=', 0.0)
+                    ->orWhere('amount_residual_currency', '!=', 0.0);
+            })
+            ->get();
+
+        foreach ($outstandingLines as $line) {
+            if ($line->currency_id == $this->currency_id) {
+                $amount = abs($line->amount_residual_currency);
+            } else {
+                $amount = $line->companyCurrency->convert(
+                    abs($line->amount_residual),
+                    $this->currency,
+                    $this->company,
+                    $line->date
+                );
+            }
+
+            if ($this->currency->isZero($amount)) {
+                continue;
+            }
+
+            $paymentVals['outstanding'] = true;
+
+            $paymentVals['content'][] = [
+                'journal_name' => $line->ref ?: $line->move->name,
+                'amount' => $amount,
+                'currency_id' => $this->currency_id,
+                'id' => $line->id,
+                'move_id' => $line->move_id,
+                'date' => $line->date->toDateString(),
+                'account_payment_id' => $line->payment_id,
+            ];
+        }
+
+        return $paymentVals;
     }
 }

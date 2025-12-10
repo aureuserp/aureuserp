@@ -12,6 +12,7 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Settings\DefaultAccountSettings;
 
 class PaymentRegister extends Model
@@ -45,6 +46,10 @@ class PaymentRegister extends Model
         'group_payment',
         'can_group_payments',
         'payment_token_id',
+    ];
+
+    protected $casts = [
+        'payment_type' => PaymentType::class,
     ];
 
     public function journal()
@@ -402,8 +407,8 @@ class PaymentRegister extends Model
                     $otherVals = $batches[$otherKey];
 
                     $allMatch = collect($vals['payment_values'])
-                        ->filter(fn ($v, $k) => ! in_array($k, ['partner_bank_id', 'payment_type']))
-                        ->every(fn ($v, $k) => $otherVals['payment_values'][$k] == $v);
+                        ->filter(fn ($value, $key) => ! in_array($key, ['partner_bank_id', 'payment_type']))
+                        ->every(fn ($value, $key) => $otherVals['payment_values'][$key] == $value);
 
                     if ($allMatch) {
                         $lines = $lines->merge($otherVals['lines']);
@@ -413,7 +418,7 @@ class PaymentRegister extends Model
             }
 
             $balance = $lines->sum('balance');
-            $vals['payment_values']['payment_type'] = $balance > 0.0 ? 'inbound' : 'outbound';
+            $vals['payment_values']['payment_type'] = $balance > 0.0 ? PaymentType::RECEIVE : PaymentType::SEND;
 
             if ($shouldMerge) {
                 $partnerBanks = $banksPerPartner[$batchKey['partner_id']];
@@ -473,7 +478,7 @@ class PaymentRegister extends Model
     {
         $paymentValues = $batch['payment_values'];
 
-        if ($paymentValues['payment_type'] == 'inbound') {
+        if ($paymentValues['payment_type'] == PaymentType::RECEIVE) {
             return collect($journal->bankAccount);
         }
 

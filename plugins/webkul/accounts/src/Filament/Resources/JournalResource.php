@@ -40,6 +40,7 @@ use Webkul\Account\Models\Journal;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
+use Webkul\Account\Enums\PaymentType;
 use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
 
 class JournalResource extends Resource
@@ -204,7 +205,7 @@ class JournalResource extends Resource
                                                             ->relationship(
                                                                 name: 'paymentMethod',
                                                                 titleAttribute: 'name',
-                                                                modifyQueryUsing: fn ($query) => $query->where('payment_type', 'inbound')
+                                                                modifyQueryUsing: fn ($query) => $query->where('payment_type', PaymentType::RECEIVE)
                                                             )
                                                             ->searchable()
                                                             ->preload()
@@ -255,7 +256,7 @@ class JournalResource extends Resource
                                                             ->relationship(
                                                                 name: 'paymentMethod',
                                                                 titleAttribute: 'name',
-                                                                modifyQueryUsing: fn ($query) => $query->where('payment_type', 'outbound')
+                                                                modifyQueryUsing: fn ($query) => $query->where('payment_type', PaymentType::SEND)
                                                             )
                                                             ->searchable()
                                                             ->preload()

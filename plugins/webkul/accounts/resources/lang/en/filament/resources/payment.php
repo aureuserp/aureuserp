@@ -15,6 +15,7 @@ return [
                 'memo'                  => 'Memo',
                 'date'                  => 'Date',
                 'amount'                => 'Amount',
+                'currency'              => 'Currency',
                 'payment-method'        => 'Payment Method',
                 'customer'              => 'Customer',
                 'journal'               => 'Journal',

@@ -11,11 +11,13 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Payment\Models\PaymentToken;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\MoveType;
+use Webkul\Account\Enums\JournalType;
 use Webkul\Payment\Models\PaymentTransaction;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Account\Settings\DefaultAccountSettings;
+use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Facades\Account as AccountFacade;
 
 class Payment extends Model
@@ -52,6 +54,10 @@ class Payment extends Model
         'payment_transaction_id',
         'source_payment_id',
         'payment_token_id',
+    ];
+
+    protected $casts = [
+        'payment_type' => PaymentType::class,
     ];
 
     public array $moveRelatedFields = [
@@ -199,7 +205,13 @@ class Payment extends Model
 
             $payment->computeState();
 
+            $payment->computePartnerType();
+
             $payment->computeCreatedBy();
+
+            $payment->computeCompanyId();
+
+            $payment->computePaymentMethodId();
 
             $payment->computeOutstandingAccountId();
 
@@ -219,6 +231,20 @@ class Payment extends Model
     public function computeCreatedBy()
     {
         $this->created_by = filament()->auth()->id();
+    }
+
+    public function computePartnerType()
+    {
+        $this->partner_type = $this->payment_type == PaymentType::RECEIVE ? 'customer' : 'supplier';
+    }
+
+    public function computeCompanyId()
+    {
+        if ($this->company_id) {
+            return;
+        }
+
+        $this->company_id = $this->journal->company_id;
     }
 
     public function computeState()
@@ -301,6 +327,11 @@ class Payment extends Model
         $this->is_reconciled = $this->currency->isZero($reconcileLines->sum($residualField));
     }
 
+    public function computePaymentMethodId()
+    {
+        $this->payment_method_id = $this->paymentMethodLine->payment_method_id;
+    }
+
     public function computeOutstandingAccountId()
     {
         if ($this->outstanding_account_id) {
@@ -308,11 +339,15 @@ class Payment extends Model
         }
 
         $this->outstanding_account_id = $this->paymentMethodLine->payment_account_id;
+
+        if (! $this->outstanding_account_id) {
+            $this->outstanding_account_id = $this->getOutstandingAccount($this->payment_type)?->id;
+        }
     }
 
     public function computeDestinationAccountId()
     {
-        if ($this->destination_account_id) {
+        if ($this->isDirty('destination_account_id') && $this->destination_account_id) {
             return;
         }
 
@@ -333,9 +368,8 @@ class Payment extends Model
 
         $mapping = $accountMapping[$this->partner_type];
 
-        $this->destination_account_id = $this->partner_id
-            ? $this->partner->{$mapping['partner_property']}
-            : Account::where('account_type', $mapping['account_type'])
+        $this->destination_account_id = $this->partner?->{$mapping['partner_property']}
+            ?? Account::where('account_type', $mapping['account_type'])
                 ->where('deprecated', false)
                 ->first()
                 ?->id;
@@ -351,6 +385,40 @@ class Payment extends Model
                 company: $this->company,
                 date: $this->date
             );
+    }
+
+    public function computePaymentMethodLineId()
+    {
+        if (! $this->journal) {
+            $this->payment_method_line_id = null;
+
+            return;
+        }
+
+        $availablePaymentMethodLines = $this->journal->getAvailablePaymentMethodLines($this->payment_type);
+
+        $inboundPaymentMethod = $this->partner?->property_inbound_payment_method_line_id;
+        $outboundPaymentMethod = $this->partner?->property_outbound_payment_method_line;
+
+        if ($this->payment_type == PaymentType::RECEIVE && $availablePaymentMethodLines->pluck('id')->contains($inboundPaymentMethod)) {
+            $this->payment_method_line_id = $inboundPaymentMethod;
+        } elseif ($this->payment_type == PaymentType::SEND && $availablePaymentMethodLines->pluck('id')->contains($outboundPaymentMethod)) {
+            $this->payment_method_line_id = $outboundPaymentMethod;
+        } elseif ($this->payment_method_line_id && $availablePaymentMethodLines->pluck('id')->contains($this->payment_method_line_id)) {
+        } elseif ($availablePaymentMethodLines->isNotEmpty()) {
+            $this->payment_method_line_id = $availablePaymentMethodLines->first()->id;
+        } else {
+            $this->payment_method_line_id = null;
+        }
+    }
+
+    public function computeShowRequirePartnerBank()
+    {
+        $this->show_partner_bank_account = $this->journal->type == JournalType::CASH
+            ? false
+            : in_array($this->paymentMethodLine->code, (new Payment)->getMethodCodesUsingBankAccount());
+
+        $this->require_partner_bank_account = in_array($this->paymentMethodLine->code, (new Payment)->getMethodCodesNeedingBankAccount());
     }
 
     public function generateJournalEntry($writeOffLineVals = null, $forceBalance = null, $lines = null)
@@ -398,8 +466,8 @@ class Payment extends Model
         $writeOffBalance = collect($writeOffLineValsList)->sum('balance');
 
         $liquidityAmountCurrency = match ($this->payment_type) {
-            'inbound' => $this->amount,
-            'outbound' => -$this->amount,
+            PaymentType::RECEIVE => $this->amount,
+            PaymentType::SEND => -$this->amount,
             default => 0.0,
         };
 

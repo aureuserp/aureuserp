@@ -5,6 +5,7 @@ namespace Webkul\Account\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Security\Models\User;
+use Webkul\Account\Enums\PaymentType;
 
 class PaymentMethod extends Model
 {
@@ -17,6 +18,10 @@ class PaymentMethod extends Model
         'payment_type',
         'name',
         'created_by'
+    ];
+
+    protected $casts = [
+        'payment_type' => PaymentType::class,
     ];
 
     public function createdBy()

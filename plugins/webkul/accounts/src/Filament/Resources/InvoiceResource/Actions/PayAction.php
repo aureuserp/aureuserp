@@ -18,7 +18,9 @@ use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\PaymentRegister;
 use Webkul\Accounting\Models\Journal;
+use Webkul\Account\Models\PaymentMethodLine;
 use Webkul\Account\Facades\Account as AccountFacade;
+use Webkul\Account\Enums\PaymentType;
 
 class PayAction extends Action
 {
@@ -43,8 +45,8 @@ class PayAction extends Action
                 $paymentRegister->currency = $this->getRecord()->currency;
                 $paymentRegister->currency_id = $this->getRecord()->currency_id;
                 $paymentRegister->payment_type = $this->getRecord()->isSaleDocument(true)
-                    ? 'inbound'
-                    : 'outbound';
+                    ? PaymentType::RECEIVE
+                    : PaymentType::SEND;
                 $paymentRegister->computeBatches();
                 $paymentRegister->computeAvailableJournalIds();
                 $paymentRegister->journal_id = $paymentRegister->available_journal_ids[0] ?? null;
@@ -100,8 +102,8 @@ class PayAction extends Action
 
                                         $paymentMethodLineIds = $journal->getAvailablePaymentMethodLines(
                                             $this->getRecord()->isSaleDocument(true)
-                                                ? 'inbound'
-                                                : 'outbound'
+                                                ? PaymentType::RECEIVE
+                                                : PaymentType::SEND
                                         )->pluck('id');
 
                                         $query->whereIn('id', $paymentMethodLineIds);
@@ -109,7 +111,7 @@ class PayAction extends Action
                                 )
                                 ->afterStateUpdated(function (Set $set, Get $get) use ($paymentRegister) {
                                     $paymentRegister->payment_method_line_id = $get('payment_method_line_id');
-                                    $paymentRegister->paymentMethodLine = \Webkul\Account\Models\PaymentMethodLine::find($get('payment_method_line_id'));
+                                    $paymentRegister->paymentMethodLine = PaymentMethodLine::find($get('payment_method_line_id'));
                                     $paymentRegister->journal = Journal::find($get('journal_id'));
                                     $paymentRegister->computeShowRequirePartnerBank();
                                 }),
@@ -137,7 +139,7 @@ class PayAction extends Action
 
                                     $paymentRegister->journal = $journal;
                                     $paymentRegister->payment_method_line_id = $get('payment_method_line_id');
-                                    $paymentRegister->paymentMethodLine = \Webkul\Account\Models\PaymentMethodLine::find($get('payment_method_line_id'));
+                                    $paymentRegister->paymentMethodLine = PaymentMethodLine::find($get('payment_method_line_id'));
 
                                     if (! $paymentRegister->paymentMethodLine) {
                                         return false;
@@ -156,7 +158,7 @@ class PayAction extends Action
 
                                     $paymentRegister->journal = $journal;
                                     $paymentRegister->payment_method_line_id = $get('payment_method_line_id');
-                                    $paymentRegister->paymentMethodLine = \Webkul\Account\Models\PaymentMethodLine::find($get('payment_method_line_id'));
+                                    $paymentRegister->paymentMethodLine = PaymentMethodLine::find($get('payment_method_line_id'));
 
                                     if (! $paymentRegister->paymentMethodLine) {
                                         return false;
@@ -175,7 +177,7 @@ class PayAction extends Action
 
                                     $paymentRegister->journal = $journal;
                                     $paymentRegister->payment_method_line_id = $get('payment_method_line_id');
-                                    $paymentRegister->paymentMethodLine = \Webkul\Account\Models\PaymentMethodLine::find($get('payment_method_line_id'));
+                                    $paymentRegister->paymentMethodLine = PaymentMethodLine::find($get('payment_method_line_id'));
 
                                     if (! $paymentRegister->paymentMethodLine) {
                                         return true;

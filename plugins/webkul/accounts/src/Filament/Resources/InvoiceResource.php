@@ -115,6 +115,7 @@ class InvoiceResource extends Resource
                     ->disabled()
                     ->live()
                     ->reactive(),
+                    
                 Section::make(__('accounts::filament/resources/invoice.form.section.general.title'))
                     ->icon('heroicon-o-document-text')
                     ->schema([
@@ -219,6 +220,7 @@ class InvoiceResource extends Resource
                                     ]),
                             ])->columns(2),
                     ]),
+
                 Tabs::make()
                     ->schema([
                         Tab::make(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.title'))
@@ -554,6 +556,9 @@ class InvoiceResource extends Resource
 
     public static function infolist(Schema $schema): Schema
     {
+        $move = AccountMove::find(135);
+        dd($move->getReconcilablePayments());
+        
         return $schema
             ->columns(1)
             ->components([
@@ -655,7 +660,7 @@ class InvoiceResource extends Resource
                                             ->label(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.repeater.products.entries.unit-price')),
                                         InfolistTableColumn::make('discount')
                                             ->alignCenter()
-                                            ->toggleable()
+                                            ->toggleable(isToggledHiddenByDefault: true)
                                             ->label(__('accounts::filament/resources/invoice.infolist.tabs.invoice-lines.repeater.products.entries.discount-percentage')),
                                         InfolistTableColumn::make('taxes')
                                             ->alignCenter()
@@ -823,18 +828,18 @@ class InvoiceResource extends Resource
                     ->width(150)
                     ->visible(fn () => resolve(ProductSettings::class)->enable_uom)
                     ->toggleable(),
-                TableColumn::make('taxes')
-                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.taxes'))
-                    ->width(150)
-                    ->toggleable(),
-                TableColumn::make('discount')
-                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.discount-percentage'))
-                    ->width(100)
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TableColumn::make('price_unit')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.unit-price'))
                     ->width(100)
                     ->markAsRequired(),
+                TableColumn::make('discount')
+                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.discount-percentage'))
+                    ->width(100)
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TableColumn::make('taxes')
+                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.taxes'))
+                    ->width(150)
+                    ->toggleable(),
                 TableColumn::make('price_subtotal')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.sub-total'))
                     ->width(100)
@@ -915,6 +920,28 @@ class InvoiceResource extends Resource
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterUOMUpdated($set, $get))
                     ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
+                TextInput::make('price_unit')
+                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.unit-price'))
+                    ->numeric()
+                    ->default(0)
+                    ->minValue(0)
+                    ->maxValue(99999999999)
+                    ->required()
+                    ->live(onBlur: true)
+                    ->dehydrated()
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
+                TextInput::make('discount')
+                    ->label(__('Discount Percentage'))
+                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.discount-percentage'))
+                    ->numeric()
+                    ->default(0)
+                    ->minValue(0)
+                    ->maxValue(99999999999)
+                    ->live(onBlur: true)
+                    ->dehydrated()
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
                 Select::make('taxes')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.taxes'))
                     ->relationship(
@@ -932,28 +959,6 @@ class InvoiceResource extends Resource
                     ->afterStateHydrated(fn (Get $get, Set $set) => self::calculateLineTotals($set, $get))
                     ->afterStateUpdated(fn (Get $get, Set $set, $state) => self::calculateLineTotals($set, $get))
                     ->live(),
-                TextInput::make('discount')
-                    ->label(__('Discount Percentage'))
-                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.discount-percentage'))
-                    ->numeric()
-                    ->default(0)
-                    ->minValue(0)
-                    ->maxValue(99999999999)
-                    ->live(onBlur: true)
-                    ->dehydrated()
-                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
-                TextInput::make('price_unit')
-                    ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.unit-price'))
-                    ->numeric()
-                    ->default(0)
-                    ->minValue(0)
-                    ->maxValue(99999999999)
-                    ->required()
-                    ->live(onBlur: true)
-                    ->dehydrated()
-                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
                 TextInput::make('price_subtotal')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.sub-total'))
                     ->default(0)

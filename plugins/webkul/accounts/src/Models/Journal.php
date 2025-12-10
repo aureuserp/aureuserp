@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Enums\JournalType;
+use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Settings\DefaultAccountSettings;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Security\Models\User;
@@ -109,7 +110,7 @@ class Journal extends Model implements Sortable
     {
         return $this->hasMany(PaymentMethodLine::class)
             ->whereHas('paymentMethod', function ($q) {
-                $q->where('payment_type', 'inbound');
+                $q->where('payment_type', PaymentType::RECEIVE);
             });
     }
 
@@ -117,13 +118,13 @@ class Journal extends Model implements Sortable
     {
         return $this->hasMany(PaymentMethodLine::class)
             ->whereHas('paymentMethod', function ($q) {
-                $q->where('payment_type', 'outbound');
+                $q->where('payment_type', PaymentType::SEND);
             });
     }
 
-    public function getAvailablePaymentMethodLines(string $paymentType)
+    public function getAvailablePaymentMethodLines($paymentType)
     {
-        if ($paymentType == 'inbound') {
+        if ($paymentType == PaymentType::RECEIVE) {
             return $this->inboundPaymentMethodLines;
         } else {
             return $this->outboundPaymentMethodLines;
@@ -158,7 +159,7 @@ class Journal extends Model implements Sortable
     public static function getDefaultInboundPaymentMethodLines(): array
     {
         $defaultMethods = PaymentMethod::where('code', 'manual')
-            ->where('payment_type', 'inbound')
+            ->where('payment_type', PaymentType::RECEIVE)
             ->get();
 
         return $defaultMethods->map(function ($method) {
@@ -176,7 +177,7 @@ class Journal extends Model implements Sortable
     public static function getDefaultOutboundPaymentMethodLines(): array
     {
         $defaultMethods = PaymentMethod::where('code', 'manual')
-            ->where('payment_type', 'outbound')
+            ->where('payment_type', PaymentType::SEND)
             ->get();
 
         return $defaultMethods->map(function ($method) {
