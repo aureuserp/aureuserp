@@ -29,7 +29,7 @@ class ResetToDraftAction extends Action
                     return;
                 }
 
-                $record = AccountFacade::resetToDraft($record);
+                $record = AccountFacade::resetToDraftMove($record);
 
                 $record->save();
 

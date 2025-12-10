@@ -41,7 +41,7 @@ class AccountManager
         return Arr::get($this->context, $key);
     }
 
-    public function cancel(AccountMove $record): AccountMove
+    public function cancelMove(AccountMove $record): AccountMove
     {
         $record->state = MoveState::CANCEL;
 
@@ -52,7 +52,7 @@ class AccountManager
         return $record;
     }
 
-    public function confirm(AccountMove $record): AccountMove
+    public function confirmMove(AccountMove $record): AccountMove
     {
         $record->state = MoveState::POSTED;
 
@@ -65,7 +65,7 @@ class AccountManager
         return $record;
     }
 
-    public function setAsChecked(AccountMove $record): AccountMove
+    public function setAsCheckedMove(AccountMove $record): AccountMove
     {
         $record->checked = true;
 
@@ -76,7 +76,7 @@ class AccountManager
         return $record;
     }
 
-    public function resetToDraft(AccountMove $record): AccountMove
+    public function resetToDraftMove(AccountMove $record): AccountMove
     {
         $record->state = MoveState::DRAFT;
 
@@ -89,7 +89,7 @@ class AccountManager
         return $record;
     }
 
-    public function printAndSend(AccountMove $record, array $data): AccountMove
+    public function printAndSendMove(AccountMove $record, array $data): AccountMove
     {
         $partners = Partner::whereIn('id', $data['partners'])->get();
 
@@ -995,7 +995,7 @@ class AccountManager
         foreach ($paymentsToProcess as $vals) {
             $this->postPayment($vals['payment']);
 
-            $this->confirm($vals['payment']->move);
+            $this->confirmMove($vals['payment']->move);
         }
     }
 

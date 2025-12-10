@@ -6,6 +6,7 @@ use Filament\Actions\Action;
 use Livewire\Component;
 use Webkul\Account\Enums\PaymentStatus;
 use Webkul\Account\Models\Payment;
+use Webkul\Account\Facades\Account as AccountFacade;
 
 class ConfirmAction extends Action
 {
@@ -25,6 +26,12 @@ class ConfirmAction extends Action
             ->action(function (Payment $record, Component $livewire): void {
                 $record->state = PaymentStatus::IN_PROCESS;
                 $record->save();
+
+                $record->generateJournalEntry();
+
+                AccountFacade::postPayment($record);
+
+                AccountFacade::confirmMove($record->move);
 
                 $livewire->refreshFormData(['state']);
             })

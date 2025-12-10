@@ -23,7 +23,7 @@ class SetAsCheckedAction extends Action
             ->label(__('accounts::filament/resources/invoice/actions/set-as-checked-action.title'))
             ->color('gray')
             ->action(function (Move $record, $livewire): void {
-                $record = AccountFacade::setAsChecked($record);
+                $record = AccountFacade::setAsCheckedMove($record);
 
                 $livewire->refreshFormData(['checked']);
             })

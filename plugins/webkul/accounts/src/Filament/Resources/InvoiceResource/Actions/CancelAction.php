@@ -24,7 +24,7 @@ class CancelAction extends Action
             ->label(__('accounts::filament/resources/invoice/actions/cancel-action.title'))
             ->color('gray')
             ->action(function (Move $record, Component $livewire): void {
-                $record = AccountFacade::cancel($record);
+                $record = AccountFacade::cancelMove($record);
 
                 $livewire->refreshFormData(['state', 'parent_state']);
             })

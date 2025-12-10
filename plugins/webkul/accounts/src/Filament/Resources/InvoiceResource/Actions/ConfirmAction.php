@@ -31,7 +31,7 @@ class ConfirmAction extends Action
 
                 $record->checked = $record->journal->auto_check_on_post;
 
-                $record = AccountFacade::confirm($record);
+                $record = AccountFacade::confirmMove($record);
 
                 $livewire->refreshFormData(['state', 'parent_state']);
             })
