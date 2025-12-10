@@ -29,8 +29,7 @@ use Webkul\Support\Package;
 
 class PurchaseOrder
 {
-
-    static public function getOrderSettings(): OrderSettings
+    public static function getOrderSettings(): OrderSettings
     {
         return once(fn () => app(OrderSettings::class));
     }

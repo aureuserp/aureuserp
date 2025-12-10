@@ -4,6 +4,7 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Enums\AccountType;
@@ -15,7 +16,6 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
-use Illuminate\Support\Facades\DB;
 
 class MoveLine extends Model implements Sortable
 {
@@ -240,7 +240,7 @@ class MoveLine extends Model implements Sortable
 
             $moveLine->computeName();
 
-            //TODO: check
+            // TODO: check
             $moveLine->computeTaxTagInvert();
         });
     }
@@ -309,7 +309,7 @@ class MoveLine extends Model implements Sortable
         }
 
         $originalName = $this->getOriginal('name');
-        
+
         $originalGetName = false;
 
         if ($this->exists) {
@@ -497,20 +497,20 @@ class MoveLine extends Model implements Sortable
         }
 
         $debit = PartialReconcile::select(
-                DB::raw("COALESCE(SUM(amount), 0) AS amount"),
-                DB::raw("COALESCE(SUM(debit_amount_currency), 0) AS amount_currency"),
-                'currencies.decimal_places'
-            )
+            DB::raw('COALESCE(SUM(amount), 0) AS amount'),
+            DB::raw('COALESCE(SUM(debit_amount_currency), 0) AS amount_currency'),
+            'currencies.decimal_places'
+        )
             ->join('currencies', 'currencies.id', '=', 'accounts_partial_reconciles.debit_currency_id')
             ->where('debit_move_id', $this->id)
             ->groupBy('currencies.decimal_places')
             ->first();
 
         $credit = PartialReconcile::select(
-                DB::raw("COALESCE(SUM(amount), 0) AS amount"),
-                DB::raw("COALESCE(SUM(credit_amount_currency), 0) AS amount_currency"),
-                'currencies.decimal_places'
-            )
+            DB::raw('COALESCE(SUM(amount), 0) AS amount'),
+            DB::raw('COALESCE(SUM(credit_amount_currency), 0) AS amount_currency'),
+            'currencies.decimal_places'
+        )
             ->join('currencies', 'currencies.id', '=', 'accounts_partial_reconciles.credit_currency_id')
             ->where('credit_move_id', $this->id)
             ->groupBy('currencies.decimal_places')

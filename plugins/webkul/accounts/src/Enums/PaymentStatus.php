@@ -2,10 +2,10 @@
 
 namespace Webkul\Account\Enums;
 
-use Filament\Support\Contracts\HasLabel;
 use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasLabel;
 
-enum PaymentStatus: string implements HasLabel, HasColor
+enum PaymentStatus: string implements HasColor, HasLabel
 {
     case DRAFT = 'draft';
 
@@ -31,17 +31,17 @@ enum PaymentStatus: string implements HasLabel, HasColor
         };
     }
 
-        public function getColor(): ?string
-        {
-            return match ($this) {
-                self::DRAFT      => 'gray',
-                self::IN_PROCESS => 'blue',
-                self::PAID       => 'success',
-                self::NOT_PAID   => 'warning',
-                self::CANCELED   => 'danger',
-                self::REJECTED   => 'danger',
-            };
-        }
+    public function getColor(): ?string
+    {
+        return match ($this) {
+            self::DRAFT      => 'gray',
+            self::IN_PROCESS => 'blue',
+            self::PAID       => 'success',
+            self::NOT_PAID   => 'warning',
+            self::CANCELED   => 'danger',
+            self::REJECTED   => 'danger',
+        };
+    }
 
     public static function options(): array
     {

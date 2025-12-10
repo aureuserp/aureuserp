@@ -2,54 +2,54 @@
 
 return [
     'assets' => [
-        'label' => 'Assets',
+        'label'   => 'Assets',
         'options' => [
-            'receivable' => 'Receivable',
-            'cash' => 'Bank and Cash',
-            'current' => 'Current Assets',
+            'receivable'  => 'Receivable',
+            'cash'        => 'Bank and Cash',
+            'current'     => 'Current Assets',
             'non-current' => 'Non-current Assets',
             'prepayments' => 'Prepayments',
-            'fixed' => 'Fixed Assets',
+            'fixed'       => 'Fixed Assets',
         ],
     ],
 
     'liabilities' => [
-        'label' => 'Liabilities',
+        'label'   => 'Liabilities',
         'options' => [
-            'payable' => 'Payable',
+            'payable'     => 'Payable',
             'credit-card' => 'Credit Card',
-            'current' => 'Current Liabilities',
+            'current'     => 'Current Liabilities',
             'non-current' => 'Non-current Liabilities',
         ],
     ],
 
     'equity' => [
-        'label' => 'Equity',
+        'label'   => 'Equity',
         'options' => [
-            'equity' => 'Equity',
+            'equity'     => 'Equity',
             'unaffected' => 'Current Year Earnings',
         ],
     ],
 
     'income' => [
-        'label' => 'Income',
+        'label'   => 'Income',
         'options' => [
             'income' => 'Income',
-            'other' => 'Other Income',
+            'other'  => 'Other Income',
         ],
     ],
 
     'expenses' => [
-        'label' => 'Expenses',
+        'label'   => 'Expenses',
         'options' => [
-            'expense' => 'Expenses',
+            'expense'      => 'Expenses',
             'depreciation' => 'Depreciation',
-            'direct-cost' => 'Cost of Revenue',
+            'direct-cost'  => 'Cost of Revenue',
         ],
     ],
 
     'off-balance' => [
-        'label' => 'Off-Balance Sheet',
+        'label'   => 'Off-Balance Sheet',
         'options' => [
             'off-balance' => 'Off-Balance Sheet',
         ],

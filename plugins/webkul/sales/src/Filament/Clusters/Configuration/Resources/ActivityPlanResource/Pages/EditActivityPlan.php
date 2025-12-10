@@ -38,6 +38,7 @@ class EditActivityPlan extends EditRecord
                 ),
         ];
     }
+
     public function getSubNavigation(): array
     {
         if (filled($cluster = static::getCluster())) {

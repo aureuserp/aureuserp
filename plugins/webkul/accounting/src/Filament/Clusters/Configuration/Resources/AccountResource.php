@@ -2,9 +2,9 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Configuration\Resources;
 
+use Webkul\Account\Filament\Resources\AccountResource as BaseAccountResource;
 use Webkul\Accounting\Filament\Clusters\Configuration;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\AccountResource\Pages\ManageAccounts;
-use Webkul\Account\Filament\Resources\AccountResource as BaseAccountResource;
 
 class AccountResource extends BaseAccountResource
 {

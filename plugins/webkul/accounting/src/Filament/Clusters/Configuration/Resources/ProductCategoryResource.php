@@ -4,6 +4,7 @@ namespace Webkul\Accounting\Filament\Clusters\Configuration\Resources;
 
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
+use Webkul\Account\Filament\Resources\ProductCategoryResource as BaseProductCategoryResource;
 use Webkul\Accounting\Filament\Clusters\Configuration;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\ProductCategoryResource\Pages\CreateProductCategory;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\ProductCategoryResource\Pages\EditProductCategory;
@@ -11,7 +12,6 @@ use Webkul\Accounting\Filament\Clusters\Configuration\Resources\ProductCategoryR
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\ProductCategoryResource\Pages\ManageProducts;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\ProductCategoryResource\Pages\ViewProductCategory;
 use Webkul\Accounting\Models\Category;
-use Webkul\Account\Filament\Resources\ProductCategoryResource as BaseProductCategoryResource;
 
 class ProductCategoryResource extends BaseProductCategoryResource
 {

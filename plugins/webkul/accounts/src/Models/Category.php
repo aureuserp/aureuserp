@@ -2,10 +2,10 @@
 
 namespace Webkul\Account\Models;
 
-use Webkul\Account\Enums\AccountType;
-use Webkul\Product\Models\Category as BaseCategory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Webkul\Account\Enums\AccountType;
+use Webkul\Product\Models\Category as BaseCategory;
 
 class Category extends BaseCategory
 {

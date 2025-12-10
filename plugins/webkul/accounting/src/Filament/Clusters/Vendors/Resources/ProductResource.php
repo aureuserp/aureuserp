@@ -3,7 +3,7 @@
 namespace Webkul\Accounting\Filament\Clusters\Vendors\Resources;
 
 use Filament\Resources\Pages\Page;
-use Webkul\Field\Filament\Traits\HasCustomFields;
+use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Accounting\Filament\Clusters\Vendors;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\ProductResource\Pages\CreateProduct;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\ProductResource\Pages\EditProduct;
@@ -12,7 +12,7 @@ use Webkul\Accounting\Filament\Clusters\Vendors\Resources\ProductResource\Pages\
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\ProductResource\Pages\ManageVariants;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\ProductResource\Pages\ViewProduct;
 use Webkul\Accounting\Models\Product;
-use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
+use Webkul\Field\Filament\Traits\HasCustomFields;
 
 class ProductResource extends BaseProductResource
 {

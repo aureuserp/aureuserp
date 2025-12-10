@@ -5,7 +5,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
-{public function up()
+{
+    public function up()
     {
         Schema::table('accounts_partial_reconciles', function (Blueprint $table) {
             $table->dropForeign(['debit_move_id']);

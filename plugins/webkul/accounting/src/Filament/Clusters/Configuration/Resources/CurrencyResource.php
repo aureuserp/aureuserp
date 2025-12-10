@@ -3,9 +3,9 @@
 namespace Webkul\Accounting\Filament\Clusters\Configuration\Resources;
 
 use Webkul\Accounting\Filament\Clusters\Configuration;
-use Webkul\Accounting\Filament\Clusters\Configuration\Resources\CurrencyResource\Pages\ListCurrencies;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\CurrencyResource\Pages\CreateCurrency;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\CurrencyResource\Pages\EditCurrency;
+use Webkul\Accounting\Filament\Clusters\Configuration\Resources\CurrencyResource\Pages\ListCurrencies;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\CurrencyResource\Pages\ViewCurrency;
 use Webkul\Support\Filament\Resources\CurrencyResource as BaseCurrencyResource;
 
@@ -35,10 +35,10 @@ class CurrencyResource extends BaseCurrencyResource
     public static function getPages(): array
     {
         return [
-            'index' => ListCurrencies::route('/'),
+            'index'  => ListCurrencies::route('/'),
             'create' => CreateCurrency::route('/create'),
-            'edit' => EditCurrency::route('/{record}/edit'),
-            'view' => ViewCurrency::route('/{record}'),
+            'edit'   => EditCurrency::route('/{record}/edit'),
+            'view'   => ViewCurrency::route('/{record}'),
         ];
     }
 }

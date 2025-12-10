@@ -71,9 +71,9 @@ class FiscalPosition extends Model implements Sortable
         $mapping = $this->accounts()
             ->where('account_source_id', $account->id)
             ->first();
-        
-        return $mapping 
-            ? Account::find($mapping->account_destination_id) 
+
+        return $mapping
+            ? Account::find($mapping->account_destination_id)
             : $account;
     }
 }

@@ -16,11 +16,11 @@ class PermissionManager
                 $entity === 'BezhanSalleh\FilamentShield\Resources\Roles\RoleResource'
                 || $entity === 'App\Filament\Resources\RoleResource'
             ) {
-                return $affix . '_role';
+                return $affix.'_role';
             }
 
             if (
-                class_exists($entity) 
+                class_exists($entity)
                 && method_exists($entity, 'getModel')
             ) {
                 $resourceIdentifier = Str::of($entity)
@@ -55,17 +55,17 @@ class PermissionManager
             }
 
             if (Str::contains($entity, 'Pages\\')) {
-                return 'page_' . Str::snake(class_basename($entity));
+                return 'page_'.Str::snake(class_basename($entity));
             }
 
             if (
-                Str::contains($entity, 'Widgets\\') 
+                Str::contains($entity, 'Widgets\\')
                 || Str::endsWith($entity, 'Widget')
             ) {
-                return 'widget_' . Str::snake(class_basename($entity));
+                return 'widget_'.Str::snake(class_basename($entity));
             }
 
-            return $affix . '_' . Str::snake($subject);
+            return $affix.'_'.Str::snake($subject);
         });
     }
 
@@ -94,7 +94,7 @@ class PermissionManager
             'Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource',
             'Webkul\Invoice\Filament\Clusters\Configuration\Resources\ProductCategoryResource',
             'Webkul\Invoice\Filament\Clusters\Configuration\Resources\BankAccountResource',
-            'Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource'
+            'Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource',
         ];
     }
 }

@@ -89,5 +89,4 @@ class BankAccountPolicy
     {
         return $user->can('restore_any_invoice_bank::account');
     }
-
 }

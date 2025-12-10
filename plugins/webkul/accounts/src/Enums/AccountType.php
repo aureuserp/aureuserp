@@ -106,11 +106,11 @@ enum AccountType: string implements HasLabel
     public static function groupedOptions(): array
     {
         return [
-            __('accounts::enums/account-type.assets.label') => self::assets(),
+            __('accounts::enums/account-type.assets.label')      => self::assets(),
             __('accounts::enums/account-type.liabilities.label') => self::liabilities(),
-            __('accounts::enums/account-type.equity.label') => self::equity(),
-            __('accounts::enums/account-type.income.label') => self::income(),
-            __('accounts::enums/account-type.expenses.label') => self::expenses(),
+            __('accounts::enums/account-type.equity.label')      => self::equity(),
+            __('accounts::enums/account-type.income.label')      => self::income(),
+            __('accounts::enums/account-type.expenses.label')    => self::expenses(),
             __('accounts::enums/account-type.off-balance.label') => self::offBalance(),
         ];
     }

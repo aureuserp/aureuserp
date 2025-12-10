@@ -89,5 +89,4 @@ class IncotermPolicy
     {
         return $user->can('restore_any_inco::term');
     }
-
 }

@@ -4,9 +4,9 @@ namespace Webkul\Accounting;
 
 use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
-use Webkul\Accounting\Filament\Clusters\Settings\Pages\ManageProducts;
 use Filament\Panel;
 use ReflectionClass;
+use Webkul\Accounting\Filament\Clusters\Settings\Pages\ManageProducts;
 use Webkul\Support\Package;
 
 class AccountingPlugin implements Plugin
@@ -39,7 +39,7 @@ class AccountingPlugin implements Plugin
                             ->url(fn () => ManageProducts::getUrl())
                             ->group(fn () => __('accounting::app.navigation.settings.group'))
                             ->sort(4)
-                            ->visible(fn() => ManageProducts::canAccess()),
+                            ->visible(fn () => ManageProducts::canAccess()),
                     ]);
             });
     }

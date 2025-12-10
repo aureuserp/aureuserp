@@ -21,14 +21,15 @@ class RejectAction extends Action
         $this
             ->label(__('accounts::filament/resources/payment/actions/reject-action.title'))
             ->color('danger')
+            ->requiresConfirmation()
             ->action(function (Payment $record, Component $livewire): void {
-                $record->state = PaymentStatus::REJECTED->value;
+                $record->state = PaymentStatus::REJECTED;
                 $record->save();
 
                 $livewire->refreshFormData(['state']);
             })
             ->hidden(function (Payment $record) {
-                return $record->state != PaymentStatus::IN_PROCESS->value;
+                return $record->state != PaymentStatus::IN_PROCESS;
             });
     }
 }

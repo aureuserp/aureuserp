@@ -8,11 +8,11 @@ use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Webkul\Accounting\Filament\Clusters\Vendors\Resources\ProductResource;
 use Webkul\Inventory\Enums\ProductTracking;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
-use Webkul\Accounting\Filament\Clusters\Vendors\Resources\ProductResource;
 
 class ManageMoves extends ManageRelatedRecords
 {

@@ -7,13 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\JournalType;
+use Webkul\Account\Enums\PaymentType;
+use Webkul\Account\Settings\DefaultAccountSettings;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
-use Webkul\Account\Enums\PaymentType;
-use Webkul\Account\Settings\DefaultAccountSettings;
 
 class PaymentRegister extends Model
 {
@@ -171,8 +171,8 @@ class PaymentRegister extends Model
             && $this->currency_id != $this->source_currency_id
             && $this->writeoff_account_id
             && in_array($this->writeoff_account_id, [
-                (new DefaultAccountSettings())->expense_currency_exchange_account_id,
-                (new DefaultAccountSettings())->income_currency_exchange_account_id,
+                (new DefaultAccountSettings)->expense_currency_exchange_account_id,
+                (new DefaultAccountSettings)->income_currency_exchange_account_id,
             ]);
     }
 

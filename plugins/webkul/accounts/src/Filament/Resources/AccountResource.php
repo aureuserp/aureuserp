@@ -201,7 +201,7 @@ class AccountResource extends Resource
                             ->icon('heroicon-o-document-text')
                             ->placeholder('-')
                             ->columnSpan(1),
-                            
+
                         Section::make(__('accounts::filament/resources/account.infolist.sections.entries.accounting'))
                             ->schema([
                                 TextEntry::make('account_type')

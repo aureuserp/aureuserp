@@ -5,8 +5,8 @@ namespace Webkul\Account\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\Company;
+use Webkul\Support\Models\Currency;
 
 class AccountSeeder extends Seeder
 {
@@ -750,7 +750,7 @@ class AccountSeeder extends Seeder
         DB::table('accounts_accounts')->insert($accounts);
 
         $accountCompanyMappings = [];
-        
+
         foreach ($accounts as $account) {
             $accountCompanyMappings[] = [
                 'account_id' => $account['id'],

@@ -21,14 +21,15 @@ class CancelAction extends Action
         $this
             ->label(__('accounts::filament/resources/payment/actions/cancel-action.title'))
             ->color('gray')
+            ->requiresConfirmation()
             ->action(function (Payment $record, Component $livewire): void {
-                $record->state = PaymentStatus::CANCELED->value;
+                $record->state = PaymentStatus::CANCELED;
                 $record->save();
 
                 $livewire->refreshFormData(['state']);
             })
             ->hidden(function (Payment $record) {
-                return $record->state == PaymentStatus::CANCELED->value;
+                return $record->state == PaymentStatus::CANCELED;
             });
     }
 }

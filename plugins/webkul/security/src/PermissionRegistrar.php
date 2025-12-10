@@ -362,10 +362,10 @@ class PermissionRegistrar
     {
         return collect(array_map(function ($item) {
             return [
-                'id' => $item['a'] ?? null,
-                'name' => $item['b'] ?? null,
+                'id'         => $item['a'] ?? null,
+                'name'       => $item['b'] ?? null,
                 'guard_name' => $item['c'] ?? null,
-                'roles' => array_values(
+                'roles'      => array_values(
                     array_intersect_key($this->cachedRoles, array_flip($item['r'] ?? []))
                 ),
             ];

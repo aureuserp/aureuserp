@@ -4,22 +4,22 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Webkul\Account\Enums\AccountType;
+use Webkul\Account\Enums\JournalType;
+use Webkul\Account\Enums\MoveType;
+use Webkul\Account\Enums\PaymentStatus;
+use Webkul\Account\Enums\PaymentType;
+use Webkul\Account\Facades\Account as AccountFacade;
+use Webkul\Account\Settings\DefaultAccountSettings;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Partner\Models\Partner;
 use Webkul\Payment\Models\PaymentToken;
-use Webkul\Account\Enums\AccountType;
-use Webkul\Account\Enums\MoveType;
-use Webkul\Account\Enums\JournalType;
 use Webkul\Payment\Models\PaymentTransaction;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
-use Webkul\Account\Settings\DefaultAccountSettings;
-use Webkul\Account\Enums\PaymentStatus;
-use Webkul\Account\Enums\PaymentType;
-use Webkul\Account\Facades\Account as AccountFacade;
 
 class Payment extends Model
 {
@@ -58,8 +58,8 @@ class Payment extends Model
     ];
 
     protected $casts = [
-        'date' => 'date',
-        'state' => PaymentStatus::class,
+        'date'         => 'date',
+        'state'        => PaymentStatus::class,
         'payment_type' => PaymentType::class,
     ];
 
@@ -177,24 +177,24 @@ class Payment extends Model
     {
         return [];
     }
-    
+
     public function getValidLiquidityAccounts()
     {
         return collect([
             $this->journal->defaultAccount ?? null,
             $this->paymentMethodLine->paymentAccount ?? null,
         ])
-        ->merge($this->journal->inboundPaymentMethodLines->pluck('paymentAccount'))
-        ->merge($this->journal->outboundPaymentMethodLines->pluck('paymentAccount'))
-        ->filter()
-        ->unique('id')
-        ->values();
+            ->merge($this->journal->inboundPaymentMethodLines->pluck('paymentAccount'))
+            ->merge($this->journal->outboundPaymentMethodLines->pluck('paymentAccount'))
+            ->filter()
+            ->unique('id')
+            ->values();
     }
 
-    //TODO: need to fetch company outstanding account based on payment type
+    // TODO: need to fetch company outstanding account based on payment type
     public function getOutstandingAccount($paymentType)
     {
-        $transferAccountId = (new DefaultAccountSettings())->transfer_account_id;
+        $transferAccountId = (new DefaultAccountSettings)->transfer_account_id;
 
         return Account::find($transferAccountId);
     }
@@ -238,7 +238,7 @@ class Payment extends Model
             $prefix = '';
 
             if (
-                $this->journal->refund_sequence 
+                $this->journal->refund_sequence
                 && in_array($this->move_type, [MoveType::OUT_REFUND, MoveType::IN_REFUND])
             ) {
                 $prefix .= 'R';
@@ -302,7 +302,7 @@ class Payment extends Model
         if (
             $this->state === PaymentStatus::IN_PROCESS
             && $this->invoices()->exists()
-            && $this->invoices->every(fn($invoice) => $invoice->payment_state === PaymentStatus::PAID)
+            && $this->invoices->every(fn ($invoice) => $invoice->payment_state === PaymentStatus::PAID)
         ) {
             $this->state = PaymentStatus::PAID;
         }
@@ -326,10 +326,10 @@ class Payment extends Model
             return;
         }
 
-        if (! $this->currency_id || !$this->id || !$this->move_id) {
+        if (! $this->currency_id || ! $this->id || ! $this->move_id) {
             $this->is_reconciled = false;
             $this->is_matched = false;
-            
+
             return;
         }
 
@@ -344,14 +344,14 @@ class Payment extends Model
             ? 'amount_residual'
             : 'amount_residual_currency';
 
-        $this->is_matched = $this->journal->default_account_id 
+        $this->is_matched = $this->journal->default_account_id
             && $liquidity->pluck('account_id')->contains($this->journal->default_account_id)
                 ? true
                 : $this->currency->isZero($liquidity->sum($residualField));
 
         $reconcileLines = $counterpart
             ->merge($writeoff)
-            ->filter(fn($line) => $line->account->reconcile);
+            ->filter(fn ($line) => $line->account->reconcile);
 
         $this->is_reconciled = $this->currency->isZero($reconcileLines->sum($residualField));
     }
@@ -383,11 +383,11 @@ class Payment extends Model
         $accountMapping = [
             'customer' => [
                 'partner_property' => 'property_account_receivable_id',
-                'account_type' => AccountType::ASSET_RECEIVABLE,
+                'account_type'     => AccountType::ASSET_RECEIVABLE,
             ],
             'supplier' => [
                 'partner_property' => 'property_account_payable_id',
-                'account_type' => AccountType::LIABILITY_PAYABLE,
+                'account_type'     => AccountType::LIABILITY_PAYABLE,
             ],
         ];
 
@@ -457,26 +457,26 @@ class Payment extends Model
         }
 
         $move = Move::create([
-            'move_type' => MoveType::ENTRY,
-            'ref' => $this->memo,
-            'date' => $this->date,
-            'journal_id' => $this->journal_id,
-            'company_id' => $this->company_id,
-            'partner_id' => $this->partner_id,
-            'currency_id' => $this->currency_id,
-            'partner_bank_id' => $this->partner_bank_id,
+            'move_type'         => MoveType::ENTRY,
+            'ref'               => $this->memo,
+            'date'              => $this->date,
+            'journal_id'        => $this->journal_id,
+            'company_id'        => $this->company_id,
+            'partner_id'        => $this->partner_id,
+            'currency_id'       => $this->currency_id,
+            'partner_bank_id'   => $this->partner_bank_id,
             'origin_payment_id' => $this->id,
         ]);
 
         $lines = $lines ?: $this->prepareMoveLineDefaultVals($writeOffLineVals, $forceBalance);
 
-        collect($lines)->each(fn($lineVals) => MoveLine::create($lineVals + ['move_id' => $move->id]));
+        collect($lines)->each(fn ($lineVals) => MoveLine::create($lineVals + ['move_id' => $move->id]));
 
         AccountFacade::computeAccountMove($move);
 
         parent::updateQuietly([
             'move_id' => $move->id,
-            'state' => PaymentStatus::IN_PROCESS,
+            'state'   => PaymentStatus::IN_PROCESS,
         ]);
     }
 
@@ -484,8 +484,8 @@ class Payment extends Model
     {
         if (! $this->outstanding_account_id) {
             throw new \Exception(
-                "You can't create a new payment without an outstanding payments/receipts account set either on the company or the " . 
-                $this->paymentMethodLine->name . " payment method in the " . $this->journal->display_name . " journal."
+                "You can't create a new payment without an outstanding payments/receipts account set either on the company or the ".
+                $this->paymentMethodLine->name.' payment method in the '.$this->journal->display_name.' journal.'
             );
         }
 
@@ -496,11 +496,11 @@ class Payment extends Model
 
         $liquidityAmountCurrency = match ($this->payment_type) {
             PaymentType::RECEIVE => $this->amount,
-            PaymentType::SEND => -$this->amount,
-            default => 0.0,
+            PaymentType::SEND    => -$this->amount,
+            default              => 0.0,
         };
 
-        $liquidityBalance = !$writeOffLineVals && $forceBalance !== null
+        $liquidityBalance = ! $writeOffLineVals && $forceBalance !== null
             ? ($liquidityAmountCurrency > 0 ? 1 : -1) * abs($forceBalance)
             : $this->currency->convert(
                 $liquidityAmountCurrency,
@@ -508,7 +508,7 @@ class Payment extends Model
                 $this->company,
                 $this->date
             );
-        
+
         $counterpartAmountCurrency = -$liquidityAmountCurrency - $writeOffAmountCurrency;
         $counterpartBalance = -$liquidityBalance - $writeOffBalance;
 
@@ -516,75 +516,75 @@ class Payment extends Model
 
         $lineValsList = [
             [
-                'name' => $liquidityLineName,
-                'date_maturity' => $this->date,
+                'name'            => $liquidityLineName,
+                'date_maturity'   => $this->date,
                 'amount_currency' => $liquidityAmountCurrency,
-                'currency_id' => $this->currency_id,
-                'debit' => $liquidityBalance > 0.0 ? $liquidityBalance : 0.0,
-                'credit' => $liquidityBalance < 0.0 ? -$liquidityBalance : 0.0,
-                'balance' => $liquidityBalance,
-                'partner_id' => $this->partner_id,
-                'account_id' => $this->outstanding_account_id,
+                'currency_id'     => $this->currency_id,
+                'debit'           => $liquidityBalance > 0.0 ? $liquidityBalance : 0.0,
+                'credit'          => $liquidityBalance < 0.0 ? -$liquidityBalance : 0.0,
+                'balance'         => $liquidityBalance,
+                'partner_id'      => $this->partner_id,
+                'account_id'      => $this->outstanding_account_id,
             ], [
-                'name' => $lineName,
-                'date_maturity' => $this->date,
+                'name'            => $lineName,
+                'date_maturity'   => $this->date,
                 'amount_currency' => $counterpartAmountCurrency,
-                'currency_id' => $this->currency_id,
-                'debit' => $counterpartBalance > 0.0 ? $counterpartBalance : 0.0,
-                'credit' => $counterpartBalance < 0.0 ? -$counterpartBalance : 0.0,
-                'balance' => $counterpartBalance,
-                'partner_id' => $this->partner_id,
-                'account_id' => $this->destination_account_id,
+                'currency_id'     => $this->currency_id,
+                'debit'           => $counterpartBalance > 0.0 ? $counterpartBalance : 0.0,
+                'credit'          => $counterpartBalance < 0.0 ? -$counterpartBalance : 0.0,
+                'balance'         => $counterpartBalance,
+                'partner_id'      => $this->partner_id,
+                'account_id'      => $this->destination_account_id,
             ],
         ];
-        
+
         return array_merge($lineValsList, $writeOffLineValsList);
     }
 
     public function synchronizeToMoves($changedFields)
     {
-        if (!array_intersect($changedFields, $this->getTriggerFieldsToSynchronize())) {
+        if (! array_intersect($changedFields, $this->getTriggerFieldsToSynchronize())) {
             return;
         }
 
         foreach ($this as $pay) {
             [$liquidityLines, $counterpartLines, $writeoffLines] = $pay->seekForLines();
-            
+
             $writeOffLineVals = [];
 
             if ($liquidityLines->isNotEmpty() && $counterpartLines->isNotEmpty() && $writeoffLines->isNotEmpty()) {
                 $writeOffLineVals[] = [
-                    'name' => $writeoffLines[0]->name,
-                    'account_id' => $writeoffLines[0]->account_id,
-                    'partner_id' => $writeoffLines[0]->partner_id,
-                    'currency_id' => $writeoffLines[0]->currency_id,
+                    'name'            => $writeoffLines[0]->name,
+                    'account_id'      => $writeoffLines[0]->account_id,
+                    'partner_id'      => $writeoffLines[0]->partner_id,
+                    'currency_id'     => $writeoffLines[0]->currency_id,
                     'amount_currency' => $writeoffLines->sum('amount_currency'),
-                    'balance' => $writeoffLines->sum('balance'),
+                    'balance'         => $writeoffLines->sum('balance'),
                 ];
             }
-            
+
             $lineValsList = $pay->prepareMoveLineDefaultVals($writeOffLineVals);
-            
+
             $lineIdsCommands = [
-                $liquidityLines->isNotEmpty() 
-                    ? ['id' => $liquidityLines->first()->id, ...$lineValsList[0]] 
+                $liquidityLines->isNotEmpty()
+                    ? ['id' => $liquidityLines->first()->id, ...$lineValsList[0]]
                     : $lineValsList[0],
-                $counterpartLines->isNotEmpty() 
-                    ? ['id' => $counterpartLines->first()->id, ...$lineValsList[1]] 
-                    : $lineValsList[1]
+                $counterpartLines->isNotEmpty()
+                    ? ['id' => $counterpartLines->first()->id, ...$lineValsList[1]]
+                    : $lineValsList[1],
             ];
-            
+
             $lineIdsCommands = array_merge(
                 $lineIdsCommands,
-                $writeoffLines->map(fn($line) => ['delete' => $line->id])->all(),
+                $writeoffLines->map(fn ($line) => ['delete' => $line->id])->all(),
                 array_slice($lineValsList, 2)
             );
-            
+
             $pay->move->update([
-                'partner_id' => $pay->partner_id,
-                'currency_id' => $pay->currency_id,
+                'partner_id'      => $pay->partner_id,
+                'currency_id'     => $pay->currency_id,
                 'partner_bank_id' => $pay->partner_bank_id,
-                'line_ids' => $lineIdsCommands,
+                'line_ids'        => $lineIdsCommands,
             ]);
         }
     }
@@ -596,13 +596,13 @@ class Payment extends Model
         $validAccountTypes = [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE];
 
         $validLiquidityAccounts = $this->getValidLiquidityAccounts();
-        
+
         foreach ($this->move->lines as $line) {
             if ($validLiquidityAccounts->pluck('id')->contains($line->account_id)) {
                 $lines[0]->push($line);
             } elseif (
                 in_array($line->account->account_type, $validAccountTypes)
-                || $line->account_id == (new DefaultAccountSettings())->transfer_account_id
+                || $line->account_id == (new DefaultAccountSettings)->transfer_account_id
             ) {
                 $lines[1]->push($line);
             } else {
@@ -629,7 +629,6 @@ class Payment extends Model
             ? $this->paymentMethodLine->name
             : 'No Payment Method';
 
-        
         if ($this->memo) {
             return [
                 ['type' => 'label', 'value' => $label],

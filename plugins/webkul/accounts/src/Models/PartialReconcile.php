@@ -4,8 +4,8 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Webkul\Support\Models\Currency;
 use Webkul\Security\Models\User;
+use Webkul\Support\Models\Currency;
 
 class PartialReconcile extends Model
 {
@@ -57,7 +57,7 @@ class PartialReconcile extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
-    
+
     protected static function boot()
     {
         parent::boot();
@@ -93,7 +93,7 @@ class PartialReconcile extends Model
     public function computeMaxDate()
     {
         $debitDate = $this->debitMove->move->date;
-        
+
         $creditDate = $this->creditMove->move->date;
 
         $this->max_date = ($debitDate > $creditDate) ? $debitDate : $creditDate;

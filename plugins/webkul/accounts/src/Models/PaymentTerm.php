@@ -66,8 +66,7 @@ class PaymentTerm extends Model implements Sortable
         $untaxedAmount,
         $untaxedAmountCurrency,
         $cashRounding = null
-    )
-    {
+    ) {
         $companyCurrency = $company->currency;
 
         $totalAmount = $taxAmount + $untaxedAmount;
@@ -77,11 +76,11 @@ class PaymentTerm extends Model implements Sortable
         $rate = $totalAmount ? abs($totalAmountCurrency / $totalAmount) : 0.0;
 
         $paymentTerm = [
-            'total_amount' => $totalAmount,
+            'total_amount'        => $totalAmount,
             'discount_percentage' => $this->early_discount ? $this->discount_percentage : 0.0,
-            'discount_date' => $this->early_discount ? $dateRef->copy()->addDays($this->discount_days ?? 0) : null,
-            'discount_balance' => 0,
-            'lines' => [],
+            'discount_date'       => $this->early_discount ? $dateRef->copy()->addDays($this->discount_days ?? 0) : null,
+            'discount_balance'    => 0,
+            'lines'               => [],
         ];
 
         if ($this->early_discount) {
@@ -100,7 +99,7 @@ class PaymentTerm extends Model implements Sortable
             if ($cashRounding) {
                 $cashRoundingDifferenceCurrency = $cashRounding->computeDifference($currency, $paymentTerm['discount_amount_currency']);
 
-                if (!$currency->isZero($cashRoundingDifferenceCurrency)) {
+                if (! $currency->isZero($cashRoundingDifferenceCurrency)) {
                     $paymentTerm['discount_amount_currency'] += $cashRoundingDifferenceCurrency;
                     $paymentTerm['discount_balance'] = $rate ? $companyCurrency->round($paymentTerm['discount_amount_currency'] / $rate) : 0.0;
                 }
@@ -113,7 +112,7 @@ class PaymentTerm extends Model implements Sortable
 
         foreach ($this->dueTerms as $i => $line) {
             $termVals = [
-                'date' => $line->getDueDate($dateRef),
+                'date'           => $line->getDueDate($dateRef),
                 'company_amount' => 0,
                 'foreign_amount' => 0,
             ];
@@ -138,10 +137,10 @@ class PaymentTerm extends Model implements Sortable
                 $termVals['foreign_amount'] = $lineAmountCurrency;
             }
 
-            if ($cashRounding && !$onBalanceLine) {
+            if ($cashRounding && ! $onBalanceLine) {
                 $cashRoundingDifferenceCurrency = $cashRounding->computeDifference($currency, $termVals['foreign_amount']);
 
-                if (!$currency->isZero($cashRoundingDifferenceCurrency)) {
+                if (! $currency->isZero($cashRoundingDifferenceCurrency)) {
                     $termVals['foreign_amount'] += $cashRoundingDifferenceCurrency;
 
                     $termVals['company_amount'] = $rate ? $companyCurrency->round($termVals['foreign_amount'] / $rate) : 0.0;
@@ -151,7 +150,7 @@ class PaymentTerm extends Model implements Sortable
             $residualAmount -= $termVals['company_amount'];
 
             $residualAmountCurrency -= $termVals['foreign_amount'];
-            
+
             $paymentTerm['lines'][] = $termVals;
         }
 

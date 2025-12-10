@@ -2,8 +2,8 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource\Pages;
 
-use Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource;
 use Webkul\Account\Filament\Resources\JournalResource\Pages\ViewJournal as BaseViewJournal;
+use Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource;
 
 class ViewJournal extends BaseViewJournal
 {

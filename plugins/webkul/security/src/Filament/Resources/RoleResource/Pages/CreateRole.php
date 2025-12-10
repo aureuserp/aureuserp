@@ -4,11 +4,10 @@ namespace Webkul\Security\Filament\Resources\RoleResource\Pages;
 
 use BezhanSalleh\FilamentShield\Support\Utils;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Webkul\Security\Filament\Resources\RoleResource;
 use Spatie\Permission\PermissionRegistrar;
+use Webkul\Security\Filament\Resources\RoleResource;
 
 class CreateRole extends CreateRecord
 {
@@ -64,8 +63,8 @@ class CreateRole extends CreateRecord
             $missingPermissions = $chunk->diff($existingPermissions->keys());
 
             if ($missingPermissions->isNotEmpty()) {
-                $insertData = $missingPermissions->map(fn($name) => [
-                    'name' => $name,
+                $insertData = $missingPermissions->map(fn ($name) => [
+                    'name'       => $name,
                     'guard_name' => $guard,
                     'created_at' => now(),
                     'updated_at' => now(),

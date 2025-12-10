@@ -22,9 +22,9 @@ class ConfirmAction extends Action
         parent::setUp();
 
         $this
-            ->color(fn(): string => $this->getRecord()->state === OrderState::DRAFT ? 'gray' : 'primary')
+            ->color(fn (): string => $this->getRecord()->state === OrderState::DRAFT ? 'gray' : 'primary')
             ->label(__('sales::filament/clusters/orders/resources/quotation/actions/confirm.title'))
-            ->hidden(fn($record) => $record->state == OrderState::SALE)
+            ->hidden(fn ($record) => $record->state == OrderState::SALE)
             ->action(function ($record, $livewire) {
                 try {
                     $record = SaleOrder::confirmSaleOrder($record);

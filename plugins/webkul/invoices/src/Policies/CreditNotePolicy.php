@@ -57,5 +57,4 @@ class CreditNotePolicy
     {
         return $user->can('delete_any_credit::notes');
     }
-
 }

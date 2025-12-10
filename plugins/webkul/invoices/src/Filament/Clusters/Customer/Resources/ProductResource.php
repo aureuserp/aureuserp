@@ -5,6 +5,7 @@ namespace Webkul\Invoice\Filament\Clusters\Customer\Resources;
 use Filament\Resources\Pages\Page;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
+use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Invoice\Filament\Clusters\Customer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource\Pages\CreateProduct;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource\Pages\EditProduct;
@@ -13,7 +14,6 @@ use Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource\Pages\Ma
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource\Pages\ManageVariants;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource\Pages\ViewProduct;
 use Webkul\Invoice\Models\Product;
-use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
 
 class ProductResource extends BaseProductResource
 {

@@ -2,8 +2,8 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Customer\Resources\ProductResource\Pages;
 
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\ProductResource;
 use Webkul\Account\Filament\Resources\ProductResource\Pages\ViewProduct as BaseViewProduct;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\ProductResource;
 
 class ViewProduct extends BaseViewProduct
 {

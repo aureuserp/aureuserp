@@ -135,7 +135,7 @@ class Company extends Model implements Sortable
 
         while ($current) {
             $parents->push($current);
-            
+
             $current = $current->parent;
         }
 

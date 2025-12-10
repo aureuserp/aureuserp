@@ -93,7 +93,7 @@ class Currency extends Model
     protected function floatIsZero($value, $precisionDigits = null, $precisionRounding = null)
     {
         $epsilon = $this->floatCheckPrecision($precisionDigits, $precisionRounding);
-        
+
         return $value == 0.0 || abs($this->floatRound($value, $epsilon)) < $epsilon;
     }
 
@@ -106,7 +106,7 @@ class Currency extends Model
 
             return $precisionRounding;
         } elseif ($precisionDigits !== null && $precisionRounding === null) {
-            if (!is_int($precisionDigits) && !$this->isInteger($precisionDigits)) {
+            if (! is_int($precisionDigits) && ! $this->isInteger($precisionDigits)) {
                 throw new \InvalidArgumentException("precision_digits must be a non-negative integer, got {$precisionDigits}");
             }
 
@@ -116,7 +116,7 @@ class Currency extends Model
 
             return pow(10, -$precisionDigits);
         } else {
-            throw new \InvalidArgumentException("exactly one of precision_digits and precision_rounding must be specified");
+            throw new \InvalidArgumentException('exactly one of precision_digits and precision_rounding must be specified');
         }
     }
 
@@ -125,6 +125,7 @@ class Currency extends Model
         if ($precisionRounding == 0) {
             return $value;
         }
+
         return round($value / $precisionRounding) * $precisionRounding;
     }
 

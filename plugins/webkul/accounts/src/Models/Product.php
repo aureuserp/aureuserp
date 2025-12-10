@@ -2,12 +2,11 @@
 
 namespace Webkul\Account\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Webkul\Account\Enums\AccountType;
-use Webkul\Account\Models\Tax;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Webkul\Product\Models\Product as BaseProduct;
 
 class Product extends BaseProduct
@@ -89,7 +88,7 @@ class Product extends BaseProduct
     public function getAccounts(): array
     {
         return [
-            'income' => $this->propertyAccountIncome ?? $this->category?->propertyAccountIncome,
+            'income'  => $this->propertyAccountIncome ?? $this->category?->propertyAccountIncome,
             'expense' => $this->propertyAccountExpense ?? $this->category?->propertyAccountExpense,
         ];
     }
@@ -97,15 +96,15 @@ class Product extends BaseProduct
     public function getAccountsFromFiscalPosition($fiscalPosition = null)
     {
         $accounts = $this->getAccounts();
-        
-        $fiscalPosition = $fiscalPosition ?? new FiscalPosition();
-        
+
+        $fiscalPosition = $fiscalPosition ?? new FiscalPosition;
+
         $result = [];
 
         foreach ($accounts as $key => $account) {
             $result[$key] = $fiscalPosition->mapAccount($account);
         }
-        
+
         return $result;
     }
 

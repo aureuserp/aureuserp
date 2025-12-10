@@ -47,7 +47,7 @@ class PurchasePlugin implements Plugin
                             ->url(fn () => ManageProducts::getUrl())
                             ->group('Purchase')
                             ->sort(4)
-                            ->visible(fn() => ManageProducts::canAccess()),
+                            ->visible(fn () => ManageProducts::canAccess()),
                     ]);
             });
     }
@@ -61,6 +61,6 @@ class PurchasePlugin implements Plugin
     {
         $reflector = new ReflectionClass(get_class($this));
 
-        return dirname($reflector->getFileName()) . ($path ?? '');
+        return dirname($reflector->getFileName()).($path ?? '');
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Configuration\Resources\FiscalPositionResource\Pages;
 
-use Webkul\Accounting\Filament\Clusters\Configuration\Resources\FiscalPositionResource;
 use Webkul\Account\Filament\Resources\FiscalPositionResource\Pages\EditFiscalPosition as BaseEditFiscalPosition;
+use Webkul\Accounting\Filament\Clusters\Configuration\Resources\FiscalPositionResource;
 
 class EditFiscalPosition extends BaseEditFiscalPosition
 {

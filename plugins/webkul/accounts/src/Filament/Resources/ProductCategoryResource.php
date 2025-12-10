@@ -4,16 +4,16 @@ namespace Webkul\Account\Filament\Resources;
 
 use Filament\Forms\Components\Select;
 use Filament\Resources\Pages\Page;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Schema;
+use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Filament\Resources\ProductCategoryResource\Pages\CreateProductCategory;
 use Webkul\Account\Filament\Resources\ProductCategoryResource\Pages\EditProductCategory;
 use Webkul\Account\Filament\Resources\ProductCategoryResource\Pages\ListProductCategories;
 use Webkul\Account\Filament\Resources\ProductCategoryResource\Pages\ManageProducts;
 use Webkul\Account\Filament\Resources\ProductCategoryResource\Pages\ViewProductCategory;
-use Webkul\Account\Models\Category;
-use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Models\Account;
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Fieldset;
+use Webkul\Account\Models\Category;
 use Webkul\Product\Filament\Resources\CategoryResource as BaseProductCategoryResource;
 
 class ProductCategoryResource extends BaseProductCategoryResource
@@ -50,7 +50,7 @@ class ProductCategoryResource extends BaseProductCategoryResource
                         ->default(fn () => Account::where('account_type', AccountType::EXPENSE->value)->first()?->id),
                 ]),
         ]);
-        
+
         $components[0]->getDefaultChildComponents()[0]->schema($generalComponents);
 
         return $schema;

@@ -3,38 +3,30 @@
 namespace Webkul\Account;
 
 use Filament\Notifications\Notification;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
-use Webkul\Account\Facades\Account;
+use Webkul\Account\Enums\PaymentStatus;
+use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Mail\Invoice\Actions\InvoiceEmail;
+use Webkul\Account\Models\FullReconcile;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\Move as AccountMove;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
-use Illuminate\Support\Collection;
 use Webkul\Account\Models\MoveLine;
+use Webkul\Account\Models\PartialReconcile;
 use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Payment;
-use Webkul\Support\Models\Currency;
-use Illuminate\Support\Arr;
-use Webkul\Account\Enums\PaymentStatus;
-use Webkul\Account\Models\FullReconcile;
-use Webkul\Account\Models\PartialReconcile;
 use Webkul\Account\Models\PaymentRegister;
-use Webkul\Accounting\Models\Journal;
-use Webkul\Support\Services\EmailService;
 use Webkul\Account\Settings\DefaultAccountSettings;
-use Webkul\Account\Enums\PaymentType;
+use Webkul\Support\Services\EmailService;
 
 class AccountManager
 {
-
     protected array $context = [];
 
     public function setContext(array $context): self
@@ -381,26 +373,26 @@ class AccountManager
                 $diffAmountCurrency = $difference;
 
                 $diffBalance = $move->currency->convert(
-                    $diffAmountCurrency, 
-                    $move->company->currency, 
-                    $move->company, 
+                    $diffAmountCurrency,
+                    $move->company->currency,
+                    $move->company,
                     $move->invoice_date ?? $move->date
                 );
             }
-            
+
             return [$diffBalance, $diffAmountCurrency];
         };
 
         $applyCashRounding = function ($move, $diffBalance, $diffAmountCurrency, $cashRoundingLine) {
             $roundingLineVals = [
-                'balance' => $diffBalance,
-                'amount_currency' => $diffAmountCurrency,
-                'partner_id' => $move->partner_id,
-                'move_id' => $move->id,
-                'currency_id' => $move->currency_id,
-                'company_id' => $move->company_id,
+                'balance'             => $diffBalance,
+                'amount_currency'     => $diffAmountCurrency,
+                'partner_id'          => $move->partner_id,
+                'move_id'             => $move->id,
+                'currency_id'         => $move->currency_id,
+                'company_id'          => $move->company_id,
                 'company_currency_id' => $move->company->currency_id,
-                'display_type' => DisplayType::ROUNDING,
+                'display_type'        => DisplayType::ROUNDING,
             ];
 
             if ($move->invoiceCashRounding->strategy === 'biggest_tax') {
@@ -409,7 +401,7 @@ class AccountManager
                 $taxLines = $move->lines->filter(function ($line) {
                     return $line->tax_repartition_line_id !== null;
                 });
-                
+
                 foreach ($taxLines as $taxLine) {
                     if (! $biggestTaxLine || abs($taxLine->balance) > abs($biggestTaxLine->balance)) {
                         $biggestTaxLine = $taxLine;
@@ -433,7 +425,7 @@ class AccountManager
                 } else {
                     $accountId = $move->invoiceCashRounding->profit_account_id;
                 }
-                
+
                 $roundingLineVals['name'] = $move->invoiceCashRounding->name;
 
                 $roundingLineVals['account_id'] = $accountId;
@@ -466,24 +458,24 @@ class AccountManager
             $strategy = $move->invoiceCashRounding->strategy;
 
             $oldStrategy = $existingCashRoundingLine->tax_line_id ? 'biggest_tax' : 'add_invoice_line';
-            
+
             if ($strategy !== $oldStrategy) {
                 $existingCashRoundingLine->delete();
-                
+
                 $existingCashRoundingLine = null;
             }
         }
 
         $othersLines = $move->lines->filter(function ($line) {
-            return !in_array($line->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE]);
+            return ! in_array($line->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE]);
         });
-        
+
         if ($existingCashRoundingLine) {
             $othersLines = $othersLines->reject(function ($line) use ($existingCashRoundingLine) {
                 return $line->id === $existingCashRoundingLine->id;
             });
         }
-        
+
         $totalAmountCurrency = $othersLines->sum('amount_currency');
 
         [$diffBalance, $diffAmountCurrency] = $computeCashRounding($move, $totalAmountCurrency);
@@ -498,17 +490,17 @@ class AccountManager
 
         if ($existingCashRoundingLine) {
             $balanceCompare = float_compare(
-                $existingCashRoundingLine->balance, 
-                $diffBalance, 
+                $existingCashRoundingLine->balance,
+                $diffBalance,
                 precisionRounding: $move->currency->rounding
             );
 
             $amountCompare = float_compare(
-                $existingCashRoundingLine->amount_currency, 
-                $diffAmountCurrency, 
+                $existingCashRoundingLine->amount_currency,
+                $diffAmountCurrency,
                 precisionRounding: $move->currency->rounding
             );
-            
+
             if ($balanceCompare === 0 && $amountCompare === 0) {
                 return;
             }
@@ -532,7 +524,7 @@ class AccountManager
 
         $neededMapping = collect($neededTerms)->mapWithKeys(function ($data) {
             $key = [
-                'move_id' => $data['move_id'],
+                'move_id'       => $data['move_id'],
                 'date_maturity' => $data['date_maturity'],
                 'discount_date' => $data['discount_date'],
             ];
@@ -672,7 +664,7 @@ class AccountManager
             $untaxedAmount = $untaxedAmountCurrency;
 
             // $sign = $move->direction_sign;
-            
+
             [$baseLines, $taxLines] = $this->getRoundedBaseAndTaxLines($move, false);
 
             $baseLines = TaxFacade::addAccountingDataInBaseLinesTaxDetails($baseLines, $move->company, $move->always_tax_exigible);
@@ -755,7 +747,8 @@ class AccountManager
         $batches = collect($paymentRegister->batches)
             ->filter(function ($batch) use ($paymentRegister) {
                 $batchAccount = $paymentRegister->getBatchAccount($batch);
-                return !$paymentRegister->require_partner_bank_account 
+
+                return ! $paymentRegister->require_partner_bank_account
                     || ($batchAccount && $batchAccount->can_send_money);
             })
             ->values()
@@ -763,7 +756,7 @@ class AccountManager
 
         if (empty($batches)) {
             throw new \Exception(
-                "To record payments with " . $paymentRegister->paymentMethodLine->name . ", the recipient bank account must be manually validated. You should go on the partner bank account in order to validate it."
+                'To record payments with '.$paymentRegister->paymentMethodLine->name.', the recipient bank account must be manually validated. You should go on the partner bank account in order to validate it.'
             );
         }
 
@@ -778,9 +771,9 @@ class AccountManager
             $paymentVals = $this->createPaymentValsFromFirstBatch($paymentRegister, $firstBatchResult);
 
             $paymentsToProcessValues = [
-                'create_vals' => $paymentVals,
+                'create_vals'  => $paymentVals,
                 'to_reconcile' => $firstBatchResult['lines'],
-                'batch' => $firstBatchResult,
+                'batch'        => $firstBatchResult,
             ];
 
             if ($paymentRegister->writeoff_is_exchange_account && $paymentRegister->currency_id == $paymentRegister->company_currency_id) {
@@ -792,17 +785,17 @@ class AccountManager
             $paymentsToProcess[] = $paymentsToProcessValues;
         } else {
             if (! $paymentRegister->group_payment) {
-                $linesToPay = in_array($paymentRegister->installments_mode, ['next', 'overdue', 'before_date']) 
-                    ? $paymentRegister->getTotalAmountsToPay($batches)['lines'] 
+                $linesToPay = in_array($paymentRegister->installments_mode, ['next', 'overdue', 'before_date'])
+                    ? $paymentRegister->getTotalAmountsToPay($batches)['lines']
                     : $paymentRegister->lines;
 
                 $batches = collect($batches)
                     ->flatMap(function ($batchResult) use ($linesToPay) {
                         return collect($batchResult['lines'])
-                            ->filter(fn($line) => $linesToPay->contains($line))
-                            ->map(fn($line) => array_merge($batchResult, [
+                            ->filter(fn ($line) => $linesToPay->contains($line))
+                            ->map(fn ($line) => array_merge($batchResult, [
                                 'payment_values' => array_merge($batchResult['payment_values'], [
-                                    'payment_type' => $line->balance > 0 ? PaymentType::RECEIVE : PaymentType::SEND
+                                    'payment_type' => $line->balance > 0 ? PaymentType::RECEIVE : PaymentType::SEND,
                                 ]),
                                 'lines' => $line,
                             ]));
@@ -812,9 +805,9 @@ class AccountManager
 
             foreach ($batches as $batchResult) {
                 $paymentsToProcess[] = [
-                    'create_vals' => $this->createPaymentValsFromBatch($paymentRegister, $batchResult),
+                    'create_vals'  => $this->createPaymentValsFromBatch($paymentRegister, $batchResult),
                     'to_reconcile' => $batchResult['lines'],
-                    'batch' => $batchResult,
+                    'batch'        => $batchResult,
                 ];
             }
         }
@@ -829,19 +822,19 @@ class AccountManager
     public function createPaymentValsFromFirstBatch($paymentRegister, $batchResult)
     {
         $paymentVals = [
-            'date' => $paymentRegister->payment_date,
-            'amount' => $paymentRegister->amount,
-            'payment_type' => $paymentRegister->payment_type,
-            'partner_type' => $paymentRegister->partner_type,
-            'memo' => $paymentRegister->communication,
-            'journal_id' => $paymentRegister->journal_id,
-            'company_id' => $paymentRegister->company_id,
-            'currency_id' => $paymentRegister->currency_id,
-            'partner_id' => $paymentRegister->partner_id,
-            'partner_bank_id' => $paymentRegister->partner_bank_id,
+            'date'                   => $paymentRegister->payment_date,
+            'amount'                 => $paymentRegister->amount,
+            'payment_type'           => $paymentRegister->payment_type,
+            'partner_type'           => $paymentRegister->partner_type,
+            'memo'                   => $paymentRegister->communication,
+            'journal_id'             => $paymentRegister->journal_id,
+            'company_id'             => $paymentRegister->company_id,
+            'currency_id'            => $paymentRegister->currency_id,
+            'partner_id'             => $paymentRegister->partner_id,
+            'partner_bank_id'        => $paymentRegister->partner_bank_id,
             'payment_method_line_id' => $paymentRegister->payment_method_line_id,
             'destination_account_id' => $paymentRegister->lines[0]->account_id,
-            'write_off_line_vals' => [],
+            'write_off_line_vals'    => [],
         ];
 
         if (
@@ -858,15 +851,15 @@ class AccountManager
                     : -$paymentRegister->payment_difference;
 
                 $paymentVals['write_off_line_vals'][] = [
-                    'name' => 'Write Off',
-                    'account_id' => $paymentRegister->writeoff_account_id,
-                    'partner_id' => $paymentRegister->partner_id,
-                    'currency_id' => $paymentRegister->currency_id,
+                    'name'            => 'Write Off',
+                    'account_id'      => $paymentRegister->writeoff_account_id,
+                    'partner_id'      => $paymentRegister->partner_id,
+                    'currency_id'     => $paymentRegister->currency_id,
                     'amount_currency' => $writeOffAmountCurrency,
-                    'balance' => $paymentRegister->currency->convert(
-                        $writeOffAmountCurrency, 
-                        $paymentRegister->company->currency, 
-                        $paymentRegister->company, 
+                    'balance'         => $paymentRegister->currency->convert(
+                        $writeOffAmountCurrency,
+                        $paymentRegister->company->currency,
+                        $paymentRegister->company,
                         $paymentRegister->payment_date
                     ),
                 ];
@@ -889,21 +882,21 @@ class AccountManager
             : $paymentRegister->paymentMethodLine;
 
         $paymentVals = [
-            'date' => $paymentRegister->payment_date,
-            'amount' => $batchValues['source_amount_currency'],
-            'payment_type' => $batchValues['payment_type'],
-            'partner_type' => $batchValues['partner_type'],
-            'memo' => $paymentRegister->getCommunication($batch['lines']),
-            'journal_id' => $paymentRegister->journal_id,
-            'company_id' => $paymentRegister->company_id,
-            'currency_id' => $batchValues['source_currency_id'],
-            'partner_id' => $batchValues['partner_id'],
+            'date'                   => $paymentRegister->payment_date,
+            'amount'                 => $batchValues['source_amount_currency'],
+            'payment_type'           => $batchValues['payment_type'],
+            'partner_type'           => $batchValues['partner_type'],
+            'memo'                   => $paymentRegister->getCommunication($batch['lines']),
+            'journal_id'             => $paymentRegister->journal_id,
+            'company_id'             => $paymentRegister->company_id,
+            'currency_id'            => $batchValues['source_currency_id'],
+            'partner_id'             => $batchValues['partner_id'],
             'payment_method_line_id' => $paymentMethodLine,
             'destination_account_id' => $batch['lines'][0]->account_id,
-            'write_off_line_vals' => [],
+            'write_off_line_vals'    => [],
         ];
 
-        return array_filter($paymentVals + ['partner_bank_id' => $partnerBankId], fn($value) => $value !== null);
+        return array_filter($paymentVals + ['partner_bank_id' => $partnerBankId], fn ($value) => $value !== null);
     }
 
     public function initiatePayments($paymentRegister, &$paymentsToProcess, $editMode = false)
@@ -912,7 +905,7 @@ class AccountManager
 
         foreach ($paymentsToProcess as $index => $processItem) {
             $vals = $processItem['create_vals'];
-        
+
             $forceBalanceVals = data_get($vals, 'force_balance');
             $writeOffLineVals = data_get($vals, 'write_off_line_vals');
             $lines = data_get($vals, 'lines');
@@ -923,7 +916,7 @@ class AccountManager
 
             if (! $accountingInstalled && ! $payment->outstanding_account_id) {
                 $payment->update([
-                    'outstanding_account_id' => $payment->getOutstandingAccount($payment->payment_type)->id
+                    'outstanding_account_id' => $payment->getOutstandingAccount($payment->payment_type)->id,
                 ]);
             }
 
@@ -937,7 +930,7 @@ class AccountManager
                 $payment->refresh();
 
                 $moveVals = Arr::only($vals, $payment->moveRelatedFields);
-                
+
                 if (filled($moveVals)) {
                     $payment->move->update($moveVals);
                 }
@@ -968,7 +961,7 @@ class AccountManager
             $paymentBalance = abs($counterpartLines->sum('balance'));
 
             $paymentAmountCurrency = abs($counterpartLines->sum('amount_currency'));
-            
+
             if (! $payment->currency->isZero($sourceBalanceConverted - $paymentAmountCurrency)) {
                 continue;
             }
@@ -981,9 +974,9 @@ class AccountManager
 
             $mergedLines = $liquidityLines->merge($counterpartLines);
 
-            $debitLines = $mergedLines->filter(fn($line) => $line->debit > 0);
+            $debitLines = $mergedLines->filter(fn ($line) => $line->debit > 0);
 
-            $creditLines = $mergedLines->filter(fn($line) => $line->credit > 0);
+            $creditLines = $mergedLines->filter(fn ($line) => $line->credit > 0);
 
             if ($debitLines->isNotEmpty() && $creditLines->isNotEmpty()) {
                 $debitLines[0]->update([
@@ -1010,11 +1003,11 @@ class AccountManager
     {
         if ($payment->require_partner_bank_account && ! $payment->partnerBank->can_send_money) {
             throw new \Exception(__(
-                "To record payments with :method_name, the recipient bank account must be manually validated. " .
-                "You should go on the partner bank account of :partner in order to validate it.",
+                'To record payments with :method_name, the recipient bank account must be manually validated. '.
+                'You should go on the partner bank account of :partner in order to validate it.',
                 [
                     'method_name' => $payment->paymentMethodLine->name,
-                    'partner' => $payment->partner->display_name,
+                    'partner'     => $payment->partner->display_name,
                 ]
             ));
         }
@@ -1037,15 +1030,15 @@ class AccountManager
         foreach ($paymentsToProcess as $values) {
             $payment = $values['payment']->refresh();
 
-            $paymentLines = $payment->move->lines->filter(function($line) {
-                return $line->parent_state == MoveState::POSTED 
+            $paymentLines = $payment->move->lines->filter(function ($line) {
+                return $line->parent_state == MoveState::POSTED
                     && in_array($line->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE])
                     && ! $line->reconciled;
             });
 
             foreach ($paymentLines->pluck('account_id')->unique() as $accountId) {
                 $lines = $paymentLines->merge($values['to_reconcile'])
-                    ->filter(function($line) use ($accountId) {
+                    ->filter(function ($line) use ($accountId) {
                         return $line->account_id == $accountId
                             && ! $line->reconciled
                             && $line->parent_state == MoveState::POSTED;
@@ -1053,12 +1046,13 @@ class AccountManager
 
                 $this->reconcile($lines);
             }
-            
+
             foreach ($values['to_reconcile'] as $line) {
                 $line->move->matchedPayments()->attach($payment->id);
             }
         }
     }
+
     public function reconcile($lines)
     {
         $lines->load([
@@ -1068,11 +1062,11 @@ class AccountManager
             'move',
             'company',
             'matchedDebits',
-            'matchedCredits'
+            'matchedCredits',
         ]);
 
         $this->isReconciliationAllowedForLines($lines);
-        
+
         $this->reconcilePlan([$lines]);
     }
 
@@ -1080,23 +1074,23 @@ class AccountManager
     {
         $allPartialReconciles = [];
         $allFullReconciles = [];
-        
+
         foreach ($reconciliationPlan as $lines) {
             $plan = $this->prepareReconciliationPlan($lines);
-            
+
             $results = $this->processReconciliationNode($plan);
 
             $allPartialReconciles = array_merge($allPartialReconciles, $results['partial_reconciles']);
 
             $allFullReconciles = array_merge($allFullReconciles, $results['full_reconciles']);
         }
-        
+
         return [
             'partial_reconciles' => $allPartialReconciles,
-            'full_reconciles' => $allFullReconciles,
+            'full_reconciles'    => $allFullReconciles,
         ];
     }
-    
+
     protected function prepareReconciliationPlan($lines): array
     {
         $sortedLines = $lines->sortBy(function ($line) {
@@ -1107,28 +1101,28 @@ class AccountManager
                 $line->balance,
             ];
         });
-        
+
         $plan = [
-            'lines' => $sortedLines,
+            'lines'    => $sortedLines,
             'line_ids' => $sortedLines->pluck('id')->toArray(),
         ];
-        
+
         if (($currencies = $sortedLines->pluck('currency_id')->unique())->count() > 1) {
             $plan['nodes'] = [];
 
             foreach ($currencies as $currencyId) {
-                $currencyLines = $sortedLines->filter(fn($line) => $line->currency_id == $currencyId);
+                $currencyLines = $sortedLines->filter(fn ($line) => $line->currency_id == $currencyId);
 
                 $plan['nodes'][] = [
-                    'lines' => $currencyLines,
+                    'lines'    => $currencyLines,
                     'line_ids' => $currencyLines->pluck('id')->toArray(),
                 ];
             }
         }
-        
+
         return $plan;
     }
-    
+
     protected function processReconciliationNode(array $plan): array
     {
         $allPartialReconciles = [];
@@ -1136,7 +1130,7 @@ class AccountManager
         $allFullReconciles = [];
 
         $fullyReconciledIds = [];
-        
+
         foreach ($plan['nodes'] ?? [] as $childNode) {
             $childResults = $this->processReconciliationNode($childNode);
 
@@ -1146,42 +1140,42 @@ class AccountManager
 
             $fullyReconciledIds = array_merge($fullyReconciledIds, $childResults['fully_reconciled_ids']);
         }
-        
+
         if (! empty($plan['lines'])) {
-            $remainingLines = $plan['lines']->reject(fn($line) => in_array($line->id, $fullyReconciledIds));
+            $remainingLines = $plan['lines']->reject(fn ($line) => in_array($line->id, $fullyReconciledIds));
 
             if ($remainingLines->isNotEmpty()) {
-                $lineValuesMapping = $remainingLines->mapWithKeys(fn($line) => [
+                $lineValuesMapping = $remainingLines->mapWithKeys(fn ($line) => [
                     $line->id => [
-                        'line' => $line,
-                        'amount_residual' => $line->amount_residual,
+                        'line'                     => $line,
+                        'amount_residual'          => $line->amount_residual,
                         'amount_residual_currency' => $line->amount_residual_currency,
-                    ]
+                    ],
                 ])->toArray();
 
                 $results = $this->prepareReconciliationLines(array_values($lineValuesMapping));
 
                 foreach ($results['partials_values_list'] as $partialResult) {
                     $partialValues = $partialResult['partial_values'];
-                    
+
                     $partial = PartialReconcile::create([
-                        'debit_move_id' => $partialValues['debit_move_id'],
-                        'credit_move_id' => $partialValues['credit_move_id'],
-                        'amount' => $partialValues['amount'],
-                        'debit_amount_currency' => $partialValues['debit_amount_currency'],
+                        'debit_move_id'          => $partialValues['debit_move_id'],
+                        'credit_move_id'         => $partialValues['credit_move_id'],
+                        'amount'                 => $partialValues['amount'],
+                        'debit_amount_currency'  => $partialValues['debit_amount_currency'],
                         'credit_amount_currency' => $partialValues['credit_amount_currency'],
-                        'company_id' => $remainingLines->first()->company_id,
+                        'company_id'             => $remainingLines->first()->company_id,
                     ]);
-                    
+
                     $allPartialReconciles[] = $partial;
-                    
+
                     $debitLine = MoveLine::find($partialValues['debit_move_id']);
                     $creditLine = MoveLine::find($partialValues['credit_move_id']);
-                    
+
                     $debitLine->amount_residual -= $partialValues['amount'];
                     $debitLine->amount_residual_currency -= $partialValues['debit_amount_currency'];
                     $debitLine->save();
-                    
+
                     $creditLine->amount_residual += $partialValues['amount'];
                     $creditLine->amount_residual_currency += $partialValues['credit_amount_currency'];
                     $creditLine->save();
@@ -1192,40 +1186,38 @@ class AccountManager
 
                     if (! empty($partialResult['exchange_values'])) {
                         $exchangeMoves = $this->createExchangeDifferenceMoves([$partialResult['exchange_values']]);
-                        
+
                         if (! empty($exchangeMoves)) {
                             $partial->update(['exchange_move_id' => $exchangeMoves[0]->id]);
                         }
                     }
                 }
-                
+
                 if (! empty($allPartialReconciles)) {
                     $this->updateMatchingNumbers($allPartialReconciles);
                 }
-                
+
                 $fulls = $this->createFullReconciles($remainingLines);
 
                 $allFullReconciles = array_merge($allFullReconciles, $fulls);
-                
+
                 $fullyReconciledIds = array_merge($fullyReconciledIds, $results['fully_reconciled_line_ids']);
             }
         }
-        
+
         return [
-            'partial_reconciles' => $allPartialReconciles,
-            'full_reconciles' => $allFullReconciles,
+            'partial_reconciles'   => $allPartialReconciles,
+            'full_reconciles'      => $allFullReconciles,
             'fully_reconciled_ids' => $fullyReconciledIds,
         ];
     }
-    
+
     protected function prepareReconciliationLines(array $valuesList): array
     {
-        $debitValuesList = array_values(array_filter($valuesList, fn($values) => 
-            $values['line']->balance > 0.0 || $values['line']->amount_currency > 0.0
+        $debitValuesList = array_values(array_filter($valuesList, fn ($values) => $values['line']->balance > 0.0 || $values['line']->amount_currency > 0.0
         ));
-        
-        $creditValuesList = array_values(array_filter($valuesList, fn($values) => 
-            $values['line']->balance < 0.0 || $values['line']->amount_currency < 0.0
+
+        $creditValuesList = array_values(array_filter($valuesList, fn ($values) => $values['line']->balance < 0.0 || $values['line']->amount_currency < 0.0
         ));
 
         $debitIndex = 0;
@@ -1234,7 +1226,7 @@ class AccountManager
         $creditValues = null;
         $fullyReconciledLineIds = [];
         $partialsValuesList = [];
-        
+
         while (true) {
             if (! $debitValues) {
                 if ($debitIndex >= count($debitValuesList)) {
@@ -1243,7 +1235,7 @@ class AccountManager
 
                 $debitValues = $debitValuesList[$debitIndex++];
             }
-            
+
             if (! $creditValues) {
                 if ($creditIndex >= count($creditValuesList)) {
                     break;
@@ -1251,13 +1243,13 @@ class AccountManager
 
                 $creditValues = $creditValuesList[$creditIndex++];
             }
-            
+
             $results = $this->prepareSinglePartial($debitValues, $creditValues);
-            
+
             if (! empty($results['partial_values'])) {
                 $partialsValuesList[] = $results;
             }
-            
+
             if ($results['debit_values'] === null) {
                 $fullyReconciledLineIds[] = $debitValues['line']->id;
 
@@ -1265,7 +1257,7 @@ class AccountManager
             } else {
                 $debitValues = $results['debit_values'];
             }
-            
+
             if ($results['credit_values'] === null) {
                 $fullyReconciledLineIds[] = $creditValues['line']->id;
 
@@ -1276,7 +1268,7 @@ class AccountManager
         }
 
         return [
-            'partials_values_list' => $partialsValuesList,
+            'partials_values_list'      => $partialsValuesList,
             'fully_reconciled_line_ids' => $fullyReconciledLineIds,
         ];
     }
@@ -1285,23 +1277,23 @@ class AccountManager
     {
         $debitLine = $debitValues['line'];
         $creditLine = $creditValues['line'];
-        
+
         $debitCurrency = $debitLine->currency;
         $creditCurrency = $creditLine->currency;
         $companyCurrency = $debitLine->company->currency;
-        
+
         $remainingDebitAmount = $debitValues['amount_residual'];
         $remainingCreditAmount = $creditValues['amount_residual'];
         $remainingDebitAmountCurrency = $debitValues['amount_residual_currency'];
         $remainingCreditAmountCurrency = $creditValues['amount_residual_currency'];
-        
+
         $debitAvailableResiduals = $this->prepareLineResidualAmounts($debitValues, $creditCurrency);
         $creditAvailableResiduals = $this->prepareLineResidualAmounts($creditValues, $debitCurrency);
-        
+
         $reconciliationCurrency = null;
 
         if (
-            $debitCurrency->id != $companyCurrency->id 
+            $debitCurrency->id != $companyCurrency->id
             && isset($debitAvailableResiduals[$debitCurrency->id])
             && isset($creditAvailableResiduals[$debitCurrency->id])
         ) {
@@ -1320,7 +1312,7 @@ class AccountManager
         $creditReconValues = $creditAvailableResiduals[$reconciliationCurrency->id] ?? null;
 
         $res = [
-            'debit_values' => $debitValues,
+            'debit_values'  => $debitValues,
             'credit_values' => $creditValues,
         ];
 
@@ -1338,24 +1330,24 @@ class AccountManager
 
         $reconDebitAmount = $debitReconValues['residual'];
         $reconCreditAmount = -$creditReconValues['residual'];
-        
+
         $minReconAmount = min($reconDebitAmount, $reconCreditAmount);
         $debitFullyMatched = $reconDebitAmount <= $reconCreditAmount;
         $creditFullyMatched = $reconDebitAmount >= $reconCreditAmount;
-        
+
         if ($reconciliationCurrency->id == $companyCurrency->id) {
             $debitRate = $debitAvailableResiduals[$debitCurrency->id]['rate'] ?? null;
             $creditRate = $creditAvailableResiduals[$creditCurrency->id]['rate'] ?? null;
-            
+
             $partialAmount = $minReconAmount;
-            
+
             if ($debitRate) {
                 $partialDebitAmountCurrency = $debitCurrency->round($debitRate * $minReconAmount);
                 $partialDebitAmountCurrency = min($partialDebitAmountCurrency, $remainingDebitAmountCurrency);
             } else {
                 $partialDebitAmountCurrency = 0.0;
             }
-            
+
             if ($creditRate) {
                 $partialCreditAmountCurrency = $creditCurrency->round($creditRate * $minReconAmount);
                 $partialCreditAmountCurrency = min($partialCreditAmountCurrency, -$remainingCreditAmountCurrency);
@@ -1365,59 +1357,59 @@ class AccountManager
         } else {
             $debitRate = $debitReconValues['rate'] ?? null;
             $creditRate = $creditReconValues['rate'] ?? null;
-            
+
             $partialAmount = $minReconAmount;
-            
+
             if ($debitRate) {
                 $partialDebitAmount = $companyCurrency->round($minReconAmount / $debitRate);
                 $partialAmount = min($partialDebitAmount, $remainingDebitAmount);
             }
-            
+
             if ($creditRate) {
                 $partialCreditAmount = $companyCurrency->round($minReconAmount / $creditRate);
                 $partialAmount = min($partialCreditAmount, -$remainingCreditAmount);
             }
-            
+
             $partialDebitAmountCurrency = $minReconAmount;
             $partialCreditAmountCurrency = $minReconAmount;
         }
-        
+
         $remainingDebitAmount -= $partialAmount;
         $remainingCreditAmount += $partialAmount;
         $remainingDebitAmountCurrency -= $partialDebitAmountCurrency;
         $remainingCreditAmountCurrency += $partialCreditAmountCurrency;
-        
+
         $res['partial_values'] = [
-            'amount' => $partialAmount,
-            'debit_amount_currency' => $partialDebitAmountCurrency,
+            'amount'                 => $partialAmount,
+            'debit_amount_currency'  => $partialDebitAmountCurrency,
             'credit_amount_currency' => $partialCreditAmountCurrency,
-            'debit_move_id' => $debitLine->id,
-            'credit_move_id' => $creditLine->id,
+            'debit_move_id'          => $debitLine->id,
+            'credit_move_id'         => $creditLine->id,
         ];
-        
+
         $debitValues['amount_residual'] = $remainingDebitAmount;
         $debitValues['amount_residual_currency'] = $remainingDebitAmountCurrency;
         $creditValues['amount_residual'] = $remainingCreditAmount;
         $creditValues['amount_residual_currency'] = $remainingCreditAmountCurrency;
-        
+
         if ($debitFullyMatched) {
             $res['debit_values'] = null;
         } else {
             $res['debit_values'] = $debitValues;
         }
-        
+
         if ($creditFullyMatched) {
             $res['credit_values'] = null;
         } else {
             $res['credit_values'] = $creditValues;
         }
-        
+
         $exchangeValues = $this->checkExchangeDifference($debitValues, $creditValues, $debitFullyMatched, $creditFullyMatched);
 
         if ($exchangeValues) {
             $res['exchange_values'] = $exchangeValues;
         }
-        
+
         return $res;
     }
 
@@ -1425,29 +1417,29 @@ class AccountManager
     {
         $getConversionRate = function ($currency, $line): float {
             if (
-                $line->currency_id != $line->company->currency->id 
-                && ! $line->company->currency->isZero($line->balance) 
+                $line->currency_id != $line->company->currency->id
+                && ! $line->company->currency->isZero($line->balance)
                 && ! $line->currency->isZero($line->amount_currency)
             ) {
                 return abs($line->amount_currency / $line->balance);
             }
-            
+
             return $currency->rate ?? 1.0;
         };
 
         $line = $lineValues['line'];
         $remainingAmount = $lineValues['amount_residual'];
         $remainingAmountCurrency = $lineValues['amount_residual_currency'];
-        
+
         $availableResidualPerCurrency = [];
-        
+
         if (! $line->company->currency->isZero($remainingAmount)) {
             $availableResidualPerCurrency[$line->company->currency->id] = [
                 'residual' => $remainingAmount,
-                'rate' => 1.0,
+                'rate'     => 1.0,
             ];
         }
-        
+
         if (
             $line->currency->id != $line->company->currency->id
             && ! $line->currency->isZero($remainingAmountCurrency)
@@ -1456,60 +1448,60 @@ class AccountManager
 
             $availableResidualPerCurrency[$line->currency->id] = [
                 'residual' => $remainingAmountCurrency,
-                'rate' => $rate,
+                'rate'     => $rate,
             ];
         }
-        
+
         if (
-            $counterpartCurrency->id != $line->company->currency->id 
-            && $line->currency->id == $line->company->currency->id 
+            $counterpartCurrency->id != $line->company->currency->id
+            && $line->currency->id == $line->company->currency->id
             && ! $line->company->currency->isZero($remainingAmount)
         ) {
             $rate = $getConversionRate($counterpartCurrency, $line);
 
             $residualInForeign = $counterpartCurrency->round($remainingAmount * $rate);
-            
+
             if (! $counterpartCurrency->isZero($residualInForeign)) {
                 $availableResidualPerCurrency[$counterpartCurrency->id] = [
                     'residual' => $residualInForeign,
-                    'rate' => $rate,
+                    'rate'     => $rate,
                 ];
             }
         }
-        
+
         return $availableResidualPerCurrency;
     }
 
     protected function checkExchangeDifference($debitValues, $creditValues, bool $debitFullyMatched, bool $creditFullyMatched): ?array
     {
         $linesToFix = [];
-        
+
         if ($debitFullyMatched && $debitValues) {
             $companyCurrency = $debitValues['line']->company->currency;
 
             if (! $companyCurrency->isZero($debitValues['amount_residual'])) {
                 $linesToFix[] = [
-                    'line' => $debitValues['line'],
+                    'line'            => $debitValues['line'],
                     'amount_residual' => $debitValues['amount_residual'],
                 ];
             }
         }
-        
+
         if ($creditFullyMatched && $creditValues) {
             $companyCurrency = $creditValues['line']->company->currency;
 
             if (! $companyCurrency->isZero($creditValues['amount_residual'])) {
                 $linesToFix[] = [
-                    'line' => $creditValues['line'],
+                    'line'            => $creditValues['line'],
                     'amount_residual' => $creditValues['amount_residual'],
                 ];
             }
         }
-        
+
         if (! empty($linesToFix)) {
             return $this->prepareExchangeDifferenceMoveVals($linesToFix);
         }
-        
+
         return null;
     }
 
@@ -1518,8 +1510,8 @@ class AccountManager
         if (empty($amountsList)) {
             return null;
         }
-        
-        $defaultAccountsSettings = new DefaultAccountSettings();
+
+        $defaultAccountsSettings = new DefaultAccountSettings;
 
         if (
             ! $journalId = $defaultAccountsSettings->currency_exchange_journal_id
@@ -1528,59 +1520,59 @@ class AccountManager
         ) {
             throw new \Exception('Exchange difference journal and accounts must be configured');
         }
-        
+
         $moveValues = [
-            'move_type' => MoveType::ENTRY,
-            'date' => now()->format('Y-m-d'),
+            'move_type'  => MoveType::ENTRY,
+            'date'       => now()->format('Y-m-d'),
             'journal_id' => $journalId,
-            'lines' => [],
+            'lines'      => [],
         ];
-        
+
         $toReconcile = [];
-        
+
         $sequence = 0;
-        
+
         foreach ($amountsList as $item) {
             $line = $item['line'];
 
             $amountResidual = $item['amount_residual'];
-            
+
             if ($line->company->currency->isZero($amountResidual)) {
                 continue;
             }
-            
+
             $moveValues['lines'][] = [
-                'name' => 'Currency exchange rate difference',
-                'debit' => $amountResidual < 0 ? abs($amountResidual) : 0,
-                'credit' => $amountResidual > 0 ? $amountResidual : 0,
+                'name'            => 'Currency exchange rate difference',
+                'debit'           => $amountResidual < 0 ? abs($amountResidual) : 0,
+                'credit'          => $amountResidual > 0 ? $amountResidual : 0,
                 'amount_currency' => 0,
-                'account_id' => $line->account_id,
-                'currency_id' => $line->currency_id,
-                'partner_id' => $line->partner_id,
+                'account_id'      => $line->account_id,
+                'currency_id'     => $line->currency_id,
+                'partner_id'      => $line->partner_id,
             ];
-            
+
             $moveValues['lines'][] = [
-                'name' => 'Currency exchange rate difference',
-                'debit' => $amountResidual > 0 ? $amountResidual : 0,
-                'credit' => $amountResidual < 0 ? abs($amountResidual) : 0,
+                'name'            => 'Currency exchange rate difference',
+                'debit'           => $amountResidual > 0 ? $amountResidual : 0,
+                'credit'          => $amountResidual < 0 ? abs($amountResidual) : 0,
                 'amount_currency' => 0,
-                'account_id' => $amountResidual < 0
+                'account_id'      => $amountResidual < 0
                     ? $incomeAccountId
                     : $expenseAccountId,
                 'currency_id' => $line->currency_id,
-                'partner_id' => $line->partner_id,
+                'partner_id'  => $line->partner_id,
             ];
-            
+
             $toReconcile[] = [
                 'source_line' => $line,
-                'sequence' => $sequence,
+                'sequence'    => $sequence,
             ];
-            
+
             $sequence += 2;
         }
-        
+
         return [
-            'move_values' => $moveValues,
+            'move_values'  => $moveValues,
             'to_reconcile' => $toReconcile,
         ];
     }
@@ -1597,43 +1589,40 @@ class AccountManager
             'company.currency',
             'currency',
         ]);
-        
-        $groups = $lines->groupBy(fn($line) => $line->matching_number ?? 'auto_' . $line->id);
+
+        $groups = $lines->groupBy(fn ($line) => $line->matching_number ?? 'auto_'.$line->id);
 
         foreach ($groups as $groupKey => $groupLines) {
-            $groupFullyReconciled = $groupLines->every(fn($line) => 
-                $line->company->currency->isZero($line->amount_residual) 
+            $groupFullyReconciled = $groupLines->every(fn ($line) => $line->company->currency->isZero($line->amount_residual)
                 && $line->currency->isZero($line->amount_residual_currency)
             );
-            
+
             if (! $groupFullyReconciled) {
                 continue;
             }
 
             $invoiceMoves = $groupLines->pluck('move')
-                ->filter(fn($move) => $move->isInvoice(true))
+                ->filter(fn ($move) => $move->isInvoice(true))
                 ->unique();
-        
-            $allInvoiceLinesReconciled = $invoiceMoves->every(function($move) {
-                return $move->paymentTermLines->every(fn($line) => 
-                    $line->company->currency->isZero($line->amount_residual)
+
+            $allInvoiceLinesReconciled = $invoiceMoves->every(function ($move) {
+                return $move->paymentTermLines->every(fn ($line) => $line->company->currency->isZero($line->amount_residual)
                     && $line->currency->isZero($line->amount_residual_currency)
                 );
             });
-            
+
             $exchangeLinesToFix = $groupLines
-                ->filter(fn($line) => 
-                    ! $line->company->currency->isZero($line->amount_residual) 
+                ->filter(fn ($line) => ! $line->company->currency->isZero($line->amount_residual)
                     || ! $line->currency->isZero($line->amount_residual_currency)
                 )
-                ->map(fn($line) => [
-                    'line' => $line,
+                ->map(fn ($line) => [
+                    'line'            => $line,
                     'amount_residual' => ! $line->company->currency->isZero($line->amount_residual)
                         ? $line->amount_residual
                         : $line->amount_residual_currency,
                 ])
                 ->all();
-            
+
             $exchangeMoveId = null;
 
             if (! empty($exchangeLinesToFix)) {
@@ -1645,23 +1634,23 @@ class AccountManager
                     $exchangeMoveId = $exchangeMoves[0]->id ?? null;
                 }
             }
-            
+
             $partialReconcileIds = $groupLines
-                ->flatMap(fn($line) => $line->matchedCredits->pluck('id')->merge($line->matchedDebits->pluck('id')))
+                ->flatMap(fn ($line) => $line->matchedCredits->pluck('id')->merge($line->matchedDebits->pluck('id')))
                 ->unique()
                 ->all();
-            
+
             $fullReconcile = null;
 
             if ($allInvoiceLinesReconciled) {
                 $fullReconcile = FullReconcile::create(['exchange_move_id' => $exchangeMoveId]);
-            
+
                 PartialReconcile::whereIn('id', $partialReconcileIds)
                     ->update(['full_reconcile_id' => $fullReconcile->id]);
-            
+
                 $fullReconciles[] = $fullReconcile;
             }
-            
+
             foreach ($groupLines as $line) {
                 $line->reconciled = true;
 
@@ -1674,49 +1663,49 @@ class AccountManager
                 $line->save();
             }
         }
-        
+
         return $fullReconciles;
     }
-    
+
     protected function updateMatchingNumbers(array $partials): void
     {
         if (empty($partials)) {
             return;
         }
-        
+
         $lineIds = collect($partials)
             ->flatMap(fn ($partial) => [$partial->debit_move_id, $partial->credit_move_id])
             ->unique()
             ->values();
-        
+
         $lines = MoveLine::with(['matchedDebits', 'matchedCredits', 'fullReconcile'])
             ->whereIn('id', $lineIds)
             ->get();
-        
+
         $allPartials = $lines
             ->flatMap(fn ($line) => $line->matchedDebits->merge($line->matchedCredits))
             ->unique('id')
             ->sortBy('id')
             ->values();
-        
+
         $number2lines = [];
         $line2number = [];
-        
+
         foreach ($allPartials as $partial) {
             $debitMinId = $line2number[$partial->debit_move_id] ?? null;
             $creditMinId = $line2number[$partial->credit_move_id] ?? null;
-            
+
             if ($debitMinId && $creditMinId) {
                 if ($debitMinId != $creditMinId) {
                     $minMinId = min($debitMinId, $creditMinId);
                     $maxMinId = max($debitMinId, $creditMinId);
-                    
+
                     foreach ($number2lines[$maxMinId] as $lineId) {
                         $line2number[$lineId] = $minMinId;
                     }
 
                     $number2lines[$minMinId] = array_merge(
-                        $number2lines[$minMinId], 
+                        $number2lines[$minMinId],
                         $number2lines[$maxMinId]
                     );
 
@@ -1734,15 +1723,15 @@ class AccountManager
                 $line2number[$partial->credit_move_id] = $partial->id;
             }
         }
-        
+
         foreach ($lines as $line) {
             if (isset($line2number[$line->id])) {
                 $matchingNumber = $line2number[$line->id];
-                
+
                 if ($line->full_reconcile_id) {
                     $line->matching_number = (string) $line->full_reconcile_id;
                 } else {
-                    $line->matching_number = 'P' . $matchingNumber;
+                    $line->matching_number = 'P'.$matchingNumber;
                 }
             } else {
                 $line->matching_number = null;
@@ -1752,10 +1741,8 @@ class AccountManager
         }
     }
 
-    //TODO: Implement this method
-    public function createExchangeDifferenceMoves(array $exchangeValuesList)
-    {
-    }
+    // TODO: Implement this method
+    public function createExchangeDifferenceMoves(array $exchangeValuesList) {}
 
     public function isReconciliationAllowedForLines($lines)
     {
@@ -1763,23 +1750,23 @@ class AccountManager
             return;
         }
 
-        if ($lines->contains(fn($line) => $line->reconciled)) {
-            throw new \Exception(__("You are trying to reconcile some entries that are already reconciled."));
+        if ($lines->contains(fn ($line) => $line->reconciled)) {
+            throw new \Exception(__('You are trying to reconcile some entries that are already reconciled.'));
         }
 
-        if ($lines->contains(fn($line) => $line->parent_state != MoveState::POSTED)) {
-            throw new \Exception(__("You can only reconcile posted entries."));
+        if ($lines->contains(fn ($line) => $line->parent_state != MoveState::POSTED)) {
+            throw new \Exception(__('You can only reconcile posted entries.'));
         }
 
         $accounts = $lines->pluck('account')->unique();
 
         if ($accounts->count() > 1) {
             throw new \Exception(__(
-                "Entries are not from the same account: :accounts",
+                'Entries are not from the same account: :accounts',
                 ['accounts' => $accounts->pluck('display_name')->implode(', ')]
             ));
         }
-        
+
         if ($lines->pluck('partner_id')->unique()->count() > 1) {
             throw new \Exception('All lines must have the same partner');
         }
@@ -1798,7 +1785,7 @@ class AccountManager
             && ! in_array($account->account_type, [AccountType::ASSET_CASH, AccountType::LIABILITY_CREDIT_CARD])
         ) {
             throw new \Exception(__(
-                "Account :account does not allow reconciliation. First change the configuration of this account to allow it.",
+                'Account :account does not allow reconciliation. First change the configuration of this account to allow it.',
                 ['account' => $account->display_name]
             ));
         }

@@ -2,16 +2,15 @@
 
 namespace Webkul\Account;
 
-use Webkul\Account\Models\Tax;
-use Webkul\Account\Models\Product;
-use Webkul\Account\Models\Account;
-use Webkul\Support\Models\Company;
-use Webkul\Support\Models\Country;
-use Webkul\Support\Models\Currency;
-use Webkul\Partner\Models\Partner;
 use Illuminate\Database\Eloquent\Model;
+use Webkul\Account\Models\Account;
+use Webkul\Account\Models\Product;
+use Webkul\Account\Models\Tax;
 use Webkul\Account\Models\TaxPartition;
 use Webkul\Account\Settings\TaxesSettings;
+use Webkul\Partner\Models\Partner;
+use Webkul\Support\Models\Company;
+use Webkul\Support\Models\Currency;
 
 class TaxManager
 {
@@ -95,18 +94,18 @@ class TaxManager
         $currency = $getValue('currency', null)
             ?: $getValue('companyCurrency', null)
             ?: $getValue('company', Company::first())?->currency
-            ?: new Currency();
+            ?: new Currency;
 
         return array_merge($args, [
             'record' => $record,
-            'id' => $getValue('id', 0),
+            'id'     => $getValue('id', 0),
 
-            'product' => $getValue('product', new Product()),
-            'taxes' => $getValue('taxes', new Tax()),
+            'product'    => $getValue('product', new Product),
+            'taxes'      => $getValue('taxes', new Tax),
             'price_unit' => $getValue('price_unit', 0.0),
-            'quantity' => $getValue('quantity', 0.0),
-            'discount' => $getValue('discount', 0.0),
-            'currency' => $currency,
+            'quantity'   => $getValue('quantity', 0.0),
+            'discount'   => $getValue('discount', 0.0),
+            'currency'   => $currency,
 
             'special_mode' => $args['special_mode'] ?? false,
             'special_type' => $args['special_type'] ?? false,
@@ -115,12 +114,12 @@ class TaxManager
 
             'manual_tax_amounts' => $args['manual_tax_amounts'] ?? null,
 
-            'sign' => $getValue('sign', 1.0),
-            'is_refund' => $getValue('is_refund', false),
+            'sign'           => $getValue('sign', 1.0),
+            'is_refund'      => $getValue('is_refund', false),
             'tax_tag_invert' => $getValue('tax_tag_invert', false),
 
-            'partner' => $getValue('partner', new Partner()),
-            'account' => $getValue('account', new Account()),
+            'partner'               => $getValue('partner', new Partner),
+            'account'               => $getValue('account', new Account),
             'analytic_distribution' => $getValue('analytic_distribution', null),
         ]);
     }
@@ -134,23 +133,23 @@ class TaxManager
         $currency = $getValue('currency', null)
             ?: $getValue('companyCurrency', null)
             ?: $getValue('company', Company::first())?->currency
-            ?: new Currency();
+            ?: new Currency;
 
         return array_merge($args, [
             'record' => $record,
-            'id' => $getValue('id', 0),
+            'id'     => $getValue('id', 0),
 
-            'taxRepartitionLine' => $getValue('taxRepartitionLine', new TaxPartition()),
-            'groupTax' => $getValue('groupTax', new Tax()),
-            'taxes' => $getValue('taxes', new Tax()),
-            'tax_tags' => $getValue('tax_tags', []),
-            'currency' => $currency,
-            'partner' => $getValue('partner', new Partner()),
-            'account' => $getValue('account', new Account()),
+            'taxRepartitionLine'    => $getValue('taxRepartitionLine', new TaxPartition),
+            'groupTax'              => $getValue('groupTax', new Tax),
+            'taxes'                 => $getValue('taxes', new Tax),
+            'tax_tags'              => $getValue('tax_tags', []),
+            'currency'              => $currency,
+            'partner'               => $getValue('partner', new Partner),
+            'account'               => $getValue('account', new Account),
             'analytic_distribution' => $getValue('analytic_distribution', null),
-            'sign' => $getValue('sign', 1.0),
-            'amount_currency' => $getValue('amount_currency', 0),
-            'balance' => $getValue('balance', 0),
+            'sign'                  => $getValue('sign', 1.0),
+            'amount_currency'       => $getValue('amount_currency', 0),
+            'balance'               => $getValue('balance', 0),
         ]);
     }
 
@@ -181,27 +180,27 @@ class TaxManager
 
                 $taxRoundingKey = json_encode([$tax->id ?? null, $currency->id, $baseLine['is_refund'], $taxData['is_reverse_charge']]);
                 $taxLineKey = json_encode([$tax->id ?? null, $currency->id, $baseLine['is_refund']]);
-                
+
                 if (! isset($mapTotalPerTaxKeyForTaxLineKey[$taxLineKey])) {
                     $mapTotalPerTaxKeyForTaxLineKey[$taxLineKey] = [];
                 }
 
                 $mapTotalPerTaxKeyForTaxLineKey[$taxLineKey][$taxRoundingKey] = true;
-                
+
                 if (! isset($totalPerTax[$taxRoundingKey])) {
                     $totalPerTax[$taxRoundingKey] = [
-                        'base_amount_currency' => 0.0,
-                        'base_amount' => 0.0,
+                        'base_amount_currency'     => 0.0,
+                        'base_amount'              => 0.0,
                         'raw_base_amount_currency' => 0.0,
-                        'raw_base_amount' => 0.0,
-                        'tax_amount_currency' => 0.0,
-                        'tax_amount' => 0.0,
-                        'raw_tax_amount_currency' => 0.0,
-                        'raw_tax_amount' => 0.0,
-                        'base_lines' => [],
+                        'raw_base_amount'          => 0.0,
+                        'tax_amount_currency'      => 0.0,
+                        'tax_amount'               => 0.0,
+                        'raw_tax_amount_currency'  => 0.0,
+                        'raw_tax_amount'           => 0.0,
+                        'base_lines'               => [],
                     ];
                 }
-                
+
                 $totalPerTax[$taxRoundingKey]['tax_amount_currency'] += $taxData['tax_amount_currency'];
                 $totalPerTax[$taxRoundingKey]['raw_tax_amount_currency'] += $taxData['raw_tax_amount_currency'];
                 $totalPerTax[$taxRoundingKey]['tax_amount'] += $taxData['tax_amount'];
@@ -211,20 +210,20 @@ class TaxManager
                 $totalPerTax[$taxRoundingKey]['base_amount'] += $taxData['base_amount'];
                 $totalPerTax[$taxRoundingKey]['raw_base_amount'] += $taxData['raw_base_amount'];
 
-                if (!$baseLine['special_type']) {
+                if (! $baseLine['special_type']) {
                     $totalPerTax[$taxRoundingKey]['base_lines'][] = $baseLineIndex;
                 }
 
                 if ($index === 0) {
                     $baseRoundingKey = json_encode([$currency->id, $baseLine['is_refund']]);
 
-                    if (!isset($totalPerBase[$baseRoundingKey])) {
+                    if (! isset($totalPerBase[$baseRoundingKey])) {
                         $totalPerBase[$baseRoundingKey] = [
-                            'base_amount_currency' => 0.0,
-                            'base_amount' => 0.0,
+                            'base_amount_currency'     => 0.0,
+                            'base_amount'              => 0.0,
                             'raw_base_amount_currency' => 0.0,
-                            'raw_base_amount' => 0.0,
-                            'base_lines' => [],
+                            'raw_base_amount'          => 0.0,
+                            'base_lines'               => [],
                         ];
                     }
 
@@ -233,28 +232,28 @@ class TaxManager
                     $totalPerBase[$baseRoundingKey]['base_amount'] += $taxData['base_amount'];
                     $totalPerBase[$baseRoundingKey]['raw_base_amount'] += $taxData['raw_base_amount'];
 
-                    if (!$baseLine['special_type']) {
+                    if (! $baseLine['special_type']) {
                         $totalPerBase[$baseRoundingKey]['base_lines'][] = $baseLineIndex;
                     }
                 }
-                
+
                 $taxesData[$index] = $taxData;
             }
 
             if (empty($taxesData)) {
                 $taxRoundingKey = json_encode([null, $currency->id, $baseLine['is_refund'], false]);
 
-                if (!isset($totalPerTax[$taxRoundingKey])) {
+                if (! isset($totalPerTax[$taxRoundingKey])) {
                     $totalPerTax[$taxRoundingKey] = [
-                        'base_amount_currency' => 0.0,
-                        'base_amount' => 0.0,
+                        'base_amount_currency'     => 0.0,
+                        'base_amount'              => 0.0,
                         'raw_base_amount_currency' => 0.0,
-                        'raw_base_amount' => 0.0,
-                        'tax_amount_currency' => 0.0,
-                        'tax_amount' => 0.0,
-                        'raw_tax_amount_currency' => 0.0,
-                        'raw_tax_amount' => 0.0,
-                        'base_lines' => [],
+                        'raw_base_amount'          => 0.0,
+                        'tax_amount_currency'      => 0.0,
+                        'tax_amount'               => 0.0,
+                        'raw_tax_amount_currency'  => 0.0,
+                        'raw_tax_amount'           => 0.0,
+                        'base_lines'               => [],
                     ];
                 }
 
@@ -263,19 +262,19 @@ class TaxManager
                 $totalPerTax[$taxRoundingKey]['base_amount'] += $taxDetails['total_excluded'];
                 $totalPerTax[$taxRoundingKey]['raw_base_amount'] += $taxDetails['raw_total_excluded'];
 
-                if (!$baseLine['special_type']) {
+                if (! $baseLine['special_type']) {
                     $totalPerTax[$taxRoundingKey]['base_lines'][] = $baseLineIndex;
                 }
 
                 $baseRoundingKey = json_encode([$currency->id, $baseLine['is_refund']]);
 
-                if (!isset($totalPerBase[$baseRoundingKey])) {
+                if (! isset($totalPerBase[$baseRoundingKey])) {
                     $totalPerBase[$baseRoundingKey] = [
-                        'base_amount_currency' => 0.0,
-                        'base_amount' => 0.0,
+                        'base_amount_currency'     => 0.0,
+                        'base_amount'              => 0.0,
                         'raw_base_amount_currency' => 0.0,
-                        'raw_base_amount' => 0.0,
-                        'base_lines' => [],
+                        'raw_base_amount'          => 0.0,
+                        'base_lines'               => [],
                     ];
                 }
 
@@ -284,11 +283,11 @@ class TaxManager
                 $totalPerBase[$baseRoundingKey]['base_amount'] += $taxDetails['total_excluded'];
                 $totalPerBase[$baseRoundingKey]['raw_base_amount'] += $taxDetails['raw_total_excluded'];
 
-                if (!$baseLine['special_type']) {
+                if (! $baseLine['special_type']) {
                     $totalPerBase[$baseRoundingKey]['base_lines'][] = $baseLineIndex;
                 }
             }
-            
+
             $taxDetails['taxes_data'] = $taxesData;
             $baseLine['tax_details'] = $taxDetails;
             $baseLines[$baseLineIndex] = $baseLine;
@@ -318,18 +317,18 @@ class TaxManager
             $totalPerBase[$key] = $baseAmounts;
         }
 
-        if (!empty($taxLines)) {
+        if (! empty($taxLines)) {
             $totalPerTaxLineKey = [];
-            
+
             foreach ($taxLines as $taxLine) {
                 $taxRepartitionLine = $taxLine['taxRepartitionLine'];
 
                 $taxLineKey = json_encode([$taxRepartitionLine->tax_id, $taxLine['currency']->id, $taxRepartitionLine->document_type === 'refund']);
-                
-                if (!isset($totalPerTaxLineKey[$taxLineKey])) {
+
+                if (! isset($totalPerTaxLineKey[$taxLineKey])) {
                     $totalPerTaxLineKey[$taxLineKey] = [
                         'tax_amount_currency' => 0.0,
-                        'tax_amount' => 0.0,
+                        'tax_amount'          => 0.0,
                     ];
                 }
 
@@ -339,11 +338,11 @@ class TaxManager
 
             foreach ($totalPerTaxLineKey as $taxLineKey => $taxLineAmounts) {
                 $roundingKeys = array_keys($mapTotalPerTaxKeyForTaxLineKey[$taxLineKey] ?? []);
-                
+
                 if (empty($roundingKeys)) {
                     continue;
                 }
-                
+
                 $rawTaxAmountCurrency = 0.0;
                 $rawTaxAmount = 0.0;
 
@@ -351,10 +350,10 @@ class TaxManager
                     $rawTaxAmountCurrency += $totalPerTax[$taxRoundingKey]['raw_tax_amount_currency'];
                     $rawTaxAmount += $totalPerTax[$taxRoundingKey]['raw_tax_amount'];
                 }
-                
+
                 $deltaRawTaxAmountCurrency = $taxLineAmounts['tax_amount_currency'] - $rawTaxAmountCurrency;
                 $deltaRawTaxAmount = $taxLineAmounts['tax_amount'] - $rawTaxAmount;
-                
+
                 $biggestKey = null;
                 $biggestAmount = null;
 
@@ -364,7 +363,7 @@ class TaxManager
                         $biggestKey = $roundingKey;
                     }
                 }
-                
+
                 if ($biggestKey !== null) {
                     $totalPerTax[$biggestKey]['raw_tax_amount_currency'] += $deltaRawTaxAmountCurrency;
                     $totalPerTax[$biggestKey]['raw_tax_amount'] += $deltaRawTaxAmount;
@@ -379,19 +378,19 @@ class TaxManager
 
             $maxBaseLineIndex = null;
             $maxAmount = null;
-            
+
             foreach ($taxAmounts['base_lines'] as $blIndex) {
                 if ($maxAmount === null || $baseLines[$blIndex]['tax_details']['total_included_currency'] > $maxAmount) {
                     $maxAmount = $baseLines[$blIndex]['tax_details']['total_included_currency'];
                     $maxBaseLineIndex = $blIndex;
                 }
             }
-            
+
             $totalPerTax[$key]['reference_base_line_index'] = $maxBaseLineIndex;
-            
+
             $decoded = json_decode($key, true);
             $taxId = $decoded[0];
-            
+
             if ($taxId === null) {
                 continue;
             }
@@ -409,7 +408,7 @@ class TaxManager
                     break;
                 }
             }
-            
+
             if ($foundTaxDataIndex !== null) {
                 $totalPerTax[$key]['reference_tax_data_index'] = $foundTaxDataIndex;
                 $baseLines[$maxBaseLineIndex]['tax_details']['taxes_data'][$foundTaxDataIndex]['tax_amount_currency'] += $deltaTaxAmountCurrency;
@@ -418,17 +417,17 @@ class TaxManager
         }
 
         foreach ($totalPerTax as $key => $taxAmounts) {
-            if (!isset($taxAmounts['reference_base_line_index'])) {
+            if (! isset($taxAmounts['reference_base_line_index'])) {
                 continue;
             }
 
             $baseLineIndex = $taxAmounts['reference_base_line_index'];
             $decoded = json_decode($key, true);
             $currency = Currency::find($decoded[1]);
-            
+
             $deltaBaseAmountCurrency = $taxAmounts['raw_base_amount_currency'] - $taxAmounts['base_amount_currency'];
             $deltaBaseAmount = $taxAmounts['raw_base_amount'] - $taxAmounts['base_amount'];
-            
+
             if ($currency->isZero($deltaBaseAmountCurrency) && $company->currency->isZero($deltaBaseAmount)) {
                 continue;
             }
@@ -467,10 +466,10 @@ class TaxManager
 
             $decoded = json_decode($key, true);
             $currency = Currency::find($decoded[0]);
-            
+
             $deltaBaseAmountCurrency = $baseAmounts['raw_base_amount_currency'] - $baseAmounts['base_amount_currency'];
             $deltaBaseAmount = $baseAmounts['raw_base_amount'] - $baseAmounts['base_amount'];
-            
+
             if ($currency->isZero($deltaBaseAmountCurrency) && $company->currency->isZero($deltaBaseAmount)) {
                 continue;
             }
@@ -487,7 +486,7 @@ class TaxManager
         $needOrigin = $fallback instanceof Model;
 
         if (array_key_exists($field, $extraValues)) {
-            $value = !empty($extraValues[$field]) ? $extraValues[$field] : $fallback;
+            $value = ! empty($extraValues[$field]) ? $extraValues[$field] : $fallback;
         } elseif ($record instanceof Model && array_key_exists($field, $record->getAttributes())) {
             $value = $record->getAttribute($field) ?? $fallback;
         } elseif ($record instanceof Model && method_exists($record, $field)) {
@@ -508,7 +507,7 @@ class TaxManager
     public function addTaxDetailsInBaseLines(array $baseLines, $company): array
     {
         return array_map(
-            fn($baseLine) => $this->addTaxDetailsInBaseLine($baseLine, $company),
+            fn ($baseLine) => $this->addTaxDetailsInBaseLine($baseLine, $company),
             $baseLines
         );
     }
@@ -516,7 +515,7 @@ class TaxManager
     public function addAccountingDataInBaseLinesTaxDetails($baseLines, $company, $includeCabaTags = false)
     {
         return array_map(
-            fn($baseLine) => $this->addAccountingDataToBaseLineTaxDetails($baseLine, $company, $includeCabaTags),
+            fn ($baseLine) => $this->addAccountingDataToBaseLineTaxDetails($baseLine, $company, $includeCabaTags),
             $baseLines
         );
     }
@@ -525,7 +524,7 @@ class TaxManager
     {
         $priceUnitAfterDiscount = $baseLine['priceUnit'] * (1 - ($baseLine['discount'] / 100));
 
-        $defaultRoundingMethod = (new TaxesSettings())->tax_calculation_rounding_method;
+        $defaultRoundingMethod = (new TaxesSettings)->tax_calculation_rounding_method;
 
         $taxesComputation = $this->getTaxDetails(
             taxes : $baseLine['taxes'],
@@ -554,11 +553,11 @@ class TaxManager
         }
 
         foreach ($taxesComputation['taxes_data'] as $taxData) {
-            $taxAmount  = $rate ? $taxData['tax_amount'] / $rate : 0.0;
+            $taxAmount = $rate ? $taxData['tax_amount'] / $rate : 0.0;
             $baseAmount = $rate ? $taxData['base_amount'] / $rate : 0.0;
 
             if ($defaultRoundingMethod === 'round_per_line') {
-                $taxAmount  = $company->currency->round($taxAmount);
+                $taxAmount = $company->currency->round($taxAmount);
                 $baseAmount = $company->currency->round($baseAmount);
             }
 
@@ -591,20 +590,18 @@ class TaxManager
             $tax = $taxData['tax'];
 
             if ($taxData['is_reverse_charge']) {
-                $taxRepartitions = $tax->{$repartitionLinesField}->filter(fn($x) =>
-                    $x->repartition_type === 'tax' && $x->factor < 0.0
+                $taxRepartitions = $tax->{$repartitionLinesField}->filter(fn ($x) => $x->repartition_type === 'tax' && $x->factor < 0.0
                 );
                 $taxRepartitionSign = -1.0;
             } else {
-                $taxRepartitions = $tax->{$repartitionLinesField}->filter(fn($x) =>
-                    $x->repartition_type === 'tax' && $x->factor >= 0.0
+                $taxRepartitions = $tax->{$repartitionLinesField}->filter(fn ($x) => $x->repartition_type === 'tax' && $x->factor >= 0.0
                 );
                 $taxRepartitionSign = 1.0;
             }
 
             $totalTaxRepAmounts = [
                 'tax_amount_currency' => 0.0,
-                'tax_amount' => 0.0,
+                'tax_amount'          => 0.0,
             ];
 
             $taxRepartitionsData = [];
@@ -615,10 +612,10 @@ class TaxManager
                     : ($taxData['tax_amount_currency'] ?? 0.0);
 
                 $taxRepartitionData = [
-                    'tax_rep' => $taxRepartition,
+                    'tax_rep'             => $taxRepartition,
                     'tax_amount_currency' => $currency->round($taxAmountCurrency * $taxRepartition->factor * $taxRepartitionSign),
-                    'tax_amount' => $currency->round($taxData['tax_amount'] * $taxRepartition->factor * $taxRepartitionSign),
-                    'account' => $taxRepartition->account ?? $baseLine['account'],
+                    'tax_amount'          => $currency->round($taxData['tax_amount'] * $taxRepartition->factor * $taxRepartitionSign),
+                    'account'             => $taxRepartition->account ?? $baseLine['account'],
                 ];
 
                 $totalTaxRepAmounts['tax_amount_currency'] += $taxRepartitionData['tax_amount_currency'];
@@ -654,7 +651,7 @@ class TaxManager
                 }
 
                 $amountToDistribute = $totalError / $numberOfErrors;
-                
+
                 $index = 0;
 
                 while ($numberOfErrors > 0) {
@@ -710,30 +707,30 @@ class TaxManager
         $taxLinesMapping = [];
 
         $baseLinesToUpdate = [];
-        
+
         foreach ($baseLines as $baseLine) {
             $baseLinesToUpdate[] = array_merge($baseLine, [
                 'amount_currency' => $baseLine['sign'] * ($baseLine['tax_details']['total_excluded_currency'] + $baseLine['tax_details']['delta_total_excluded_currency']),
-                'balance' => $baseLine['sign'] * ($baseLine['tax_details']['total_excluded'] + $baseLine['tax_details']['delta_total_excluded']),
+                'balance'         => $baseLine['sign'] * ($baseLine['tax_details']['total_excluded'] + $baseLine['tax_details']['delta_total_excluded']),
             ]);
-            
+
             foreach ($baseLine['tax_details']['taxes_data'] as $taxData) {
                 $tax = $taxData['tax'];
 
                 foreach ($taxData['tax_reps_data'] as $taxRepData) {
                     $groupingKey = json_encode($taxRepData['grouping_key']);
-                    
-                    if (!isset($taxLinesMapping[$groupingKey])) {
+
+                    if (! isset($taxLinesMapping[$groupingKey])) {
                         $taxLinesMapping[$groupingKey] = [
-                            'grouping_key' => $taxRepData['grouping_key'],
+                            'grouping_key'    => $taxRepData['grouping_key'],
                             'tax_base_amount' => 0.0,
                             'amount_currency' => 0.0,
-                            'balance' => 0.0,
-                            'tax_line_id' => null,
-                            'tax_group_id' => null,
+                            'balance'         => 0.0,
+                            'tax_line_id'     => null,
+                            'tax_group_id'    => null,
                         ];
                     }
-                    
+
                     $taxLinesMapping[$groupingKey]['name'] = $tax->name;
                     $taxLinesMapping[$groupingKey]['tax_base_amount'] += $baseLine['sign'] * $taxData['base_amount'] * ($baseLine['tax_tag_invert'] ? -1 : 1);
                     $taxLinesMapping[$groupingKey]['amount_currency'] += $baseLine['sign'] * $taxRepData['tax_amount_currency'];
@@ -750,12 +747,12 @@ class TaxManager
             if ($currencyId) {
                 $currency = Currency::find($currencyId);
 
-                if (!$currency->isZero($v['amount_currency'])) {
+                if (! $currency->isZero($v['amount_currency'])) {
                     return true;
                 }
             }
 
-            return !$company->currency_id->isZero($v['balance']);
+            return ! $company->currency_id->isZero($v['balance']);
         });
 
         $taxLinesToUpdate = [];
@@ -763,11 +760,11 @@ class TaxManager
         $taxLinesToDelete = [];
 
         $processedKeys = [];
-        
+
         foreach ($taxLines as $taxLine) {
             $groupingKey = json_encode($this->prepareTaxLineRepartitionGroupingKey($taxLine));
-            
-            if (isset($taxLinesMapping[$groupingKey]) && !in_array($groupingKey, $processedKeys)) {
+
+            if (isset($taxLinesMapping[$groupingKey]) && ! in_array($groupingKey, $processedKeys)) {
                 $amounts = $taxLinesMapping[$groupingKey];
 
                 unset($taxLinesMapping[$groupingKey]);
@@ -779,7 +776,7 @@ class TaxManager
                 $taxLinesToDelete[] = $taxLine;
             }
         }
-        
+
         $taxLinesToAdd = [];
 
         foreach ($taxLinesMapping as $mapping) {
@@ -791,9 +788,9 @@ class TaxManager
         }
 
         return [
-            'tax_lines_to_add' => $taxLinesToAdd,
-            'tax_lines_to_delete' => $taxLinesToDelete,
-            'tax_lines_to_update' => $taxLinesToUpdate,
+            'tax_lines_to_add'     => $taxLinesToAdd,
+            'tax_lines_to_delete'  => $taxLinesToDelete,
+            'tax_lines_to_update'  => $taxLinesToUpdate,
             'base_lines_to_update' => $baseLinesToUpdate,
         ];
     }
@@ -801,11 +798,11 @@ class TaxManager
     public function prepareBaseLineGroupingKey($baseLine)
     {
         return [
-            'partner_id' => $baseLine['partner']->id,
-            'currency_id' => $baseLine['currency']->id,
+            'partner_id'            => $baseLine['partner']->id,
+            'currency_id'           => $baseLine['currency']->id,
             'analytic_distribution' => $baseLine['analytic_distribution'],
-            'account_id' => $baseLine['account']->id,
-            'tax_ids' => $baseLine instanceof Model
+            'account_id'            => $baseLine['account']->id,
+            'tax_ids'               => $baseLine instanceof Model
                 ? [$baseLine->id]
                 : $baseLine['taxes']->pluck('id')->toArray(),
         ];
@@ -815,27 +812,27 @@ class TaxManager
     {
         return array_merge($baseLineGroupingKey, [
             'tax_repartition_line_id' => $taxRepartitionData['tax_rep']->id,
-            'partner_id' => $baseLine['partner']->id,
-            'currency_id' => $baseLine['currency']->id,
-            'group_tax_id' => $taxData['group']?->id ?? null,
-            'analytic_distribution' => ($taxData['tax']->analytic || !$taxRepartitionData['tax_rep']->use_in_tax_closing)
+            'partner_id'              => $baseLine['partner']->id,
+            'currency_id'             => $baseLine['currency']->id,
+            'group_tax_id'            => $taxData['group']?->id ?? null,
+            'analytic_distribution'   => ($taxData['tax']->analytic || ! $taxRepartitionData['tax_rep']->use_in_tax_closing)
                 ? $baseLineGroupingKey['analytic_distribution']
                 : [],
             'account_id' => $taxRepartitionData['account']?->id ?: $baseLineGroupingKey['account_id'],
-            'tax_ids' => $taxRepartitionData['taxes']->pluck('id')->toArray(),
+            'tax_ids'    => $taxRepartitionData['taxes']->pluck('id')->toArray(),
         ]);
     }
 
     public function prepareTaxLineRepartitionGroupingKey($taxLine)
     {
         return [
-            'partner_id' => $taxLine['partner']->id,
-            'currency_id' => $taxLine['currency']->id,
-            'analytic_distribution' => $taxLine['analytic_distribution'],
-            'account_id' => $taxLine['account']->id,
-            'tax_ids' => $taxLine['taxes']->pluck('id')->toArray(),
+            'partner_id'              => $taxLine['partner']->id,
+            'currency_id'             => $taxLine['currency']->id,
+            'analytic_distribution'   => $taxLine['analytic_distribution'],
+            'account_id'              => $taxLine['account']->id,
+            'tax_ids'                 => $taxLine['taxes']->pluck('id')->toArray(),
             'tax_repartition_line_id' => $taxLine['taxRepartitionLine']->id,
-            'group_tax_id' => $taxLine['groupTax']->id,
+            'group_tax_id'            => $taxLine['groupTax']->id,
         ];
     }
 
@@ -848,8 +845,7 @@ class TaxManager
         mixed $product = null,
         bool $specialMode = false,
         mixed $manualTaxAmounts = null,
-    )
-    {
+    ) {
         $batchingResults = $this->batchForTaxesComputation($taxes, $specialMode);
 
         $sortedTaxes = $batchingResults['sorted_taxes'];
@@ -881,11 +877,11 @@ class TaxManager
         }
 
         $evaluationContext = [
-            'product' => $product,
-            'price_unit' => $priceUnit,
-            'quantity' => $quantity,
-            'raw_base' => $rawBase,
-            'special_mode' => $specialMode,
+            'product'            => $product,
+            'price_unit'         => $priceUnit,
+            'quantity'           => $quantity,
+            'raw_base'           => $rawBase,
+            'special_mode'       => $specialMode,
             'precision_rounding' => $precisionRounding,
         ];
 
@@ -944,7 +940,7 @@ class TaxManager
         foreach ($sortedTaxes->reverse() as $tax) {
             $taxData = $taxesData[$tax->id];
 
-            if (!array_key_exists('tax_amount', $taxData)) {
+            if (! array_key_exists('tax_amount', $taxData)) {
                 continue;
             }
 
@@ -958,7 +954,7 @@ class TaxManager
                 }
 
                 $base = $rawBase + $taxData['extra_base_for_base'];
-                
+
                 if ($taxData['price_include'] && in_array($specialMode, [false, 'total_included'], true)) {
                     $base -= $totalTaxAmount;
                 }
@@ -1005,11 +1001,11 @@ class TaxManager
 
         foreach ($taxesDataList as $taxData) {
             $taxesDataResult[] = [
-                'tax' => $taxData['tax'],
-                'group' => $batchingResults['group_per_tax'][$taxData['tax']->id] ?? new Tax(),
-                'batch' => $batchingResults['batch_per_tax'][$taxData['tax']->id],
-                'tax_amount' => $taxData['tax_amount'],
-                'base_amount' => $taxData['base'],
+                'tax'               => $taxData['tax'],
+                'group'             => $batchingResults['group_per_tax'][$taxData['tax']->id] ?? new Tax,
+                'batch'             => $batchingResults['batch_per_tax'][$taxData['tax']->id],
+                'tax_amount'        => $taxData['tax_amount'],
+                'base_amount'       => $taxData['base'],
                 'is_reverse_charge' => $taxData['is_reverse_charge'] ?? false,
             ];
         }
@@ -1017,7 +1013,7 @@ class TaxManager
         return [
             'total_excluded' => $totalExcluded,
             'total_included' => $totalIncluded,
-            'taxes_data' => $taxesDataResult,
+            'taxes_data'     => $taxesDataResult,
         ];
     }
 
@@ -1026,7 +1022,7 @@ class TaxManager
         $results = [
             'batch_per_tax' => [],
             'group_per_tax' => [],
-            'sorted_taxes' => collect(),
+            'sorted_taxes'  => collect(),
         ];
 
         $taxes = $taxes->sortBy('sequence');
@@ -1075,13 +1071,13 @@ class TaxManager
         };
 
         $addExtraBase = function ($otherTax, int $sign, &$taxesData, $tax) {
-            if (!isset($taxesData[$tax->id]['tax_amount'])) {
+            if (! isset($taxesData[$tax->id]['tax_amount'])) {
                 return;
             }
 
             $taxAmount = $taxesData[$tax->id]['tax_amount'];
 
-            if (!isset($taxesData[$otherTax->id]['tax_amount'])) {
+            if (! isset($taxesData[$otherTax->id]['tax_amount'])) {
                 $taxesData[$otherTax->id]['extra_base_for_tax'] += $sign * $taxAmount;
             }
 
@@ -1090,7 +1086,7 @@ class TaxManager
 
         if ($tax->price_include) {
             if ($specialMode === false || $specialMode === 'total_included') {
-                if (!$tax->include_base_amount) {
+                if (! $tax->include_base_amount) {
                     foreach ($getTaxAfter($taxes, $tax, $taxesData) as $otherTax) {
                         if ($otherTax->price_include) {
                             $addExtraBase($otherTax, -1, $taxesData, $tax);
@@ -1103,7 +1099,7 @@ class TaxManager
                 }
             } else {
                 foreach ($getTaxAfter($taxes, $tax, $taxesData) as $otherTax) {
-                    if (!$otherTax->price_include || $tax->include_base_amount) {
+                    if (! $otherTax->price_include || $tax->include_base_amount) {
                         $addExtraBase($otherTax, 1, $taxesData, $tax);
                     }
                 }
@@ -1118,7 +1114,7 @@ class TaxManager
                     }
                 }
             } else {
-                if (!$tax->include_base_amount) {
+                if (! $tax->include_base_amount) {
                     foreach ($getTaxAfter($taxes, $tax, $taxesData) as $otherTax) {
                         $addExtraBase($otherTax, -1, $taxesData, $tax);
                     }
@@ -1142,9 +1138,9 @@ class TaxManager
         }
 
         return array_merge($args, [
-            'tax' => $tax,
-            'price_include' => $priceInclude,
-            'extra_base_for_tax' => 0.0,
+            'tax'                 => $tax,
+            'price_include'       => $priceInclude,
+            'extra_base_for_tax'  => 0.0,
             'extra_base_for_base' => 0.0,
         ]);
     }
@@ -1162,7 +1158,7 @@ class TaxManager
         $roundingMethod,
         $specialMode
     ) {
-        $addTaxAmountToResults = function(
+        $addTaxAmountToResults = function (
             $tax,
             float $taxAmount
         ) use (
@@ -1195,7 +1191,7 @@ class TaxManager
             return;
         }
 
-        if ($manualTaxAmounts && isset($manualTaxAmounts[(string)$tax->id])) {
+        if ($manualTaxAmounts && isset($manualTaxAmounts[(string) $tax->id])) {
             $taxAmount = $manualTaxAmounts[(string) $tax->id]['tax_amount_currency'];
         } else {
             $taxAmount = $taxAmountFunction(

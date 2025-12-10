@@ -4,11 +4,11 @@ namespace Webkul\Account\Filament\Resources\BillResource\Pages;
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Webkul\Account\Enums\MoveType;
-use Webkul\Account\Models\Journal;
 use Webkul\Account\Enums\JournalType;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\BillResource;
+use Webkul\Account\Models\Journal;
 use Webkul\Support\Concerns\HasRepeaterColumnManager;
 
 class CreateBill extends CreateRecord
@@ -46,7 +46,7 @@ class CreateBill extends CreateRecord
         $journal = Journal::where('type', JournalType::PURCHASE)
             ->where('company_id', filament()->auth()->user()->default_company_id)
             ->first();
-            
+
         $this->data['journal_id'] = $journal?->id;
 
         $this->form->fill($this->data);

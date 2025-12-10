@@ -21,6 +21,7 @@ class ConfirmAction extends Action
         $this
             ->label(__('accounts::filament/resources/payment/actions/confirm-action.title'))
             ->color('gray')
+            ->requiresConfirmation()
             ->action(function (Payment $record, Component $livewire): void {
                 $record->state = PaymentStatus::IN_PROCESS;
                 $record->save();

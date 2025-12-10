@@ -42,12 +42,12 @@ class PaymentDueTerm extends Model
             return $dueDate->copy()->addMonthNoOverflow(1)->endOfMonth()->addDays($this->nb_days);
         } elseif ($this->delay_type === 'days_end_of_month_on_the') {
             $daysNextMonth = 1;
-            
+
             if (is_numeric($this->days_next_month)) {
                 $daysNextMonth = (int) $this->days_next_month;
             }
 
-            if (!$daysNextMonth) {
+            if (! $daysNextMonth) {
                 return $dueDate->copy()->addDays($this->nb_days)->endOfMonth();
             }
 

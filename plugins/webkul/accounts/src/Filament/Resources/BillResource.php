@@ -42,9 +42,8 @@ use Webkul\Account\Filament\Resources\BillResource\Pages\ViewBill;
 use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\Partner;
-use Webkul\Field\Filament\Forms\Components\ProgressStepper;
-use Webkul\Account\Filament\Resources\InvoiceResource;
 use Webkul\Account\Models\Product;
+use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
@@ -194,7 +193,7 @@ class BillResource extends Resource
                                                     ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
                                             ])
                                             ->columns(2),
-                                            
+
                                         Group::make()
                                             ->schema([
                                                 Select::make('journal_id')

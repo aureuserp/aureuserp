@@ -13,7 +13,7 @@ trait DepartmentEmployee
         $table = EmployeeResource::table($table);
 
         [$view, $edit] = $table->getActions();
-        
+
         $view = $view->url(fn ($record) => EmployeeResource::getUrl('view', ['record' => $record]))
             ->openUrlInNewTab(false);
         $edit = $edit->url(fn ($record) => EmployeeResource::getUrl('edit', ['record' => $record]))

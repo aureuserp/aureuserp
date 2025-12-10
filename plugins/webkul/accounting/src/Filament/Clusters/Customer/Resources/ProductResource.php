@@ -3,6 +3,7 @@
 namespace Webkul\Accounting\Filament\Clusters\Customer\Resources;
 
 use Filament\Resources\Pages\Page;
+use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Accounting\Filament\Clusters\Customer;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\ProductResource\Pages\CreateProduct;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\ProductResource\Pages\EditProduct;
@@ -11,7 +12,6 @@ use Webkul\Accounting\Filament\Clusters\Customer\Resources\ProductResource\Pages
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\ProductResource\Pages\ManageVariants;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\ProductResource\Pages\ViewProduct;
 use Webkul\Accounting\Models\Product;
-use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
 
 class ProductResource extends BaseProductResource
 {

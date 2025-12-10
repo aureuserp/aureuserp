@@ -25,6 +25,7 @@ class ViewActivityPlan extends ViewRecord
                 ),
         ];
     }
+
     public function getSubNavigation(): array
     {
         if (filled($cluster = static::getCluster())) {

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\DelayType;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\JournalType;
@@ -14,7 +15,6 @@ use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\PaymentStatus;
-use Webkul\Account\Enums\AccountType;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
@@ -449,7 +449,7 @@ class Move extends Model implements Sortable
         $prefix = '';
 
         if (
-            $this->journal->refund_sequence 
+            $this->journal->refund_sequence
             && in_array($this->move_type, [MoveType::OUT_REFUND, MoveType::IN_REFUND])
         ) {
             $prefix .= 'R';
@@ -557,13 +557,13 @@ class Move extends Model implements Sortable
             'source_line.move_id as source_move_id',
             'account.account_type as source_line_account_type',
             DB::raw('JSON_ARRAYAGG(opposite_move.move_type) as opposite_move_types'),
-            DB::raw("
+            DB::raw('
                 CASE 
                     WHEN SUM(opposite_move.origin_payment_id IS NOT NULL) = 0 
                         THEN TRUE
                     ELSE MIN(COALESCE(payment.is_matched, 0))
                 END AS all_payments_matched
-            "),
+            '),
             DB::raw('MAX(payment.id IS NOT NULL) as has_payment'),
             DB::raw('MAX(opposite_move.statement_line_id IS NOT NULL) as has_statement_line')
         )
@@ -583,13 +583,13 @@ class Move extends Model implements Sortable
             'source_line.move_id as source_move_id',
             'account.account_type as source_line_account_type',
             DB::raw('JSON_ARRAYAGG(opposite_move.move_type) as opposite_move_types'),
-            DB::raw("
+            DB::raw('
                 CASE 
                     WHEN SUM(opposite_move.origin_payment_id IS NOT NULL) = 0 
                         THEN TRUE
                     ELSE MIN(COALESCE(payment.is_matched, 0))
                 END AS all_payments_matched
-            "),
+            '),
             DB::raw('MAX(payment.id IS NOT NULL) as has_payment'),
             DB::raw('MAX(opposite_move.statement_line_id IS NOT NULL) as has_statement_line')
         )
@@ -607,7 +607,7 @@ class Move extends Model implements Sortable
         $allResults = $debitResults->merge($creditResults);
 
         $paymentData = [];
-        
+
         foreach ($allResults as $row) {
             $oppositeMoveTypes = $row->opposite_move_types;
 
@@ -616,24 +616,24 @@ class Move extends Model implements Sortable
 
                 $oppositeMoveTypes = $oppositeMoveTypes ? explode(',', $oppositeMoveTypes) : [];
             }
-            
+
             $paymentData[] = [
-                'source_line_id' => $row->source_line_id,
-                'source_move_id' => $row->source_move_id,
+                'source_line_id'           => $row->source_line_id,
+                'source_move_id'           => $row->source_move_id,
                 'source_line_account_type' => $row->source_line_account_type,
-                'opposite_move_types' => $oppositeMoveTypes,
-                'all_payments_matched' => $row->all_payments_matched === true,
-                'has_payment' => $row->has_payment === true,
-                'has_statement_line' => $row->has_statement_line === true,
+                'opposite_move_types'      => $oppositeMoveTypes,
+                'all_payments_matched'     => $row->all_payments_matched === true,
+                'has_payment'              => $row->has_payment === true,
+                'has_statement_line'       => $row->has_statement_line === true,
             ];
         }
 
         $currencies = $this->lines->pluck('currency_id')->unique();
 
-        $currency = $currencies->count() === 1 
-            ? Currency::find($currencies->first()) 
+        $currency = $currencies->count() === 1
+            ? Currency::find($currencies->first())
             : $this->company->currency_id;
-        
+
         $reconciliationVals = $paymentData;
 
         $paymentStateNeeded = $this->isInvoice(true);
@@ -645,7 +645,7 @@ class Move extends Model implements Sortable
         }
 
         $newPaymentState = $this->payment_state !== PaymentState::BLOCKED ? PaymentState::NOT_PAID : PaymentState::BLOCKED;
-        
+
         if ($this->state === MoveState::POSTED && $paymentStateNeeded) {
             if ($currency->isZero($this->amount_residual)) {
                 $hasPaymentOrStatementLine = false;
@@ -657,18 +657,18 @@ class Move extends Model implements Sortable
                         break;
                     }
                 }
-                
+
                 if ($hasPaymentOrStatementLine) {
                     $allPaymentsMatched = true;
 
                     foreach ($reconciliationVals as $row) {
-                        if (!$row['all_payments_matched']) {
+                        if (! $row['all_payments_matched']) {
                             $allPaymentsMatched = false;
 
                             break;
                         }
                     }
-                    
+
                     if ($allPaymentsMatched) {
                         $newPaymentState = PaymentState::PAID;
                     } else {
@@ -691,7 +691,7 @@ class Move extends Model implements Sortable
 
                     $inReverse = in_array($this->move_type, [MoveType::IN_INVOICE, MoveType::IN_RECEIPT])
                         && (
-                            $reverseMoveTypes === [MoveType::IN_REFUND] 
+                            $reverseMoveTypes === [MoveType::IN_REFUND]
                             || (
                                 count($reverseMoveTypes) === 2
                                 && in_array(MoveType::IN_REFUND, $reverseMoveTypes)
@@ -701,7 +701,7 @@ class Move extends Model implements Sortable
 
                     $outReverse = in_array($this->move_type, [MoveType::OUT_INVOICE, MoveType::OUT_RECEIPT])
                         && (
-                            $reverseMoveTypes === [MoveType::OUT_REFUND] 
+                            $reverseMoveTypes === [MoveType::OUT_REFUND]
                             || (
                                 count($reverseMoveTypes) === 2
                                 && in_array(MoveType::OUT_REFUND, $reverseMoveTypes)
@@ -711,7 +711,7 @@ class Move extends Model implements Sortable
 
                     $miscReverse = in_array($this->move_type, [MoveType::ENTRY, MoveType::OUT_REFUND, MoveType::IN_REFUND])
                         && $reverseMoveTypes === ['entry'];
-                    
+
                     if ($inReverse || $outReverse || $miscReverse) {
                         $newPaymentState = PaymentState::REVERSED;
                     }
@@ -728,7 +728,7 @@ class Move extends Model implements Sortable
                 $newPaymentState = $this->getInvoiceInPaymentState();
             }
         }
-        
+
         $this->payment_state = $newPaymentState;
     }
 
@@ -736,7 +736,7 @@ class Move extends Model implements Sortable
     {
         $paymentDate = $paymentDate ?: now()->toDateString();
 
-        $termLines = $lines->sortBy(function($line) {
+        $termLines = $lines->sortBy(function ($line) {
             return [$line->date_maturity, $line->date];
         });
 
@@ -747,20 +747,20 @@ class Move extends Model implements Sortable
         $firstInstallmentMode = false;
 
         $currentInstallmentMode = false;
-        
+
         $i = 1;
 
         foreach ($termLines as $line) {
             $installment = [
-                'number' => $i,
-                'line' => $line,
-                'date_maturity' => $line->date_maturity ?: $line->date,
-                'amount_residual_currency' => $line->amount_residual_currency,
-                'amount_residual' => $line->amount_residual,
+                'number'                            => $i,
+                'line'                              => $line,
+                'date_maturity'                     => $line->date_maturity ?: $line->date,
+                'amount_residual_currency'          => $line->amount_residual_currency,
+                'amount_residual'                   => $line->amount_residual,
                 'amount_residual_currency_unsigned' => -$sign * $line->amount_residual_currency,
-                'amount_residual_unsigned' => -$sign * $line->amount_residual,
-                'type' => 'other',
-                'reconciled' => $line->reconciled,
+                'amount_residual_unsigned'          => -$sign * $line->amount_residual,
+                'type'                              => 'other',
+                'reconciled'                        => $line->reconciled,
             ];
 
             $installments[] = $installment;
@@ -787,7 +787,7 @@ class Move extends Model implements Sortable
 
                 $installments[count($installments) - 1] = $installment;
             }
-            
+
             $i++;
         }
 
@@ -798,9 +798,9 @@ class Move extends Model implements Sortable
     {
         $paymentVals = [
             'outstanding' => false,
-            'content' => [],
-            'move_id' => $this->id,
-            'title' => $this->isInbound() ? 'Outstanding debits' : 'Outstanding credits',
+            'content'     => [],
+            'move_id'     => $this->id,
+            'title'       => $this->isInbound() ? 'Outstanding debits' : 'Outstanding credits',
         ];
 
         if (
@@ -811,7 +811,7 @@ class Move extends Model implements Sortable
             return $paymentVals;
         }
 
-        $paymentTermLines = $this->lines->filter(function($line) {
+        $paymentTermLines = $this->lines->filter(function ($line) {
             return in_array($line->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE]);
         });
 
@@ -822,10 +822,10 @@ class Move extends Model implements Sortable
             ['reconciled', false],
         ];
 
-        $filters[] = $this->isInbound() ? ['balance', '<', 0.0]: ['balance', '>', 0.0];
-        
+        $filters[] = $this->isInbound() ? ['balance', '<', 0.0] : ['balance', '>', 0.0];
+
         $outstandingLines = MoveLine::where($filters)
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->where('amount_residual', '!=', 0.0)
                     ->orWhere('amount_residual_currency', '!=', 0.0);
             })
@@ -850,12 +850,12 @@ class Move extends Model implements Sortable
             $paymentVals['outstanding'] = true;
 
             $paymentVals['content'][] = [
-                'journal_name' => $line->ref ?: $line->move->name,
-                'amount' => $amount,
-                'currency_id' => $this->currency_id,
-                'id' => $line->id,
-                'move_id' => $line->move_id,
-                'date' => $line->date->toDateString(),
+                'journal_name'       => $line->ref ?: $line->move->name,
+                'amount'             => $amount,
+                'currency_id'        => $this->currency_id,
+                'id'                 => $line->id,
+                'move_id'            => $line->move_id,
+                'date'               => $line->date->toDateString(),
                 'account_payment_id' => $line->payment_id,
             ];
         }

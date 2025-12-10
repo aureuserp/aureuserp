@@ -2,7 +2,6 @@
 
 namespace Webkul\Website\Filament\Admin\Clusters;
 
-use BackedEnum;
 use Filament\Clusters\Cluster;
 
 class Configurations extends Cluster

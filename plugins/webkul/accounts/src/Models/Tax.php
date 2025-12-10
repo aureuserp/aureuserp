@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Enums\DocumentType;
+use Webkul\Account\Settings\TaxesSettings;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
-use Webkul\Account\Settings\TaxesSettings;
 
 class Tax extends Model implements Sortable
 {
@@ -91,7 +91,7 @@ class Tax extends Model implements Sortable
     public function getPriceIncludeAttribute()
     {
         return $this->price_include_override == 'tax_included'
-            || (new TaxesSettings())->account_price_include == 'tax_included' && ! $this->price_include_override;
+            || (new TaxesSettings)->account_price_include == 'tax_included' && ! $this->price_include_override;
     }
 
     public function evalTaxAmountFixedAmount($batch, $rawBase, $evaluationContext)

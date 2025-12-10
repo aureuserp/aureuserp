@@ -2,12 +2,12 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Configuration\Resources;
 
+use Webkul\Account\Filament\Resources\TaxResource as BaseTaxResource;
 use Webkul\Accounting\Filament\Clusters\Configuration;
-use Webkul\Accounting\Filament\Clusters\Configuration\Resources\TaxResource\Pages\ListTaxes;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\TaxResource\Pages\CreateTax;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\TaxResource\Pages\EditTax;
+use Webkul\Accounting\Filament\Clusters\Configuration\Resources\TaxResource\Pages\ListTaxes;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\TaxResource\Pages\ViewTax;
-use Webkul\Account\Filament\Resources\TaxResource as BaseTaxResource;
 
 class TaxResource extends BaseTaxResource
 {
@@ -35,10 +35,10 @@ class TaxResource extends BaseTaxResource
     public static function getPages(): array
     {
         return [
-            'index' => ListTaxes::route('/'),
+            'index'  => ListTaxes::route('/'),
             'create' => CreateTax::route('/create'),
-            'edit' => EditTax::route('/{record}/edit'),
-            'view' => ViewTax::route('/{record}'),
+            'edit'   => EditTax::route('/{record}/edit'),
+            'view'   => ViewTax::route('/{record}'),
         ];
     }
 }

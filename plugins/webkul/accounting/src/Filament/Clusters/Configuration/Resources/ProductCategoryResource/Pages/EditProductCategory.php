@@ -2,8 +2,8 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Configuration\Resources\ProductCategoryResource\Pages;
 
-use Webkul\Chatter\Filament\Actions as ChatterActions;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\ProductCategoryResource;
+use Webkul\Chatter\Filament\Actions as ChatterActions;
 use Webkul\Product\Filament\Resources\CategoryResource\Pages\EditCategory;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 

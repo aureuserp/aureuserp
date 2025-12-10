@@ -22,13 +22,13 @@ class ResetToDraftAction extends Action
             ->label(__('accounts::filament/resources/payment/actions/reset-to-draft.title'))
             ->color('gray')
             ->action(function (Payment $record, Component $livewire): void {
-                $record->state = PaymentStatus::DRAFT->value;
+                $record->state = PaymentStatus::DRAFT;
                 $record->save();
 
                 $livewire->refreshFormData(['state']);
             })
             ->hidden(function (Payment $record) {
-                return $record->state == PaymentStatus::DRAFT->value;
+                return $record->state == PaymentStatus::DRAFT;
             });
     }
 }

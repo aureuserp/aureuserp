@@ -2,7 +2,6 @@
 
 namespace Webkul\Project\Filament\Resources\ProjectResource\RelationManagers;
 
-use Webkul\Project\Filament\Resources\ProjectResource;
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -11,7 +10,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\MilestoneResource;
-use Webkul\Project\Settings\TaskSettings;
+use Webkul\Project\Filament\Resources\ProjectResource;
 
 class MilestonesRelationManager extends RelationManager
 {

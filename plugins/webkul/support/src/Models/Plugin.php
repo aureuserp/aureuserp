@@ -95,12 +95,14 @@ class Plugin extends Model implements Sortable
     public function getPackage(): ?\Webkul\Support\Package
     {
         $packages = self::getAllPluginPackages();
+
         return $packages[$this->name] ?? null;
     }
 
     public function getDependenciesFromConfig(): array
     {
         $package = $this->getPackage();
+
         return $package ? $package->dependencies : [];
     }
 

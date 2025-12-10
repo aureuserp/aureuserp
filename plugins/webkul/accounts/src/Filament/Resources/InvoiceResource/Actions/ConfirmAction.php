@@ -53,14 +53,14 @@ class ConfirmAction extends Action
                     __('accounts::filament/resources/invoice/actions/confirm-action.validation.notification.error.customer-required.title'),
                     __('accounts::filament/resources/invoice/actions/confirm-action.validation.notification.error.customer-required.body')
                 );
-                    
+
                 return false;
             } elseif ($record->isPurchaseDocument(true)) {
                 $this->sendErrorNotification(
                     __('accounts::filament/resources/invoice/actions/confirm-action.validation.notification.error.vendor-required.title'),
                     __('accounts::filament/resources/invoice/actions/confirm-action.validation.notification.error.vendor-required.body')
                 );
-                    
+
                 return false;
             }
         }
@@ -91,7 +91,7 @@ class ConfirmAction extends Action
                     __('accounts::filament/resources/invoice/actions/confirm-action.validation.notification.error.date-required.title'),
                     __('accounts::filament/resources/invoice/actions/confirm-action.validation.notification.error.date-required.body')
                 );
-                    
+
                 return false;
             }
         }

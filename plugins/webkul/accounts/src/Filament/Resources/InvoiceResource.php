@@ -115,7 +115,7 @@ class InvoiceResource extends Resource
                     ->disabled()
                     ->live()
                     ->reactive(),
-                    
+
                 Section::make(__('accounts::filament/resources/invoice.form.section.general.title'))
                     ->icon('heroicon-o-document-text')
                     ->schema([
@@ -558,7 +558,7 @@ class InvoiceResource extends Resource
     {
         $move = AccountMove::find(135);
         dd($move->getReconcilablePayments());
-        
+
         return $schema
             ->columns(1)
             ->components([
