@@ -800,7 +800,7 @@ class Move extends Model implements Sortable
             'outstanding' => false,
             'content'     => [],
             'move_id'     => $this->id,
-            'title'       => $this->isInbound() ? 'Outstanding debits' : 'Outstanding credits',
+            'title'       => $this->isInbound() ? 'Outstanding credits' : 'Outstanding debits',
         ];
 
         if (
@@ -815,19 +815,18 @@ class Move extends Model implements Sortable
             return in_array($line->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE]);
         });
 
-        $filters = [
-            ['account_id', 'in', $paymentTermLines->pluck('account_id')->toArray()],
-            ['parent_state', MoveState::POSTED],
-            ['partner_id', $this->commercial_partner_id],
-            ['reconciled', false],
-        ];
-
-        $filters[] = $this->isInbound() ? ['balance', '<', 0.0] : ['balance', '>', 0.0];
-
-        $outstandingLines = MoveLine::where($filters)
+        $outstandingLines = MoveLine::whereIn('account_id', $paymentTermLines->pluck('account_id'))
+            ->where('parent_state', MoveState::POSTED)
+            ->where('partner_id', $this->commercial_partner_id)
+            ->where('reconciled', false)
             ->where(function ($query) {
                 $query->where('amount_residual', '!=', 0.0)
                     ->orWhere('amount_residual_currency', '!=', 0.0);
+            })
+            ->when($this->isInbound(), function ($query) {
+                return $query->where('balance', '<', 0);
+            }, function ($query) {
+                return $query->where('balance', '>', 0);
             })
             ->get();
 

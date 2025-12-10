@@ -556,8 +556,8 @@ class InvoiceResource extends Resource
 
     public static function infolist(Schema $schema): Schema
     {
-        $move = AccountMove::find(135);
-        dd($move->getReconcilablePayments());
+        // $move = AccountMove::find(144);
+        // dd($move->getReconcilablePayments());
 
         return $schema
             ->columns(1)

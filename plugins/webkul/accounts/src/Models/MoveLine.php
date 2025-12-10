@@ -76,6 +76,7 @@ class MoveLine extends Model implements Sortable
     ];
 
     protected $casts = [
+        'date'                  => 'date',
         'date_maturity'         => 'date',
         'invoice_date'          => 'date',
         'analytic_distribution' => 'array',
