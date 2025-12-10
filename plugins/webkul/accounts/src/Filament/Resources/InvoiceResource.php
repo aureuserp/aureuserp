@@ -149,7 +149,7 @@ class InvoiceResource extends Resource
                                                 $set('invoice_user_id', $partner?->user_id);
 
                                                 $set('preferred_payment_method_line_id', $partner?->property_inbound_payment_method_line_id);
-                                                
+
                                                 $set('invoice_payment_term_id', $partner?->property_payment_term_id);
                                             })
                                             ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
@@ -200,7 +200,7 @@ class InvoiceResource extends Resource
                                                     ->label(__('accounts::filament/resources/invoice.form.section.general.fields.journal'))
                                                     ->createOptionForm(fn ($form) => JournalResource::form($form))
                                                     ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
-                                                
+
                                                 Select::make('currency_id')
                                                     ->label(__('accounts::filament/resources/invoice.form.section.general.fields.currency'))
                                                     ->relationship(
@@ -411,7 +411,7 @@ class InvoiceResource extends Resource
                     ->searchable()
                     ->placeholder('-')
                     ->sortable()
-                    ->summarize(Sum::make()->label('Total'))
+                    ->summarize(Sum::make()->label(__('accounts::filament/resources/invoice.table.summarizers.total')))
                     ->money(fn ($record) => $record->currency?->name)
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('payment_state')
@@ -705,7 +705,7 @@ class InvoiceResource extends Resource
                                     $rounding = 0;
                                     if ($record->invoiceCashRounding) {
                                         $total = $record->amount_total ?? 0;
-                                        
+
                                         $rounding = $record->invoiceCashRounding->computeDifference($record->currency, $total);
                                     }
 

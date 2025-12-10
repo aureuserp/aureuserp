@@ -67,7 +67,7 @@ class EditTax extends EditRecord
         } catch (\Exception $e) {
             Notification::make()
                 ->danger()
-                ->title('Invalid Repartition Lines')
+                ->title(__('accounts::filament/resources/tax/pages/edit-tax.header-actions.delete.notification.invalid-repartition-lines.title'))
                 ->body($e->getMessage())
                 ->send();
 
