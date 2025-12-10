@@ -218,60 +218,47 @@ class PaymentResource extends Resource
             ->reorderableColumns()
             ->columnManagerColumns(2)
             ->columns([
+                TextColumn::make('date')
+                    ->label(__('accounts::filament/resources/payment.table.columns.date'))
+                    ->placeholder('-')
+                    ->date()
+                    ->sortable(),
                 TextColumn::make('name')
                     ->label(__('accounts::filament/resources/payment.table.columns.name'))
                     ->searchable()
                     ->placeholder('-')
                     ->sortable(),
-                TextColumn::make('company.name')
-                    ->label(__('accounts::filament/resources/payment.table.columns.company'))
+                TextColumn::make('journal.name')
+                    ->label(__('accounts::filament/resources/payment.table.columns.journal'))
                     ->placeholder('-')
-                    ->sortable(),
-                TextColumn::make('partnerBank.account_holder_name')
-                    ->label(__('accounts::filament/resources/payment.table.columns.bank-account-holder'))
-                    ->searchable()
-                    ->placeholder('-')
-                    ->sortable(),
-                TextColumn::make('pairedInternalTransferPayment.name')
-                    ->label(__('accounts::filament/resources/payment.table.columns.paired-internal-transfer-payment'))
-                    ->placeholder('-')
-                    ->sortable(),
-                TextColumn::make('paymentMethodLine.name')
-                    ->placeholder('-')
-                    ->label(__('accounts::filament/resources/payment.table.columns.payment-method-line'))
                     ->sortable(),
                 TextColumn::make('paymentMethod.name')
                     ->label(__('accounts::filament/resources/payment.table.columns.payment-method'))
                     ->placeholder('-')
                     ->sortable(),
-                TextColumn::make('currency.name')
-                    ->label(__('accounts::filament/resources/payment.table.columns.currency'))
-                    ->placeholder('-')
-                    ->sortable(),
                 TextColumn::make('partner.name')
                     ->label(__('accounts::filament/resources/payment.table.columns.partner'))
-                    ->sortable()
                     ->placeholder('-')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('outstandingAccount.name')
-                    ->label(__('accounts::filament/resources/payment.table.columns.outstanding-amount'))
-                    ->sortable()
+                    ->sortable(),
+                TextColumn::make('amount_company_currency_signed')
+                    ->label(__('accounts::filament/resources/payment.table.columns.amount-currency'))
                     ->placeholder('-')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('destinationAccount.name')
-                    ->label(__('accounts::filament/resources/payment.table.columns.destination-account'))
                     ->sortable()
+                    ->money(fn (Payment $record) => $record->company?->currency_code, true),
+                TextColumn::make('amount')
+                    ->label(__('accounts::filament/resources/payment.table.columns.amount'))
                     ->placeholder('-')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('createdBy.name')
-                    ->label(__('accounts::filament/resources/payment.table.columns.created-by'))
                     ->sortable()
+                    ->money(fn (Payment $record) => $record->company?->currency_code, true),
+                TextColumn::make('state')
+                    ->label(__('accounts::filament/resources/payment.table.columns.state'))
                     ->placeholder('-')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('paymentTransaction.name')
-                    ->label(__('accounts::filament/resources/payment.table.columns.payment-transaction'))
                     ->sortable()
+                    ->badge(),
+                TextColumn::make('company.name')
+                    ->label(__('accounts::filament/resources/payment.table.columns.company'))
                     ->placeholder('-')
+                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->groups([
@@ -434,15 +421,7 @@ class PaymentResource extends Resource
                             ->schema([
                                 TextEntry::make('state')
                                     ->badge()
-                                    ->color(fn (string $state): string => match ($state) {
-                                        PaymentStatus::DRAFT->value      => 'gray',
-                                        PaymentStatus::IN_PROCESS->value => 'warning',
-                                        PaymentStatus::PAID->value       => 'success',
-                                        PaymentStatus::CANCELED->value   => 'danger',
-                                        default                          => 'gray',
-                                    })
-                                    ->label(__('accounts::filament/resources/payment.infolist.sections.payment-information.entries.state'))
-                                    ->formatStateUsing(fn (string $state): string => PaymentStatus::options()[$state]),
+                                    ->label(__('accounts::filament/resources/payment.infolist.sections.payment-information.entries.state')),
                                 TextEntry::make('payment_type')
                                     ->label(__('accounts::filament/resources/payment.infolist.sections.payment-information.entries.payment-type'))
                                     ->badge(),

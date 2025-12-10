@@ -17,6 +17,7 @@ use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Account\Settings\DefaultAccountSettings;
+use Webkul\Account\Enums\PaymentStatus;
 use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Facades\Account as AccountFacade;
 
@@ -57,6 +58,8 @@ class Payment extends Model
     ];
 
     protected $casts = [
+        'date' => 'date',
+        'state' => PaymentStatus::class,
         'payment_type' => PaymentType::class,
     ];
 
@@ -200,9 +203,13 @@ class Payment extends Model
     {
         parent::boot();
 
-        static::saving(function ($payment) {
-            $payment->computeName();
+        static::created(function ($move) {
+            $move->computeName();
 
+            $move->save();
+        });
+
+        static::saving(function ($payment) {
             $payment->computeState();
 
             $payment->computePartnerType();
@@ -226,6 +233,28 @@ class Payment extends Model
     public function computeName()
     {
         $this->name = $this->move?->name;
+
+        if (! $this->name) {
+            $prefix = '';
+
+            if (
+                $this->journal->refund_sequence 
+                && in_array($this->move_type, [MoveType::OUT_REFUND, MoveType::IN_REFUND])
+            ) {
+                $prefix .= 'R';
+            }
+
+            if ($this->journal->payment_sequence && $this->payment_method_line_id) {
+                $prefix .= 'P';
+            }
+
+            $this->name = sprintf(
+                '%s%s/%s',
+                $prefix,
+                $this->journal->code,
+                $this->date->format('Y'),
+            ).'/'.$this->id;
+        }
     }
 
     public function computeCreatedBy()
@@ -250,32 +279,32 @@ class Payment extends Model
     public function computeState()
     {
         if (! $this->state) {
-            $this->state = 'draft';
+            $this->state = PaymentStatus::DRAFT;
         }
 
         if (! $this->move) {
             return;
         }
 
-        if ($this->state === 'in_process' && $this->outstanding_account_id) {
+        if ($this->state === PaymentStatus::IN_PROCESS && $this->outstanding_account_id) {
             [$liquidity] = $this->seekForLines();
 
             if (
                 $this->move
                 && $this->move->currency->isZero($liquidity->sum('amount_residual'))
             ) {
-                $this->state = 'paid';
+                $this->state = PaymentStatus::PAID;
 
                 return;
             }
         }
 
         if (
-            $this->state === 'in_process'
+            $this->state === PaymentStatus::IN_PROCESS
             && $this->invoices()->exists()
-            && $this->invoices->every(fn($invoice) => $invoice->payment_state === 'paid')
+            && $this->invoices->every(fn($invoice) => $invoice->payment_state === PaymentStatus::PAID)
         ) {
-            $this->state = 'paid';
+            $this->state = PaymentStatus::PAID;
         }
     }
 
@@ -292,7 +321,7 @@ class Payment extends Model
 
         if (! $this->outstanding_account_id) {
             $this->is_reconciled = false;
-            $this->is_matched = $this->state === 'paid';
+            $this->is_matched = $this->state === PaymentStatus::PAID;
 
             return;
         }
@@ -447,7 +476,7 @@ class Payment extends Model
 
         parent::updateQuietly([
             'move_id' => $move->id,
-            'state' => 'in_process',
+            'state' => PaymentStatus::IN_PROCESS,
         ]);
     }
 

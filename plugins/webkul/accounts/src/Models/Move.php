@@ -13,6 +13,7 @@ use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
+use Webkul\Account\Enums\PaymentStatus;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
@@ -406,7 +407,7 @@ class Move extends Model implements Sortable
 
     public function getInvoiceInPaymentState()
     {
-        return 'paid';
+        return PaymentState::PAID;
     }
 
     /**
@@ -643,7 +644,7 @@ class Move extends Model implements Sortable
             });
         }
 
-        $newPaymentState = $this->payment_state !== 'blocked' ? 'not_paid' : 'blocked';
+        $newPaymentState = $this->payment_state !== PaymentState::BLOCKED ? PaymentState::NOT_PAID : PaymentState::BLOCKED;
         
         if ($this->state === MoveState::POSTED && $paymentStateNeeded) {
             if ($currency->isZero($this->amount_residual)) {
@@ -669,12 +670,12 @@ class Move extends Model implements Sortable
                     }
                     
                     if ($allPaymentsMatched) {
-                        $newPaymentState = 'paid';
+                        $newPaymentState = PaymentState::PAID;
                     } else {
                         $newPaymentState = $this->getInvoiceInPaymentState();
                     }
                 } else {
-                    $newPaymentState = 'paid';
+                    $newPaymentState = PaymentState::PAID;
 
                     $reverseMoveTypes = [];
 
@@ -712,17 +713,17 @@ class Move extends Model implements Sortable
                         && $reverseMoveTypes === ['entry'];
                     
                     if ($inReverse || $outReverse || $miscReverse) {
-                        $newPaymentState = 'reversed';
+                        $newPaymentState = PaymentState::REVERSED;
                     }
                 }
             } elseif ($this->matchedPayments->filter(function ($payment) {
-                return ! $payment->move_id && $payment->state === 'in_process';
+                return ! $payment->move_id && $payment->state === PaymentStatus::IN_PROCESS;
             })->isNotEmpty()) {
                 $newPaymentState = $this->getInvoiceInPaymentState();
             } elseif (! empty($reconciliationVals)) {
-                $newPaymentState = 'partial';
+                $newPaymentState = PaymentState::PARTIAL;
             } elseif ($this->matchedPayments->filter(function ($payment) {
-                return ! $payment->move_id && $payment->state === 'paid';
+                return ! $payment->move_id && $payment->state === PaymentStatus::PAID;
             })->isNotEmpty()) {
                 $newPaymentState = $this->getInvoiceInPaymentState();
             }

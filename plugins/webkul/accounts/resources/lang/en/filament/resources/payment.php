@@ -26,18 +26,17 @@ return [
 
     'table' => [
         'columns' => [
-            'name'                             => 'Name',
-            'company'                          => 'Company',
-            'bank-account-holder'              => 'Bank Account Holder',
-            'paired-internal-transfer-payment' => 'Paired Internal Transfer Payment',
-            'payment-method-line'              => 'Payment Method Line',
-            'payment-method'                   => 'Payment Method',
-            'currency'                         => 'Currency',
-            'partner'                          => 'Partner',
-            'outstanding-amount'               => 'Outstanding Amount',
-            'destination-account'              => 'Destination Account',
-            'created-by'                       => 'Created By',
-            'payment-transaction'              => 'Payment Transaction',
+            'name'            => 'Name',
+            'date'            => 'Date',
+            'journal'         => 'Journal',
+            'payment-method'  => 'Payment Method',
+            'partner'         => 'Partner',
+            'amount-currency' => 'Amount (Currency)',
+            'amount'          => 'Amount',
+            'state'           => 'State',
+            'company'         => 'Company',
+            'currency'        => 'Currency',
+            'created-by'      => 'Created By',
         ],
 
         'groups' => [

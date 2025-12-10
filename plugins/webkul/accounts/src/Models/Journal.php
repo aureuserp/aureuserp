@@ -106,6 +106,24 @@ class Journal extends Model implements Sortable
         return $this->hasMany(MoveLine::class, 'journal_id');
     }
 
+    public function getPaymentSequenceAttribute()
+    {
+        if (in_array($this->type, [JournalType::CASH, JournalType::BANK, JournalType::CREDIT_CARD])) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function getRefundSequenceAttribute()
+    {
+        if (in_array($this->type, [JournalType::SALE, JournalType::PURCHASE])) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function inboundPaymentMethodLines(): HasMany
     {
         return $this->hasMany(PaymentMethodLine::class)

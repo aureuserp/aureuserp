@@ -23,6 +23,7 @@ use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Payment;
 use Webkul\Support\Models\Currency;
 use Illuminate\Support\Arr;
+use Webkul\Account\Enums\PaymentStatus;
 use Webkul\Account\Models\FullReconcile;
 use Webkul\Account\Models\PartialReconcile;
 use Webkul\Account\Models\PaymentRegister;
@@ -907,7 +908,7 @@ class AccountManager
 
     public function initiatePayments($paymentRegister, &$paymentsToProcess, $editMode = false)
     {
-        $accountingInstalled = (new Move)->getInvoiceInPaymentState() == 'in_payment';
+        $accountingInstalled = (new Move)->getInvoiceInPaymentState() == PaymentState::IN_PAYMENT;
 
         foreach ($paymentsToProcess as $index => $processItem) {
             $vals = $processItem['create_vals'];
@@ -1019,13 +1020,13 @@ class AccountManager
         }
 
         if ($payment->outstandingAccount->account_type === AccountType::ASSET_CASH) {
-            $payment->state = 'paid';
+            $payment->state = PaymentStatus::PAID;
 
             $payment->save();
         }
 
-        if (in_array($payment->state, [null, 'draft', 'in_process'])) {
-            $payment->state = 'in_process';
+        if (in_array($payment->state, [null, PaymentStatus::DRAFT, PaymentStatus::IN_PROCESS])) {
+            $payment->state = PaymentStatus::IN_PROCESS;
 
             $payment->save();
         }
