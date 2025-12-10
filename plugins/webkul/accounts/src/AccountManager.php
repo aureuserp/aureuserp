@@ -1023,6 +1023,8 @@ class AccountManager
 
             $payment->save();
         }
+
+        return $payment;
     }
 
     public function reconcilePayments($paymentsToProcess, $editMode = false)

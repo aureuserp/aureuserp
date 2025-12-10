@@ -24,14 +24,15 @@ class ConfirmAction extends Action
             ->color('gray')
             ->requiresConfirmation()
             ->action(function (Payment $record, Component $livewire): void {
-                $record->state = PaymentStatus::IN_PROCESS;
-                $record->save();
+                $record = AccountFacade::postPayment($record);
 
-                $record->generateJournalEntry();
+                if (! $record->move_id && in_array($record->state, [PaymentStatus::IN_PROCESS, PaymentStatus::PAID])) {
+                    $record->generateJournalEntry();
 
-                AccountFacade::postPayment($record);
+                    $record->refresh();
 
-                AccountFacade::confirmMove($record->move);
+                    AccountFacade::confirmMove($record->move);
+                }
 
                 $livewire->refreshFormData(['state']);
             })

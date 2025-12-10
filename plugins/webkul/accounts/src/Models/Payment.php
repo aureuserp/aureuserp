@@ -291,6 +291,7 @@ class Payment extends Model
 
             if (
                 $this->move
+                && $liquidity->isNotEmpty()
                 && $this->move->currency->isZero($liquidity->sum('amount_residual'))
             ) {
                 $this->state = PaymentStatus::PAID;
