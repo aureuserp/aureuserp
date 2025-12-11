@@ -11,6 +11,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -45,18 +46,23 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\TypeTaxUse;
-use Webkul\Account\Facades\Tax;
+use Webkul\Account\Facades\Account as AccountFacade;
+use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\CreateInvoice;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\EditInvoice;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\ListInvoices;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\ViewInvoice;
 use Webkul\Account\Livewire\InvoiceSummary;
+use Webkul\Account\Models\CashRounding;
 use Webkul\Account\Models\Move as AccountMove;
+use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Product;
+use Webkul\Account\Models\Tax;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
@@ -227,15 +233,25 @@ class InvoiceResource extends Resource
                             ->icon('heroicon-o-list-bullet')
                             ->schema([
                                 static::getProductRepeater(),
-                                Livewire::make(InvoiceSummary::class, function (Get $get) {
-                                    return [
-                                        'currency' => Currency::find($get('currency_id')),
-                                        'products' => $get('products'),
-                                        'rounding' => $get('invoice_cash_rounding_id') ? self::calculateRounding($get) : 0,
-                                    ];
-                                })
-                                    ->visible(fn (Get $get) => $get('currency_id') && $get('products'))
-                                    ->live()
+                                Placeholder::make('invoice_summary')
+                                    ->label('')
+                                    ->content(function (Get $get): \Illuminate\Contracts\Support\Htmlable {
+                                        $totals = self::calculateInvoiceTotals($get);
+                                        $currency = Currency::find($get('currency_id'));
+
+                                        return new \Illuminate\Support\HtmlString(
+                                            view('accounts::livewire/invoice-summary', [
+                                                'products'   => $get('products') ?? [],
+                                                'rounding'   => $totals['rounding'],
+                                                'amountTax'  => $totals['totalTax'],
+                                                'subtotal'   => $totals['subtotal'],
+                                                'totalTax'   => $totals['totalTax'],
+                                                'grandTotal' => $totals['grandTotal'] + $totals['rounding'],
+                                                'currency'   => $currency,
+                                            ])->render()
+                                        );
+                                    })
+                                    ->visible(fn (Get $get) => $get('currency_id') && ! empty($get('products')))
                                     ->reactive(),
                             ]),
 
@@ -556,9 +572,6 @@ class InvoiceResource extends Resource
 
     public static function infolist(Schema $schema): Schema
     {
-        // $move = AccountMove::find(144);
-        // dd($move->getReconcilablePayments());
-
         return $schema
             ->columns(1)
             ->components([
@@ -702,23 +715,22 @@ class InvoiceResource extends Resource
                                     ])->columns(5),
 
                                 Livewire::make(InvoiceSummary::class, function ($record) {
-                                    $rounding = 0;
-                                    if ($record->invoiceCashRounding) {
-                                        $total = $record->amount_total ?? 0;
-
-                                        $rounding = $record->invoiceCashRounding->computeDifference($record->currency, $total);
-                                    }
+                                    $rounding = $record->roundingLines->sum('balance');
 
                                     return [
                                         'currency'   => $record->currency,
+                                        'subtotal'   => $record->amount_untaxed ?? 0,
+                                        'totalTax'   => $record->amount_tax ?? 0,
                                         'amountTax'  => $record->amount_tax ?? 0,
-                                        'products'   => $record->lines->map(function ($item) {
-                                            return [
-                                                ...$item->toArray(),
-                                                'taxes' => $item->taxes->pluck('id')->toArray() ?? [],
-                                            ];
-                                        })->toArray(),
+                                        'grandTotal' => $record->amount_total ?? 0,
                                         'rounding'   => $rounding,
+                                        'products'   => $record->invoiceLines
+                                            ->map(function ($item) {
+                                                return [
+                                                    ...$item->toArray(),
+                                                    'taxes' => $item->taxes->pluck('id')->toArray() ?? [],
+                                                ];
+                                            })->toArray(),
                                     ];
                                 }),
                             ]),
@@ -807,7 +819,6 @@ class InvoiceResource extends Resource
             ->hiddenLabel()
             ->compact()
             ->live(onBlur: true)
-            ->reactive()
             ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.title'))
             ->addActionLabel(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.add-product'))
             ->collapsible()
@@ -961,15 +972,20 @@ class InvoiceResource extends Resource
                     ->live(),
                 TextInput::make('price_subtotal')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.sub-total'))
+                    ->numeric()
                     ->default(0)
-                    ->dehydrated()
-                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
+                    ->readOnly()
+                    ->reactive()
+                    ->dehydrated(),
                 Hidden::make('product_uom_qty')
-                    ->default(0),
+                    ->default(0)
+                    ->dehydrated(),
                 Hidden::make('price_tax')
-                    ->default(0),
+                    ->default(0)
+                    ->dehydrated(),
                 Hidden::make('price_total')
-                    ->default(0),
+                    ->default(0)
+                    ->dehydrated(),
             ])
             ->mutateRelationshipDataBeforeCreateUsing(fn (array $data, $record) => static::mutateProductRelationship($data, $record))
             ->mutateRelationshipDataBeforeSaveUsing(fn (array $data, $record) => static::mutateProductRelationship($data, $record));
@@ -1063,68 +1079,180 @@ class InvoiceResource extends Resource
     {
         if (! $get('product_id')) {
             $set('price_unit', 0);
-
             $set('discount', 0);
-
             $set('price_tax', 0);
-
             $set('price_subtotal', 0);
-
             $set('price_total', 0);
 
             return;
         }
 
-        $priceUnit = floatval($get('price_unit'));
+        $currencyId = $get('../../currency_id');
+        $companyId = $get('../../company_id');
+        $productId = $get('product_id');
 
-        $quantity = floatval($get('quantity') ?? 1);
-
-        $subTotal = $priceUnit * $quantity;
-
-        $discountValue = floatval($get('discount') ?? 0);
-
-        if ($discountValue > 0) {
-            $discountAmount = $subTotal * ($discountValue / 100);
-
-            $subTotal = $subTotal - $discountAmount;
+        if (! $currencyId || ! $companyId || ! $productId) {
+            return;
         }
+
+        $currency = Currency::find($currencyId);
+        $company = Company::find($companyId);
+        $product = Product::find($productId);
+
+        if (! $currency || ! $company || ! $product) {
+            return;
+        }
+
+        $mockLine = new MoveLine([
+            'quantity'     => $get('quantity') ?? 1,
+            'price_unit'   => $get('price_unit') ?? 0,
+            'discount'     => $get('discount') ?? 0,
+            'display_type' => DisplayType::PRODUCT,
+        ]);
+
+        $mockMove = new AccountMove([
+            'move_type'   => $get('../../move_type'),
+            'currency_id' => $currencyId,
+            'company_id'  => $companyId,
+        ]);
 
         $taxIds = $get('taxes') ?? [];
+        $mockLine->setRelation('taxes', Tax::whereIn('id', $taxIds)->get());
+        $mockLine->setRelation('currency', $currency);
+        $mockLine->setRelation('company', $company);
+        $mockLine->setRelation('product', $product);
+        $mockLine->setRelation('move', $mockMove);
 
-        [$subTotal, $taxAmount] = Tax::collect($taxIds, $subTotal, $quantity);
+        $mockMove->setRelation('currency', $currency);
+        $mockMove->setRelation('company', $company);
 
-        $set('price_subtotal', round($subTotal, 4));
+        $baseLine = AccountFacade::prepareProductBaseLineForTaxesComputation($mockLine);
 
-        $set('price_tax', $taxAmount);
+        $baseLine = TaxFacade::addTaxDetailsInBaseLine($baseLine, $company);
 
-        $set('price_total', $subTotal + $taxAmount);
+        $subtotal = $baseLine['tax_details']['raw_total_excluded_currency'];
+        $total = $baseLine['tax_details']['raw_total_included_currency'];
+        $tax = $total - $subtotal;
+
+        $set('price_subtotal', round($subtotal, 4));
+        $set('price_tax', round($tax, 4));
+        $set('price_total', round($total, 4));
     }
 
-    private static function calculateRounding(Get $get): float
+    private static function calculateInvoiceTotals(Get $get): array
     {
-        $cashRoundingId = $get('invoice_cash_rounding_id');
-
-        if (! $cashRoundingId) {
-            return 0;
-        }
-
-        $cashRounding = \Webkul\Account\Models\CashRounding::find($cashRoundingId);
-
-        if (! $cashRounding) {
-            return 0;
-        }
-
+        $currencyId = $get('currency_id');
+        $companyId = $get('company_id');
         $products = $get('products') ?? [];
 
-        $total = 0;
+        $defaultTotals = [
+            'subtotal'   => 0,
+            'totalTax'   => 0,
+            'grandTotal' => 0,
+            'rounding'   => 0,
+        ];
 
-        foreach ($products as $product) {
-            $total += floatval($product['price_total'] ?? 0);
+        if (! $currencyId || ! $companyId || empty($products)) {
+            return $defaultTotals;
         }
 
-        $currency = \Webkul\Support\Models\Currency::find($get('currency_id'));
+        $currency = Currency::find($currencyId);
+        $company = Company::find($companyId);
 
-        return $cashRounding->computeDifference($currency, $total);
+        if (! $currency || ! $company) {
+            return $defaultTotals;
+        }
+
+        $cashRoundingId = $get('invoice_cash_rounding_id');
+
+        $mockMove = new AccountMove([
+            'move_type'                => $get('move_type'),
+            'currency_id'              => $currency->id,
+            'company_id'               => $company->id,
+            'invoice_cash_rounding_id' => $cashRoundingId,
+        ]);
+
+        $mockMove->setRelation('currency', $currency);
+        $mockMove->setRelation('company', $company);
+
+        if ($cashRoundingId) {
+            $cashRounding = CashRounding::find($cashRoundingId);
+
+            if ($cashRounding) {
+                $mockMove->setRelation('invoiceCashRounding', $cashRounding);
+            }
+        }
+
+        $mockLines = collect();
+
+        foreach ($products as $productData) {
+            $productId = $productData['product_id'] ?? null;
+
+            if (! $productId) {
+                continue;
+            }
+
+            $product = Product::find($productId);
+
+            if (! $product) {
+                continue;
+            }
+
+            $mockLine = new MoveLine([
+                'quantity'     => $productData['quantity'] ?? 1,
+                'price_unit'   => $productData['price_unit'] ?? 0,
+                'discount'     => $productData['discount'] ?? 0,
+                'display_type' => DisplayType::PRODUCT,
+            ]);
+
+            $mockLine->setRelation('taxes', Tax::whereIn('id', $productData['taxes'] ?? [])->get());
+            $mockLine->setRelation('currency', $currency);
+            $mockLine->setRelation('company', $company);
+            $mockLine->setRelation('product', $product);
+            $mockLine->setRelation('move', $mockMove);
+
+            $mockLines->push($mockLine);
+        }
+
+        if ($mockLines->isEmpty()) {
+            return $defaultTotals;
+        }
+
+        $mockMove->setRelation('lines', $mockLines);
+
+        [$baseLines] = AccountFacade::getRoundedBaseAndTaxLines($mockMove, false);
+
+        $subtotal = 0;
+        $grandTotal = 0;
+        $rounding = 0;
+
+        foreach ($baseLines as $baseLine) {
+            $specialType = $baseLine['special_type'] ?? null;
+
+            if ($specialType === 'cash_rounding') {
+                $rounding = $baseLine['tax_details']['raw_total_excluded_currency'];
+            } else {
+                $subtotal += $baseLine['tax_details']['raw_total_excluded_currency'] ?? 0;
+                $grandTotal += $baseLine['tax_details']['raw_total_included_currency'] ?? 0;
+            }
+        }
+
+        if ($rounding == 0 && $cashRoundingId) {
+            $cashRounding = CashRounding::find($cashRoundingId);
+
+            if ($cashRounding) {
+                $rounding = $cashRounding->computeDifference($currency, $grandTotal);
+            }
+        }
+
+        $totalTax = $grandTotal - $subtotal;
+
+        return [
+            'subtotal'   => round($subtotal, 2),
+            'totalTax'   => round($totalTax, 2),
+            'grandTotal' => round($grandTotal, 2),
+            'rounding'   => round($rounding, 2),
+        ];
     }
 
     public static function getEloquentQuery(): Builder

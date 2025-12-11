@@ -57,30 +57,9 @@
     @if (count($products))
         <div class="flex justify-end">
             <div class="invoice-container">
-                @php
-                    $subTotal = 0;
-                    $totalTax = 0;
-                    $grandTotal = 0;
-
-                    foreach ($products as $product) {
-                        $subTotal += floatval($product['price_subtotal']);
-
-                        if (
-                            isset($amountTax)
-                            && $amountTax > 0
-                        ) {
-                            $totalTax = $amountTax;
-                        } else {
-                            $totalTax += $product['price_tax'] ?? 0;
-                        }
-
-                        $grandTotal += floatval($product['price_total']);
-                    }
-                @endphp
-
                <div class="invoice-item">
                     <span>Untaxed Amount</span>
-                    <span>{{ money($subTotal, $currency?->name) }}</span>
+                    <span>{{ money($subtotal, $currency?->name) }}</span>
                 </div>
 
                 @if ($totalTax > 0)
@@ -101,7 +80,7 @@
 
                 <div class="invoice-item font-bold">
                     <span>Total</span>
-                    <span>{{ money($grandTotal + ($rounding ?? 0), $currency?->name) }}</span>
+                    <span>{{ money($grandTotal, $currency?->name) }}</span>
                 </div>
             </div>
         </div>

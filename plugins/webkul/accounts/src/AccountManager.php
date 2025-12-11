@@ -386,6 +386,8 @@ class AccountManager
         $applyCashRounding = function ($move, $diffBalance, $diffAmountCurrency, $cashRoundingLine) {
             $roundingLineVals = [
                 'balance'             => $diffBalance,
+                'debit'               => $diffBalance > 0.0 ? $diffBalance : 0.0,
+                'credit'              => $diffBalance < 0.0 ? -$diffBalance : 0.0,
                 'amount_currency'     => $diffAmountCurrency,
                 'partner_id'          => $move->partner_id,
                 'move_id'             => $move->id,
@@ -488,24 +490,6 @@ class AccountManager
             return;
         }
 
-        if ($existingCashRoundingLine) {
-            $balanceCompare = float_compare(
-                $existingCashRoundingLine->balance,
-                $diffBalance,
-                precisionRounding: $move->currency->rounding
-            );
-
-            $amountCompare = float_compare(
-                $existingCashRoundingLine->amount_currency,
-                $diffAmountCurrency,
-                precisionRounding: $move->currency->rounding
-            );
-
-            if ($balanceCompare === 0 && $amountCompare === 0) {
-                return;
-            }
-        }
-
         $applyCashRounding($move, $diffBalance, $diffAmountCurrency, $existingCashRoundingLine);
     }
 
@@ -574,7 +558,7 @@ class AccountManager
         }
     }
 
-    protected function getRoundedBaseAndTaxLines(Move $move, $roundFromTaxLines = true)
+    public function getRoundedBaseAndTaxLines(Move $move, $roundFromTaxLines = true)
     {
         $baseMoveLines = $move->lines->where('display_type', DisplayType::PRODUCT);
 
