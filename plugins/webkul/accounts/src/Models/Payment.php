@@ -228,6 +228,10 @@ class Payment extends Model
 
             $payment->computeReconciliationStatus();
         });
+
+        static::saving(function ($payment) {
+            $payment->move->delete();
+        });
     }
 
     public function computeName()
