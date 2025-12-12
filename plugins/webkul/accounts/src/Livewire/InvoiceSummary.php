@@ -2,10 +2,20 @@
 
 namespace Webkul\Account\Livewire;
 
+use Filament\Actions\Action;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
+use Filament\Schemas\Concerns\InteractsWithSchemas;
+use Filament\Schemas\Contracts\HasSchemas;
 use Livewire\Component;
+use Webkul\Account\Models\MoveLine;
+use Webkul\Account\Facades\Account as AccountFacade;
 
-class InvoiceSummary extends Component
+class InvoiceSummary extends Component implements HasActions, HasSchemas
 {
+    use InteractsWithActions;
+    use InteractsWithSchemas;
+
     public $record = null;
 
     public $subtotal = 0;
@@ -33,6 +43,24 @@ class InvoiceSummary extends Component
         $this->grandTotal = $totals['grandTotal'];
         $this->amountTax = $totals['totalTax'];
         $this->rounding = $totals['rounding'];
+    }
+
+    public function reconcileAction(): Action
+    {
+        return Action::make('reconcile')
+            ->label('Add')
+            ->icon('heroicon-o-check-circle')
+            ->size('xs')
+            ->requiresConfirmation()
+            ->modalHeading('Reconcile Payment')
+            ->modalDescription('Are you sure you want to reconcile this payment?')
+            ->action(function (array $arguments) {
+                $lines = MoveLine::where('id', $arguments['lineId'])->get();
+
+                $lines = $lines->merge($this->record->lines->filter(fn ($line) => $line->account_id == $lines->first()->account_id && ! $line->reconciled));
+
+                $results = AccountFacade::reconcile($lines);
+            });
     }
 
     public function render()

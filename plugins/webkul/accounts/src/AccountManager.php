@@ -1160,10 +1160,20 @@ class AccountManager
 
                     $debitLine->amount_residual -= $partialValues['amount'];
                     $debitLine->amount_residual_currency -= $partialValues['debit_amount_currency'];
+
+                    if ($debitLine->companyCurrency->isZero($debitLine->amount_residual)) {
+                        $debitLine->reconciled = true;
+                    }
+
                     $debitLine->save();
 
                     $creditLine->amount_residual += $partialValues['amount'];
                     $creditLine->amount_residual_currency += $partialValues['credit_amount_currency'];
+
+                    if ($creditLine->companyCurrency->isZero($creditLine->amount_residual)) {
+                        $creditLine->reconciled = true;
+                    }
+
                     $creditLine->save();
 
                     $this->computeMoveTotals($debitLine->move->refresh())->save();
@@ -1200,10 +1210,12 @@ class AccountManager
 
     protected function prepareReconciliationLines(array $valuesList): array
     {
-        $debitValuesList = array_values(array_filter($valuesList, fn ($values) => $values['line']->balance > 0.0 || $values['line']->amount_currency > 0.0
+        $debitValuesList = array_values(array_filter($valuesList, fn ($values) =>
+            $values['line']->balance > 0.0 || $values['line']->amount_currency > 0.0
         ));
 
-        $creditValuesList = array_values(array_filter($valuesList, fn ($values) => $values['line']->balance < 0.0 || $values['line']->amount_currency < 0.0
+        $creditValuesList = array_values(array_filter($valuesList, fn ($values) =>
+            $values['line']->balance < 0.0 || $values['line']->amount_currency < 0.0
         ));
 
         $debitIndex = 0;

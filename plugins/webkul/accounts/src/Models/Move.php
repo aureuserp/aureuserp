@@ -808,6 +808,7 @@ class Move extends Model implements Sortable
             || ! in_array($this->payment_state, [PaymentState::NOT_PAID, PaymentState::PARTIAL])
             || ! $this->isInvoice(true)
         ) {
+
             return $paymentVals;
         }
 

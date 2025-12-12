@@ -18,6 +18,7 @@
             padding: 8px 0;
             font-size: 14px;
             color: #555;
+            gap: 8px;
         }
 
         :is(.dark .invoice-item) {
@@ -26,6 +27,10 @@
 
         .invoice-item span {
             font-weight: 600;
+        }
+
+        .invoice-item button {
+            flex-shrink: 0;
         }
 
         .divider {
@@ -88,12 +93,27 @@
                 </div>
 
                 @foreach ($reconcilablePayments['lines'] ?? [] as $line)
-                    <div class="invoice-item">
-                        <span>{{ $line['journal_name'] }}</span>
-                        <span>{{ money($line['amount'], $currency?->name) }}</span>
+                    <div class="invoice-item items-center">
+                        <div class="flex items-center gap-2">
+                            {{ ($this->reconcileAction())(['lineId' => $line['id']]) }}
+
+                            <div class="flex-1">
+                                <div class="font-medium">{{ $line['journal_name'] }}</div>
+                                
+                                @if (isset($line['date']))
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $line['date'] }}</div>
+                                @endif
+                            </div>
+                        </div>
+                        
+                        <span class="font-semibold">
+                            {{ money($line['amount'], $currency?->name) }}
+                        </span>
                     </div>
                 @endforeach
             @endif
         </div>
     </div>
+
+    <x-filament-actions::modals />
 </div>
