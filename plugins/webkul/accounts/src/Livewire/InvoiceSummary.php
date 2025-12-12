@@ -2,11 +2,12 @@
 
 namespace Webkul\Account\Livewire;
 
-use Livewire\Attributes\Reactive;
 use Livewire\Component;
 
 class InvoiceSummary extends Component
 {
+    public $record = null;
+
     public $subtotal = 0;
 
     public $totalDiscount = 0;
@@ -21,6 +22,8 @@ class InvoiceSummary extends Component
 
     public $currency = null;
 
+    public $reconcilablePayments = null;
+
     protected $listeners = ['itemUpdated' => 'refreshSummary'];
 
     public function refreshSummary($totals)
@@ -34,12 +37,8 @@ class InvoiceSummary extends Component
 
     public function render()
     {
-        return view('accounts::livewire/invoice-summary', [
-            'rounding'   => $this->rounding,
-            'amountTax'  => $this->amountTax,
-            'subtotal'   => $this->subtotal,
-            'totalTax'   => $this->totalTax,
-            'grandTotal' => $this->grandTotal,
-        ]);
+        $this->reconcilablePayments = $this->record?->getReconcilablePayments();
+
+        return view('accounts::livewire/invoice-summary');
     }
 }

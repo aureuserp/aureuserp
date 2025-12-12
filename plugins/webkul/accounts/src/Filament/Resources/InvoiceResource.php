@@ -234,12 +234,13 @@ class InvoiceResource extends Resource
                             ->schema([
                                 static::getProductRepeater(),
                                 
-                                Livewire::make(InvoiceSummary::class, function  (Get $get, $livewire) {
+                                Livewire::make(InvoiceSummary::class, function  (Get $get, $record, $livewire) {
                                     $totals = self::calculateInvoiceTotals($get, $livewire);
 
                                     $currency = Currency::find($get('currency_id'));
 
                                     return [
+                                        'record'     => $record,
                                         'rounding'   => $totals['rounding'],
                                         'amountTax'  => $totals['totalTax'],
                                         'subtotal'   => $totals['subtotal'],
@@ -814,7 +815,7 @@ class InvoiceResource extends Resource
             ->addActionLabel(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.add-product'))
             ->collapsible()
             ->defaultItems(0)
-            ->deleteAction(function(Action $action, $record) {
+            ->deleteAction(function(Action $action) {
                 $action->requiresConfirmation();
 
                 $action->after(function (Get $get, $livewire) {
@@ -896,7 +897,7 @@ class InvoiceResource extends Resource
                     ->live()
                     ->dehydrated()
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                    ->afterStateUpdated(fn (Set $set, Get $get, $livewire) => static::afterProductUpdated($set, $get, $livewire))
+                    ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductUpdated($set, $get))
                     ->required(),
                 TextInput::make('quantity')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.quantity'))
@@ -907,7 +908,7 @@ class InvoiceResource extends Resource
                     ->live(onBlur: true)
                     ->dehydrated()
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                    ->afterStateUpdated(fn (Set $set, Get $get, $livewire) => static::afterProductQtyUpdated($set, $get, $livewire)),
+                    ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductQtyUpdated($set, $get)),
                 Select::make('uom_id')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.unit'))
                     ->relationship(
@@ -920,7 +921,7 @@ class InvoiceResource extends Resource
                     ->selectablePlaceholder(false)
                     ->dehydrated()
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                    ->afterStateUpdated(fn (Set $set, Get $get, $livewire) => static::afterUOMUpdated($set, $get, $livewire))
+                    ->afterStateUpdated(fn (Set $set, Get $get) => static::afterUOMUpdated($set, $get))
                     ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
                 TextInput::make('price_unit')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.unit-price'))
@@ -943,7 +944,7 @@ class InvoiceResource extends Resource
                     ->live(onBlur: true)
                     ->dehydrated()
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                    ->afterStateUpdated(fn (Set $set, Get $get, $livewire) => self::calculateLineTotals($set, $get, $livewire)),
+                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
                 Select::make('taxes')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.taxes'))
                     ->relationship(
@@ -958,8 +959,8 @@ class InvoiceResource extends Resource
                     ->preload()
                     ->dehydrated()
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                    ->afterStateHydrated(fn (Get $get, Set $set, $livewire) => self::calculateLineTotals($set, $get, $livewire))
-                    ->afterStateUpdated(fn (Get $get, Set $set, $livewire) => self::calculateLineTotals($set, $get, $livewire))
+                    ->afterStateHydrated(fn (Get $get, Set $set) => self::calculateLineTotals($set, $get))
+                    ->afterStateUpdated(fn (Get $get, Set $set) => self::calculateLineTotals($set, $get))
                     ->live(),
                 TextInput::make('price_subtotal')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.sub-total'))
@@ -989,7 +990,7 @@ class InvoiceResource extends Resource
         return $data;
     }
 
-    private static function afterProductUpdated(Set $set, Get $get, $livewire): void
+    private static function afterProductUpdated(Set $set, Get $get): void
     {
         if (! $get('product_id')) {
             return;
@@ -999,52 +1000,52 @@ class InvoiceResource extends Resource
 
         $set('uom_id', $product->uom_id);
 
-        $priceUnit = static::calculateUnitPrice($get('uom_id'), $product->price ?? $product->cost, $livewire);
+        $priceUnit = static::calculateUnitPrice($get('uom_id'), $product->price ?? $product->cost);
 
         $set('price_unit', round($priceUnit, 2));
 
         $set('taxes', $product->productTaxes->pluck('id')->toArray());
 
-        $uomQuantity = static::calculateUnitQuantity($get('uom_id'), $get('quantity'), $livewire);
+        $uomQuantity = static::calculateUnitQuantity($get('uom_id'), $get('quantity'));
 
         $set('product_uom_qty', round($uomQuantity, 2));
 
-        self::calculateLineTotals($set, $get, $livewire);
+        self::calculateLineTotals($set, $get);
     }
 
-    private static function afterProductQtyUpdated(Set $set, Get $get, $livewire): void
+    private static function afterProductQtyUpdated(Set $set, Get $get): void
     {
         if (! $get('product_id')) {
             return;
         }
 
-        $uomQuantity = static::calculateUnitQuantity($get('uom_id'), $get('quantity'), $livewire);
+        $uomQuantity = static::calculateUnitQuantity($get('uom_id'), $get('quantity'));
 
         $set('product_uom_qty', round($uomQuantity, 2));
 
-        self::calculateLineTotals($set, $get, $livewire);
+        self::calculateLineTotals($set, $get);
     }
 
-    private static function afterUOMUpdated(Set $set, Get $get, $livewire): void
+    private static function afterUOMUpdated(Set $set, Get $get): void
     {
         if (! $get('product_id')) {
             return;
         }
 
-        $uomQuantity = static::calculateUnitQuantity($get('uom_id'), $get('quantity'), $livewire);
+        $uomQuantity = static::calculateUnitQuantity($get('uom_id'), $get('quantity'));
 
         $set('product_uom_qty', round($uomQuantity, 2));
 
         $product = Product::find($get('product_id'));
 
-        $priceUnit = static::calculateUnitPrice($get('uom_id'), $product->cost ?? $product->price, $livewire);
+        $priceUnit = static::calculateUnitPrice($get('uom_id'), $product->cost ?? $product->price);
 
         $set('price_unit', round($priceUnit, 2));
 
-        self::calculateLineTotals($set, $get, $livewire);
+        self::calculateLineTotals($set, $get);
     }
 
-    private static function calculateUnitQuantity($uomId, $quantity, $livewire)
+    private static function calculateUnitQuantity($uomId, $quantity)
     {
         if (! $uomId) {
             return $quantity;
@@ -1055,7 +1056,7 @@ class InvoiceResource extends Resource
         return (float) ($quantity ?? 0) / $uom->factor;
     }
 
-    private static function calculateUnitPrice($uomId, $price, $livewire)
+    private static function calculateUnitPrice($uomId, $price)
     {
         if (! $uomId) {
             return $price;
@@ -1066,7 +1067,7 @@ class InvoiceResource extends Resource
         return (float) ($price / $uom->factor);
     }
 
-    private static function calculateLineTotals(Set $set, Get $get, $livewire): void
+    private static function calculateLineTotals(Set $set, Get $get): void
     {
         if (! $get('product_id')) {
             $set('price_unit', 0);

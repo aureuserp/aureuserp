@@ -797,10 +797,10 @@ class Move extends Model implements Sortable
     public function getReconcilablePayments()
     {
         $paymentVals = [
-            'outstanding' => false,
-            'content'     => [],
-            'move_id'     => $this->id,
             'title'       => $this->isInbound() ? 'Outstanding credits' : 'Outstanding debits',
+            'move_id'     => $this->id,
+            'outstanding' => false,
+            'lines'     => [],
         ];
 
         if (
@@ -848,10 +848,10 @@ class Move extends Model implements Sortable
 
             $paymentVals['outstanding'] = true;
 
-            $paymentVals['content'][] = [
+            $paymentVals['lines'][] = [
                 'journal_name'       => $line->ref ?: $line->move->name,
                 'amount'             => $amount,
-                'currency_id'        => $this->currency_id,
+                'currency'           => $this->currency,
                 'id'                 => $line->id,
                 'move_id'            => $line->move_id,
                 'date'               => $line->date->toDateString(),

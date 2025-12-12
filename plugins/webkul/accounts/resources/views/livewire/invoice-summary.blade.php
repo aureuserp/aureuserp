@@ -81,6 +81,19 @@
                 <span>Total</span>
                 <span>{{ money($grandTotal, $currency?->name) }}</span>
             </div>
+        
+            @if ($reconcilablePayments && $reconcilablePayments['outstanding'])
+                <div class="mt-4 font-semibold">
+                    {{ $reconcilablePayments['title'] }}
+                </div>
+
+                @foreach ($reconcilablePayments['lines'] ?? [] as $line)
+                    <div class="invoice-item">
+                        <span>{{ $line['journal_name'] }}</span>
+                        <span>{{ money($line['amount'], $currency?->name) }}</span>
+                    </div>
+                @endforeach
+            @endif
         </div>
     </div>
 </div>
