@@ -240,7 +240,6 @@ class InvoiceResource extends Resource
                                     $currency = Currency::find($get('currency_id'));
 
                                     return [
-                                        'products'   => $get('products') ?? [],
                                         'rounding'   => $totals['rounding'],
                                         'amountTax'  => $totals['totalTax'],
                                         'subtotal'   => $totals['subtotal'],
@@ -722,13 +721,6 @@ class InvoiceResource extends Resource
                                         'amountTax'  => $record->amount_tax ?? 0,
                                         'grandTotal' => $record->amount_total ?? 0,
                                         'rounding'   => $rounding,
-                                        'products'   => $record->invoiceLines
-                                            ->map(function ($item) {
-                                                return [
-                                                    ...$item->toArray(),
-                                                    'taxes' => $item->taxes->pluck('id')->toArray() ?? [],
-                                                ];
-                                            })->toArray(),
                                     ];
                                 }),
                             ]),

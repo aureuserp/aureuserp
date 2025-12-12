@@ -8,9 +8,6 @@ use Livewire\Component;
 class InvoiceSummary extends Component
 {
     #[Reactive]
-    public $products = [];
-
-    #[Reactive]
     public $subtotal = 0;
 
     public $totalDiscount = 0;
@@ -28,10 +25,9 @@ class InvoiceSummary extends Component
     #[Reactive]
     public $currency = null;
 
-    public function mount($currency, $products, $subtotal = 0, $totalTax = 0, $grandTotal = 0, $rounding = 0)
+    public function mount($currency, $subtotal = 0, $totalTax = 0, $grandTotal = 0, $rounding = 0)
     {
         $this->currency = $currency;
-        $this->products = $products ?? [];
         $this->subtotal = $subtotal;
         $this->totalTax = $totalTax;
         $this->grandTotal = $grandTotal;
@@ -42,7 +38,6 @@ class InvoiceSummary extends Component
     public function render()
     {
         return view('accounts::livewire/invoice-summary', [
-            'products'   => $this->products,
             'rounding'   => $this->rounding,
             'amountTax'  => $this->amountTax,
             'subtotal'   => $this->subtotal,

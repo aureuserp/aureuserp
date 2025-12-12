@@ -54,35 +54,33 @@
         }
     </style>
 
-    @if (count($products))
-        <div class="flex justify-end">
-            <div class="invoice-container">
-               <div class="invoice-item">
-                    <span>Untaxed Amount</span>
-                    <span>{{ money($subtotal, $currency?->name) }}</span>
+    <div class="flex justify-end">
+        <div class="invoice-container">
+            <div class="invoice-item">
+                <span>Untaxed Amount</span>
+                <span>{{ money($subtotal, $currency?->name) }}</span>
+            </div>
+
+            @if ($totalTax > 0)
+                <div class="invoice-item">
+                    <span>Tax</span>
+                    <span>{{ money($totalTax, $currency?->name) }}</span>
                 </div>
+            @endif
 
-                @if ($totalTax > 0)
-                    <div class="invoice-item">
-                        <span>Tax</span>
-                        <span>{{ money($totalTax, $currency?->name) }}</span>
-                    </div>
-                @endif
-
-                @if ($rounding != 0)
-                    <div class="invoice-item">
-                        <span>Cash Rounding</span>
-                        <span>{{ money($rounding, $currency?->name) }}</span>
-                    </div>
-                @endif
-
-                <div class="divider"></div>
-
-                <div class="invoice-item font-bold">
-                    <span>Total</span>
-                    <span>{{ money($grandTotal, $currency?->name) }}</span>
+            @if ($rounding != 0)
+                <div class="invoice-item">
+                    <span>Cash Rounding</span>
+                    <span>{{ money($rounding, $currency?->name) }}</span>
                 </div>
+            @endif
+
+            <div class="divider"></div>
+
+            <div class="invoice-item font-bold">
+                <span>Total</span>
+                <span>{{ money($grandTotal, $currency?->name) }}</span>
             </div>
         </div>
-    @endif
+    </div>
 </div>
