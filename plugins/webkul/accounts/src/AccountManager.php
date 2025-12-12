@@ -1054,6 +1054,13 @@ class AccountManager
         $this->isReconciliationAllowedForLines($lines);
 
         $this->reconcilePlan([$lines]);
+
+        Payment::whereIn('move_id', $lines->pluck('move_id')->unique())->get()
+            ->each(function ($payment) {
+                $payment->computeReconciliationStatus();
+
+                $payment->save();
+            });
     }
 
     protected function reconcilePlan(array $reconciliationPlan): array
@@ -1210,12 +1217,10 @@ class AccountManager
 
     protected function prepareReconciliationLines(array $valuesList): array
     {
-        $debitValuesList = array_values(array_filter($valuesList, fn ($values) =>
-            $values['line']->balance > 0.0 || $values['line']->amount_currency > 0.0
+        $debitValuesList = array_values(array_filter($valuesList, fn ($values) => $values['line']->balance > 0.0 || $values['line']->amount_currency > 0.0
         ));
 
-        $creditValuesList = array_values(array_filter($valuesList, fn ($values) =>
-            $values['line']->balance < 0.0 || $values['line']->amount_currency < 0.0
+        $creditValuesList = array_values(array_filter($valuesList, fn ($values) => $values['line']->balance < 0.0 || $values['line']->amount_currency < 0.0
         ));
 
         $debitIndex = 0;
@@ -1647,18 +1652,27 @@ class AccountManager
                     ->update(['full_reconcile_id' => $fullReconcile->id]);
 
                 $fullReconciles[] = $fullReconcile;
-            }
 
-            foreach ($groupLines as $line) {
-                $line->reconciled = true;
+                $allReconciledLineIds = PartialReconcile::whereIn('id', $partialReconcileIds)
+                    ->get()
+                    ->flatMap(fn ($partial) => [$partial->debit_move_id, $partial->credit_move_id])
+                    ->unique()
+                    ->values();
 
-                if ($fullReconcile) {
+                $allReconciledLines = MoveLine::whereIn('id', $allReconciledLineIds)->get();
+
+                foreach ($allReconciledLines as $line) {
+                    $line->reconciled = true;
                     $line->full_reconcile_id = $fullReconcile->id;
-
                     $line->matching_number = (string) $fullReconcile->id;
-                }
 
-                $line->save();
+                    $line->save();
+                }
+            } else {
+                foreach ($groupLines as $line) {
+                    $line->reconciled = true;
+                    $line->save();
+                }
             }
         }
 
