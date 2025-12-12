@@ -7,32 +7,29 @@ use Livewire\Component;
 
 class InvoiceSummary extends Component
 {
-    #[Reactive]
     public $subtotal = 0;
 
     public $totalDiscount = 0;
 
-    #[Reactive]
     public $totalTax = 0;
 
-    #[Reactive]
     public $grandTotal = 0;
 
     public $amountTax = 0;
 
     public $rounding = 0;
 
-    #[Reactive]
     public $currency = null;
 
-    public function mount($currency, $subtotal = 0, $totalTax = 0, $grandTotal = 0, $rounding = 0)
+    protected $listeners = ['itemUpdated' => 'refreshSummary'];
+
+    public function refreshSummary($totals)
     {
-        $this->currency = $currency;
-        $this->subtotal = $subtotal;
-        $this->totalTax = $totalTax;
-        $this->grandTotal = $grandTotal;
-        $this->rounding = $rounding ?? 0;
-        $this->amountTax = $totalTax;
+        $this->subtotal = $totals['subtotal'];
+        $this->totalTax = $totals['totalTax'];
+        $this->grandTotal = $totals['grandTotal'];
+        $this->amountTax = $totals['totalTax'];
+        $this->rounding = $totals['rounding'];
     }
 
     public function render()
