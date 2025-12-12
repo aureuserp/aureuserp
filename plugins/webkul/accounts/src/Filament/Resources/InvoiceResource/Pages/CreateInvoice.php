@@ -47,6 +47,8 @@ class CreateInvoice extends CreateRecord
             ->where('company_id', filament()->auth()->user()->default_company_id)
             ->first();
 
+        $this->data['move_type'] ??= MoveType::OUT_INVOICE->value;
+
         $this->data['journal_id'] = $journal?->id;
 
         $this->form->fill($this->data);

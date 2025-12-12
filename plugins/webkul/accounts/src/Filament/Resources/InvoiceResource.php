@@ -233,26 +233,24 @@ class InvoiceResource extends Resource
                             ->icon('heroicon-o-list-bullet')
                             ->schema([
                                 static::getProductRepeater(),
-                                Placeholder::make('invoice_summary')
-                                    ->label('')
-                                    ->content(function (Get $get): \Illuminate\Contracts\Support\Htmlable {
-                                        $totals = self::calculateInvoiceTotals($get);
-                                        $currency = Currency::find($get('currency_id'));
+                                
+                                Livewire::make(InvoiceSummary::class, function  (Get $get) {
+                                    $totals = self::calculateInvoiceTotals($get);
 
-                                        return new \Illuminate\Support\HtmlString(
-                                            view('accounts::livewire/invoice-summary', [
-                                                'products'   => $get('products') ?? [],
-                                                'rounding'   => $totals['rounding'],
-                                                'amountTax'  => $totals['totalTax'],
-                                                'subtotal'   => $totals['subtotal'],
-                                                'totalTax'   => $totals['totalTax'],
-                                                'grandTotal' => $totals['grandTotal'] + $totals['rounding'],
-                                                'currency'   => $currency,
-                                            ])->render()
-                                        );
-                                    })
-                                    ->visible(fn (Get $get) => $get('currency_id') && ! empty($get('products')))
-                                    ->reactive(),
+                                    $currency = Currency::find($get('currency_id'));
+
+                                    return [
+                                        'products'   => $get('products') ?? [],
+                                        'rounding'   => $totals['rounding'],
+                                        'amountTax'  => $totals['totalTax'],
+                                        'subtotal'   => $totals['subtotal'],
+                                        'totalTax'   => $totals['totalTax'],
+                                        'grandTotal' => $totals['grandTotal'] + $totals['rounding'],
+                                        'currency'   => $currency,
+                                    ];
+                                })
+                                ->reactive()
+                                ->visible(fn (Get $get) => $get('currency_id') && ! empty($get('products'))),
                             ]),
 
                         Tab::make(__('accounts::filament/resources/invoice.form.tabs.other-information.title'))
@@ -818,11 +816,23 @@ class InvoiceResource extends Resource
             ->relationship('invoiceLines')
             ->hiddenLabel()
             ->compact()
-            ->live(onBlur: true)
+            ->live()
             ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.title'))
             ->addActionLabel(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.add-product'))
             ->collapsible()
             ->defaultItems(0)
+            ->itemLabel(function ($state) {
+                if (! empty($state['name'])) {
+                    return $state['name'];
+                }
+
+                $product = Product::find($state['product_id']);
+
+                return $product->name ?? null;
+            })
+            ->deleteAction(fn (Action $action) => $action->requiresConfirmation())
+            ->deletable(fn ($record): bool => ! in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL]))
+            ->addable(fn ($record): bool => ! in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL]))
             ->table([
                 TableColumn::make('product_id')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.columns.product'))
@@ -856,18 +866,6 @@ class InvoiceResource extends Resource
                     ->width(100)
                     ->toggleable(),
             ])
-            ->itemLabel(function ($state) {
-                if (! empty($state['name'])) {
-                    return $state['name'];
-                }
-
-                $product = Product::find($state['product_id']);
-
-                return $product->name ?? null;
-            })
-            ->deleteAction(fn (Action $action) => $action->requiresConfirmation())
-            ->deletable(fn ($record): bool => ! in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL]))
-            ->addable(fn ($record): bool => ! in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL]))
             ->schema([
                 Select::make('product_id')
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.product'))
@@ -885,6 +883,7 @@ class InvoiceResource extends Resource
                         }
 
                         $repeater = $component->getParentRepeater();
+
                         if (! $repeater) {
                             return false;
                         }
@@ -1098,7 +1097,6 @@ class InvoiceResource extends Resource
         $currency = Currency::find($currencyId);
         $company = Company::find($companyId);
         $product = Product::find($productId);
-
         if (! $currency || ! $company || ! $product) {
             return;
         }
@@ -1141,16 +1139,17 @@ class InvoiceResource extends Resource
 
     private static function calculateInvoiceTotals(Get $get): array
     {
-        $currencyId = $get('currency_id');
-        $companyId = $get('company_id');
-        $products = $get('products') ?? [];
-
         $defaultTotals = [
             'subtotal'   => 0,
             'totalTax'   => 0,
             'grandTotal' => 0,
             'rounding'   => 0,
         ];
+
+        $currencyId = $get('currency_id');
+        $companyId = $get('company_id');
+        $products = $get('products') ?? [];
+
 
         if (! $currencyId || ! $companyId || empty($products)) {
             return $defaultTotals;
@@ -1183,36 +1182,31 @@ class InvoiceResource extends Resource
             }
         }
 
-        $mockLines = collect();
+        $mockLines = collect($products)
+            ->filter(fn($productData) => !empty($productData['product_id']))
+            ->map(function ($productData) use ($currency, $company, $mockMove) {
+                $product = Product::find($productData['product_id']);
 
-        foreach ($products as $productData) {
-            $productId = $productData['product_id'] ?? null;
+                if (!$product) {
+                    return null;
+                }
 
-            if (! $productId) {
-                continue;
-            }
+                $mockLine = new MoveLine([
+                    'quantity'     => $productData['quantity'] ?? 1,
+                    'price_unit'   => $productData['price_unit'] ?? 0,
+                    'discount'     => $productData['discount'] ?? 0,
+                    'display_type' => DisplayType::PRODUCT,
+                ]);
 
-            $product = Product::find($productId);
+                $mockLine->setRelation('taxes', Tax::whereIn('id', $productData['taxes'] ?? [])->get());
+                $mockLine->setRelation('currency', $currency);
+                $mockLine->setRelation('company', $company);
+                $mockLine->setRelation('product', $product);
+                $mockLine->setRelation('move', $mockMove);
 
-            if (! $product) {
-                continue;
-            }
-
-            $mockLine = new MoveLine([
-                'quantity'     => $productData['quantity'] ?? 1,
-                'price_unit'   => $productData['price_unit'] ?? 0,
-                'discount'     => $productData['discount'] ?? 0,
-                'display_type' => DisplayType::PRODUCT,
-            ]);
-
-            $mockLine->setRelation('taxes', Tax::whereIn('id', $productData['taxes'] ?? [])->get());
-            $mockLine->setRelation('currency', $currency);
-            $mockLine->setRelation('company', $company);
-            $mockLine->setRelation('product', $product);
-            $mockLine->setRelation('move', $mockMove);
-
-            $mockLines->push($mockLine);
-        }
+                return $mockLine;
+            })
+            ->filter();
 
         if ($mockLines->isEmpty()) {
             return $defaultTotals;
