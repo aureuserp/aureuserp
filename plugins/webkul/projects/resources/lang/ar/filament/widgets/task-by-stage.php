@@ -2,10 +2,10 @@
 
 return [
     'heading' => [
-        'title' => 'Tasks by Stage',
+        'title' => 'المهام حسب المرحلة',
     ],
 
     'datasets' => [
-        'label' => 'Tasks created',
+        'label' => 'المهام المُنشأة',
     ],
 ];

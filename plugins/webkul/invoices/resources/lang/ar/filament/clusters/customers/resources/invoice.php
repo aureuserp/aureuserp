@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'title' => 'Invoice',
+    'title' => 'فاتورة',
 
     'navigation' => [
-        'title' => 'Invoices',
+        'title' => 'الفواتير',
     ],
 ];

@@ -3,8 +3,8 @@
 return [
     'navigation' => [
         'settings' => [
-            'label' => 'Settings',
-            'group' => 'Inventory',
+            'label' => 'الإعدادات',
+            'group' => 'المخزون',
         ],
     ],
 ];

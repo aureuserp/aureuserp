@@ -1,15 +1,15 @@
 <?php
 
 return [
-    'title' => 'Manage Products',
+    'title' => 'إدارة المنتجات',
 
     'form' => [
-        'enable-variants'               => 'Variants',
-        'enable-variants-helper-text'   => 'Set product attributes (e.g. color, size) to manage variants',
-        'enable-uom'                    => 'Unit of Measure',
-        'enable-uom-helper-text'        => 'Sell and purchase products in different units of measure',
-        'enable-packagings'             => 'Packagings',
-        'enable-packagings-helper-text' => 'Manage product packagings (e.g. pack of 6 bottles, box of 10 pieces)',
-        'configure-packagings'          => 'Configure Packagings',
+        'enable-variants'               => 'المتغيرات',
+        'enable-variants-helper-text'   => 'تعيين سمات المنتج (مثل اللون والحجم) لإدارة المتغيرات',
+        'enable-uom'                    => 'وحدة القياس',
+        'enable-uom-helper-text'        => 'بيع وشراء المنتجات بوحدات قياس مختلفة',
+        'enable-packagings'             => 'التغليف',
+        'enable-packagings-helper-text' => 'إدارة تغليف المنتجات (مثل عبوة 6 زجاجات، صندوق 10 قطع)',
+        'configure-packagings'          => 'إعداد التغليف',
     ],
 ];

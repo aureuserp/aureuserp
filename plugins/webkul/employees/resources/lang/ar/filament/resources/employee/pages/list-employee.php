@@ -2,15 +2,15 @@
 
 return [
     'tabs' => [
-        'my-team'       => 'My Team',
-        'my-department' => 'My Department',
-        'archived'      => 'Archived',
-        'newly-hired'   => 'Newly Hired',
+        'my-team'       => 'فريقي',
+        'my-department' => 'قسمي',
+        'archived'      => 'مؤرشف',
+        'newly-hired'   => 'المُعيَّنون حديثاً',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Employee',
+            'label' => 'موظف جديد',
         ],
     ],
 ];

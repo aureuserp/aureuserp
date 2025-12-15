@@ -1,22 +1,22 @@
 <?php
 
 return [
-    'title' => 'Manage Warehouses',
+    'title' => 'إدارة المستودعات',
 
     'form' => [
-        'enable-locations'                      => 'Locations',
-        'enable-locations-helper-text'          => 'Track product location in your warehouse',
-        'configure-locations'                   => 'Configure Locations',
-        'enable-multi-steps-routes'             => 'Multi Steps Routes',
-        'enable-multi-steps-routes-helper-text' => 'Use your own routes to manage the transfer of products between warehouses',
-        'configure-routes'                      => 'Configure Warehouse Routes',
+        'enable-locations'                      => 'المواقع',
+        'enable-locations-helper-text'          => 'تتبع موقع المنتج في المستودع',
+        'configure-locations'                   => 'إعداد المواقع',
+        'enable-multi-steps-routes'             => 'مسارات متعددة الخطوات',
+        'enable-multi-steps-routes-helper-text' => 'استخدم مساراتك الخاصة لإدارة نقل المنتجات بين المستودعات',
+        'configure-routes'                      => 'إعداد مسارات المستودع',
     ],
 
     'before-save' => [
         'notification' => [
             'warning' => [
-                'title' => 'Have multiple warehouses',
-                'body'  => 'You can\'t deactivate the multi-location if you have more than one warehouse.',
+                'title' => 'لديك عدة مستودعات',
+                'body'  => 'لا يمكنك إلغاء تنشيط المواقع المتعددة إذا كان لديك أكثر من مستودع.',
             ],
         ],
     ],

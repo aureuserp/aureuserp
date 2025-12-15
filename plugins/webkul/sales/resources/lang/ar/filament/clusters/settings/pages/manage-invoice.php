@@ -1,21 +1,21 @@
 <?php
 
 return [
-    'title' => 'Manage Invoice',
+    'title' => 'إدارة الفواتير',
 
-    'breadcrumb' => 'Manage Invoice',
+    'breadcrumb' => 'إدارة الفواتير',
 
     'navigation' => [
-        'title' => 'Manage Invoice',
+        'title' => 'إدارة الفواتير',
     ],
 
     'form' => [
         'invoice-policy' => [
-            'label'      => 'Invoice Policy',
-            'label-help' => 'Define how invoices are generated from sales orders.',
+            'label'      => 'سياسة الفواتير',
+            'label-help' => 'تحديد كيفية إنشاء الفواتير من أوامر البيع.',
             'options'    => [
-                'order'    => 'Generate invoice based on ordered quantities',
-                'delivery' => 'Generate invoice based on delivered quantities',
+                'order'    => 'إنشاء فاتورة بناءً على الكميات المطلوبة',
+                'delivery' => 'إنشاء فاتورة بناءً على الكميات المُسلَّمة',
             ],
         ],
     ],

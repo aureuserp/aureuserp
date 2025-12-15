@@ -2,6 +2,6 @@
 
 return [
     'header-actions' => [
-        'new-accrual-plan' => 'New Accrual',
+        'new-accrual-plan' => 'استحقاق جديد',
     ],
 ];

@@ -3,8 +3,8 @@
 return [
     'navigation' => [
         'settings' => [
-            'label' => 'Settings',
-            'group' => 'Invoices',
+            'label' => 'الإعدادات',
+            'group' => 'الفواتير',
         ],
     ],
 ];

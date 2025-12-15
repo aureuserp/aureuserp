@@ -2,11 +2,11 @@
 
 return [
     'heading' => [
-        'title' => 'Applicant Overview',
+        'title' => 'نظرة عامة على المتقدمين',
     ],
 
-    'ongoing'  => 'Ongoing',
-    'hired'    => 'Hired',
-    'refused'  => 'Refused',
-    'archived' => 'Archived',
+    'ongoing'  => 'جاري',
+    'hired'    => 'تم التوظيف',
+    'refused'  => 'مرفوض',
+    'archived' => 'مؤرشف',
 ];

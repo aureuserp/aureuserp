@@ -2,11 +2,11 @@
 
 return [
     'tabs' => [
-        'sale'      => 'Sale',
-        'purchase'  => 'Purchase',
-        'tax-scope' => 'Tax Scope',
-        'goods'     => 'Goods',
-        'active'    => 'Active',
-        'in-active' => 'In active',
+        'sale'      => 'البيع',
+        'purchase'  => 'الشراء',
+        'tax-scope' => 'نطاق الضريبة',
+        'goods'     => 'السلع',
+        'active'    => 'نشط',
+        'in-active' => 'غير نشط',
     ],
 ];

@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'title' => 'Request for Quotation',
+        'title' => 'طلب عرض أسعار',
     ],
 ];

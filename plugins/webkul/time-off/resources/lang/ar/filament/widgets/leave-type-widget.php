@@ -2,16 +2,16 @@
 
 return [
     'heading' => [
-        'title' => 'Time Off Analysis',
+        'title' => 'تحليل الإجازات',
     ],
 
-    'label' => 'Overview',
+    'label' => 'نظرة عامة',
 
     'types' => [
-        'draft'     => 'Draft',
-        'confirmed' => 'Confirmed',
-        'validated' => 'Validated',
-        'refused'   => 'Refused',
-        'cancelled' => 'Cancelled',
+        'draft'     => 'مسودة',
+        'confirmed' => 'مؤكد',
+        'validated' => 'معتمد',
+        'refused'   => 'مرفوض',
+        'cancelled' => 'ملغى',
     ],
 ];

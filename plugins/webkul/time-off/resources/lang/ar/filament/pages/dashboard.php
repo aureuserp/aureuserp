@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'title' => 'Dashboard',
+        'title' => 'لوحة التحكم',
     ],
 ];

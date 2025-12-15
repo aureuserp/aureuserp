@@ -3,89 +3,89 @@
 return [
 
     'navigation' => [
-        'group' => 'Plugins',
+        'group' => 'الإضافات',
     ],
 
-    'title' => 'Plugin',
+    'title' => 'إضافة',
 
     'table' => [
-        'version'             => 'Version',
-        'dependencies'        => 'Dependencies',
-        'dependencies_suffix' => 'Dependencies',
+        'version'             => 'الإصدار',
+        'dependencies'        => 'التبعيات',
+        'dependencies_suffix' => 'تبعيات',
     ],
 
     'status' => [
-        'installed'     => 'Installed',
-        'not_installed' => 'Not Installed',
+        'installed'     => 'مُثبَّت',
+        'not_installed' => 'غير مُثبَّت',
     ],
 
     'filters' => [
-        'installation_status' => 'Installation Status',
-        'all_plugins'         => 'All Plugins',
-        'installed'           => 'Installed',
-        'not_installed'       => 'Not Installed',
-        'active_status'       => 'Active Status',
-        'author'              => 'Author',
+        'installation_status' => 'حالة التثبيت',
+        'all_plugins'         => 'جميع الإضافات',
+        'installed'           => 'مُثبَّت',
+        'not_installed'       => 'غير مُثبَّت',
+        'active_status'       => 'حالة التفعيل',
+        'author'              => 'المؤلف',
         'webkul'              => 'Webkul',
-        'third_party'         => 'Third Party',
+        'third_party'         => 'طرف ثالث',
     ],
 
     'actions' => [
         'install' => [
-            'title'       => 'Install',
-            'heading'     => 'Install Plugin :name',
-            'description' => "Are you sure you want to install the ':name' plugin? This will run migrations and seeders.",
-            'submit'      => 'Install Plugin',
+            'title'       => 'تثبيت',
+            'heading'     => 'تثبيت الإضافة :name',
+            'description' => "هل أنت متأكد أنك تريد تثبيت إضافة ':name'؟ سيتم تشغيل التهجيرات والبذور.",
+            'submit'      => 'تثبيت الإضافة',
         ],
         'uninstall' => [
-            'title'      => 'Uninstall',
-            'heading'    => 'Uninstall Plugin',
-            'submit'     => 'Uninstall Plugin',
+            'title'      => 'إلغاء التثبيت',
+            'heading'    => 'إلغاء تثبيت الإضافة',
+            'submit'     => 'إلغاء تثبيت الإضافة',
         ],
     ],
 
     'notifications' => [
         'installed' => [
-            'title' => 'Plugin Installed Successfully',
-            'body'  => "The ':name' plugin has been installed.",
+            'title' => 'تم تثبيت الإضافة بنجاح',
+            'body'  => "تم تثبيت إضافة ':name'.",
         ],
         'installed-failed' => [
-            'title' => 'Installation Failed',
+            'title' => 'فشل التثبيت',
         ],
         'uninstalled' => [
-            'title' => 'Plugin Uninstalled Successfully',
-            'body'  => "The ':name' plugin has been uninstalled.",
+            'title' => 'تم إلغاء تثبيت الإضافة بنجاح',
+            'body'  => "تم إلغاء تثبيت إضافة ':name'.",
         ],
         'uninstalled-failed' => [
-            'title' => 'Uninstallation Failed',
+            'title' => 'فشل إلغاء التثبيت',
         ],
     ],
 
     'infolist' => [
         'section'  => [
-            'plugin'       => ' Plugin Information',
-            'dependencies' => 'Dependencies',
+            'plugin'       => 'معلومات الإضافة',
+            'dependencies' => 'التبعيات',
         ],
-        'name'         => 'Plugin Name',
-        'version'      => 'Version',
-        'dependencies' => 'Required Plugins',
-        'dependents'   => 'Plugins That Depend On This',
-        'is_installed' => 'Installation Status',
-        'license'      => 'License',
-        'summary'      => 'Description',
+        'name'         => 'اسم الإضافة',
+        'version'      => 'الإصدار',
+        'dependencies' => 'الإضافات المطلوبة',
+        'dependents'   => 'الإضافات التي تعتمد على هذه',
+        'is_installed' => 'حالة التثبيت',
+        'license'      => 'الترخيص',
+        'summary'      => 'الوصف',
 
         'dependencies-repeater' => [
-            'title'        => 'Required Plugins',
-            'name'         => 'Plugin Name',
-            'is_installed' => 'Installed',
-            'placeholder'  => 'No dependencies required',
+            'title'        => 'الإضافات المطلوبة',
+            'name'         => 'اسم الإضافة',
+            'is_installed' => 'مُثبَّت',
+            'placeholder'  => 'لا توجد تبعيات مطلوبة',
         ],
 
         'dependents-repeater' => [
-            'title'        => 'Plugins That Depend On This',
-            'name'         => 'Plugin Name',
-            'is_installed' => 'Installed',
-            'placeholder'  => 'No dependents',
+            'title'        => 'الإضافات التي تعتمد على هذه',
+            'name'         => 'اسم الإضافة',
+            'is_installed' => 'مُثبَّت',
+            'placeholder'  => 'لا توجد إضافات تابعة',
         ],
 
     ],

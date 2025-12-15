@@ -1,14 +1,14 @@
 <?php
 
 return [
-    'title' => 'Products',
+    'title' => 'المنتجات',
 
     'table' => [
         'columns' => [
-            'product'         => 'Product',
-            'lot'             => 'Lot/Serial Number',
-            'quantity'        => 'Quantity',
-            'unit-of-measure' => 'Unit of Measure',
+            'product'         => 'المنتج',
+            'lot'             => 'رقم الدفعة/التسلسلي',
+            'quantity'        => 'الكمية',
+            'unit-of-measure' => 'وحدة القياس',
         ],
     ],
 ];

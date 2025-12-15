@@ -1,16 +1,16 @@
 <?php
 
 return [
-    'title' => 'Bill',
+    'title' => 'فاتورة مورد',
 
     'navigation' => [
-        'title' => 'Bills',
+        'title' => 'فواتير الموردين',
     ],
 
     'form' => [
-        'biller'            => 'Biller',
-        'reference'         => 'Reference',
-        'payment-reference' => 'Payment Reference',
-        'date'              => 'Date',
+        'biller'            => 'الجهة المُصدِرة',
+        'reference'         => 'المرجع',
+        'payment-reference' => 'مرجع الدفع',
+        'date'              => 'التاريخ',
     ],
 ];

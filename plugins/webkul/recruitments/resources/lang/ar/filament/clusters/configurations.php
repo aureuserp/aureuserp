@@ -2,7 +2,7 @@
 
 return [
     'navigation' => [
-        'title' => 'Configuration',
-        'group' => 'Recruitments',
+        'title' => 'الإعدادات',
+        'group' => 'التوظيف',
     ],
 ];

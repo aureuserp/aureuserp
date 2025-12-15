@@ -3,15 +3,15 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Company',
+            'label' => 'شركة جديدة',
         ],
     ],
 
     'tabs' => [
 
-        'all' => 'All Companies',
+        'all' => 'جميع الشركات',
 
-        'archived' => 'Archived Companies',
+        'archived' => 'الشركات المؤرشفة',
 
     ],
 ];

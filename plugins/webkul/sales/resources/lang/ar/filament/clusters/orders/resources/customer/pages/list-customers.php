@@ -1,11 +1,11 @@
 <?php
 
 return [
-    'title' => 'Customers',
+    'title' => 'العملاء',
 
     'header-actions' => [
         'create' => [
-            'label' => 'Create Customer',
+            'label' => 'إنشاء عميل',
         ],
     ],
 ];

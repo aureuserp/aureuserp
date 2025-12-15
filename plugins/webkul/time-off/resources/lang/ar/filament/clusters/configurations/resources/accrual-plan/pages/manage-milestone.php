@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'label' => 'Manage Milestone',
+        'label' => 'إدارة المراحل',
     ],
 ];

@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'title' => 'Create Scrap',
+    'title' => 'إنشاء خردة',
 ];

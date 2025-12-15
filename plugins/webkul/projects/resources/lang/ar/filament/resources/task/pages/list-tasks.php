@@ -2,19 +2,19 @@
 
 return [
     'tabs' => [
-        'open-tasks'       => 'Open Tasks',
-        'my-tasks'         => 'My Tasks',
-        'unassigned-tasks' => 'Unassigned Tasks',
-        'private-tasks'    => 'Private Tasks',
-        'followed-tasks'   => 'Followed Tasks',
-        'closed-tasks'     => 'Closed Tasks',
-        'starred-tasks'    => 'Starred Tasks',
-        'archived-tasks'   => 'Archived Tasks',
+        'open-tasks'       => 'المهام المفتوحة',
+        'my-tasks'         => 'مهامي',
+        'unassigned-tasks' => 'مهام غير مُعيَّنة',
+        'private-tasks'    => 'مهام خاصة',
+        'followed-tasks'   => 'مهام متابَعة',
+        'closed-tasks'     => 'مهام مغلقة',
+        'starred-tasks'    => 'مهام مميزة',
+        'archived-tasks'   => 'مهام مؤرشفة',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Task',
+            'label' => 'مهمة جديدة',
         ],
     ],
 ];

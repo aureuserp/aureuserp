@@ -2,10 +2,10 @@
 
 return [
     'heading' => [
-        'title' => 'Stats Overview',
+        'title' => 'نظرة عامة على الإحصائيات',
     ],
 
-    'total-tasks'          => 'Total Tasks',
-    'total-hours-spent'    => 'Total Hours Spent',
-    'total-time-remaining' => 'Total Time Remaining',
+    'total-tasks'          => 'إجمالي المهام',
+    'total-hours-spent'    => 'إجمالي الساعات المُنفقة',
+    'total-time-remaining' => 'إجمالي الوقت المتبقي',
 ];

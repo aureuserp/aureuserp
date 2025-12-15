@@ -2,15 +2,15 @@
 
 return [
     'tabs' => [
-        'my-projects'          => 'My Projects',
-        'my-favorite-projects' => 'My Favorites',
-        'unassigned-projects'  => 'Unassigned Projects',
-        'archived-projects'    => 'Archived Projects',
+        'my-projects'          => 'مشاريعي',
+        'my-favorite-projects' => 'مفضلاتي',
+        'unassigned-projects'  => 'مشاريع غير مُعيَّنة',
+        'archived-projects'    => 'مشاريع مؤرشفة',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Project',
+            'label' => 'مشروع جديد',
         ],
     ],
 ];

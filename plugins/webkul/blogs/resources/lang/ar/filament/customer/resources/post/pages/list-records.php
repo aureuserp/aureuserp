@@ -2,6 +2,11 @@
 
 return [
     'navigation' => [
-        'title' => 'Our Latest Posts',
+        'title' => 'أحدث المقالات',
+    ],
+
+    'empty' => [
+        'title' => 'لا توجد مقالات',
+        'description' => 'تحقق مرة أخرى لاحقاً للحصول على محتوى جديد.',
     ],
 ];

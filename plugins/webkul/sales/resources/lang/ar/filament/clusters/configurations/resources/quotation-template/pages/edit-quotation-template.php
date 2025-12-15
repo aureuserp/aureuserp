@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Quotation Template Updated',
-        'body'  => 'Quotation Template has been updated successfully.',
+        'title' => 'تم تحديث قالب عرض الأسعار',
+        'body'  => 'تم تحديث قالب عرض الأسعار بنجاح.',
     ],
 
     'header-actions' => [
         'notification' => [
             'delete' => [
-                'title' => 'Delete Quotation Template',
-                'body'  => 'Quotation template has been deleted successfully.',
+                'title' => 'حذف قالب عرض الأسعار',
+                'body'  => 'تم حذف قالب عرض الأسعار بنجاح.',
             ],
         ],
     ],

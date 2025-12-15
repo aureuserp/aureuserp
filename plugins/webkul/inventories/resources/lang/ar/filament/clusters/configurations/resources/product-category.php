@@ -2,21 +2,21 @@
 
 return [
     'navigation' => [
-        'title' => 'Categories',
-        'group' => 'Products',
+        'title' => 'الفئات',
+        'group' => 'المنتجات',
     ],
 
     'form' => [
         'sections' => [
             'inventory' => [
-                'title' => 'Inventory',
+                'title' => 'المخزون',
 
                 'fieldsets' => [
                     'logistics' => [
-                        'title' => 'Logistics',
+                        'title' => 'اللوجستيات',
 
                         'fields' => [
-                            'routes' => 'Routes',
+                            'routes' => 'المسارات',
                         ],
                     ],
                 ],
@@ -27,15 +27,15 @@ return [
     'infolist' => [
         'sections' => [
             'inventory' => [
-                'title' => 'Inventory',
+                'title' => 'المخزون',
 
                 'subsections' => [
                     'logistics' => [
-                        'title' => 'Logistics',
+                        'title' => 'اللوجستيات',
 
                         'entries' => [
-                            'routes'     => 'Warehouse Routes',
-                            'route_name' => 'Route Name',
+                            'routes'     => 'مسارات المستودع',
+                            'route_name' => 'اسم المسار',
                         ],
                     ],
                 ],

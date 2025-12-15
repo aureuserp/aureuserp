@@ -1,10 +1,11 @@
 @if (! filament()->auth()->check())
     @php
         $visibleNavigationItems = $navigationItems->filter(fn ($item) => $item->isVisible());
+        $isRtl = app()->getLocale() === 'ar';
     @endphp
 
     {{-- Desktop View --}}
-    <ul class="items-center hidden lg:flex gap-x-4 me-4">
+    <ul class="items-center hidden lg:flex gap-x-4 {{ $isRtl ? 'ms-4 flex-row-reverse' : 'me-4' }}">
         @foreach ($visibleNavigationItems as $item)
             <li>
                 <x-filament-panels::topbar.item
@@ -24,8 +25,8 @@
     </ul>
 
     {{-- Mobile View --}}
-    <div class="overflow-x-auto lg:hidden">
-        <div class="flex items-center px-2 gap-x-3">
+    <div class="overflow-x-auto lg:hidden" dir="{{ $isRtl ? 'rtl' : 'ltr' }}">
+        <div class="flex items-center px-2 gap-x-3 {{ $isRtl ? 'flex-row-reverse' : '' }}">
             @foreach ($visibleNavigationItems as $item)
                 <x-filament::link :href="$item->getUrl()" class="text-sm whitespace-nowrap">
                     {{ $item->getLabel() }}

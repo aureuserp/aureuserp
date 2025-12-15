@@ -1,15 +1,15 @@
 <?php
 
 return [
-    'title' => 'Manage Orders',
+    'title' => 'إدارة الطلبات',
 
     'form' => [
-        'enable-order-approval'                    => 'Purchase Order Approval',
-        'enable-order-approval-helper-text'        => 'Request managers to approve orders above a minimum amount',
-        'min-amount'                               => 'Minimum Amount',
-        'enable-lock-confirmed-orders'             => 'Lock Confirmed Orders',
-        'enable-lock-confirmed-orders-helper-text' => 'Automatically lock confirmed orders to prevent editing',
-        'enable-purchase-agreements'               => 'Purchase Agreements',
-        'enable-purchase-agreements-helper-text'   => 'Manage blanket orders and purchase templates',
+        'enable-order-approval'                    => 'اعتماد أمر الشراء',
+        'enable-order-approval-helper-text'        => 'طلب موافقة المديرين على الطلبات التي تتجاوز الحد الأدنى',
+        'min-amount'                               => 'الحد الأدنى للمبلغ',
+        'enable-lock-confirmed-orders'             => 'قفل الطلبات المؤكدة',
+        'enable-lock-confirmed-orders-helper-text' => 'قفل الطلبات المؤكدة تلقائياً لمنع التعديل',
+        'enable-purchase-agreements'               => 'اتفاقيات الشراء',
+        'enable-purchase-agreements-helper-text'   => 'إدارة الطلبات الشاملة وقوالب الشراء',
     ],
 ];

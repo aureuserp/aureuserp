@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'title' => 'Category',
+    'title' => 'الفئة',
 
     'navigation' => [
-        'title' => 'Categories',
-        'group' => 'Products',
+        'title' => 'الفئات',
+        'group' => 'المنتجات',
     ],
 ];

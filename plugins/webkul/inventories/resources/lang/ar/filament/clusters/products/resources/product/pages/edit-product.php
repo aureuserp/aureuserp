@@ -3,14 +3,14 @@
 return [
     'header-actions' => [
         'update-quantity' => [
-            'label'                     => 'Update Quantity',
-            'modal-heading'             => 'Update Product Quantity',
-            'modal-submit-action-label' => 'Update',
+            'label'                     => 'تحديث الكمية',
+            'modal-heading'             => 'تحديث كمية المنتج',
+            'modal-submit-action-label' => 'تحديث',
 
             'form' => [
                 'fields' => [
-                    'product'     => 'Product',
-                    'on-hand-qty' => 'On Hand Quantity',
+                    'product'     => 'المنتج',
+                    'on-hand-qty' => 'الكمية المتوفرة',
                 ],
             ],
         ],

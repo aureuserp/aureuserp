@@ -3,19 +3,19 @@
 return [
     'header' => [
         'sub-heading' => [
-            'accept-invitation' => 'Accept Invitation',
+            'accept-invitation' => 'قبول الدعوة',
         ],
     ],
 
-    'title' => 'Register',
+    'title' => 'التسجيل',
 
-    'heading' => 'Sign up',
+    'heading' => 'إنشاء حساب',
 
     'actions' => [
 
         'login' => [
-            'before' => 'or',
-            'label' => 'sign in to your account',
+            'before' => 'أو',
+            'label' => 'تسجيل الدخول إلى حسابك',
         ],
 
     ],
@@ -23,26 +23,26 @@ return [
     'form' => [
 
         'email' => [
-            'label' => 'Email address',
+            'label' => 'البريد الإلكتروني',
         ],
 
         'name' => [
-            'label' => 'Name',
+            'label' => 'الاسم',
         ],
 
         'password' => [
-            'label' => 'Password',
-            'validation_attribute' => 'password',
+            'label' => 'كلمة المرور',
+            'validation_attribute' => 'كلمة المرور',
         ],
 
         'password_confirmation' => [
-            'label' => 'Confirm password',
+            'label' => 'تأكيد كلمة المرور',
         ],
 
         'actions' => [
 
             'register' => [
-                'label' => 'Sign up',
+                'label' => 'إنشاء حساب',
             ],
 
         ],
@@ -52,8 +52,8 @@ return [
     'notifications' => [
 
         'throttled' => [
-            'title' => 'Too many registration attempts',
-            'body' => 'Please try again in :seconds seconds.',
+            'title' => 'محاولات تسجيل كثيرة جداً',
+            'body' => 'يرجى المحاولة مرة أخرى بعد :seconds ثانية.',
         ],
 
     ],

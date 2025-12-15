@@ -2,11 +2,11 @@
 
 return [
     'header-actions' => [
-        'new-leave-type' => 'New Leave Type',
+        'new-leave-type' => 'نوع إجازة جديد',
     ],
 
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'الكل',
+        'archived' => 'مؤرشف',
     ],
 ];

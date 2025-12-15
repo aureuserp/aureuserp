@@ -1,40 +1,40 @@
 <?php
 
 return [
-    'title'    => 'Login',
-    'heading'  => 'Login',
+    'title'    => 'تسجيل الدخول',
+    'heading'  => 'تسجيل الدخول',
     'messages' => [
-        'failed' => 'These credentials do not match our records.',
+        'failed' => 'بيانات الاعتماد هذه لا تتطابق مع سجلاتنا.',
     ],
     'notifications' => [
         'throttled' => [
-            'title' => 'Too many attempts. Try again in :seconds seconds.',
-            'body'  => 'Please wait :seconds seconds (:minutes minutes) before trying again.',
+            'title' => 'محاولات كثيرة جداً. حاول مرة أخرى بعد :seconds ثانية.',
+            'body'  => 'يرجى الانتظار :seconds ثانية (:minutes دقيقة) قبل المحاولة مرة أخرى.',
         ],
     ],
     'form' => [
         'email' => [
-            'label' => 'Email address',
+            'label' => 'البريد الإلكتروني',
         ],
         'password' => [
-            'label' => 'Password',
+            'label' => 'كلمة المرور',
         ],
         'remember' => [
-            'label' => 'Remember me',
+            'label' => 'تذكرني',
         ],
         'actions' => [
             'authenticate' => [
-                'label' => 'Sign in',
+                'label' => 'تسجيل الدخول',
             ],
         ],
     ],
     'actions' => [
         'register' => [
-            'before' => 'Don\'t have an account?',
-            'label'  => 'Create account',
+            'before' => 'ليس لديك حساب؟',
+            'label'  => 'إنشاء حساب',
         ],
         'request_password_reset' => [
-            'label' => 'Forgot password?',
+            'label' => 'نسيت كلمة المرور؟',
         ],
     ],
 ];

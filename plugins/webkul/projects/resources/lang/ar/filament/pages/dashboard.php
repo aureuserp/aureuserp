@@ -2,16 +2,16 @@
 
 return [
     'navigation' => [
-        'title' => 'Project',
-        'group' => 'Dashboard',
+        'title' => 'المشاريع',
+        'group' => 'لوحة التحكم',
     ],
 
     'filters-form' => [
-        'project'    => 'Project',
-        'assignees'  => 'Assignees',
-        'tags'       => 'Tags',
-        'customer'   => 'Customer',
-        'start-date' => 'Start Date',
-        'end-date'   => 'End Date',
+        'project'    => 'المشروع',
+        'assignees'  => 'المُكلَّفون',
+        'tags'       => 'الوسوم',
+        'customer'   => 'العميل',
+        'start-date' => 'تاريخ البداية',
+        'end-date'   => 'تاريخ النهاية',
     ],
 ];

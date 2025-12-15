@@ -2,94 +2,94 @@
 
 return [
     'heading' => [
-        'title' => 'Time Off Requests',
+        'title' => 'طلبات الإجازات',
     ],
 
     'modal-actions' => [
         'edit' => [
-            'title'                         => 'Edit',
-            'duration-display'              => ':count working day|:count working days',
-            'duration-display-with-weekend' => ':count working day (+ :weekend weekend day)|:count working days (+ :weekend weekend days)',
+            'title'                         => 'تعديل',
+            'duration-display'              => ':count يوم عمل|:count أيام عمل',
+            'duration-display-with-weekend' => ':count يوم عمل (+ :weekend يوم عطلة)|:count أيام عمل (+ :weekend أيام عطلة)',
 
             'notification' => [
-                'title' => 'Time Off Updated',
-                'body'  => 'Your time off request has been updated successfully.',
+                'title' => 'تم تحديث الإجازة',
+                'body'  => 'تم تحديث طلب الإجازة بنجاح.',
             ],
         ],
 
         'delete' => [
-            'title' => 'Delete',
+            'title' => 'حذف',
         ],
     ],
 
     'view-action' => [
-        'title'       => 'View',
-        'description' => 'View Time Off Request',
+        'title'       => 'عرض',
+        'description' => 'عرض طلب الإجازة',
     ],
 
     'header-actions' => [
         'create' => [
-            'title'       => 'New Time Off',
-            'description' => 'Create Time Off Request',
+            'title'       => 'إجازة جديدة',
+            'description' => 'إنشاء طلب إجازة',
 
             'notification' => [
-                'title' => 'Time Off Created',
-                'body'  => 'Time off request has been created successfully.',
+                'title' => 'تم إنشاء الإجازة',
+                'body'  => 'تم إنشاء طلب الإجازة بنجاح.',
             ],
 
             'employee-not-found' => [
                 'notification' => [
-                    'title' => 'Employee Not Found',
-                    'body'  => 'Please add an employee to your profile before creating a time off request.',
+                    'title' => 'لم يتم العثور على الموظف',
+                    'body'  => 'يرجى إضافة موظف إلى ملفك الشخصي قبل إنشاء طلب إجازة.',
                 ],
             ],
 
             'success' => [
                 'notification' => [
-                    'title' => 'Time Off Created',
-                    'body'  => 'Your time off request has been created successfully.',
+                    'title' => 'تم إنشاء الإجازة',
+                    'body'  => 'تم إنشاء طلب الإجازة بنجاح.',
                 ],
             ],
         ],
     ],
 
     'form' => [
-        'title'       => 'Time Off Request',
-        'description' => 'Create or edit your time off request with the following details:',
+        'title'       => 'طلب إجازة',
+        'description' => 'أنشئ أو عدّل طلب الإجازة الخاص بك بالتفاصيل التالية:',
 
         'fields' => [
-            'time-off-type'             => 'Time Off Type',
-            'time-off-type-placeholder' => 'Select a time off type',
-            'time-off-type-helper'      => 'Select the type of time off you are requesting.',
-            'request-date-from'         => 'Request Date From',
-            'request-date-to'           => 'Request Date To',
-            'period'                    => 'Period',
-            'half-day'                  => 'Half Day',
-            'half-day-helper'           => 'Toggle for half-day leave.',
-            'requested-days'            => 'Requested (Days/Hours)',
-            'description'               => 'Description',
-            'description-placeholder'   => 'No description provided',
-            'description-helper'        => 'Provide a brief description of your time off request.',
-            'duration'                  => 'Duration',
-            'please-select-dates'       => 'Please select the request date from and to.',
+            'time-off-type'             => 'نوع الإجازة',
+            'time-off-type-placeholder' => 'اختر نوع الإجازة',
+            'time-off-type-helper'      => 'اختر نوع الإجازة التي تطلبها.',
+            'request-date-from'         => 'تاريخ بداية الطلب',
+            'request-date-to'           => 'تاريخ نهاية الطلب',
+            'period'                    => 'الفترة',
+            'half-day'                  => 'نصف يوم',
+            'half-day-helper'           => 'تفعيل لإجازة نصف يوم.',
+            'requested-days'            => 'المطلوب (أيام/ساعات)',
+            'description'               => 'الوصف',
+            'description-placeholder'   => 'لم يتم تقديم وصف',
+            'description-helper'        => 'قدم وصفاً موجزاً لطلب الإجازة الخاص بك.',
+            'duration'                  => 'المدة',
+            'please-select-dates'       => 'يرجى تحديد تاريخ بداية ونهاية الطلب.',
         ],
     ],
 
     'infolist' => [
-        'title'       => 'Time Off Details',
-        'description' => 'Here are the details of your time off request:',
+        'title'       => 'تفاصيل الإجازة',
+        'description' => 'إليك تفاصيل طلب الإجازة الخاص بك:',
         'entries'     => [
-            'time-off-type'           => 'Time Off Type',
-            'request-date-from'       => 'Request Date From',
-            'request-date-to'         => 'Request Date To',
-            'description'             => 'Description',
-            'description-placeholder' => 'No description provided',
-            'duration'                => 'Duration',
-            'status'                  => 'Status',
+            'time-off-type'           => 'نوع الإجازة',
+            'request-date-from'       => 'تاريخ بداية الطلب',
+            'request-date-to'         => 'تاريخ نهاية الطلب',
+            'description'             => 'الوصف',
+            'description-placeholder' => 'لم يتم تقديم وصف',
+            'duration'                => 'المدة',
+            'status'                  => 'الحالة',
         ],
     ],
 
     'events' => [
-        'title' => ':name On :status: :days day(s)',
+        'title' => ':name في حالة :status: :days يوم/أيام',
     ],
 ];

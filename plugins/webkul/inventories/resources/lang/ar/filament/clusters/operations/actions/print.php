@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'label' => 'Print',
+    'label' => 'طباعة',
 ];

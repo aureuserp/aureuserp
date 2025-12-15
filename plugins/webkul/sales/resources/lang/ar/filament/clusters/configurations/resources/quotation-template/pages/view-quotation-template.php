@@ -4,8 +4,8 @@ return [
     'header-actions' => [
         'notification' => [
             'delete' => [
-                'title' => 'Delete Quotation Template',
-                'body'  => 'Quotation template has been deleted successfully.',
+                'title' => 'حذف قالب عرض الأسعار',
+                'body'  => 'تم حذف قالب عرض الأسعار بنجاح.',
             ],
         ],
     ],

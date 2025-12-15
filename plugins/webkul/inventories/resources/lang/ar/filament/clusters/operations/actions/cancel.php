@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'label' => 'Cancel',
+    'label' => 'إلغاء',
 ];

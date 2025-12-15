@@ -1,38 +1,38 @@
 <?php
 
 return [
-    'title'         => 'Register',
-    'heading'       => 'Register',
+    'title'         => 'إنشاء حساب',
+    'heading'       => 'إنشاء حساب',
     'notifications' => [
         'throttled' => [
-            'title' => 'Too many attempts. Try again in :seconds seconds.',
-            'body'  => 'Please wait :seconds seconds (:minutes minutes) before trying again.',
+            'title' => 'محاولات كثيرة جداً. حاول مرة أخرى بعد :seconds ثانية.',
+            'body'  => 'يرجى الانتظار :seconds ثانية (:minutes دقيقة) قبل المحاولة مرة أخرى.',
         ],
     ],
     'form' => [
         'name' => [
-            'label' => 'Name',
+            'label' => 'الاسم',
         ],
         'email' => [
-            'label' => 'Email address',
+            'label' => 'البريد الإلكتروني',
         ],
         'password' => [
-            'label'                => 'Password',
-            'validation_attribute' => 'password',
+            'label'                => 'كلمة المرور',
+            'validation_attribute' => 'كلمة المرور',
         ],
         'password_confirmation' => [
-            'label' => 'Confirm password',
+            'label' => 'تأكيد كلمة المرور',
         ],
         'actions' => [
             'register' => [
-                'label' => 'Create account',
+                'label' => 'إنشاء حساب',
             ],
         ],
     ],
     'actions' => [
         'login' => [
-            'before' => 'Already have an account?',
-            'label'  => 'Log in',
+            'before' => 'لديك حساب بالفعل؟',
+            'label'  => 'تسجيل الدخول',
         ],
     ],
 ];

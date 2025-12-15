@@ -2,27 +2,27 @@
 
 return [
     'navigation' => [
-        'title' => 'Recruitment',
-        'group' => 'Dashboard',
+        'title' => 'التوظيف',
+        'group' => 'لوحة التحكم',
     ],
 
     'filters-form' => [
-        'job-position' => 'Job Position',
-        'departments'  => 'Departments',
-        'companies'    => 'Companies',
-        'stages'       => 'Stages',
+        'job-position' => 'المسمى الوظيفي',
+        'departments'  => 'الأقسام',
+        'companies'    => 'الشركات',
+        'stages'       => 'المراحل',
         'status'       => [
-            'title'   => 'Status',
+            'title'   => 'الحالة',
             'options' => [
-                'all'      => 'All',
-                'ongoing'  => 'Ongoing',
-                'hired'    => 'Hired',
-                'refused'  => 'Refused',
-                'archived' => 'Archived',
+                'all'      => 'الكل',
+                'ongoing'  => 'جاري',
+                'hired'    => 'تم التوظيف',
+                'refused'  => 'مرفوض',
+                'archived' => 'مؤرشف',
             ],
         ],
 
-        'start-date' => 'Start Date',
-        'end-date'   => 'End Date',
+        'start-date' => 'تاريخ البداية',
+        'end-date'   => 'تاريخ النهاية',
     ],
 ];

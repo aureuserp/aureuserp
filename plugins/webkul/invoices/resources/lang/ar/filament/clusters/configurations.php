@@ -2,7 +2,7 @@
 
 return [
     'navigation' => [
-        'title' => 'Configurations',
-        'group' => 'Invoices',
+        'title' => 'الإعدادات',
+        'group' => 'الفواتير',
     ],
 ];

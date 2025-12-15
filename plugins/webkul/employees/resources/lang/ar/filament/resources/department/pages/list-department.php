@@ -2,12 +2,12 @@
 
 return [
     'tabs' => [
-        'archived-departments' => 'Archived Departments',
+        'archived-departments' => 'الأقسام المؤرشفة',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Department',
+            'label' => 'قسم جديد',
         ],
     ],
 ];

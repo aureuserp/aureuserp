@@ -1,20 +1,20 @@
 <?php
 
 return [
-    'title' => 'Manage Pricing',
+    'title' => 'إدارة الأسعار',
 
-    'breadcrumb' => 'Manage Pricing',
+    'breadcrumb' => 'إدارة الأسعار',
 
     'navigation' => [
-        'title' => 'Manage Pricing',
+        'title' => 'إدارة الأسعار',
     ],
 
     'form' => [
         'fields' => [
-            'discount'      => 'Discount',
-            'discount-help' => 'Enable discount on products.',
-            'margins'       => 'Margins',
-            'margins-help'  => 'Show margins on orders.',
+            'discount'      => 'الخصم',
+            'discount-help' => 'تفعيل الخصم على المنتجات.',
+            'margins'       => 'هوامش الربح',
+            'margins-help'  => 'عرض هوامش الربح في الطلبات.',
         ],
     ],
 ];

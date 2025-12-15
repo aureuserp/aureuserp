@@ -1,27 +1,27 @@
 <?php
 
 return [
-    'title' => 'Manage Traceability',
+    'title' => 'إدارة التتبع',
 
     'form' => [
-        'enable-lots-serial-numbers'                             => 'Lots & Serial Numbers',
-        'enable-lots-serial-numbers-helper-text'                 => 'Get a full traceability from vendors to customers',
-        'configure-lots'                                         => 'Configure Lots',
-        'enable-expiration-dates'                                => 'Expiration Dates',
-        'enable-expiration-dates-helper-text'                    => 'Set expiration dates on lots & serial numbers',
-        'display-on-delivery-slips'                              => 'Display on Delivery Slips',
-        'display-on-delivery-slips-helper-text'                  => 'Lots & Serial numbers will appear on the delivery slips',
-        'display-expiration-dates-on-delivery-slips'             => 'Display Expiration Dates on Delivery Slips',
-        'display-expiration-dates-on-delivery-slips-helper-text' => 'Expiration dates will appear on the delivery slip',
-        'enable-consignments'                                    => 'Consignments',
-        'enable-consignments-helper-text'                        => 'Set owner on stored products',
+        'enable-lots-serial-numbers'                             => 'الدفعات والأرقام التسلسلية',
+        'enable-lots-serial-numbers-helper-text'                 => 'الحصول على تتبع كامل من الموردين إلى العملاء',
+        'configure-lots'                                         => 'إعداد الدفعات',
+        'enable-expiration-dates'                                => 'تواريخ انتهاء الصلاحية',
+        'enable-expiration-dates-helper-text'                    => 'تعيين تواريخ انتهاء الصلاحية على الدفعات والأرقام التسلسلية',
+        'display-on-delivery-slips'                              => 'العرض على إيصالات التسليم',
+        'display-on-delivery-slips-helper-text'                  => 'ستظهر الدفعات والأرقام التسلسلية على إيصالات التسليم',
+        'display-expiration-dates-on-delivery-slips'             => 'عرض تواريخ انتهاء الصلاحية على إيصالات التسليم',
+        'display-expiration-dates-on-delivery-slips-helper-text' => 'ستظهر تواريخ انتهاء الصلاحية على إيصال التسليم',
+        'enable-consignments'                                    => 'الأمانات',
+        'enable-consignments-helper-text'                        => 'تعيين المالك على المنتجات المخزنة',
     ],
 
     'before-save' => [
         'notification' => [
             'warning' => [
-                'title' => 'You have products in stock that have lot/serial number tracking enabled. ',
-                'body'  => 'First switch off tracking on all the products before switching off this setting.',
+                'title' => 'لديك منتجات في المخزون مع تفعيل تتبع الدفعة/الرقم التسلسلي.',
+                'body'  => 'قم أولاً بإيقاف التتبع على جميع المنتجات قبل إيقاف هذا الإعداد.',
             ],
         ],
     ],

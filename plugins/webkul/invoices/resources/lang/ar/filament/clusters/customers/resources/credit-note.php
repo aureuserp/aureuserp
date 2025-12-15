@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'title' => 'Credit Note',
+    'title' => 'إشعار دائن',
 
     'navigation' => [
-        'title' => 'Credit Notes',
+        'title' => 'إشعارات دائنة',
     ],
 ];

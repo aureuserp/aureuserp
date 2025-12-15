@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'title' => 'Manage Logistics',
+    'title' => 'إدارة اللوجستيات',
 
     'form' => [
-        'enable-dropshipping'             => 'Dropshipping',
-        'enable-dropshipping-helper-text' => 'This enables a dropshipping route for products, allowing vendors to ship directly to customers. When a product is set to dropship, a purchase request for quotation is generated upon sales order confirmation. This is an on-demand process, with the customer\'s delivery address used instead of the warehouse address.',
+        'enable-dropshipping'             => 'الشحن المباشر',
+        'enable-dropshipping-helper-text' => 'يُتيح هذا مسار الشحن المباشر للمنتجات، مما يسمح للموردين بالشحن مباشرة إلى العملاء. عند تعيين منتج للشحن المباشر، يتم إنشاء طلب عرض أسعار شراء عند تأكيد أمر البيع. هذه عملية حسب الطلب، حيث يتم استخدام عنوان تسليم العميل بدلاً من عنوان المستودع.',
     ],
 ];

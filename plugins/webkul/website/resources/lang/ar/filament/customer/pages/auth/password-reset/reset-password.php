@@ -1,28 +1,28 @@
 <?php
 
 return [
-    'title'         => 'Reset password',
-    'heading'       => 'Reset password',
+    'title'         => 'إعادة تعيين كلمة المرور',
+    'heading'       => 'إعادة تعيين كلمة المرور',
     'notifications' => [
         'throttled' => [
-            'title' => 'Too many attempts. Try again in :seconds seconds.',
-            'body'  => 'Please wait :seconds seconds (:minutes minutes) before trying again.',
+            'title' => 'محاولات كثيرة جداً. حاول مرة أخرى بعد :seconds ثانية.',
+            'body'  => 'يرجى الانتظار :seconds ثانية (:minutes دقيقة) قبل المحاولة مرة أخرى.',
         ],
     ],
     'form' => [
         'email' => [
-            'label' => 'Email address',
+            'label' => 'البريد الإلكتروني',
         ],
         'password' => [
-            'label'                => 'New password',
-            'validation_attribute' => 'password',
+            'label'                => 'كلمة المرور الجديدة',
+            'validation_attribute' => 'كلمة المرور',
         ],
         'password_confirmation' => [
-            'label' => 'Confirm new password',
+            'label' => 'تأكيد كلمة المرور الجديدة',
         ],
         'actions' => [
             'reset' => [
-                'label' => 'Reset password',
+                'label' => 'إعادة تعيين كلمة المرور',
             ],
         ],
     ],

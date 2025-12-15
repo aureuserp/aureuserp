@@ -2,6 +2,6 @@
 
 return [
     'navigation' => [
-        'title' => 'Our Latest Posts',
+        'title' => 'أحدث مقالاتنا',
     ],
 ];

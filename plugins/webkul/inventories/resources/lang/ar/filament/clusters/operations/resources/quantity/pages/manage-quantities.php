@@ -1,13 +1,13 @@
 <?php
 
 return [
-    'title' => 'Quantity Adjustments',
+    'title' => 'تعديلات الكمية',
 
     'tabs' => [
-        'internal-locations' => 'Internal Locations',
-        'transit-locations'  => 'Transit Locations',
-        'on-hand'            => 'On Hand',
-        'to-count'           => 'To Count',
-        'to-apply'           => 'To Apply',
+        'internal-locations' => 'المواقع الداخلية',
+        'transit-locations'  => 'مواقع النقل',
+        'on-hand'            => 'المتوفر',
+        'to-count'           => 'للعد',
+        'to-apply'           => 'للتطبيق',
     ],
 ];

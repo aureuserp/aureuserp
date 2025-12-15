@@ -1,18 +1,18 @@
 <?php
 
 return [
-    'title' => 'Contacts',
+    'title' => 'جهات الاتصال',
 
     'header-actions' => [
         'create' => [
-            'label' => 'Create Contact',
+            'label' => 'إنشاء جهة اتصال',
         ],
     ],
 
     'tabs' => [
-        'individuals' => 'Individuals',
-        'companies'   => 'Companies',
-        'employees'   => 'Employees',
-        'archived'    => 'Archived',
+        'individuals' => 'أفراد',
+        'companies'   => 'شركات',
+        'employees'   => 'موظفون',
+        'archived'    => 'مؤرشف',
     ],
 ];

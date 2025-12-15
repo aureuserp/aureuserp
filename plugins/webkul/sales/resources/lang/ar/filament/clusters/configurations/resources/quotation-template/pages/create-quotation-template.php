@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Quotation Template Created',
-        'body'  => 'Quotation Template has been created successfully.',
+        'title' => 'تم إنشاء قالب عرض الأسعار',
+        'body'  => 'تم إنشاء قالب عرض الأسعار بنجاح.',
     ],
 ];

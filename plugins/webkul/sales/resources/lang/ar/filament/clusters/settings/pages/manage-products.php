@@ -1,24 +1,24 @@
 <?php
 
 return [
-    'title' => 'Manage Products',
+    'title' => 'إدارة المنتجات',
 
-    'breadcrumb' => 'Manage Products',
+    'breadcrumb' => 'إدارة المنتجات',
 
     'navigation' => [
-        'title' => 'Manage Products',
+        'title' => 'إدارة المنتجات',
     ],
 
     'form' => [
         'fields' => [
-            'variants'                      => 'Variants',
-            'variants-help'                 => 'Allow products to have multiple variants',
-            'uom'                           => 'Unit of Measure',
-            'uom-help'                      => 'Allow products to have a unit of measure',
-            'packagings'                    => 'Packagings',
-            'packagings-help'               => 'Allow products to have multiple packagings',
-            'deliver-content-by-email'      => 'Deliver Content by Email',
-            'deliver-content-by-email-help' => 'Allow products to deliver content by email',
+            'variants'                      => 'المتغيرات',
+            'variants-help'                 => 'السماح للمنتجات بأن يكون لها متغيرات متعددة',
+            'uom'                           => 'وحدة القياس',
+            'uom-help'                      => 'السماح للمنتجات بأن يكون لها وحدة قياس',
+            'packagings'                    => 'التغليف',
+            'packagings-help'               => 'السماح للمنتجات بأن يكون لها تغليف متعدد',
+            'deliver-content-by-email'      => 'تسليم المحتوى بالبريد الإلكتروني',
+            'deliver-content-by-email-help' => 'السماح للمنتجات بتسليم المحتوى بالبريد الإلكتروني',
         ],
     ],
 ];
