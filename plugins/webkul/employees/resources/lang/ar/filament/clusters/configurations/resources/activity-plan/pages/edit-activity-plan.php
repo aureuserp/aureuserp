@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Activity Plan updated',
-        'body'  => 'The activity plan has been updated successfully.',
+        'title' => 'تم تحديث خطة النشاط',
+        'body'  => 'تم تحديث خطة النشاط بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Activity Plan deleted',
-                'body'  => 'The activity plan has been deleted successfully.',
+                'title' => 'تم حذف خطة النشاط',
+                'body'  => 'تم حذف خطة النشاط بنجاح.',
             ],
         ],
     ],

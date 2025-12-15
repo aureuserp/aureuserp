@@ -1,18 +1,18 @@
 <?php
 
 return [
-    'title' => 'Confirm',
+    'title' => 'تأكيد',
 
     'customer' => [
         'notification' => [
             'customer-validation' => [
-                'title' => 'Customer validation',
-                'body'  => 'Please provide a valid Customer to proceed with the Customer Invoice validation.',
+                'title' => 'التحقق من العميل',
+                'body'  => 'يرجى تقديم عميل صالح للمتابعة مع التحقق من فاتورة العميل.',
             ],
 
             'move-line-validation' => [
-                'title' => 'Move Line validation',
-                'body'  => 'Please add at least one line to the invoice.',
+                'title' => 'التحقق من بند الحركة',
+                'body'  => 'يرجى إضافة بند واحد على الأقل إلى الفاتورة.',
             ],
         ],
     ],

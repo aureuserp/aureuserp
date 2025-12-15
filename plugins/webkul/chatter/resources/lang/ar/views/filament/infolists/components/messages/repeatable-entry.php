@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'today'     => 'Today',
-    'yesterday' => 'Yesterday',
+    'today'     => 'اليوم',
+    'yesterday' => 'أمس',
 ];

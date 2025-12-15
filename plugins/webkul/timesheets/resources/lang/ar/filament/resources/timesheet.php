@@ -1,64 +1,64 @@
 <?php
 
 return [
-    'title' => 'Timesheets',
+    'title' => 'سجلات الوقت',
 
     'navigation' => [
-        'title' => 'Timesheets',
-        'group' => 'Project',
+        'title' => 'سجلات الوقت',
+        'group' => 'المشروع',
     ],
 
     'form' => [
-        'date'                   => 'Date',
-        'employee'               => 'Employee',
-        'project'                => 'Project',
-        'task'                   => 'Task',
-        'description'            => 'Description',
-        'time-spent'             => 'Time Spent',
-        'time-spent-helper-text' => 'Time spent in hours (Eg. 1.5 hours means 1 hour 30 minutes)',
+        'date'                   => 'التاريخ',
+        'employee'               => 'الموظف',
+        'project'                => 'المشروع',
+        'task'                   => 'المهمة',
+        'description'            => 'الوصف',
+        'time-spent'             => 'الوقت المستغرق',
+        'time-spent-helper-text' => 'الوقت المستغرق بالساعات (مثال: 1.5 ساعة تعني ساعة و30 دقيقة)',
     ],
 
     'table' => [
         'columns' => [
-            'date'        => 'Date',
-            'employee'    => 'Employee',
-            'project'     => 'Project',
-            'task'        => 'Task',
-            'description' => 'Description',
-            'time-spent'  => 'Time Spent',
-            'created-at'  => 'Created At',
-            'updated-at'  => 'Updated At',
+            'date'        => 'التاريخ',
+            'employee'    => 'الموظف',
+            'project'     => 'المشروع',
+            'task'        => 'المهمة',
+            'description' => 'الوصف',
+            'time-spent'  => 'الوقت المستغرق',
+            'created-at'  => 'تاريخ الإنشاء',
+            'updated-at'  => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'date'       => 'Date',
-            'employee'   => 'Employee',
-            'project'    => 'Project',
-            'task'       => 'Task',
-            'creator'    => 'Creator',
+            'date'       => 'التاريخ',
+            'employee'   => 'الموظف',
+            'project'    => 'المشروع',
+            'task'       => 'المهمة',
+            'creator'    => 'المُنشئ',
         ],
 
         'filters' => [
-            'date-from'  => 'Date From',
-            'date-until' => 'Date Until',
-            'employee'   => 'Employee',
-            'project'    => 'Project',
-            'task'       => 'Task',
-            'creator'    => 'Creator',
+            'date-from'  => 'من تاريخ',
+            'date-until' => 'حتى تاريخ',
+            'employee'   => 'الموظف',
+            'project'    => 'المشروع',
+            'task'       => 'المهمة',
+            'creator'    => 'المُنشئ',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Timesheet updated',
-                    'body'  => 'The timesheet has been updated successfully.',
+                    'title' => 'تم تحديث سجل الوقت',
+                    'body'  => 'تم تحديث سجل الوقت بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Timesheet deleted',
-                    'body'  => 'The timesheet has been deleted successfully.',
+                    'title' => 'تم حذف سجل الوقت',
+                    'body'  => 'تم حذف سجل الوقت بنجاح.',
                 ],
             ],
         ],
@@ -66,8 +66,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Timesheets deleted',
-                    'body'  => 'The timesheets has been deleted successfully.',
+                    'title' => 'تم حذف سجلات الوقت',
+                    'body'  => 'تم حذف سجلات الوقت بنجاح.',
                 ],
             ],
         ],

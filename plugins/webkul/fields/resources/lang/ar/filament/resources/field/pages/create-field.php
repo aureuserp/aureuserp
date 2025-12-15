@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Field created',
-        'body'  => 'The field has been created successfully.',
+        'title' => 'تم إنشاء الحقل',
+        'body'  => 'تم إنشاء الحقل بنجاح.',
     ],
 ];

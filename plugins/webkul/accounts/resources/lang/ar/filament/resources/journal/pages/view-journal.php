@@ -4,8 +4,8 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Journal deleted',
-                'body'  => 'The journal has been deleted successfully.',
+                'title' => 'تم حذف دفتر اليومية',
+                'body'  => 'تم حذف دفتر اليومية بنجاح.',
             ],
         ],
     ],

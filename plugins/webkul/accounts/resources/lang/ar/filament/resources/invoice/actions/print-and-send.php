@@ -1,28 +1,28 @@
 <?php
 
 return [
-    'title' => 'Print & Send',
+    'title' => 'طباعة وإرسال',
 
     'modal' => [
-        'title' => 'Preview Invoice',
+        'title' => 'معاينة الفاتورة',
 
         'form' => [
-            'partners'    => 'Customer',
-            'subject'     => 'Subject',
-            'description' => 'Description',
-            'files'       => 'Attachment',
+            'partners'    => 'العميل',
+            'subject'     => 'الموضوع',
+            'description' => 'الوصف',
+            'files'       => 'المرفق',
         ],
 
         'action' => [
             'submit' => [
-                'title' => 'Send',
+                'title' => 'إرسال',
             ],
         ],
 
         'notification' => [
             'invoice-sent' => [
-                'title' => 'Invoice Sent',
-                'body'  => 'Invoice has been sent successfully.',
+                'title' => 'تم إرسال الفاتورة',
+                'body'  => 'تم إرسال الفاتورة بنجاح.',
             ],
         ],
     ],

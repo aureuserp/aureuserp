@@ -1,16 +1,16 @@
 <?php
 
 return [
-    'title' => 'Pay',
+    'title' => 'دفع',
 
     'form' => [
         'fields' => [
-            'journal'              => 'Journal',
-            'amount'               => 'Amount',
-            'payment-method-line'  => 'Payment Method Line',
-            'payment-date'         => 'Payment Date',
-            'partner-bank-account' => 'Partner Bank Account',
-            'communication'        => 'Communication',
+            'journal'              => 'دفتر اليومية',
+            'amount'               => 'المبلغ',
+            'payment-method-line'  => 'بند طريقة الدفع',
+            'payment-date'         => 'تاريخ الدفع',
+            'partner-bank-account' => 'الحساب البنكي للشريك',
+            'communication'        => 'البيان',
         ],
     ],
 ];

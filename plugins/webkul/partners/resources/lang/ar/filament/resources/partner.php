@@ -4,36 +4,36 @@ return [
     'form' => [
         'sections' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'fields' => [
-                    'company'    => 'Company',
-                    'avatar'     => 'Avatar',
-                    'tax-id'     => 'Tax ID',
-                    'job-title'  => 'Job Title',
-                    'phone'      => 'Phone',
-                    'mobile'     => 'Mobile',
-                    'email'      => 'Email',
-                    'website'    => 'Website',
-                    'title'      => 'Title',
-                    'name'       => 'Name',
-                    'short-name' => 'Short Name',
-                    'tags'       => 'Tags',
-                    'color'      => 'Color',
+                    'company'    => 'الشركة',
+                    'avatar'     => 'الصورة الرمزية',
+                    'tax-id'     => 'الرقم الضريبي',
+                    'job-title'  => 'المسمى الوظيفي',
+                    'phone'      => 'الهاتف',
+                    'mobile'     => 'الجوال',
+                    'email'      => 'البريد الإلكتروني',
+                    'website'    => 'الموقع الإلكتروني',
+                    'title'      => 'اللقب',
+                    'name'       => 'الاسم',
+                    'short-name' => 'الاسم المختصر',
+                    'tags'       => 'الوسوم',
+                    'color'      => 'اللون',
                 ],
 
                 'address' => [
-                    'title' => 'Address',
+                    'title' => 'العنوان',
 
                     'fields' => [
-                        'street1'  => 'Street 1',
-                        'street2'  => 'Street 2',
-                        'city'     => 'City',
-                        'zip'      => 'ZIP',
-                        'state'    => 'State',
-                        'country'  => 'Country',
-                        'name'     => 'Name',
-                        'code'     => 'Code',
+                        'street1'  => 'الشارع 1',
+                        'street2'  => 'الشارع 2',
+                        'city'     => 'المدينة',
+                        'zip'      => 'الرمز البريدي',
+                        'state'    => 'المنطقة',
+                        'country'  => 'الدولة',
+                        'name'     => 'الاسم',
+                        'code'     => 'الرمز',
                     ],
                 ],
             ],
@@ -41,15 +41,15 @@ return [
 
         'tabs' => [
             'sales-purchase' => [
-                'title' => 'Sales and Purchases',
+                'title' => 'المبيعات والمشتريات',
 
                 'fields' => [
-                    'responsible'           => 'Responsible',
-                    'responsible-hint-text' => 'This is internal salesperson responsible for this customer',
-                    'company-id'            => 'Company ID',
-                    'company-id-hint-text'  => 'The company\'s registry number, used if different from the Tax ID. It must be unique among all partners within the same country.',
-                    'reference'             => 'Reference',
-                    'industry'              => 'Industry',
+                    'responsible'           => 'المسؤول',
+                    'responsible-hint-text' => 'هذا هو مندوب المبيعات الداخلي المسؤول عن هذا العميل',
+                    'company-id'            => 'معرف الشركة',
+                    'company-id-hint-text'  => 'رقم سجل الشركة، يُستخدم إذا كان مختلفاً عن الرقم الضريبي. يجب أن يكون فريداً بين جميع الشركاء في نفس الدولة.',
+                    'reference'             => 'المرجع',
+                    'industry'              => 'الصناعة',
                 ],
             ],
         ],
@@ -57,70 +57,70 @@ return [
 
     'table' => [
         'columns' => [
-            'parent'     => 'Parent',
+            'parent'     => 'الأصل',
         ],
 
         'groups' => [
-            'account-type' => 'Account Type',
-            'parent'       => 'Parent',
-            'title'        => 'Title',
-            'job-title'    => 'Job Title',
-            'industry'     => 'Industry',
+            'account-type' => 'نوع الحساب',
+            'parent'       => 'الأصل',
+            'title'        => 'اللقب',
+            'job-title'    => 'المسمى الوظيفي',
+            'industry'     => 'الصناعة',
         ],
 
         'filters' => [
-            'account-type'     => 'Account Type',
-            'name'             => 'Name',
-            'email'            => 'Email',
-            'parent'           => 'Parent',
-            'title'            => 'Title',
-            'tax-id'           => 'Tax ID',
-            'phone'            => 'Phone',
-            'mobile'           => 'Mobile',
-            'job-title'        => 'Job Title',
-            'website'          => 'Website',
-            'company-registry' => 'Company Registry',
-            'responsible'      => 'Responsible',
-            'reference'        => 'Reference',
-            'parent'           => 'Parent',
-            'creator'          => 'Creator',
-            'company'          => 'Company',
-            'industry'         => 'Industry',
-            'industry'         => 'Industry',
+            'account-type'     => 'نوع الحساب',
+            'name'             => 'الاسم',
+            'email'            => 'البريد الإلكتروني',
+            'parent'           => 'الأصل',
+            'title'            => 'اللقب',
+            'tax-id'           => 'الرقم الضريبي',
+            'phone'            => 'الهاتف',
+            'mobile'           => 'الجوال',
+            'job-title'        => 'المسمى الوظيفي',
+            'website'          => 'الموقع الإلكتروني',
+            'company-registry' => 'سجل الشركة',
+            'responsible'      => 'المسؤول',
+            'reference'        => 'المرجع',
+            'parent'           => 'الأصل',
+            'creator'          => 'المُنشئ',
+            'company'          => 'الشركة',
+            'industry'         => 'الصناعة',
+            'industry'         => 'الصناعة',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Contact updated',
-                    'body'  => 'The contact has been updated successfully.',
+                    'title' => 'تم تحديث جهة الاتصال',
+                    'body'  => 'تم تحديث جهة الاتصال بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Contact restored',
-                    'body'  => 'The contact has been restored successfully.',
+                    'title' => 'تم استعادة جهة الاتصال',
+                    'body'  => 'تم استعادة جهة الاتصال بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Contact deleted',
-                    'body'  => 'The contact has been deleted successfully.',
+                    'title' => 'تم حذف جهة الاتصال',
+                    'body'  => 'تم حذف جهة الاتصال بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Contact force deleted',
-                        'body'  => 'The contact has been force deleted successfully.',
+                        'title' => 'تم حذف جهة الاتصال نهائياً',
+                        'body'  => 'تم حذف جهة الاتصال نهائياً بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Contact could not be deleted',
-                        'body'  => 'The contact cannot be deleted because it is currently in use.',
+                        'title' => 'تعذر حذف جهة الاتصال',
+                        'body'  => 'لا يمكن حذف جهة الاتصال لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -129,28 +129,28 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Contacts restored',
-                    'body'  => 'The contacts has been restored successfully.',
+                    'title' => 'تم استعادة جهات الاتصال',
+                    'body'  => 'تم استعادة جهات الاتصال بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Contacts deleted',
-                    'body'  => 'The contacts has been deleted successfully.',
+                    'title' => 'تم حذف جهات الاتصال',
+                    'body'  => 'تم حذف جهات الاتصال بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Contacts force deleted',
-                        'body'  => 'The contacts has been force deleted successfully.',
+                        'title' => 'تم حذف جهات الاتصال نهائياً',
+                        'body'  => 'تم حذف جهات الاتصال نهائياً بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Contacts could not be deleted',
-                        'body'  => 'The contacts cannot be deleted because they are currently in use.',
+                        'title' => 'تعذر حذف جهات الاتصال',
+                        'body'  => 'لا يمكن حذف جهات الاتصال لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -160,35 +160,35 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'fields' => [
-                    'company'    => 'Company',
-                    'avatar'     => 'Avatar',
-                    'tax-id'     => 'Tax ID',
-                    'job-title'  => 'Job Title',
-                    'phone'      => 'Phone',
-                    'mobile'     => 'Mobile',
-                    'email'      => 'Email',
-                    'website'    => 'Website',
-                    'title'      => 'Title',
-                    'name'       => 'Name',
-                    'short-name' => 'Short Name',
-                    'tags'       => 'Tags',
+                    'company'    => 'الشركة',
+                    'avatar'     => 'الصورة الرمزية',
+                    'tax-id'     => 'الرقم الضريبي',
+                    'job-title'  => 'المسمى الوظيفي',
+                    'phone'      => 'الهاتف',
+                    'mobile'     => 'الجوال',
+                    'email'      => 'البريد الإلكتروني',
+                    'website'    => 'الموقع الإلكتروني',
+                    'title'      => 'اللقب',
+                    'name'       => 'الاسم',
+                    'short-name' => 'الاسم المختصر',
+                    'tags'       => 'الوسوم',
                 ],
 
                 'address' => [
-                    'title' => 'Address',
+                    'title' => 'العنوان',
 
                     'fields' => [
-                        'street1'  => 'Street 1',
-                        'street2'  => 'Street 2',
-                        'city'     => 'City',
-                        'zip'      => 'ZIP',
-                        'state'    => 'State',
-                        'country'  => 'Country',
-                        'name'     => 'Name',
-                        'code'     => 'Code',
+                        'street1'  => 'الشارع 1',
+                        'street2'  => 'الشارع 2',
+                        'city'     => 'المدينة',
+                        'zip'      => 'الرمز البريدي',
+                        'state'    => 'المنطقة',
+                        'country'  => 'الدولة',
+                        'name'     => 'الاسم',
+                        'code'     => 'الرمز',
                     ],
                 ],
             ],
@@ -196,15 +196,15 @@ return [
 
         'tabs' => [
             'sales-purchase' => [
-                'title' => 'Sales and Purchases',
+                'title' => 'المبيعات والمشتريات',
 
                 'fields' => [
-                    'responsible'           => 'Responsible',
-                    'responsible-hint-text' => 'This is internal salesperson responsible for this customer',
-                    'company-id'            => 'Company ID',
-                    'company-id-hint-text'  => 'The registry number of the company. Use it if it is different from the Tax ID. It must be unique across all partners of a same country',
-                    'reference'             => 'Reference',
-                    'industry'              => 'Industry',
+                    'responsible'           => 'المسؤول',
+                    'responsible-hint-text' => 'هذا هو مندوب المبيعات الداخلي المسؤول عن هذا العميل',
+                    'company-id'            => 'معرف الشركة',
+                    'company-id-hint-text'  => 'رقم سجل الشركة. استخدمه إذا كان مختلفاً عن الرقم الضريبي. يجب أن يكون فريداً بين جميع الشركاء في نفس الدولة',
+                    'reference'             => 'المرجع',
+                    'industry'              => 'الصناعة',
                 ],
             ],
         ],

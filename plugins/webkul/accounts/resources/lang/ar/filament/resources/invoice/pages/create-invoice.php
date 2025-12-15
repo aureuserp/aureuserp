@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Invoice created',
-        'body'  => 'The invoice has been created successfully.',
+        'title' => 'تم إنشاء الفاتورة',
+        'body'  => 'تم إنشاء الفاتورة بنجاح.',
     ],
 ];

@@ -1,14 +1,14 @@
 <?php
 
 return [
-    'title' => 'Credit Note',
+    'title' => 'إشعار دائن',
 
     'modal' => [
-        'heading' => 'Create Credit Note',
+        'heading' => 'إنشاء إشعار دائن',
 
         'form' => [
-            'reason' => 'Reason displayed on Credit Note',
-            'date'   => 'Date',
+            'reason' => 'السبب المعروض على الإشعار الدائن',
+            'date'   => 'التاريخ',
         ],
     ],
 ];

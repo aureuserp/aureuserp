@@ -4,45 +4,45 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'company'            => 'Company',
-                'country'            => 'Country',
-                'name'               => 'Name',
-                'preceding-subtotal' => 'Preceding Subtotal',
+                'company'            => 'الشركة',
+                'country'            => 'الدولة',
+                'name'               => 'الاسم',
+                'preceding-subtotal' => 'المجموع الفرعي السابق',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'company'            => 'Company',
-            'country'            => 'Country',
-            'created-by'         => 'Created By',
-            'name'               => 'Name',
-            'preceding-subtotal' => 'Preceding Subtotal',
-            'created-at'         => 'Created At',
-            'updated-at'         => 'Updated At',
+            'company'            => 'الشركة',
+            'country'            => 'الدولة',
+            'created-by'         => 'أنشئ بواسطة',
+            'name'               => 'الاسم',
+            'preceding-subtotal' => 'المجموع الفرعي السابق',
+            'created-at'         => 'تاريخ الإنشاء',
+            'updated-at'         => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'name'       => 'Name',
-            'company'    => 'Company',
-            'country'    => 'Country',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'الاسم',
+            'company'    => 'الشركة',
+            'country'    => 'الدولة',
+            'created-by' => 'أنشئ بواسطة',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Tax Group deleted',
-                        'body'  => 'The tax group has been deleted successfully.',
+                        'title' => 'تم حذف مجموعة الضرائب',
+                        'body'  => 'تم حذف مجموعة الضرائب بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Tax Group could not be deleted',
-                        'body'  => 'The tax group cannot be deleted because it is currently in use.',
+                        'title' => 'تعذر حذف مجموعة الضرائب',
+                        'body'  => 'لا يمكن حذف مجموعة الضرائب لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -52,13 +52,13 @@ return [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Tax Groups deleted',
-                        'body'  => 'The tax groups has been deleted successfully.',
+                        'title' => 'تم حذف مجموعات الضرائب',
+                        'body'  => 'تم حذف مجموعات الضرائب بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Tax Groups could not be deleted',
-                        'body'  => 'The tax groups cannot be deleted because they are currently in use.',
+                        'title' => 'تعذر حذف مجموعات الضرائب',
+                        'body'  => 'لا يمكن حذف مجموعات الضرائب لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -68,10 +68,10 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'company'            => 'Company',
-                'country'            => 'Country',
-                'name'               => 'Name',
-                'preceding-subtotal' => 'Preceding Subtotal',
+                'company'            => 'الشركة',
+                'country'            => 'الدولة',
+                'name'               => 'الاسم',
+                'preceding-subtotal' => 'المجموع الفرعي السابق',
             ],
         ],
     ],

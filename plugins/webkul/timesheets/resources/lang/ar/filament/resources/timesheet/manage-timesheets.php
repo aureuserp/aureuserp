@@ -3,17 +3,17 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'Add Timesheet',
+            'label' => 'إضافة سجل وقت',
 
             'notification' => [
-                'title' => 'Timesheet created',
-                'body'  => 'The timesheet has been created successfully.',
+                'title' => 'تم إنشاء سجل الوقت',
+                'body'  => 'تم إنشاء سجل الوقت بنجاح.',
             ],
         ],
     ],
 
     'tabs' => [
-        'all'           => 'All Timesheets',
-        'my-timesheets' => 'My Timesheets',
+        'all'           => 'جميع سجلات الوقت',
+        'my-timesheets' => 'سجلات الوقت الخاصة بي',
     ],
 ];

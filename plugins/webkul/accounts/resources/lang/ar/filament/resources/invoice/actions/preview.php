@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'title' => 'Preview',
+    'title' => 'معاينة',
 
     'modal' => [
-        'title' => 'Preview Invoice',
+        'title' => 'معاينة الفاتورة',
     ],
 ];

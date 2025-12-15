@@ -2,13 +2,13 @@
 
 return [
     'notification' => [
-        'title' => 'Refund updated',
-        'body'  => 'The refund has been updated successfully.',
+        'title' => 'تم تحديث الاسترداد',
+        'body'  => 'تم تحديث الاسترداد بنجاح.',
     ],
 
     'header-actions' => [
         'preview' => [
-            'modal-heading' => 'Preview Refund',
+            'modal-heading' => 'معاينة الاسترداد',
         ],
     ],
 ];

@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Journal created',
-        'body'  => 'The journal has been created successfully.',
+        'title' => 'تم إنشاء دفتر اليومية',
+        'body'  => 'تم إنشاء دفتر اليومية بنجاح.',
     ],
 ];

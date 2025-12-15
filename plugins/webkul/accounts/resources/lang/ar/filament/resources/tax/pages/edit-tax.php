@@ -2,21 +2,21 @@
 
 return [
     'notification' => [
-        'title' => 'Tax updated',
-        'body'  => 'The tax has been updated successfully.',
+        'title' => 'تم تحديث الضريبة',
+        'body'  => 'تم تحديث الضريبة بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Tax deleted',
-                    'body'  => 'The tax has been deleted successfully.',
+                    'title' => 'تم حذف الضريبة',
+                    'body'  => 'تم حذف الضريبة بنجاح.',
                 ],
 
                 'error' => [
-                    'title' => 'Tax could not be deleted',
-                    'body'  => 'The tax cannot be deleted because it is currently in use.',
+                    'title' => 'تعذر حذف الضريبة',
+                    'body'  => 'لا يمكن حذف الضريبة لأنها قيد الاستخدام حالياً.',
                 ],
             ],
         ],

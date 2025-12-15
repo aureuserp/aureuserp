@@ -5,10 +5,10 @@ return [
         'component' => [
             'tables' => [
                 'table-views' => [
-                    'title'          => 'Views',
-                    'favorite-views' => 'Favorite Views',
-                    'saved-views'    => 'Saved Views',
-                    'preset-views'   => 'Preset Views',
+                    'title'          => 'العروض',
+                    'favorite-views' => 'العروض المفضلة',
+                    'saved-views'    => 'العروض المحفوظة',
+                    'preset-views'   => 'العروض المُعدة مسبقاً',
                 ],
             ],
         ],

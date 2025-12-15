@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Job Position updated',
-        'body'  => 'The job position has been updated successfully.',
+        'title' => 'تم تحديث المنصب الوظيفي',
+        'body'  => 'تم تحديث المنصب الوظيفي بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Job Position deleted',
-                'body'  => 'The job position has been deleted successfully.',
+                'title' => 'تم حذف المنصب الوظيفي',
+                'body'  => 'تم حذف المنصب الوظيفي بنجاح.',
             ],
         ],
     ],

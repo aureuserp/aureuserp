@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'title' => 'Reset to Draft',
+    'title' => 'إعادة إلى مسودة',
 ];

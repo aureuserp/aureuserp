@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Payment updated',
-        'body'  => 'The payment has been updated successfully.',
+        'title' => 'تم تحديث الدفعة',
+        'body'  => 'تم تحديث الدفعة بنجاح.',
     ],
 ];

@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Journal updated',
-        'body'  => 'The journal has been updated successfully.',
+        'title' => 'تم تحديث دفتر اليومية',
+        'body'  => 'تم تحديث دفتر اليومية بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Journal deleted',
-                'body'  => 'The journal has been deleted successfully.',
+                'title' => 'تم حذف دفتر اليومية',
+                'body'  => 'تم حذف دفتر اليومية بنجاح.',
             ],
         ],
     ],

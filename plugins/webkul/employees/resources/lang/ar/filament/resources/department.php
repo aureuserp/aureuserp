@@ -1,84 +1,84 @@
 <?php
 
 return [
-    'title' => 'Departments',
+    'title' => 'الأقسام',
 
     'navigation' => [
-        'title' => 'Departments',
-        'group' => 'Employees',
+        'title' => 'الأقسام',
+        'group' => 'الموظفون',
     ],
 
     'global-search' => [
-        'name'               => 'Department',
-        'department-manager' => 'Manager',
-        'company'            => 'Company',
+        'name'               => 'القسم',
+        'department-manager' => 'المدير',
+        'company'            => 'الشركة',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title' => 'General Information',
+                'title' => 'معلومات عامة',
 
                 'fields' => [
-                    'name'                => 'Name',
-                    'manager'             => 'Manager',
-                    'parent-department'   => 'Parent Department',
-                    'manager-placeholder' => 'Select Manager',
-                    'company'             => 'Company',
-                    'company-placeholder' => 'Select Company',
-                    'color'               => 'Color',
+                    'name'                => 'الاسم',
+                    'manager'             => 'المدير',
+                    'parent-department'   => 'القسم الأصلي',
+                    'manager-placeholder' => 'اختر المدير',
+                    'company'             => 'الشركة',
+                    'company-placeholder' => 'اختر الشركة',
+                    'color'               => 'اللون',
                 ],
             ],
 
             'additional' => [
-                'title'       => 'Additional Information',
-                'description' => 'Additional information about this department.',
+                'title'       => 'معلومات إضافية',
+                'description' => 'معلومات إضافية حول هذا القسم.',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'         => 'Name',
-            'manager-name' => 'Manager',
-            'company-name' => 'Company',
+            'name'         => 'الاسم',
+            'manager-name' => 'المدير',
+            'company-name' => 'الشركة',
         ],
 
         'groups' => [
-            'name'       => 'Name',
-            'manager'    => 'Manager',
-            'company'    => 'Company',
-            'updated-at' => 'Updated At',
-            'created-at' => 'Created At',
+            'name'       => 'الاسم',
+            'manager'    => 'المدير',
+            'company'    => 'الشركة',
+            'updated-at' => 'تاريخ التحديث',
+            'created-at' => 'تاريخ الإنشاء',
         ],
 
         'filters' => [
-            'name'         => 'Name',
-            'manager-name' => 'Manager',
-            'company-name' => 'Company',
-            'updated-at'   => 'Updated At',
-            'created-at'   => 'Created At',
+            'name'         => 'الاسم',
+            'manager-name' => 'المدير',
+            'company-name' => 'الشركة',
+            'updated-at'   => 'تاريخ التحديث',
+            'created-at'   => 'تاريخ الإنشاء',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Department restored',
-                    'body'  => 'The department has been restored successfully.',
+                    'title' => 'تم استعادة القسم',
+                    'body'  => 'تم استعادة القسم بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Department deleted',
-                    'body'  => 'The department has been deleted successfully.',
+                    'title' => 'تم حذف القسم',
+                    'body'  => 'تم حذف القسم بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Department force deleted',
-                    'body'  => 'The department has been force deleted successfully.',
+                    'title' => 'تم حذف القسم نهائياً',
+                    'body'  => 'تم حذف القسم نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -86,22 +86,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Departments restored',
-                    'body'  => 'The departments has been restored successfully.',
+                    'title' => 'تم استعادة الأقسام',
+                    'body'  => 'تم استعادة الأقسام بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Departments deleted',
-                    'body'  => 'The departments has been deleted successfully.',
+                    'title' => 'تم حذف الأقسام',
+                    'body'  => 'تم حذف الأقسام بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Departments force deleted',
-                    'body'  => 'The departments has been force deleted successfully.',
+                    'title' => 'تم حذف الأقسام نهائياً',
+                    'body'  => 'تم حذف الأقسام نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -110,14 +110,14 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'entries' => [
-                    'name'            => 'Name',
-                    'manager'         => 'Manager',
-                    'company'         => 'Company',
-                    'color'           => 'Color',
-                    'hierarchy-title' => 'Department Organization',
+                    'name'            => 'الاسم',
+                    'manager'         => 'المدير',
+                    'company'         => 'الشركة',
+                    'color'           => 'اللون',
+                    'hierarchy-title' => 'الهيكل التنظيمي للقسم',
                 ],
             ],
         ],

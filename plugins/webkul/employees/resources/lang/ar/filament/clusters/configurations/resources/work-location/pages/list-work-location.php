@@ -2,19 +2,19 @@
 
 return [
     'tabs' => [
-        'all'      => 'All',
-        'office'   => 'Office',
-        'home'     => 'Home',
-        'other'    => 'Other',
+        'all'      => 'الكل',
+        'office'   => 'المكتب',
+        'home'     => 'المنزل',
+        'other'    => 'أخرى',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Work Location',
+            'label' => 'موقع عمل جديد',
 
             'notification' => [
-                'title' => 'Work Location created',
-                'body'  => 'The work location has been created successfully.',
+                'title' => 'تم إنشاء موقع العمل',
+                'body'  => 'تم إنشاء موقع العمل بنجاح.',
             ],
         ],
     ],

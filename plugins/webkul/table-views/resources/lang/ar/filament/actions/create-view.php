@@ -1,30 +1,30 @@
 <?php
 
 return [
-    'label' => 'Add New',
+    'label' => 'إضافة جديد',
 
     'form' => [
-        'name'                  => 'Name',
-        'color'                 => 'Color',
-        'icon'                  => 'Icon',
-        'add-to-favorites'      => 'Add To Favorites',
-        'add-to-favorites-help' => 'Add this filter to your favorites',
-        'make-public'           => 'Make Public',
-        'make-public-help'      => 'Make this filter available to all users',
+        'name'                  => 'الاسم',
+        'color'                 => 'اللون',
+        'icon'                  => 'الأيقونة',
+        'add-to-favorites'      => 'إضافة للمفضلة',
+        'add-to-favorites-help' => 'إضافة هذا الفلتر إلى المفضلة',
+        'make-public'           => 'جعله عام',
+        'make-public-help'      => 'جعل هذا الفلتر متاحاً لجميع المستخدمين',
         'options'               => [
-            'danger'  => 'Danger',
-            'gray'    => 'Gray',
-            'info'    => 'Information',
-            'success' => 'Success',
-            'warning' => 'Warning',
+            'danger'  => 'خطر',
+            'gray'    => 'رمادي',
+            'info'    => 'معلومات',
+            'success' => 'نجاح',
+            'warning' => 'تحذير',
         ],
 
         'notification' => [
-            'created' => 'View created successfully',
+            'created' => 'تم إنشاء العرض بنجاح',
         ],
 
         'modal' => [
-            'title' => 'Save View',
+            'title' => 'حفظ العرض',
         ],
     ],
 ];

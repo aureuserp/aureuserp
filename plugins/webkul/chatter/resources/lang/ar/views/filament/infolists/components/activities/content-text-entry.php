@@ -1,14 +1,14 @@
 <?php
 
 return [
-    'activity'         => 'Activity',
-    'created-by'       => 'Created By',
-    'summary'          => 'Summary',
-    'due-date'         => 'Due date',
-    'assigned-to'      => 'Assigned To',
-    'due-in-days'      => 'Due in :days days',
-    'today'            => 'Today',
-    'tomorrow'         => 'Tomorrow',
-    'one-day-overdue'  => '1 Day Overdue',
-    'days-overdue'     => ':days days overdue',
+    'activity'         => 'النشاط',
+    'created-by'       => 'أنشئ بواسطة',
+    'summary'          => 'الملخص',
+    'due-date'         => 'تاريخ الاستحقاق',
+    'assigned-to'      => 'مُعيَّن إلى',
+    'due-in-days'      => 'مستحق خلال :days يوم',
+    'today'            => 'اليوم',
+    'tomorrow'         => 'غداً',
+    'one-day-overdue'  => 'متأخر يوم واحد',
+    'days-overdue'     => 'متأخر :days يوم',
 ];

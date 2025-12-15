@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'individual' => 'Individual',
-    'company'    => 'Company',
-    'address'    => 'Address',
+    'individual' => 'فرد',
+    'company'    => 'شركة',
+    'address'    => 'عنوان',
 ];

@@ -2,21 +2,21 @@
 
 return [
     'notification' => [
-        'title' => 'Tax group updated',
-        'body'  => 'The tax group has been updated successfully.',
+        'title' => 'تم تحديث مجموعة الضرائب',
+        'body'  => 'تم تحديث مجموعة الضرائب بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Tax group deleted',
-                    'body'  => 'The tax group has been deleted successfully.',
+                    'title' => 'تم حذف مجموعة الضرائب',
+                    'body'  => 'تم حذف مجموعة الضرائب بنجاح.',
                 ],
 
                 'error' => [
-                    'title' => 'Tax Group could not be deleted',
-                    'body'  => 'The tax group cannot be deleted because it is currently in use.',
+                    'title' => 'تعذر حذف مجموعة الضرائب',
+                    'body'  => 'لا يمكن حذف مجموعة الضرائب لأنها قيد الاستخدام حالياً.',
                 ],
             ],
         ],

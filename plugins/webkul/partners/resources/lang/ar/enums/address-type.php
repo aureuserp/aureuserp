@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'permanent' => 'Permanent',
-    'present'   => 'Present',
-    'invoice'   => 'Invoice',
-    'delivery'  => 'Delivery',
-    'other'     => 'Other',
+    'permanent' => 'دائم',
+    'present'   => 'حالي',
+    'invoice'   => 'فاتورة',
+    'delivery'  => 'تسليم',
+    'other'     => 'أخرى',
 ];

@@ -2,19 +2,19 @@
 
 return [
     'notification' => [
-        'title' => 'Location updated',
-        'body'  => 'The location has been updated successfully.',
+        'title' => 'تم تحديث الموقع',
+        'body'  => 'تم تحديث الموقع بنجاح.',
     ],
 
     'header-actions' => [
         'print' => [
-            'label' => 'Print',
+            'label' => 'طباعة',
         ],
 
         'delete' => [
             'notification' => [
-                'title' => 'Location deleted',
-                'body'  => 'The location has been deleted successfully.',
+                'title' => 'تم حذف الموقع',
+                'body'  => 'تم حذف الموقع بنجاح.',
             ],
         ],
     ],

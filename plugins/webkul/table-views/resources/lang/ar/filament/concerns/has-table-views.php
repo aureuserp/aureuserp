@@ -1,12 +1,12 @@
 <?php
 
 return [
-    'title'                 => 'Views',
-    'reset'                 => 'Reset',
-    'default'               => 'Default',
-    'apply-view'            => 'Apply View',
-    'add-to-favorites'      => 'Add to Favorites',
-    'remove-from-favorites' => 'Remove from Favorites',
-    'delete-view'           => 'Delete View',
-    'replace-view'          => 'Replace View',
+    'title'                 => 'العروض',
+    'reset'                 => 'إعادة تعيين',
+    'default'               => 'افتراضي',
+    'apply-view'            => 'تطبيق العرض',
+    'add-to-favorites'      => 'إضافة للمفضلة',
+    'remove-from-favorites' => 'إزالة من المفضلة',
+    'delete-view'           => 'حذف العرض',
+    'replace-view'          => 'استبدال العرض',
 ];

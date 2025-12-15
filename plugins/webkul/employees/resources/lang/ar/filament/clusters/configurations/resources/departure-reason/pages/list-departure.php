@@ -3,11 +3,11 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Departure Reason',
+            'label' => 'سبب مغادرة جديد',
 
             'notification' => [
-                'title' => 'Departure Reason created',
-                'body'  => 'The departure reason has been created successfully.',
+                'title' => 'تم إنشاء سبب المغادرة',
+                'body'  => 'تم إنشاء سبب المغادرة بنجاح.',
             ],
         ],
     ],

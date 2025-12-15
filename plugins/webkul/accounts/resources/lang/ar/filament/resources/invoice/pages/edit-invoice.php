@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Invoice updated',
-        'body'  => 'The invoice has been updated successfully.',
+        'title' => 'تم تحديث الفاتورة',
+        'body'  => 'تم تحديث الفاتورة بنجاح.',
     ],
 ];

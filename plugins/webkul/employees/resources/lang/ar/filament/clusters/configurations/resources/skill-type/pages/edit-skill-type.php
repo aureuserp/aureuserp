@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Skill Type updated',
-        'body'  => 'The skill type has been updated successfully.',
+        'title' => 'تم تحديث نوع المهارة',
+        'body'  => 'تم تحديث نوع المهارة بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Skill Type deleted',
-                'body'  => 'The skill type has been deleted successfully.',
+                'title' => 'تم حذف نوع المهارة',
+                'body'  => 'تم حذف نوع المهارة بنجاح.',
             ],
         ],
     ],
