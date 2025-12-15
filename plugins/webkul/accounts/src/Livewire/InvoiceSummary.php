@@ -63,8 +63,6 @@ class InvoiceSummary extends Component implements HasActions, HasSchemas
                 ));
 
                 AccountFacade::reconcile($lines);
-
-                //TODO:  send success notification
             });
     }
 
@@ -79,8 +77,6 @@ class InvoiceSummary extends Component implements HasActions, HasSchemas
                 $partialReconcile = PartialReconcile::find($arguments['partial_id']);
 
                 AccountFacade::unReconcile($partialReconcile);
-
-                //TODO:  send success notification
             });
     }
 
