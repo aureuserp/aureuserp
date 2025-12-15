@@ -1,63 +1,63 @@
 <?php
 
 return [
-    'title'                   => 'Profile',
-    'heading'                 => 'Profile',
-    'subheading'              => 'Manage your account settings and preferences.',
-    'information_section'     => 'Profile Information',
-    'information_description' => "Update your account's profile information and email address.",
+    'title'                   => 'الملف الشخصي',
+    'heading'                 => 'الملف الشخصي',
+    'subheading'              => 'إدارة إعدادات حسابك وتفضيلاتك.',
+    'information_section'     => 'معلومات الملف الشخصي',
+    'information_description' => 'تحديث معلومات الملف الشخصي وعنوان البريد الإلكتروني لحسابك.',
 
     'notification' => [
         'success' => [
-            'title' => 'Profile Updated',
-            'body'  => 'Your profile has been updated successfully.',
+            'title' => 'تم تحديث الملف الشخصي',
+            'body'  => 'تم تحديث ملفك الشخصي بنجاح.',
         ],
 
         'error' => [
-            'title' => 'Profile Update Failed',
-            'body'  => 'There was an error updating your profile.',
+            'title' => 'فشل تحديث الملف الشخصي',
+            'body'  => 'حدث خطأ أثناء تحديث ملفك الشخصي.',
         ],
 
         'validation-error' => [
-            'title' => 'Validation Error',
+            'title' => 'خطأ في التحقق',
         ],
     ],
 
     'actions' => [
-        'save' => 'Save Changes',
+        'save' => 'حفظ التغييرات',
     ],
 
     'fields' => [
-        'avatar' => 'Profile Photo',
-        'name'   => 'Name',
-        'email'  => 'Email',
+        'avatar' => 'صورة الملف الشخصي',
+        'name'   => 'الاسم',
+        'email'  => 'البريد الإلكتروني',
     ],
 
     'password' => [
-        'section'     => 'Update Password',
-        'description' => 'Ensure your account is using a long, random password to stay secure.',
-        'current'     => 'Current Password',
-        'new'         => 'New Password',
-        'confirm'     => 'Confirm Password',
-        'helper'      => 'Must be at least 8 characters long.',
+        'section'     => 'تحديث كلمة المرور',
+        'description' => 'تأكد من أن حسابك يستخدم كلمة مرور طويلة وعشوائية للحفاظ على الأمان.',
+        'current'     => 'كلمة المرور الحالية',
+        'new'         => 'كلمة المرور الجديدة',
+        'confirm'     => 'تأكيد كلمة المرور',
+        'helper'      => 'يجب أن تكون 8 أحرف على الأقل.',
 
         'errors' => [
-            'current-required'  => 'Current password is required.',
-            'current-incorrect' => 'The current password is incorrect. Please try again.',
-            'same-as-current'   => 'The new password must be different from your current password.',
+            'current-required'  => 'كلمة المرور الحالية مطلوبة.',
+            'current-incorrect' => 'كلمة المرور الحالية غير صحيحة. يرجى المحاولة مرة أخرى.',
+            'same-as-current'   => 'يجب أن تكون كلمة المرور الجديدة مختلفة عن كلمة المرور الحالية.',
         ],
 
-        'current-helper' => 'Enter your current password to verify your identity.',
+        'current-helper' => 'أدخل كلمة المرور الحالية للتحقق من هويتك.',
 
         'notification' => [
             'success' => [
-                'title' => 'Password Updated',
-                'body'  => 'Your password has been updated successfully.',
+                'title' => 'تم تحديث كلمة المرور',
+                'body'  => 'تم تحديث كلمة المرور بنجاح.',
             ],
 
             'error' => [
-                'title' => 'Password Update Failed',
-                'body'  => 'There was an error updating your password.',
+                'title' => 'فشل تحديث كلمة المرور',
+                'body'  => 'حدث خطأ أثناء تحديث كلمة المرور.',
             ],
         ],
     ],

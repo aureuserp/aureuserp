@@ -2,18 +2,18 @@
 
 return [
     'setup' => [
-        'title'   => 'Attachments',
-        'tooltip' => 'Upload Attachments',
+        'title'   => 'المرفقات',
+        'tooltip' => 'رفع المرفقات',
 
         'form' => [
             'fields' => [
-                'files'                  => 'Files',
-                'attachment-helper-text' => 'Max file size: 10MB. Allowed types: Images, PDF, Word, Excel, Text',
+                'files'                  => 'الملفات',
+                'attachment-helper-text' => 'الحد الأقصى لحجم الملف: 10 ميجابايت. الأنواع المسموحة: صور، PDF، Word، Excel، نص',
 
                 'actions' => [
                     'delete' => [
-                        'title' => 'File deleted',
-                        'body'  => 'File has been deleted successfully.',
+                        'title' => 'تم حذف الملف',
+                        'body'  => 'تم حذف الملف بنجاح.',
                     ],
                 ],
             ],
@@ -22,18 +22,18 @@ return [
         'actions' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Attachments Uploaded',
-                    'body'  => 'Attachments uploaded successfully.',
+                    'title' => 'تم رفع المرفقات',
+                    'body'  => 'تم رفع المرفقات بنجاح.',
                 ],
 
                 'warning'  => [
-                    'title' => 'No new files',
-                    'body'  => 'All files have already been uploaded.',
+                    'title' => 'لا توجد ملفات جديدة',
+                    'body'  => 'تم رفع جميع الملفات بالفعل.',
                 ],
 
                 'error' => [
-                    'title' => 'Attachment upload error',
-                    'body'  => 'Failed to upload attachments ',
+                    'title' => 'خطأ في رفع المرفقات',
+                    'body'  => 'فشل في رفع المرفقات',
                 ],
             ],
         ],

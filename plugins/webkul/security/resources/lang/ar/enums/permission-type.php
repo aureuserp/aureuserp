@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'group'      => 'Group',
-    'individual' => 'Individual',
-    'global'     => 'Global',
+    'group'      => 'مجموعة',
+    'individual' => 'فردي',
+    'global'     => 'عام',
 ];

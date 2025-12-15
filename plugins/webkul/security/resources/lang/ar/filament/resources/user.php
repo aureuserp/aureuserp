@@ -1,101 +1,101 @@
 <?php
 
 return [
-    'title' => 'Users',
+    'title' => 'المستخدمون',
 
     'navigation' => [
-        'title' => 'Users',
-        'group' => 'Settings',
+        'title' => 'المستخدمون',
+        'group' => 'الإعدادات',
     ],
 
     'global-search' => [
-        'name'  => 'Name',
-        'email' => 'Email',
+        'name'  => 'الاسم',
+        'email' => 'البريد الإلكتروني',
     ],
 
     'form' => [
         'sections' => [
             'general-information' => [
-                'title'  => 'General Information',
+                'title'  => 'معلومات عامة',
                 'fields' => [
-                    'name'                  => 'Name',
-                    'email'                 => 'Email',
-                    'password'              => 'Password',
-                    'password-confirmation' => 'Password Confirmation',
+                    'name'                  => 'الاسم',
+                    'email'                 => 'البريد الإلكتروني',
+                    'password'              => 'كلمة المرور',
+                    'password-confirmation' => 'تأكيد كلمة المرور',
                 ],
             ],
 
             'permissions' => [
-                'title'  => 'Permissions',
+                'title'  => 'الصلاحيات',
                 'fields' => [
-                    'roles'               => 'Roles',
-                    'permissions'         => 'Permissions',
-                    'resource-permission' => 'Resource Permission',
-                    'teams'               => 'Teams',
+                    'roles'               => 'الأدوار',
+                    'permissions'         => 'الصلاحيات',
+                    'resource-permission' => 'صلاحية المورد',
+                    'teams'               => 'الفرق',
                 ],
             ],
 
             'avatar' => [
-                'title' => 'Avatar',
+                'title' => 'الصورة الرمزية',
             ],
 
             'lang-and-status' => [
-                'title'  => 'Language & Status',
+                'title'  => 'اللغة والحالة',
                 'fields' => [
-                    'language' => 'Preferred Language',
-                    'status'   => 'Status',
+                    'language' => 'اللغة المفضلة',
+                    'status'   => 'الحالة',
                 ],
             ],
 
             'multi-company' => [
-                'title'             => 'Multi Company',
-                'allowed-companies' => 'Allowed Companies',
-                'default-company'   => 'Default Company',
+                'title'             => 'تعدد الشركات',
+                'allowed-companies' => 'الشركات المسموحة',
+                'default-company'   => 'الشركة الافتراضية',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'avatar'              => 'Avatar',
-            'name'                => 'Name',
-            'email'               => 'Email',
-            'teams'               => 'Teams',
-            'role'                => 'Role',
-            'resource-permission' => 'Resource Permission',
-            'default-company'     => 'Default Company',
-            'allowed-company'     => 'Allowed Company',
-            'created-at'          => 'Created At',
-            'updated-at'          => 'Updated At',
+            'avatar'              => 'الصورة الرمزية',
+            'name'                => 'الاسم',
+            'email'               => 'البريد الإلكتروني',
+            'teams'               => 'الفرق',
+            'role'                => 'الدور',
+            'resource-permission' => 'صلاحية المورد',
+            'default-company'     => 'الشركة الافتراضية',
+            'allowed-company'     => 'الشركة المسموحة',
+            'created-at'          => 'تاريخ الإنشاء',
+            'updated-at'          => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'resource-permission' => 'Resource Permission',
-            'teams'               => 'Teams',
-            'roles'               => 'Roles',
-            'default-company'     => 'Default Company',
-            'allowed-companies'   => 'Allowed Companies',
+            'resource-permission' => 'صلاحية المورد',
+            'teams'               => 'الفرق',
+            'roles'               => 'الأدوار',
+            'default-company'     => 'الشركة الافتراضية',
+            'allowed-companies'   => 'الشركات المسموحة',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'User edited',
-                    'body'  => 'The user has been edited successfully.',
+                    'title' => 'تم تعديل المستخدم',
+                    'body'  => 'تم تعديل المستخدم بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'User deleted',
-                    'body'  => 'The user has been deleted successfully.',
+                    'title' => 'تم حذف المستخدم',
+                    'body'  => 'تم حذف المستخدم بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'User restored',
-                    'body'  => 'The user has been restored successfully.',
+                    'title' => 'تم استعادة المستخدم',
+                    'body'  => 'تم استعادة المستخدم بنجاح.',
                 ],
             ],
         ],
@@ -103,25 +103,25 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Users restored',
-                    'body'  => 'The users has been restored successfully.',
+                    'title' => 'تم استعادة المستخدمين',
+                    'body'  => 'تم استعادة المستخدمين بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Users deleted',
-                    'body'  => 'The users has been deleted successfully.',
+                    'title' => 'تم حذف المستخدمين',
+                    'body'  => 'تم حذف المستخدمين بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Users force deleted',
-                    'body'  => 'The users has been force deleted successfully.',
+                    'title' => 'تم حذف المستخدمين نهائياً',
+                    'body'  => 'تم حذف المستخدمين نهائياً بنجاح.',
                     'error' => [
-                        'title' => 'User could not be deleted',
-                        'body'  => 'The user cannot be deleted because it is currently in use.',
+                        'title' => 'تعذر حذف المستخدم',
+                        'body'  => 'لا يمكن حذف المستخدم لأنه قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -130,8 +130,8 @@ return [
         'empty-state-actions' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Users created',
-                    'body'  => 'The users has been created successfully.',
+                    'title' => 'تم إنشاء المستخدمين',
+                    'body'  => 'تم إنشاء المستخدمين بنجاح.',
                 ],
             ],
         ],
@@ -140,41 +140,41 @@ return [
     'infolist' => [
         'sections' => [
             'general-information' => [
-                'title'   => 'General Information',
+                'title'   => 'معلومات عامة',
                 'entries' => [
-                    'name'                  => 'Name',
-                    'email'                 => 'Email',
-                    'password'              => 'Password',
-                    'password-confirmation' => 'Password Confirmation',
+                    'name'                  => 'الاسم',
+                    'email'                 => 'البريد الإلكتروني',
+                    'password'              => 'كلمة المرور',
+                    'password-confirmation' => 'تأكيد كلمة المرور',
                 ],
             ],
 
             'permissions' => [
-                'title'   => 'Permissions',
+                'title'   => 'الصلاحيات',
                 'entries' => [
-                    'roles'               => 'Roles',
-                    'permissions'         => 'Permissions',
-                    'resource-permission' => 'Resource Permission',
-                    'teams'               => 'Teams',
+                    'roles'               => 'الأدوار',
+                    'permissions'         => 'الصلاحيات',
+                    'resource-permission' => 'صلاحية المورد',
+                    'teams'               => 'الفرق',
                 ],
             ],
 
             'avatar' => [
-                'title' => 'Avatar',
+                'title' => 'الصورة الرمزية',
             ],
 
             'lang-and-status' => [
-                'title'   => 'Language & Status',
+                'title'   => 'اللغة والحالة',
                 'entries' => [
-                    'language' => 'Preferred Language',
-                    'status'   => 'Status',
+                    'language' => 'اللغة المفضلة',
+                    'status'   => 'الحالة',
                 ],
             ],
 
             'multi-company' => [
-                'title'             => 'Multi Company',
-                'allowed-companies' => 'Allowed Companies',
-                'default-company'   => 'Default Company',
+                'title'             => 'تعدد الشركات',
+                'allowed-companies' => 'الشركات المسموحة',
+                'default-company'   => 'الشركة الافتراضية',
             ],
         ],
     ],

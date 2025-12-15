@@ -2,69 +2,69 @@
 
 return [
     'placeholders' => [
-        'no-record-found' => 'No record found.',
-        'loading'         => 'Loading Chatter...',
+        'no-record-found' => 'لم يتم العثور على سجل.',
+        'loading'         => 'جاري تحميل المحادثات...',
     ],
 
     'activity-infolist' => [
-        'title' => 'Activities',
+        'title' => 'الأنشطة',
     ],
 
     'cancel-activity-plan-action' => [
-        'title' => 'Cancel Activity',
+        'title' => 'إلغاء النشاط',
     ],
 
     'delete-message-action' => [
-        'title' => 'Delete Message',
+        'title' => 'حذف الرسالة',
     ],
 
     'edit-activity' => [
-        'title' => 'Edit Activity',
+        'title' => 'تعديل النشاط',
 
         'form' => [
             'fields' => [
-                'activity-plan' => 'Activity Plan',
-                'plan-date'     => 'Plan Date',
-                'plan-summary'  => 'Plan Summary',
-                'activity-type' => 'Activity Type',
-                'due-date'      => 'Due Date',
-                'summary'       => 'Summary',
-                'assigned-to'   => 'Assigned To',
+                'activity-plan' => 'خطة النشاط',
+                'plan-date'     => 'تاريخ الخطة',
+                'plan-summary'  => 'ملخص الخطة',
+                'activity-type' => 'نوع النشاط',
+                'due-date'      => 'تاريخ الاستحقاق',
+                'summary'       => 'الملخص',
+                'assigned-to'   => 'مُعيَّن إلى',
             ],
         ],
 
         'action' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Activity updated',
-                    'body'  => 'The activity has been updated successfully.',
+                    'title' => 'تم تحديث النشاط',
+                    'body'  => 'تم تحديث النشاط بنجاح.',
                 ],
             ],
         ],
     ],
 
     'process-message' => [
-        'original-note' => '<br><div><span class="font-bold">Original Note</span>: :body</div>',
-        'original-note' => '<br><div><span class="font-bold">Original Note</span>: :body</div>',
-        'feedback'      => '<div><span class="font-bold">Feedback</span>: <p>:feedback</p></div>',
+        'original-note' => '<br><div><span class="font-bold">الملاحظة الأصلية</span>: :body</div>',
+        'original-note' => '<br><div><span class="font-bold">الملاحظة الأصلية</span>: :body</div>',
+        'feedback'      => '<div><span class="font-bold">الملاحظات</span>: <p>:feedback</p></div>',
     ],
 
     'mark-as-done' => [
-        'title' => 'Mark as done',
+        'title' => 'تعيين كمكتمل',
         'form'  => [
             'fields' => [
-                'feedback' => 'Feedback',
+                'feedback' => 'الملاحظات',
             ],
         ],
 
         'footer-actions' => [
-            'label' => 'Done & Schedule Next',
+            'label' => 'إتمام وجدولة التالي',
 
             'actions' => [
                 'notification' => [
                     'mark-as-done' => [
-                        'title' => 'Activity mark as done',
-                        'body'  => 'The activity mark as done successfully.',
+                        'title' => 'تم تعيين النشاط كمكتمل',
+                        'body'  => 'تم تعيين النشاط كمكتمل بنجاح.',
                     ],
                 ],
             ],

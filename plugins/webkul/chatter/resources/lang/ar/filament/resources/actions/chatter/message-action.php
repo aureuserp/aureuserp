@@ -2,29 +2,29 @@
 
 return [
     'setup' => [
-        'title'        => 'Send Message',
-        'submit-title' => 'Send',
+        'title'        => 'إرسال رسالة',
+        'submit-title' => 'إرسال',
 
         'form' => [
             'fields' => [
-                'hide-subject'            => 'Hide Subject',
-                'add-subject'             => 'Add Subject',
-                'subject'                 => 'Subject',
-                'write-message-here'      => 'Write your message here',
-                'attachments-helper-text' => 'Max file size: 10MB. Allowed types: Images, PDF, Word, Excel, Text',
+                'hide-subject'            => 'إخفاء الموضوع',
+                'add-subject'             => 'إضافة موضوع',
+                'subject'                 => 'الموضوع',
+                'write-message-here'      => 'اكتب رسالتك هنا',
+                'attachments-helper-text' => 'الحد الأقصى لحجم الملف: 10 ميجابايت. الأنواع المسموحة: صور، PDF، Word، Excel، نص',
             ],
         ],
 
         'actions' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Message sent',
-                    'body'  => 'Your message has been send successfully.',
+                    'title' => 'تم إرسال الرسالة',
+                    'body'  => 'تم إرسال رسالتك بنجاح.',
                 ],
 
                 'error' => [
-                    'title' => 'Message sent error',
-                    'body'  => 'Failed to send your message',
+                    'title' => 'خطأ في إرسال الرسالة',
+                    'body'  => 'فشل في إرسال رسالتك',
                 ],
             ],
 

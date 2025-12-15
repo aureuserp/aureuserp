@@ -2,104 +2,104 @@
 
 return [
     'navigation' => [
-        'title' => 'Categories',
-        'group' => 'Blog',
+        'title' => 'الفئات',
+        'group' => 'المدونة',
     ],
 
     'form' => [
         'fields' => [
-            'name'             => 'Name',
-            'name-placeholder' => 'Category title ...',
-            'sub-title'        => 'Sub Title',
+            'name'             => 'الاسم',
+            'name-placeholder' => 'عنوان الفئة ...',
+            'sub-title'        => 'العنوان الفرعي',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'name',
-            'sub-title'  => 'Sub Title',
-            'posts'      => 'Posts',
-            'created-at' => 'Created At',
+            'name'       => 'الاسم',
+            'sub-title'  => 'العنوان الفرعي',
+            'posts'      => 'المقالات',
+            'created-at' => 'تاريخ الإنشاء',
         ],
 
         'filters' => [
-            'is-published' => 'Is Published',
-            'author'       => 'Author',
-            'creator'      => 'Created By',
-            'category'     => 'Category',
+            'is-published' => 'منشور',
+            'author'       => 'الكاتب',
+            'creator'      => 'أنشئ بواسطة',
+            'category'     => 'الفئة',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Category updated',
-                    'body'  => 'The category has been updated successfully.',
+                    'title' => 'تم تحديث الفئة',
+                    'body'  => 'تم تحديث الفئة بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Category restored',
-                    'body'  => 'The category has been restored successfully.',
+                    'title' => 'تم استعادة الفئة',
+                    'body'  => 'تم استعادة الفئة بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Category deleted',
-                    'body'  => 'The category has been deleted successfully.',
+                    'title' => 'تم حذف الفئة',
+                    'body'  => 'تم حذف الفئة بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Category force deleted',
-                        'body'  => 'The Category has been force deleted successfully.',
+                        'title' => 'تم حذف الفئة نهائياً',
+                        'body'  => 'تم حذف الفئة نهائياً بنجاح.',
                     ],
                     'error' => [
-                        'title' => 'Category  could not be deleted',
-                        'body'  => 'The Category  cannot be deleted because it is currently in use.',
+                        'title' => 'تعذر حذف الفئة',
+                        'body'  => 'لا يمكن حذف الفئة لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
 
             'force-delete-error' => [
                 'notification' => [
-                    'title' => 'Cannot delete category',
-                    'body' => 'You cannot delete this category as it is associated with some posts.',
+                    'title' => 'لا يمكن حذف الفئة',
+                    'body' => 'لا يمكنك حذف هذه الفئة لأنها مرتبطة ببعض المقالات.',
                 ],
 
-                'exception' => 'You cannot force delete this category as it is associated with some posts.'
+                'exception' => 'لا يمكنك حذف هذه الفئة نهائياً لأنها مرتبطة ببعض المقالات.'
             ],
         ],
 
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Categories restored',
-                    'body'  => 'The categories has been restored successfully.',
+                    'title' => 'تم استعادة الفئات',
+                    'body'  => 'تم استعادة الفئات بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Categories deleted',
-                    'body'  => 'The categories has been deleted successfully.',
+                    'title' => 'تم حذف الفئات',
+                    'body'  => 'تم حذف الفئات بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Categories force deleted',
-                    'body'  => 'The categories has been force deleted successfully.',
+                    'title' => 'تم حذف الفئات نهائياً',
+                    'body'  => 'تم حذف الفئات نهائياً بنجاح.',
                 ],
             ],
             
             'force-delete-error' => [
                 'notification' => [
-                    'title' => 'Cannot delete category',
-                    'body' => 'You cannot delete this category as it is associated with some posts.',
+                    'title' => 'لا يمكن حذف الفئة',
+                    'body' => 'لا يمكنك حذف هذه الفئة لأنها مرتبطة ببعض المقالات.',
                 ],
             ],
         ],

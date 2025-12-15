@@ -1,36 +1,36 @@
 <?php
 
 return [
-    'title' => 'Teams',
+    'title' => 'الفرق',
 
     'navigation' => [
-        'title' => 'Teams',
-        'group' => 'Settings',
+        'title' => 'الفرق',
+        'group' => 'الإعدادات',
     ],
 
     'form' => [
         'fields' => [
-            'name' => 'Name',
+            'name' => 'الاسم',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'         => 'Name',
+            'name'         => 'الاسم',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Team updated',
-                    'body'  => 'The team has been updated successfully.',
+                    'title' => 'تم تحديث الفريق',
+                    'body'  => 'تم تحديث الفريق بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Team deleted',
-                    'body'  => 'The team has been deleted successfully.',
+                    'title' => 'تم حذف الفريق',
+                    'body'  => 'تم حذف الفريق بنجاح.',
                 ],
             ],
         ],
@@ -38,8 +38,8 @@ return [
         'empty-state-actions' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Teams created',
-                    'body'  => 'The teams has been created successfully.',
+                    'title' => 'تم إنشاء الفرق',
+                    'body'  => 'تم إنشاء الفرق بنجاح.',
                 ],
             ],
         ],
@@ -48,23 +48,23 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'name'          => 'Name',
-                'job-title'     => 'Job Title',
-                'work-email'    => 'Work Email',
-                'work-mobile'   => 'Work Mobile',
-                'work-phone'    => 'Work Phone',
-                'manager'       => 'Manager',
-                'department'    => 'Department',
-                'job-position'  => 'Job Position',
-                'team-tags'     => 'Team Tags',
-                'coach'         => 'Coach',
+                'name'          => 'الاسم',
+                'job-title'     => 'المسمى الوظيفي',
+                'work-email'    => 'البريد الإلكتروني للعمل',
+                'work-mobile'   => 'جوال العمل',
+                'work-phone'    => 'هاتف العمل',
+                'manager'       => 'المدير',
+                'department'    => 'القسم',
+                'job-position'  => 'المنصب الوظيفي',
+                'team-tags'     => 'وسوم الفريق',
+                'coach'         => 'المدرب',
             ],
         ],
     ],
 
     'infolist' => [
         'entries' => [
-            'name' => 'Name',
+            'name' => 'الاسم',
         ],
     ],
 ];

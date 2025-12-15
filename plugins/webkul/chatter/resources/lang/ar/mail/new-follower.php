@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'subject' => 'New follower notification',
+    'subject' => 'إشعار متابع جديد',
 ];

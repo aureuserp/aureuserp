@@ -1,33 +1,33 @@
 <?php
 
 return [
-    'breadcrumb' => 'Manage Users',
-    'title'      => 'Manage Users',
-    'group'      => 'General',
+    'breadcrumb' => 'إدارة المستخدمين',
+    'title'      => 'إدارة المستخدمين',
+    'group'      => 'عام',
 
     'navigation' => [
-        'label' => 'Manage Users',
+        'label' => 'إدارة المستخدمين',
     ],
 
     'form' => [
         'enable-user-invitation' => [
-            'label'       => 'Enable User Invitation',
-            'helper-text' => 'Allow users to invite other users to the application.',
+            'label'       => 'تفعيل دعوة المستخدمين',
+            'helper-text' => 'السماح للمستخدمين بدعوة مستخدمين آخرين إلى التطبيق.',
         ],
 
         'enable-reset-password' => [
-            'label'       => 'Enable Reset Password',
-            'helper-text' => 'Allow users to reset their password.',
+            'label'       => 'تفعيل إعادة تعيين كلمة المرور',
+            'helper-text' => 'السماح للمستخدمين بإعادة تعيين كلمة المرور الخاصة بهم.',
         ],
 
         'default-role' => [
-            'label'       => 'Default Role',
-            'helper-text' => 'The default role assigned to new users.',
+            'label'       => 'الدور الافتراضي',
+            'helper-text' => 'الدور الافتراضي المُعيَّن للمستخدمين الجدد.',
         ],
 
         'default-company' => [
-            'label'       => 'Default Company',
-            'helper-text' => 'The default company assigned to new users.',
+            'label'       => 'الشركة الافتراضية',
+            'helper-text' => 'الشركة الافتراضية المُعيَّنة للمستخدمين الجدد.',
         ],
     ],
 ];

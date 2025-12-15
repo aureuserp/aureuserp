@@ -2,44 +2,44 @@
 
 return [
     'navigation' => [
-        'title' => 'Blog Posts',
-        'group' => 'Website',
+        'title' => 'مقالات المدونة',
+        'group' => 'الموقع',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'fields' => [
-                    'title'             => 'Title',
-                    'sub-title'         => 'Sub Title',
-                    'title-placeholder' => 'Post title ...',
-                    'slug'              => 'Slug',
-                    'content'           => 'Content',
-                    'banner'            => 'Banner',
+                    'title'             => 'العنوان',
+                    'sub-title'         => 'العنوان الفرعي',
+                    'title-placeholder' => 'عنوان المقال ...',
+                    'slug'              => 'الرابط المختصر',
+                    'content'           => 'المحتوى',
+                    'banner'            => 'البانر',
                 ],
             ],
 
             'seo' => [
-                'title' => 'SEO',
+                'title' => 'تحسين محركات البحث',
 
                 'fields' => [
-                    'meta-title'       => 'Meta Title',
-                    'meta-keywords'    => 'Meta Keywords',
-                    'meta-description' => 'Meta Description',
+                    'meta-title'       => 'عنوان الميتا',
+                    'meta-keywords'    => 'كلمات الميتا المفتاحية',
+                    'meta-description' => 'وصف الميتا',
                 ],
             ],
 
             'settings' => [
-                'title' => 'Settings',
+                'title' => 'الإعدادات',
 
                 'fields' => [
-                    'category'     => 'Category',
-                    'tags'         => 'Tags',
-                    'name'         => 'Name',
-                    'color'        => 'Color',
-                    'is-published' => 'Is Published',
+                    'category'     => 'الفئة',
+                    'tags'         => 'الوسوم',
+                    'name'         => 'الاسم',
+                    'color'        => 'اللون',
+                    'is-published' => 'منشور',
                 ],
             ],
         ],
@@ -47,56 +47,56 @@ return [
 
     'table' => [
         'columns' => [
-            'title'        => 'Title',
-            'slug'         => 'Slug',
-            'author'       => 'Author',
-            'category'     => 'Category',
-            'creator'      => 'Created By',
-            'is-published' => 'Is Published',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'title'        => 'العنوان',
+            'slug'         => 'الرابط المختصر',
+            'author'       => 'الكاتب',
+            'category'     => 'الفئة',
+            'creator'      => 'أنشئ بواسطة',
+            'is-published' => 'منشور',
+            'created-at'   => 'تاريخ الإنشاء',
+            'updated-at'   => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'category'   => 'Category',
-            'author'     => 'Author',
-            'created-at' => 'Created At',
+            'category'   => 'الفئة',
+            'author'     => 'الكاتب',
+            'created-at' => 'تاريخ الإنشاء',
         ],
 
         'filters' => [
-            'is-published' => 'Is Published',
-            'author'       => 'Author',
-            'creator'      => 'Created By',
-            'category'     => 'Category',
-            'tags'         => 'Tags',
+            'is-published' => 'منشور',
+            'author'       => 'الكاتب',
+            'creator'      => 'أنشئ بواسطة',
+            'category'     => 'الفئة',
+            'tags'         => 'الوسوم',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Post updated',
-                    'body'  => 'The post has been updated successfully.',
+                    'title' => 'تم تحديث المقال',
+                    'body'  => 'تم تحديث المقال بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Post restored',
-                    'body'  => 'The post has been restored successfully.',
+                    'title' => 'تم استعادة المقال',
+                    'body'  => 'تم استعادة المقال بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Post deleted',
-                    'body'  => 'The post has been deleted successfully.',
+                    'title' => 'تم حذف المقال',
+                    'body'  => 'تم حذف المقال بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Post force deleted',
-                    'body'  => 'The post has been force deleted successfully.',
+                    'title' => 'تم حذف المقال نهائياً',
+                    'body'  => 'تم حذف المقال نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -104,22 +104,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Posts restored',
-                    'body'  => 'The posts has been restored successfully.',
+                    'title' => 'تم استعادة المقالات',
+                    'body'  => 'تم استعادة المقالات بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Posts deleted',
-                    'body'  => 'The posts has been deleted successfully.',
+                    'title' => 'تم حذف المقالات',
+                    'body'  => 'تم حذف المقالات بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Posts force deleted',
-                    'body'  => 'The posts has been force deleted successfully.',
+                    'title' => 'تم حذف المقالات نهائياً',
+                    'body'  => 'تم حذف المقالات نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -128,48 +128,48 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'entries' => [
-                    'title'   => 'Title',
-                    'slug'    => 'Slug',
-                    'content' => 'Content',
-                    'banner'  => 'Banner',
+                    'title'   => 'العنوان',
+                    'slug'    => 'الرابط المختصر',
+                    'content' => 'المحتوى',
+                    'banner'  => 'البانر',
                 ],
             ],
 
             'seo' => [
-                'title' => 'SEO',
+                'title' => 'تحسين محركات البحث',
 
                 'entries' => [
-                    'meta-title'       => 'Meta Title',
-                    'meta-keywords'    => 'Meta Keywords',
-                    'meta-description' => 'Meta Description',
+                    'meta-title'       => 'عنوان الميتا',
+                    'meta-keywords'    => 'كلمات الميتا المفتاحية',
+                    'meta-description' => 'وصف الميتا',
                 ],
             ],
 
             'record-information' => [
-                'title' => 'Record Information',
+                'title' => 'معلومات السجل',
 
                 'entries' => [
-                    'author'          => 'Author',
-                    'created-by'      => 'Created By',
-                    'published-at'    => 'Published At',
-                    'last-updated-by' => 'Last Updated By',
-                    'last-updated'    => 'Last Updated At',
-                    'created-at'      => 'Created At',
+                    'author'          => 'الكاتب',
+                    'created-by'      => 'أنشئ بواسطة',
+                    'published-at'    => 'تاريخ النشر',
+                    'last-updated-by' => 'آخر تحديث بواسطة',
+                    'last-updated'    => 'آخر تحديث في',
+                    'created-at'      => 'تاريخ الإنشاء',
                 ],
             ],
 
             'settings' => [
-                'title' => 'Settings',
+                'title' => 'الإعدادات',
 
                 'entries' => [
-                    'category'     => 'Category',
-                    'tags'         => 'Tags',
-                    'name'         => 'Name',
-                    'color'        => 'Color',
-                    'is-published' => 'Is Published',
+                    'category'     => 'الفئة',
+                    'tags'         => 'الوسوم',
+                    'name'         => 'الاسم',
+                    'color'        => 'اللون',
+                    'is-published' => 'منشور',
                 ],
             ],
         ],

@@ -2,29 +2,29 @@
 
 return [
     'setup' => [
-        'title'        => 'Log Note',
-        'submit-title' => 'Log',
+        'title'        => 'ملاحظة السجل',
+        'submit-title' => 'تسجيل',
 
         'form' => [
             'fields' => [
-                'hide-subject'            => 'Hide Subject',
-                'add-subject'             => 'Add Subject',
-                'subject'                 => 'Subject',
-                'write-message-here'      => 'Write your message here',
-                'attachments-helper-text' => 'Max file size: 10MB. Allowed types: Images, PDF, Word, Excel, Text',
+                'hide-subject'            => 'إخفاء الموضوع',
+                'add-subject'             => 'إضافة موضوع',
+                'subject'                 => 'الموضوع',
+                'write-message-here'      => 'اكتب رسالتك هنا',
+                'attachments-helper-text' => 'الحد الأقصى لحجم الملف: 10 ميجابايت. الأنواع المسموحة: صور، PDF، Word، Excel، نص',
             ],
         ],
 
         'actions' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Log Note added',
-                    'body'  => 'Your log note added successfully.',
+                    'title' => 'تمت إضافة ملاحظة السجل',
+                    'body'  => 'تمت إضافة ملاحظة السجل بنجاح.',
                 ],
 
                 'error' => [
-                    'title' => 'Log add error',
-                    'body'  => 'Failed to add your log note',
+                    'title' => 'خطأ في إضافة السجل',
+                    'body'  => 'فشل في إضافة ملاحظة السجل',
                 ],
             ],
         ],

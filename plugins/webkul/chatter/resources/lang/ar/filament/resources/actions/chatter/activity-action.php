@@ -2,37 +2,37 @@
 
 return [
     'setup' => [
-        'title'               => 'Schedule Activity',
-        'submit-action-title' => 'Schedule',
+        'title'               => 'جدولة نشاط',
+        'submit-action-title' => 'جدولة',
 
         'form' => [
             'fields' => [
-                'activity-plan' => 'Activity Plan',
-                'plan-date'     => 'Plan Date',
-                'plan-summary'  => 'Plan Summary',
-                'activity-type' => 'Activity Type',
-                'due-date'      => 'Due Date',
-                'summary'       => 'Summary',
-                'assigned-to'   => 'Assigned To',
-                'log-note'      => 'Log note',
+                'activity-plan' => 'خطة النشاط',
+                'plan-date'     => 'تاريخ الخطة',
+                'plan-summary'  => 'ملخص الخطة',
+                'activity-type' => 'نوع النشاط',
+                'due-date'      => 'تاريخ الاستحقاق',
+                'summary'       => 'الملخص',
+                'assigned-to'   => 'مُعيَّن إلى',
+                'log-note'      => 'ملاحظة السجل',
             ],
         ],
 
         'actions' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Activity Created',
-                    'body'  => 'The activity has been created.',
+                    'title' => 'تم إنشاء النشاط',
+                    'body'  => 'تم إنشاء النشاط.',
                 ],
 
                 'warning'  => [
-                    'title' => 'No new files',
-                    'body'  => 'All files have already been uploaded.',
+                    'title' => 'لا توجد ملفات جديدة',
+                    'body'  => 'تم رفع جميع الملفات بالفعل.',
                 ],
 
                 'error' => [
-                    'title' => 'Activity creation failed',
-                    'body'  => 'Failed to create activity ',
+                    'title' => 'فشل إنشاء النشاط',
+                    'body'  => 'فشل في إنشاء النشاط',
                 ],
             ],
         ],

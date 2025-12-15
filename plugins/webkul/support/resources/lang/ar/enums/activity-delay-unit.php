@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'minutes' => 'Minutes',
-    'hours'   => 'Hours',
-    'days'    => 'Days',
-    'weeks'   => 'Weeks',
+    'minutes' => 'دقائق',
+    'hours'   => 'ساعات',
+    'days'    => 'أيام',
+    'weeks'   => 'أسابيع',
 ];

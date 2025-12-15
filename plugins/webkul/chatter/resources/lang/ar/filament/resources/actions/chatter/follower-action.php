@@ -2,33 +2,33 @@
 
 return [
     'setup' => [
-        'title'               => 'Followers',
-        'submit-action-title' => 'Add Follower',
-        'tooltip'             => 'Add Follower',
+        'title'               => 'المتابعون',
+        'submit-action-title' => 'إضافة متابع',
+        'tooltip'             => 'إضافة متابع',
 
         'form' => [
             'fields' => [
-                'recipients'  => 'Recipients',
-                'notify-user' => 'Notify User',
-                'add-a-note'  => 'Add a note',
+                'recipients'  => 'المستلمون',
+                'notify-user' => 'إشعار المستخدم',
+                'add-a-note'  => 'إضافة ملاحظة',
             ],
         ],
 
         'actions' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Follower Added',
-                    'body'  => '":partner" has been added as a follower.',
+                    'title' => 'تمت إضافة المتابع',
+                    'body'  => 'تمت إضافة ":partner" كمتابع.',
                 ],
 
                 'error' => [
-                    'title' => 'Follower added error',
-                    'body'  => 'Failed to ":partner" as follower',
+                    'title' => 'خطأ في إضافة المتابع',
+                    'body'  => 'فشل في إضافة ":partner" كمتابع',
                 ],
             ],
 
             'mail' => [
-                'subject' => 'Invitation to follow :model: :department',
+                'subject' => 'دعوة لمتابعة :model: :department',
             ],
         ],
     ],

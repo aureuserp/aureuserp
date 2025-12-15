@@ -1,57 +1,57 @@
 <?php
 
 return [
-    'title' => 'Departments',
+    'title' => 'الأقسام',
 
     'navigation' => [
-        'title' => 'Departments',
-        'group' => 'Employees',
+        'title' => 'الأقسام',
+        'group' => 'الموظفون',
     ],
 
     'form' => [
         'sections' => [
             'activity-type-details' => [
-                'title' => 'General Information',
+                'title' => 'معلومات عامة',
 
                 'fields' => [
-                    'name'                => 'Activity Type',
-                    'name-tooltip'        => 'Enter the official activity type name',
-                    'action'              => 'Action',
-                    'default-user'        => 'Default User',
-                    'summary'             => 'Summary',
-                    'note'                => 'Note',
+                    'name'                => 'نوع النشاط',
+                    'name-tooltip'        => 'أدخل اسم نوع النشاط الرسمي',
+                    'action'              => 'الإجراء',
+                    'default-user'        => 'المستخدم الافتراضي',
+                    'summary'             => 'الملخص',
+                    'note'                => 'ملاحظة',
                 ],
             ],
 
             'delay-information' => [
-                'title' => 'Delay Information',
+                'title' => 'معلومات التأخير',
 
                 'fields' => [
-                    'delay-count'            => 'Delay Count',
-                    'delay-unit'             => 'Delay Unit',
-                    'delay-form'             => 'Delay Form',
-                    'delay-form-helper-text' => 'Source of delay calculation',
+                    'delay-count'            => 'عدد التأخير',
+                    'delay-unit'             => 'وحدة التأخير',
+                    'delay-form'             => 'نموذج التأخير',
+                    'delay-form-helper-text' => 'مصدر حساب التأخير',
                 ],
             ],
 
             'advanced-information' => [
-                'title' => 'Advanced Information',
+                'title' => 'معلومات متقدمة',
 
                 'fields' => [
-                    'icon'                => 'Icon',
-                    'decoration-type'     => 'Decoration Type',
-                    'chaining-type'       => 'Chaining Type',
-                    'suggest'             => 'Suggest',
-                    'trigger'             => 'Trigger',
+                    'icon'                => 'الأيقونة',
+                    'decoration-type'     => 'نوع الزخرفة',
+                    'chaining-type'       => 'نوع التسلسل',
+                    'suggest'             => 'اقتراح',
+                    'trigger'             => 'تفعيل',
                 ],
             ],
 
             'status-and-configuration-information' => [
-                'title' => 'Status & Configuration',
+                'title' => 'الحالة والإعدادات',
 
                 'fields' => [
-                    'status'               => 'Status',
-                    'keep-done-activities' => 'Keep Done Activities',
+                    'status'               => 'الحالة',
+                    'keep-done-activities' => 'الاحتفاظ بالأنشطة المكتملة',
                 ],
             ],
         ],
@@ -59,61 +59,61 @@ return [
 
     'table' => [
         'columns' => [
-            'name'       => 'Activity Type',
-            'summary'    => 'Summary',
-            'planned-in' => 'Planned In',
-            'type'       => 'Type',
-            'action'     => 'Action',
-            'status'     => 'Status',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'نوع النشاط',
+            'summary'    => 'الملخص',
+            'planned-in' => 'مخطط في',
+            'type'       => 'النوع',
+            'action'     => 'الإجراء',
+            'status'     => 'الحالة',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'name'             => 'Name',
-            'action-category'  => 'Action Category',
-            'status'           => 'Status',
-            'delay-count'      => 'Delay Count',
-            'delay-unit'       => 'Delay Unit',
-            'delay-source'     => 'Delay Source',
-            'associated-model' => 'Associated Model',
-            'chaining-type'    => 'Chaining Type',
-            'decoration-type'  => 'Decoration Type',
-            'default-user'     => 'Default User',
-            'creation-date'    => 'Creation Date',
-            'last-update'      => 'Last Update',
+            'name'             => 'الاسم',
+            'action-category'  => 'فئة الإجراء',
+            'status'           => 'الحالة',
+            'delay-count'      => 'عدد التأخير',
+            'delay-unit'       => 'وحدة التأخير',
+            'delay-source'     => 'مصدر التأخير',
+            'associated-model' => 'النموذج المرتبط',
+            'chaining-type'    => 'نوع التسلسل',
+            'decoration-type'  => 'نوع الزخرفة',
+            'default-user'     => 'المستخدم الافتراضي',
+            'creation-date'    => 'تاريخ الإنشاء',
+            'last-update'      => 'آخر تحديث',
         ],
 
         'filters' => [
-            'action'    => 'Action',
-            'status'    => 'Status',
-            'has-delay' => 'Has Delay',
+            'action'    => 'الإجراء',
+            'status'    => 'الحالة',
+            'has-delay' => 'له تأخير',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Activity type restored',
-                    'body'  => 'The activity type has been restored successfully.',
+                    'title' => 'تم استعادة نوع النشاط',
+                    'body'  => 'تم استعادة نوع النشاط بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Activity type deleted',
-                    'body'  => 'The activity type has been deleted successfully.',
+                    'title' => 'تم حذف نوع النشاط',
+                    'body'  => 'تم حذف نوع النشاط بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Activity type force deleted',
-                        'body'  => 'The Activity type has been force deleted successfully.',
+                        'title' => 'تم حذف نوع النشاط نهائياً',
+                        'body'  => 'تم حذف نوع النشاط نهائياً بنجاح.',
                     ],
                     'error' => [
-                        'title' => 'Activity type  could not be deleted',
-                        'body'  => 'The Activity type  cannot be deleted because it is currently in use.',
+                        'title' => 'تعذر حذف نوع النشاط',
+                        'body'  => 'لا يمكن حذف نوع النشاط لأنه قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -122,22 +122,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Activity types restored',
-                    'body'  => 'The activity types has been restored successfully.',
+                    'title' => 'تم استعادة أنواع الأنشطة',
+                    'body'  => 'تم استعادة أنواع الأنشطة بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Activity types deleted',
-                    'body'  => 'The activity types has been deleted successfully.',
+                    'title' => 'تم حذف أنواع الأنشطة',
+                    'body'  => 'تم حذف أنواع الأنشطة بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Activity types force deleted',
-                    'body'  => 'The activity types has been force deleted successfully.',
+                    'title' => 'تم حذف أنواع الأنشطة نهائياً',
+                    'body'  => 'تم حذف أنواع الأنشطة نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -146,48 +146,48 @@ return [
     'infolist' => [
         'sections' => [
             'activity-type-details' => [
-                'title' => 'General Information',
+                'title' => 'معلومات عامة',
 
                 'entries' => [
-                    'name'                => 'Activity Type',
-                    'name-tooltip'        => 'Enter the official activity type name',
-                    'action'              => 'Action',
-                    'default-user'        => 'Default User',
-                    'plugin'              => 'Plugin',
-                    'summary'             => 'Summary',
-                    'note'                => 'Note',
+                    'name'                => 'نوع النشاط',
+                    'name-tooltip'        => 'أدخل اسم نوع النشاط الرسمي',
+                    'action'              => 'الإجراء',
+                    'default-user'        => 'المستخدم الافتراضي',
+                    'plugin'              => 'الإضافة',
+                    'summary'             => 'الملخص',
+                    'note'                => 'ملاحظة',
                 ],
             ],
 
             'delay-information' => [
-                'title' => 'Delay Information',
+                'title' => 'معلومات التأخير',
 
                 'entries' => [
-                    'delay-count'            => 'Delay Count',
-                    'delay-unit'             => 'Delay Unit',
-                    'delay-form'             => 'Delay Form',
-                    'delay-form-helper-text' => 'Source of delay calculation',
+                    'delay-count'            => 'عدد التأخير',
+                    'delay-unit'             => 'وحدة التأخير',
+                    'delay-form'             => 'نموذج التأخير',
+                    'delay-form-helper-text' => 'مصدر حساب التأخير',
                 ],
             ],
 
             'advanced-information' => [
-                'title' => 'Advanced Information',
+                'title' => 'معلومات متقدمة',
 
                 'entries' => [
-                    'icon'                => 'Icon',
-                    'decoration-type'     => 'Decoration Type',
-                    'chaining-type'       => 'Chaining Type',
-                    'suggest'             => 'Suggest',
-                    'trigger'             => 'Trigger',
+                    'icon'                => 'الأيقونة',
+                    'decoration-type'     => 'نوع الزخرفة',
+                    'chaining-type'       => 'نوع التسلسل',
+                    'suggest'             => 'اقتراح',
+                    'trigger'             => 'تفعيل',
                 ],
             ],
 
             'status-and-configuration-information' => [
-                'title' => 'Status & Configuration',
+                'title' => 'الحالة والإعدادات',
 
                 'entries' => [
-                    'status'               => 'Status',
-                    'keep-done-activities' => 'Keep Done Activities',
+                    'status'               => 'الحالة',
+                    'keep-done-activities' => 'الاحتفاظ بالأنشطة المكتملة',
                 ],
             ],
         ],

@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'reference' => 'Reference',
-    'bigger'    => 'Bigger',
-    'smaller'   => 'Smaller',
+    'reference' => 'مرجعي',
+    'bigger'    => 'أكبر',
+    'smaller'   => 'أصغر',
 ];
