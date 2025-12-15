@@ -79,20 +79,30 @@ class ApplicantChartWidget extends ChartWidget
             ],
         };
 
+        $colorMap = [
+            'Ongoing'  => '#3b82f6',
+            'Hired'    => '#22c55e',
+            'Refused'  => '#ef4444',
+            'Archived' => '#94a3b8',
+        ];
+
+        $translatedLabels = array_map(fn ($key) => match ($key) {
+            'Ongoing'  => __('recruitments::filament/widgets/applicant.ongoing'),
+            'Hired'    => __('recruitments::filament/widgets/applicant.hired'),
+            'Refused'  => __('recruitments::filament/widgets/applicant.refused'),
+            'Archived' => __('recruitments::filament/widgets/applicant.archived'),
+            default    => $key,
+        }, array_keys($data));
+
         return [
             'datasets' => [
                 [
                     'label'           => __('recruitments::filament/widgets/applicant.heading.title'),
                     'data'            => array_values($data),
-                    'backgroundColor' => array_map(fn ($key) => match ($key) {
-                        __('recruitments::filament/widgets/applicant.ongoing')  => '#3b82f6',
-                        __('recruitments::filament/widgets/applicant.hired')    => '#22c55e',
-                        __('recruitments::filament/widgets/applicant.refused')  => '#ef4444',
-                        __('recruitments::filament/widgets/applicant.archived') => '#94a3b8',
-                    }, array_keys($data)),
+                    'backgroundColor' => array_map(fn ($key) => $colorMap[$key] ?? '#94a3b8', array_keys($data)),
                 ],
             ],
-            'labels' => array_keys($data),
+            'labels' => $translatedLabels,
         ];
     }
 

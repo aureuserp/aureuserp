@@ -64,7 +64,7 @@
         <svg class="w-6 h-6 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
             <path fill-rule="evenodd" d="M4.5 3.75A.75.75 0 0 1 5.25 3h13.5a.75.75 0 0 1 .75.75v16.5a.75.75 0 0 1-1.28.53L12 15.81l-6.22 4.97a.75.75 0 0 1-1.28-.53V3.75ZM6 4.5v14.69l5.47-4.38a.75.75 0 0 1 .92 0l5.47 4.38V4.5H6Z" clip-rule="evenodd"/>
         </svg>
-        <p class="mt-4 text-lg font-semibold text-gray-700">No blog posts found</p>
-        <p class="mt-2 text-gray-500">Check back later for new content.</p>
+        <p class="mt-4 text-lg font-semibold text-gray-700">{{ __('blogs::filament/customer/resources/post/pages/list-records.empty.title') }}</p>
+        <p class="mt-2 text-gray-500">{{ __('blogs::filament/customer/resources/post/pages/list-records.empty.description') }}</p>
     </div>
 @endif
