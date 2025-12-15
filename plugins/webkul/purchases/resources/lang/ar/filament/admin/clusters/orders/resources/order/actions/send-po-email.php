@@ -1,21 +1,21 @@
 <?php
 
 return [
-    'label' => 'Send PO By Email',
+    'label' => 'إرسال أمر الشراء بالبريد الإلكتروني',
 
     'form' => [
         'fields' => [
-            'to'      => 'To',
-            'subject' => 'Subject',
-            'message' => 'Message',
+            'to'      => 'إلى',
+            'subject' => 'الموضوع',
+            'message' => 'الرسالة',
         ],
     ],
 
     'action' => [
         'notification' => [
             'success' => [
-                'title' => 'Email sent',
-                'body'  => 'The email has been sent successfully.',
+                'title' => 'تم إرسال البريد الإلكتروني',
+                'body'  => 'تم إرسال البريد الإلكتروني بنجاح.',
             ],
         ],
     ],

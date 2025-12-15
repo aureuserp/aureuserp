@@ -4,27 +4,27 @@ return [
     'form' => [
         'sections' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'fields' => [
-                    'name'  => 'Name',
-                    'code'  => 'Bank Identifier Code',
-                    'email' => 'Email',
-                    'phone' => 'Phone',
+                    'name'  => 'الاسم',
+                    'code'  => 'رمز تعريف البنك',
+                    'email' => 'البريد الإلكتروني',
+                    'phone' => 'الهاتف',
                 ],
             ],
 
             'address' => [
-                'title' => 'Address',
+                'title' => 'العنوان',
 
                 'fields' => [
-                    'address' => 'Address',
-                    'city'    => 'City',
-                    'street1' => 'Street 1',
-                    'street2' => 'Street 2',
-                    'state'   => 'State',
-                    'zip'     => 'Zip',
-                    'country' => 'Country',
+                    'address' => 'العنوان',
+                    'city'    => 'المدينة',
+                    'street1' => 'الشارع 1',
+                    'street2' => 'الشارع 2',
+                    'state'   => 'الولاية',
+                    'zip'     => 'الرمز البريدي',
+                    'country' => 'الدولة',
                 ],
             ],
         ],
@@ -32,45 +32,45 @@ return [
 
     'table' => [
         'columns' => [
-            'name'           => 'Name',
-            'code'           => 'Bank Identifier Code',
-            'country'        => 'Country',
-            'created-at'     => 'Created At',
-            'updated-at'     => 'Updated At',
-            'deleted-at'     => 'Deleted At',
+            'name'           => 'الاسم',
+            'code'           => 'رمز تعريف البنك',
+            'country'        => 'الدولة',
+            'created-at'     => 'تاريخ الإنشاء',
+            'updated-at'     => 'تاريخ التحديث',
+            'deleted-at'     => 'تاريخ الحذف',
         ],
 
         'groups' => [
-            'country'               => 'Country',
-            'created-at'            => 'Created At',
+            'country'               => 'الدولة',
+            'created-at'            => 'تاريخ الإنشاء',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Bank updated',
-                    'body'  => 'The bank has been updated successfully.',
+                    'title' => 'تم تحديث البنك',
+                    'body'  => 'تم تحديث البنك بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Bank restored',
-                    'body'  => 'The bank has been restored successfully.',
+                    'title' => 'تم استعادة البنك',
+                    'body'  => 'تم استعادة البنك بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Bank deleted',
-                    'body'  => 'The bank has been deleted successfully.',
+                    'title' => 'تم حذف البنك',
+                    'body'  => 'تم حذف البنك بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Bank force deleted',
-                    'body'  => 'The bank has been force deleted successfully.',
+                    'title' => 'تم حذف البنك نهائياً',
+                    'body'  => 'تم حذف البنك نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -78,22 +78,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Banks restored',
-                    'body'  => 'The banks has been restored successfully.',
+                    'title' => 'تم استعادة البنوك',
+                    'body'  => 'تم استعادة البنوك بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Banks deleted',
-                    'body'  => 'The banks has been deleted successfully.',
+                    'title' => 'تم حذف البنوك',
+                    'body'  => 'تم حذف البنوك بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Banks force deleted',
-                    'body'  => 'The banks has been force deleted successfully.',
+                    'title' => 'تم حذف البنوك نهائياً',
+                    'body'  => 'تم حذف البنوك نهائياً بنجاح.',
                 ],
             ],
         ],

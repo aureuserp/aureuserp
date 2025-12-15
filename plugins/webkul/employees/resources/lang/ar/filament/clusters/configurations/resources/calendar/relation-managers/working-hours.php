@@ -2,46 +2,46 @@
 
 return [
     'modal' => [
-        'title' => 'Working Hours',
+        'title' => 'ساعات العمل',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title'  => 'General Information',
+                'title'  => 'المعلومات العامة',
                 'fields' => [
-                    'attendance-name' => 'Attendance Name',
-                    'attendance-name' => 'Attendance Name',
-                    'day-of-week'     => 'Day of Week',
+                    'attendance-name' => 'اسم الحضور',
+                    'attendance-name' => 'اسم الحضور',
+                    'day-of-week'     => 'يوم الأسبوع',
                 ],
             ],
 
             'timing-information' => [
-                'title' => 'Timing Information',
+                'title' => 'معلومات التوقيت',
 
                 'fields' => [
-                    'day-period' => 'Day Periods',
-                    'week-type'  => 'Week Type',
-                    'work-from'  => 'Work From',
-                    'work-to'    => 'Work To',
+                    'day-period' => 'فترات اليوم',
+                    'week-type'  => 'نوع الأسبوع',
+                    'work-from'  => 'العمل من',
+                    'work-to'    => 'العمل إلى',
                 ],
             ],
 
             'date-information' => [
-                'title' => 'Date Information',
+                'title' => 'معلومات التاريخ',
 
                 'fields' => [
-                    'starting-date' => 'Starting Date',
-                    'ending-date'   => 'Ending Date',
+                    'starting-date' => 'تاريخ البداية',
+                    'ending-date'   => 'تاريخ النهاية',
                 ],
             ],
 
             'additional-information' => [
-                'title' => 'Additional Information',
+                'title' => 'معلومات إضافية',
 
                 'fields' => [
-                    'durations-days' => 'Duration (Days)',
-                    'display-type'   => 'Display Type',
+                    'durations-days' => 'المدة (أيام)',
+                    'display-type'   => 'نوع العرض',
                 ],
             ],
         ],
@@ -49,62 +49,62 @@ return [
 
     'table' => [
         'columns' => [
-            'name'          => 'Attendance Name',
-            'day-of-week'   => 'Day of Week',
-            'day-period'    => 'Day Periods',
-            'work-from'     => 'Work From',
-            'work-to'       => 'Work To',
-            'starting-date' => 'Starting Date',
-            'ending-date'   => 'Ending Date',
-            'display-type'  => 'Display Type',
-            'created-by'    => 'Created By',
-            'created-at'    => 'Created At',
-            'updated-at'    => 'Updated At',
+            'name'          => 'اسم الحضور',
+            'day-of-week'   => 'يوم الأسبوع',
+            'day-period'    => 'فترات اليوم',
+            'work-from'     => 'العمل من',
+            'work-to'       => 'العمل إلى',
+            'starting-date' => 'تاريخ البداية',
+            'ending-date'   => 'تاريخ النهاية',
+            'display-type'  => 'نوع العرض',
+            'created-by'    => 'أنشئ بواسطة',
+            'created-at'    => 'تاريخ الإنشاء',
+            'updated-at'    => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'activity-type' => 'Activity Type',
-            'assignment'    => 'Assignment',
-            'assigned-to'   => 'Assigned To',
-            'interval'      => 'Interval',
-            'delay-unit'    => 'Delay Unit',
-            'delay-from'    => 'Delay From',
-            'created-by'    => 'Created By',
-            'created-at'    => 'Created At',
-            'updated-at'    => 'Updated At',
+            'activity-type' => 'نوع النشاط',
+            'assignment'    => 'التعيين',
+            'assigned-to'   => 'مُعيَّن إلى',
+            'interval'      => 'الفاصل الزمني',
+            'delay-unit'    => 'وحدة التأخير',
+            'delay-from'    => 'التأخير من',
+            'created-by'    => 'أنشئ بواسطة',
+            'created-at'    => 'تاريخ الإنشاء',
+            'updated-at'    => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'display-type' => 'Display Type',
-            'day-of-week'  => 'Day of Week',
+            'display-type' => 'نوع العرض',
+            'day-of-week'  => 'يوم الأسبوع',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Working Hours updated',
-                    'body'  => 'The working hours has been updated successfully.',
+                    'title' => 'تم تحديث ساعات العمل',
+                    'body'  => 'تم تحديث ساعات العمل بنجاح.',
                 ],
             ],
 
             'create' => [
                 'notification' => [
-                    'title' => 'Working Hours created',
-                    'body'  => 'The working hours has been created successfully.',
+                    'title' => 'تم إنشاء ساعات العمل',
+                    'body'  => 'تم إنشاء ساعات العمل بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Working Hours deleted',
-                    'body'  => 'The working hours has been deleted successfully.',
+                    'title' => 'تم حذف ساعات العمل',
+                    'body'  => 'تم حذف ساعات العمل بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Working Hours restored',
-                    'body'  => 'The working hours has been restored successfully.',
+                    'title' => 'تم استعادة ساعات العمل',
+                    'body'  => 'تم استعادة ساعات العمل بنجاح.',
                 ],
             ],
         ],
@@ -112,22 +112,22 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Working Hours deleted',
-                    'body'  => 'The working hours has been deleted successfully.',
+                    'title' => 'تم حذف ساعات العمل',
+                    'body'  => 'تم حذف ساعات العمل بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Working Hours deleted',
-                    'body'  => 'The working hours has been deleted successfully.',
+                    'title' => 'تم استعادة ساعات العمل',
+                    'body'  => 'تم استعادة ساعات العمل بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Working Hours deleted',
-                    'body'  => 'The working hours has been deleted successfully.',
+                    'title' => 'تم حذف ساعات العمل نهائياً',
+                    'body'  => 'تم حذف ساعات العمل نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -136,44 +136,44 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'General Information',
+                'title' => 'المعلومات العامة',
 
                 'entries' => [
-                    'name'        => 'Attendance Name',
-                    'day-of-week' => 'Day of Week',
+                    'name'        => 'اسم الحضور',
+                    'day-of-week' => 'يوم الأسبوع',
                 ],
             ],
 
             'timing-information' => [
-                'title' => 'Timing Information',
+                'title' => 'معلومات التوقيت',
 
                 'entries' => [
-                    'day-period' => 'Day Periods',
-                    'week-type'  => 'Week Type',
-                    'work-from'  => 'Work From',
-                    'work-to'    => 'Work To',
+                    'day-period' => 'فترات اليوم',
+                    'week-type'  => 'نوع الأسبوع',
+                    'work-from'  => 'العمل من',
+                    'work-to'    => 'العمل إلى',
                 ],
             ],
 
             'date-information' => [
-                'title' => 'Date Information',
+                'title' => 'معلومات التاريخ',
 
                 'entries' => [
-                    'starting-date' => 'Starting Date',
-                    'ending-date'   => 'Ending Date',
+                    'starting-date' => 'تاريخ البداية',
+                    'ending-date'   => 'تاريخ النهاية',
                 ],
             ],
 
             'additional-information' => [
-                'title' => 'Additional Information',
+                'title' => 'معلومات إضافية',
 
                 'entries' => [
-                    'durations-days' => 'Duration (Days)',
-                    'display-type'   => 'Display Type',
+                    'durations-days' => 'المدة (أيام)',
+                    'display-type'   => 'نوع العرض',
                 ],
             ],
         ],
 
-        'note' => 'Note',
+        'note' => 'ملاحظة',
     ],
 ];

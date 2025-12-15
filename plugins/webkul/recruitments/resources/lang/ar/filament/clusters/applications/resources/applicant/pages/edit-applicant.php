@@ -1,62 +1,62 @@
 <?php
 
 return [
-    'create-employee' => 'Create Employee',
-    'goto-employee'   => 'Go to Employee',
+    'create-employee' => 'إنشاء موظف',
+    'goto-employee'   => 'الذهاب إلى الموظف',
 
     'notification' => [
-        'title' => 'Applicant updated',
-        'body'  => 'The applicant has been updated successfully.',
+        'title' => 'تم تحديث المتقدم',
+        'body'  => 'تم تحديث المتقدم بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Applicant deleted',
-                'body'  => 'The applicant has been deleted successfully.',
+                'title' => 'تم حذف المتقدم',
+                'body'  => 'تم حذف المتقدم بنجاح.',
             ],
         ],
         'force-delete' => [
             'notification' => [
-                'title' => 'Applicant deleted',
-                'body'  => 'The applicant has been force deleted successfully.',
+                'title' => 'تم حذف المتقدم',
+                'body'  => 'تم حذف المتقدم نهائياً بنجاح.',
             ],
         ],
 
         'refuse' => [
-            'title'        => 'Refuse Reason',
+            'title'        => 'سبب الرفض',
             'notification' => [
-                'title' => 'Applicant refused',
-                'body'  => 'The applicant has been refused successfully.',
+                'title' => 'تم رفض المتقدم',
+                'body'  => 'تم رفض المتقدم بنجاح.',
             ],
         ],
 
         'reopen' => [
-            'title'        => 'Reopen Applicant',
+            'title'        => 'إعادة فتح المتقدم',
             'notification' => [
-                'title' => 'Applicant reopened',
-                'body'  => 'The applicant has been reopened successfully.',
+                'title' => 'تم إعادة فتح المتقدم',
+                'body'  => 'تم إعادة فتح المتقدم بنجاح.',
             ],
         ],
 
         'state' => [
             'notification' => [
-                'title' => 'Applicant state updated',
-                'body'  => 'The applicant state has been updated successfully.',
+                'title' => 'تم تحديث حالة المتقدم',
+                'body'  => 'تم تحديث حالة المتقدم بنجاح.',
             ],
         ],
     ],
 
     'mail' => [
         'application-refused' => [
-            'subject' => 'Your Job Application: :application',
+            'subject' => 'طلب التوظيف الخاص بك: :application',
         ],
 
         'application-confirm' => [
-            'subject' => 'Your Job Application: :job_position',
+            'subject' => 'طلب التوظيف الخاص بك: :job_position',
         ],
         'interviewer-assigned' => [
-            'subject' => 'You have been assigned to the Applicant :applicant.',
+            'subject' => 'تم تعيينك للمتقدم :applicant.',
         ],
     ],
 ];

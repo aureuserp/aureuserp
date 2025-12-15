@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Field updated',
-        'body'  => 'The field has been updated successfully.',
+        'title' => 'تم تحديث الحقل',
+        'body'  => 'تم تحديث الحقل بنجاح.',
     ],
 ];

@@ -4,11 +4,11 @@ return [
     'table' => [
         'header-actions' => [
             'create' => [
-                'label' => 'Add Contact',
+                'label' => 'إضافة جهة اتصال',
 
                 'notification' => [
-                    'title' => 'Contact created',
-                    'body'  => 'The contact has been created successfully.',
+                    'title' => 'تم إنشاء جهة الاتصال',
+                    'body'  => 'تم إنشاء جهة الاتصال بنجاح.',
                 ],
             ],
         ],

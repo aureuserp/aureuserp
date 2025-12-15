@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Attribute updated',
-        'body'  => 'The attribute has been updated successfully.',
+        'title' => 'تم تحديث السمة',
+        'body'  => 'تم تحديث السمة بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Attribute deleted',
-                'body'  => 'The attribute has been deleted successfully.',
+                'title' => 'تم حذف السمة',
+                'body'  => 'تم حذف السمة بنجاح.',
             ],
         ],
     ],

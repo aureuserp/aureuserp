@@ -4,8 +4,8 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Page deleted',
-                'body'  => 'The page has been deleted successfully.',
+                'title' => 'تم حذف الصفحة',
+                'body'  => 'تم حذف الصفحة بنجاح.',
             ],
         ],
     ],

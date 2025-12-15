@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Candidate created',
-        'body'  => 'The candidate has been created successfully.',
+        'title' => 'تم إنشاء المرشح',
+        'body'  => 'تم إنشاء المرشح بنجاح.',
     ],
 ];

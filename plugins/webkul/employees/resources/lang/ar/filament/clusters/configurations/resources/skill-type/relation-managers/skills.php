@@ -2,43 +2,43 @@
 
 return [
     'form' => [
-        'name' => 'Name',
+        'name' => 'الاسم',
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'الاسم',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'created-at' => 'Created At',
+            'created-at' => 'تاريخ الإنشاء',
         ],
 
         'filters' => [
-            'deleted-records' => 'Deleted Records',
+            'deleted-records' => 'السجلات المحذوفة',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Skill updated',
-                    'body'  => 'The skill has been updated successfully.',
+                    'title' => 'تم تحديث المهارة',
+                    'body'  => 'تم تحديث المهارة بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Skill restored',
-                    'body'  => 'The skill has been restored successfully.',
+                    'title' => 'تم استعادة المهارة',
+                    'body'  => 'تم استعادة المهارة بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Skill deleted',
-                    'body'  => 'The skill has been deleted successfully.',
+                    'title' => 'تم حذف المهارة',
+                    'body'  => 'تم حذف المهارة بنجاح.',
                 ],
             ],
         ],
@@ -46,22 +46,22 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Skills deleted',
-                    'body'  => 'The skills has been deleted successfully.',
+                    'title' => 'تم حذف المهارات',
+                    'body'  => 'تم حذف المهارات بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Skills force deleted',
-                    'body'  => 'The skills has been force deleted successfully.',
+                    'title' => 'تم حذف المهارات نهائياً',
+                    'body'  => 'تم حذف المهارات نهائياً بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Skills force restored',
-                    'body'  => 'The skills has been force restored successfully.',
+                    'title' => 'تم استعادة المهارات',
+                    'body'  => 'تم استعادة المهارات بنجاح.',
                 ],
             ],
         ],
@@ -69,7 +69,7 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name' => 'Name',
+            'name' => 'الاسم',
         ],
     ],
 ];

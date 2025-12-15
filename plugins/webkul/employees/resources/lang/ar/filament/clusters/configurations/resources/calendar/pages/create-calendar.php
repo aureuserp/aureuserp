@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Work Schedule Plan created',
-        'body'  => 'The work schedule plan has been created successfully.',
+        'title' => 'تم إنشاء خطة جدول العمل',
+        'body'  => 'تم إنشاء خطة جدول العمل بنجاح.',
     ],
 ];

@@ -3,17 +3,17 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Industry',
+            'label' => 'قطاع جديد',
 
             'notification' => [
-                'title' => 'Industry created',
-                'body'  => 'The industry has been created successfully.',
+                'title' => 'تم إنشاء القطاع',
+                'body'  => 'تم إنشاء القطاع بنجاح.',
             ],
         ],
     ],
 
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'الكل',
+        'archived' => 'المؤرشفة',
     ],
 ];

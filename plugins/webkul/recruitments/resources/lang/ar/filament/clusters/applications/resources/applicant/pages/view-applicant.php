@@ -4,36 +4,36 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Applicant deleted',
-                'body'  => 'The applicant has been deleted successfully.',
+                'title' => 'تم حذف المتقدم',
+                'body'  => 'تم حذف المتقدم بنجاح.',
             ],
         ],
 
         'refuse' => [
             'notification' => [
-                'title' => 'Applicant refused',
-                'body'  => 'The applicant has been refused successfully.',
+                'title' => 'تم رفض المتقدم',
+                'body'  => 'تم رفض المتقدم بنجاح.',
             ],
         ],
 
         'reopen' => [
             'notification' => [
-                'title' => 'Applicant reopened',
-                'body'  => 'The applicant has been reopened successfully.',
+                'title' => 'تم إعادة فتح المتقدم',
+                'body'  => 'تم إعادة فتح المتقدم بنجاح.',
             ],
         ],
 
         'state' => [
             'notification' => [
-                'title' => 'Applicant state updated',
-                'body'  => 'The applicant state has been updated successfully.',
+                'title' => 'تم تحديث حالة المتقدم',
+                'body'  => 'تم تحديث حالة المتقدم بنجاح.',
             ],
         ],
     ],
 
     'mail' => [
         'application-refused' => [
-            'subject' => 'Your Job Application: :application',
+            'subject' => 'طلب التوظيف الخاص بك: :application',
         ],
     ],
 ];

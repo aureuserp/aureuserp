@@ -2,31 +2,31 @@
 
 return [
     'notification' => [
-        'title' => 'Purchase Agreement updated',
-        'body'  => 'The purchase agreement has been updated successfully.',
+        'title' => 'تم تحديث اتفاقية الشراء',
+        'body'  => 'تم تحديث اتفاقية الشراء بنجاح.',
     ],
 
     'header-actions' => [
         'confirm' => [
-            'label' => 'Confirm',
+            'label' => 'تأكيد',
         ],
 
         'close' => [
-            'label' => 'Close',
+            'label' => 'إغلاق',
         ],
 
         'cancel' => [
-            'label' => 'Cancel',
+            'label' => 'إلغاء',
         ],
 
         'print' => [
-            'label' => 'Print',
+            'label' => 'طباعة',
         ],
 
         'delete' => [
             'notification' => [
-                'title' => 'Purchase Agreement deleted',
-                'body'  => 'The purchase agreement has been deleted successfully.',
+                'title' => 'تم حذف اتفاقية الشراء',
+                'body'  => 'تم حذف اتفاقية الشراء بنجاح.',
             ],
         ],
     ],

@@ -2,25 +2,25 @@
 
 return [
     'navigation' => [
-        'title' => 'Edit Vendor Price List',
+        'title' => 'تعديل قائمة أسعار المورد',
     ],
 
     'notification' => [
-        'title' => 'Vendor Price updated',
-        'body'  => 'The vendor price has been updated successfully.',
+        'title' => 'تم تحديث سعر المورد',
+        'body'  => 'تم تحديث سعر المورد بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Vendor Price deleted',
-                    'body'  => 'The vendor price has been deleted successfully.',
+                    'title' => 'تم حذف سعر المورد',
+                    'body'  => 'تم حذف سعر المورد بنجاح.',
                 ],
 
                 'error' => [
-                    'title' => 'Vendor Price could not be deleted',
-                    'body'  => 'The vendor price cannot be deleted because it is currently in use.',
+                    'title' => 'تعذر حذف سعر المورد',
+                    'body'  => 'لا يمكن حذف سعر المورد لأنه قيد الاستخدام حالياً.',
                 ],
             ],
         ],

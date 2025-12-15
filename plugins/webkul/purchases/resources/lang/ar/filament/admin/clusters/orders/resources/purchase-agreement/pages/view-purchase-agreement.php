@@ -3,13 +3,13 @@
 return [
     'header-actions' => [
         'print' => [
-            'label' => 'Print',
+            'label' => 'طباعة',
         ],
 
         'delete' => [
             'notification' => [
-                'title' => 'Purchase Agreement Deleted',
-                'body'  => 'The purchase agreement has been deleted successfully.',
+                'title' => 'تم حذف اتفاقية الشراء',
+                'body'  => 'تم حذف اتفاقية الشراء بنجاح.',
             ],
         ],
     ],

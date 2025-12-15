@@ -2,44 +2,44 @@
 
 return [
     'form' => [
-        'name'      => 'Name',
-        'full-name' => 'Full Name',
+        'name'      => 'الاسم',
+        'full-name' => 'الاسم الكامل',
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'full-name'  => 'Full Name',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'الاسم',
+            'full-name'  => 'الاسم الكامل',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Industry updated',
-                    'body'  => 'The industry has been updated successfully.',
+                    'title' => 'تم تحديث القطاع',
+                    'body'  => 'تم تحديث القطاع بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Industry restored',
-                    'body'  => 'The industry has been restored successfully.',
+                    'title' => 'تم استعادة القطاع',
+                    'body'  => 'تم استعادة القطاع بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Industry deleted',
-                    'body'  => 'The industry has been deleted successfully.',
+                    'title' => 'تم حذف القطاع',
+                    'body'  => 'تم حذف القطاع بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Industry force deleted',
-                    'body'  => 'The industry has been force deleted successfully.',
+                    'title' => 'تم حذف القطاع نهائياً',
+                    'body'  => 'تم حذف القطاع نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -47,22 +47,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Industries restored',
-                    'body'  => 'The industries has been restored successfully.',
+                    'title' => 'تم استعادة القطاعات',
+                    'body'  => 'تم استعادة القطاعات بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Industries deleted',
-                    'body'  => 'The industries has been deleted successfully.',
+                    'title' => 'تم حذف القطاعات',
+                    'body'  => 'تم حذف القطاعات بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Industries force deleted',
-                    'body'  => 'The industries has been force deleted successfully.',
+                    'title' => 'تم حذف القطاعات نهائياً',
+                    'body'  => 'تم حذف القطاعات نهائياً بنجاح.',
                 ],
             ],
         ],

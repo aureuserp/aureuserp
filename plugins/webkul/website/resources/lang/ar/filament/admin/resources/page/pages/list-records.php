@@ -2,17 +2,17 @@
 
 return [
     'tabs' => [
-        'my-posts' => 'My Pages',
-        'archived' => 'Archived',
+        'my-posts' => 'صفحاتي',
+        'archived' => 'المؤرشفة',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Page',
+            'label' => 'صفحة جديدة',
 
             'notification' => [
-                'title' => 'Page created',
-                'body'  => 'The page has been created successfully.',
+                'title' => 'تم إنشاء الصفحة',
+                'body'  => 'تم إنشاء الصفحة بنجاح.',
             ],
         ],
     ],

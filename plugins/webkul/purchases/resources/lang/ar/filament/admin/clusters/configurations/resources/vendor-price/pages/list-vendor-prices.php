@@ -2,16 +2,16 @@
 
 return [
     'navigation' => [
-        'title' => 'Vendor Price Lists',
+        'title' => 'قوائم أسعار الموردين',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Vendor Price',
+            'label' => 'سعر مورد جديد',
 
             'notification' => [
-                'title' => 'Vendor Price created',
-                'body'  => 'The vendor price has been created successfully.',
+                'title' => 'تم إنشاء سعر المورد',
+                'body'  => 'تم إنشاء سعر المورد بنجاح.',
             ],
         ],
     ],

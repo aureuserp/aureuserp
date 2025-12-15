@@ -2,20 +2,20 @@
 
 return [
     'navigation' => [
-        'title' => 'View Vendor Price List',
+        'title' => 'عرض قائمة أسعار المورد',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Vendor Price deleted',
-                    'body'  => 'The vendor price has been deleted successfully.',
+                    'title' => 'تم حذف سعر المورد',
+                    'body'  => 'تم حذف سعر المورد بنجاح.',
                 ],
 
                 'error' => [
-                    'title' => 'Vendor Price could not be deleted',
-                    'body'  => 'The vendor price cannot be deleted because it is currently in use.',
+                    'title' => 'تعذر حذف سعر المورد',
+                    'body'  => 'لا يمكن حذف سعر المورد لأنه قيد الاستخدام حالياً.',
                 ],
             ],
         ],

@@ -2,54 +2,54 @@
 
 return [
     'form' => [
-        'name'          => 'Name',
-        'level'         => 'Level',
-        'default-level' => 'Default Level',
+        'name'          => 'الاسم',
+        'level'         => 'المستوى',
+        'default-level' => 'المستوى الافتراضي',
     ],
 
     'table' => [
         'columns' => [
-            'name'          => 'Name',
-            'level'         => 'Level',
-            'default-level' => 'Default Level',
-            'created-at'    => 'Created At',
-            'updated-at'    => 'Updated At',
+            'name'          => 'الاسم',
+            'level'         => 'المستوى',
+            'default-level' => 'المستوى الافتراضي',
+            'created-at'    => 'تاريخ الإنشاء',
+            'updated-at'    => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'created-at' => 'Created At',
+            'created-at' => 'تاريخ الإنشاء',
         ],
 
         'filters' => [
-            'deleted-records' => 'Deleted Records',
+            'deleted-records' => 'السجلات المحذوفة',
         ],
 
         'actions' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Skill Level created',
-                    'body'  => 'The skill level has been created successfully.',
+                    'title' => 'تم إنشاء مستوى المهارة',
+                    'body'  => 'تم إنشاء مستوى المهارة بنجاح.',
                 ],
             ],
 
             'edit' => [
                 'notification' => [
-                    'title' => 'Skill Level updated',
-                    'body'  => 'The skill level has been updated successfully.',
+                    'title' => 'تم تحديث مستوى المهارة',
+                    'body'  => 'تم تحديث مستوى المهارة بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Skill Level restored',
-                    'body'  => 'The skill level has been restored successfully.',
+                    'title' => 'تم استعادة مستوى المهارة',
+                    'body'  => 'تم استعادة مستوى المهارة بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Skill Level deleted',
-                    'body'  => 'The skill level has been deleted successfully.',
+                    'title' => 'تم حذف مستوى المهارة',
+                    'body'  => 'تم حذف مستوى المهارة بنجاح.',
                 ],
             ],
         ],
@@ -57,22 +57,22 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Skill Levels deleted',
-                    'body'  => 'The skills has been deleted successfully.',
+                    'title' => 'تم حذف مستويات المهارات',
+                    'body'  => 'تم حذف مستويات المهارات بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Skill Levels force deleted',
-                    'body'  => 'The skills has been force deleted successfully.',
+                    'title' => 'تم حذف مستويات المهارات نهائياً',
+                    'body'  => 'تم حذف مستويات المهارات نهائياً بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Skill Levels force restored',
-                    'body'  => 'The skills has been force restored successfully.',
+                    'title' => 'تم استعادة مستويات المهارات',
+                    'body'  => 'تم استعادة مستويات المهارات بنجاح.',
                 ],
             ],
         ],
@@ -80,9 +80,9 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name'          => 'Name',
-            'level'         => 'Level',
-            'default-level' => 'Default Level',
+            'name'          => 'الاسم',
+            'level'         => 'المستوى',
+            'default-level' => 'المستوى الافتراضي',
         ],
     ],
 ];

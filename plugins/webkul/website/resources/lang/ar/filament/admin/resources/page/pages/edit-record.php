@@ -2,33 +2,33 @@
 
 return [
     'notification' => [
-        'title' => 'Page updated',
-        'body'  => 'The page has been updated successfully.',
+        'title' => 'تم تحديث الصفحة',
+        'body'  => 'تم تحديث الصفحة بنجاح.',
     ],
 
     'header-actions' => [
         'draft' => [
-            'label' => 'Set as Draft',
+            'label' => 'تعيين كمسودة',
 
             'notification' => [
-                'title' => 'Page set as draft',
-                'body'  => 'The page has been set as draft successfully.',
+                'title' => 'تم تعيين الصفحة كمسودة',
+                'body'  => 'تم تعيين الصفحة كمسودة بنجاح.',
             ],
         ],
 
         'publish' => [
-            'label' => 'Publish',
+            'label' => 'نشر',
 
             'notification' => [
-                'title' => 'Page published',
-                'body'  => 'The page has been published successfully.',
+                'title' => 'تم نشر الصفحة',
+                'body'  => 'تم نشر الصفحة بنجاح.',
             ],
         ],
 
         'delete' => [
             'notification' => [
-                'title' => 'Page deleted',
-                'body'  => 'The page has been deleted successfully.',
+                'title' => 'تم حذف الصفحة',
+                'body'  => 'تم حذف الصفحة بنجاح.',
             ],
         ],
     ],

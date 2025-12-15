@@ -3,19 +3,19 @@
 return [
     'header-actions' => [
         'print' => [
-            'label' => 'Print',
+            'label' => 'طباعة',
         ],
 
         'delete' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Order Deleted',
-                    'body'  => 'The order has been deleted successfully.',
+                    'title' => 'تم حذف الطلب',
+                    'body'  => 'تم حذف الطلب بنجاح.',
                 ],
 
                 'error' => [
-                    'title' => 'Order could not be deleted',
-                    'body'  => 'The order cannot be deleted because it is currently in use.',
+                    'title' => 'تعذر حذف الطلب',
+                    'body'  => 'لا يمكن حذف الطلب لأنه قيد الاستخدام حالياً.',
                 ],
             ],
         ],

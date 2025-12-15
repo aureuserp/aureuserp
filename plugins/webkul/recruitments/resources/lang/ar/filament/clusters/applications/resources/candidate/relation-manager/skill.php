@@ -4,57 +4,57 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'skill-type'  => 'Skill Type',
-                'skill'       => 'Skill',
-                'skill-level' => 'Skill Level',
+                'skill-type'  => 'نوع المهارة',
+                'skill'       => 'المهارة',
+                'skill-level' => 'مستوى المهارة',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'skill-type'    => 'Skill Type',
-            'skill'         => 'Skill',
-            'skill-level'   => 'Skill Level',
-            'level-percent' => 'Level Percent',
-            'created-by'    => 'Created By',
-            'user'          => 'User',
-            'created-at'    => 'Created At',
+            'skill-type'    => 'نوع المهارة',
+            'skill'         => 'المهارة',
+            'skill-level'   => 'مستوى المهارة',
+            'level-percent' => 'نسبة المستوى',
+            'created-by'    => 'أنشئ بواسطة',
+            'user'          => 'المستخدم',
+            'created-at'    => 'تاريخ الإنشاء',
         ],
 
         'groups' => [
-            'skill-type' => 'Skill Type',
+            'skill-type' => 'نوع المهارة',
         ],
 
         'header-actions' => [
-            'add-skill' => 'Add Skill',
+            'add-skill' => 'إضافة مهارة',
         ],
 
         'filters' => [
-            'activity-type'   => 'Activity Type',
-            'activity-status' => 'Activity Status',
-            'has-delay'       => 'Has Delay',
+            'activity-type'   => 'نوع النشاط',
+            'activity-status' => 'حالة النشاط',
+            'has-delay'       => 'يوجد تأخير',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Skill updated',
-                    'body'  => 'The skill has been updated successfully.',
+                    'title' => 'تم تحديث المهارة',
+                    'body'  => 'تم تحديث المهارة بنجاح.',
                 ],
             ],
 
             'create' => [
                 'notification' => [
-                    'title' => 'Skill created',
-                    'body'  => 'The skill has been created successfully.',
+                    'title' => 'تم إنشاء المهارة',
+                    'body'  => 'تم إنشاء المهارة بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Skill deleted',
-                    'body'  => 'The skill has been deleted successfully.',
+                    'title' => 'تم حذف المهارة',
+                    'body'  => 'تم حذف المهارة بنجاح.',
                 ],
             ],
         ],
@@ -62,8 +62,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Skills deleted',
-                    'body'  => 'The skills has been deleted successfully.',
+                    'title' => 'تم حذف المهارات',
+                    'body'  => 'تم حذف المهارات بنجاح.',
                 ],
             ],
         ],
@@ -71,10 +71,10 @@ return [
 
     'infolist' => [
         'entries' => [
-            'skill-type'    => 'Skill Type',
-            'skill'         => 'Skill',
-            'skill-level'   => 'Skill Level',
-            'level-percent' => 'Level Percent',
+            'skill-type'    => 'نوع المهارة',
+            'skill'         => 'المهارة',
+            'skill-level'   => 'مستوى المهارة',
+            'level-percent' => 'نسبة المستوى',
         ],
     ],
 ];

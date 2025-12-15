@@ -4,91 +4,91 @@ return [
     'form' => [
         'tabs' => [
             'general-information' => [
-                'title' => 'General Information',
+                'title' => 'المعلومات العامة',
 
                 'sections' => [
                     'branch-information' => [
-                        'title' => 'Branch Information',
+                        'title' => 'معلومات الفرع',
 
                         'fields' => [
-                            'company-name'                => 'Company Name',
-                            'registration-number'         => 'Registration Number',
-                            'tax-id'                      => 'Tax ID',
-                            'tax-id-tooltip'              => 'The Tax ID is a unique identifier for your company.',
-                            'color'                       => 'Color',
-                            'company-id'                  => 'Company ID',
-                            'company-id-tooltip'          => 'The Company ID is a unique identifier for your company.',
+                            'company-name'                => 'اسم الشركة',
+                            'registration-number'         => 'رقم التسجيل',
+                            'tax-id'                      => 'الرقم الضريبي',
+                            'tax-id-tooltip'              => 'الرقم الضريبي هو معرف فريد لشركتك.',
+                            'color'                       => 'اللون',
+                            'company-id'                  => 'معرف الشركة',
+                            'company-id-tooltip'          => 'معرف الشركة هو معرف فريد لشركتك.',
                         ],
                     ],
 
                     'branding' => [
-                        'title'  => 'Branding',
+                        'title'  => 'العلامة التجارية',
                         'fields' => [
-                            'branch-logo' => 'Branch Logo',
+                            'branch-logo' => 'شعار الفرع',
                         ],
                     ],
                 ],
             ],
 
             'address-information' => [
-                'title' => 'Address Information',
+                'title' => 'معلومات العنوان',
 
                 'sections' => [
                     'address-information' => [
-                        'title' => 'Address Information',
+                        'title' => 'معلومات العنوان',
 
                         'fields' => [
-                            'street1'                => 'Street 1',
-                            'street2'                => 'Street 2',
-                            'city'                   => 'City',
-                            'zip'                    => 'Zip Code',
-                            'country'                => 'Country',
-                            'country-currency-name'  => 'Currency Name',
-                            'country-phone-code'     => 'Phone Code',
-                            'country-code'           => 'Code',
-                            'country-name'           => 'Country Name',
-                            'country-state-required' => 'State Required',
-                            'country-zip-required'   => 'Zip Required',
-                            'country-create'         => 'Create Country',
-                            'state'                  => 'State',
-                            'state-name'             => 'State Name',
-                            'state-code'             => 'State Code',
-                            'zip-code'               => 'Zip Code',
-                            'state-create'           => 'Create State',
+                            'street1'                => 'الشارع 1',
+                            'street2'                => 'الشارع 2',
+                            'city'                   => 'المدينة',
+                            'zip'                    => 'الرمز البريدي',
+                            'country'                => 'الدولة',
+                            'country-currency-name'  => 'اسم العملة',
+                            'country-phone-code'     => 'رمز الهاتف',
+                            'country-code'           => 'الرمز',
+                            'country-name'           => 'اسم الدولة',
+                            'country-state-required' => 'الولاية مطلوبة',
+                            'country-zip-required'   => 'الرمز البريدي مطلوب',
+                            'country-create'         => 'إنشاء دولة',
+                            'state'                  => 'الولاية',
+                            'state-name'             => 'اسم الولاية',
+                            'state-code'             => 'رمز الولاية',
+                            'zip-code'               => 'الرمز البريدي',
+                            'state-create'           => 'إنشاء ولاية',
                         ],
                     ],
 
                     'additional-information' => [
-                        'title' => 'Additional Information',
+                        'title' => 'معلومات إضافية',
 
                         'fields' => [
-                            'default-currency'        => 'Default Currency',
-                            'currency-name'           => 'Currency Name',
-                            'currency-full-name'      => 'Currency Full Name',
-                            'currency-symbol'         => 'Currency Symbol',
-                            'currency-iso-numeric'    => 'Currency ISO Numeric',
-                            'currency-decimal-places' => 'Currency Decimal Places',
-                            'currency-rounding'       => 'Currency Rounding',
-                            'currency-status'         => 'Currency Status',
-                            'currency-create'         => 'Create Currency',
-                            'company-foundation-date' => 'Company Foundation Date',
-                            'status'                  => 'Status',
+                            'default-currency'        => 'العملة الافتراضية',
+                            'currency-name'           => 'اسم العملة',
+                            'currency-full-name'      => 'الاسم الكامل للعملة',
+                            'currency-symbol'         => 'رمز العملة',
+                            'currency-iso-numeric'    => 'الرمز الرقمي ISO للعملة',
+                            'currency-decimal-places' => 'المنازل العشرية للعملة',
+                            'currency-rounding'       => 'تقريب العملة',
+                            'currency-status'         => 'حالة العملة',
+                            'currency-create'         => 'إنشاء عملة',
+                            'company-foundation-date' => 'تاريخ تأسيس الشركة',
+                            'status'                  => 'الحالة',
                         ],
                     ],
                 ],
             ],
 
             'contact-information' => [
-                'title' => 'Contact Information',
+                'title' => 'معلومات الاتصال',
 
                 'sections' => [
                     'contact-information' => [
-                        'title' => 'Contact Information',
+                        'title' => 'معلومات الاتصال',
 
                         'fields' => [
-                            'email-address' => 'Email Address',
-                            'phone-number'  => 'Phone Number',
-                            'mobile-number' => 'Phone Number',
+                            'email-address' => 'البريد الإلكتروني',
+                            'phone-number'  => 'رقم الهاتف',
+                            'mobile-number' => 'رقم الجوال',
                         ],
                     ],
                 ],
@@ -98,41 +98,41 @@ return [
 
     'table' => [
         'columns' => [
-            'logo'                 => 'Logo',
-            'company-name'         => 'Branch Name',
-            'branches'             => 'Branches',
-            'email'                => 'Email',
-            'city'                 => 'City',
-            'country'              => 'Country',
-            'currency'             => 'Currency',
-            'status'               => 'Status',
-            'created-at'           => 'Created At',
-            'updated-at'           => 'Updated At',
+            'logo'                 => 'الشعار',
+            'company-name'         => 'اسم الفرع',
+            'branches'             => 'الفروع',
+            'email'                => 'البريد الإلكتروني',
+            'city'                 => 'المدينة',
+            'country'              => 'الدولة',
+            'currency'             => 'العملة',
+            'status'               => 'الحالة',
+            'created-at'           => 'تاريخ الإنشاء',
+            'updated-at'           => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'company-name' => 'Branch Name',
-            'city'         => 'City',
-            'country'      => 'Country',
-            'state'        => 'State',
-            'email'        => 'Email',
-            'phone'        => 'Phone',
-            'currency'     => 'Currency',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'company-name' => 'اسم الفرع',
+            'city'         => 'المدينة',
+            'country'      => 'الدولة',
+            'state'        => 'الولاية',
+            'email'        => 'البريد الإلكتروني',
+            'phone'        => 'الهاتف',
+            'currency'     => 'العملة',
+            'created-at'   => 'تاريخ الإنشاء',
+            'updated-at'   => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'trashed' => 'Trashed',
-            'status'  => 'Status',
-            'country' => 'Country',
+            'trashed' => 'المحذوفة',
+            'status'  => 'الحالة',
+            'country' => 'الدولة',
         ],
 
         'header-actions' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Branch created',
-                    'body'  => 'The branch has been created successfully.',
+                    'title' => 'تم إنشاء الفرع',
+                    'body'  => 'تم إنشاء الفرع بنجاح.',
                 ],
             ],
         ],
@@ -140,22 +140,22 @@ return [
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Branch updated',
-                    'body'  => 'The branch has been updated successfully.',
+                    'title' => 'تم تحديث الفرع',
+                    'body'  => 'تم تحديث الفرع بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Branch deleted',
-                    'body'  => 'The branch has been deleted successfully.',
+                    'title' => 'تم حذف الفرع',
+                    'body'  => 'تم حذف الفرع بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Branch restored',
-                    'body'  => 'The branch has been restored successfully.',
+                    'title' => 'تم استعادة الفرع',
+                    'body'  => 'تم استعادة الفرع بنجاح.',
                 ],
             ],
         ],
@@ -163,22 +163,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Branches restored',
-                    'body'  => 'The branches has been restored successfully.',
+                    'title' => 'تم استعادة الفروع',
+                    'body'  => 'تم استعادة الفروع بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Branches deleted',
-                    'body'  => 'The branches has been deleted successfully.',
+                    'title' => 'تم حذف الفروع',
+                    'body'  => 'تم حذف الفروع بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Branches force deleted',
-                    'body'  => 'The branches has been force deleted successfully.',
+                    'title' => 'تم حذف الفروع نهائياً',
+                    'body'  => 'تم حذف الفروع نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -187,88 +187,88 @@ return [
     'infolist' => [
         'tabs' => [
             'general-information' => [
-                'title' => 'General Information',
+                'title' => 'المعلومات العامة',
 
                 'sections' => [
                     'branch-information' => [
-                        'title' => 'Branch Information',
+                        'title' => 'معلومات الفرع',
 
                         'entries' => [
-                            'company-name'                => 'Company Name',
-                            'registration-number'         => 'Registration Number',
-                            'registration-number-tooltip' => 'The Tax ID is a unique identifier for your company.',
-                            'color'                       => 'Color',
+                            'company-name'                => 'اسم الشركة',
+                            'registration-number'         => 'رقم التسجيل',
+                            'registration-number-tooltip' => 'الرقم الضريبي هو معرف فريد لشركتك.',
+                            'color'                       => 'اللون',
                         ],
                     ],
 
                     'branding' => [
-                        'title'   => 'Branding',
+                        'title'   => 'العلامة التجارية',
                         'entries' => [
-                            'branch-logo' => 'Branch Logo',
+                            'branch-logo' => 'شعار الفرع',
                         ],
                     ],
                 ],
             ],
 
             'address-information' => [
-                'title' => 'Address Information',
+                'title' => 'معلومات العنوان',
 
                 'sections' => [
                     'address-information' => [
-                        'title' => 'Address Information',
+                        'title' => 'معلومات العنوان',
 
                         'entries' => [
-                            'street1'                => 'Street 1',
-                            'street2'                => 'Street 2',
-                            'city'                   => 'City',
-                            'zip'                    => 'Zip Code',
-                            'country'                => 'Country',
-                            'country-currency-name'  => 'Currency Name',
-                            'country-phone-code'     => 'Phone Code',
-                            'country-code'           => 'Code',
-                            'country-name'           => 'Country Name',
-                            'country-state-required' => 'State Required',
-                            'country-zip-required'   => 'Zip Required',
-                            'country-create'         => 'Create Country',
-                            'state'                  => 'State',
-                            'state-name'             => 'State Name',
-                            'state-code'             => 'State Code',
-                            'zip-code'               => 'Zip Code',
-                            'state-create'           => 'Create State',
+                            'street1'                => 'الشارع 1',
+                            'street2'                => 'الشارع 2',
+                            'city'                   => 'المدينة',
+                            'zip'                    => 'الرمز البريدي',
+                            'country'                => 'الدولة',
+                            'country-currency-name'  => 'اسم العملة',
+                            'country-phone-code'     => 'رمز الهاتف',
+                            'country-code'           => 'الرمز',
+                            'country-name'           => 'اسم الدولة',
+                            'country-state-required' => 'الولاية مطلوبة',
+                            'country-zip-required'   => 'الرمز البريدي مطلوب',
+                            'country-create'         => 'إنشاء دولة',
+                            'state'                  => 'الولاية',
+                            'state-name'             => 'اسم الولاية',
+                            'state-code'             => 'رمز الولاية',
+                            'zip-code'               => 'الرمز البريدي',
+                            'state-create'           => 'إنشاء ولاية',
                         ],
                     ],
 
                     'additional-information' => [
-                        'title' => 'Additional Information',
+                        'title' => 'معلومات إضافية',
 
                         'entries' => [
-                            'default-currency'        => 'Default Currency',
-                            'currency-name'           => 'Currency Name',
-                            'currency-full-name'      => 'Currency Full Name',
-                            'currency-symbol'         => 'Currency Symbol',
-                            'currency-iso-numeric'    => 'Currency ISO Numeric',
-                            'currency-decimal-places' => 'Currency Decimal Places',
-                            'currency-rounding'       => 'Currency Rounding',
-                            'currency-status'         => 'Currency Status',
-                            'currency-create'         => 'Create Currency',
-                            'company-foundation-date' => 'Company Foundation Date',
-                            'status'                  => 'Status',
+                            'default-currency'        => 'العملة الافتراضية',
+                            'currency-name'           => 'اسم العملة',
+                            'currency-full-name'      => 'الاسم الكامل للعملة',
+                            'currency-symbol'         => 'رمز العملة',
+                            'currency-iso-numeric'    => 'الرمز الرقمي ISO للعملة',
+                            'currency-decimal-places' => 'المنازل العشرية للعملة',
+                            'currency-rounding'       => 'تقريب العملة',
+                            'currency-status'         => 'حالة العملة',
+                            'currency-create'         => 'إنشاء عملة',
+                            'company-foundation-date' => 'تاريخ تأسيس الشركة',
+                            'status'                  => 'الحالة',
                         ],
                     ],
                 ],
             ],
 
             'contact-information' => [
-                'title' => 'Contact Information',
+                'title' => 'معلومات الاتصال',
 
                 'sections' => [
                     'contact-information' => [
-                        'title' => 'Contact Information',
+                        'title' => 'معلومات الاتصال',
 
                         'entries' => [
-                            'email-address' => 'Email Address',
-                            'phone-number'  => 'Phone Number',
-                            'mobile-number' => 'Phone Number',
+                            'email-address' => 'البريد الإلكتروني',
+                            'phone-number'  => 'رقم الهاتف',
+                            'mobile-number' => 'رقم الجوال',
                         ],
                     ],
                 ],

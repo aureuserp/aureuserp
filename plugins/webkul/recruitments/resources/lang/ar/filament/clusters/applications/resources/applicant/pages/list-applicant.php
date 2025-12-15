@@ -2,28 +2,28 @@
 
 return [
     'notification' => [
-        'title' => 'Applicant created',
-        'body'  => 'The applicant has been created successf ully.',
+        'title' => 'تم إنشاء المتقدم',
+        'body'  => 'تم إنشاء المتقدم بنجاح.',
     ],
 
     'tabs' => [
-        'my-applicants'          => 'My Applicants',
-        'un-assigned'            => 'Un Assigned',
-        'in-progress'            => 'In Progress',
-        'hired'                  => 'Hired',
-        'refused'                => 'Refused',
-        'archived'               => 'Archived',
-        'blocked'                => 'Blocked',
-        'directly-available'     => 'Directly Available',
-        'created-recently'       => 'Created Recently',
-        'stage-updated-recently' => 'Stage Updated Recently',
+        'my-applicants'          => 'المتقدمون لي',
+        'un-assigned'            => 'غير مسند',
+        'in-progress'            => 'قيد التنفيذ',
+        'hired'                  => 'تم التوظيف',
+        'refused'                => 'مرفوض',
+        'archived'               => 'مؤرشف',
+        'blocked'                => 'محظور',
+        'directly-available'     => 'متاح مباشرة',
+        'created-recently'       => 'أنشئ مؤخراً',
+        'stage-updated-recently' => 'تم تحديث المرحلة مؤخراً',
     ],
 
     'header-actions' => [
         'create-applicant' => [
-            'label' => 'New Applicant',
+            'label' => 'متقدم جديد',
 
-            'modal-title' => 'Create Applicant',
+            'modal-title' => 'إنشاء متقدم',
         ],
     ],
 ];

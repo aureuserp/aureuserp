@@ -2,23 +2,23 @@
 
 return [
     'navigation' => [
-        'title' => 'Orders',
+        'title' => 'الطلبات',
     ],
 
     'tabs' => [
-        'my-orders'      => 'My Orders',
-        'starred'        => 'Starred',
-        'waiting-bills'  => 'Waiting Bills',
-        'received-bills' => 'Bills Received',
+        'my-orders'      => 'طلباتي',
+        'starred'        => 'المميزة',
+        'waiting-bills'  => 'فواتير قيد الانتظار',
+        'received-bills' => 'فواتير مستلمة',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Order',
+            'label' => 'طلب جديد',
 
             'notification' => [
-                'title' => 'Order created',
-                'body'  => 'The order has been created successfully.',
+                'title' => 'تم إنشاء الطلب',
+                'body'  => 'تم إنشاء الطلب بنجاح.',
             ],
         ],
     ],

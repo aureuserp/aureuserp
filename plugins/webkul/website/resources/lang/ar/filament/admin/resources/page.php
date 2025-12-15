@@ -2,39 +2,39 @@
 
 return [
     'navigation' => [
-        'title' => 'Pages',
-        'group' => 'Website',
+        'title' => 'الصفحات',
+        'group' => 'الموقع الإلكتروني',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'fields' => [
-                    'title'             => 'Title',
-                    'title-placeholder' => 'Page title ...',
-                    'slug'              => 'Slug',
-                    'content'           => 'Content',
+                    'title'             => 'العنوان',
+                    'title-placeholder' => 'عنوان الصفحة ...',
+                    'slug'              => 'الرابط المختصر',
+                    'content'           => 'المحتوى',
                 ],
             ],
 
             'seo' => [
-                'title' => 'SEO',
+                'title' => 'تحسين محركات البحث',
 
                 'fields' => [
-                    'meta-title'       => 'Meta Title',
-                    'meta-keywords'    => 'Meta Keywords',
-                    'meta-description' => 'Meta Description',
+                    'meta-title'       => 'عنوان الميتا',
+                    'meta-keywords'    => 'كلمات الميتا المفتاحية',
+                    'meta-description' => 'وصف الميتا',
                 ],
             ],
 
             'settings' => [
-                'title' => 'Settings',
+                'title' => 'الإعدادات',
 
                 'fields' => [
-                    'is-header-visible' => 'Is Visible Header Menu',
-                    'is-footer-visible' => 'Is Visible Footer Menu',
+                    'is-header-visible' => 'مرئي في قائمة الرأس',
+                    'is-footer-visible' => 'مرئي في قائمة التذييل',
                 ],
             ],
         ],
@@ -42,51 +42,51 @@ return [
 
     'table' => [
         'columns' => [
-            'title'             => 'Title',
-            'slug'              => 'Slug',
-            'creator'           => 'Created By',
-            'is-published'      => 'Is Published',
-            'is-header-visible' => 'Is Visible Header Menu',
-            'is-footer-visible' => 'Is Visible Footer Menu',
-            'created-at'        => 'Created At',
-            'updated-at'        => 'Updated At',
+            'title'             => 'العنوان',
+            'slug'              => 'الرابط المختصر',
+            'creator'           => 'أنشئ بواسطة',
+            'is-published'      => 'منشور',
+            'is-header-visible' => 'مرئي في قائمة الرأس',
+            'is-footer-visible' => 'مرئي في قائمة التذييل',
+            'created-at'        => 'تاريخ الإنشاء',
+            'updated-at'        => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'created-at' => 'Created At',
+            'created-at' => 'تاريخ الإنشاء',
         ],
 
         'filters' => [
-            'is-published' => 'Is Published',
-            'creator'      => 'Created By',
+            'is-published' => 'منشور',
+            'creator'      => 'أنشئ بواسطة',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Page updated',
-                    'body'  => 'The page has been updated successfully.',
+                    'title' => 'تم تحديث الصفحة',
+                    'body'  => 'تم تحديث الصفحة بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Page restored',
-                    'body'  => 'The page has been restored successfully.',
+                    'title' => 'تم استعادة الصفحة',
+                    'body'  => 'تم استعادة الصفحة بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Page deleted',
-                    'body'  => 'The page has been deleted successfully.',
+                    'title' => 'تم حذف الصفحة',
+                    'body'  => 'تم حذف الصفحة بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Page force deleted',
-                    'body'  => 'The page has been force deleted successfully.',
+                    'title' => 'تم حذف الصفحة نهائياً',
+                    'body'  => 'تم حذف الصفحة نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -94,22 +94,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Pages restored',
-                    'body'  => 'The pages has been restored successfully.',
+                    'title' => 'تم استعادة الصفحات',
+                    'body'  => 'تم استعادة الصفحات بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Pages deleted',
-                    'body'  => 'The pages has been deleted successfully.',
+                    'title' => 'تم حذف الصفحات',
+                    'body'  => 'تم حذف الصفحات بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Pages force deleted',
-                    'body'  => 'The pages has been force deleted successfully.',
+                    'title' => 'تم حذف الصفحات نهائياً',
+                    'body'  => 'تم حذف الصفحات نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -118,45 +118,45 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'entries' => [
-                    'title'   => 'Title',
-                    'slug'    => 'Slug',
-                    'content' => 'Content',
-                    'banner'  => 'Banner',
+                    'title'   => 'العنوان',
+                    'slug'    => 'الرابط المختصر',
+                    'content' => 'المحتوى',
+                    'banner'  => 'البانر',
                 ],
             ],
 
             'seo' => [
-                'title' => 'SEO',
+                'title' => 'تحسين محركات البحث',
 
                 'entries' => [
-                    'meta-title'       => 'Meta Title',
-                    'meta-keywords'    => 'Meta Keywords',
-                    'meta-description' => 'Meta Description',
+                    'meta-title'       => 'عنوان الميتا',
+                    'meta-keywords'    => 'كلمات الميتا المفتاحية',
+                    'meta-description' => 'وصف الميتا',
                 ],
             ],
 
             'record-information' => [
-                'title' => 'Record Information',
+                'title' => 'معلومات السجل',
 
                 'entries' => [
-                    'author'          => 'Author',
-                    'created-by'      => 'Created By',
-                    'published-at'    => 'Published At',
-                    'last-updated-by' => 'Last Updated By',
-                    'last-updated'    => 'Last Updated At',
-                    'created-at'      => 'Created At',
+                    'author'          => 'المؤلف',
+                    'created-by'      => 'أنشئ بواسطة',
+                    'published-at'    => 'تاريخ النشر',
+                    'last-updated-by' => 'آخر تحديث بواسطة',
+                    'last-updated'    => 'آخر تحديث في',
+                    'created-at'      => 'تاريخ الإنشاء',
                 ],
             ],
 
             'settings' => [
-                'title' => 'Settings',
+                'title' => 'الإعدادات',
 
                 'entries' => [
-                    'is-header-visible' => 'Is Visible Header Menu',
-                    'is-footer-visible' => 'Is Visible Footer Menu',
+                    'is-header-visible' => 'مرئي في قائمة الرأس',
+                    'is-footer-visible' => 'مرئي في قائمة التذييل',
                 ],
             ],
         ],

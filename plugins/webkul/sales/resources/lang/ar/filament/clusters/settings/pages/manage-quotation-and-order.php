@@ -1,21 +1,21 @@
 <?php
 
 return [
-    'title' => 'Manage Quotation & Order',
+    'title' => 'إدارة عروض الأسعار والطلبات',
 
-    'breadcrumb' => 'Manage Quotation & Order',
+    'breadcrumb' => 'إدارة عروض الأسعار والطلبات',
 
     'navigation' => [
-        'title' => 'Manage Quotation & Order',
+        'title' => 'إدارة عروض الأسعار والطلبات',
     ],
 
     'form' => [
         'fields' => [
-            'validity-suffix'         => 'days',
-            'validity'                => 'Default Quotation Validity',
-            'validity-help'           => 'The default number of days a quotation is valid for.',
-            'lock-confirm-sales'      => 'Lock Confirm Sales',
-            'lock-confirm-sales-help' => 'If enabled, the sales order will be locked after confirmation.',
+            'validity-suffix'         => 'أيام',
+            'validity'                => 'صلاحية عرض السعر الافتراضية',
+            'validity-help'           => 'عدد الأيام الافتراضية التي يكون فيها عرض السعر صالحاً.',
+            'lock-confirm-sales'      => 'قفل تأكيد المبيعات',
+            'lock-confirm-sales-help' => 'إذا تم التفعيل، سيتم قفل أمر البيع بعد التأكيد.',
         ],
     ],
 ];

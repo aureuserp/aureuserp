@@ -1,16 +1,16 @@
 <?php
 
 return [
-    'title' => 'Vendors',
+    'title' => 'الموردون',
 
     'table' => [
         'header-actions' => [
             'create' => [
-                'label' => 'Add Vendor Price',
+                'label' => 'إضافة سعر مورد',
 
                 'notification' => [
-                    'title' => 'Vendor Price created',
-                    'body'  => 'The vendor price has been created successfully.',
+                    'title' => 'تم إنشاء سعر المورد',
+                    'body'  => 'تم إنشاء سعر المورد بنجاح.',
                 ],
             ],
         ],

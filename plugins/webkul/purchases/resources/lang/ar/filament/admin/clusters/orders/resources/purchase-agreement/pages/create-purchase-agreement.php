@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'title' => 'Create Purchase Agreement',
+    'title' => 'إنشاء اتفاقية شراء',
 
     'notification' => [
-        'title' => 'Purchase Agreement created',
-        'body'  => 'The purchase agreement has been created successfully.',
+        'title' => 'تم إنشاء اتفاقية الشراء',
+        'body'  => 'تم إنشاء اتفاقية الشراء بنجاح.',
     ],
 ];

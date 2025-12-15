@@ -2,34 +2,34 @@
 
 return [
     'form' => [
-        'name'       => 'Name',
-        'short-name' => 'Short Name',
+        'name'       => 'الاسم',
+        'short-name' => 'الاسم المختصر',
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'short-name' => 'Short Name',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'الاسم',
+            'short-name' => 'الاسم المختصر',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'creator' => 'Creator',
+            'creator' => 'المُنشئ',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Title updated',
-                    'body'  => 'The Title has been updated successfully.',
+                    'title' => 'تم تحديث اللقب',
+                    'body'  => 'تم تحديث اللقب بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Title deleted',
-                    'body'  => 'The title has been deleted successfully.',
+                    'title' => 'تم حذف اللقب',
+                    'body'  => 'تم حذف اللقب بنجاح.',
                 ],
             ],
         ],
@@ -37,8 +37,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Titles deleted',
-                    'body'  => 'The titles has been deleted successfully.',
+                    'title' => 'تم حذف الألقاب',
+                    'body'  => 'تم حذف الألقاب بنجاح.',
                 ],
             ],
         ],

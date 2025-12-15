@@ -3,17 +3,17 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Bank Account',
+            'label' => 'حساب بنكي جديد',
 
             'notification' => [
-                'title' => 'Bank Account created',
-                'body'  => 'The bank account has been created successfully.',
+                'title' => 'تم إنشاء الحساب البنكي',
+                'body'  => 'تم إنشاء الحساب البنكي بنجاح.',
             ],
         ],
     ],
 
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'الكل',
+        'archived' => 'المؤرشفة',
     ],
 ];

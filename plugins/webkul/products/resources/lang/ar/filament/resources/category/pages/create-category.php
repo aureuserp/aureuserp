@@ -2,14 +2,14 @@
 
 return [
     'notification' => [
-        'title' => 'Category created',
-        'body'  => 'The category has been created successfully.',
+        'title' => 'تم إنشاء الفئة',
+        'body'  => 'تم إنشاء الفئة بنجاح.',
     ],
 
     'create' => [
         'notification' => [
             'error' => [
-                'title' => 'Category updated failed',
+                'title' => 'فشل تحديث الفئة',
             ],
         ],
     ],

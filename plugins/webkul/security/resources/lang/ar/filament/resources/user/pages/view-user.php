@@ -4,8 +4,8 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'User deleted',
-                'body'  => 'The user has been deleted successfully.',
+                'title' => 'تم حذف المستخدم',
+                'body'  => 'تم حذف المستخدم بنجاح.',
             ],
         ],
     ],

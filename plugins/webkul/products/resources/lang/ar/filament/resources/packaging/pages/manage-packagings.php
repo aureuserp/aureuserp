@@ -3,11 +3,11 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Packaging',
+            'label' => 'تغليف جديد',
 
             'notification' => [
-                'title' => 'Packaging created',
-                'body'  => 'The packaging has been created successfully.',
+                'title' => 'تم إنشاء التغليف',
+                'body'  => 'تم إنشاء التغليف بنجاح.',
             ],
         ],
     ],

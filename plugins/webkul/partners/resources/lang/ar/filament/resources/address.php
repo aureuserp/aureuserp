@@ -2,58 +2,58 @@
 
 return [
     'form' => [
-        'partner' => 'Partner',
-        'name'    => 'Name',
-        'email'   => 'Email',
-        'phone'   => 'Phone',
-        'mobile'  => 'Mobile',
-        'type'    => 'Type',
-        'address' => 'Address',
-        'city'    => 'City',
-        'street1' => 'Street 1',
-        'street2' => 'Street 2',
-        'state'   => 'State',
-        'zip'     => 'Zip',
-        'code'    => 'Code',
-        'country' => 'Country',
+        'partner' => 'الشريك',
+        'name'    => 'الاسم',
+        'email'   => 'البريد الإلكتروني',
+        'phone'   => 'الهاتف',
+        'mobile'  => 'الجوال',
+        'type'    => 'النوع',
+        'address' => 'العنوان',
+        'city'    => 'المدينة',
+        'street1' => 'الشارع 1',
+        'street2' => 'الشارع 2',
+        'state'   => 'الولاية',
+        'zip'     => 'الرمز البريدي',
+        'code'    => 'الرمز',
+        'country' => 'الدولة',
     ],
 
     'table' => [
         'header-actions' => [
             'create' => [
-                'label' => 'Add Address',
+                'label' => 'إضافة عنوان',
 
                 'notification' => [
-                    'title' => 'Address created',
-                    'body'  => 'The address has been created successfully.',
+                    'title' => 'تم إنشاء العنوان',
+                    'body'  => 'تم إنشاء العنوان بنجاح.',
                 ],
             ],
         ],
 
         'columns' => [
-            'type'    => 'Type',
-            'name'    => 'Contact Name',
-            'address' => 'Address',
-            'city'    => 'City',
-            'street1' => 'Street 1',
-            'street2' => 'Street 2',
-            'state'   => 'State',
-            'zip'     => 'Zip',
-            'country' => 'Country',
+            'type'    => 'النوع',
+            'name'    => 'اسم جهة الاتصال',
+            'address' => 'العنوان',
+            'city'    => 'المدينة',
+            'street1' => 'الشارع 1',
+            'street2' => 'الشارع 2',
+            'state'   => 'الولاية',
+            'zip'     => 'الرمز البريدي',
+            'country' => 'الدولة',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Address updated',
-                    'body'  => 'The address has been updated successfully.',
+                    'title' => 'تم تحديث العنوان',
+                    'body'  => 'تم تحديث العنوان بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Address deleted',
-                    'body'  => 'The address has been deleted successfully.',
+                    'title' => 'تم حذف العنوان',
+                    'body'  => 'تم حذف العنوان بنجاح.',
                 ],
             ],
         ],
@@ -61,8 +61,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Addresses deleted',
-                    'body'  => 'The addresses has been deleted successfully.',
+                    'title' => 'تم حذف العناوين',
+                    'body'  => 'تم حذف العناوين بنجاح.',
                 ],
             ],
         ],

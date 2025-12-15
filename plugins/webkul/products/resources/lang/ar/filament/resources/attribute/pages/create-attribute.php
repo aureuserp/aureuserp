@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Attribute created',
-        'body'  => 'The attribute has been created successfully.',
+        'title' => 'تم إنشاء السمة',
+        'body'  => 'تم إنشاء السمة بنجاح.',
     ],
 ];

@@ -3,11 +3,11 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Category',
+            'label' => 'فئة جديدة',
 
             'notification' => [
-                'title' => 'Category created',
-                'body'  => 'The category has been created successfully.',
+                'title' => 'تم إنشاء الفئة',
+                'body'  => 'تم إنشاء الفئة بنجاح.',
             ],
         ],
     ],

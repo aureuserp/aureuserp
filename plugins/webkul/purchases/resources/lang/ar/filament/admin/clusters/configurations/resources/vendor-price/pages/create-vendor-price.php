@@ -2,11 +2,11 @@
 
 return [
     'navigation' => [
-        'title' => 'Create Vendor Price List',
+        'title' => 'إنشاء قائمة أسعار المورد',
     ],
 
     'notification' => [
-        'title' => 'Vendor Price created',
-        'body'  => 'The vendor price has been created successfully.',
+        'title' => 'تم إنشاء سعر المورد',
+        'body'  => 'تم إنشاء سعر المورد بنجاح.',
     ],
 ];

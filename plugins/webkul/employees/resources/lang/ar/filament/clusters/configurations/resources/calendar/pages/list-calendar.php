@@ -2,17 +2,17 @@
 
 return [
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'الكل',
+        'archived' => 'المؤرشفة',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Working Schedule',
+            'label' => 'جدول عمل جديد',
 
             'notification' => [
-                'title' => 'Working Schedule created',
-                'body'  => 'The working schedule has been created successfully.',
+                'title' => 'تم إنشاء جدول العمل',
+                'body'  => 'تم إنشاء جدول العمل بنجاح.',
             ],
         ],
     ],

@@ -2,120 +2,120 @@
 
 return [
     'navigation' => [
-        'title' => 'Purchase Agreements',
-        'group' => 'Purchase',
+        'title' => 'اتفاقيات الشراء',
+        'group' => 'الشراء',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'fields' => [
-                    'vendor'                => 'Vendor',
-                    'valid-from'            => 'Valid From',
-                    'valid-to'              => 'Valid Until',
-                    'buyer'                 => 'Buyer',
-                    'reference'             => 'Reference',
-                    'reference-placeholder' => 'eg. PO/123',
-                    'agreement-type'        => 'Agreement Type',
-                    'company'               => 'Company',
-                    'currency'              => 'Currency',
+                    'vendor'                => 'المورد',
+                    'valid-from'            => 'صالح من',
+                    'valid-to'              => 'صالح حتى',
+                    'buyer'                 => 'المشتري',
+                    'reference'             => 'المرجع',
+                    'reference-placeholder' => 'مثال: PO/123',
+                    'agreement-type'        => 'نوع الاتفاقية',
+                    'company'               => 'الشركة',
+                    'currency'              => 'العملة',
                 ],
             ],
         ],
 
         'tabs' => [
             'products' => [
-                'title' => 'Products',
+                'title' => 'المنتجات',
 
                 'columns' => [
-                    'product'    => 'Product',
-                    'quantity'   => 'Quantity',
-                    'ordered'    => 'Ordered',
-                    'uom'        => 'Unit of Measure',
-                    'unit-price' => 'Unit Price',
+                    'product'    => 'المنتج',
+                    'quantity'   => 'الكمية',
+                    'ordered'    => 'المطلوب',
+                    'uom'        => 'وحدة القياس',
+                    'unit-price' => 'سعر الوحدة',
                 ],
 
                 'fields' => [
-                    'product'    => 'Product',
-                    'quantity'   => 'Quantity',
-                    'ordered'    => 'Ordered',
-                    'uom'        => 'Unit of Measure',
-                    'unit-price' => 'Unit Price',
+                    'product'    => 'المنتج',
+                    'quantity'   => 'الكمية',
+                    'ordered'    => 'المطلوب',
+                    'uom'        => 'وحدة القياس',
+                    'unit-price' => 'سعر الوحدة',
                 ],
             ],
 
             'additional' => [
-                'title' => 'Additional Information',
+                'title' => 'معلومات إضافية',
             ],
 
             'terms' => [
-                'title' => 'Terms and Conditions',
+                'title' => 'الشروط والأحكام',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'agreement'      => 'Agreement',
-            'vendor'         => 'Vendor',
-            'agreement-type' => 'Agreement Type',
-            'buyer'          => 'Buyer',
-            'company'        => 'Company',
-            'valid-from'     => 'Valid From',
-            'valid-to'       => 'Valid Until',
-            'reference'      => 'Reference',
-            'status'         => 'Status',
+            'agreement'      => 'الاتفاقية',
+            'vendor'         => 'المورد',
+            'agreement-type' => 'نوع الاتفاقية',
+            'buyer'          => 'المشتري',
+            'company'        => 'الشركة',
+            'valid-from'     => 'صالح من',
+            'valid-to'       => 'صالح حتى',
+            'reference'      => 'المرجع',
+            'status'         => 'الحالة',
         ],
 
         'groups' => [
-            'agreement-type' => 'Agreement Type',
-            'vendor'         => 'Vendor',
-            'state'          => 'State',
-            'created-at'     => 'Created At',
-            'updated-at'     => 'Updated At',
+            'agreement-type' => 'نوع الاتفاقية',
+            'vendor'         => 'المورد',
+            'state'          => 'الحالة',
+            'created-at'     => 'تاريخ الإنشاء',
+            'updated-at'     => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'agreement'      => 'Agreement',
-            'vendor'         => 'Vendor',
-            'agreement-type' => 'Agreement Type',
-            'buyer'          => 'Buyer',
-            'company'        => 'Company',
-            'valid-from'     => 'Valid From',
-            'valid-to'       => 'Valid Until',
-            'reference'      => 'Reference',
-            'status'         => 'Status',
-            'created-at'     => 'Created At',
-            'updated-at'     => 'Updated At',
+            'agreement'      => 'الاتفاقية',
+            'vendor'         => 'المورد',
+            'agreement-type' => 'نوع الاتفاقية',
+            'buyer'          => 'المشتري',
+            'company'        => 'الشركة',
+            'valid-from'     => 'صالح من',
+            'valid-to'       => 'صالح حتى',
+            'reference'      => 'المرجع',
+            'status'         => 'الحالة',
+            'created-at'     => 'تاريخ الإنشاء',
+            'updated-at'     => 'تاريخ التحديث',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Purchase Agreement deleted',
-                    'body'  => 'The purchase agreement has been deleted successfully.',
+                    'title' => 'تم حذف اتفاقية الشراء',
+                    'body'  => 'تم حذف اتفاقية الشراء بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Purchase Agreement restored',
-                    'body'  => 'The purchase agreement has been restored successfully.',
+                    'title' => 'تم استعادة اتفاقية الشراء',
+                    'body'  => 'تم استعادة اتفاقية الشراء بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Purchase Agreement permanently deleted',
-                        'body'  => 'The purchase agreement has been permanently deleted successfully.',
+                        'title' => 'تم حذف اتفاقية الشراء نهائياً',
+                        'body'  => 'تم حذف اتفاقية الشراء نهائياً بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Purchase Agreement could not be deleted',
-                        'body'  => 'The The purchase agreement cannot be deleted because it is currently in use.',
+                        'title' => 'تعذر حذف اتفاقية الشراء',
+                        'body'  => 'لا يمكن حذف اتفاقية الشراء لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -124,28 +124,28 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Purchase Agreements deleted',
-                    'body'  => 'The purchase agreements has been deleted successfully.',
+                    'title' => 'تم حذف اتفاقيات الشراء',
+                    'body'  => 'تم حذف اتفاقيات الشراء بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Purchase Agreements restored',
-                    'body'  => 'The purchase agreements has been restored successfully.',
+                    'title' => 'تم استعادة اتفاقيات الشراء',
+                    'body'  => 'تم استعادة اتفاقيات الشراء بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Purchase Agreements permanently deleted',
-                        'body'  => 'The purchase agreements has been permanently deleted successfully.',
+                        'title' => 'تم حذف اتفاقيات الشراء نهائياً',
+                        'body'  => 'تم حذف اتفاقيات الشراء نهائياً بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Purchase Agreements could not be deleted',
-                        'body'  => 'The purchase agreements cannot be deleted because they are currently in use.',
+                        'title' => 'تعذر حذف اتفاقيات الشراء',
+                        'body'  => 'لا يمكن حذف اتفاقيات الشراء لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -155,51 +155,51 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'entries' => [
-                    'vendor'                => 'Vendor',
-                    'valid-from'            => 'Valid From',
-                    'valid-to'              => 'Valid Until',
-                    'buyer'                 => 'Buyer',
-                    'reference'             => 'Reference',
-                    'reference-placeholder' => 'eg. PO/123',
-                    'agreement-type'        => 'Agreement Type',
-                    'company'               => 'Company',
-                    'currency'              => 'Currency',
+                    'vendor'                => 'المورد',
+                    'valid-from'            => 'صالح من',
+                    'valid-to'              => 'صالح حتى',
+                    'buyer'                 => 'المشتري',
+                    'reference'             => 'المرجع',
+                    'reference-placeholder' => 'مثال: PO/123',
+                    'agreement-type'        => 'نوع الاتفاقية',
+                    'company'               => 'الشركة',
+                    'currency'              => 'العملة',
                 ],
             ],
 
             'metadata' => [
-                'title' => 'Metadata',
+                'title' => 'البيانات الوصفية',
 
                 'entries' => [
-                    'created-at' => 'Created At',
-                    'created-by' => 'Created By',
-                    'updated-at' => 'Updated At',
+                    'created-at' => 'تاريخ الإنشاء',
+                    'created-by' => 'أنشئ بواسطة',
+                    'updated-at' => 'تاريخ التحديث',
                 ],
             ],
         ],
 
         'tabs' => [
             'products' => [
-                'title' => 'Products',
+                'title' => 'المنتجات',
 
                 'entries' => [
-                    'product'    => 'Product',
-                    'quantity'   => 'Quantity',
-                    'ordered'    => 'Ordered',
-                    'uom'        => 'Unit of Measure',
-                    'unit-price' => 'Unit Price',
+                    'product'    => 'المنتج',
+                    'quantity'   => 'الكمية',
+                    'ordered'    => 'المطلوب',
+                    'uom'        => 'وحدة القياس',
+                    'unit-price' => 'سعر الوحدة',
                 ],
             ],
 
             'additional' => [
-                'title' => 'Additional Information',
+                'title' => 'معلومات إضافية',
             ],
 
             'terms' => [
-                'title' => 'Terms and Conditions',
+                'title' => 'الشروط والأحكام',
             ],
         ],
     ],

@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Order Template Product created',
-        'body'  => 'The Order Template Product has been created successfully',
+        'title' => 'تم إنشاء منتج قالب الطلب',
+        'body'  => 'تم إنشاء منتج قالب الطلب بنجاح',
     ],
 ];

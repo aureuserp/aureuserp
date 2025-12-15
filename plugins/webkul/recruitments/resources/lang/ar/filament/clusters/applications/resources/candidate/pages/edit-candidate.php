@@ -1,18 +1,18 @@
 <?php
 
 return [
-    'create-employee'       => 'Create employee',
-    'goto-employee-tooltip' => 'Go to employee',
+    'create-employee'       => 'إنشاء موظف',
+    'goto-employee-tooltip' => 'الذهاب إلى الموظف',
     'notification'          => [
-        'title' => 'Candidate updated',
-        'body'  => 'The candidate has been updated successfully.',
+        'title' => 'تم تحديث المرشح',
+        'body'  => 'تم تحديث المرشح بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Candidate deleted',
-                'body'  => 'The candidate has been deleted successfully.',
+                'title' => 'تم حذف المرشح',
+                'body'  => 'تم حذف المرشح بنجاح.',
             ],
         ],
     ],

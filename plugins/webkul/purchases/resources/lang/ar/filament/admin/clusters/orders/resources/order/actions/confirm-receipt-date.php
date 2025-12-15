@@ -1,13 +1,13 @@
 <?php
 
 return [
-    'label' => 'Confirm Receipt Date',
+    'label' => 'تأكيد تاريخ الاستلام',
 
     'action' => [
         'notification' => [
             'success' => [
-                'title' => 'Order confirmed receipt date',
-                'body'  => 'The order has been confirmed receipt date successfully.',
+                'title' => 'تم تأكيد تاريخ استلام الطلب',
+                'body'  => 'تم تأكيد تاريخ استلام الطلب بنجاح.',
             ],
         ],
     ],

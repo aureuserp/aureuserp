@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Work Schedule Plan updated',
-        'body'  => 'The work schedule plan has been updated successfully.',
+        'title' => 'تم تحديث خطة جدول العمل',
+        'body'  => 'تم تحديث خطة جدول العمل بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Work Schedule Plan deleted',
-                'body'  => 'The work schedule plan has been deleted successfully.',
+                'title' => 'تم حذف خطة جدول العمل',
+                'body'  => 'تم حذف خطة جدول العمل بنجاح.',
             ],
         ],
     ],

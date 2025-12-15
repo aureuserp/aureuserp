@@ -1,18 +1,18 @@
 <?php
 
 return [
-    'title' => 'Edit Contact',
+    'title' => 'تعديل جهة الاتصال',
 
     'notification' => [
-        'title' => 'Contact updated',
-        'body'  => 'The contact has been updated successfully.',
+        'title' => 'تم تحديث جهة الاتصال',
+        'body'  => 'تم تحديث جهة الاتصال بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Contact deleted',
-                'body'  => 'The contact has been deleted successfully.',
+                'title' => 'تم حذف جهة الاتصال',
+                'body'  => 'تم حذف جهة الاتصال بنجاح.',
             ],
         ],
     ],

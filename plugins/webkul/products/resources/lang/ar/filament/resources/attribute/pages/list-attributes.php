@@ -2,17 +2,17 @@
 
 return [
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'الكل',
+        'archived' => 'المؤرشفة',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Attribute',
+            'label' => 'سمة جديدة',
 
             'notification' => [
-                'title' => 'Attribute created',
-                'body'  => 'The attribute has been created successfully.',
+                'title' => 'تم إنشاء السمة',
+                'body'  => 'تم إنشاء السمة بنجاح.',
             ],
         ],
     ],

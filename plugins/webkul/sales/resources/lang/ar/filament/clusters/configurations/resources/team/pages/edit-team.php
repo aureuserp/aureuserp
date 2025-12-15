@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Sales team updated',
-        'body'  => 'The sales team has been updated successfully.',
+        'title' => 'تم تحديث فريق المبيعات',
+        'body'  => 'تم تحديث فريق المبيعات بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Sales team deleted',
-                'body'  => 'The sales team has been deleted successfully.',
+                'title' => 'تم حذف فريق المبيعات',
+                'body'  => 'تم حذف فريق المبيعات بنجاح.',
             ],
         ],
     ],

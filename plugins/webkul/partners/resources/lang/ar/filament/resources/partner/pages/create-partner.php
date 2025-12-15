@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'title' => 'Create Contact',
+    'title' => 'إنشاء جهة اتصال',
 
     'notification' => [
-        'title' => 'Contact created',
-        'body'  => 'The contact has been created successfully.',
+        'title' => 'تم إنشاء جهة الاتصال',
+        'body'  => 'تم إنشاء جهة الاتصال بنجاح.',
     ],
 ];

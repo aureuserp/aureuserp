@@ -3,65 +3,65 @@
 return [
     'table' => [
         'columns' => [
-            'reference'         => 'Reference',
-            'total-amount'      => 'Total Amount',
-            'confirmation-date' => 'Confirmation Date',
-            'status'            => 'Status',
+            'reference'         => 'المرجع',
+            'total-amount'      => 'المبلغ الإجمالي',
+            'confirmation-date' => 'تاريخ التأكيد',
+            'status'            => 'الحالة',
         ],
     ],
 
     'infolist' => [
         'settings' => [
             'entries' => [
-                'buyer' => 'Buyer',
+                'buyer' => 'المشتري',
             ],
 
             'actions' => [
                 'accept' => [
-                    'label' => 'Accept',
+                    'label' => 'قبول',
 
                     'notification' => [
-                        'title' => 'Quotation Accepted',
-                        'body'  => 'The RFQ has been acknowledged successfully.',
+                        'title' => 'تم قبول عرض السعر',
+                        'body'  => 'تم الإقرار بطلب عرض السعر بنجاح.',
                     ],
 
                     'message' => [
-                        'body' => 'The RFQ has been acknowledged by vendor.',
+                        'body' => 'تم الإقرار بطلب عرض السعر من قبل المورد.',
                     ],
                 ],
 
                 'decline' => [
-                    'label' => 'Decline',
+                    'label' => 'رفض',
 
                     'notification' => [
-                        'title' => 'Quotation Declined',
-                        'body'  => 'The RFQ has been declined successfully.',
+                        'title' => 'تم رفض عرض السعر',
+                        'body'  => 'تم رفض طلب عرض السعر بنجاح.',
                     ],
 
                     'message' => [
-                        'body' => 'The RFQ has been declined by vendor.',
+                        'body' => 'تم رفض طلب عرض السعر من قبل المورد.',
                     ],
                 ],
 
                 'print' => [
-                    'label' => 'Download/Print',
+                    'label' => 'تحميل/طباعة',
                 ],
             ],
         ],
 
         'general' => [
             'entries' => [
-                'purchase-order'        => 'Purchase Order #:id',
-                'quotation'             => 'Request for Quotation #:id',
-                'order-date'            => 'Order Date',
-                'from'                  => 'From',
-                'confirmation-date'     => 'Confirmation Date',
-                'receipt-date'          => 'Receipt Date',
-                'products'              => 'Products',
-                'untaxed-amount'        => 'Untaxed Amount',
-                'tax-amount'            => 'Tax Amount',
-                'total'                 => 'Total',
-                'communication-history' => 'Communication History',
+                'purchase-order'        => 'أمر شراء #:id',
+                'quotation'             => 'طلب عرض سعر #:id',
+                'order-date'            => 'تاريخ الطلب',
+                'from'                  => 'من',
+                'confirmation-date'     => 'تاريخ التأكيد',
+                'receipt-date'          => 'تاريخ الاستلام',
+                'products'              => 'المنتجات',
+                'untaxed-amount'        => 'المبلغ بدون ضريبة',
+                'tax-amount'            => 'مبلغ الضريبة',
+                'total'                 => 'الإجمالي',
+                'communication-history' => 'سجل الاتصالات',
             ],
         ],
     ],

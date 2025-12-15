@@ -1,13 +1,13 @@
 <?php
 
 return [
-    'title' => 'View Contact',
+    'title' => 'عرض جهة الاتصال',
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Contact deleted',
-                'body'  => 'The contact has been deleted successfully.',
+                'title' => 'تم حذف جهة الاتصال',
+                'body'  => 'تم حذف جهة الاتصال بنجاح.',
             ],
         ],
     ],
