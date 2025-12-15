@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Accrual Plan Created',
-        'body'  => 'The accrual plan has been created successfully.',
+        'title' => 'تم إنشاء خطة الاستحقاق',
+        'body'  => 'تم إنشاء خطة الاستحقاق بنجاح.',
     ],
 ];

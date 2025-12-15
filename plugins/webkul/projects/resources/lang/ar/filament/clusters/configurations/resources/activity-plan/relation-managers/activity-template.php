@@ -4,32 +4,32 @@ return [
     'form' => [
         'sections' => [
             'activity-details' => [
-                'title' => 'Activity Details',
+                'title' => 'تفاصيل النشاط',
 
                 'fields' => [
-                    'activity-type' => 'Activity Type',
-                    'summary'       => 'Summary',
-                    'note'          => 'Note',
+                    'activity-type' => 'نوع النشاط',
+                    'summary'       => 'الملخص',
+                    'note'          => 'ملاحظة',
                 ],
             ],
 
             'assignment' => [
-                'title' => 'Assignment',
+                'title' => 'التكليف',
 
                 'fields' => [
-                    'assignment' => 'Assignment',
-                    'assignee'   => 'Assignee',
+                    'assignment' => 'التكليف',
+                    'assignee'   => 'المكلف',
                 ],
             ],
 
             'delay-information' => [
-                'title' => 'Delay Information',
+                'title' => 'معلومات التأخير',
 
                 'fields' => [
-                    'delay-count'            => 'Delay Count',
-                    'delay-unit'             => 'Delay Unit',
-                    'delay-from'             => 'Delay From',
-                    'delay-from-helper-text' => 'Source of delay calculation',
+                    'delay-count'            => 'عدد التأخير',
+                    'delay-unit'             => 'وحدة التأخير',
+                    'delay-from'             => 'التأخير من',
+                    'delay-from-helper-text' => 'مصدر حساب التأخير',
                 ],
             ],
         ],
@@ -37,48 +37,48 @@ return [
 
     'table' => [
         'columns' => [
-            'activity-type' => 'Activity Type',
-            'summary'       => 'Summary',
-            'assignment'    => 'Assignment',
-            'assigned-to'   => 'Assigned To',
-            'interval'      => 'Interval',
-            'delay-unit'    => 'Delay Unit',
-            'delay-from'    => 'Delay From',
-            'created-by'    => 'Created By',
-            'created-at'    => 'Created At',
-            'updated-at'    => 'Updated At',
+            'activity-type' => 'نوع النشاط',
+            'summary'       => 'الملخص',
+            'assignment'    => 'التكليف',
+            'assigned-to'   => 'مكلف إلى',
+            'interval'      => 'الفاصل الزمني',
+            'delay-unit'    => 'وحدة التأخير',
+            'delay-from'    => 'التأخير من',
+            'created-by'    => 'أنشئ بواسطة',
+            'created-at'    => 'تاريخ الإنشاء',
+            'updated-at'    => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'activity-type' => 'Activity Type',
-            'assignment'    => 'Assignment',
-            'assigned-to'   => 'Assigned To',
-            'interval'      => 'Interval',
-            'delay-unit'    => 'Delay Unit',
-            'delay-from'    => 'Delay From',
-            'created-by'    => 'Created By',
-            'created-at'    => 'Created At',
-            'updated-at'    => 'Updated At',
+            'activity-type' => 'نوع النشاط',
+            'assignment'    => 'التكليف',
+            'assigned-to'   => 'مكلف إلى',
+            'interval'      => 'الفاصل الزمني',
+            'delay-unit'    => 'وحدة التأخير',
+            'delay-from'    => 'التأخير من',
+            'created-by'    => 'أنشئ بواسطة',
+            'created-at'    => 'تاريخ الإنشاء',
+            'updated-at'    => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'activity-type'   => 'Activity Type',
-            'activity-status' => 'Activity Status',
-            'has-delay'       => 'Has Delay',
+            'activity-type'   => 'نوع النشاط',
+            'activity-status' => 'حالة النشاط',
+            'has-delay'       => 'يوجد تأخير',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Activity template updated',
-                    'body'  => 'The activity template has been updated successfully.',
+                    'title' => 'تم تحديث قالب النشاط',
+                    'body'  => 'تم تحديث قالب النشاط بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Activity template deleted',
-                    'body'  => 'The activity template has been deleted successfully.',
+                    'title' => 'تم حذف قالب النشاط',
+                    'body'  => 'تم حذف قالب النشاط بنجاح.',
                 ],
             ],
         ],
@@ -86,8 +86,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Activity templates deleted',
-                    'body'  => 'The activity templates has been deleted successfully.',
+                    'title' => 'تم حذف قوالب الأنشطة',
+                    'body'  => 'تم حذف قوالب الأنشطة بنجاح.',
                 ],
             ],
         ],

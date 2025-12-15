@@ -2,17 +2,17 @@
 
 return [
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'الكل',
+        'archived' => 'مؤرشف',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Storage Category',
+            'label' => 'فئة تخزين جديدة',
 
             'notification' => [
-                'title' => 'Storage Category created',
-                'body'  => 'The storage category has been created successfully.',
+                'title' => 'تم إنشاء فئة التخزين',
+                'body'  => 'تم إنشاء فئة التخزين بنجاح.',
             ],
         ],
     ],

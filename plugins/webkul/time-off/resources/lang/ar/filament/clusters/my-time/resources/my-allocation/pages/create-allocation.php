@@ -3,13 +3,13 @@
 return [
     'notification' => [
         'success' => [
-            'title' => 'Time Off created',
-            'body'  => 'The time off has been created successfully.',
+            'title' => 'تم إنشاء التخصيص',
+            'body'  => 'تم إنشاء التخصيص بنجاح.',
         ],
 
         'warning' => [
-            'title' => 'You don\'t have an employee account',
-            'body'  => 'You don\'t have an employee account. Please contact your administrator.',
+            'title' => 'ليس لديك حساب موظف',
+            'body'  => 'ليس لديك حساب موظف. يرجى التواصل مع المسؤول.',
         ],
     ],
 ];

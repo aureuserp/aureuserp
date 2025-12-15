@@ -3,8 +3,8 @@
 return [
     'header-actions' => [
         'notification' => [
-            'title' => 'Account tag created',
-            'body'  => 'The account tag has been created successfully.',
+            'title' => 'تم إنشاء وسم الحساب',
+            'body'  => 'تم إنشاء وسم الحساب بنجاح.',
         ],
     ],
 ];

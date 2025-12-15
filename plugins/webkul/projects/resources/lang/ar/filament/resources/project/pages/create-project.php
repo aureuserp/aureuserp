@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Project created',
-        'body'  => 'The project has been created successfully.',
+        'title' => 'تم إنشاء المشروع',
+        'body'  => 'تم إنشاء المشروع بنجاح.',
     ],
 ];

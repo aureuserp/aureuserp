@@ -2,17 +2,17 @@
 
 return [
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'الكل',
+        'archived' => 'مؤرشف',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Rule',
+            'label' => 'قاعدة جديدة',
 
             'notification' => [
-                'title' => 'Rule created',
-                'body'  => 'The rule has been created successfully.',
+                'title' => 'تم إنشاء القاعدة',
+                'body'  => 'تم إنشاء القاعدة بنجاح.',
             ],
         ],
     ],

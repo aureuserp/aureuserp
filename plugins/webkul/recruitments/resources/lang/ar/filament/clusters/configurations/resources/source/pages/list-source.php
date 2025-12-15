@@ -3,11 +3,11 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Source',
+            'label' => 'مصدر جديد',
 
             'notification' => [
-                'title' => 'Source created',
-                'body'  => 'The source has been created successfully.',
+                'title' => 'تم إنشاء المصدر',
+                'body'  => 'تم إنشاء المصدر بنجاح.',
             ],
         ],
     ],

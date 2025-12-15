@@ -3,11 +3,11 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Milestone',
+            'label' => 'مرحلة رئيسية جديدة',
 
             'notification' => [
-                'title' => 'Milestone created',
-                'body'  => 'The milestone has been created successfully.',
+                'title' => 'تم إنشاء المرحلة الرئيسية',
+                'body'  => 'تم إنشاء المرحلة الرئيسية بنجاح.',
             ],
         ],
     ],

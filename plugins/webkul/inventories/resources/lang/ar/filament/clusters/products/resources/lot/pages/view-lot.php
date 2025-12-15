@@ -3,19 +3,19 @@
 return [
     'header-actions' => [
         'print' => [
-            'label' => 'Print',
+            'label' => 'طباعة',
         ],
 
         'delete' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Lot Deleted',
-                    'body'  => 'The lot has been deleted successfully.',
+                    'title' => 'تم حذف الدفعة',
+                    'body'  => 'تم حذف الدفعة بنجاح.',
                 ],
 
                 'error' => [
-                    'title' => 'Lot could not be deleted',
-                    'body'  => 'The lot cannot be deleted because it is currently in use.',
+                    'title' => 'تعذر حذف الدفعة',
+                    'body'  => 'لا يمكن حذف الدفعة لأنها قيد الاستخدام حالياً.',
                 ],
             ],
         ],

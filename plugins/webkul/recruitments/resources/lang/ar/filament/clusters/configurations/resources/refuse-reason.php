@@ -1,55 +1,55 @@
 <?php
 
 return [
-    'title' => 'Refuse Reason',
+    'title' => 'سبب الرفض',
 
     'navigation' => [
-        'title' => 'Refuse Reasons',
-        'group' => 'Applications',
+        'title' => 'أسباب الرفض',
+        'group' => 'الطلبات',
     ],
 
     'form' => [
         'fields' => [
-            'name'             => 'Name',
+            'name'             => 'الاسم',
             'template'         => [
-                'title'                    => 'Template',
-                'applicant-refuse'         => 'Applicant Refuse',
-                'applicant-not-interested' => 'Applicant Not Interested',
+                'title'                    => 'القالب',
+                'applicant-refuse'         => 'رفض المتقدم',
+                'applicant-not-interested' => 'المتقدم غير مهتم',
             ],
-            'name-placeholder' => 'Enter the name of the refuse reason',
+            'name-placeholder' => 'أدخل اسم سبب الرفض',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'id'         => 'ID',
-            'name'       => 'Name',
-            'template'   => 'Template',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'id'         => 'المعرف',
+            'name'       => 'الاسم',
+            'template'   => 'القالب',
+            'created-by' => 'أنشئ بواسطة',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'name'       => 'Name',
-            'employee'   => 'Employee',
-            'created-by' => 'Created By',
-            'updated-at' => 'Updated At',
-            'created-at' => 'Created At',
+            'name'       => 'الاسم',
+            'employee'   => 'الموظف',
+            'created-by' => 'أنشئ بواسطة',
+            'updated-at' => 'تاريخ التحديث',
+            'created-at' => 'تاريخ الإنشاء',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Refuse reason updated',
-                    'body'  => 'The refuse reason has been updated successfully.',
+                    'title' => 'تم تحديث سبب الرفض',
+                    'body'  => 'تم تحديث سبب الرفض بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Refuse reason deleted',
-                    'body'  => 'The refuse reason has been deleted successfully.',
+                    'title' => 'تم حذف سبب الرفض',
+                    'body'  => 'تم حذف سبب الرفض بنجاح.',
                 ],
             ],
         ],
@@ -57,8 +57,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Refuse reasons deleted',
-                    'body'  => 'The refuse reasons has been deleted successfully.',
+                    'title' => 'تم حذف أسباب الرفض',
+                    'body'  => 'تم حذف أسباب الرفض بنجاح.',
                 ],
             ],
         ],
@@ -66,15 +66,15 @@ return [
         'empty-state-action' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Refuse reason created',
-                    'body'  => 'The refuse reason has been created successfully.',
+                    'title' => 'تم إنشاء سبب الرفض',
+                    'body'  => 'تم إنشاء سبب الرفض بنجاح.',
                 ],
             ],
         ],
     ],
 
     'infolist' => [
-        'name'       => 'Name',
-        'template'   => 'Template',
+        'name'       => 'الاسم',
+        'template'   => 'القالب',
     ],
 ];

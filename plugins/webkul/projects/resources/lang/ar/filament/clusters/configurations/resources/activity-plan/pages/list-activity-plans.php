@@ -2,17 +2,17 @@
 
 return [
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'الكل',
+        'archived' => 'المؤرشفة',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Activity Plan',
+            'label' => 'خطة نشاط جديدة',
 
             'notification' => [
-                'title' => 'Activity Plan created',
-                'body'  => 'The activity plan has been created successfully.',
+                'title' => 'تم إنشاء خطة النشاط',
+                'body'  => 'تم إنشاء خطة النشاط بنجاح.',
             ],
         ],
     ],

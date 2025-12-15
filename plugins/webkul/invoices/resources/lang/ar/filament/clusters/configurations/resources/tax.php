@@ -1,49 +1,49 @@
 <?php
 
 return [
-    'title' => 'Taxes',
+    'title' => 'الضرائب',
 
     'navigation' => [
-        'title' => 'Taxes',
-        'group' => 'Accounting',
+        'title' => 'الضرائب',
+        'group' => 'المحاسبة',
     ],
 
     'global-search' => [
-        'company'     => 'Company',
-        'amount-type' => 'Amount Type',
-        'name'        => 'Name',
+        'company'     => 'الشركة',
+        'amount-type' => 'نوع المبلغ',
+        'name'        => 'الاسم',
     ],
 
     'form' => [
         'sections' => [
             'fields' => [
-                'name'            => 'Name',
-                'tax-type'        => 'Tax Type',
-                'tax-computation' => 'Tax Computation',
-                'tax-scope'       => 'Tax Scope',
-                'status'          => 'Status',
-                'amount'          => 'Amount',
+                'name'            => 'الاسم',
+                'tax-type'        => 'نوع الضريبة',
+                'tax-computation' => 'حساب الضريبة',
+                'tax-scope'       => 'نطاق الضريبة',
+                'status'          => 'الحالة',
+                'amount'          => 'المبلغ',
             ],
 
             'field-set' => [
                 'advanced-options' => [
-                    'title' => 'Advanced Options',
+                    'title' => 'خيارات متقدمة',
 
                     'fields' => [
-                        'invoice-label'       => 'Invoice label',
-                        'tax-group'           => 'Tax Group',
-                        'country'             => 'Country',
-                        'include-in-price'    => 'Include in price',
-                        'include-base-amount' => 'Include base amount',
-                        'is-base-affected'    => 'Is base affected',
+                        'invoice-label'       => 'تسمية الفاتورة',
+                        'tax-group'           => 'مجموعة الضرائب',
+                        'country'             => 'الدولة',
+                        'include-in-price'    => 'تضمين في السعر',
+                        'include-base-amount' => 'تضمين المبلغ الأساسي',
+                        'is-base-affected'    => 'هل الأساس متأثر',
                     ],
                 ],
 
                 'description-and-legal-notes' => [
-                    'title'  => 'Description & Invoice Legal Notes',
+                    'title'  => 'الوصف والملاحظات القانونية للفاتورة',
                     'fields' => [
-                        'description' => 'Description',
-                        'legal-notes' => 'Legal Notes',
+                        'description' => 'الوصف',
+                        'legal-notes' => 'الملاحظات القانونية',
                     ],
                 ],
             ],
@@ -52,39 +52,39 @@ return [
 
     'table' => [
         'columns' => [
-            'name'                    => 'Name',
-            'amount-type'             => 'Amount Type',
-            'company'                 => 'Company',
-            'tax-group'               => 'Tax Group',
-            'country'                 => 'Country',
-            'type-tax-use'            => 'Type Tax Use',
-            'tax-scope'               => 'Tax Scope',
-            'amount-type'             => 'Amount Type',
-            'invoice-label'           => 'Invoice Label',
-            'tax-exigibility'         => 'Tax Exigibility',
-            'price-include-override'  => 'Price Include Override',
-            'amount'                  => 'Amount',
-            'status'                  => 'Status',
-            'include-base-amount'     => 'Include Base Amount',
-            'is-base-affected'        => 'Is Base Affected',
+            'name'                    => 'الاسم',
+            'amount-type'             => 'نوع المبلغ',
+            'company'                 => 'الشركة',
+            'tax-group'               => 'مجموعة الضرائب',
+            'country'                 => 'الدولة',
+            'type-tax-use'            => 'نوع استخدام الضريبة',
+            'tax-scope'               => 'نطاق الضريبة',
+            'amount-type'             => 'نوع المبلغ',
+            'invoice-label'           => 'تسمية الفاتورة',
+            'tax-exigibility'         => 'استحقاق الضريبة',
+            'price-include-override'  => 'تجاوز تضمين السعر',
+            'amount'                  => 'المبلغ',
+            'status'                  => 'الحالة',
+            'include-base-amount'     => 'تضمين المبلغ الأساسي',
+            'is-base-affected'        => 'هل الأساس متأثر',
         ],
 
         'groups' => [
-            'name'         => 'Name',
-            'company'      => 'Company',
-            'tax-group'    => 'Tax Group',
-            'country'      => 'Country',
-            'created-by'   => 'Created By',
-            'type-tax-use' => 'Type Tax Use',
-            'tax-scope'    => 'Tax Scope',
-            'amount-type'  => 'Amount Type',
+            'name'         => 'الاسم',
+            'company'      => 'الشركة',
+            'tax-group'    => 'مجموعة الضرائب',
+            'country'      => 'الدولة',
+            'created-by'   => 'أنشئ بواسطة',
+            'type-tax-use' => 'نوع استخدام الضريبة',
+            'tax-scope'    => 'نطاق الضريبة',
+            'amount-type'  => 'نوع المبلغ',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Payment Term deleted',
-                    'body'  => 'The payment term has been deleted successfully.',
+                    'title' => 'تم حذف الضريبة',
+                    'body'  => 'تم حذف الضريبة بنجاح.',
                 ],
             ],
         ],
@@ -92,8 +92,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Taxes deleted',
-                    'body'  => 'The taxes has been deleted successfully.',
+                    'title' => 'تم حذف الضرائب',
+                    'body'  => 'تم حذف الضرائب بنجاح.',
                 ],
             ],
         ],
@@ -102,33 +102,33 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'name'            => 'Name',
-                'tax-type'        => 'Tax Type',
-                'tax-computation' => 'Tax Computation',
-                'tax-scope'       => 'Tax Scope',
-                'status'          => 'Status',
-                'amount'          => 'Amount',
+                'name'            => 'الاسم',
+                'tax-type'        => 'نوع الضريبة',
+                'tax-computation' => 'حساب الضريبة',
+                'tax-scope'       => 'نطاق الضريبة',
+                'status'          => 'الحالة',
+                'amount'          => 'المبلغ',
             ],
 
             'field-set' => [
                 'advanced-options' => [
-                    'title' => 'Advanced Options',
+                    'title' => 'خيارات متقدمة',
 
                     'entries' => [
-                        'invoice-label'       => 'Invoice label',
-                        'tax-group'           => 'Tax Group',
-                        'country'             => 'Country',
-                        'include-in-price'    => 'Include in price',
-                        'include-base-amount' => 'Include base amount',
-                        'is-base-affected'    => 'Is base affected',
+                        'invoice-label'       => 'تسمية الفاتورة',
+                        'tax-group'           => 'مجموعة الضرائب',
+                        'country'             => 'الدولة',
+                        'include-in-price'    => 'تضمين في السعر',
+                        'include-base-amount' => 'تضمين المبلغ الأساسي',
+                        'is-base-affected'    => 'هل الأساس متأثر',
                     ],
                 ],
 
                 'description-and-legal-notes' => [
-                    'title'   => 'Description & Invoice Legal Notes',
+                    'title'   => 'الوصف والملاحظات القانونية للفاتورة',
                     'entries' => [
-                        'description' => 'Description',
-                        'legal-notes' => 'Legal Notes',
+                        'description' => 'الوصف',
+                        'legal-notes' => 'الملاحظات القانونية',
                     ],
                 ],
             ],

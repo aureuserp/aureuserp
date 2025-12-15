@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Accrual Type updated',
-        'body'  => 'The accrual Type has been updated successfully.',
+        'title' => 'تم تحديث نوع الاستحقاق',
+        'body'  => 'تم تحديث نوع الاستحقاق بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Accrual Type deleted',
-                'body'  => 'The accrual type has been deleted successfully.',
+                'title' => 'تم حذف نوع الاستحقاق',
+                'body'  => 'تم حذف نوع الاستحقاق بنجاح.',
             ],
         ],
     ],

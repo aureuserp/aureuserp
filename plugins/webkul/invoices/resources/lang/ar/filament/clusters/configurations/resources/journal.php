@@ -1,95 +1,95 @@
 <?php
 
 return [
-    'title' => 'Journal',
+    'title' => 'اليومية',
 
     'navigation' => [
-        'title' => 'Journal',
-        'group' => 'Accounting',
+        'title' => 'اليومية',
+        'group' => 'المحاسبة',
     ],
 
     'global-search' => [
-        'name' => 'Name',
-        'code' => 'Code',
+        'name' => 'الاسم',
+        'code' => 'الرمز',
     ],
 
     'form' => [
         'tabs' => [
             'journal-entries' => [
-                'title' => 'Journal Entries',
+                'title' => 'قيود اليومية',
 
                 'field-set' => [
                     'accounting-information' => [
-                        'title'  => 'Accounting Information',
+                        'title'  => 'معلومات المحاسبة',
                         'fields' => [
-                            'dedicated-credit-note-sequence' => 'Dedicated Credit Note Sequence',
-                            'dedicated-payment-sequence'     => 'Dedicated Payment Sequence',
-                            'sort-code-placeholder'          => 'Enter the journal code',
-                            'sort-code'                      => 'Sort',
-                            'currency'                       => 'Currency',
-                            'color'                          => 'Color',
+                            'dedicated-credit-note-sequence' => 'تسلسل إشعار الائتمان المخصص',
+                            'dedicated-payment-sequence'     => 'تسلسل الدفع المخصص',
+                            'sort-code-placeholder'          => 'أدخل رمز اليومية',
+                            'sort-code'                      => 'الترتيب',
+                            'currency'                       => 'العملة',
+                            'color'                          => 'اللون',
                         ],
                     ],
                     'bank-account-number' => [
-                        'title' => 'Bank Account Number',
+                        'title' => 'رقم الحساب البنكي',
                     ],
                 ],
             ],
             'incoming-payments' => [
-                'title' => 'Incoming Payments',
+                'title' => 'المدفوعات الواردة',
 
                 'fields' => [
-                    'relation-notes'             => 'Relation Notes',
-                    'relation-notes-placeholder' => 'Enter any relation details',
+                    'relation-notes'             => 'ملاحظات العلاقة',
+                    'relation-notes-placeholder' => 'أدخل أي تفاصيل للعلاقة',
                 ],
             ],
             'outgoing-payments' => [
-                'title' => 'Outgoing Payments',
+                'title' => 'المدفوعات الصادرة',
 
                 'fields' => [
-                    'relation-notes'             => 'Relation Notes',
-                    'relation-notes-placeholder' => 'Enter any relation details',
+                    'relation-notes'             => 'ملاحظات العلاقة',
+                    'relation-notes-placeholder' => 'أدخل أي تفاصيل للعلاقة',
                 ],
             ],
             'advanced-settings' => [
-                'title'  => 'Advanced Settings',
+                'title'  => 'الإعدادات المتقدمة',
                 'fields' => [
-                    'allowed-accounts'       => 'Allowed Accounts',
-                    'control-access'         => 'Control Access',
-                    'payment-communication'  => 'Payment Communication',
-                    'auto-check-on-post'     => 'Auto Check on Post',
-                    'communication-type'     => 'Communication Type',
-                    'communication-standard' => 'Communication Standard',
+                    'allowed-accounts'       => 'الحسابات المسموحة',
+                    'control-access'         => 'التحكم في الوصول',
+                    'payment-communication'  => 'اتصال الدفع',
+                    'auto-check-on-post'     => 'التحقق التلقائي عند الترحيل',
+                    'communication-type'     => 'نوع الاتصال',
+                    'communication-standard' => 'معيار الاتصال',
                 ],
             ],
         ],
 
         'general' => [
-            'title' => 'General Information',
+            'title' => 'معلومات عامة',
 
             'fields' => [
-                'name'    => 'Name',
-                'type'    => 'Type',
-                'company' => 'Company',
+                'name'    => 'الاسم',
+                'type'    => 'النوع',
+                'company' => 'الشركة',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'type'       => 'Type',
-            'code'       => 'Code',
-            'currency'   => 'Currency',
-            'created-by' => 'Created By',
-            'status'     => 'Status',
+            'name'       => 'الاسم',
+            'type'       => 'النوع',
+            'code'       => 'الرمز',
+            'currency'   => 'العملة',
+            'created-by' => 'أنشئ بواسطة',
+            'status'     => 'الحالة',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Incoterm deleted',
-                    'body'  => 'The incoterm has been deleted successfully.',
+                    'title' => 'تم حذف اليومية',
+                    'body'  => 'تم حذف اليومية بنجاح.',
                 ],
             ],
         ],
@@ -97,8 +97,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Journal deleted',
-                    'body'  => 'The journal has been deleted successfully.',
+                    'title' => 'تم حذف اليومية',
+                    'body'  => 'تم حذف اليومية بنجاح.',
                 ],
             ],
         ],
@@ -107,61 +107,61 @@ return [
     'infolist' => [
         'tabs' => [
             'journal-entries' => [
-                'title' => 'Journal Entries',
+                'title' => 'قيود اليومية',
 
                 'field-set' => [
                     'accounting-information' => [
-                        'title'   => 'Accounting Information',
+                        'title'   => 'معلومات المحاسبة',
                         'entries' => [
-                            'dedicated-credit-note-sequence' => 'Dedicated Credit Note Sequence',
-                            'dedicated-payment-sequence'     => 'Dedicated Payment Sequence',
-                            'sort-code-placeholder'          => 'Enter the journal code',
-                            'sort-code'                      => 'Sort',
-                            'currency'                       => 'Currency',
-                            'color'                          => 'Color',
+                            'dedicated-credit-note-sequence' => 'تسلسل إشعار الائتمان المخصص',
+                            'dedicated-payment-sequence'     => 'تسلسل الدفع المخصص',
+                            'sort-code-placeholder'          => 'أدخل رمز اليومية',
+                            'sort-code'                      => 'الترتيب',
+                            'currency'                       => 'العملة',
+                            'color'                          => 'اللون',
                         ],
                     ],
                     'bank-account-number' => [
-                        'title' => 'Bank Account Number',
+                        'title' => 'رقم الحساب البنكي',
                     ],
                 ],
             ],
             'incoming-payments' => [
-                'title' => 'Incoming Payments',
+                'title' => 'المدفوعات الواردة',
 
                 'entries' => [
-                    'relation-notes'             => 'Relation Notes',
-                    'relation-notes-placeholder' => 'Enter any relation details',
+                    'relation-notes'             => 'ملاحظات العلاقة',
+                    'relation-notes-placeholder' => 'أدخل أي تفاصيل للعلاقة',
                 ],
             ],
             'outgoing-payments' => [
-                'title' => 'Outgoing Payments',
+                'title' => 'المدفوعات الصادرة',
 
                 'entries' => [
-                    'relation-notes'             => 'Relation Notes',
-                    'relation-notes-placeholder' => 'Enter any relation details',
+                    'relation-notes'             => 'ملاحظات العلاقة',
+                    'relation-notes-placeholder' => 'أدخل أي تفاصيل للعلاقة',
                 ],
             ],
             'advanced-settings' => [
-                'title'   => 'Advanced Settings',
+                'title'   => 'الإعدادات المتقدمة',
                 'entries' => [
-                    'allowed-accounts'       => 'Allowed Accounts',
-                    'control-access'         => 'Control Access',
-                    'payment-communication'  => 'Payment Communication',
-                    'auto-check-on-post'     => 'Auto Check on Post',
-                    'communication-type'     => 'Communication Type',
-                    'communication-standard' => 'Communication Standard',
+                    'allowed-accounts'       => 'الحسابات المسموحة',
+                    'control-access'         => 'التحكم في الوصول',
+                    'payment-communication'  => 'اتصال الدفع',
+                    'auto-check-on-post'     => 'التحقق التلقائي عند الترحيل',
+                    'communication-type'     => 'نوع الاتصال',
+                    'communication-standard' => 'معيار الاتصال',
                 ],
             ],
         ],
 
         'general' => [
-            'title' => 'General Information',
+            'title' => 'معلومات عامة',
 
             'entries' => [
-                'name'    => 'Name',
-                'type'    => 'Type',
-                'company' => 'Company',
+                'name'    => 'الاسم',
+                'type'    => 'النوع',
+                'company' => 'الشركة',
             ],
         ],
     ],

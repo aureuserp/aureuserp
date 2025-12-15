@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Route updated',
-        'body'  => 'The route has been updated successfully.',
+        'title' => 'تم تحديث المسار',
+        'body'  => 'تم تحديث المسار بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Route deleted',
-                'body'  => 'The route has been deleted successfully.',
+                'title' => 'تم حذف المسار',
+                'body'  => 'تم حذف المسار بنجاح.',
             ],
         ],
     ],

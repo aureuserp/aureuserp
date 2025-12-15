@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Allocation updated',
-        'body'  => 'The allocation has been updated successfully.',
+        'title' => 'تم تحديث التخصيص',
+        'body'  => 'تم تحديث التخصيص بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Allocation deleted',
-                'body'  => 'The allocation has been deleted successfully.',
+                'title' => 'تم حذف التخصيص',
+                'body'  => 'تم حذف التخصيص بنجاح.',
             ],
         ],
     ],

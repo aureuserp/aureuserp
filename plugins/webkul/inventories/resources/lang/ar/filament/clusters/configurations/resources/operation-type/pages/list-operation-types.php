@@ -2,17 +2,17 @@
 
 return [
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'الكل',
+        'archived' => 'مؤرشف',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Operation Type',
+            'label' => 'نوع عملية جديد',
 
             'notification' => [
-                'title' => 'Operation Type created',
-                'body'  => 'The operation type has been created successfully.',
+                'title' => 'تم إنشاء نوع العملية',
+                'body'  => 'تم إنشاء نوع العملية بنجاح.',
             ],
         ],
     ],

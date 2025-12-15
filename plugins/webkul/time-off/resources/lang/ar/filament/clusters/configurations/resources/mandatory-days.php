@@ -1,60 +1,60 @@
 <?php
 
 return [
-    'title' => 'Mandatory Days',
+    'title' => 'الأيام الإلزامية',
 
-    'model-label' => 'Mandatory Day',
+    'model-label' => 'يوم إلزامي',
 
     'navigation' => [
-        'title' => 'Mandatory Holidays',
+        'title' => 'العطل الإلزامية',
     ],
 
     'form' => [
         'fields' => [
-            'name'       => 'Name',
-            'start-date' => 'Start Date',
-            'end-date'   => 'End Date',
-            'color'      => 'Color',
+            'name'       => 'الاسم',
+            'start-date' => 'تاريخ البداية',
+            'end-date'   => 'تاريخ النهاية',
+            'color'      => 'اللون',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'         => 'Name',
-            'company-name' => 'Company Name',
-            'created-by'   => 'Created By',
-            'start-date'   => 'Start Date',
-            'end-date'     => 'End Date',
+            'name'         => 'الاسم',
+            'company-name' => 'اسم الشركة',
+            'created-by'   => 'أنشئ بواسطة',
+            'start-date'   => 'تاريخ البداية',
+            'end-date'     => 'تاريخ النهاية',
         ],
 
         'filters' => [
-            'name'         => 'Name',
-            'company-name' => 'Company Name',
-            'created-by'   => 'Created By',
-            'start-date'   => 'Start Date',
-            'end-date'     => 'End Date',
+            'name'         => 'الاسم',
+            'company-name' => 'اسم الشركة',
+            'created-by'   => 'أنشئ بواسطة',
+            'start-date'   => 'تاريخ البداية',
+            'end-date'     => 'تاريخ النهاية',
         ],
 
         'groups' => [
-            'name'         => 'Name',
-            'company-name' => 'Company Name',
-            'created-by'   => 'Created By',
-            'start-date'   => 'Start Date',
-            'end-date'     => 'End Date',
+            'name'         => 'الاسم',
+            'company-name' => 'اسم الشركة',
+            'created-by'   => 'أنشئ بواسطة',
+            'start-date'   => 'تاريخ البداية',
+            'end-date'     => 'تاريخ النهاية',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Mandatory day updated',
-                    'body'  => 'The mandatory day has been restored successfully.',
+                    'title' => 'تم تحديث اليوم الإلزامي',
+                    'body'  => 'تم تحديث اليوم الإلزامي بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Mandatory day deleted',
-                    'body'  => 'The mandatory day has been deleted successfully.',
+                    'title' => 'تم حذف اليوم الإلزامي',
+                    'body'  => 'تم حذف اليوم الإلزامي بنجاح.',
                 ],
             ],
         ],
@@ -62,8 +62,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Mandatory days deleted',
-                    'body'  => 'The mandatory days has been deleted successfully.',
+                    'title' => 'تم حذف الأيام الإلزامية',
+                    'body'  => 'تم حذف الأيام الإلزامية بنجاح.',
                 ],
             ],
         ],
@@ -71,10 +71,10 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name'       => 'Name',
-            'start-date' => 'Start Date',
-            'end-date'   => 'End Date',
-            'color'      => 'Color',
+            'name'       => 'الاسم',
+            'start-date' => 'تاريخ البداية',
+            'end-date'   => 'تاريخ النهاية',
+            'color'      => 'اللون',
         ],
     ],
 ];

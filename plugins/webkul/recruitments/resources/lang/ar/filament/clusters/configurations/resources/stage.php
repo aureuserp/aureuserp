@@ -1,47 +1,47 @@
 <?php
 
 return [
-    'title' => 'Stages',
+    'title' => 'المراحل',
 
     'navigation' => [
-        'title' => 'Stages',
-        'group' => 'Job Positions',
+        'title' => 'المراحل',
+        'group' => 'المناصب الوظيفية',
     ],
 
     'form' => [
         'sections' => [
             'general-information' => [
-                'title' => 'General Information',
+                'title' => 'المعلومات العامة',
 
                 'fields' => [
-                    'stage-name'   => 'Stage Name',
-                    'sort'         => 'Sequence Order',
-                    'requirements' => 'Requirements',
+                    'stage-name'   => 'اسم المرحلة',
+                    'sort'         => 'ترتيب التسلسل',
+                    'requirements' => 'المتطلبات',
                 ],
             ],
 
             'tooltips' => [
-                'title'       => 'Tooltips',
-                'description' => 'Define the custom label for application status.',
+                'title'       => 'التلميحات',
+                'description' => 'تحديد التسمية المخصصة لحالة الطلب.',
 
                 'fields' => [
-                    'gray-label'          => 'Gray Label',
-                    'gray-label-tooltip'  => 'The label for the gray status.',
-                    'red-label'           => 'Red Label',
-                    'red-label-tooltip'   => 'The label for the red status.',
-                    'green-label'         => 'Green Label',
-                    'green-label-tooltip' => 'The label for the green status.',
+                    'gray-label'          => 'التسمية الرمادية',
+                    'gray-label-tooltip'  => 'التسمية للحالة الرمادية.',
+                    'red-label'           => 'التسمية الحمراء',
+                    'red-label-tooltip'   => 'التسمية للحالة الحمراء.',
+                    'green-label'         => 'التسمية الخضراء',
+                    'green-label-tooltip' => 'التسمية للحالة الخضراء.',
                 ],
             ],
 
             'additional-information' => [
-                'title' => 'Additional Information',
+                'title' => 'معلومات إضافية',
 
                 'fields' => [
-                    'job-positions' => 'Job Positions',
-                    'folded'        => 'Folded',
-                    'hired-stage'   => 'Hired Stage',
-                    'default-stage' => 'Default Stage',
+                    'job-positions' => 'المناصب الوظيفية',
+                    'folded'        => 'مطوي',
+                    'hired-stage'   => 'مرحلة التوظيف',
+                    'default-stage' => 'المرحلة الافتراضية',
                 ],
             ],
         ],
@@ -49,52 +49,52 @@ return [
 
     'table' => [
         'columns' => [
-            'id'                 => 'ID',
-            'name'               => 'Stage Name',
-            'hired-stage'        => 'Hired Stage',
-            'default-stage'      => 'Default Stage',
-            'folded'             => 'Folded',
-            'job-positions'      => 'Job Positions',
-            'created-by'         => 'Created By',
-            'created-at'         => 'Created At',
-            'updated-at'         => 'Updated At',
+            'id'                 => 'المعرف',
+            'name'               => 'اسم المرحلة',
+            'hired-stage'        => 'مرحلة التوظيف',
+            'default-stage'      => 'المرحلة الافتراضية',
+            'folded'             => 'مطوي',
+            'job-positions'      => 'المناصب الوظيفية',
+            'created-by'         => 'أنشئ بواسطة',
+            'created-at'         => 'تاريخ الإنشاء',
+            'updated-at'         => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'name'         => 'Stage Name',
-            'job-position' => 'Job Position',
-            'folded'       => 'Folded',
-            'gray-label'   => 'Gray Label',
-            'red-label'    => 'Red Label',
-            'green-label'  => 'Green Label',
-            'created-by'   => 'Created By',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'name'         => 'اسم المرحلة',
+            'job-position' => 'المنصب الوظيفي',
+            'folded'       => 'مطوي',
+            'gray-label'   => 'التسمية الرمادية',
+            'red-label'    => 'التسمية الحمراء',
+            'green-label'  => 'التسمية الخضراء',
+            'created-by'   => 'أنشئ بواسطة',
+            'created-at'   => 'تاريخ الإنشاء',
+            'updated-at'   => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'job-position' => 'Job Position',
-            'stage-name'   => 'Stage Name',
-            'folded'       => 'Folded',
-            'gray-label'   => 'Gray Label',
-            'red-label'    => 'Red Label',
-            'green-label'  => 'Green Label',
-            'created-by'   => 'Created By',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'job-position' => 'المنصب الوظيفي',
+            'stage-name'   => 'اسم المرحلة',
+            'folded'       => 'مطوي',
+            'gray-label'   => 'التسمية الرمادية',
+            'red-label'    => 'التسمية الحمراء',
+            'green-label'  => 'التسمية الخضراء',
+            'created-by'   => 'أنشئ بواسطة',
+            'created-at'   => 'تاريخ الإنشاء',
+            'updated-at'   => 'تاريخ التحديث',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Stages deleted',
-                        'body'  => 'The Stages has been deleted successfully.',
+                        'title' => 'تم حذف المراحل',
+                        'body'  => 'تم حذف المراحل بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Stages could not be deleted',
-                        'body'  => 'The Stages cannot be deleted because it is currently in use.',
+                        'title' => 'تعذر حذف المراحل',
+                        'body'  => 'لا يمكن حذف المراحل لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -103,15 +103,15 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Stages deleted',
-                    'body'  => 'The Stages has been deleted successfully.',
+                    'title' => 'تم حذف المراحل',
+                    'body'  => 'تم حذف المراحل بنجاح.',
                 ],
             ],
         ],
 
         'empty-state-actions' => [
             'create' => [
-                'label' => 'New Stage',
+                'label' => 'مرحلة جديدة',
             ],
         ],
     ],
@@ -119,37 +119,37 @@ return [
     'infolist' => [
         'sections' => [
             'general-information' => [
-                'title' => 'General Information',
+                'title' => 'المعلومات العامة',
 
                 'entries' => [
-                    'stage-name'   => 'Stage Name',
-                    'sort'         => 'Sequence Order',
-                    'requirements' => 'Requirements',
+                    'stage-name'   => 'اسم المرحلة',
+                    'sort'         => 'ترتيب التسلسل',
+                    'requirements' => 'المتطلبات',
                 ],
             ],
 
             'tooltips' => [
-                'title'       => 'Tooltips',
-                'description' => 'Define the custom label for application status.',
+                'title'       => 'التلميحات',
+                'description' => 'تحديد التسمية المخصصة لحالة الطلب.',
 
                 'entries' => [
-                    'gray-label'          => 'Gray Label',
-                    'gray-label-tooltip'  => 'The label for the gray status.',
-                    'red-label'           => 'Red Label',
-                    'red-label-tooltip'   => 'The label for the red status.',
-                    'green-label'         => 'Green Label',
-                    'green-label-tooltip' => 'The label for the green status.',
+                    'gray-label'          => 'التسمية الرمادية',
+                    'gray-label-tooltip'  => 'التسمية للحالة الرمادية.',
+                    'red-label'           => 'التسمية الحمراء',
+                    'red-label-tooltip'   => 'التسمية للحالة الحمراء.',
+                    'green-label'         => 'التسمية الخضراء',
+                    'green-label-tooltip' => 'التسمية للحالة الخضراء.',
                 ],
             ],
 
             'additional-information' => [
-                'title' => 'Additional Information',
+                'title' => 'معلومات إضافية',
 
                 'entries' => [
-                    'job-positions'      => 'Job Position',
-                    'folded'             => 'Folded',
-                    'hired-stage'        => 'Hired Stage',
-                    'default-stage'      => 'Default Stage',
+                    'job-positions'      => 'المنصب الوظيفي',
+                    'folded'             => 'مطوي',
+                    'hired-stage'        => 'مرحلة التوظيف',
+                    'default-stage'      => 'المرحلة الافتراضية',
                 ],
             ],
         ],

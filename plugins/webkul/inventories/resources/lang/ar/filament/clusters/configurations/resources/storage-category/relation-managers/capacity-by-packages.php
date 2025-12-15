@@ -1,42 +1,42 @@
 <?php
 
 return [
-    'title' => 'Capacity By Packages',
+    'title' => 'السعة حسب الطرود',
 
     'form' => [
-        'package-type' => 'Package Type',
-        'qty'          => 'Quantity',
+        'package-type' => 'نوع الطرد',
+        'qty'          => 'الكمية',
     ],
 
     'table' => [
         'header-actions' => [
             'create' => [
-                'label' => 'Add Package Type Capacity',
+                'label' => 'إضافة سعة نوع طرد',
 
                 'notification' => [
-                    'title' => 'Package Type Capacity created',
-                    'body'  => 'The package type capacity been added successfully.',
+                    'title' => 'تم إنشاء سعة نوع الطرد',
+                    'body'  => 'تم إضافة سعة نوع الطرد بنجاح.',
                 ],
             ],
         ],
 
         'columns' => [
-            'package-type' => 'Package Type',
-            'qty'          => 'Quantity',
+            'package-type' => 'نوع الطرد',
+            'qty'          => 'الكمية',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Package Type Capacity updated',
-                    'body'  => 'The package type capacity has been updated successfully.',
+                    'title' => 'تم تحديث سعة نوع الطرد',
+                    'body'  => 'تم تحديث سعة نوع الطرد بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Package Type Capacity deleted',
-                    'body'  => 'The package type capacity has been deleted successfully.',
+                    'title' => 'تم حذف سعة نوع الطرد',
+                    'body'  => 'تم حذف سعة نوع الطرد بنجاح.',
                 ],
             ],
         ],

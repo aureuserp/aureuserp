@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Time Off created',
-        'body'  => 'The time off has been created successfully.',
+        'title' => 'تم إنشاء الإجازة',
+        'body'  => 'تم إنشاء الإجازة بنجاح.',
     ],
 ];

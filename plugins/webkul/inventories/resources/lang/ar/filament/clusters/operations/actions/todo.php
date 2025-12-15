@@ -1,17 +1,17 @@
 <?php
 
 return [
-    'label' => 'Mark as Todo',
+    'label' => 'تعليم كمهمة',
 
     'notification' => [
         'warning' => [
-            'title' => 'Receipt has no moves',
-            'body'  => 'The receipt has no moves to mark as todo.',
+            'title' => 'الاستلام لا يحتوي على حركات',
+            'body'  => 'الاستلام لا يحتوي على حركات لتعليمها كمهمة.',
         ],
 
         'success' => [
-            'title' => 'Receipt marked as todo',
-            'body'  => 'The receipt has been marked as todo successfully.',
+            'title' => 'تم تعليم الاستلام كمهمة',
+            'body'  => 'تم تعليم الاستلام كمهمة بنجاح.',
         ],
     ],
 ];

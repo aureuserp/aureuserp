@@ -2,36 +2,36 @@
 
 return [
     'form' => [
-        'value'                  => 'Value',
-        'due'                    => 'Due',
-        'delay-due'              => 'Delay Due',
-        'delay-type'             => 'Delay Type',
-        'days-on-the-next-month' => 'Days on the next month',
-        'days'                   => 'Days',
-        'payment-term'           => 'Payment Term',
+        'value'                  => 'القيمة',
+        'due'                    => 'الاستحقاق',
+        'delay-due'              => 'تأخير الاستحقاق',
+        'delay-type'             => 'نوع التأخير',
+        'days-on-the-next-month' => 'أيام في الشهر التالي',
+        'days'                   => 'أيام',
+        'payment-term'           => 'شرط الدفع',
     ],
 
     'table' => [
         'columns' => [
-            'due'          => 'Due',
-            'value'        => 'Value',
-            'value-amount' => 'Value Amount',
-            'after'        => 'After',
-            'delay-type'   => 'Delay Type',
+            'due'          => 'الاستحقاق',
+            'value'        => 'القيمة',
+            'value-amount' => 'مبلغ القيمة',
+            'after'        => 'بعد',
+            'delay-type'   => 'نوع التأخير',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Payment Due Term updated',
-                    'body'  => 'The payment due term has been updated successfully.',
+                    'title' => 'تم تحديث شرط استحقاق الدفع',
+                    'body'  => 'تم تحديث شرط استحقاق الدفع بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Payment Due Term deleted',
-                    'body'  => 'The payment due term has been deleted successfully.',
+                    'title' => 'تم حذف شرط استحقاق الدفع',
+                    'body'  => 'تم حذف شرط استحقاق الدفع بنجاح.',
                 ],
             ],
         ],
@@ -39,8 +39,8 @@ return [
         'header-actions' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Payment Due Term created',
-                    'body'  => 'The payment due term has been created successfully.',
+                    'title' => 'تم إنشاء شرط استحقاق الدفع',
+                    'body'  => 'تم إنشاء شرط استحقاق الدفع بنجاح.',
                 ],
             ],
         ],

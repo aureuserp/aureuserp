@@ -4,54 +4,54 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'payment-term'         => 'Payment Term',
-                'early-discount'       => 'Early Discount',
-                'discount-days-prefix' => 'if paid within',
-                'discount-days-suffix' => 'days',
-                'reduced-tax'          => 'Reduced tax',
-                'note'                 => 'Note',
-                'status'               => 'Status',
+                'payment-term'         => 'شرط الدفع',
+                'early-discount'       => 'خصم السداد المبكر',
+                'discount-days-prefix' => 'إذا تم الدفع خلال',
+                'discount-days-suffix' => 'أيام',
+                'reduced-tax'          => 'ضريبة مخفضة',
+                'note'                 => 'ملاحظة',
+                'status'               => 'الحالة',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'payment-term' => 'Payment Term',
-            'company'      => 'Company',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'payment-term' => 'شرط الدفع',
+            'company'      => 'الشركة',
+            'created-at'   => 'تاريخ الإنشاء',
+            'updated-at'   => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'company-name'        => 'Company Name',
-            'discount-days'       => 'Discount Days',
-            'early-pay-discount'  => 'Early Pay Discount',
-            'payment-term'        => 'Payment Term',
-            'display-on-invoice'  => 'Display on Invoice',
-            'early-discount'      => 'Early Discount',
-            'discount-percentage' => 'Discount Percentage',
+            'company-name'        => 'اسم الشركة',
+            'discount-days'       => 'أيام الخصم',
+            'early-pay-discount'  => 'خصم السداد المبكر',
+            'payment-term'        => 'شرط الدفع',
+            'display-on-invoice'  => 'عرض على الفاتورة',
+            'early-discount'      => 'الخصم المبكر',
+            'discount-percentage' => 'نسبة الخصم',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Payment Term restored',
-                    'body'  => 'The payment term has been restored successfully.',
+                    'title' => 'تم استعادة شرط الدفع',
+                    'body'  => 'تم استعادة شرط الدفع بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Payment Term deleted',
-                    'body'  => 'The payment term has been deleted successfully.',
+                    'title' => 'تم حذف شرط الدفع',
+                    'body'  => 'تم حذف شرط الدفع بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Payment Term force deleted',
-                    'body'  => 'The payment term has been force deleted successfully.',
+                    'title' => 'تم حذف شرط الدفع نهائياً',
+                    'body'  => 'تم حذف شرط الدفع نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -59,22 +59,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Payment Terms restored',
-                    'body'  => 'The payment Terms has been restored successfully.',
+                    'title' => 'تم استعادة شروط الدفع',
+                    'body'  => 'تم استعادة شروط الدفع بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Payment Terms deleted',
-                    'body'  => 'The payment Terms has been deleted successfully.',
+                    'title' => 'تم حذف شروط الدفع',
+                    'body'  => 'تم حذف شروط الدفع بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Payment Terms force deleted',
-                    'body'  => 'The payment Terms has been force deleted successfully.',
+                    'title' => 'تم حذف شروط الدفع نهائياً',
+                    'body'  => 'تم حذف شروط الدفع نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -83,14 +83,14 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'payment-term'         => 'Payment Term',
-                'early-discount'       => 'Early Discount',
-                'discount-percentage'  => 'Discount Percentage',
-                'discount-days-prefix' => 'if paid within',
-                'discount-days-suffix' => 'days',
-                'reduced-tax'          => 'Reduced tax',
-                'note'                 => 'Note',
-                'status'               => 'Status',
+                'payment-term'         => 'شرط الدفع',
+                'early-discount'       => 'خصم السداد المبكر',
+                'discount-percentage'  => 'نسبة الخصم',
+                'discount-days-prefix' => 'إذا تم الدفع خلال',
+                'discount-days-suffix' => 'أيام',
+                'reduced-tax'          => 'ضريبة مخفضة',
+                'note'                 => 'ملاحظة',
+                'status'               => 'الحالة',
             ],
         ],
     ],

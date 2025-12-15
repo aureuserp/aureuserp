@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Post created',
-        'body'  => 'The post has been created successfully.',
+        'title' => 'تم إنشاء المقال',
+        'body'  => 'تم إنشاء المقال بنجاح.',
     ],
 ];

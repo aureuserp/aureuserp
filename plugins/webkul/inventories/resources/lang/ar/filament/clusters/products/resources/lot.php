@@ -2,23 +2,23 @@
 
 return [
     'navigation' => [
-        'title' => 'Lots / Serial Numbers',
-        'group' => 'Inventory',
+        'title' => 'الدفعات / الأرقام التسلسلية',
+        'group' => 'المخزون',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'fields' => [
-                    'name'                   => 'Name',
-                    'name-placeholder'       => 'e.g. LOT/0001/20121',
-                    'product'                => 'Product',
-                    'product-hint-tooltip'   => 'The product associated with this lot/serial number. It cannot be changed if it has already been moved.',
-                    'reference'              => 'Reference',
-                    'reference-hint-tooltip' => 'An internal reference number, if different from the manufacturer\'s lot/serial number.',
-                    'description'            => 'Description',
+                    'name'                   => 'الاسم',
+                    'name-placeholder'       => 'مثال: LOT/0001/20121',
+                    'product'                => 'المنتج',
+                    'product-hint-tooltip'   => 'المنتج المرتبط بهذه الدفعة/الرقم التسلسلي. لا يمكن تغييره إذا تم نقله بالفعل.',
+                    'reference'              => 'المرجع',
+                    'reference-hint-tooltip' => 'رقم مرجع داخلي، إذا كان مختلفاً عن رقم الدفعة/التسلسلي الخاص بالشركة المصنعة.',
+                    'description'            => 'الوصف',
                 ],
             ],
         ],
@@ -26,38 +26,38 @@ return [
 
     'table' => [
         'columns' => [
-            'name'         => 'Name',
-            'product'      => 'Product',
-            'on-hand-qty'  => 'On Hand Quantity',
-            'reference'    => 'Internal Reference',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'name'         => 'الاسم',
+            'product'      => 'المنتج',
+            'on-hand-qty'  => 'الكمية المتاحة',
+            'reference'    => 'المرجع الداخلي',
+            'created-at'   => 'تاريخ الإنشاء',
+            'updated-at'   => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'product'        => 'Product',
-            'location'       => 'Location',
-            'created-at'     => 'Created At',
+            'product'        => 'المنتج',
+            'location'       => 'الموقع',
+            'created-at'     => 'تاريخ الإنشاء',
         ],
 
         'filters' => [
-            'product'  => 'Product',
-            'location' => 'Location',
-            'creator'  => 'Creator',
-            'company'  => 'Company',
+            'product'  => 'المنتج',
+            'location' => 'الموقع',
+            'creator'  => 'المُنشئ',
+            'company'  => 'الشركة',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Lot deleted',
-                        'body'  => 'The lot has been deleted successfully.',
+                        'title' => 'تم حذف الدفعة',
+                        'body'  => 'تم حذف الدفعة بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Lot could not be deleted',
-                        'body'  => 'The lot cannot be deleted because it is currently in use.',
+                        'title' => 'تعذر حذف الدفعة',
+                        'body'  => 'لا يمكن حذف الدفعة لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -65,19 +65,19 @@ return [
 
         'bulk-actions' => [
             'print' => [
-                'label' => 'Print Barcode',
+                'label' => 'طباعة الباركود',
             ],
 
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Lots deleted',
-                        'body'  => 'The lots has been deleted successfully.',
+                        'title' => 'تم حذف الدفعات',
+                        'body'  => 'تم حذف الدفعات بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Lots could not be deleted',
-                        'body'  => 'The lots cannot be deleted because they are currently in use.',
+                        'title' => 'تعذر حذف الدفعات',
+                        'body'  => 'لا يمكن حذف الدفعات لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -87,27 +87,27 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'Lot Details',
+                'title' => 'تفاصيل الدفعة',
 
                 'entries' => [
-                    'name'        => 'Lot Name',
-                    'product'     => 'Product',
-                    'reference'   => 'Reference',
-                    'description' => 'Description',
-                    'on-hand-qty' => 'On-Hand Quantity',
-                    'company'     => 'Company',
-                    'created-at'  => 'Created At',
-                    'updated-at'  => 'Last Updated',
+                    'name'        => 'اسم الدفعة',
+                    'product'     => 'المنتج',
+                    'reference'   => 'المرجع',
+                    'description' => 'الوصف',
+                    'on-hand-qty' => 'الكمية المتاحة',
+                    'company'     => 'الشركة',
+                    'created-at'  => 'تاريخ الإنشاء',
+                    'updated-at'  => 'آخر تحديث',
                 ],
             ],
 
             'record-information' => [
-                'title' => 'Record Information',
+                'title' => 'معلومات السجل',
 
                 'entries' => [
-                    'created-by'   => 'Created By',
-                    'created-at'   => 'Created At',
-                    'last-updated' => 'Last Updated',
+                    'created-by'   => 'أنشئ بواسطة',
+                    'created-at'   => 'تاريخ الإنشاء',
+                    'last-updated' => 'آخر تحديث',
                 ],
             ],
         ],

@@ -2,69 +2,69 @@
 
 return [
     'navigation' => [
-        'title' => 'Activity Plans',
-        'group' => 'Activities',
+        'title' => 'خطط الأنشطة',
+        'group' => 'الأنشطة',
     ],
 
     'global-search' => [
-        'name'         => 'Department',
-        'department'   => 'Department',
-        'manager'      => 'Manager',
-        'company'      => 'Company',
-        'plugin'       => 'Plugin',
-        'creator-name' => 'Created By',
+        'name'         => 'القسم',
+        'department'   => 'القسم',
+        'manager'      => 'المدير',
+        'company'      => 'الشركة',
+        'plugin'       => 'الإضافة',
+        'creator-name' => 'أنشئ بواسطة',
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'status'     => 'Status',
-            'department' => 'Department',
-            'company'    => 'Company',
-            'manager'    => 'Manager',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'الاسم',
+            'status'     => 'الحالة',
+            'department' => 'القسم',
+            'company'    => 'الشركة',
+            'manager'    => 'المدير',
+            'created-by' => 'أنشئ بواسطة',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'name'           => 'Name',
-            'plugin'         => 'Plugin',
-            'activity-types' => 'Activity Types',
-            'company'        => 'Company',
-            'department'     => 'Department',
-            'is-active'      => 'Status',
-            'updated-at'     => 'Updated At',
-            'created-at'     => 'Created At',
+            'name'           => 'الاسم',
+            'plugin'         => 'الإضافة',
+            'activity-types' => 'أنواع الأنشطة',
+            'company'        => 'الشركة',
+            'department'     => 'القسم',
+            'is-active'      => 'الحالة',
+            'updated-at'     => 'تاريخ التحديث',
+            'created-at'     => 'تاريخ الإنشاء',
         ],
 
         'groups' => [
-            'status'     => 'Status',
-            'name'       => 'Name',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'status'     => 'الحالة',
+            'name'       => 'الاسم',
+            'created-by' => 'أنشئ بواسطة',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Activity Plan restored',
-                    'body'  => 'The activity plan has been restored successfully.',
+                    'title' => 'تم استعادة خطة النشاط',
+                    'body'  => 'تم استعادة خطة النشاط بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Activity Plan deleted',
-                    'body'  => 'The activity plan has been deleted successfully.',
+                    'title' => 'تم حذف خطة النشاط',
+                    'body'  => 'تم حذف خطة النشاط بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Activity Plan force deleted',
-                    'body'  => 'The activity plan has been force deleted successfully.',
+                    'title' => 'تم حذف خطة النشاط نهائياً',
+                    'body'  => 'تم حذف خطة النشاط نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -72,22 +72,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Activity Plans restored',
-                    'body'  => 'The activity plans has been restored successfully.',
+                    'title' => 'تم استعادة خطط الأنشطة',
+                    'body'  => 'تم استعادة خطط الأنشطة بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Activity Plans deleted',
-                    'body'  => 'The activity plans has been deleted successfully.',
+                    'title' => 'تم حذف خطط الأنشطة',
+                    'body'  => 'تم حذف خطط الأنشطة بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Activity Plans force deleted',
-                    'body'  => 'The activity plans has been force deleted successfully.',
+                    'title' => 'تم حذف خطط الأنشطة نهائياً',
+                    'body'  => 'تم حذف خطط الأنشطة نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -95,8 +95,8 @@ return [
         'empty-state' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Activity Plan created',
-                    'body'  => 'The activity plan has been created successfully.',
+                    'title' => 'تم إنشاء خطة النشاط',
+                    'body'  => 'تم إنشاء خطة النشاط بنجاح.',
                 ],
             ],
         ],

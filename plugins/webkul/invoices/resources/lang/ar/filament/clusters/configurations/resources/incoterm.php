@@ -1,56 +1,56 @@
 <?php
 
 return [
-    'title' => 'Incoterms',
+    'title' => 'شروط التسليم',
 
     'navigation' => [
-        'title' => 'Incoterms',
-        'group' => 'Invoicing',
+        'title' => 'شروط التسليم',
+        'group' => 'الفوترة',
     ],
 
     'global-search' => [
-        'name' => 'Name',
-        'code' => 'Code',
+        'name' => 'الاسم',
+        'code' => 'الرمز',
     ],
 
     'form' => [
         'fields' => [
-            'code' => 'Code',
-            'name' => 'Name',
+            'code' => 'الرمز',
+            'name' => 'الاسم',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'code'       => 'Code',
-            'name'       => 'Name',
-            'created-by' => 'Created By',
+            'code'       => 'الرمز',
+            'name'       => 'الاسم',
+            'created-by' => 'أنشئ بواسطة',
         ],
 
         'groups' => [
-            'code' => 'Code',
-            'name' => 'Name',
+            'code' => 'الرمز',
+            'name' => 'الاسم',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Incoterm updated',
-                    'body'  => 'The incoterm has been updated successfully.',
+                    'title' => 'تم تحديث شرط التسليم',
+                    'body'  => 'تم تحديث شرط التسليم بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Incoterm deleted',
-                    'body'  => 'The incoterm has been deleted successfully.',
+                    'title' => 'تم حذف شرط التسليم',
+                    'body'  => 'تم حذف شرط التسليم بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Incoterm restored',
-                    'body'  => 'The incoterm has been restored successfully.',
+                    'title' => 'تم استعادة شرط التسليم',
+                    'body'  => 'تم استعادة شرط التسليم بنجاح.',
                 ],
             ],
         ],
@@ -58,22 +58,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Incoterms restored',
-                    'body'  => 'The incoterms has been restored successfully.',
+                    'title' => 'تم استعادة شروط التسليم',
+                    'body'  => 'تم استعادة شروط التسليم بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Incoterms deleted',
-                    'body'  => 'The incoterms has been deleted successfully.',
+                    'title' => 'تم حذف شروط التسليم',
+                    'body'  => 'تم حذف شروط التسليم بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Incoterms force deleted',
-                    'body'  => 'The incoterms has been force deleted successfully.',
+                    'title' => 'تم حذف شروط التسليم نهائياً',
+                    'body'  => 'تم حذف شروط التسليم نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -81,8 +81,8 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name' => 'Name',
-            'code' => 'Code',
+            'name' => 'الاسم',
+            'code' => 'الرمز',
         ],
     ],
 ];

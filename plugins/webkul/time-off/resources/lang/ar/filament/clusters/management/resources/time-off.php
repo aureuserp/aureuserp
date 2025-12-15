@@ -1,79 +1,79 @@
 <?php
 
 return [
-    'title' => 'Time off',
+    'title' => 'الإجازات',
 
-    'model-label' => 'Time off',
+    'model-label' => 'إجازة',
 
     'navigation' => [
-        'title' => 'Time off',
+        'title' => 'الإجازات',
     ],
 
     'form' => [
         'fields' => [
-            'employee-name'     => 'Employee Name',
-            'department-name'   => 'Department Name',
-            'time-off-type'     => 'Time off Type',
-            'date'              => 'Date',
-            'dates'             => 'Dates',
-            'request-date-from' => 'Request Date From',
-            'request-date-to'   => 'Request Date To',
-            'description'       => 'Description',
-            'period'            => 'Period',
-            'half-day'          => 'Half Day',
-            'requested-days'    => 'Requested (Days/Hours)',
-            'description'       => 'Description',
-            'attachment'        => 'Attachment',
-            'day'               => ':day day',
-            'days'              => ':days day(s)',
+            'employee-name'     => 'اسم الموظف',
+            'department-name'   => 'اسم القسم',
+            'time-off-type'     => 'نوع الإجازة',
+            'date'              => 'التاريخ',
+            'dates'             => 'التواريخ',
+            'request-date-from' => 'تاريخ الطلب من',
+            'request-date-to'   => 'تاريخ الطلب إلى',
+            'description'       => 'الوصف',
+            'period'            => 'الفترة',
+            'half-day'          => 'نصف يوم',
+            'requested-days'    => 'المطلوب (أيام/ساعات)',
+            'description'       => 'الوصف',
+            'attachment'        => 'المرفق',
+            'day'               => ':day يوم',
+            'days'              => ':days يوم/أيام',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'employee-name'  => 'Employee',
-            'time-off-type'  => 'Time Off Type',
-            'description'    => 'Description',
-            'date-from'      => 'Date From',
-            'date-to'        => 'Date To',
-            'duration'       => 'Duration',
-            'status'         => 'Status',
+            'employee-name'  => 'الموظف',
+            'time-off-type'  => 'نوع الإجازة',
+            'description'    => 'الوصف',
+            'date-from'      => 'التاريخ من',
+            'date-to'        => 'التاريخ إلى',
+            'duration'       => 'المدة',
+            'status'         => 'الحالة',
         ],
 
         'groups' => [
-            'employee-name' => 'Employee',
-            'time-off-type' => 'Time Off Type',
-            'status'        => 'Status',
-            'start-date'    => 'Start Date',
-            'start-to'      => 'End Date',
-            'updated-at'    => 'Updated At',
-            'created-at'    => 'Created At',
+            'employee-name' => 'الموظف',
+            'time-off-type' => 'نوع الإجازة',
+            'status'        => 'الحالة',
+            'start-date'    => 'تاريخ البداية',
+            'start-to'      => 'تاريخ النهاية',
+            'updated-at'    => 'تاريخ التحديث',
+            'created-at'    => 'تاريخ الإنشاء',
         ],
 
         'actions' => [
             'approve' => [
                 'title' => [
-                    'validate' => 'Validate',
-                    'approve'  => 'Approve',
+                    'validate' => 'تحقق',
+                    'approve'  => 'موافقة',
                 ],
                 'notification' => [
-                    'title' => 'Time Off approved',
-                    'body'  => 'The time off has been approved successfully.',
+                    'title' => 'تمت الموافقة على الإجازة',
+                    'body'  => 'تمت الموافقة على الإجازة بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Time Off deleted',
-                    'body'  => 'The time off has been deleted successfully.',
+                    'title' => 'تم حذف الإجازة',
+                    'body'  => 'تم حذف الإجازة بنجاح.',
                 ],
             ],
 
             'refused' => [
-                'title'        => 'Refuse',
+                'title'        => 'رفض',
                 'notification' => [
-                    'title' => 'Time Off refused',
-                    'body'  => 'The time off has been refused successfully.',
+                    'title' => 'تم رفض الإجازة',
+                    'body'  => 'تم رفض الإجازة بنجاح.',
                 ],
             ],
         ],
@@ -81,8 +81,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Time Off deleted',
-                    'body'  => 'The time off has been deleted successfully.',
+                    'title' => 'تم حذف الإجازة',
+                    'body'  => 'تم حذف الإجازة بنجاح.',
                 ],
             ],
         ],
@@ -90,23 +90,23 @@ return [
 
     'infolist' => [
         'entries' => [
-            'employee-name'     => 'Employee Name',
-            'department-name'   => 'Department Name',
-            'time-off-type'     => 'Time off Type',
-            'date'              => 'Date',
-            'dates'             => 'Dates',
-            'request-date-from' => 'Request Date From',
-            'request-date-to'   => 'Request Date To',
-            'description'       => 'Description',
-            'period'            => 'Period',
-            'half-day'          => 'Half Day',
-            'requested-days'    => 'Requested (Days/Hours)',
-            'attachment'        => 'Attachment',
-            'day'               => ':day day',
-            'days'              => ':days day(s)',
-            'date-from'         => 'Date From',
-            'date-to'           => 'Date To',
-            'status'            => 'Status',
+            'employee-name'     => 'اسم الموظف',
+            'department-name'   => 'اسم القسم',
+            'time-off-type'     => 'نوع الإجازة',
+            'date'              => 'التاريخ',
+            'dates'             => 'التواريخ',
+            'request-date-from' => 'تاريخ الطلب من',
+            'request-date-to'   => 'تاريخ الطلب إلى',
+            'description'       => 'الوصف',
+            'period'            => 'الفترة',
+            'half-day'          => 'نصف يوم',
+            'requested-days'    => 'المطلوب (أيام/ساعات)',
+            'attachment'        => 'المرفق',
+            'day'               => ':day يوم',
+            'days'              => ':days يوم/أيام',
+            'date-from'         => 'التاريخ من',
+            'date-to'           => 'التاريخ إلى',
+            'status'            => 'الحالة',
         ],
     ],
 ];

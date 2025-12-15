@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Tax created',
-        'body'  => 'The tax has been created successfully.',
+        'title' => 'تم إنشاء الضريبة',
+        'body'  => 'تم إنشاء الضريبة بنجاح.',
     ],
 ];

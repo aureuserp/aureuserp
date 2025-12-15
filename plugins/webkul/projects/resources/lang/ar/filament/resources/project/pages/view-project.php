@@ -4,8 +4,8 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Project deleted',
-                'body'  => 'The project has been deleted successfully.',
+                'title' => 'تم حذف المشروع',
+                'body'  => 'تم حذف المشروع بنجاح.',
             ],
         ],
     ],

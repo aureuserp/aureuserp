@@ -1,16 +1,16 @@
 <?php
 
 return [
-    'title' => 'Routes',
+    'title' => 'المسارات',
 
     'table' => [
         'header-actions' => [
             'create' => [
-                'label' => 'Add Route',
+                'label' => 'إضافة مسار',
 
                 'notification' => [
-                    'title' => 'Route created',
-                    'body'  => 'The route has been created successfully.',
+                    'title' => 'تم إنشاء المسار',
+                    'body'  => 'تم إنشاء المسار بنجاح.',
                 ],
             ],
         ],

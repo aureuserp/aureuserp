@@ -2,133 +2,133 @@
 
 return [
     'navigation' => [
-        'title' => 'Products',
-        'group' => 'Inventory',
+        'title' => 'المنتجات',
+        'group' => 'المخزون',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'fields' => [
-                    'name'             => 'Name',
-                    'name-placeholder' => 'eg. T-shirt',
-                    'description'      => 'Description',
-                    'tags'             => 'Tags',
-                    'sales'            => 'Sales',
-                    'purchase'         => 'Purchase',
+                    'name'             => 'الاسم',
+                    'name-placeholder' => 'مثال: تي شيرت',
+                    'description'      => 'الوصف',
+                    'tags'             => 'الوسوم',
+                    'sales'            => 'المبيعات',
+                    'purchase'         => 'المشتريات',
                 ],
             ],
 
             'invoice-policy' => [
-                'title'            => 'Invoice Policy',
-                'ordered-policy'   => 'You can invoice goods before they are delivered.',
-                'delivered-policy' => 'Invoice after delivery, based on quantities delivered, not ordered.',
+                'title'            => 'سياسة الفوترة',
+                'ordered-policy'   => 'يمكنك فوترة البضائع قبل تسليمها.',
+                'delivered-policy' => 'الفوترة بعد التسليم، بناءً على الكميات المسلمة وليس المطلوبة.',
             ],
 
             'images' => [
-                'title' => 'Images',
+                'title' => 'الصور',
             ],
 
             'settings' => [
-                'title' => 'Settings',
+                'title' => 'الإعدادات',
 
                 'fields' => [
-                    'type'      => 'Type',
-                    'reference' => 'Reference',
-                    'barcode'   => 'Barcode',
-                    'category'  => 'Category',
-                    'company'   => 'Company',
+                    'type'      => 'النوع',
+                    'reference' => 'المرجع',
+                    'barcode'   => 'الباركود',
+                    'category'  => 'الفئة',
+                    'company'   => 'الشركة',
                 ],
             ],
 
             'category-and-tags' => [
-                'title' => 'Category & Tags',
+                'title' => 'الفئة والوسوم',
 
                 'fields' => [
-                    'category' => 'Category',
-                    'tags'     => 'Tags',
+                    'category' => 'الفئة',
+                    'tags'     => 'الوسوم',
                 ],
             ],
 
             'pricing' => [
-                'title' => 'Pricing',
+                'title' => 'التسعير',
 
                 'fields' => [
-                    'price' => 'Price',
-                    'cost'  => 'Cost',
+                    'price' => 'السعر',
+                    'cost'  => 'التكلفة',
                 ],
             ],
 
             'additional' => [
-                'title' => 'Additional',
+                'title' => 'إضافي',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'        => 'Name',
-            'images'      => 'Images',
-            'type'        => 'Type',
-            'reference'   => 'Reference',
-            'responsible' => 'Responsible',
-            'barcode'     => 'Barcode',
-            'category'    => 'Category',
-            'company'     => 'Company',
-            'price'       => 'Price',
-            'cost'        => 'Cost',
-            'tags'        => 'Tags',
-            'deleted-at'  => 'Deleted At',
-            'created-at'  => 'Created At',
-            'updated-at'  => 'Updated At',
+            'name'        => 'الاسم',
+            'images'      => 'الصور',
+            'type'        => 'النوع',
+            'reference'   => 'المرجع',
+            'responsible' => 'المسؤول',
+            'barcode'     => 'الباركود',
+            'category'    => 'الفئة',
+            'company'     => 'الشركة',
+            'price'       => 'السعر',
+            'cost'        => 'التكلفة',
+            'tags'        => 'الوسوم',
+            'deleted-at'  => 'تاريخ الحذف',
+            'created-at'  => 'تاريخ الإنشاء',
+            'updated-at'  => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'type'       => 'Type',
-            'category'   => 'Category',
-            'created-at' => 'Created At',
+            'type'       => 'النوع',
+            'category'   => 'الفئة',
+            'created-at' => 'تاريخ الإنشاء',
         ],
 
         'filters' => [
-            'name'        => 'Name',
-            'type'        => 'Type',
-            'reference'   => 'Reference',
-            'barcode'     => 'Barcode',
-            'category'    => 'Category',
-            'company'     => 'Company',
-            'price'       => 'Price',
-            'cost'        => 'Cost',
-            'is-favorite' => 'Is Favorite',
-            'weight'      => 'Weight',
-            'volume'      => 'Volume',
-            'tags'        => 'Tags',
-            'responsible' => 'Responsible',
-            'created-at'  => 'Created At',
-            'updated-at'  => 'Updated At',
-            'creator'     => 'Creator',
+            'name'        => 'الاسم',
+            'type'        => 'النوع',
+            'reference'   => 'المرجع',
+            'barcode'     => 'الباركود',
+            'category'    => 'الفئة',
+            'company'     => 'الشركة',
+            'price'       => 'السعر',
+            'cost'        => 'التكلفة',
+            'is-favorite' => 'مفضل',
+            'weight'      => 'الوزن',
+            'volume'      => 'الحجم',
+            'tags'        => 'الوسوم',
+            'responsible' => 'المسؤول',
+            'created-at'  => 'تاريخ الإنشاء',
+            'updated-at'  => 'تاريخ التحديث',
+            'creator'     => 'المُنشئ',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Product restored',
-                    'body'  => 'The product has been restored successfully.',
+                    'title' => 'تم استعادة المنتج',
+                    'body'  => 'تم استعادة المنتج بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Product deleted',
-                    'body'  => 'The product has been deleted successfully.',
+                    'title' => 'تم حذف المنتج',
+                    'body'  => 'تم حذف المنتج بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Product force deleted',
-                    'body'  => 'The product has been force deleted successfully.',
+                    'title' => 'تم حذف المنتج نهائياً',
+                    'body'  => 'تم حذف المنتج نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -136,22 +136,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Products restored',
-                    'body'  => 'The products has been restored successfully.',
+                    'title' => 'تم استعادة المنتجات',
+                    'body'  => 'تم استعادة المنتجات بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Products deleted',
-                    'body'  => 'The products has been deleted successfully.',
+                    'title' => 'تم حذف المنتجات',
+                    'body'  => 'تم حذف المنتجات بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Products force deleted',
-                    'body'  => 'The products has been force deleted successfully.',
+                    'title' => 'تم حذف المنتجات نهائياً',
+                    'body'  => 'تم حذف المنتجات نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -160,98 +160,98 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'entries' => [
-                    'name'             => 'Name',
-                    'name-placeholder' => 'eg. T-shirt',
-                    'description'      => 'Description',
-                    'tags'             => 'Tags',
+                    'name'             => 'الاسم',
+                    'name-placeholder' => 'مثال: تي شيرت',
+                    'description'      => 'الوصف',
+                    'tags'             => 'الوسوم',
                 ],
             ],
 
             'images' => [
-                'title' => 'Images',
+                'title' => 'الصور',
 
                 'entries' => [],
             ],
 
             'settings' => [
-                'title' => 'Settings',
+                'title' => 'الإعدادات',
 
                 'entries' => [
-                    'type'      => 'Type',
-                    'reference' => 'Reference',
-                    'barcode'   => 'Barcode',
-                    'category'  => 'Category',
-                    'company'   => 'Company',
+                    'type'      => 'النوع',
+                    'reference' => 'المرجع',
+                    'barcode'   => 'الباركود',
+                    'category'  => 'الفئة',
+                    'company'   => 'الشركة',
                 ],
             ],
 
             'pricing' => [
-                'title' => 'Pricing',
+                'title' => 'التسعير',
 
                 'entries' => [
-                    'price' => 'Price',
-                    'cost'  => 'Cost',
+                    'price' => 'السعر',
+                    'cost'  => 'التكلفة',
                 ],
             ],
 
             'inventory' => [
-                'title' => 'Inventory',
+                'title' => 'المخزون',
 
                 'entries' => [],
 
                 'fieldsets' => [
                     'tracking' => [
-                        'title' => 'Tracking',
+                        'title' => 'التتبع',
 
                         'entries' => [
-                            'track-inventory' => 'Track Inventory',
-                            'track-by'        => 'Track By',
-                            'expiration-date' => 'Expiration Date',
+                            'track-inventory' => 'تتبع المخزون',
+                            'track-by'        => 'التتبع بواسطة',
+                            'expiration-date' => 'تاريخ انتهاء الصلاحية',
                         ],
                     ],
 
                     'operation' => [
-                        'title' => 'Operations',
+                        'title' => 'العمليات',
 
                         'entries' => [
-                            'routes' => 'Routes',
+                            'routes' => 'المسارات',
                         ],
                     ],
 
                     'logistics' => [
-                        'title' => 'Logistics',
+                        'title' => 'اللوجستيات',
 
                         'entries' => [
-                            'responsible' => 'Responsible',
-                            'weight'      => 'Weight',
-                            'volume'      => 'Volume',
-                            'sale-delay'  => 'Customer Lead Time (Days)',
+                            'responsible' => 'المسؤول',
+                            'weight'      => 'الوزن',
+                            'volume'      => 'الحجم',
+                            'sale-delay'  => 'مهلة العميل (أيام)',
                         ],
                     ],
 
                     'traceability' => [
-                        'title' => 'Traceability',
+                        'title' => 'التتبع',
 
                         'entries' => [
-                            'expiration-date'  => 'Expiration Date (Days)',
-                            'best-before-date' => 'Best Before Date (Days)',
-                            'removal-date'     => 'Removal Date (Days)',
-                            'alert-date'       => 'Alert Date (Days)',
+                            'expiration-date'  => 'تاريخ انتهاء الصلاحية (أيام)',
+                            'best-before-date' => 'تاريخ الاستخدام الأفضل (أيام)',
+                            'removal-date'     => 'تاريخ الإزالة (أيام)',
+                            'alert-date'       => 'تاريخ التنبيه (أيام)',
                         ],
                     ],
                 ],
             ],
 
             'record-information' => [
-                'title' => 'Record Information',
+                'title' => 'معلومات السجل',
 
                 'entries' => [
-                    'created-at' => 'Created At',
-                    'created-by' => 'Created By',
-                    'updated-at' => 'Updated At',
+                    'created-at' => 'تاريخ الإنشاء',
+                    'created-by' => 'أنشئ بواسطة',
+                    'updated-at' => 'تاريخ التحديث',
                 ],
             ],
         ],

@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Stage created',
-        'body'  => 'The stage has been created successfully.',
+        'title' => 'تم إنشاء المرحلة',
+        'body'  => 'تم إنشاء المرحلة بنجاح.',
     ],
 ];

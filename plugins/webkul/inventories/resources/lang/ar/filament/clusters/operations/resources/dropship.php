@@ -2,8 +2,8 @@
 
 return [
     'navigation' => [
-        'title' => 'Dropships',
-        'group' => 'Transfers',
+        'title' => 'الشحن المباشر',
+        'group' => 'التحويلات',
     ],
 
     'table' => [
@@ -11,13 +11,13 @@ return [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Dropship deleted',
-                        'body'  => 'The dropship ras been deleted successfully.',
+                        'title' => 'تم حذف الشحن المباشر',
+                        'body'  => 'تم حذف الشحن المباشر بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Dropship could not be deleted',
-                        'body'  => 'The dropship cannot be deleted because it is currently in use.',
+                        'title' => 'تعذر حذف الشحن المباشر',
+                        'body'  => 'لا يمكن حذف الشحن المباشر لأنه قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -27,13 +27,13 @@ return [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Dropships deleted',
-                        'body'  => 'The dropships has been deleted successfully.',
+                        'title' => 'تم حذف الشحنات المباشرة',
+                        'body'  => 'تم حذف الشحنات المباشرة بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Dropships could not be deleted',
-                        'body'  => 'The dropships cannot be deleted because they are currently in use.',
+                        'title' => 'تعذر حذف الشحنات المباشرة',
+                        'body'  => 'لا يمكن حذف الشحنات المباشرة لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],

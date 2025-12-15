@@ -1,11 +1,11 @@
 <?php
 
 return [
-    'title' => 'Tasks',
+    'title' => 'المهام',
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Task',
+            'label' => 'مهمة جديدة',
         ],
     ],
 
@@ -13,33 +13,33 @@ return [
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Task restored',
-                    'body'  => 'The task has been restored successfully.',
+                    'title' => 'تم استعادة المهمة',
+                    'body'  => 'تم استعادة المهمة بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Task deleted',
-                    'body'  => 'The task has been deleted successfully.',
+                    'title' => 'تم حذف المهمة',
+                    'body'  => 'تم حذف المهمة بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Task force deleted',
-                    'body'  => 'The task has been force deleted successfully.',
+                    'title' => 'تم حذف المهمة نهائياً',
+                    'body'  => 'تم حذف المهمة نهائياً بنجاح.',
                 ],
             ],
         ],
     ],
 
     'tabs' => [
-        'open-tasks'       => 'Open Tasks',
-        'my-tasks'         => 'My Tasks',
-        'unassigned-tasks' => 'Unassigned Tasks',
-        'closed-tasks'     => 'Closed Tasks',
-        'starred-tasks'    => 'Starred Tasks',
-        'archived-tasks'   => 'Archived Tasks',
+        'open-tasks'       => 'المهام المفتوحة',
+        'my-tasks'         => 'مهامي',
+        'unassigned-tasks' => 'المهام غير المسندة',
+        'closed-tasks'     => 'المهام المغلقة',
+        'starred-tasks'    => 'المهام المميزة',
+        'archived-tasks'   => 'المهام المؤرشفة',
     ],
 ];

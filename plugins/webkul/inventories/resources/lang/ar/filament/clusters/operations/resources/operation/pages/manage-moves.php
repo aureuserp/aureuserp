@@ -1,27 +1,27 @@
 <?php
 
 return [
-    'title' => 'Moves',
+    'title' => 'الحركات',
 
     'table' => [
         'columns' => [
-            'date'                 => 'Date',
-            'reference'            => 'Reference',
-            'product'              => 'Product',
-            'package'              => 'Package',
-            'lot'                  => 'Lot / Serial Numbers',
-            'source-location'      => 'Source Location',
-            'destination-location' => 'Destination Location',
-            'quantity'             => 'Quantity',
-            'state'                => 'State',
-            'done-by'              => 'Done By',
+            'date'                 => 'التاريخ',
+            'reference'            => 'المرجع',
+            'product'              => 'المنتج',
+            'package'              => 'الطرد',
+            'lot'                  => 'الدفعة / الأرقام التسلسلية',
+            'source-location'      => 'موقع المصدر',
+            'destination-location' => 'موقع الوجهة',
+            'quantity'             => 'الكمية',
+            'state'                => 'الحالة',
+            'done-by'              => 'تم بواسطة',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Move deleted',
-                    'body'  => 'The move has been deleted successfully.',
+                    'title' => 'تم حذف الحركة',
+                    'body'  => 'تم حذف الحركة بنجاح.',
                 ],
             ],
         ],

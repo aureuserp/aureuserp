@@ -3,12 +3,12 @@
 return [
     'header-actions' => [
         'create' => [
-            'title' => 'New Public Holiday',
+            'title' => 'عطلة رسمية جديدة',
 
             'notification' => [
                 'created' => [
-                    'title' => 'Public Holiday created',
-                    'body'  => 'The public holiday has been created successfully.',
+                    'title' => 'تم إنشاء العطلة الرسمية',
+                    'body'  => 'تم إنشاء العطلة الرسمية بنجاح.',
                 ],
             ],
         ],

@@ -4,8 +4,8 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Blog Post deleted',
-                'body'  => 'The blog post has been deleted successfully.',
+                'title' => 'تم حذف مقال المدونة',
+                'body'  => 'تم حذف مقال المدونة بنجاح.',
             ],
         ],
     ],

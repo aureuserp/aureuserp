@@ -3,19 +3,19 @@
 return [
     'header-actions' => [
         'print' => [
-            'label' => 'Print',
+            'label' => 'طباعة',
         ],
 
         'delete' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Dropship Deleted',
-                    'body'  => 'The dropship has been deleted successfully.',
+                    'title' => 'تم حذف الشحن المباشر',
+                    'body'  => 'تم حذف الشحن المباشر بنجاح.',
                 ],
 
                 'error' => [
-                    'title' => 'Dropship could not be deleted',
-                    'body'  => 'The dropship cannot be deleted because it is currently in use.',
+                    'title' => 'تعذر حذف الشحن المباشر',
+                    'body'  => 'لا يمكن حذف الشحن المباشر لأنه قيد الاستخدام حالياً.',
                 ],
             ],
         ],

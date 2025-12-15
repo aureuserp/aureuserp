@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'title' => 'Create Internal Transfer',
+    'title' => 'إنشاء تحويل داخلي',
 
     'notification' => [
-        'title' => 'Internal Transfer created',
-        'body'  => 'The internal transfer has been created successfully.',
+        'title' => 'تم إنشاء التحويل الداخلي',
+        'body'  => 'تم إنشاء التحويل الداخلي بنجاح.',
     ],
 ];

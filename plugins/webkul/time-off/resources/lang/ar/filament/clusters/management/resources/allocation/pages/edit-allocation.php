@@ -2,39 +2,39 @@
 
 return [
     'notification' => [
-        'title' => 'Allocation updated',
-        'body'  => 'The allocation has been updated successfully.',
+        'title' => 'تم تحديث التخصيص',
+        'body'  => 'تم تحديث التخصيص بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Allocation deleted',
-                'body'  => 'The allocation has been deleted successfully.',
+                'title' => 'تم حذف التخصيص',
+                'body'  => 'تم حذف التخصيص بنجاح.',
             ],
         ],
         'approved' => [
-            'title' => 'Approved',
+            'title' => 'موافقة',
 
             'notification' => [
-                'title' => 'Allocation approved',
-                'body'  => 'The allocation has been approved successfully.',
+                'title' => 'تمت الموافقة على التخصيص',
+                'body'  => 'تمت الموافقة على التخصيص بنجاح.',
             ],
         ],
         'refuse' => [
-            'title' => 'Refuse',
+            'title' => 'رفض',
 
             'notification' => [
-                'title' => 'Allocation refused',
-                'body'  => 'The allocation has been refused successfully.',
+                'title' => 'تم رفض التخصيص',
+                'body'  => 'تم رفض التخصيص بنجاح.',
             ],
         ],
         'mark-as-ready-to-confirm' => [
-            'title' => 'Mark as Ready to Confirm',
+            'title' => 'تعليم كجاهز للتأكيد',
 
             'notification' => [
-                'title' => 'Marked as ready to confirm',
-                'body'  => 'The allocation has been marked as ready to confirm successfully.',
+                'title' => 'تم التعليم كجاهز للتأكيد',
+                'body'  => 'تم تعليم التخصيص كجاهز للتأكيد بنجاح.',
             ],
         ],
     ],

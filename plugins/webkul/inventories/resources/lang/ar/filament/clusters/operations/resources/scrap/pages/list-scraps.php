@@ -3,11 +3,11 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Scrap',
+            'label' => 'خردة جديدة',
 
             'notification' => [
-                'title' => 'Scrap created',
-                'body'  => 'The scrap has been created successfully.',
+                'title' => 'تم إنشاء الخردة',
+                'body'  => 'تم إنشاء الخردة بنجاح.',
             ],
         ],
     ],

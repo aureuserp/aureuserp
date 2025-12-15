@@ -1,50 +1,50 @@
 <?php
 
 return [
-    'title' => 'Fiscal Positions',
+    'title' => 'المواقف المالية',
 
     'navigation' => [
-        'title' => 'Fiscal Positions',
-        'group' => 'Accounting',
+        'title' => 'المواقف المالية',
+        'group' => 'المحاسبة',
     ],
 
     'global-search' => [
-        'zip-from' => 'Zip From',
-        'zip-to'   => 'Zip To',
-        'name'     => 'Name',
+        'zip-from' => 'الرمز البريدي من',
+        'zip-to'   => 'الرمز البريدي إلى',
+        'name'     => 'الاسم',
     ],
 
     'form' => [
         'fields' => [
-            'name'                 => 'Name',
-            'foreign-vat'          => 'Foreign VAT',
-            'country'              => 'Country',
-            'country-group'        => 'Country Group',
-            'zip-from'             => 'Zip From',
-            'zip-to'               => 'Zip To',
-            'detect-automatically' => 'Detect Automatically',
-            'notes'                => 'Notes',
+            'name'                 => 'الاسم',
+            'foreign-vat'          => 'ضريبة القيمة المضافة الأجنبية',
+            'country'              => 'الدولة',
+            'country-group'        => 'مجموعة الدول',
+            'zip-from'             => 'الرمز البريدي من',
+            'zip-to'               => 'الرمز البريدي إلى',
+            'detect-automatically' => 'الكشف التلقائي',
+            'notes'                => 'ملاحظات',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'                 => 'Name',
-            'company'              => 'Company',
-            'country'              => 'Country',
-            'country-group'        => 'Country Group',
-            'created-by'           => 'Created By',
-            'zip-from'             => 'Zip From',
-            'zip-to'               => 'Zip To',
-            'status'               => 'Status',
-            'detect-automatically' => 'Detect Automatically',
+            'name'                 => 'الاسم',
+            'company'              => 'الشركة',
+            'country'              => 'الدولة',
+            'country-group'        => 'مجموعة الدول',
+            'created-by'           => 'أنشئ بواسطة',
+            'zip-from'             => 'الرمز البريدي من',
+            'zip-to'               => 'الرمز البريدي إلى',
+            'status'               => 'الحالة',
+            'detect-automatically' => 'الكشف التلقائي',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Payment Term deleted',
-                    'body'  => 'The payment term has been deleted successfully.',
+                    'title' => 'تم حذف الموقف المالي',
+                    'body'  => 'تم حذف الموقف المالي بنجاح.',
                 ],
             ],
         ],
@@ -52,8 +52,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Fiscal Position deleted',
-                    'body'  => 'The fiscal Position has been deleted successfully.',
+                    'title' => 'تم حذف الموقف المالي',
+                    'body'  => 'تم حذف الموقف المالي بنجاح.',
                 ],
             ],
         ],
@@ -61,14 +61,14 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name'                 => 'Name',
-            'foreign-vat'          => 'Foreign VAT',
-            'country'              => 'Country',
-            'country-group'        => 'Country Group',
-            'zip-from'             => 'Zip From',
-            'zip-to'               => 'Zip To',
-            'detect-automatically' => 'Detect Automatically',
-            'notes'                => 'Notes',
+            'name'                 => 'الاسم',
+            'foreign-vat'          => 'ضريبة القيمة المضافة الأجنبية',
+            'country'              => 'الدولة',
+            'country-group'        => 'مجموعة الدول',
+            'zip-from'             => 'الرمز البريدي من',
+            'zip-to'               => 'الرمز البريدي إلى',
+            'detect-automatically' => 'الكشف التلقائي',
+            'notes'                => 'ملاحظات',
         ],
     ],
 ];

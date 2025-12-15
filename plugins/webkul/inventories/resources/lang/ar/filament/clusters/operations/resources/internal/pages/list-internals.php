@@ -3,11 +3,11 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Internal Transfer',
+            'label' => 'تحويل داخلي جديد',
 
             'notification' => [
-                'title' => 'Internal Transfer created',
-                'body'  => 'The internal transfer has been created successfully.',
+                'title' => 'تم إنشاء التحويل الداخلي',
+                'body'  => 'تم إنشاء التحويل الداخلي بنجاح.',
             ],
         ],
     ],

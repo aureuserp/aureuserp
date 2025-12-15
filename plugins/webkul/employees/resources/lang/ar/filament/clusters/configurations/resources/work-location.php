@@ -1,89 +1,89 @@
 <?php
 
 return [
-    'title' => 'Work Locations',
+    'title' => 'مواقع العمل',
 
     'navigation' => [
-        'title' => 'Work Locations',
-        'group' => 'Employee',
+        'title' => 'مواقع العمل',
+        'group' => 'الموظفين',
     ],
 
     'form' => [
-        'name'            => 'Name',
-        'company'         => 'Company',
-        'location-type'   => 'Location Type',
-        'location-number' => 'Location Number',
-        'status'          => 'Status',
+        'name'            => 'الاسم',
+        'company'         => 'الشركة',
+        'location-type'   => 'نوع الموقع',
+        'location-number' => 'رقم الموقع',
+        'status'          => 'الحالة',
     ],
 
     'table' => [
         'columns' => [
-            'id'              => 'ID',
-            'name'            => 'Name',
-            'status'          => 'Status',
-            'company'         => 'Company',
-            'location-type'   => 'Location Type',
-            'location-number' => 'Location Number',
-            'deleted-at'      => 'Deleted At',
-            'created-by'      => 'Created By',
-            'created-at'      => 'Created At',
-            'updated-at'      => 'Updated At',
+            'id'              => 'المعرف',
+            'name'            => 'الاسم',
+            'status'          => 'الحالة',
+            'company'         => 'الشركة',
+            'location-type'   => 'نوع الموقع',
+            'location-number' => 'رقم الموقع',
+            'deleted-at'      => 'تاريخ الحذف',
+            'created-by'      => 'أنشئ بواسطة',
+            'created-at'      => 'تاريخ الإنشاء',
+            'updated-at'      => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'name'            => 'Name',
-            'status'          => 'Status',
-            'created-by'      => 'Created By',
-            'company'         => 'Company',
-            'location-number' => 'Location Number',
-            'location-type'   => 'Location Type',
-            'updated-at'      => 'Updated At',
-            'created-at'      => 'Created At',
+            'name'            => 'الاسم',
+            'status'          => 'الحالة',
+            'created-by'      => 'أنشئ بواسطة',
+            'company'         => 'الشركة',
+            'location-number' => 'رقم الموقع',
+            'location-type'   => 'نوع الموقع',
+            'updated-at'      => 'تاريخ التحديث',
+            'created-at'      => 'تاريخ الإنشاء',
         ],
 
         'groups' => [
-            'name'          => 'Name',
-            'status'        => 'Status',
-            'location-type' => 'Location Type',
-            'company'       => 'Company',
-            'created-by'    => 'Created By',
-            'created-at'    => 'Created At',
-            'updated-at'    => 'Updated At',
+            'name'          => 'الاسم',
+            'status'        => 'الحالة',
+            'location-type' => 'نوع الموقع',
+            'company'       => 'الشركة',
+            'created-by'    => 'أنشئ بواسطة',
+            'created-at'    => 'تاريخ الإنشاء',
+            'updated-at'    => 'تاريخ التحديث',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Work Location updated',
-                    'body'  => 'The work Location has been updated successfully.',
+                    'title' => 'تم تحديث موقع العمل',
+                    'body'  => 'تم تحديث موقع العمل بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Work Location restored',
-                    'body'  => 'The work Location has been restored successfully.',
+                    'title' => 'تم استعادة موقع العمل',
+                    'body'  => 'تم استعادة موقع العمل بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Work Location deleted',
-                    'body'  => 'The work Location has been deleted successfully.',
+                    'title' => 'تم حذف موقع العمل',
+                    'body'  => 'تم حذف موقع العمل بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Work Location force deleted',
-                    'body'  => 'The work Location has been force deleted successfully.',
+                    'title' => 'تم حذف موقع العمل نهائياً',
+                    'body'  => 'تم حذف موقع العمل نهائياً بنجاح.',
                 ],
             ],
 
             'empty-state' => [
                 'notification' => [
-                    'title' => 'Work Location created',
-                    'body'  => 'The Work Location has been created successfully.',
+                    'title' => 'تم إنشاء موقع العمل',
+                    'body'  => 'تم إنشاء موقع العمل بنجاح.',
                 ],
             ],
         ],
@@ -91,25 +91,25 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Work Locations deleted',
-                    'body'  => 'The work Locations has been deleted successfully.',
+                    'title' => 'تم حذف مواقع العمل',
+                    'body'  => 'تم حذف مواقع العمل بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Work Locations force deleted',
-                    'body'  => 'The work Locations has been force deleted successfully.',
+                    'title' => 'تم حذف مواقع العمل نهائياً',
+                    'body'  => 'تم حذف مواقع العمل نهائياً بنجاح.',
                 ],
             ],
         ],
     ],
 
     'infolist' => [
-        'name'            => 'Name',
-        'company'         => 'Company',
-        'location-type'   => 'Location Type',
-        'location-number' => 'Location Number',
-        'status'          => 'Status',
+        'name'            => 'الاسم',
+        'company'         => 'الشركة',
+        'location-type'   => 'نوع الموقع',
+        'location-number' => 'رقم الموقع',
+        'status'          => 'الحالة',
     ],
 ];

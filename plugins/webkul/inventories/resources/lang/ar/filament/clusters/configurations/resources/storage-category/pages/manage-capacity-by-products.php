@@ -1,42 +1,42 @@
 <?php
 
 return [
-    'title' => 'Capacity By Products',
+    'title' => 'السعة حسب المنتجات',
 
     'form' => [
-        'product' => 'Product',
-        'qty'     => 'Quantity',
+        'product' => 'المنتج',
+        'qty'     => 'الكمية',
     ],
 
     'table' => [
         'header-actions' => [
             'create' => [
-                'label' => 'Add Product Capacity',
+                'label' => 'إضافة سعة منتج',
 
                 'notification' => [
-                    'title' => 'Product Capacity created',
-                    'body'  => 'The product capacity been added successfully.',
+                    'title' => 'تم إنشاء سعة المنتج',
+                    'body'  => 'تم إضافة سعة المنتج بنجاح.',
                 ],
             ],
         ],
 
         'columns' => [
-            'product' => 'Product',
-            'qty'     => 'Quantity',
+            'product' => 'المنتج',
+            'qty'     => 'الكمية',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Product Capacity updated',
-                    'body'  => 'The product capacity has been updated successfully.',
+                    'title' => 'تم تحديث سعة المنتج',
+                    'body'  => 'تم تحديث سعة المنتج بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Product Capacity deleted',
-                    'body'  => 'The product capacity has been deleted successfully.',
+                    'title' => 'تم حذف سعة المنتج',
+                    'body'  => 'تم حذف سعة المنتج بنجاح.',
                 ],
             ],
         ],

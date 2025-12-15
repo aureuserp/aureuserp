@@ -2,30 +2,30 @@
 
 return [
     'navigation' => [
-        'title' => 'Package Types',
-        'group' => 'Delivery',
+        'title' => 'أنواع الطرود',
+        'group' => 'التوصيل',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title'  => 'General',
+                'title'  => 'عام',
 
                 'fields' => [
-                    'name'       => 'Name',
-                    'barcode'    => 'Barcode',
-                    'company'    => 'Company',
-                    'weight'     => 'Weight',
-                    'max-weight' => 'Max Weight',
+                    'name'       => 'الاسم',
+                    'barcode'    => 'الباركود',
+                    'company'    => 'الشركة',
+                    'weight'     => 'الوزن',
+                    'max-weight' => 'الوزن الأقصى',
 
                     'fieldsets' => [
                         'size' => [
-                            'title' => 'Size',
+                            'title' => 'الحجم',
 
                             'fields' => [
-                                'length' => 'Length',
-                                'width'  => 'Width',
-                                'height' => 'Height',
+                                'length' => 'الطول',
+                                'width'  => 'العرض',
+                                'height' => 'الارتفاع',
                             ],
                         ],
                     ],
@@ -36,27 +36,27 @@ return [
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'barcode'    => 'Barcode',
-            'weight'     => 'Weight',
-            'max-weight' => 'Max Weight',
-            'width'      => 'Width',
-            'height'     => 'Height',
-            'length'     => 'Length',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'الاسم',
+            'barcode'    => 'الباركود',
+            'weight'     => 'الوزن',
+            'max-weight' => 'الوزن الأقصى',
+            'width'      => 'العرض',
+            'height'     => 'الارتفاع',
+            'length'     => 'الطول',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Package Type deleted',
-                    'body'  => 'The package type has been deleted successfully.',
+                    'title' => 'تم حذف نوع الطرد',
+                    'body'  => 'تم حذف نوع الطرد بنجاح.',
                 ],
             ],
         ],
@@ -64,8 +64,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Package Type deleted',
-                    'body'  => 'The package type has been deleted successfully.',
+                    'title' => 'تم حذف نوع الطرد',
+                    'body'  => 'تم حذف نوع الطرد بنجاح.',
                 ],
             ],
         ],
@@ -74,35 +74,35 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title'   => 'General Information',
+                'title'   => 'معلومات عامة',
                 'entries' => [
-                    'name'      => 'Name',
+                    'name'      => 'الاسم',
                     'fieldsets' => [
                         'size' => [
-                            'title'   => 'Package Dimensions',
+                            'title'   => 'أبعاد الطرد',
                             'entries' => [
-                                'length' => 'Length',
-                                'width'  => 'Width',
-                                'height' => 'Height',
+                                'length' => 'الطول',
+                                'width'  => 'العرض',
+                                'height' => 'الارتفاع',
                             ],
                         ],
                     ],
-                    'weight'     => 'Base Weight',
-                    'max-weight' => 'Maximum Weight',
-                    'barcode'    => 'Barcode',
-                    'company'    => 'Company',
-                    'created-at' => 'Created At',
-                    'updated-at' => 'Last Updated',
+                    'weight'     => 'الوزن الأساسي',
+                    'max-weight' => 'الوزن الأقصى',
+                    'barcode'    => 'الباركود',
+                    'company'    => 'الشركة',
+                    'created-at' => 'تاريخ الإنشاء',
+                    'updated-at' => 'آخر تحديث',
                 ],
             ],
 
             'record-information' => [
-                'title' => 'Record Information',
+                'title' => 'معلومات السجل',
 
                 'entries' => [
-                    'created-by'   => 'Created By',
-                    'created-at'   => 'Created At',
-                    'last-updated' => 'Last Updated',
+                    'created-by'   => 'أنشئ بواسطة',
+                    'created-at'   => 'تاريخ الإنشاء',
+                    'last-updated' => 'آخر تحديث',
                 ],
             ],
         ],

@@ -1,48 +1,48 @@
 <?php
 
 return [
-    'title' => 'Mediums',
+    'title' => 'الوسائط',
 
     'navigation' => [
-        'title' => 'Mediums',
-        'group' => 'UTMs',
+        'title' => 'الوسائط',
+        'group' => 'روابط UTM',
     ],
 
     'form' => [
         'fields' => [
-            'name'             => 'Name',
-            'name-placeholder' => 'Enter the name of the medium',
+            'name'             => 'الاسم',
+            'name-placeholder' => 'أدخل اسم الوسيط',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'id'         => 'ID',
-            'name'       => 'Name',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'id'         => 'المعرف',
+            'name'       => 'الاسم',
+            'created-by' => 'أنشئ بواسطة',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'name'       => 'Name',
-            'created-by' => 'Created By',
-            'updated-at' => 'Updated At',
-            'created-at' => 'Created At',
+            'name'       => 'الاسم',
+            'created-by' => 'أنشئ بواسطة',
+            'updated-at' => 'تاريخ التحديث',
+            'created-at' => 'تاريخ الإنشاء',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Medium updated',
-                    'body'  => 'The medium has been updated successfully.',
+                    'title' => 'تم تحديث الوسيط',
+                    'body'  => 'تم تحديث الوسيط بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Medium deleted',
-                    'body'  => 'The medium has been deleted successfully.',
+                    'title' => 'تم حذف الوسيط',
+                    'body'  => 'تم حذف الوسيط بنجاح.',
                 ],
             ],
         ],
@@ -50,8 +50,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Mediums deleted',
-                    'body'  => 'The Mediums has been deleted successfully.',
+                    'title' => 'تم حذف الوسائط',
+                    'body'  => 'تم حذف الوسائط بنجاح.',
                 ],
             ],
         ],
@@ -59,14 +59,14 @@ return [
         'empty-state-action' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Medium created',
-                    'body'  => 'The medium has been created successfully.',
+                    'title' => 'تم إنشاء الوسيط',
+                    'body'  => 'تم إنشاء الوسيط بنجاح.',
                 ],
             ],
         ],
     ],
 
     'infolist' => [
-        'name' => 'Name',
+        'name' => 'الاسم',
     ],
 ];

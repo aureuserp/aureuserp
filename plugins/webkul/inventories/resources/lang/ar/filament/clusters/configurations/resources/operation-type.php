@@ -2,22 +2,22 @@
 
 return [
     'navigation' => [
-        'title' => 'Operation Types',
-        'group' => 'Warehouse Management',
+        'title' => 'أنواع العمليات',
+        'group' => 'إدارة المستودعات',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
                 'fields' => [
-                    'operator-type'             => 'Operator Type',
-                    'operator-type-placeholder' => 'eg. Receptions',
+                    'operator-type'             => 'نوع العملية',
+                    'operator-type-placeholder' => 'مثال: الاستلامات',
                 ],
             ],
 
             'applicable-on' => [
-                'title'       => 'Applicable On',
-                'description' => 'Select the places where this route can be selected.',
+                'title'       => 'ينطبق على',
+                'description' => 'اختر الأماكن التي يمكن اختيار هذا المسار فيها.',
 
                 'fields' => [
                 ],
@@ -26,93 +26,93 @@ return [
 
         'tabs' => [
             'general' => [
-                'title'  => 'General',
+                'title'  => 'عام',
 
                 'fields' => [
-                    'operator-type'                      => 'Operator Type',
-                    'sequence-prefix'                    => 'Sequence Prefix',
-                    'generate-shipping-labels'           => 'Generate Shipping Labels',
-                    'warehouse'                          => 'Warehouse',
-                    'show-reception-report'              => 'Show Reception Report at Validation',
-                    'show-reception-report-hint-tooltip' => 'If selected, the system will automatically display the reception report upon validation, provided there are moves to allocate.',
-                    'company'                            => 'Company',
-                    'return-type'                        => 'Return Type',
-                    'create-backorder'                   => 'Create Backorder',
-                    'move-type'                          => 'Move Type',
-                    'move-type-hint-tooltip'             => 'Unless defined by the source document, this will serve as the default picking policy for this operation type.',
+                    'operator-type'                      => 'نوع العملية',
+                    'sequence-prefix'                    => 'بادئة التسلسل',
+                    'generate-shipping-labels'           => 'إنشاء ملصقات الشحن',
+                    'warehouse'                          => 'المستودع',
+                    'show-reception-report'              => 'عرض تقرير الاستلام عند التحقق',
+                    'show-reception-report-hint-tooltip' => 'إذا تم تحديده، سيعرض النظام تلقائياً تقرير الاستلام عند التحقق، بشرط وجود حركات للتخصيص.',
+                    'company'                            => 'الشركة',
+                    'return-type'                        => 'نوع الإرجاع',
+                    'create-backorder'                   => 'إنشاء طلب متأخر',
+                    'move-type'                          => 'نوع الحركة',
+                    'move-type-hint-tooltip'             => 'ما لم يتم تحديده من المستند المصدر، سيكون هذا سياسة الالتقاط الافتراضية لنوع العملية هذا.',
                 ],
 
                 'fieldsets' => [
                     'lots' => [
-                        'title'  => 'Lots/Serial Numbers',
+                        'title'  => 'الدفعات/الأرقام التسلسلية',
 
                         'fields' => [
-                            'create-new'                => 'Create New',
-                            'create-new-hint-tooltip'   => 'If selected, the system will assume you intend to create new Lots/Serial Numbers, allowing you to enter them in a text field.',
-                            'use-existing'              => 'Use Existing',
-                            'use-existing-hint-tooltip' => 'If selected, you can choose the Lots/Serial Numbers or opt not to assign any. This allows stock to be created without a lot or without restrictions on the lot used.',
+                            'create-new'                => 'إنشاء جديد',
+                            'create-new-hint-tooltip'   => 'إذا تم تحديده، سيفترض النظام أنك تنوي إنشاء دفعات/أرقام تسلسلية جديدة، مما يتيح لك إدخالها في حقل نصي.',
+                            'use-existing'              => 'استخدام موجود',
+                            'use-existing-hint-tooltip' => 'إذا تم تحديده، يمكنك اختيار الدفعات/الأرقام التسلسلية أو عدم تعيين أي منها. يسمح هذا بإنشاء مخزون بدون دفعة أو بدون قيود على الدفعة المستخدمة.',
                         ],
                     ],
 
                     'locations' => [
-                        'title'  => 'Locations',
+                        'title'  => 'المواقع',
 
                         'fields' => [
-                            'source-location'                   => 'Source Location',
-                            'source-location-hint-tooltip'      => 'This serves as the default source location when manually creating this operation. However, it can be changed later, and routes may assign a different default location.',
-                            'destination-location'              => 'Destination Location',
-                            'destination-location-hint-tooltip' => 'This is the default destination location for manually created operations. However, it can be modified later, and routes may assign a different default location.',
+                            'source-location'                   => 'موقع المصدر',
+                            'source-location-hint-tooltip'      => 'يعمل هذا كموقع المصدر الافتراضي عند إنشاء هذه العملية يدوياً. ومع ذلك، يمكن تغييره لاحقاً، وقد تعين المسارات موقعاً افتراضياً مختلفاً.',
+                            'destination-location'              => 'موقع الوجهة',
+                            'destination-location-hint-tooltip' => 'هذا هو موقع الوجهة الافتراضي للعمليات المنشأة يدوياً. ومع ذلك، يمكن تعديله لاحقاً، وقد تعين المسارات موقعاً افتراضياً مختلفاً.',
                         ],
                     ],
 
                     'packages' => [
-                        'title'  => 'Packages',
+                        'title'  => 'الطرود',
 
                         'fields' => [
-                            'show-entire-package'              => 'Move Entire Package',
-                            'show-entire-package-hint-tooltip' => 'If selected, you can move entire packages.',
+                            'show-entire-package'              => 'نقل الطرد بالكامل',
+                            'show-entire-package-hint-tooltip' => 'إذا تم تحديده، يمكنك نقل طرود كاملة.',
                         ],
                     ],
                 ],
             ],
 
             'hardware' => [
-                'title'  => 'Hardware',
+                'title'  => 'الأجهزة',
 
                 'fieldsets' => [
                     'print-on-validation' => [
-                        'title'  => 'Print on Validation',
+                        'title'  => 'طباعة عند التحقق',
 
                         'fields' => [
-                            'delivery-slip'              => 'Delivery Slip',
-                            'delivery-slip-hint-tooltip' => 'If selected, the system will automatically print the delivery slip when the picking is validated.',
+                            'delivery-slip'              => 'إيصال التسليم',
+                            'delivery-slip-hint-tooltip' => 'إذا تم تحديده، سيطبع النظام تلقائياً إيصال التسليم عند التحقق من الالتقاط.',
 
-                            'return-slip'              => 'Return Slip',
-                            'return-slip-hint-tooltip' => 'If selected, the system will automatically print the return slip when the picking is validated.',
+                            'return-slip'              => 'إيصال الإرجاع',
+                            'return-slip-hint-tooltip' => 'إذا تم تحديده، سيطبع النظام تلقائياً إيصال الإرجاع عند التحقق من الالتقاط.',
 
-                            'product-labels'              => 'Product Labels',
-                            'product-labels-hint-tooltip' => 'If selected, the system will automatically print the product labels when the picking is validated.',
+                            'product-labels'              => 'ملصقات المنتجات',
+                            'product-labels-hint-tooltip' => 'إذا تم تحديده، سيطبع النظام تلقائياً ملصقات المنتجات عند التحقق من الالتقاط.',
 
-                            'lots-labels'              => 'Lot/SN Labels',
-                            'lots-labels-hint-tooltip' => 'If selected, the system will automatically print the lot/serial number labels when the picking is validated.',
+                            'lots-labels'              => 'ملصقات الدفعات/الأرقام التسلسلية',
+                            'lots-labels-hint-tooltip' => 'إذا تم تحديده، سيطبع النظام تلقائياً ملصقات الدفعات/الأرقام التسلسلية عند التحقق من الالتقاط.',
 
-                            'reception-report'              => 'Reception Report',
-                            'reception-report-hint-tooltip' => 'If selected, the system will automatically print the reception report when the picking is validated and contains assigned moves.',
+                            'reception-report'              => 'تقرير الاستلام',
+                            'reception-report-hint-tooltip' => 'إذا تم تحديده، سيطبع النظام تلقائياً تقرير الاستلام عند التحقق من الالتقاط ويحتوي على حركات مخصصة.',
 
-                            'reception-report-labels'              => 'Reception Report Labels',
-                            'reception-report-labels-hint-tooltip' => 'If selected, the system will automatically print the reception report labels when the picking is validated.',
+                            'reception-report-labels'              => 'ملصقات تقرير الاستلام',
+                            'reception-report-labels-hint-tooltip' => 'إذا تم تحديده، سيطبع النظام تلقائياً ملصقات تقرير الاستلام عند التحقق من الالتقاط.',
 
-                            'package-content'              => 'Package Content',
-                            'package-content-hint-tooltip' => 'If selected, the system will automatically print the package details and their contents when the picking is validated.',
+                            'package-content'              => 'محتوى الطرد',
+                            'package-content-hint-tooltip' => 'إذا تم تحديده، سيطبع النظام تلقائياً تفاصيل الطرد ومحتوياته عند التحقق من الالتقاط.',
                         ],
                     ],
 
                     'print-on-pack' => [
-                        'title'  => 'Print on "Put in Pack"',
+                        'title'  => 'طباعة عند "وضع في طرد"',
 
                         'fields' => [
-                            'package-label'              => 'Package Label',
-                            'package-label-hint-tooltip' => 'If selected, the system will automatically print the package label when the "Put in Pack" button is used.',
+                            'package-label'              => 'ملصق الطرد',
+                            'package-label-hint-tooltip' => 'إذا تم تحديده، سيطبع النظام تلقائياً ملصق الطرد عند استخدام زر "وضع في طرد".',
                         ],
                     ],
                 ],
@@ -122,52 +122,52 @@ return [
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'warehouse'  => 'Warehouse',
-            'company'    => 'Company',
-            'deleted-at' => 'Deleted At',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'الاسم',
+            'warehouse'  => 'المستودع',
+            'company'    => 'الشركة',
+            'deleted-at' => 'تاريخ الحذف',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'type'       => 'Type',
-            'warehouse'  => 'Warehouse',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'type'       => 'النوع',
+            'warehouse'  => 'المستودع',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'type'      => 'Type',
-            'warehouse' => 'Warehouse',
-            'company'   => 'Company',
+            'type'      => 'النوع',
+            'warehouse' => 'المستودع',
+            'company'   => 'الشركة',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Operation Type restored',
-                    'body'  => 'The operation type has been restored successfully.',
+                    'title' => 'تم استعادة نوع العملية',
+                    'body'  => 'تم استعادة نوع العملية بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Operation Type deleted',
-                    'body'  => 'The operation type has been deleted successfully.',
+                    'title' => 'تم حذف نوع العملية',
+                    'body'  => 'تم حذف نوع العملية بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Operation Type force deleted',
-                        'body'  => 'The operation type has been force deleted successfully.',
+                        'title' => 'تم حذف نوع العملية نهائياً',
+                        'body'  => 'تم حذف نوع العملية نهائياً بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Operation Type could not be deleted',
-                        'body'  => 'The operation type cannot be deleted because it is currently in use.',
+                        'title' => 'تعذر حذف نوع العملية',
+                        'body'  => 'لا يمكن حذف نوع العملية لأنه قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -176,28 +176,28 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Operation Types restored',
-                    'body'  => 'The operation types has been restored successfully.',
+                    'title' => 'تم استعادة أنواع العمليات',
+                    'body'  => 'تم استعادة أنواع العمليات بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Operation Types deleted',
-                    'body'  => 'The operation types has been deleted successfully.',
+                    'title' => 'تم حذف أنواع العمليات',
+                    'body'  => 'تم حذف أنواع العمليات بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Operations Types force deleted',
-                        'body'  => 'The operation types has been force deleted successfully.',
+                        'title' => 'تم حذف أنواع العمليات نهائياً',
+                        'body'  => 'تم حذف أنواع العمليات نهائياً بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Operations Types could not be deleted',
-                        'body'  => 'The operation types cannot be deleted because they are currently in use.',
+                        'title' => 'تعذر حذف أنواع العمليات',
+                        'body'  => 'لا يمكن حذف أنواع العمليات لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -205,7 +205,7 @@ return [
 
         'empty-actions' => [
             'create' => [
-                'label' => 'Create Operation Type',
+                'label' => 'إنشاء نوع عملية',
             ],
         ],
     ],
@@ -213,84 +213,84 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'General Information',
+                'title' => 'معلومات عامة',
 
                 'entries' => [
-                    'name' => 'Name',
+                    'name' => 'الاسم',
                 ],
             ],
 
             'record-information' => [
-                'title' => 'Record Information',
+                'title' => 'معلومات السجل',
 
                 'entries' => [
-                    'created-by'   => 'Created By',
-                    'created-at'   => 'Created At',
-                    'last-updated' => 'Last Updated',
+                    'created-by'   => 'أنشئ بواسطة',
+                    'created-at'   => 'تاريخ الإنشاء',
+                    'last-updated' => 'آخر تحديث',
                 ],
             ],
         ],
 
         'tabs' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'entries' => [
-                    'type'                       => 'Operation Type',
-                    'sequence_code'              => 'Sequence Code',
-                    'print_label'                => 'Print Label',
-                    'warehouse'                  => 'Warehouse',
-                    'reservation_method'         => 'Reservation Method',
-                    'auto_show_reception_report' => 'Auto Show Reception Report',
-                    'company'                    => 'Company',
-                    'return_operation_type'      => 'Return Operation Type',
-                    'create_backorder'           => 'Create Backorder',
-                    'move_type'                  => 'Move Type',
+                    'type'                       => 'نوع العملية',
+                    'sequence_code'              => 'رمز التسلسل',
+                    'print_label'                => 'طباعة الملصق',
+                    'warehouse'                  => 'المستودع',
+                    'reservation_method'         => 'طريقة الحجز',
+                    'auto_show_reception_report' => 'عرض تقرير الاستلام تلقائياً',
+                    'company'                    => 'الشركة',
+                    'return_operation_type'      => 'نوع عملية الإرجاع',
+                    'create_backorder'           => 'إنشاء طلب متأخر',
+                    'move_type'                  => 'نوع الحركة',
                 ],
 
                 'fieldsets' => [
                     'lots' => [
-                        'title' => 'Lots',
+                        'title' => 'الدفعات',
 
                         'entries' => [
-                            'use_create_lots'   => 'Use Create Lots',
-                            'use_existing_lots' => 'Use Existing Lots',
+                            'use_create_lots'   => 'استخدام إنشاء دفعات',
+                            'use_existing_lots' => 'استخدام دفعات موجودة',
                         ],
                     ],
 
                     'locations' => [
-                        'title' => 'Locations',
+                        'title' => 'المواقع',
 
                         'entries' => [
-                            'source_location'      => 'Source Location',
-                            'destination_location' => 'Destination Location',
+                            'source_location'      => 'موقع المصدر',
+                            'destination_location' => 'موقع الوجهة',
                         ],
                     ],
                 ],
             ],
             'hardware' => [
-                'title' => 'Hardware',
+                'title' => 'الأجهزة',
 
                 'fieldsets' => [
                     'print_on_validation' => [
-                        'title' => 'Print on Validation',
+                        'title' => 'طباعة عند التحقق',
 
                         'entries' => [
-                            'auto_print_delivery_slip'           => 'Auto Print Delivery Slip',
-                            'auto_print_return_slip'             => 'Auto Print Return Slip',
-                            'auto_print_product_labels'          => 'Auto Print Product Labels',
-                            'auto_print_lot_labels'              => 'Auto Print Lot Labels',
-                            'auto_print_reception_report'        => 'Auto Print Reception Report',
-                            'auto_print_reception_report_labels' => 'Auto Print Reception Report Labels',
-                            'auto_print_packages'                => 'Auto Print Packages',
+                            'auto_print_delivery_slip'           => 'طباعة إيصال التسليم تلقائياً',
+                            'auto_print_return_slip'             => 'طباعة إيصال الإرجاع تلقائياً',
+                            'auto_print_product_labels'          => 'طباعة ملصقات المنتجات تلقائياً',
+                            'auto_print_lot_labels'              => 'طباعة ملصقات الدفعات تلقائياً',
+                            'auto_print_reception_report'        => 'طباعة تقرير الاستلام تلقائياً',
+                            'auto_print_reception_report_labels' => 'طباعة ملصقات تقرير الاستلام تلقائياً',
+                            'auto_print_packages'                => 'طباعة الطرود تلقائياً',
                         ],
                     ],
 
                     'print_on_pack' => [
-                        'title' => 'Print on Pack',
+                        'title' => 'طباعة عند التغليف',
 
                         'entries' => [
-                            'auto_print_package_label' => 'Auto Print Package Label',
+                            'auto_print_package_label' => 'طباعة ملصق الطرد تلقائياً',
                         ],
                     ],
                 ],

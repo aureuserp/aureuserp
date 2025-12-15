@@ -1,52 +1,52 @@
 <?php
 
 return [
-    'title' => 'Cash Rounding',
+    'title' => 'تقريب النقد',
 
     'navigation' => [
-        'title' => 'Cash Rounding',
-        'group' => 'Management',
+        'title' => 'تقريب النقد',
+        'group' => 'الإدارة',
     ],
 
     'global-search' => [
-        'name'     => 'Name',
+        'name'     => 'الاسم',
     ],
 
     'form' => [
         'fields' => [
-            'name'               => 'Name',
-            'rounding-precision' => 'Rounding Precision',
-            'rounding-strategy'  => 'Rounding Strategy',
-            'profit-account'     => 'Profit Account',
-            'loss-account'       => 'Loss Account',
-            'rounding-method'    => 'Rounding Method',
+            'name'               => 'الاسم',
+            'rounding-precision' => 'دقة التقريب',
+            'rounding-strategy'  => 'استراتيجية التقريب',
+            'profit-account'     => 'حساب الأرباح',
+            'loss-account'       => 'حساب الخسائر',
+            'rounding-method'    => 'طريقة التقريب',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'                 => 'Name',
-            'rounding-strategy'    => 'Rounding Strategy',
-            'rounding-method'      => 'Rounding Method',
-            'created-by'           => 'Created By',
-            'profit-account'       => 'Profit Account',
-            'loss-account'         => 'Loss Account',
+            'name'                 => 'الاسم',
+            'rounding-strategy'    => 'استراتيجية التقريب',
+            'rounding-method'      => 'طريقة التقريب',
+            'created-by'           => 'أنشئ بواسطة',
+            'profit-account'       => 'حساب الأرباح',
+            'loss-account'         => 'حساب الخسائر',
         ],
 
         'groups' => [
-            'name'              => 'Name',
-            'rounding-strategy' => 'Rounding Strategy',
-            'rounding-method'   => 'Rounding Method',
-            'created-by'        => 'Created By',
-            'profit-account'    => 'Profit Account',
-            'loss-account'      => 'Loss Account',
+            'name'              => 'الاسم',
+            'rounding-strategy' => 'استراتيجية التقريب',
+            'rounding-method'   => 'طريقة التقريب',
+            'created-by'        => 'أنشئ بواسطة',
+            'profit-account'    => 'حساب الأرباح',
+            'loss-account'      => 'حساب الخسائر',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Cash Rounding deleted',
-                    'body'  => 'The cash rounding has been deleted successfully.',
+                    'title' => 'تم حذف تقريب النقد',
+                    'body'  => 'تم حذف تقريب النقد بنجاح.',
                 ],
             ],
         ],
@@ -54,8 +54,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Cash Rounding deleted',
-                    'body'  => 'The cash rounding has been deleted successfully.',
+                    'title' => 'تم حذف تقريب النقد',
+                    'body'  => 'تم حذف تقريب النقد بنجاح.',
                 ],
             ],
         ],
@@ -63,12 +63,12 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name'               => 'Name',
-            'rounding-precision' => 'Rounding Precision',
-            'rounding-strategy'  => 'Rounding Strategy',
-            'profit-account'     => 'Profit Account',
-            'loss-account'       => 'Loss Account',
-            'rounding-method'    => 'Rounding Method',
+            'name'               => 'الاسم',
+            'rounding-precision' => 'دقة التقريب',
+            'rounding-strategy'  => 'استراتيجية التقريب',
+            'profit-account'     => 'حساب الأرباح',
+            'loss-account'       => 'حساب الخسائر',
+            'rounding-method'    => 'طريقة التقريب',
         ],
     ],
 ];

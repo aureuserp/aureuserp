@@ -1,69 +1,69 @@
 <?php
 
 return [
-    'title' => 'Account Tags',
+    'title' => 'وسوم الحسابات',
 
     'navigation' => [
-        'title' => 'Account Tags',
-        'group' => 'Accounting',
+        'title' => 'وسوم الحسابات',
+        'group' => 'المحاسبة',
     ],
 
     'global-search' => [
-        'country' => 'Country',
-        'name'    => 'Name',
+        'country' => 'الدولة',
+        'name'    => 'الاسم',
     ],
 
     'form' => [
         'fields' => [
-            'color'         => 'Color',
-            'country'       => 'Country',
-            'applicability' => 'Applicability',
-            'name'          => 'Name',
-            'status'        => 'Status',
-            'tax-negate'    => 'Tax Negate',
+            'color'         => 'اللون',
+            'country'       => 'الدولة',
+            'applicability' => 'قابلية التطبيق',
+            'name'          => 'الاسم',
+            'status'        => 'الحالة',
+            'tax-negate'    => 'نفي الضريبة',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'color'         => 'Color',
-            'country'       => 'Country',
-            'created-by'    => 'Created By',
-            'applicability' => 'Applicability',
-            'name'          => 'Name',
-            'status'        => 'Status',
-            'tax-negate'    => 'Tax Negate',
-            'created-at'    => 'Created At',
-            'updated-at'    => 'Updated At',
-            'deleted-at'    => 'Deleted At',
+            'color'         => 'اللون',
+            'country'       => 'الدولة',
+            'created-by'    => 'أنشئ بواسطة',
+            'applicability' => 'قابلية التطبيق',
+            'name'          => 'الاسم',
+            'status'        => 'الحالة',
+            'tax-negate'    => 'نفي الضريبة',
+            'created-at'    => 'تاريخ الإنشاء',
+            'updated-at'    => 'تاريخ التحديث',
+            'deleted-at'    => 'تاريخ الحذف',
         ],
 
         'filters' => [
-            'bank'           => 'Bank',
-            'account-holder' => 'Account Holder',
-            'creator'        => 'Creator',
-            'can-send-money' => 'Can Send Money',
+            'bank'           => 'البنك',
+            'account-holder' => 'صاحب الحساب',
+            'creator'        => 'المُنشئ',
+            'can-send-money' => 'يمكن إرسال الأموال',
         ],
 
         'groups' => [
-            'country'       => 'Country',
-            'created-by'    => 'Created By',
-            'applicability' => 'Applicability',
-            'name'          => 'Name',
+            'country'       => 'الدولة',
+            'created-by'    => 'أنشئ بواسطة',
+            'applicability' => 'قابلية التطبيق',
+            'name'          => 'الاسم',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Account Tag updated',
-                    'body'  => 'The account Tag has been updated successfully.',
+                    'title' => 'تم تحديث وسم الحساب',
+                    'body'  => 'تم تحديث وسم الحساب بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Account Tag deleted',
-                    'body'  => 'The account Tag has been deleted successfully.',
+                    'title' => 'تم حذف وسم الحساب',
+                    'body'  => 'تم حذف وسم الحساب بنجاح.',
                 ],
             ],
         ],
@@ -71,8 +71,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Account Tags deleted',
-                    'body'  => 'The account Tags has been deleted successfully.',
+                    'title' => 'تم حذف وسوم الحسابات',
+                    'body'  => 'تم حذف وسوم الحسابات بنجاح.',
                 ],
             ],
         ],
@@ -80,12 +80,12 @@ return [
 
     'infolist' => [
         'entries' => [
-            'color'         => 'Color',
-            'country'       => 'Country',
-            'applicability' => 'Applicability',
-            'name'          => 'Name',
-            'status'        => 'Status',
-            'tax-negate'    => 'Tax Negate',
+            'color'         => 'اللون',
+            'country'       => 'الدولة',
+            'applicability' => 'قابلية التطبيق',
+            'name'          => 'الاسم',
+            'status'        => 'الحالة',
+            'tax-negate'    => 'نفي الضريبة',
         ],
     ],
 ];

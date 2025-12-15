@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Job Position created',
-        'body'  => 'The job position has been created successfully.',
+        'title' => 'تم إنشاء المسمى الوظيفي',
+        'body'  => 'تم إنشاء المسمى الوظيفي بنجاح.',
     ],
 ];

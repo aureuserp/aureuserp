@@ -3,11 +3,11 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Package Type',
+            'label' => 'نوع طرد جديد',
 
             'notification' => [
-                'title' => 'Package Type created',
-                'body'  => 'The package type has been created successfully.',
+                'title' => 'تم إنشاء نوع الطرد',
+                'body'  => 'تم إنشاء نوع الطرد بنجاح.',
             ],
         ],
     ],

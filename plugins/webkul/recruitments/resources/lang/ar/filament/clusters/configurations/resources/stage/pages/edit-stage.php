@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Stage updated',
-        'body'  => 'The stage has been updated successfully.',
+        'title' => 'تم تحديث المرحلة',
+        'body'  => 'تم تحديث المرحلة بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Stage deleted',
-                'body'  => 'The stage has been deleted successfully.',
+                'title' => 'تم حذف المرحلة',
+                'body'  => 'تم حذف المرحلة بنجاح.',
             ],
         ],
     ],

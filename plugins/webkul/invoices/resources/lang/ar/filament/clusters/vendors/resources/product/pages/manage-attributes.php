@@ -1,44 +1,44 @@
 <?php
 
 return [
-    'title' => 'Attributes',
+    'title' => 'السمات',
 
     'form' => [
-        'attribute' => 'Attribute',
-        'values'    => 'Values',
+        'attribute' => 'السمة',
+        'values'    => 'القيم',
     ],
 
     'table' => [
-        'description' => 'Warning: adding or deleting attributes will delete and recreate existing variants and lead to the loss of their possible customizations.',
+        'description' => 'تحذير: إضافة أو حذف السمات سيؤدي إلى حذف وإعادة إنشاء المتغيرات الموجودة وفقدان تخصيصاتها المحتملة.',
 
         'header-actions' => [
             'create' => [
-                'label' => 'Add Attribute',
+                'label' => 'إضافة سمة',
 
                 'notification' => [
-                    'title' => 'Attribute created',
-                    'body'  => 'The attribute has been created successfully.',
+                    'title' => 'تم إنشاء السمة',
+                    'body'  => 'تم إنشاء السمة بنجاح.',
                 ],
             ],
         ],
 
         'columns' => [
-            'attribute' => 'Attribute',
-            'values'    => 'Values',
+            'attribute' => 'السمة',
+            'values'    => 'القيم',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Attribute updated',
-                    'body'  => 'The attribute has been updated successfully.',
+                    'title' => 'تم تحديث السمة',
+                    'body'  => 'تم تحديث السمة بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Attribute deleted',
-                    'body'  => 'The attribute has been deleted successfully.',
+                    'title' => 'تم حذف السمة',
+                    'body'  => 'تم حذف السمة بنجاح.',
                 ],
             ],
         ],

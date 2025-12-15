@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Package created',
-        'body'  => 'The package has been created successfully.',
+        'title' => 'تم إنشاء الطرد',
+        'body'  => 'تم إنشاء الطرد بنجاح.',
     ],
 ];

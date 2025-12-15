@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Fiscal position updated',
-        'body'  => 'The fiscal position has been updated successfully.',
+        'title' => 'تم تحديث الموقف المالي',
+        'body'  => 'تم تحديث الموقف المالي بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Fiscal position deleted',
-                'body'  => 'The fiscal position has been deleted successfully.',
+                'title' => 'تم حذف الموقف المالي',
+                'body'  => 'تم حذف الموقف المالي بنجاح.',
             ],
         ],
     ],

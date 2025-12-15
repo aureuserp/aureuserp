@@ -2,48 +2,48 @@
 
 return [
     'navigation' => [
-        'title' => 'Tags',
+        'title' => 'الوسوم',
     ],
 
     'form' => [
-        'name'  => 'Name',
-        'color' => 'Color',
+        'name'  => 'الاسم',
+        'color' => 'اللون',
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'color'      => 'Color',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'الاسم',
+            'color'      => 'اللون',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Tag updated',
-                    'body'  => 'The tag has been updated successfully.',
+                    'title' => 'تم تحديث الوسم',
+                    'body'  => 'تم تحديث الوسم بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Tag restored',
-                    'body'  => 'The tag has been restored successfully.',
+                    'title' => 'تم استعادة الوسم',
+                    'body'  => 'تم استعادة الوسم بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Tag deleted',
-                    'body'  => 'The tag has been deleted successfully.',
+                    'title' => 'تم حذف الوسم',
+                    'body'  => 'تم حذف الوسم بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Tag force deleted',
-                    'body'  => 'The tag has been force deleted successfully.',
+                    'title' => 'تم حذف الوسم نهائياً',
+                    'body'  => 'تم حذف الوسم نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -51,22 +51,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Tags restored',
-                    'body'  => 'The tags has been restored successfully.',
+                    'title' => 'تم استعادة الوسوم',
+                    'body'  => 'تم استعادة الوسوم بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Tags deleted',
-                    'body'  => 'The tags has been deleted successfully.',
+                    'title' => 'تم حذف الوسوم',
+                    'body'  => 'تم حذف الوسوم بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Tags force deleted',
-                    'body'  => 'The tags has been force deleted successfully.',
+                    'title' => 'تم حذف الوسوم نهائياً',
+                    'body'  => 'تم حذف الوسوم نهائياً بنجاح.',
                 ],
             ],
         ],

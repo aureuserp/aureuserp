@@ -2,47 +2,47 @@
 
 return [
     'form' => [
-        'date'                   => 'Date',
-        'employee'               => 'Employee',
-        'description'            => 'Description',
-        'time-spent'             => 'Time Spent',
-        'time-spent-helper-text' => 'Time spent in hours (Eg. 1.5 hours means 1 hour 30 minutes)',
+        'date'                   => 'التاريخ',
+        'employee'               => 'الموظف',
+        'description'            => 'الوصف',
+        'time-spent'             => 'الوقت المستغرق',
+        'time-spent-helper-text' => 'الوقت المستغرق بالساعات (مثال: 1.5 ساعة تعني ساعة و30 دقيقة)',
     ],
 
     'table' => [
         'header-actions' => [
             'create' => [
-                'label' => 'Add Timesheet',
+                'label' => 'إضافة جدول وقت',
 
                 'notification' => [
-                    'title' => 'Timesheet created',
-                    'body'  => 'The timesheet has been created successfully.',
+                    'title' => 'تم إنشاء جدول الوقت',
+                    'body'  => 'تم إنشاء جدول الوقت بنجاح.',
                 ],
             ],
         ],
 
         'columns' => [
-            'date'                   => 'Date',
-            'employee'               => 'Employee',
-            'description'            => 'Description',
-            'time-spent'             => 'Time Spent',
-            'time-spent-on-subtasks' => 'Time Spent on Subtasks',
-            'total-time-spent'       => 'Total Time Spent',
-            'remaining-time'         => 'Remaining Time',
+            'date'                   => 'التاريخ',
+            'employee'               => 'الموظف',
+            'description'            => 'الوصف',
+            'time-spent'             => 'الوقت المستغرق',
+            'time-spent-on-subtasks' => 'الوقت المستغرق على المهام الفرعية',
+            'total-time-spent'       => 'إجمالي الوقت المستغرق',
+            'remaining-time'         => 'الوقت المتبقي',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Timesheet updated',
-                    'body'  => 'The timesheet has been updated successfully.',
+                    'title' => 'تم تحديث جدول الوقت',
+                    'body'  => 'تم تحديث جدول الوقت بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Timesheet deleted',
-                    'body'  => 'The timesheet has been deleted successfully.',
+                    'title' => 'تم حذف جدول الوقت',
+                    'body'  => 'تم حذف جدول الوقت بنجاح.',
                 ],
             ],
         ],

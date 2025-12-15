@@ -1,16 +1,16 @@
 <?php
 
 return [
-    'title' => 'Locations',
+    'title' => 'المواقع',
 
     'table' => [
         'header-actions' => [
             'create' => [
-                'label' => 'Create Location',
+                'label' => 'إنشاء موقع',
 
                 'notification' => [
-                    'title' => 'Location Created',
-                    'body'  => 'The location has been created.',
+                    'title' => 'تم إنشاء الموقع',
+                    'body'  => 'تم إنشاء الموقع بنجاح.',
                 ],
             ],
         ],

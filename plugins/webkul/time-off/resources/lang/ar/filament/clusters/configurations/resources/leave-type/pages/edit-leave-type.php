@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Leave Type updated',
-        'body'  => 'The leave type has been updated successfully.',
+        'title' => 'تم تحديث نوع الإجازة',
+        'body'  => 'تم تحديث نوع الإجازة بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Leave Type deleted',
-                'body'  => 'The leave type has been deleted successfully.',
+                'title' => 'تم حذف نوع الإجازة',
+                'body'  => 'تم حذف نوع الإجازة بنجاح.',
             ],
         ],
     ],

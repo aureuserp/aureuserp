@@ -4,8 +4,8 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Account deleted',
-                'body'  => 'The account has been deleted successfully.',
+                'title' => 'تم حذف الحساب',
+                'body'  => 'تم حذف الحساب بنجاح.',
             ],
         ],
     ],

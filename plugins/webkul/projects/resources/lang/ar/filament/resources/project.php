@@ -2,57 +2,57 @@
 
 return [
     'navigation' => [
-        'title' => 'Projects',
-        'group' => 'Project',
+        'title' => 'المشاريع',
+        'group' => 'المشروع',
     ],
 
     'global-search' => [
-        'project-manager' => 'Project Manager',
-        'customer'        => 'Customer',
+        'project-manager' => 'مدير المشروع',
+        'customer'        => 'العميل',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'fields' => [
-                    'name'             => 'Name',
-                    'name-placeholder' => 'Project Name...',
-                    'description'      => 'Description',
+                    'name'             => 'الاسم',
+                    'name-placeholder' => 'اسم المشروع...',
+                    'description'      => 'الوصف',
                 ],
             ],
 
             'additional' => [
-                'title' => 'Additional Information',
+                'title' => 'معلومات إضافية',
 
                 'fields' => [
-                    'project-manager'             => 'Project Manager',
-                    'customer'                    => 'Customer',
-                    'start-date'                  => 'Start Date',
-                    'end-date'                    => 'End Date',
-                    'allocated-hours'             => 'Allocated Hours',
-                    'allocated-hours-helper-text' => 'In hours (Eg. 1.5 hours means 1 hour 30 minutes)',
-                    'tags'                        => 'Tags',
-                    'company'                     => 'Company',
+                    'project-manager'             => 'مدير المشروع',
+                    'customer'                    => 'العميل',
+                    'start-date'                  => 'تاريخ البداية',
+                    'end-date'                    => 'تاريخ النهاية',
+                    'allocated-hours'             => 'الساعات المخصصة',
+                    'allocated-hours-helper-text' => 'بالساعات (مثال: 1.5 ساعة تعني ساعة و30 دقيقة)',
+                    'tags'                        => 'الوسوم',
+                    'company'                     => 'الشركة',
                 ],
             ],
 
             'settings' => [
-                'title' => 'Settings',
+                'title' => 'الإعدادات',
 
                 'fields' => [
-                    'visibility'                   => 'Visibility',
-                    'visibility-hint-tooltip'      => 'Allow employees to access your project or tasks by adding them as followers. They will automatically gain access to any tasks assigned to them..',
-                    'private-description'          => 'Invited internal users only.',
-                    'internal-description'         => 'All internal users can see.',
-                    'public-description'           => 'Invited portal users and all internal users.',
-                    'time-management'              => 'Time Management',
-                    'allow-timesheets'             => 'Allow Timesheets',
-                    'allow-timesheets-helper-text' => 'Log time on tasks and track progress',
-                    'task-management'              => 'Task Management',
-                    'allow-milestones'             => 'Allow Milestones',
-                    'allow-milestones-helper-text' => 'Monitor key milestones that are essential for achieving success.',
+                    'visibility'                   => 'الرؤية',
+                    'visibility-hint-tooltip'      => 'اسمح للموظفين بالوصول إلى مشروعك أو مهامك عن طريق إضافتهم كمتابعين. سيحصلون تلقائياً على حق الوصول لأي مهام مسندة إليهم.',
+                    'private-description'          => 'المستخدمون الداخليون المدعوون فقط.',
+                    'internal-description'         => 'جميع المستخدمين الداخليين يمكنهم الرؤية.',
+                    'public-description'           => 'مستخدمو البوابة المدعوون وجميع المستخدمين الداخليين.',
+                    'time-management'              => 'إدارة الوقت',
+                    'allow-timesheets'             => 'السماح بجداول الوقت',
+                    'allow-timesheets-helper-text' => 'تسجيل الوقت على المهام وتتبع التقدم',
+                    'task-management'              => 'إدارة المهام',
+                    'allow-milestones'             => 'السماح بالمراحل الرئيسية',
+                    'allow-milestones-helper-text' => 'مراقبة المراحل الرئيسية الضرورية لتحقيق النجاح.',
                 ],
             ],
         ],
@@ -60,55 +60,55 @@ return [
 
     'table' => [
         'columns' => [
-            'name'            => 'Name',
-            'customer'        => 'Customer',
-            'start-date'      => 'Start Date',
-            'end-date'        => 'End Date',
-            'planned-date'    => 'Planned Date',
-            'remaining-hours' => 'Remaining Hours',
-            'project-manager' => 'Project Manager',
+            'name'            => 'الاسم',
+            'customer'        => 'العميل',
+            'start-date'      => 'تاريخ البداية',
+            'end-date'        => 'تاريخ النهاية',
+            'planned-date'    => 'التاريخ المخطط',
+            'remaining-hours' => 'الساعات المتبقية',
+            'project-manager' => 'مدير المشروع',
         ],
 
         'groups' => [
-            'stage'           => 'Stage',
-            'project-manager' => 'Project Manager',
-            'customer'        => 'Customer',
-            'created-at'      => 'Created At',
+            'stage'           => 'المرحلة',
+            'project-manager' => 'مدير المشروع',
+            'customer'        => 'العميل',
+            'created-at'      => 'تاريخ الإنشاء',
         ],
 
         'filters' => [
-            'name'             => 'Name',
-            'visibility'       => 'Visibility',
-            'start-date'       => 'Start Date',
-            'end-date'         => 'End Date',
-            'allow-timesheets' => 'Allow Timesheets',
-            'allow-milestones' => 'Allow Milestones',
-            'allocated-hours'  => 'Allocated Hours',
-            'created-at'       => 'Created At',
-            'updated-at'       => 'Updated At',
-            'stage'            => 'Stage',
-            'customer'         => 'Customer',
-            'project-manager'  => 'Project Manager',
-            'company'          => 'Company',
-            'creator'          => 'Creator',
-            'tags'             => 'Tags',
+            'name'             => 'الاسم',
+            'visibility'       => 'الرؤية',
+            'start-date'       => 'تاريخ البداية',
+            'end-date'         => 'تاريخ النهاية',
+            'allow-timesheets' => 'السماح بجداول الوقت',
+            'allow-milestones' => 'السماح بالمراحل الرئيسية',
+            'allocated-hours'  => 'الساعات المخصصة',
+            'created-at'       => 'تاريخ الإنشاء',
+            'updated-at'       => 'تاريخ التحديث',
+            'stage'            => 'المرحلة',
+            'customer'         => 'العميل',
+            'project-manager'  => 'مدير المشروع',
+            'company'          => 'الشركة',
+            'creator'          => 'المُنشئ',
+            'tags'             => 'الوسوم',
         ],
 
         'actions' => [
-            'tasks'      => ':count Tasks',
-            'milestones' => ':completed milestones completed out of :all',
+            'tasks'      => ':count مهام',
+            'milestones' => ':completed مراحل رئيسية مكتملة من أصل :all',
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Project restored',
-                    'body'  => 'The project has been restored successfully.',
+                    'title' => 'تم استعادة المشروع',
+                    'body'  => 'تم استعادة المشروع بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Project deleted',
-                    'body'  => 'The project has been deleted successfully.',
+                    'title' => 'تم حذف المشروع',
+                    'body'  => 'تم حذف المشروع بنجاح.',
                 ],
             ],
 
@@ -117,13 +117,13 @@ return [
                 'notification' => [
 
                     'success' => [
-                        'title' => 'Project permanently deleted',
-                        'body'  => 'The project has been permanently deleted successfully.',
+                        'title' => 'تم حذف المشروع نهائياً',
+                        'body'  => 'تم حذف المشروع نهائياً بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Project cannot be permanently deleted',
-                        'body'  => 'The project is associated with other records.',
+                        'title' => 'لا يمكن حذف المشروع نهائياً',
+                        'body'  => 'المشروع مرتبط بسجلات أخرى.',
                     ],
 
                 ],
@@ -135,57 +135,57 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'entries' => [
-                    'name'             => 'Name',
-                    'name-placeholder' => 'Project Name...',
-                    'description'      => 'Description',
+                    'name'             => 'الاسم',
+                    'name-placeholder' => 'اسم المشروع...',
+                    'description'      => 'الوصف',
                 ],
             ],
 
             'additional' => [
-                'title' => 'Additional Information',
+                'title' => 'معلومات إضافية',
 
                 'entries' => [
-                    'project-manager'        => 'Project Manager',
-                    'customer'               => 'Customer',
-                    'project-timeline'       => 'Project Timeline',
-                    'allocated-hours'        => 'Allocated Hours',
-                    'allocated-hours-suffix' => ' Hours',
-                    'remaining-hours'        => 'Remaining Hours',
-                    'remaining-hours-suffix' => ' Hours',
-                    'current-stage'          => 'Current Stage',
-                    'tags'                   => 'Tags',
+                    'project-manager'        => 'مدير المشروع',
+                    'customer'               => 'العميل',
+                    'project-timeline'       => 'الجدول الزمني للمشروع',
+                    'allocated-hours'        => 'الساعات المخصصة',
+                    'allocated-hours-suffix' => ' ساعة',
+                    'remaining-hours'        => 'الساعات المتبقية',
+                    'remaining-hours-suffix' => ' ساعة',
+                    'current-stage'          => 'المرحلة الحالية',
+                    'tags'                   => 'الوسوم',
                 ],
             ],
 
             'statistics' => [
-                'title' => 'Statistics',
+                'title' => 'الإحصائيات',
 
                 'entries' => [
-                    'total-tasks'         => 'Total Tasks',
-                    'milestones-progress' => 'Milestones Progress',
+                    'total-tasks'         => 'إجمالي المهام',
+                    'milestones-progress' => 'تقدم المراحل الرئيسية',
                 ],
             ],
 
             'record-information' => [
-                'title' => 'Record Information',
+                'title' => 'معلومات السجل',
 
                 'entries' => [
-                    'created-at'   => 'Created At',
-                    'created-by'   => 'Created By',
-                    'last-updated' => 'Last Updated',
+                    'created-at'   => 'تاريخ الإنشاء',
+                    'created-by'   => 'أنشئ بواسطة',
+                    'last-updated' => 'آخر تحديث',
                 ],
             ],
 
             'settings' => [
-                'title' => 'Project Settings',
+                'title' => 'إعدادات المشروع',
 
                 'entries' => [
-                    'visibility'         => 'Visibility',
-                    'timesheets-enabled' => 'Timesheets Enabled',
-                    'milestones-enabled' => 'Milestones Enabled',
+                    'visibility'         => 'الرؤية',
+                    'timesheets-enabled' => 'جداول الوقت مفعلة',
+                    'milestones-enabled' => 'المراحل الرئيسية مفعلة',
                 ],
             ],
         ],

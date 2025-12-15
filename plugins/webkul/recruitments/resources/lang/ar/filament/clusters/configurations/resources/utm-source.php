@@ -1,57 +1,57 @@
 <?php
 
 return [
-    'title' => 'Sources',
+    'title' => 'المصادر',
 
     'navigation' => [
-        'title' => 'Sources',
-        'group' => 'UTMs',
+        'title' => 'المصادر',
+        'group' => 'روابط UTM',
     ],
 
     'groups' => [
-        'status'     => 'Status',
-        'created-by' => 'Created By',
-        'created-at' => 'Created At',
-        'updated-at' => 'Updated At',
+        'status'     => 'الحالة',
+        'created-by' => 'أنشئ بواسطة',
+        'created-at' => 'تاريخ الإنشاء',
+        'updated-at' => 'تاريخ التحديث',
     ],
 
     'form' => [
         'fields' => [
-            'name'             => 'Name',
-            'name-placeholder' => 'Enter the name of the source',
-            'status'           => 'Status',
+            'name'             => 'الاسم',
+            'name-placeholder' => 'أدخل اسم المصدر',
+            'status'           => 'الحالة',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'id'         => 'ID',
-            'name'       => 'Name',
-            'status'     => 'Status',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'id'         => 'المعرف',
+            'name'       => 'الاسم',
+            'status'     => 'الحالة',
+            'created-by' => 'أنشئ بواسطة',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'name'       => 'Name',
-            'created-by' => 'Created By',
-            'updated-at' => 'Updated At',
-            'created-at' => 'Created At',
+            'name'       => 'الاسم',
+            'created-by' => 'أنشئ بواسطة',
+            'updated-at' => 'تاريخ التحديث',
+            'created-at' => 'تاريخ الإنشاء',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Source updated',
-                    'body'  => 'The source has been updated successfully.',
+                    'title' => 'تم تحديث المصدر',
+                    'body'  => 'تم تحديث المصدر بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Source deleted',
-                    'body'  => 'The source has been deleted successfully.',
+                    'title' => 'تم حذف المصدر',
+                    'body'  => 'تم حذف المصدر بنجاح.',
                 ],
             ],
         ],
@@ -59,8 +59,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Sources deleted',
-                    'body'  => 'The Sources has been deleted successfully.',
+                    'title' => 'تم حذف المصادر',
+                    'body'  => 'تم حذف المصادر بنجاح.',
                 ],
             ],
         ],
@@ -68,14 +68,14 @@ return [
         'empty-state-action' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Source created',
-                    'body'  => 'The source has been created successfully.',
+                    'title' => 'تم إنشاء المصدر',
+                    'body'  => 'تم إنشاء المصدر بنجاح.',
                 ],
             ],
         ],
     ],
 
     'infolist' => [
-        'name' => 'Name',
+        'name' => 'الاسم',
     ],
 ];

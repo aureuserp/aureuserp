@@ -2,17 +2,17 @@
 
 return [
     'tabs' => [
-        'my-posts' => 'My Posts',
-        'archived' => 'Archived',
+        'my-posts' => 'مقالاتي',
+        'archived' => 'مؤرشف',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Post',
+            'label' => 'مقال جديد',
 
             'notification' => [
-                'title' => 'Post created',
-                'body'  => 'The post has been created successfully.',
+                'title' => 'تم إنشاء المقال',
+                'body'  => 'تم إنشاء المقال بنجاح.',
             ],
         ],
     ],

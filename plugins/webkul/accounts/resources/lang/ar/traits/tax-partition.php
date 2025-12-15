@@ -2,38 +2,38 @@
 
 return [
     'form' => [
-        'factor-percent'    => 'Factor Percent',
-        'factor-ratio'      => 'Factor Ratio',
-        'repartition-type'  => 'Repartition Type',
-        'document-type'     => 'Document Type',
-        'account'           => 'Account',
-        'tax'               => 'Tax',
-        'tax-closing-entry' => 'Tax Closing Entry',
+        'factor-percent'    => 'نسبة العامل',
+        'factor-ratio'      => 'معدل العامل',
+        'repartition-type'  => 'نوع التوزيع',
+        'document-type'     => 'نوع المستند',
+        'account'           => 'الحساب',
+        'tax'               => 'الضريبة',
+        'tax-closing-entry' => 'قيد إغلاق الضريبة',
     ],
 
     'table' => [
         'columns' => [
-            'factor-percent'    => 'Factor Percent(%)',
-            'account'           => 'Account',
-            'tax'               => 'Tax',
-            'company'           => 'Company',
-            'repartition-type'  => 'Repartition Type',
-            'document-type'     => 'Document Type',
-            'tax-closing-entry' => 'Tax Closing Entry',
+            'factor-percent'    => 'نسبة العامل(%)',
+            'account'           => 'الحساب',
+            'tax'               => 'الضريبة',
+            'company'           => 'الشركة',
+            'repartition-type'  => 'نوع التوزيع',
+            'document-type'     => 'نوع المستند',
+            'tax-closing-entry' => 'قيد إغلاق الضريبة',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Tax Partition updated',
-                    'body'  => 'The tax partition has been updated successfully.',
+                    'title' => 'تم تحديث توزيع الضريبة',
+                    'body'  => 'تم تحديث توزيع الضريبة بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Tax Partition Term deleted',
-                    'body'  => 'The tax Partition term has been deleted successfully.',
+                    'title' => 'تم حذف شرط توزيع الضريبة',
+                    'body'  => 'تم حذف شرط توزيع الضريبة بنجاح.',
                 ],
             ],
         ],
@@ -41,8 +41,8 @@ return [
         'header-actions' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Tax Partition Term created',
-                    'body'  => 'The tax Partition term has been created successfully.',
+                    'title' => 'تم إنشاء شرط توزيع الضريبة',
+                    'body'  => 'تم إنشاء شرط توزيع الضريبة بنجاح.',
                 ],
             ],
         ],

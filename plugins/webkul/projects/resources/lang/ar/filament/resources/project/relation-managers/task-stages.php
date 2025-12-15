@@ -4,11 +4,11 @@ return [
     'table' => [
         'header-actions' => [
             'create' => [
-                'label' => 'Add Task Stage',
+                'label' => 'إضافة مرحلة مهمة',
 
                 'notification' => [
-                    'title' => 'Task Stage created',
-                    'body'  => 'The task Stage has been created successfully.',
+                    'title' => 'تم إنشاء مرحلة المهمة',
+                    'body'  => 'تم إنشاء مرحلة المهمة بنجاح.',
                 ],
             ],
         ],

@@ -3,17 +3,17 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Project Stage',
+            'label' => 'مرحلة مشروع جديدة',
 
             'notification' => [
-                'title' => 'Project stage created',
-                'body'  => 'The project stage has been created successfully.',
+                'title' => 'تم إنشاء مرحلة المشروع',
+                'body'  => 'تم إنشاء مرحلة المشروع بنجاح.',
             ],
         ],
     ],
 
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'الكل',
+        'archived' => 'المؤرشفة',
     ],
 ];

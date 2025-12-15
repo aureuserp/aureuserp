@@ -1,70 +1,70 @@
 <?php
 
 return [
-    'title' => 'My Allocation',
+    'title' => 'تخصيصاتي',
 
-    'model-label' => 'My Allocation',
+    'model-label' => 'تخصيصاتي',
 
     'navigation' => [
-        'title' => 'My Allocation',
+        'title' => 'تخصيصاتي',
     ],
 
     'form' => [
         'fields' => [
-            'name'                => 'Name',
-            'name-placeholder'    => 'Time Off Type (From validity start to validity end/no limit)',
-            'time-off-type'       => 'Time Off Type',
-            'allocation-type'     => 'Allocation Type',
-            'validity-period'     => 'Validity Period',
-            'date-from'           => 'Date From',
-            'date-to'             => 'Date To',
-            'date-to-placeholder' => 'No Limit',
-            'allocation'          => 'Allocation',
-            'allocation-suffix'   => 'Number of Days',
-            'reason'              => 'Reason',
+            'name'                => 'الاسم',
+            'name-placeholder'    => 'نوع الإجازة (من بداية الصلاحية إلى نهاية الصلاحية/بدون حد)',
+            'time-off-type'       => 'نوع الإجازة',
+            'allocation-type'     => 'نوع التخصيص',
+            'validity-period'     => 'فترة الصلاحية',
+            'date-from'           => 'التاريخ من',
+            'date-to'             => 'التاريخ إلى',
+            'date-to-placeholder' => 'بدون حد',
+            'allocation'          => 'التخصيص',
+            'allocation-suffix'   => 'عدد الأيام',
+            'reason'              => 'السبب',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'time-off-type'   => 'Time Off Type',
-            'amount'          => 'Amount',
-            'allocation-type' => 'Allocation Type',
-            'status'          => 'Status',
+            'time-off-type'   => 'نوع الإجازة',
+            'amount'          => 'الكمية',
+            'allocation-type' => 'نوع التخصيص',
+            'status'          => 'الحالة',
         ],
 
         'groups' => [
-            'time-off-type'   => 'Time Off Type',
-            'employee-name'   => 'Employee Name',
-            'allocation-type' => 'Allocation Type',
-            'status'          => 'Status',
-            'start-date'      => 'Start Date',
+            'time-off-type'   => 'نوع الإجازة',
+            'employee-name'   => 'اسم الموظف',
+            'allocation-type' => 'نوع التخصيص',
+            'status'          => 'الحالة',
+            'start-date'      => 'تاريخ البداية',
         ],
 
         'actions' => [
             'approve' => [
                 'title' => [
-                    'validate' => 'Validate',
-                    'approve'  => 'Approve',
+                    'validate' => 'تحقق',
+                    'approve'  => 'موافقة',
                 ],
                 'notification' => [
-                    'title' => 'Allocation approved approved',
-                    'body'  => 'The allocation approved has been approved successfully.',
+                    'title' => 'تمت الموافقة على التخصيص',
+                    'body'  => 'تمت الموافقة على التخصيص بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Allocation deleted',
-                    'body'  => 'The allocation has been deleted successfully.',
+                    'title' => 'تم حذف التخصيص',
+                    'body'  => 'تم حذف التخصيص بنجاح.',
                 ],
             ],
 
             'refused' => [
-                'title'        => 'Refuse',
+                'title'        => 'رفض',
                 'notification' => [
-                    'title' => 'Allocation refused',
-                    'body'  => 'The allocation has been refused successfully.',
+                    'title' => 'تم رفض التخصيص',
+                    'body'  => 'تم رفض التخصيص بنجاح.',
                 ],
             ],
         ],
@@ -72,8 +72,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Allocations deleted',
-                    'body'  => 'The allocations has been deleted successfully.',
+                    'title' => 'تم حذف التخصيصات',
+                    'body'  => 'تم حذف التخصيصات بنجاح.',
                 ],
             ],
         ],
@@ -82,29 +82,29 @@ return [
     'infolist' => [
         'sections' => [
             'allocation-details' => [
-                'title'   => 'Allocation Details',
+                'title'   => 'تفاصيل التخصيص',
                 'entries' => [
-                    'name'                => 'Name',
-                    'time-off-type'       => 'Time Off Type',
-                    'allocation-type'     => 'Allocation Type',
+                    'name'                => 'الاسم',
+                    'time-off-type'       => 'نوع الإجازة',
+                    'allocation-type'     => 'نوع التخصيص',
                 ],
             ],
 
             'validity-period' => [
-                'title'   => 'Validity Period',
+                'title'   => 'فترة الصلاحية',
                 'entries' => [
-                    'date-from' => 'Date From',
-                    'date-to'   => 'Date To',
-                    'reason'    => 'Reason',
+                    'date-from' => 'التاريخ من',
+                    'date-to'   => 'التاريخ إلى',
+                    'reason'    => 'السبب',
                 ],
             ],
             'allocation-status' => [
-                'title'   => 'Allocation Status',
+                'title'   => 'حالة التخصيص',
                 'entries' => [
-                    'date-to-placeholder' => 'No Limit',
-                    'allocation'          => 'Number of Day(s)',
-                    'allocation-value'    => ':days number of days',
-                    'state'               => 'State',
+                    'date-to-placeholder' => 'بدون حد',
+                    'allocation'          => 'عدد الأيام',
+                    'allocation-value'    => ':days عدد الأيام',
+                    'state'               => 'الحالة',
                 ],
             ],
         ],

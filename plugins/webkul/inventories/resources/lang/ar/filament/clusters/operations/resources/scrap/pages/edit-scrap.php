@@ -2,23 +2,23 @@
 
 return [
     'notification' => [
-        'title' => 'Scrap updated',
-        'body'  => 'The scrap has been updated successfully.',
+        'title' => 'تم تحديث الخردة',
+        'body'  => 'تم تحديث الخردة بنجاح.',
     ],
 
     'header-actions' => [
         'validate' => [
-            'label' => 'Validate',
+            'label' => 'تحقق',
 
             'notification' => [
                 'warning' => [
-                    'title' => 'Insufficient stock',
-                    'body'  => 'The scrap has insufficient stock to validate.',
+                    'title' => 'مخزون غير كافٍ',
+                    'body'  => 'الخردة لا تملك مخزوناً كافياً للتحقق.',
                 ],
 
                 'success' => [
-                    'title' => 'Scrap marked as done',
-                    'body'  => 'The scrap has been marked as done successfully.',
+                    'title' => 'تم تعليم الخردة كمنجزة',
+                    'body'  => 'تم تعليم الخردة كمنجزة بنجاح.',
                 ],
             ],
         ],
@@ -26,13 +26,13 @@ return [
         'delete' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Scrap deleted',
-                    'body'  => 'The scrap has been deleted successfully.',
+                    'title' => 'تم حذف الخردة',
+                    'body'  => 'تم حذف الخردة بنجاح.',
                 ],
 
                 'error' => [
-                    'title' => 'Scraps could not be deleted',
-                    'body'  => 'The scraps cannot be deleted because they are currently in use.',
+                    'title' => 'تعذر حذف الخردة',
+                    'body'  => 'لا يمكن حذف الخردة لأنها قيد الاستخدام حالياً.',
                 ],
             ],
         ],

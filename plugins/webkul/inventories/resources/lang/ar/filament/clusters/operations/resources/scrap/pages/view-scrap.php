@@ -5,13 +5,13 @@ return [
         'delete' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Scrap Deleted',
-                    'body'  => 'The scrap has been deleted successfully.',
+                    'title' => 'تم حذف الخردة',
+                    'body'  => 'تم حذف الخردة بنجاح.',
                 ],
 
                 'error' => [
-                    'title' => 'Scraps could not be deleted',
-                    'body'  => 'The scraps cannot be deleted because they are currently in use.',
+                    'title' => 'تعذر حذف الخردة',
+                    'body'  => 'لا يمكن حذف الخردة لأنها قيد الاستخدام حالياً.',
                 ],
             ],
         ],

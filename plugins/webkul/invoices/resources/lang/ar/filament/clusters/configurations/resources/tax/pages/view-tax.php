@@ -4,8 +4,8 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Tax deleted',
-                'body'  => 'The tax has been deleted successfully.',
+                'title' => 'تم حذف الضريبة',
+                'body'  => 'تم حذف الضريبة بنجاح.',
             ],
         ],
     ],

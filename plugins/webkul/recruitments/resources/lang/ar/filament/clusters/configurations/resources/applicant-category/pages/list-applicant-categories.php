@@ -2,13 +2,13 @@
 
 return [
     'notification' => [
-        'title' => 'Tags created',
-        'body'  => 'The tags has been created successfully.',
+        'title' => 'تم إنشاء الوسوم',
+        'body'  => 'تم إنشاء الوسوم بنجاح.',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Tag',
+            'label' => 'وسم جديد',
         ],
     ],
 ];

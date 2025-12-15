@@ -2,8 +2,8 @@
 
 return [
     'navigation' => [
-        'title' => 'Deliveries',
-        'group' => 'Transfers',
+        'title' => 'التسليمات',
+        'group' => 'التحويلات',
     ],
 
     'table' => [
@@ -11,13 +11,13 @@ return [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Delivery deleted',
-                        'body'  => 'The delivery ras been deleted successfully.',
+                        'title' => 'تم حذف التسليم',
+                        'body'  => 'تم حذف التسليم بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Delivery could not be deleted',
-                        'body'  => 'The delivery cannot be deleted because it is currently in use.',
+                        'title' => 'تعذر حذف التسليم',
+                        'body'  => 'لا يمكن حذف التسليم لأنه قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -27,13 +27,13 @@ return [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Deliveries deleted',
-                        'body'  => 'The deliveries has been deleted successfully.',
+                        'title' => 'تم حذف التسليمات',
+                        'body'  => 'تم حذف التسليمات بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Deliveries could not be deleted',
-                        'body'  => 'The deliveries cannot be deleted because they are currently in use.',
+                        'title' => 'تعذر حذف التسليمات',
+                        'body'  => 'لا يمكن حذف التسليمات لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],

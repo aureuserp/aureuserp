@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'subject'          => 'Subject',
-    'changes-made'     => 'Changes Made',
-    'modified'         => 'The <b>:field</b> has been',
-    'preview'          => 'Preview',
-    'download'         => 'Download',
+    'subject'          => 'الموضوع',
+    'changes-made'     => 'التغييرات التي تمت',
+    'modified'         => 'تم تعديل <b>:field</b>',
+    'preview'          => 'معاينة',
+    'download'         => 'تحميل',
 ];

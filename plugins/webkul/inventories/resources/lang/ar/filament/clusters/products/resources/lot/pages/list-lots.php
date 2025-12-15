@@ -2,17 +2,17 @@
 
 return [
     'tabs' => [
-        'all'      => 'All',
-        'internal' => 'Internal Locations',
+        'all'      => 'الكل',
+        'internal' => 'المواقع الداخلية',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Lot / Serial Number',
+            'label' => 'دفعة / رقم تسلسلي جديد',
 
             'notification' => [
-                'title' => 'Package created',
-                'body'  => 'The package has been created successfully.',
+                'title' => 'تم إنشاء الدفعة',
+                'body'  => 'تم إنشاء الدفعة بنجاح.',
             ],
         ],
     ],

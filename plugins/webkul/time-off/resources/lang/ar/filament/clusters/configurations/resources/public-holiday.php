@@ -1,65 +1,65 @@
 <?php
 
 return [
-    'title' => 'Public Holidays',
+    'title' => 'العطل الرسمية',
 
-    'model-label' => 'Public holiday',
+    'model-label' => 'عطلة رسمية',
 
     'navigation' => [
-        'title' => 'Public Holidays',
+        'title' => 'العطل الرسمية',
     ],
 
     'form' => [
         'fields' => [
-            'name'             => 'Name',
-            'name-placeholder' => 'Enter the name of the public holiday',
-            'date-from'        => 'Start Date',
-            'date-to'          => 'End Date',
-            'color'            => 'Color',
-            'calendar'         => 'Calendar',
+            'name'             => 'الاسم',
+            'name-placeholder' => 'أدخل اسم العطلة الرسمية',
+            'date-from'        => 'تاريخ البداية',
+            'date-to'          => 'تاريخ النهاية',
+            'color'            => 'اللون',
+            'calendar'         => 'التقويم',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'         => 'Name',
-            'company-name' => 'Company Name',
-            'calendar'     => 'Calendar',
-            'created-by'   => 'Created By',
-            'date-from'    => 'Start Date',
-            'date-to'      => 'End Date',
+            'name'         => 'الاسم',
+            'company-name' => 'اسم الشركة',
+            'calendar'     => 'التقويم',
+            'created-by'   => 'أنشئ بواسطة',
+            'date-from'    => 'تاريخ البداية',
+            'date-to'      => 'تاريخ النهاية',
         ],
 
         'filters' => [
-            'name'         => 'Name',
-            'company-name' => 'Company Name',
-            'created-by'   => 'Created By',
-            'date-from'    => 'Start Date',
-            'date-to'      => 'End Date',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'name'         => 'الاسم',
+            'company-name' => 'اسم الشركة',
+            'created-by'   => 'أنشئ بواسطة',
+            'date-from'    => 'تاريخ البداية',
+            'date-to'      => 'تاريخ النهاية',
+            'created-at'   => 'تاريخ الإنشاء',
+            'updated-at'   => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'name'         => 'Name',
-            'company-name' => 'Company Name',
-            'created-by'   => 'Created By',
-            'date-from'    => 'Start Date',
-            'date-to'      => 'End Date',
+            'name'         => 'الاسم',
+            'company-name' => 'اسم الشركة',
+            'created-by'   => 'أنشئ بواسطة',
+            'date-from'    => 'تاريخ البداية',
+            'date-to'      => 'تاريخ النهاية',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Public holiday updated',
-                    'body'  => 'The public holiday has been restored successfully.',
+                    'title' => 'تم تحديث العطلة الرسمية',
+                    'body'  => 'تم تحديث العطلة الرسمية بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Public holiday deleted',
-                    'body'  => 'The public holiday has been deleted successfully.',
+                    'title' => 'تم حذف العطلة الرسمية',
+                    'body'  => 'تم حذف العطلة الرسمية بنجاح.',
                 ],
             ],
         ],
@@ -67,8 +67,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Public holidays deleted',
-                    'body'  => 'The public holidays has been deleted successfully.',
+                    'title' => 'تم حذف العطل الرسمية',
+                    'body'  => 'تم حذف العطل الرسمية بنجاح.',
                 ],
             ],
         ],
@@ -76,10 +76,10 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name'      => 'Name',
-            'date-from' => 'Start Date',
-            'date-to'   => 'End Date',
-            'color'     => 'Color',
+            'name'      => 'الاسم',
+            'date-from' => 'تاريخ البداية',
+            'date-to'   => 'تاريخ النهاية',
+            'color'     => 'اللون',
         ],
     ],
 ];

@@ -1,66 +1,66 @@
 <?php
 
 return [
-    'title' => 'Skill Types',
+    'title' => 'أنواع المهارات',
 
     'navigation' => [
-        'title' => 'Skill Types',
-        'group' => 'Employee',
+        'title' => 'أنواع المهارات',
+        'group' => 'الموظفين',
     ],
 
     'form' => [
         'sections' => [
             'fields' => [
-                'name'       => 'Name',
-                'color'      => 'Color',
-                'status'     => 'Status',
+                'name'       => 'الاسم',
+                'color'      => 'اللون',
+                'status'     => 'الحالة',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'id'         => 'ID',
-            'name'       => 'Skill Type',
-            'status'     => 'Status',
-            'color'      => 'Color',
-            'skills'     => 'Skills',
-            'levels'     => 'Levels',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'id'         => 'المعرف',
+            'name'       => 'نوع المهارة',
+            'status'     => 'الحالة',
+            'color'      => 'اللون',
+            'skills'     => 'المهارات',
+            'levels'     => 'المستويات',
+            'created-by' => 'أنشئ بواسطة',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'skill-levels' => 'Skill Levels',
-            'skills'       => 'Skills',
-            'created-by'   => 'Created By',
-            'status'       => 'Status',
-            'updated-at'   => 'Updated At',
-            'created-at'   => 'Created At',
+            'skill-levels' => 'مستويات المهارات',
+            'skills'       => 'المهارات',
+            'created-by'   => 'أنشئ بواسطة',
+            'status'       => 'الحالة',
+            'updated-at'   => 'تاريخ التحديث',
+            'created-at'   => 'تاريخ الإنشاء',
         ],
 
         'groups' => [
-            'name'       => 'Skill Type',
-            'color'      => 'Color',
-            'status'     => 'Status',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'نوع المهارة',
+            'color'      => 'اللون',
+            'status'     => 'الحالة',
+            'created-by' => 'أنشئ بواسطة',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Skill Type restored',
-                    'body'  => 'The Skill Type has been restored successfully.',
+                    'title' => 'تم استعادة نوع المهارة',
+                    'body'  => 'تم استعادة نوع المهارة بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Skill Type deleted',
-                    'body'  => 'The Skill Type has been deleted successfully.',
+                    'title' => 'تم حذف نوع المهارة',
+                    'body'  => 'تم حذف نوع المهارة بنجاح.',
                 ],
             ],
         ],
@@ -68,22 +68,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Skill Types restored',
-                    'body'  => 'The Skill Types has been restored successfully.',
+                    'title' => 'تم استعادة أنواع المهارات',
+                    'body'  => 'تم استعادة أنواع المهارات بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Skill Types deleted',
-                    'body'  => 'The Skill Types has been deleted successfully.',
+                    'title' => 'تم حذف أنواع المهارات',
+                    'body'  => 'تم حذف أنواع المهارات بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Skill Types force deleted',
-                    'body'  => 'The Skill Types has been force deleted successfully.',
+                    'title' => 'تم حذف أنواع المهارات نهائياً',
+                    'body'  => 'تم حذف أنواع المهارات نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -91,8 +91,8 @@ return [
         'empty-state-actions' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Skill Types',
-                    'body'  => 'The Skill Types has been created successfully.',
+                    'title' => 'أنواع المهارات',
+                    'body'  => 'تم إنشاء نوع المهارة بنجاح.',
                 ],
             ],
         ],
@@ -101,9 +101,9 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'name'   => 'Skill Type',
-                'color'  => 'Color',
-                'status' => 'Status',
+                'name'   => 'نوع المهارة',
+                'color'  => 'اللون',
+                'status' => 'الحالة',
             ],
         ],
     ],

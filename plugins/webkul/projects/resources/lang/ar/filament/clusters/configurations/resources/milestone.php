@@ -2,53 +2,53 @@
 
 return [
     'navigation' => [
-        'title' => 'Milestones',
+        'title' => 'المراحل الرئيسية',
     ],
 
     'form' => [
-        'name'         => 'Name',
-        'deadline'     => 'Deadline',
-        'is-completed' => 'Is Completed',
-        'project'      => 'Project',
+        'name'         => 'الاسم',
+        'deadline'     => 'الموعد النهائي',
+        'is-completed' => 'مكتمل',
+        'project'      => 'المشروع',
     ],
 
     'table' => [
         'columns' => [
-            'name'         => 'Name',
-            'deadline'     => 'Deadline',
-            'is-completed' => 'Is Completed',
-            'completed-at' => 'Completed At',
-            'project'      => 'Project',
-            'creator'      => 'Creator',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'name'         => 'الاسم',
+            'deadline'     => 'الموعد النهائي',
+            'is-completed' => 'مكتمل',
+            'completed-at' => 'تاريخ الإكمال',
+            'project'      => 'المشروع',
+            'creator'      => 'المُنشئ',
+            'created-at'   => 'تاريخ الإنشاء',
+            'updated-at'   => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'name'         => 'Name',
-            'is-completed' => 'Is Completed',
-            'project'      => 'Project',
-            'created-at'   => 'Created At',
+            'name'         => 'الاسم',
+            'is-completed' => 'مكتمل',
+            'project'      => 'المشروع',
+            'created-at'   => 'تاريخ الإنشاء',
         ],
 
         'filters' => [
-            'is-completed' => 'Is Completed',
-            'project'      => 'Project',
-            'creator'      => 'Creator',
+            'is-completed' => 'مكتمل',
+            'project'      => 'المشروع',
+            'creator'      => 'المُنشئ',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Milestone update',
-                    'body'  => 'The milestone has been update successfully.',
+                    'title' => 'تم تحديث المرحلة الرئيسية',
+                    'body'  => 'تم تحديث المرحلة الرئيسية بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Milestone deleted',
-                    'body'  => 'The milestone has been deleted successfully.',
+                    'title' => 'تم حذف المرحلة الرئيسية',
+                    'body'  => 'تم حذف المرحلة الرئيسية بنجاح.',
                 ],
             ],
         ],
@@ -56,8 +56,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Milestones deleted',
-                    'body'  => 'The milestones has been deleted successfully.',
+                    'title' => 'تم حذف المراحل الرئيسية',
+                    'body'  => 'تم حذف المراحل الرئيسية بنجاح.',
                 ],
             ],
         ],

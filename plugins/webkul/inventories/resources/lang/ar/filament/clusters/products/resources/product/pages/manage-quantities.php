@@ -1,59 +1,59 @@
 <?php
 
 return [
-    'title' => 'Quantities',
+    'title' => 'الكميات',
 
     'tabs' => [
-        'internal-locations' => 'Internal Locations',
-        'transit-locations'  => 'Transit Locations',
-        'on-hand'            => 'On Hand',
-        'to-count'           => 'To Count',
-        'to-apply'           => 'To Apply',
+        'internal-locations' => 'المواقع الداخلية',
+        'transit-locations'  => 'مواقع العبور',
+        'on-hand'            => 'المتاح',
+        'to-count'           => 'للجرد',
+        'to-apply'           => 'للتطبيق',
     ],
 
     'form' => [
         'fields' => [
-            'product'          => 'Product',
-            'location'         => 'Location',
-            'package'          => 'Package',
-            'lot'              => 'Lot / Serial Numbers',
-            'on-hand-qty'      => 'On Hand Quantity',
-            'storage-category' => 'Storage Category',
+            'product'          => 'المنتج',
+            'location'         => 'الموقع',
+            'package'          => 'الطرد',
+            'lot'              => 'الدفعة / الأرقام التسلسلية',
+            'on-hand-qty'      => 'الكمية المتاحة',
+            'storage-category' => 'فئة التخزين',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'product'           => 'Product',
-            'location'          => 'Location',
-            'lot'               => 'Lot / Serial Numbers',
-            'storage-category'  => 'Storage Category',
-            'quantity'          => 'Quantity',
-            'package'           => 'Package',
-            'on-hand'           => 'On Hand Quantity',
-            'reserved-quantity' => 'Reserved Quantity',
+            'product'           => 'المنتج',
+            'location'          => 'الموقع',
+            'lot'               => 'الدفعة / الأرقام التسلسلية',
+            'storage-category'  => 'فئة التخزين',
+            'quantity'          => 'الكمية',
+            'package'           => 'الطرد',
+            'on-hand'           => 'الكمية المتاحة',
+            'reserved-quantity' => 'الكمية المحجوزة',
 
             'on-hand-before-state-updated' => [
                 'notification' => [
-                    'title' => 'Quantity updated',
-                    'body'  => 'The quantity has been updated successfully.',
+                    'title' => 'تم تحديث الكمية',
+                    'body'  => 'تم تحديث الكمية بنجاح.',
                 ],
             ],
         ],
 
         'header-actions' => [
             'create' => [
-                'label' => 'Add Quantity',
+                'label' => 'إضافة كمية',
 
                 'notification' => [
-                    'title' => 'Quantity added',
-                    'body'  => 'The quantity has been added successfully.',
+                    'title' => 'تمت إضافة الكمية',
+                    'body'  => 'تمت إضافة الكمية بنجاح.',
                 ],
 
                 'before' => [
                     'notification' => [
-                        'title' => 'Quantity already exists',
-                        'body'  => 'Already has a quantity for the same configuration. Please update the quantity instead.',
+                        'title' => 'الكمية موجودة بالفعل',
+                        'body'  => 'توجد بالفعل كمية لنفس الإعدادات. يرجى تحديث الكمية بدلاً من ذلك.',
                     ],
                 ],
             ],
@@ -62,8 +62,8 @@ return [
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Quantity deleted',
-                    'body'  => 'The quantity has been deleted successfully.',
+                    'title' => 'تم حذف الكمية',
+                    'body'  => 'تم حذف الكمية بنجاح.',
                 ],
             ],
         ],

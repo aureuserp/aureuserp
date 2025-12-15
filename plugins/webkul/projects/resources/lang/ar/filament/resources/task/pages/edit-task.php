@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Task updated',
-        'body'  => 'The task has been updated successfully.',
+        'title' => 'تم تحديث المهمة',
+        'body'  => 'تم تحديث المهمة بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Task deleted',
-                'body'  => 'The task has been deleted successfully.',
+                'title' => 'تم حذف المهمة',
+                'body'  => 'تم حذف المهمة بنجاح.',
             ],
         ],
     ],

@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Tax group updated',
-        'body'  => 'The tax group has been updated successfully.',
+        'title' => 'تم تحديث مجموعة الضرائب',
+        'body'  => 'تم تحديث مجموعة الضرائب بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Tax group deleted',
-                'body'  => 'The tax group has been deleted successfully.',
+                'title' => 'تم حذف مجموعة الضرائب',
+                'body'  => 'تم حذف مجموعة الضرائب بنجاح.',
             ],
         ],
     ],

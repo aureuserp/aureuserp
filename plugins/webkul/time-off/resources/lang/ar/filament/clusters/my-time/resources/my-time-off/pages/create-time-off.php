@@ -3,33 +3,33 @@
 return [
     'notification' => [
         'success' => [
-            'title' => 'Time Off created',
-            'body'  => 'The time off has been created successfully.',
+            'title' => 'تم إنشاء الإجازة',
+            'body'  => 'تم إنشاء الإجازة بنجاح.',
         ],
 
         'overlap' => [
-            'title' => 'Overlapping Leave Request',
-            'body'  => 'The selected leave dates overlap with an existing request. Please choose different dates.',
+            'title' => 'طلب إجازة متداخل',
+            'body'  => 'تواريخ الإجازة المحددة متداخلة مع طلب موجود. يرجى اختيار تواريخ مختلفة.',
         ],
 
         'warning' => [
-            'title' => 'You don\'t have an employee account',
-            'body'  => 'You don\'t have an employee account. Please contact your administrator.',
+            'title' => 'ليس لديك حساب موظف',
+            'body'  => 'ليس لديك حساب موظف. يرجى التواصل مع المسؤول.',
         ],
 
         'invalid_half_day_leave' => [
-            'title' => 'Invalid Leave Request',
-            'body'  => 'Half-day leave can only be applied for a single day.',
+            'title' => 'طلب إجازة غير صالح',
+            'body'  => 'يمكن تطبيق إجازة نصف يوم ليوم واحد فقط.',
         ],
 
         'leave_request_denied_no_allocation' => [
-            'title' => 'Leave Request Denied',
-            'body'  => 'You do not have any allocated leave for :leaveType.',
+            'title' => 'تم رفض طلب الإجازة',
+            'body'  => 'ليس لديك أي إجازة مخصصة لـ :leaveType.',
         ],
 
         'leave_request_denied_insufficient_balance' => [
-            'title' => 'Leave Request Denied',
-            'body'  => 'Insufficient leave balance. You have :available_balance day(s) available. Requested: :requested_days day(s).',
+            'title' => 'تم رفض طلب الإجازة',
+            'body'  => 'رصيد الإجازة غير كافٍ. لديك :available_balance يوم/أيام متاحة. المطلوب: :requested_days يوم/أيام.',
         ],
     ],
 ];

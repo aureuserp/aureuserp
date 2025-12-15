@@ -2,23 +2,23 @@
 
 return [
     'notification' => [
-        'title'              => 'Time Off updated',
-        'body'               => 'The time off has been updated successfully.',
+        'title'              => 'تم تحديث الإجازة',
+        'body'               => 'تم تحديث الإجازة بنجاح.',
         'action_not_allowed' => [
-            'title' => 'Action Not Allowed',
-            'body'  => 'You cannot modify this leave request as it is in a locked state.',
+            'title' => 'الإجراء غير مسموح',
+            'body'  => 'لا يمكنك تعديل طلب الإجازة هذا لأنه في حالة مقفلة.',
         ],
         'overlap' => [
-            'title' => 'Overlapping Leave Request',
-            'body'  => 'The selected leave dates overlap with an existing request. Please choose different dates.',
+            'title' => 'طلب إجازة متداخل',
+            'body'  => 'تواريخ الإجازة المحددة متداخلة مع طلب موجود. يرجى اختيار تواريخ مختلفة.',
         ],
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Time Off deleted',
-                'body'  => 'The time off has been deleted successfully.',
+                'title' => 'تم حذف الإجازة',
+                'body'  => 'تم حذف الإجازة بنجاح.',
             ],
         ],
     ],

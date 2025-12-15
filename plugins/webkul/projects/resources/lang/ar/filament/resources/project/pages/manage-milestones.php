@@ -1,16 +1,16 @@
 <?php
 
 return [
-    'title' => 'Milestones',
+    'title' => 'المراحل الرئيسية',
 
     'table' => [
         'header-actions' => [
             'create' => [
-                'label' => 'Add Project Milestone',
+                'label' => 'إضافة مرحلة رئيسية للمشروع',
 
                 'notification' => [
-                    'title' => 'Milestone created',
-                    'body'  => 'The milestone has been created successfully.',
+                    'title' => 'تم إنشاء المرحلة الرئيسية',
+                    'body'  => 'تم إنشاء المرحلة الرئيسية بنجاح.',
                 ],
             ],
         ],

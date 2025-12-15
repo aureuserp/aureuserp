@@ -2,17 +2,17 @@
 
 return [
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'الكل',
+        'archived' => 'مؤرشف',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Warehouse',
+            'label' => 'مستودع جديد',
 
             'notification' => [
-                'title' => 'Warehouse created',
-                'body'  => 'The warehouse has been created successfully.',
+                'title' => 'تم إنشاء المستودع',
+                'body'  => 'تم إنشاء المستودع بنجاح.',
             ],
         ],
     ],

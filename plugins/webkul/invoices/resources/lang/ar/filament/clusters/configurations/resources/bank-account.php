@@ -2,95 +2,95 @@
 
 return [
     'navigation' => [
-        'title' => 'Bank Accounts',
-        'group' => 'Banks',
+        'title' => 'الحسابات البنكية',
+        'group' => 'البنوك',
     ],
 
     'form' => [
-        'account-number'     => 'Account Number',
+        'account-number'     => 'رقم الحساب',
         'bank'               => [
-            'title'    => 'Bank',
+            'title'    => 'البنك',
             'sections' => [
                 'general' => [
-                    'title' => 'General',
+                    'title' => 'عام',
 
                     'fields' => [
-                        'name'  => 'Name',
-                        'code'  => 'Bank Identifier Code',
-                        'email' => 'Email',
-                        'phone' => 'Phone',
+                        'name'  => 'الاسم',
+                        'code'  => 'رمز تعريف البنك',
+                        'email' => 'البريد الإلكتروني',
+                        'phone' => 'الهاتف',
                     ],
                 ],
 
                 'address' => [
-                    'title' => 'Address',
+                    'title' => 'العنوان',
 
                     'fields' => [
-                        'address' => 'Address',
-                        'city'    => 'City',
-                        'street1' => 'Street 1',
-                        'street2' => 'Street 2',
-                        'state'   => 'State',
-                        'zip'     => 'Zip',
-                        'country' => 'Country',
+                        'address' => 'العنوان',
+                        'city'    => 'المدينة',
+                        'street1' => 'الشارع 1',
+                        'street2' => 'الشارع 2',
+                        'state'   => 'المنطقة',
+                        'zip'     => 'الرمز البريدي',
+                        'country' => 'الدولة',
                     ],
                 ],
             ],
         ],
 
-        'account-holder'     => 'Account Holder',
+        'account-holder'     => 'صاحب الحساب',
     ],
 
     'table' => [
         'columns' => [
-            'account-number' => 'Account Number',
-            'bank'           => 'Bank',
-            'account-holder' => 'Account Holder',
-            'send-money'     => 'Can Send Money',
-            'created-at'     => 'Created At',
-            'updated-at'     => 'Updated At',
-            'deleted-at'     => 'Deleted At',
+            'account-number' => 'رقم الحساب',
+            'bank'           => 'البنك',
+            'account-holder' => 'صاحب الحساب',
+            'send-money'     => 'يمكن إرسال الأموال',
+            'created-at'     => 'تاريخ الإنشاء',
+            'updated-at'     => 'تاريخ التحديث',
+            'deleted-at'     => 'تاريخ الحذف',
         ],
 
         'filters' => [
-            'bank'           => 'Bank',
-            'account-holder' => 'Account Holder',
-            'creator'        => 'Creator',
-            'can-send-money' => 'Can Send Money',
+            'bank'           => 'البنك',
+            'account-holder' => 'صاحب الحساب',
+            'creator'        => 'المُنشئ',
+            'can-send-money' => 'يمكن إرسال الأموال',
         ],
 
         'groups' => [
-            'bank'               => 'Bank',
-            'can-send-money'     => 'Can Send Money',
-            'created-at'         => 'Created At',
+            'bank'               => 'البنك',
+            'can-send-money'     => 'يمكن إرسال الأموال',
+            'created-at'         => 'تاريخ الإنشاء',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Bank account updated',
-                    'body'  => 'The bank account has been updated successfully.',
+                    'title' => 'تم تحديث الحساب البنكي',
+                    'body'  => 'تم تحديث الحساب البنكي بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Bank account restored',
-                    'body'  => 'The bank account has been restored successfully.',
+                    'title' => 'تم استعادة الحساب البنكي',
+                    'body'  => 'تم استعادة الحساب البنكي بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Bank account deleted',
-                    'body'  => 'The bank account has been deleted successfully.',
+                    'title' => 'تم حذف الحساب البنكي',
+                    'body'  => 'تم حذف الحساب البنكي بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Bank account force deleted',
-                    'body'  => 'The bank account has been force deleted successfully.',
+                    'title' => 'تم حذف الحساب البنكي نهائياً',
+                    'body'  => 'تم حذف الحساب البنكي نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -98,22 +98,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Bank accounts restored',
-                    'body'  => 'The bank accounts has been restored successfully.',
+                    'title' => 'تم استعادة الحسابات البنكية',
+                    'body'  => 'تم استعادة الحسابات البنكية بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Bank accounts deleted',
-                    'body'  => 'The bank accounts has been deleted successfully.',
+                    'title' => 'تم حذف الحسابات البنكية',
+                    'body'  => 'تم حذف الحسابات البنكية بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Bank accounts force deleted',
-                    'body'  => 'The bank accounts has been force deleted successfully.',
+                    'title' => 'تم حذف الحسابات البنكية نهائياً',
+                    'body'  => 'تم حذف الحسابات البنكية نهائياً بنجاح.',
                 ],
             ],
         ],

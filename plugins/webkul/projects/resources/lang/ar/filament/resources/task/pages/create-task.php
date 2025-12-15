@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Task created',
-        'body'  => 'The task has been created successfully.',
+        'title' => 'تم إنشاء المهمة',
+        'body'  => 'تم إنشاء المهمة بنجاح.',
     ],
 ];

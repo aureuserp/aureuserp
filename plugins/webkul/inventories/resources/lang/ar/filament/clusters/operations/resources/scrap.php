@@ -2,29 +2,29 @@
 
 return [
     'navigation' => [
-        'title' => 'Scraps',
-        'group' => 'Adjustments',
+        'title' => 'الخردة',
+        'group' => 'التعديلات',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'fields' => [
-                    'product'              => 'Product',
-                    'package'              => 'Package',
-                    'quantity'             => 'Quantity',
-                    'unit'                 => 'Unit of Measure',
-                    'lot'                  => 'Lot/Serial',
-                    'tags'                 => 'Tags',
-                    'name'                 => 'Name',
-                    'color'                => 'Color',
-                    'owner'                => 'Owner',
-                    'source-location'      => 'Source Location',
-                    'destination-location' => 'Scrap Location',
-                    'source-document'      => 'Source Document',
-                    'company'              => 'Company',
+                    'product'              => 'المنتج',
+                    'package'              => 'الطرد',
+                    'quantity'             => 'الكمية',
+                    'unit'                 => 'وحدة القياس',
+                    'lot'                  => 'الدفعة/التسلسلي',
+                    'tags'                 => 'الوسوم',
+                    'name'                 => 'الاسم',
+                    'color'                => 'اللون',
+                    'owner'                => 'المالك',
+                    'source-location'      => 'موقع المصدر',
+                    'destination-location' => 'موقع الخردة',
+                    'source-document'      => 'المستند المصدر',
+                    'company'              => 'الشركة',
                 ],
             ],
         ],
@@ -32,55 +32,55 @@ return [
 
     'table' => [
         'columns' => [
-            'date'            => 'Date',
-            'reference'       => 'Reference',
-            'product'         => 'Product',
-            'package'         => 'Package',
-            'quantity'        => 'Quantity',
-            'uom'             => 'Unit of Measure',
-            'source-location' => 'Source Location',
-            'scrap-location'  => 'Scrap Location',
-            'unit'            => 'Unit of Measure',
-            'lot'             => 'Lot/Serial',
-            'tags'            => 'Tags',
-            'state'           => 'State',
+            'date'            => 'التاريخ',
+            'reference'       => 'المرجع',
+            'product'         => 'المنتج',
+            'package'         => 'الطرد',
+            'quantity'        => 'الكمية',
+            'uom'             => 'وحدة القياس',
+            'source-location' => 'موقع المصدر',
+            'scrap-location'  => 'موقع الخردة',
+            'unit'            => 'وحدة القياس',
+            'lot'             => 'الدفعة/التسلسلي',
+            'tags'            => 'الوسوم',
+            'state'           => 'الحالة',
         ],
 
         'groups' => [
-            'product'              => 'Product',
-            'source-location'      => 'Source Location',
-            'destination-location' => 'Scrap Location',
+            'product'              => 'المنتج',
+            'source-location'      => 'موقع المصدر',
+            'destination-location' => 'موقع الخردة',
         ],
 
         'filters' => [
-            'source-location'      => 'Source Location',
-            'destination-location' => 'Scrap Location',
-            'product'              => 'Product',
-            'state'                => 'State',
-            'product-category'     => 'Product Category',
-            'uom'                  => 'Unit of Measure',
-            'lot'                  => 'Lot/Serial',
-            'package'              => 'Package',
-            'tags'                 => 'Tags',
-            'company'              => 'Company',
-            'quantity'             => 'Quantity',
-            'creator'              => 'Creator',
-            'closed-at'            => 'Closed At',
-            'created-at'           => 'Created At',
-            'updated-at'           => 'Updated At',
+            'source-location'      => 'موقع المصدر',
+            'destination-location' => 'موقع الخردة',
+            'product'              => 'المنتج',
+            'state'                => 'الحالة',
+            'product-category'     => 'فئة المنتج',
+            'uom'                  => 'وحدة القياس',
+            'lot'                  => 'الدفعة/التسلسلي',
+            'package'              => 'الطرد',
+            'tags'                 => 'الوسوم',
+            'company'              => 'الشركة',
+            'quantity'             => 'الكمية',
+            'creator'              => 'المُنشئ',
+            'closed-at'            => 'تاريخ الإغلاق',
+            'created-at'           => 'تاريخ الإنشاء',
+            'updated-at'           => 'تاريخ التحديث',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Scrap deleted',
-                        'body'  => 'The scrap has been deleted successfully.',
+                        'title' => 'تم حذف الخردة',
+                        'body'  => 'تم حذف الخردة بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Scrap could not be deleted',
-                        'body'  => 'The scrap cannot be deleted because it is currently in use.',
+                        'title' => 'تعذر حذف الخردة',
+                        'body'  => 'لا يمكن حذف الخردة لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -90,13 +90,13 @@ return [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Scraps deleted',
-                        'body'  => 'The selected scraps have been deleted successfully.',
+                        'title' => 'تم حذف الخردة',
+                        'body'  => 'تم حذف الخردة المحددة بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Scraps could not be deleted',
-                        'body'  => 'The scraps cannot be deleted because they are currently in use.',
+                        'title' => 'تعذر حذف الخردة',
+                        'body'  => 'لا يمكن حذف الخردة لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -106,29 +106,29 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'Scrap Details',
+                'title' => 'تفاصيل الخردة',
 
                 'entries' => [
-                    'product'              => 'Product',
-                    'quantity'             => 'Quantity',
-                    'lot'                  => 'Lot',
-                    'tags'                 => 'Tags',
-                    'package'              => 'Package',
-                    'owner'                => 'Owner',
-                    'source-location'      => 'Source Location',
-                    'destination-location' => 'Destination Location',
-                    'source-document'      => 'Source Document',
-                    'company'              => 'Company',
+                    'product'              => 'المنتج',
+                    'quantity'             => 'الكمية',
+                    'lot'                  => 'الدفعة',
+                    'tags'                 => 'الوسوم',
+                    'package'              => 'الطرد',
+                    'owner'                => 'المالك',
+                    'source-location'      => 'موقع المصدر',
+                    'destination-location' => 'موقع الوجهة',
+                    'source-document'      => 'المستند المصدر',
+                    'company'              => 'الشركة',
                 ],
             ],
 
             'record-information' => [
-                'title' => 'Record Information',
+                'title' => 'معلومات السجل',
 
                 'entries' => [
-                    'created-by'   => 'Created By',
-                    'created-at'   => 'Created At',
-                    'last-updated' => 'Last Updated',
+                    'created-by'   => 'أنشئ بواسطة',
+                    'created-at'   => 'تاريخ الإنشاء',
+                    'last-updated' => 'آخر تحديث',
                 ],
             ],
         ],

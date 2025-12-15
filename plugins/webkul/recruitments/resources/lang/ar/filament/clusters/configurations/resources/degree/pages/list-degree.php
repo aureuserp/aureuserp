@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Degree created',
-        'body'  => 'The degree has been created successfully.',
+        'title' => 'تم إنشاء الدرجة العلمية',
+        'body'  => 'تم إنشاء الدرجة العلمية بنجاح.',
     ],
 ];

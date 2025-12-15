@@ -1,54 +1,54 @@
 <?php
 
 return [
-    'title' => 'Tax Groups',
+    'title' => 'مجموعات الضرائب',
 
     'navigation' => [
-        'title' => 'Tax Groups',
-        'group' => 'Accounting',
+        'title' => 'مجموعات الضرائب',
+        'group' => 'المحاسبة',
     ],
 
     'global-search' => [
-        'company-name' => 'Company Name',
-        'payment-term' => 'Payment Term',
+        'company-name' => 'اسم الشركة',
+        'payment-term' => 'شرط الدفع',
     ],
 
     'form' => [
         'sections' => [
             'fields' => [
-                'company'            => 'Company',
-                'country'            => 'Country',
-                'name'               => 'Name',
-                'preceding-subtotal' => 'Preceding Subtotal',
+                'company'            => 'الشركة',
+                'country'            => 'الدولة',
+                'name'               => 'الاسم',
+                'preceding-subtotal' => 'المجموع الفرعي السابق',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'company'            => 'Company',
-            'country'            => 'Country',
-            'created-by'         => 'Created By',
-            'name'               => 'Name',
-            'preceding-subtotal' => 'Preceding Subtotal',
-            'created-at'         => 'Created At',
-            'updated-at'         => 'Updated At',
+            'company'            => 'الشركة',
+            'country'            => 'الدولة',
+            'created-by'         => 'أنشئ بواسطة',
+            'name'               => 'الاسم',
+            'preceding-subtotal' => 'المجموع الفرعي السابق',
+            'created-at'         => 'تاريخ الإنشاء',
+            'updated-at'         => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'name'       => 'Name',
-            'company'    => 'Company',
-            'country'    => 'Country',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'الاسم',
+            'company'    => 'الشركة',
+            'country'    => 'الدولة',
+            'created-by' => 'أنشئ بواسطة',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Payment Term deleted',
-                    'body'  => 'The payment term has been deleted successfully.',
+                    'title' => 'تم حذف مجموعة الضرائب',
+                    'body'  => 'تم حذف مجموعة الضرائب بنجاح.',
                 ],
             ],
         ],
@@ -56,8 +56,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Tax Groups deleted',
-                    'body'  => 'The tax Groups has been deleted successfully.',
+                    'title' => 'تم حذف مجموعات الضرائب',
+                    'body'  => 'تم حذف مجموعات الضرائب بنجاح.',
                 ],
             ],
         ],
@@ -66,10 +66,10 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'company'            => 'Company',
-                'country'            => 'Country',
-                'name'               => 'Name',
-                'preceding-subtotal' => 'Preceding Subtotal',
+                'company'            => 'الشركة',
+                'country'            => 'الدولة',
+                'name'               => 'الاسم',
+                'preceding-subtotal' => 'المجموع الفرعي السابق',
             ],
         ],
     ],

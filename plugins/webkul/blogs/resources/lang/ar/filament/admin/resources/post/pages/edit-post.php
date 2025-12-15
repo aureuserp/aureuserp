@@ -2,33 +2,33 @@
 
 return [
     'notification' => [
-        'title' => 'Post updated',
-        'body'  => 'The post has been updated successfully.',
+        'title' => 'تم تحديث المقال',
+        'body'  => 'تم تحديث المقال بنجاح.',
     ],
 
     'header-actions' => [
         'draft' => [
-            'label' => 'Set as Draft',
+            'label' => 'تعيين كمسودة',
 
             'notification' => [
-                'title' => 'Post set as draft',
-                'body'  => 'The post has been set as draft successfully.',
+                'title' => 'تم تعيين المقال كمسودة',
+                'body'  => 'تم تعيين المقال كمسودة بنجاح.',
             ],
         ],
 
         'publish' => [
-            'label' => 'Publish',
+            'label' => 'نشر',
 
             'notification' => [
-                'title' => 'Post published',
-                'body'  => 'The post has been published successfully.',
+                'title' => 'تم نشر المقال',
+                'body'  => 'تم نشر المقال بنجاح.',
             ],
         ],
 
         'delete' => [
             'notification' => [
-                'title' => 'Post deleted',
-                'body'  => 'The post has been deleted successfully.',
+                'title' => 'تم حذف المقال',
+                'body'  => 'تم حذف المقال بنجاح.',
             ],
         ],
     ],

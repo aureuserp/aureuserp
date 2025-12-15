@@ -1,51 +1,51 @@
 <?php
 
 return [
-    'title' => 'Tags',
+    'title' => 'الوسوم',
 
     'navigation' => [
-        'title' => 'Tags',
-        'group' => 'Applications',
+        'title' => 'الوسوم',
+        'group' => 'الطلبات',
     ],
 
     'form' => [
         'fields' => [
-            'name'             => 'Name',
-            'name-placeholder' => 'Enter the name of the tags',
-            'color'            => 'Color',
+            'name'             => 'الاسم',
+            'name-placeholder' => 'أدخل اسم الوسم',
+            'color'            => 'اللون',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'id'         => 'ID',
-            'name'       => 'Name',
-            'color'      => 'Color',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'id'         => 'المعرف',
+            'name'       => 'الاسم',
+            'color'      => 'اللون',
+            'created-by' => 'أنشئ بواسطة',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'name'       => 'Name',
-            'employee'   => 'Employee',
-            'created-by' => 'Created By',
-            'updated-at' => 'Updated At',
-            'created-at' => 'Created At',
+            'name'       => 'الاسم',
+            'employee'   => 'الموظف',
+            'created-by' => 'أنشئ بواسطة',
+            'updated-at' => 'تاريخ التحديث',
+            'created-at' => 'تاريخ الإنشاء',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Tags updated',
-                    'body'  => 'The tags has been updated successfully.',
+                    'title' => 'تم تحديث الوسوم',
+                    'body'  => 'تم تحديث الوسوم بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Tags deleted',
-                    'body'  => 'The tags has been deleted successfully.',
+                    'title' => 'تم حذف الوسوم',
+                    'body'  => 'تم حذف الوسوم بنجاح.',
                 ],
             ],
         ],
@@ -53,8 +53,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Applicant Categories deleted',
-                    'body'  => 'The applicant Categories has been deleted successfully.',
+                    'title' => 'تم حذف فئات المتقدمين',
+                    'body'  => 'تم حذف فئات المتقدمين بنجاح.',
                 ],
             ],
         ],
@@ -62,15 +62,15 @@ return [
         'empty-state-action' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Tags created',
-                    'body'  => 'The tags has been created successfully.',
+                    'title' => 'تم إنشاء الوسوم',
+                    'body'  => 'تم إنشاء الوسوم بنجاح.',
                 ],
             ],
         ],
     ],
 
     'infolist' => [
-        'name'  => 'Name',
-        'color' => 'Color',
+        'name'  => 'الاسم',
+        'color' => 'اللون',
     ],
 ];

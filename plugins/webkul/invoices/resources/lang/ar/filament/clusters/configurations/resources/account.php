@@ -1,52 +1,52 @@
 <?php
 
 return [
-    'title' => 'Accounts',
+    'title' => 'الحسابات',
 
     'navigation' => [
-        'title' => 'Accounts',
-        'group' => 'Accounting',
+        'title' => 'الحسابات',
+        'group' => 'المحاسبة',
     ],
 
     'global-search' => [
-        'currency' => 'Currency',
-        'name'     => 'Name',
+        'currency' => 'العملة',
+        'name'     => 'الاسم',
     ],
 
     'form' => [
         'sections' => [
             'fields' => [
-                'code'          => 'Code',
-                'account-name'  => 'Account Name',
-                'accounting'    => 'Accounting',
-                'account-type'  => 'Account Type',
-                'default-taxes' => 'Default Taxes',
-                'tags'          => 'Tags',
-                'journals'      => 'Journals',
-                'currency'      => 'Currency',
-                'deprecated'    => 'Deprecated',
-                'reconcile'     => 'Reconcile',
-                'non-trade'     => 'Non Trade',
+                'code'          => 'الرمز',
+                'account-name'  => 'اسم الحساب',
+                'accounting'    => 'المحاسبة',
+                'account-type'  => 'نوع الحساب',
+                'default-taxes' => 'الضرائب الافتراضية',
+                'tags'          => 'الوسوم',
+                'journals'      => 'اليوميات',
+                'currency'      => 'العملة',
+                'deprecated'    => 'مهمل',
+                'reconcile'     => 'تسوية',
+                'non-trade'     => 'غير تجاري',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'code'         => 'Code',
-            'account-name' => 'Account Name',
-            'account-type' => 'Account Type',
-            'currency'     => 'Currency',
-            'deprecated'   => 'Deprecated',
-            'reconcile'    => 'Reconcile',
-            'non-trade'    => 'Non Trade',
+            'code'         => 'الرمز',
+            'account-name' => 'اسم الحساب',
+            'account-type' => 'نوع الحساب',
+            'currency'     => 'العملة',
+            'deprecated'   => 'مهمل',
+            'reconcile'    => 'تسوية',
+            'non-trade'    => 'غير تجاري',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Account deleted',
-                    'body'  => 'The account has been deleted successfully.',
+                    'title' => 'تم حذف الحساب',
+                    'body'  => 'تم حذف الحساب بنجاح.',
                 ],
             ],
         ],
@@ -54,8 +54,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Accounts deleted',
-                    'body'  => 'The accounts has been deleted successfully.',
+                    'title' => 'تم حذف الحسابات',
+                    'body'  => 'تم حذف الحسابات بنجاح.',
                 ],
             ],
         ],
@@ -64,33 +64,33 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'name'            => 'Name',
-                'tax-type'        => 'Tax Type',
-                'tax-computation' => 'Tax Computation',
-                'tax-scope'       => 'Tax Scope',
-                'status'          => 'Status',
-                'amount'          => 'Amount',
+                'name'            => 'الاسم',
+                'tax-type'        => 'نوع الضريبة',
+                'tax-computation' => 'حساب الضريبة',
+                'tax-scope'       => 'نطاق الضريبة',
+                'status'          => 'الحالة',
+                'amount'          => 'المبلغ',
             ],
 
             'field-set' => [
                 'advanced-options' => [
-                    'title' => 'Advanced Options',
+                    'title' => 'خيارات متقدمة',
 
                     'entries' => [
-                        'invoice-label'       => 'Invoice label',
-                        'tax-group'           => 'Tax Group',
-                        'country'             => 'Country',
-                        'include-in-price'    => 'Include in price',
-                        'include-base-amount' => 'Include base amount',
-                        'is-base-affected'    => 'Is base affected',
+                        'invoice-label'       => 'تسمية الفاتورة',
+                        'tax-group'           => 'مجموعة الضرائب',
+                        'country'             => 'الدولة',
+                        'include-in-price'    => 'تضمين في السعر',
+                        'include-base-amount' => 'تضمين المبلغ الأساسي',
+                        'is-base-affected'    => 'هل الأساس متأثر',
                     ],
                 ],
 
                 'description-and-legal-notes' => [
-                    'title'   => 'Description & Invoice Legal Notes',
+                    'title'   => 'الوصف والملاحظات القانونية للفاتورة',
                     'entries' => [
-                        'description' => 'Description',
-                        'legal-notes' => 'Legal Notes',
+                        'description' => 'الوصف',
+                        'legal-notes' => 'الملاحظات القانونية',
                     ],
                 ],
             ],
@@ -100,17 +100,17 @@ return [
     'infolist' => [
         'sections' => [
             'entries' => [
-                'code'          => 'Code',
-                'account-name'  => 'Account Name',
-                'accounting'    => 'Accounting',
-                'account-type'  => 'Account Type',
-                'default-taxes' => 'Default Taxes',
-                'tags'          => 'Tags',
-                'journals'      => 'Journals',
-                'currency'      => 'Currency',
-                'deprecated'    => 'Deprecated',
-                'reconcile'     => 'Reconcile',
-                'non-trade'     => 'Non Trade',
+                'code'          => 'الرمز',
+                'account-name'  => 'اسم الحساب',
+                'accounting'    => 'المحاسبة',
+                'account-type'  => 'نوع الحساب',
+                'default-taxes' => 'الضرائب الافتراضية',
+                'tags'          => 'الوسوم',
+                'journals'      => 'اليوميات',
+                'currency'      => 'العملة',
+                'deprecated'    => 'مهمل',
+                'reconcile'     => 'تسوية',
+                'non-trade'     => 'غير تجاري',
             ],
         ],
     ],

@@ -3,11 +3,11 @@
 return [
     'header-actions' => [
         'create' => [
-            'label' => 'New Medium',
+            'label' => 'وسيط جديد',
 
             'notification' => [
-                'title' => 'Medium created',
-                'body'  => 'The medium has been created successfully.',
+                'title' => 'تم إنشاء الوسيط',
+                'body'  => 'تم إنشاء الوسيط بنجاح.',
             ],
         ],
     ],

@@ -2,25 +2,25 @@
 
 return [
     'notification' => [
-        'title' => 'Internal Transfer updated',
-        'body'  => 'The internal transfer has been updated successfully.',
+        'title' => 'تم تحديث التحويل الداخلي',
+        'body'  => 'تم تحديث التحويل الداخلي بنجاح.',
     ],
 
     'header-actions' => [
         'print' => [
-            'label' => 'Print',
+            'label' => 'طباعة',
         ],
 
         'delete' => [
             'notification' => [
                 'success' => [
-                    'title' => 'Internal Transfer deleted',
-                    'body'  => 'The internal transfer has been deleted successfully.',
+                    'title' => 'تم حذف التحويل الداخلي',
+                    'body'  => 'تم حذف التحويل الداخلي بنجاح.',
                 ],
 
                 'error' => [
-                    'title' => 'Internal Transfer could not be deleted',
-                    'body'  => 'The internal transfer cannot be deleted because it is currently in use.',
+                    'title' => 'تعذر حذف التحويل الداخلي',
+                    'body'  => 'لا يمكن حذف التحويل الداخلي لأنه قيد الاستخدام حالياً.',
                 ],
             ],
         ],

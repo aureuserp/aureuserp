@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Rule updated',
-        'body'  => 'The rule has been updated successfully.',
+        'title' => 'تم تحديث القاعدة',
+        'body'  => 'تم تحديث القاعدة بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Rule deleted',
-                'body'  => 'The rule has been deleted successfully.',
+                'title' => 'تم حذف القاعدة',
+                'body'  => 'تم حذف القاعدة بنجاح.',
             ],
         ],
     ],

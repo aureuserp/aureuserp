@@ -4,11 +4,11 @@ return [
     'table' => [
         'header-actions' => [
             'create' => [
-                'label' => 'Add Sub Task',
+                'label' => 'إضافة مهمة فرعية',
 
                 'notification' => [
-                    'title' => 'Task created',
-                    'body'  => 'The task has been created successfully.',
+                    'title' => 'تم إنشاء المهمة',
+                    'body'  => 'تم إنشاء المهمة بنجاح.',
                 ],
             ],
         ],
@@ -16,22 +16,22 @@ return [
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Task restored',
-                    'body'  => 'The task has been restored successfully.',
+                    'title' => 'تم استعادة المهمة',
+                    'body'  => 'تم استعادة المهمة بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Task deleted',
-                    'body'  => 'The task has been deleted successfully.',
+                    'title' => 'تم حذف المهمة',
+                    'body'  => 'تم حذف المهمة بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Task force deleted',
-                    'body'  => 'The task has been force deleted successfully.',
+                    'title' => 'تم حذف المهمة نهائياً',
+                    'body'  => 'تم حذف المهمة نهائياً بنجاح.',
                 ],
             ],
         ],

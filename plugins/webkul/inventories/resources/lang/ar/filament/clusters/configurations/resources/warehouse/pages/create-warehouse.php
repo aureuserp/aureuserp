@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Warehouse created',
-        'body'  => 'The warehouse has been created successfully.',
+        'title' => 'تم إنشاء المستودع',
+        'body'  => 'تم إنشاء المستودع بنجاح.',
     ],
 ];

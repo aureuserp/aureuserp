@@ -2,62 +2,62 @@
 
 return [
     'navigation' => [
-        'title' => 'Task Stages',
+        'title' => 'مراحل المهام',
     ],
 
     'form' => [
-        'name'    => 'Name',
-        'project' => 'Project',
+        'name'    => 'الاسم',
+        'project' => 'المشروع',
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'project'    => 'Project',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'الاسم',
+            'project'    => 'المشروع',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'project'    => 'Project',
-            'created-at' => 'Created At',
+            'project'    => 'المشروع',
+            'created-at' => 'تاريخ الإنشاء',
         ],
 
         'filters' => [
-            'project' => 'Project',
+            'project' => 'المشروع',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Task stage updated',
-                    'body'  => 'The task stage has been updated successfully.',
+                    'title' => 'تم تحديث مرحلة المهمة',
+                    'body'  => 'تم تحديث مرحلة المهمة بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Task stage restored',
-                    'body'  => 'The task stage has been restored successfully.',
+                    'title' => 'تم استعادة مرحلة المهمة',
+                    'body'  => 'تم استعادة مرحلة المهمة بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Task stage deleted',
-                    'body'  => 'The task stage has been deleted successfully.',
+                    'title' => 'تم حذف مرحلة المهمة',
+                    'body'  => 'تم حذف مرحلة المهمة بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Task stage force deleted',
-                        'body'  => 'The Task stage has been force deleted successfully.',
+                        'title' => 'تم حذف مرحلة المهمة نهائياً',
+                        'body'  => 'تم حذف مرحلة المهمة نهائياً بنجاح.',
                     ],
                     'error' => [
-                        'title' => 'Task stage could not be deleted',
-                        'body'  => 'The Task stage cannot be deleted because it is currently in use.',
+                        'title' => 'تعذر حذف مرحلة المهمة',
+                        'body'  => 'لا يمكن حذف مرحلة المهمة لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -66,22 +66,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Task stages restored',
-                    'body'  => 'The task stages has been restored successfully.',
+                    'title' => 'تم استعادة مراحل المهام',
+                    'body'  => 'تم استعادة مراحل المهام بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Task stages deleted',
-                    'body'  => 'The task stages has been deleted successfully.',
+                    'title' => 'تم حذف مراحل المهام',
+                    'body'  => 'تم حذف مراحل المهام بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Task stages force deleted',
-                    'body'  => 'The task stages has been force deleted successfully.',
+                    'title' => 'تم حذف مراحل المهام نهائياً',
+                    'body'  => 'تم حذف مراحل المهام نهائياً بنجاح.',
                 ],
             ],
         ],

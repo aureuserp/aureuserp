@@ -2,21 +2,21 @@
 
 return [
     'navigation' => [
-        'title' => 'Packages',
-        'group' => 'Inventory',
+        'title' => 'الطرود',
+        'group' => 'المخزون',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'fields' => [
-                    'name'             => 'Name',
-                    'name-placeholder' => 'eg. PACK007',
-                    'package-type'     => 'Package Type',
-                    'pack-date'        => 'Pack Date',
-                    'location'         => 'Location',
+                    'name'             => 'الاسم',
+                    'name-placeholder' => 'مثال: PACK007',
+                    'package-type'     => 'نوع الطرد',
+                    'pack-date'        => 'تاريخ التعبئة',
+                    'location'         => 'الموقع',
                 ],
             ],
         ],
@@ -24,38 +24,38 @@ return [
 
     'table' => [
         'columns' => [
-            'name'         => 'Name',
-            'package-type' => 'Package Type',
-            'location'     => 'Location',
-            'company'      => 'Company',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'name'         => 'الاسم',
+            'package-type' => 'نوع الطرد',
+            'location'     => 'الموقع',
+            'company'      => 'الشركة',
+            'created-at'   => 'تاريخ الإنشاء',
+            'updated-at'   => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'package-type'   => 'Package Type',
-            'location'       => 'Location',
-            'created-at'     => 'Created At',
+            'package-type'   => 'نوع الطرد',
+            'location'       => 'الموقع',
+            'created-at'     => 'تاريخ الإنشاء',
         ],
 
         'filters' => [
-            'package-type' => 'Package Type',
-            'location'     => 'Location',
-            'creator'      => 'Creator',
-            'company'      => 'Company',
+            'package-type' => 'نوع الطرد',
+            'location'     => 'الموقع',
+            'creator'      => 'المُنشئ',
+            'company'      => 'الشركة',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Package deleted',
-                        'body'  => 'The package has been deleted successfully.',
+                        'title' => 'تم حذف الطرد',
+                        'body'  => 'تم حذف الطرد بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Package could not be deleted',
-                        'body'  => 'The package cannot be deleted because it is currently in use.',
+                        'title' => 'تعذر حذف الطرد',
+                        'body'  => 'لا يمكن حذف الطرد لأنه قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -63,23 +63,23 @@ return [
 
         'bulk-actions' => [
             'print-without-content' => [
-                'label' => 'Print Barcode',
+                'label' => 'طباعة الباركود',
             ],
 
             'print-with-content' => [
-                'label' => 'Print Barcode With Content',
+                'label' => 'طباعة الباركود مع المحتوى',
             ],
 
             'delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Packages deleted',
-                        'body'  => 'The packages has been deleted successfully.',
+                        'title' => 'تم حذف الطرود',
+                        'body'  => 'تم حذف الطرود بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Packages could not be deleted',
-                        'body'  => 'The packages cannot be deleted because they are currently in use.',
+                        'title' => 'تعذر حذف الطرود',
+                        'body'  => 'لا يمكن حذف الطرود لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -89,26 +89,26 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'Package Details',
+                'title' => 'تفاصيل الطرد',
 
                 'entries' => [
-                    'name'         => 'Package Name',
-                    'package-type' => 'Package Type',
-                    'pack-date'    => 'Pack Date',
-                    'location'     => 'Location',
-                    'company'      => 'Company',
-                    'created-at'   => 'Created At',
-                    'updated-at'   => 'Last Updated',
+                    'name'         => 'اسم الطرد',
+                    'package-type' => 'نوع الطرد',
+                    'pack-date'    => 'تاريخ التعبئة',
+                    'location'     => 'الموقع',
+                    'company'      => 'الشركة',
+                    'created-at'   => 'تاريخ الإنشاء',
+                    'updated-at'   => 'آخر تحديث',
                 ],
             ],
 
             'record-information' => [
-                'title' => 'Record Information',
+                'title' => 'معلومات السجل',
 
                 'entries' => [
-                    'created-by'   => 'Created By',
-                    'created-at'   => 'Created At',
-                    'last-updated' => 'Last Updated',
+                    'created-by'   => 'أنشئ بواسطة',
+                    'created-at'   => 'تاريخ الإنشاء',
+                    'last-updated' => 'آخر تحديث',
                 ],
             ],
         ],

@@ -1,56 +1,56 @@
 <?php
 
 return [
-    'title' => 'Tasks',
+    'title' => 'المهام',
 
     'navigation' => [
-        'title' => 'Tasks',
-        'group' => 'Project',
+        'title' => 'المهام',
+        'group' => 'المشروع',
     ],
 
     'global-search' => [
-        'project'   => 'Project',
-        'customer'  => 'Customer',
-        'milestone' => 'Milestone',
+        'project'   => 'المشروع',
+        'customer'  => 'العميل',
+        'milestone' => 'المرحلة الرئيسية',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'fields' => [
-                    'title'             => 'Title',
-                    'title-placeholder' => 'Task Title...',
-                    'tags'              => 'Tags',
-                    'name'              => 'Name',
-                    'color'             => 'Color',
-                    'description'       => 'Description',
-                    'project'           => 'Project',
-                    'status'            => 'Status',
-                    'start_date'        => 'Start Date',
-                    'end_date'          => 'End Date',
+                    'title'             => 'العنوان',
+                    'title-placeholder' => 'عنوان المهمة...',
+                    'tags'              => 'الوسوم',
+                    'name'              => 'الاسم',
+                    'color'             => 'اللون',
+                    'description'       => 'الوصف',
+                    'project'           => 'المشروع',
+                    'status'            => 'الحالة',
+                    'start_date'        => 'تاريخ البداية',
+                    'end_date'          => 'تاريخ النهاية',
                 ],
             ],
 
             'additional' => [
-                'title' => 'Additional Information',
+                'title' => 'معلومات إضافية',
             ],
 
             'settings' => [
-                'title' => 'Settings',
+                'title' => 'الإعدادات',
 
                 'fields' => [
-                    'project'                     => 'Project',
-                    'milestone'                   => 'Milestone',
-                    'milestone-hint-text'         => 'Automatically deliver your services upon reaching a milestone by linking it to a sales order item.',
-                    'name'                        => 'Name',
-                    'deadline'                    => 'Deadline',
-                    'is-completed'                => 'Is Completed',
-                    'customer'                    => 'Customer',
-                    'assignees'                   => 'Assignees',
-                    'allocated-hours'             => 'Allocated Hours',
-                    'allocated-hours-helper-text' => 'In hours (Eg. 1.5 hours means 1 hour 30 minutes)',
+                    'project'                     => 'المشروع',
+                    'milestone'                   => 'المرحلة الرئيسية',
+                    'milestone-hint-text'         => 'قم بتسليم خدماتك تلقائياً عند الوصول إلى مرحلة رئيسية من خلال ربطها بعنصر أمر مبيعات.',
+                    'name'                        => 'الاسم',
+                    'deadline'                    => 'الموعد النهائي',
+                    'is-completed'                => 'مكتمل',
+                    'customer'                    => 'العميل',
+                    'assignees'                   => 'المكلفون',
+                    'allocated-hours'             => 'الساعات المخصصة',
+                    'allocated-hours-helper-text' => 'بالساعات (مثال: 1.5 ساعة تعني ساعة و30 دقيقة)',
                 ],
             ],
         ],
@@ -58,79 +58,79 @@ return [
 
     'table' => [
         'columns' => [
-            'id'                  => 'ID',
-            'priority'            => 'Priority',
-            'state'               => 'State',
-            'new-state'           => 'New State',
-            'update-state'        => 'Update State',
-            'title'               => 'Title',
-            'project'             => 'Project',
-            'project-placeholder' => 'Private Task',
-            'milestone'           => 'Milestone',
-            'customer'            => 'Customer',
-            'assignees'           => 'Assignees',
-            'allocated-time'      => 'Allocated Time',
-            'time-spent'          => 'Time Spent',
-            'time-remaining'      => 'Time Remaining',
-            'progress'            => 'Progress',
-            'deadline'            => 'Deadline',
-            'tags'                => 'Tags',
-            'stage'               => 'Stage',
+            'id'                  => 'المعرف',
+            'priority'            => 'الأولوية',
+            'state'               => 'الحالة',
+            'new-state'           => 'حالة جديدة',
+            'update-state'        => 'تحديث الحالة',
+            'title'               => 'العنوان',
+            'project'             => 'المشروع',
+            'project-placeholder' => 'مهمة خاصة',
+            'milestone'           => 'المرحلة الرئيسية',
+            'customer'            => 'العميل',
+            'assignees'           => 'المكلفون',
+            'allocated-time'      => 'الوقت المخصص',
+            'time-spent'          => 'الوقت المستغرق',
+            'time-remaining'      => 'الوقت المتبقي',
+            'progress'            => 'التقدم',
+            'deadline'            => 'الموعد النهائي',
+            'tags'                => 'الوسوم',
+            'stage'               => 'المرحلة',
         ],
 
         'groups' => [
-            'state'      => 'State',
-            'project'    => 'Project',
-            'milestone'  => 'Milestone',
-            'customer'   => 'Customer',
-            'deadline'   => 'Deadline',
-            'stage'      => 'Stage',
-            'created-at' => 'Created At',
+            'state'      => 'الحالة',
+            'project'    => 'المشروع',
+            'milestone'  => 'المرحلة الرئيسية',
+            'customer'   => 'العميل',
+            'deadline'   => 'الموعد النهائي',
+            'stage'      => 'المرحلة',
+            'created-at' => 'تاريخ الإنشاء',
         ],
 
         'filters' => [
-            'title'             => 'Title',
-            'priority'          => 'Priority',
-            'low'               => 'Low',
-            'high'              => 'High',
-            'state'             => 'State',
-            'tags'              => 'Tags',
-            'allocated-hours'   => 'Allocated Hours',
-            'total-hours-spent' => 'Total Hours Spent',
-            'remaining-hours'   => 'Remaining Hours',
-            'overtime'          => 'Overtime',
-            'progress'          => 'Progress',
-            'deadline'          => 'Deadline',
-            'created-at'        => 'Created At',
-            'updated-at'        => 'Updated At',
-            'assignees'         => 'Assignees',
-            'customer'          => 'Customer',
-            'project'           => 'Project',
-            'stage'             => 'Stage',
-            'milestone'         => 'Milestone',
-            'company'           => 'Company',
-            'creator'           => 'Creator',
+            'title'             => 'العنوان',
+            'priority'          => 'الأولوية',
+            'low'               => 'منخفض',
+            'high'              => 'مرتفع',
+            'state'             => 'الحالة',
+            'tags'              => 'الوسوم',
+            'allocated-hours'   => 'الساعات المخصصة',
+            'total-hours-spent' => 'إجمالي الساعات المستغرقة',
+            'remaining-hours'   => 'الساعات المتبقية',
+            'overtime'          => 'الوقت الإضافي',
+            'progress'          => 'التقدم',
+            'deadline'          => 'الموعد النهائي',
+            'created-at'        => 'تاريخ الإنشاء',
+            'updated-at'        => 'تاريخ التحديث',
+            'assignees'         => 'المكلفون',
+            'customer'          => 'العميل',
+            'project'           => 'المشروع',
+            'stage'             => 'المرحلة',
+            'milestone'         => 'المرحلة الرئيسية',
+            'company'           => 'الشركة',
+            'creator'           => 'المُنشئ',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Task restored',
-                    'body'  => 'The task has been restored successfully.',
+                    'title' => 'تم استعادة المهمة',
+                    'body'  => 'تم استعادة المهمة بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Task deleted',
-                    'body'  => 'The task has been deleted successfully.',
+                    'title' => 'تم حذف المهمة',
+                    'body'  => 'تم حذف المهمة بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Task force deleted',
-                    'body'  => 'The task has been force deleted successfully.',
+                    'title' => 'تم حذف المهمة نهائياً',
+                    'body'  => 'تم حذف المهمة نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -138,22 +138,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Tasks restored',
-                    'body'  => 'The tasks has been restored successfully.',
+                    'title' => 'تم استعادة المهام',
+                    'body'  => 'تم استعادة المهام بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Tasks deleted',
-                    'body'  => 'The tasks has been deleted successfully.',
+                    'title' => 'تم حذف المهام',
+                    'body'  => 'تم حذف المهام بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Tasks force deleted',
-                    'body'  => 'The tasks has been force deleted successfully.',
+                    'title' => 'تم حذف المهام نهائياً',
+                    'body'  => 'تم حذف المهام نهائياً بنجاح.',
                 ],
             ],
         ],
@@ -162,63 +162,63 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'General',
+                'title' => 'عام',
 
                 'entries' => [
-                    'title'       => 'Title',
-                    'state'       => 'State',
-                    'tags'        => 'Tags',
-                    'priority'    => 'Priority',
-                    'description' => 'Description',
+                    'title'       => 'العنوان',
+                    'state'       => 'الحالة',
+                    'tags'        => 'الوسوم',
+                    'priority'    => 'الأولوية',
+                    'description' => 'الوصف',
                 ],
             ],
 
             'project-information' => [
-                'title' => 'Project Information',
+                'title' => 'معلومات المشروع',
 
                 'entries' => [
-                    'project'   => 'Project',
-                    'milestone' => 'Milestone',
-                    'customer'  => 'Customer',
-                    'assignees' => 'Assignees',
-                    'deadline'  => 'Deadline',
-                    'stage'     => 'Stage',
+                    'project'   => 'المشروع',
+                    'milestone' => 'المرحلة الرئيسية',
+                    'customer'  => 'العميل',
+                    'assignees' => 'المكلفون',
+                    'deadline'  => 'الموعد النهائي',
+                    'stage'     => 'المرحلة',
                 ],
             ],
 
             'time-tracking' => [
-                'title' => 'Time Tracking',
+                'title' => 'تتبع الوقت',
 
                 'entries' => [
-                    'allocated-time'        => 'Allocated Time',
-                    'time-spent'            => 'Time Spent',
-                    'time-spent-suffix'     => ' Hours',
-                    'time-remaining'        => 'Time Remaining',
-                    'time-remaining-suffix' => ' Hours',
-                    'progress'              => 'Progress',
+                    'allocated-time'        => 'الوقت المخصص',
+                    'time-spent'            => 'الوقت المستغرق',
+                    'time-spent-suffix'     => ' ساعة',
+                    'time-remaining'        => 'الوقت المتبقي',
+                    'time-remaining-suffix' => ' ساعة',
+                    'progress'              => 'التقدم',
                 ],
             ],
 
             'additional-information' => [
-                'title' => 'Additional Information',
+                'title' => 'معلومات إضافية',
             ],
 
             'record-information' => [
-                'title' => 'Record Information',
+                'title' => 'معلومات السجل',
 
                 'entries' => [
-                    'created-at'   => 'Created At',
-                    'created-by'   => 'Created By',
-                    'last-updated' => 'Last Updated',
+                    'created-at'   => 'تاريخ الإنشاء',
+                    'created-by'   => 'أنشئ بواسطة',
+                    'last-updated' => 'آخر تحديث',
                 ],
             ],
 
             'statistics' => [
-                'title' => 'Statistics',
+                'title' => 'الإحصائيات',
 
                 'entries' => [
-                    'sub-tasks'         => 'Sub Tasks',
-                    'timesheet-entries' => 'Timesheet Entries',
+                    'sub-tasks'         => 'المهام الفرعية',
+                    'timesheet-entries' => 'إدخالات جدول الوقت',
                 ],
             ],
         ],

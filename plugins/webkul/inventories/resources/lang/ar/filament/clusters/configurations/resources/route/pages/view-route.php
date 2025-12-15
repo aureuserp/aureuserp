@@ -4,8 +4,8 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Route deleted',
-                'body'  => 'The route has been deleted successfully.',
+                'title' => 'تم حذف المسار',
+                'body'  => 'تم حذف المسار بنجاح.',
             ],
         ],
     ],

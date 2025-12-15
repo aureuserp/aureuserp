@@ -1,23 +1,23 @@
 <?php
 
 return [
-    'title' => 'Locations',
+    'title' => 'المواقع',
 
     'table' => [
         'columns' => [
-            'product'          => 'Product',
-            'location'         => 'Location',
-            'storage-category' => 'Storage Category',
-            'quantity'         => 'Quantity',
-            'package'          => 'Package',
-            'on-hand'          => 'On Hand Quantity',
+            'product'          => 'المنتج',
+            'location'         => 'الموقع',
+            'storage-category' => 'فئة التخزين',
+            'quantity'         => 'الكمية',
+            'package'          => 'الطرد',
+            'on-hand'          => 'الكمية المتاحة',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Quantity deleted',
-                    'body'  => 'The quantity has been deleted successfully.',
+                    'title' => 'تم حذف الكمية',
+                    'body'  => 'تم حذف الكمية بنجاح.',
                 ],
             ],
         ],

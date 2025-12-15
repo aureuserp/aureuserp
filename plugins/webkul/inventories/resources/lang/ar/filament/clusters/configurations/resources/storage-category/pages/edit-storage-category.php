@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Storage Category updated',
-        'body'  => 'The storage category has been updated successfully.',
+        'title' => 'تم تحديث فئة التخزين',
+        'body'  => 'تم تحديث فئة التخزين بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Storage Category deleted',
-                'body'  => 'The storage category has been deleted successfully.',
+                'title' => 'تم حذف فئة التخزين',
+                'body'  => 'تم حذف فئة التخزين بنجاح.',
             ],
         ],
     ],

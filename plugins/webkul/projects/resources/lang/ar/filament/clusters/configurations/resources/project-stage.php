@@ -2,64 +2,64 @@
 
 return [
     'navigation' => [
-        'title' => 'Project Stages',
+        'title' => 'مراحل المشروع',
     ],
 
     'form' => [
-        'name' => 'Name',
+        'name' => 'الاسم',
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'الاسم',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'name'         => 'Name',
-            'is-completed' => 'Is Completed',
-            'project'      => 'Project',
-            'created-at'   => 'Created At',
+            'name'         => 'الاسم',
+            'is-completed' => 'مكتمل',
+            'project'      => 'المشروع',
+            'created-at'   => 'تاريخ الإنشاء',
         ],
 
         'filters' => [
-            'is-completed' => 'Is Completed',
-            'project'      => 'Project',
-            'creator'      => 'Creator',
+            'is-completed' => 'مكتمل',
+            'project'      => 'المشروع',
+            'creator'      => 'المُنشئ',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Project stage updated',
-                    'body'  => 'The project stage has been updated successfully.',
+                    'title' => 'تم تحديث مرحلة المشروع',
+                    'body'  => 'تم تحديث مرحلة المشروع بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Project stage restored',
-                    'body'  => 'The project stage has been restored successfully.',
+                    'title' => 'تم استعادة مرحلة المشروع',
+                    'body'  => 'تم استعادة مرحلة المشروع بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Project stage deleted',
-                    'body'  => 'The project stage has been deleted successfully.',
+                    'title' => 'تم حذف مرحلة المشروع',
+                    'body'  => 'تم حذف مرحلة المشروع بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Project stage force deleted',
-                        'body'  => 'The project stage has been force deleted successfully.',
+                        'title' => 'تم حذف مرحلة المشروع نهائياً',
+                        'body'  => 'تم حذف مرحلة المشروع نهائياً بنجاح.',
                     ],
                     'error' => [
-                        'title' => 'Project Stage  could not be deleted',
-                        'body'  => 'The Project Stage  cannot be deleted because it is currently in use.',
+                        'title' => 'تعذر حذف مرحلة المشروع',
+                        'body'  => 'لا يمكن حذف مرحلة المشروع لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -68,22 +68,22 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Project stages restored',
-                    'body'  => 'The project stages has been restored successfully.',
+                    'title' => 'تم استعادة مراحل المشروع',
+                    'body'  => 'تم استعادة مراحل المشروع بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Project stages deleted',
-                    'body'  => 'The project stages has been deleted successfully.',
+                    'title' => 'تم حذف مراحل المشروع',
+                    'body'  => 'تم حذف مراحل المشروع بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Project stages force deleted',
-                    'body'  => 'The project stages has been force deleted successfully.',
+                    'title' => 'تم حذف مراحل المشروع نهائياً',
+                    'body'  => 'تم حذف مراحل المشروع نهائياً بنجاح.',
                 ],
             ],
         ],

@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Account created',
-        'body'  => 'The account has been created successfully.',
+        'title' => 'تم إنشاء الحساب',
+        'body'  => 'تم إنشاء الحساب بنجاح.',
     ],
 ];

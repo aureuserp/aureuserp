@@ -2,17 +2,17 @@
 
 return [
     'tabs' => [
-        'all'      => 'All',
-        'internal' => 'Internal Locations',
+        'all'      => 'الكل',
+        'internal' => 'المواقع الداخلية',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Package',
+            'label' => 'طرد جديد',
 
             'notification' => [
-                'title' => 'Package created',
-                'body'  => 'The package has been created successfully.',
+                'title' => 'تم إنشاء الطرد',
+                'body'  => 'تم إنشاء الطرد بنجاح.',
             ],
         ],
     ],

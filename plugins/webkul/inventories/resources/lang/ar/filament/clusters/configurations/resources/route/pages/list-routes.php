@@ -2,17 +2,17 @@
 
 return [
     'tabs' => [
-        'all'      => 'All',
-        'archived' => 'Archived',
+        'all'      => 'الكل',
+        'archived' => 'مؤرشف',
     ],
 
     'header-actions' => [
         'create' => [
-            'label' => 'New Route',
+            'label' => 'مسار جديد',
 
             'notification' => [
-                'title' => 'Route created',
-                'body'  => 'The route has been created successfully.',
+                'title' => 'تم إنشاء المسار',
+                'body'  => 'تم إنشاء المسار بنجاح.',
             ],
         ],
     ],

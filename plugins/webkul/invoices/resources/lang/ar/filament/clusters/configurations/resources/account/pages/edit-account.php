@@ -2,15 +2,15 @@
 
 return [
     'notification' => [
-        'title' => 'Account updated',
-        'body'  => 'The account has been updated successfully.',
+        'title' => 'تم تحديث الحساب',
+        'body'  => 'تم تحديث الحساب بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Account deleted',
-                'body'  => 'The account has been deleted successfully.',
+                'title' => 'تم حذف الحساب',
+                'body'  => 'تم حذف الحساب بنجاح.',
             ],
         ],
     ],
