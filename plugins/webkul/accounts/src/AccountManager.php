@@ -16,6 +16,7 @@ use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Mail\Invoice\Actions\InvoiceEmail;
 use Webkul\Account\Models\FullReconcile;
 use Webkul\Account\Models\Move;
+use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\PartialReconcile;
@@ -27,20 +28,6 @@ use Webkul\Support\Services\EmailService;
 
 class AccountManager
 {
-    protected array $context = [];
-
-    public function setContext(array $context): self
-    {
-        $this->context = array_merge($this->context, $context);
-
-        return $this;
-    }
-
-    public function getContext(string $key)
-    {
-        return Arr::get($this->context, $key);
-    }
-
     public function cancelMove(AccountMove $record): AccountMove
     {
         $record->state = MoveState::CANCEL;
@@ -54,6 +41,42 @@ class AccountManager
 
     public function confirmMove(AccountMove $record): AccountMove
     {
+        $this->isConfirmAllowedForMove($record);
+
+        if ($record->reversedEntry?->state == MoveState::POSTED) {
+            $this->reconcileReversedMoves([$record->reversedEntry], [$record]);
+
+            $tempNumbers = $record->lines
+                ->filter(fn ($line) =>
+                    ! empty($line->matching_number) &&
+                    str_starts_with($line->matching_number, 'I')
+                )
+                ->pluck('matching_number')
+                ->unique()
+                ->values();
+
+            if ($tempNumbers->isNotEmpty()) {
+                $grouped = MoveLine::with(['move', 'account'])
+                    ->whereIn('matching_number', $tempNumbers)
+                    ->get()
+                    ->groupBy(fn ($line) => $line->matching_number . ':' . $line->account_id);
+
+                foreach ($grouped as $groupLines) {
+                    if (! $groupLines->every(fn ($line) => $line->move->state === MoveState::POSTED)) {
+                        continue;
+                    }
+
+                    $account = $groupLines->first()->account;
+
+                    if (! $account->reconcile) {
+                        $account->update(['reconcile' => true]);
+                    }
+
+                    $this->reconcile($groupLines);
+                }
+            }
+        }
+
         $record->state = MoveState::POSTED;
 
         $record->posted_before = true;
@@ -78,6 +101,22 @@ class AccountManager
 
     public function resetToDraftMove(AccountMove $record): AccountMove
     {
+        if (in_array($record->state, [MoveState::CANCEL, MoveState::POSTED])) {
+            throw new \Exception('Only posted/cancelled journal entries can be reset to draft.');
+        }
+
+        $exchangeMoveIds = AccountMove::where('exchange_move_id', $record->id)->pluck('id')->unique();
+
+        if ($exchangeMoveIds->isNotEmpty()) {
+            throw new \Exception('You cannot reset to draft an exchange difference journal entry.');
+        }
+
+        $record->lines->each(function($line) {
+            $line->matchedDebits->each(fn ($partial) => $partial->delete());
+
+            $line->matchedCredits->each(fn ($partial) => $partial->delete());
+        });
+
         $record->state = MoveState::DRAFT;
 
         $record->payment_state = PaymentState::NOT_PAID;
@@ -1063,6 +1102,64 @@ class AccountManager
             });
     }
 
+    public function reconcileReversedMoves($moves, $reverseMoves)
+    {
+        foreach ($moves->zip($reverseMoves) as [$move, $reverseMove]) {
+            $groupedLines = $move->lines->merge($reverseMove->lines)
+                ->reject(fn ($line) => $line->reconciled)
+                ->groupBy(fn ($line) => $line->account_id . '|' . ($line->currency_id ?? 'null'));
+
+            foreach ($groupedLines as $key => $lines) {
+                [$accountId] = explode('|', $key);
+
+                $account = Account::find($accountId);
+
+                if (
+                    $account->reconcile
+                    || in_array($account->account_type, [AccountType::ASSET_CASH, AccountType::LIABILITY_CREDIT_CARD])
+                ) {
+                    $this->reconcile($lines);
+                }
+            }
+        }
+
+        return $reverseMoves;
+    }
+
+    public function unReconcile($partialReconcile)
+    {
+        $fullReconcileToUnlink = $partialReconcile->fullReconcile;
+
+        $debitLine = $partialReconcile->debitMove;
+        $creditLine = $partialReconcile->creditMove;
+
+        $allReconciledLines = [
+            $debitLine->id,
+            $creditLine->id,
+        ];
+
+        $partialReconcile->delete();
+
+        if ($fullReconcileToUnlink) {
+            $fullReconcileToUnlink->delete();
+        }
+
+        if ($move = $partialReconcile->exchangeMove) {
+            $defaultValues = [[
+                'date' => $move->date,
+                'ref'  => __('Reversal of: :name', ['name' => $move->name]),
+            ]];
+
+            $this->reverseMoves([$move], $defaultValues, true);
+        }
+
+        $this->computeAccountMove($debitLine->move->refresh())->save();
+
+        $this->computeAccountMove($creditLine->move->refresh())->save();
+
+        $this->updateMatchingNumbers($allReconciledLines);
+    }
+
     protected function reconcilePlan(array $reconciliationPlan): array
     {
         $allPartialReconciles = [];
@@ -1148,6 +1245,8 @@ class AccountManager
 
                 $results = $this->prepareReconciliationLines(array_values($lineValuesMapping));
 
+                $reconciledLines = [];
+
                 foreach ($results['partials_values_list'] as $partialResult) {
                     $partialValues = $partialResult['partial_values'];
 
@@ -1183,6 +1282,9 @@ class AccountManager
 
                     $creditLine->save();
 
+                    $reconciledLines[] = $debitLine->id;
+                    $reconciledLines[] = $creditLine->id;
+
                     $this->computeMoveTotals($debitLine->move->refresh())->save();
 
                     $this->computeMoveTotals($creditLine->move->refresh())->save();
@@ -1196,8 +1298,8 @@ class AccountManager
                     }
                 }
 
-                if (! empty($allPartialReconciles)) {
-                    $this->updateMatchingNumbers($allPartialReconciles);
+                if (! empty($reconciledLines)) {
+                    $this->updateMatchingNumbers($reconciledLines);
                 }
 
                 $fulls = $this->createFullReconciles($remainingLines);
@@ -1679,22 +1781,20 @@ class AccountManager
         return $fullReconciles;
     }
 
-    protected function updateMatchingNumbers(array $partials): void
+    // TODO: Implement this method
+    public function createExchangeDifferenceMoves(array $exchangeValuesList) {
+
+    }
+
+    protected function updateMatchingNumbers(array $lineIds): void
     {
-        if (empty($partials)) {
+        if (empty($lineIds)) {
             return;
         }
 
-        $lineIds = collect($partials)
-            ->flatMap(fn ($partial) => [$partial->debit_move_id, $partial->credit_move_id])
-            ->unique()
-            ->values();
+        $lines = MoveLine::whereIn('id', $lineIds)->get();
 
-        $lines = MoveLine::with(['matchedDebits', 'matchedCredits', 'fullReconcile'])
-            ->whereIn('id', $lineIds)
-            ->get();
-
-        $allPartials = $lines
+        $allPartials = collect($lines)
             ->flatMap(fn ($line) => $line->matchedDebits->merge($line->matchedCredits))
             ->unique('id')
             ->sortBy('id')
@@ -1753,8 +1853,116 @@ class AccountManager
         }
     }
 
-    // TODO: Implement this method
-    public function createExchangeDifferenceMoves(array $exchangeValuesList) {}
+    public function reverseMoves($moves, $defaultValues = [], $cancel = false)
+    {
+        if (empty($defaultValues)) {
+            $defaultValues = $moves->flatMap(fn ($move) => []);
+        }
+
+        if ($cancel) {
+            $lines = $moves->flatMap(fn ($move) => $move->lines);
+
+            if ($lines->isNotEmpty()) {
+                $lines->each(function($line) {
+                    $line->matchedDebits->each(fn ($partial) => $partial->delete());
+
+                    $line->matchedCredits->each(fn ($partial) => $partial->delete());
+                });
+            }
+        }
+
+        $reverseMoves = collect();
+
+        foreach ($moves as $index => $move) {
+            $defaultValues = $defaultValues[$index] ?? [];
+
+            $defaultValues = array_merge($defaultValues, [
+                'move_type'          => $move->typeReverseMapping[$move->move_type->value],
+                'reversed_entry_id'  => $move->id,
+                'partner_id'         => $move->partner_id,
+            ]);
+
+            $reverseMove = $move->replicate();
+            $reverseMove->fill($defaultValues);
+            $reverseMove->save();
+
+            foreach ($move->lines as $line) {
+                $newLine = $line->replicate();
+                $newLine->move_id = $reverseMove->id;
+                $newLine->save();
+            }
+
+            $reverseMove = $this->computeAccountMove($reverseMove);
+
+            $reverseMoves->push($reverseMove);
+        }
+
+        foreach ($reverseMoves as $reverseMove) {
+            foreach ($reverseMove->lines as $line) {
+                if ($reverseMove->move_type === MoveType::ENTRY || $line->display_type === DisplayType::COGS) {
+                    $line->update([
+                        'balance'         => -$line->balance,
+                        'amount_currency' => -$line->amount_currency,
+                    ]);
+                }
+            }
+        }
+
+        if ($cancel) {
+            foreach ($reverseMoves as $reverseMove) {
+                $this->confirmMove($reverseMove);
+            }
+        }
+
+        return $reverseMoves;
+    }
+
+    public function isConfirmAllowedForMove(Move &$record)
+    {
+        if (! $record->partner_id) {
+            if ($record->isSaleDocument(true)) {
+                throw new \Exception(__('accounts::account-manager.errors.customer-required'));
+            } elseif ($record->isPurchaseDocument(true)) {
+                throw new \Exception(__('accounts::account-manager.errors.vendor-required'));
+            }
+        }
+
+        if ($record->partnerBank?->trashed()) {
+            throw new \Exception(__('accounts::account-manager.errors.bank-archived'));
+        }
+
+        if (float_compare($record->amount_total, 0, precisionRounding: $record->currency->rounding) < 0) {
+            throw new \Exception(__('accounts::account-manager.errors.negative-amount'));
+        }
+
+        if (! $record->invoice_date) {
+            if ($record->isSaleDocument(true)) {
+                $record->invoice_date = now();
+            } elseif ($record->isPurchaseDocument(true)) {
+                throw new \Exception(__('accounts::account-manager.errors.date-required'));
+            }
+        }
+
+        if (in_array($record->state, [MoveState::POSTED, MoveState::CANCEL])) {
+            throw new \Exception(__('accounts::account-manager.errors.draft-state-required'));
+        }
+
+        if ($record->lines->isEmpty()) {
+            throw new \Exception(__('accounts::account-manager.errors.lines-required'));
+        }
+
+        if ($record->lines->some(fn ($line) => $line->account->deprecated)) {
+            throw new \Exception(__('accounts::account-manager.errors.account-deprecated'));
+        }
+
+        if (! $record->journal) {
+            throw new \Exception(__('accounts::account-manager.errors.journal-archived'));
+        }
+
+        if (! $record->currency) {
+            throw new \Exception(__('accounts::account-manager.errors.currency-archived'));
+        }
+    }
 
     public function isReconciliationAllowedForLines($lines)
     {

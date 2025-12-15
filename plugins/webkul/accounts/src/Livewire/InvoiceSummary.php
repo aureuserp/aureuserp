@@ -9,6 +9,7 @@ use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
 use Livewire\Component;
 use Webkul\Account\Models\MoveLine;
+use Webkul\Account\Models\PartialReconcile;
 use Webkul\Account\Facades\Account as AccountFacade;
 
 class InvoiceSummary extends Component implements HasActions, HasSchemas
@@ -34,6 +35,8 @@ class InvoiceSummary extends Component implements HasActions, HasSchemas
 
     public $reconcilablePayments = null;
 
+    public $reconciledPayments = null;
+
     protected $listeners = ['itemUpdated' => 'refreshSummary'];
 
     public function refreshSummary($totals)
@@ -52,20 +55,40 @@ class InvoiceSummary extends Component implements HasActions, HasSchemas
             ->icon('heroicon-o-check-circle')
             ->size('xs')
             ->requiresConfirmation()
-            ->modalHeading('Reconcile Payment')
-            ->modalDescription('Are you sure you want to reconcile this payment?')
             ->action(function (array $arguments) {
                 $lines = MoveLine::where('id', $arguments['lineId'])->get();
 
-                $lines = $lines->merge($this->record->lines->filter(fn ($line) => $line->account_id == $lines->first()->account_id && ! $line->reconciled));
+                $lines = $lines->merge($this->record->lines->filter(fn ($line) =>
+                    $line->account_id == $lines->first()->account_id && ! $line->reconciled
+                ));
 
-                $results = AccountFacade::reconcile($lines);
+                AccountFacade::reconcile($lines);
+
+                //TODO:  send success notification
+            });
+    }
+
+    public function unReconcileAction(): Action
+    {
+        return Action::make('unReconcile')
+            ->label('Unlink')
+            ->icon('heroicon-o-x-circle')
+            ->size('xs')
+            ->requiresConfirmation()
+            ->action(function (array $arguments) {
+                $partialReconcile = PartialReconcile::find($arguments['partial_id']);
+
+                AccountFacade::unReconcile($partialReconcile);
+
+                //TODO:  send success notification
             });
     }
 
     public function render()
     {
         $this->reconcilablePayments = $this->record?->getReconcilablePayments();
+
+        $this->reconciledPayments = $this->record?->getReconciledPayments();
 
         return view('accounts::livewire/invoice-summary');
     }

@@ -29,6 +29,11 @@
             font-weight: 600;
         }
 
+        .invoice-item.font-bold span {
+            font-weight: 700 !important;
+            font-size: 18px;
+        }
+
         .invoice-item button {
             flex-shrink: 0;
         }
@@ -86,8 +91,38 @@
                 <span>Total</span>
                 <span>{{ money($grandTotal, $currency?->name) }}</span>
             </div>
-        
+
+            <!-- Reconciled Payments Section -->
+            @if ($reconciledPayments && ! empty($reconciledPayments['lines']))
+                <div class="divider"></div>
+                
+                @foreach ($reconciledPayments['lines'] ?? [] as $line)
+                    <div class="invoice-item items-center">
+                        <div class="flex items-center gap-2">
+                            {{ ($this->unReconcileAction())(['partial_id' => $line['partial_id']]) }}
+
+                            <div class="flex-1">
+                                <div class="font-medium">{{ $line['ref'] }}</div>
+                                
+                                @if (isset($line['date']))
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                                        Paid on {{ $line['date']->format('M D, Y') }}
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <span class="font-semibold">
+                            {{ $line['amount_company_currency'] }}
+                        </span>
+                    </div>
+                @endforeach
+            @endif
+
+            <!-- Reconcilable Payments Section -->
             @if ($reconcilablePayments && $reconcilablePayments['outstanding'])
+                <div class="divider"></div>
+
                 <div class="mt-4 font-semibold">
                     {{ $reconcilablePayments['title'] }}
                 </div>
