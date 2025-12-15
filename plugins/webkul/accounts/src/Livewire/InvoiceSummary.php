@@ -8,9 +8,9 @@ use Filament\Actions\Contracts\HasActions;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
 use Livewire\Component;
+use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\PartialReconcile;
-use Webkul\Account\Facades\Account as AccountFacade;
 
 class InvoiceSummary extends Component implements HasActions, HasSchemas
 {
@@ -58,12 +58,13 @@ class InvoiceSummary extends Component implements HasActions, HasSchemas
             ->action(function (array $arguments) {
                 $lines = MoveLine::where('id', $arguments['lineId'])->get();
 
-                $lines = $lines->merge($this->record->lines->filter(fn ($line) =>
-                    $line->account_id == $lines->first()->account_id && ! $line->reconciled
+                $lines = $lines->merge($this->record->lines->filter(fn ($line) => $line->account_id == $lines->first()->account_id && ! $line->reconciled
                 ));
 
+
                 AccountFacade::reconcile($lines);
-            });
+            })
+            ->after(fn () => $this->js('window.location.reload()'));
     }
 
     public function unReconcileAction(): Action
@@ -77,7 +78,8 @@ class InvoiceSummary extends Component implements HasActions, HasSchemas
                 $partialReconcile = PartialReconcile::find($arguments['partial_id']);
 
                 AccountFacade::unReconcile($partialReconcile);
-            });
+            })
+            ->after(fn () => $this->js('window.location.reload()'));
     }
 
     public function render()

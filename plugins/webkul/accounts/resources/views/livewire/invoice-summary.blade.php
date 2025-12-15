@@ -34,6 +34,11 @@
             font-size: 18px;
         }
 
+        .invoice-item.font-semibold span {
+            font-weight: 700 !important;
+            font-size: 16px;
+        }
+
         .invoice-item button {
             flex-shrink: 0;
         }
@@ -87,7 +92,7 @@
 
             <div class="divider"></div>
 
-            <div class="invoice-item font-bold">
+            <div class="invoice-item font-semibold">
                 <span>Total</span>
                 <span>{{ money($grandTotal, $currency?->name) }}</span>
             </div>
@@ -146,6 +151,21 @@
                         </span>
                     </div>
                 @endforeach
+            @endif
+
+            <!-- Amount due or rededula -->
+            @if ($record?->state === \Webkul\Account\Enums\MoveState::POSTED)
+                <div class="divider"></div>
+
+                <div class="invoice-item font-bold total">
+                    <span>
+                        Amount Due
+                    </span>
+
+                    <span>
+                        {{ money($record->amount_residual, $currency?->name) }}
+                    </span>
+                </div>
             @endif
         </div>
     </div>

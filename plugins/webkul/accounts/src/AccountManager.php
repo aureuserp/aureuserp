@@ -101,20 +101,22 @@ class AccountManager
 
     public function resetToDraftMove(AccountMove $record): AccountMove
     {
-        if (in_array($record->state, [MoveState::CANCEL, MoveState::POSTED])) {
+        if (! in_array($record->state, [MoveState::CANCEL, MoveState::POSTED])) {
             throw new \Exception('Only posted/cancelled journal entries can be reset to draft.');
         }
 
-        $exchangeMoveIds = AccountMove::where('exchange_move_id', $record->id)->pluck('id')->unique();
+        $partialReconcileExchangeMoveIds = PartialReconcile::where('exchange_move_id', $record->id)->pluck('id')->unique();
 
-        if ($exchangeMoveIds->isNotEmpty()) {
+        $fullReconcileExchangeMoveIds = FullReconcile::where('exchange_move_id', $record->id)->pluck('id')->unique();
+
+        if ($partialReconcileExchangeMoveIds->merge($fullReconcileExchangeMoveIds)->isNotEmpty()) {
             throw new \Exception('You cannot reset to draft an exchange difference journal entry.');
         }
 
         $record->lines->each(function($line) {
-            $line->matchedDebits->each(fn ($partial) => $partial->delete());
+            $line->matchedDebits->each(fn ($partial) => $this->unReconcile($partial));
 
-            $line->matchedCredits->each(fn ($partial) => $partial->delete());
+            $line->matchedCredits->each(fn ($partial) => $this->unReconcile($partial));
         });
 
         $record->state = MoveState::DRAFT;
