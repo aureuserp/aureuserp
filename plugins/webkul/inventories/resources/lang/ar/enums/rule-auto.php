@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'manual'      => 'Manual Operation',
-    'transparent' => 'Automatic No Step Added',
+    'manual'      => 'عملية يدوية',
+    'transparent' => 'تلقائي بدون خطوة إضافية',
 ];

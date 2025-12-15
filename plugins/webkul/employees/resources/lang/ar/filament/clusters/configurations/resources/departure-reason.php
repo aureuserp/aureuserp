@@ -1,55 +1,55 @@
 <?php
 
 return [
-    'title' => 'Departure Reasons',
+    'title' => 'أسباب المغادرة',
 
     'navigation' => [
-        'title' => 'Departure Reasons',
-        'group' => 'Employee',
+        'title' => 'أسباب المغادرة',
+        'group' => 'الموظف',
     ],
 
     'groups' => [
-        'status'     => 'Status',
-        'created-by' => 'Created By',
-        'created-at' => 'Created At',
-        'updated-at' => 'Updated At',
+        'status'     => 'الحالة',
+        'created-by' => 'أنشئ بواسطة',
+        'created-at' => 'تاريخ الإنشاء',
+        'updated-at' => 'تاريخ التحديث',
     ],
 
     'form' => [
         'fields' => [
-            'name' => 'Name',
+            'name' => 'الاسم',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'id'         => 'ID',
-            'name'       => 'Name',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'id'         => 'المعرف',
+            'name'       => 'الاسم',
+            'created-by' => 'أنشئ بواسطة',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'name'       => 'Name',
-            'employee'   => 'Employee',
-            'created-by' => 'Created By',
-            'updated-at' => 'Updated At',
-            'created-at' => 'Created At',
+            'name'       => 'الاسم',
+            'employee'   => 'الموظف',
+            'created-by' => 'أنشئ بواسطة',
+            'updated-at' => 'تاريخ التحديث',
+            'created-at' => 'تاريخ الإنشاء',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Departure reason updated',
-                    'body'  => 'The departure reason has been updated successfully.',
+                    'title' => 'تم تحديث سبب المغادرة',
+                    'body'  => 'تم تحديث سبب المغادرة بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Departure reason deleted',
-                    'body'  => 'The departure reason has been deleted successfully.',
+                    'title' => 'تم حذف سبب المغادرة',
+                    'body'  => 'تم حذف سبب المغادرة بنجاح.',
                 ],
             ],
         ],
@@ -57,8 +57,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Departure reasons deleted',
-                    'body'  => 'The departure reasons has been deleted successfully.',
+                    'title' => 'تم حذف أسباب المغادرة',
+                    'body'  => 'تم حذف أسباب المغادرة بنجاح.',
                 ],
             ],
         ],
@@ -66,14 +66,14 @@ return [
         'empty-state-action' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Departure reason created',
-                    'body'  => 'The departure reason has been created successfully.',
+                    'title' => 'تم إنشاء سبب المغادرة',
+                    'body'  => 'تم إنشاء سبب المغادرة بنجاح.',
                 ],
             ],
         ],
     ],
 
     'infolist' => [
-        'name' => 'Name',
+        'name' => 'الاسم',
     ],
 ];

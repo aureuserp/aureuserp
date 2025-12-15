@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'disposable' => 'Disposable',
-    'reusable'   => 'Reusable',
+    'disposable' => 'للاستخدام مرة واحدة',
+    'reusable'   => 'قابل لإعادة الاستخدام',
 ];

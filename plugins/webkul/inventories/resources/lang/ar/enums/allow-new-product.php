@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'empty' => 'Empty',
-    'same'  => 'Same',
-    'mixed' => 'Mixed',
+    'empty' => 'فارغ',
+    'same'  => 'نفسه',
+    'mixed' => 'مختلط',
 ];

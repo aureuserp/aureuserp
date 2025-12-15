@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'regular' => 'Regular',
-    'accrual' => 'Accrual',
+    'regular' => 'عادي',
+    'accrual' => 'تراكمي',
 ];

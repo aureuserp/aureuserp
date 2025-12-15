@@ -1,61 +1,61 @@
 <?php
 
 return [
-    'title' => 'Employment Types',
+    'title' => 'أنواع التوظيف',
 
     'navigation' => [
-        'title' => 'Employment Types',
-        'group' => 'Recruitment',
+        'title' => 'أنواع التوظيف',
+        'group' => 'التوظيف',
     ],
 
     'form' => [
         'fields' => [
-            'name'    => 'Employment Type',
-            'code'    => 'Code',
-            'country' => 'Country',
+            'name'    => 'نوع التوظيف',
+            'code'    => 'الرمز',
+            'country' => 'البلد',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'id'         => 'ID',
-            'name'       => 'Employment Type',
-            'code'       => 'Code',
-            'country'    => 'Country',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'id'         => 'المعرف',
+            'name'       => 'نوع التوظيف',
+            'code'       => 'الرمز',
+            'country'    => 'البلد',
+            'created-by' => 'أنشئ بواسطة',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'name'       => 'Employment Type',
-            'country'    => 'Country',
-            'created-by' => 'Created By',
-            'updated-at' => 'Updated At',
-            'created-at' => 'Created At',
+            'name'       => 'نوع التوظيف',
+            'country'    => 'البلد',
+            'created-by' => 'أنشئ بواسطة',
+            'updated-at' => 'تاريخ التحديث',
+            'created-at' => 'تاريخ الإنشاء',
         ],
 
         'groups' => [
-            'name'       => 'Employment Type',
-            'country'    => 'Country',
-            'code'       => 'Code',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'نوع التوظيف',
+            'country'    => 'البلد',
+            'code'       => 'الرمز',
+            'created-by' => 'أنشئ بواسطة',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Employment Type',
-                    'body'  => 'The Employment Type has been edited successfully.',
+                    'title' => 'نوع التوظيف',
+                    'body'  => 'تم تعديل نوع التوظيف بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Employment Type deleted',
-                    'body'  => 'The Employment Type has been deleted successfully.',
+                    'title' => 'تم حذف نوع التوظيف',
+                    'body'  => 'تم حذف نوع التوظيف بنجاح.',
                 ],
             ],
         ],
@@ -63,8 +63,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Employment Types deleted',
-                    'body'  => 'The Employment Types has been deleted successfully.',
+                    'title' => 'تم حذف أنواع التوظيف',
+                    'body'  => 'تم حذف أنواع التوظيف بنجاح.',
                 ],
             ],
         ],
@@ -72,8 +72,8 @@ return [
         'empty-state-actions' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Employment Types',
-                    'body'  => 'The Employment Types has been created successfully.',
+                    'title' => 'أنواع التوظيف',
+                    'body'  => 'تم إنشاء أنواع التوظيف بنجاح.',
                 ],
             ],
         ],
@@ -81,9 +81,9 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name'    => 'Employment Type',
-            'code'    => 'Code',
-            'country' => 'Country',
+            'name'    => 'نوع التوظيف',
+            'code'    => 'الرمز',
+            'country' => 'البلد',
         ],
     ],
 ];

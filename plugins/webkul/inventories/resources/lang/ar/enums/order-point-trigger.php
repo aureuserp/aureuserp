@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'manual'    => 'Manual',
-    'automatic' => 'Automatic',
+    'manual'    => 'يدوي',
+    'automatic' => 'تلقائي',
 ];

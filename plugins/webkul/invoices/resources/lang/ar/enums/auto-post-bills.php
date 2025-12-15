@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'always' => 'Always',
-    'ask'    => 'Ask after 3 validations without edits',
-    'never'  => 'Never',
+    'always' => 'دائماً',
+    'ask'    => 'استفسار بعد 3 تصديقات بدون تعديلات',
+    'never'  => 'أبداً',
 ];

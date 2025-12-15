@@ -1,65 +1,65 @@
 <?php
 
 return [
-    'title' => 'Applicant',
+    'title' => 'المتقدم',
 
     'navigation' => [
-        'title' => 'Applicants',
+        'title' => 'المتقدمون',
     ],
 
     'form' => [
         'sections' => [
             'general-information' => [
-                'title' => 'General Information',
+                'title' => 'معلومات عامة',
 
                 'fields' => [
-                    'evaluation-good'           => 'Evaluation: Good',
-                    'evaluation-very-good'      => 'Evaluation: Very Good',
-                    'evaluation-very-excellent' => 'Evaluation: Very Excellent',
-                    'hired'                     => 'Hired',
-                    'candidate-name'            => 'Candidate name',
-                    'email'                     => 'Emails',
-                    'phone'                     => 'Phone',
-                    'linkedin-profile'          => 'Linkedin Profile',
-                    'recruiter'                 => 'Recruiter',
-                    'interviewer'               => 'Interviewer',
-                    'tags'                      => 'Tags',
-                    'notes'                     => 'Notes',
-                    'hired-date'                => 'Hired Date',
-                    'job-position'              => 'Job Positions',
+                    'evaluation-good'           => 'التقييم: جيد',
+                    'evaluation-very-good'      => 'التقييم: جيد جداً',
+                    'evaluation-very-excellent' => 'التقييم: ممتاز',
+                    'hired'                     => 'تم التوظيف',
+                    'candidate-name'            => 'اسم المرشح',
+                    'email'                     => 'البريد الإلكتروني',
+                    'phone'                     => 'الهاتف',
+                    'linkedin-profile'          => 'ملف LinkedIn',
+                    'recruiter'                 => 'المُوظِّف',
+                    'interviewer'               => 'المُقابِل',
+                    'tags'                      => 'الوسوم',
+                    'notes'                     => 'ملاحظات',
+                    'hired-date'                => 'تاريخ التوظيف',
+                    'job-position'              => 'المسمى الوظيفي',
                 ],
             ],
 
             'education-and-availability' => [
-                'title' => 'Education & Availability',
+                'title' => 'التعليم والتوفر',
 
                 'fields' => [
-                    'degree'            => 'Degree',
-                    'availability-date' => 'Availability Date',
+                    'degree'            => 'الدرجة العلمية',
+                    'availability-date' => 'تاريخ التوفر',
                 ],
             ],
 
             'department' => [
-                'title' => 'Department',
+                'title' => 'القسم',
             ],
 
             'salary' => [
-                'title' => 'Expected & Proposed Salary',
+                'title' => 'الراتب المتوقع والمقترح',
 
                 'fields' => [
-                    'expected-salary'       => 'Expected Salary',
-                    'salary-proposed-extra' => 'Other Benefit',
-                    'proposed-salary'       => 'Proposed Salary',
-                    'salary-expected-extra' => 'Other Benefit',
+                    'expected-salary'       => 'الراتب المتوقع',
+                    'salary-proposed-extra' => 'مزايا أخرى',
+                    'proposed-salary'       => 'الراتب المقترح',
+                    'salary-expected-extra' => 'مزايا أخرى',
                 ],
             ],
 
             'source-and-medium' => [
-                'title' => 'Source & Medium',
+                'title' => 'المصدر والوسيط',
 
                 'fields' => [
-                    'source' => 'Source',
-                    'medium' => 'Medium',
+                    'source' => 'المصدر',
+                    'medium' => 'الوسيط',
                 ],
             ],
         ],
@@ -67,79 +67,79 @@ return [
 
     'table' => [
         'columns' => [
-            'partner-name'       => 'Partner Name',
-            'applied-on'         => 'Applied On',
-            'job-position'       => 'Job Position',
-            'stage'              => 'Stage',
-            'candidate-name'     => 'Candidate Name',
-            'evaluation'         => 'Evaluation',
-            'application-status' => 'Application Status',
-            'tags'               => 'Tags',
-            'refuse-reason'      => 'Refuse Reason',
-            'email'              => 'Email',
-            'recruiter'          => 'Recruiter',
-            'interviewer'        => 'Interviewer',
-            'candidate-phone'    => 'Phone',
-            'medium'             => 'Medium',
-            'source'             => 'Source',
-            'salary-expected'    => 'Expected Salary',
-            'availability-date'  => 'Availability Date',
+            'partner-name'       => 'اسم الشريك',
+            'applied-on'         => 'تاريخ التقديم',
+            'job-position'       => 'المسمى الوظيفي',
+            'stage'              => 'المرحلة',
+            'candidate-name'     => 'اسم المرشح',
+            'evaluation'         => 'التقييم',
+            'application-status' => 'حالة الطلب',
+            'tags'               => 'الوسوم',
+            'refuse-reason'      => 'سبب الرفض',
+            'email'              => 'البريد الإلكتروني',
+            'recruiter'          => 'المُوظِّف',
+            'interviewer'        => 'المُقابِل',
+            'candidate-phone'    => 'الهاتف',
+            'medium'             => 'الوسيط',
+            'source'             => 'المصدر',
+            'salary-expected'    => 'الراتب المتوقع',
+            'availability-date'  => 'تاريخ التوفر',
         ],
 
         'filters' => [
-            'source'                  => 'Source',
-            'medium'                  => 'Medium',
-            'candidate'               => 'Candidate',
-            'priority'                => 'Priority',
-            'salary-proposed-extra'   => 'Salary Proposed Extra',
-            'salary-expected-extra'   => 'Salary Expected Extra',
-            'applicant-notes'         => 'Applicant Notes',
-            'create-date'             => 'Applied On',
-            'date-closed'             => 'Hired Date',
-            'date-last-stage-updated' => 'Last Stage Updated',
-            'stage'                   => 'Stage',
-            'job-position'            => 'Job Position',
+            'source'                  => 'المصدر',
+            'medium'                  => 'الوسيط',
+            'candidate'               => 'المرشح',
+            'priority'                => 'الأولوية',
+            'salary-proposed-extra'   => 'المزايا الإضافية المقترحة',
+            'salary-expected-extra'   => 'المزايا الإضافية المتوقعة',
+            'applicant-notes'         => 'ملاحظات المتقدم',
+            'create-date'             => 'تاريخ التقديم',
+            'date-closed'             => 'تاريخ التوظيف',
+            'date-last-stage-updated' => 'آخر تحديث للمرحلة',
+            'stage'                   => 'المرحلة',
+            'job-position'            => 'المسمى الوظيفي',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Applicant Deleted',
-                    'body'  => 'The applicant was successfully deleted.',
+                    'title' => 'تم حذف المتقدم',
+                    'body'  => 'تم حذف المتقدم بنجاح.',
                 ],
             ],
         ],
 
         'groups' => [
-            'stage'          => 'Stage',
-            'job-position'   => 'Job Position',
-            'candidate-name' => 'Candidate Name',
-            'responsible'    => 'Responsible',
-            'creation-date'  => 'Creation Date',
-            'hired-date'     => 'Hired Date',
-            'last-stage'     => 'Last Stage',
-            'refuse-reason'  => 'Refuse Reason',
+            'stage'          => 'المرحلة',
+            'job-position'   => 'المسمى الوظيفي',
+            'candidate-name' => 'اسم المرشح',
+            'responsible'    => 'المسؤول',
+            'creation-date'  => 'تاريخ الإنشاء',
+            'hired-date'     => 'تاريخ التوظيف',
+            'last-stage'     => 'آخر مرحلة',
+            'refuse-reason'  => 'سبب الرفض',
         ],
 
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Employees deleted',
-                    'body'  => 'The employees has been deleted successfully.',
+                    'title' => 'تم حذف الموظفين',
+                    'body'  => 'تم حذف الموظفين بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Employees deleted',
-                    'body'  => 'The employees has been deleted successfully.',
+                    'title' => 'تم حذف الموظفين',
+                    'body'  => 'تم حذف الموظفين بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Employees restored',
-                    'body'  => 'The employees has been restored successfully.',
+                    'title' => 'تم استعادة الموظفين',
+                    'body'  => 'تم استعادة الموظفين بنجاح.',
                 ],
             ],
         ],
@@ -148,55 +148,55 @@ return [
     'infolist' => [
         'sections' => [
             'general-information' => [
-                'title' => 'General Information',
+                'title' => 'معلومات عامة',
 
                 'entries' => [
-                    'evaluation-good'           => 'Evaluation: Good',
-                    'evaluation-very-good'      => 'Evaluation: Very Good',
-                    'evaluation-very-excellent' => 'Evaluation: Very Excellent',
-                    'hired'                     => 'Hired',
-                    'candidate-name'            => 'Candidate name',
-                    'email'                     => 'Emails',
-                    'phone'                     => 'Phone',
-                    'linkedin-profile'          => 'Linkedin Profile',
-                    'recruiter'                 => 'Recruiter',
-                    'interviewer'               => 'Interviewer',
-                    'tags'                      => 'Tags',
-                    'notes'                     => 'Notes',
-                    'job-position'              => 'Job Positions',
+                    'evaluation-good'           => 'التقييم: جيد',
+                    'evaluation-very-good'      => 'التقييم: جيد جداً',
+                    'evaluation-very-excellent' => 'التقييم: ممتاز',
+                    'hired'                     => 'تم التوظيف',
+                    'candidate-name'            => 'اسم المرشح',
+                    'email'                     => 'البريد الإلكتروني',
+                    'phone'                     => 'الهاتف',
+                    'linkedin-profile'          => 'ملف LinkedIn',
+                    'recruiter'                 => 'المُوظِّف',
+                    'interviewer'               => 'المُقابِل',
+                    'tags'                      => 'الوسوم',
+                    'notes'                     => 'ملاحظات',
+                    'job-position'              => 'المسمى الوظيفي',
                 ],
             ],
 
             'education-and-availability' => [
-                'title' => 'Education & Availability',
+                'title' => 'التعليم والتوفر',
 
                 'entries' => [
-                    'degree'            => 'Degree',
-                    'availability-date' => 'Availability Date',
+                    'degree'            => 'الدرجة العلمية',
+                    'availability-date' => 'تاريخ التوفر',
                 ],
             ],
 
             'department' => [
-                'title' => 'Department',
+                'title' => 'القسم',
             ],
 
             'salary' => [
-                'title' => 'Expected & Proposed Salary',
+                'title' => 'الراتب المتوقع والمقترح',
 
                 'entries' => [
-                    'expected-salary'       => 'Expected Salary',
-                    'salary-proposed-extra' => 'Other Benefit',
-                    'proposed-salary'       => 'Proposed Salary',
-                    'salary-expected-extra' => 'Other Benefit',
+                    'expected-salary'       => 'الراتب المتوقع',
+                    'salary-proposed-extra' => 'مزايا أخرى',
+                    'proposed-salary'       => 'الراتب المقترح',
+                    'salary-expected-extra' => 'مزايا أخرى',
                 ],
             ],
 
             'source-and-medium' => [
-                'title' => 'Source & Medium',
+                'title' => 'المصدر والوسيط',
 
                 'entries' => [
-                    'source' => 'Source',
-                    'medium' => 'Medium',
+                    'source' => 'المصدر',
+                    'medium' => 'الوسيط',
                 ],
             ],
         ],

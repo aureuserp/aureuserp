@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'confirm'      => 'To Approve',
-    'refuse'       => 'Refused',
-    'validate_one' => 'Second Approval',
-    'validate_two' => 'Approved',
+    'confirm'      => 'بانتظار الموافقة',
+    'refuse'       => 'مرفوض',
+    'validate_one' => 'الموافقة الثانية',
+    'validate_two' => 'موافق عليه',
 ];

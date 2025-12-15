@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'danger'  => 'Danger',
-    'gray'    => 'Gray',
-    'info'    => 'Info',
-    'success' => 'Success',
-    'warning' => 'Warning',
+    'danger'  => 'خطر',
+    'gray'    => 'رمادي',
+    'info'    => 'معلومات',
+    'success' => 'نجاح',
+    'warning' => 'تحذير',
 ];

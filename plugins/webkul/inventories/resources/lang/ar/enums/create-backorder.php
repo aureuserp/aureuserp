@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'ask'    => 'Ask',
-    'always' => 'Always',
-    'never'  => 'Never',
+    'ask'    => 'استفسار',
+    'always' => 'دائماً',
+    'never'  => 'أبداً',
 ];

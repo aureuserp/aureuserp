@@ -1,66 +1,66 @@
 <?php
 
 return [
-    'title' => 'Tags',
+    'title' => 'الوسوم',
 
     'navigation' => [
-        'title' => 'Tags',
-        'group' => 'Employee',
+        'title' => 'الوسوم',
+        'group' => 'الموظف',
     ],
 
     'groups' => [
-        'status'     => 'Status',
-        'created-by' => 'Created By',
-        'created-at' => 'Created At',
-        'updated-at' => 'Updated At',
+        'status'     => 'الحالة',
+        'created-by' => 'أنشئ بواسطة',
+        'created-at' => 'تاريخ الإنشاء',
+        'updated-at' => 'تاريخ التحديث',
     ],
 
     'form' => [
         'fields' => [
-            'name'  => 'Name',
-            'color' => 'Color',
+            'name'  => 'الاسم',
+            'color' => 'اللون',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'id'         => 'ID',
-            'name'       => 'Name',
-            'color'      => 'Color',
-            'created-by' => 'Created By',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'id'         => 'المعرف',
+            'name'       => 'الاسم',
+            'color'      => 'اللون',
+            'created-by' => 'أنشئ بواسطة',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'name'       => 'Name',
-            'created-by' => 'Created By',
-            'updated-by' => 'Updated By',
-            'updated-at' => 'Updated At',
-            'created-at' => 'Created At',
+            'name'       => 'الاسم',
+            'created-by' => 'أنشئ بواسطة',
+            'updated-by' => 'حُدّث بواسطة',
+            'updated-at' => 'تاريخ التحديث',
+            'created-at' => 'تاريخ الإنشاء',
         ],
 
         'groups' => [
-            'name'         => 'Name',
-            'job-position' => 'Job Position',
-            'color'        => 'Color',
-            'created-by'   => 'Created By',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'name'         => 'الاسم',
+            'job-position' => 'المسمى الوظيفي',
+            'color'        => 'اللون',
+            'created-by'   => 'أنشئ بواسطة',
+            'created-at'   => 'تاريخ الإنشاء',
+            'updated-at'   => 'تاريخ التحديث',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Tag updated',
-                    'body'  => 'The tag has been updated successfully.',
+                    'title' => 'تم تحديث الوسم',
+                    'body'  => 'تم تحديث الوسم بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Tag deleted',
-                    'body'  => 'The tag has been deleted successfully.',
+                    'title' => 'تم حذف الوسم',
+                    'body'  => 'تم حذف الوسم بنجاح.',
                 ],
             ],
         ],
@@ -68,8 +68,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Tags deleted',
-                    'body'  => 'The tags has been deleted successfully.',
+                    'title' => 'تم حذف الوسوم',
+                    'body'  => 'تم حذف الوسوم بنجاح.',
                 ],
             ],
         ],
@@ -77,15 +77,15 @@ return [
         'empty-state-action' => [
             'create' => [
                 'notification' => [
-                    'title' => 'Tag created',
-                    'body'  => 'The tag has been created successfully.',
+                    'title' => 'تم إنشاء الوسم',
+                    'body'  => 'تم إنشاء الوسم بنجاح.',
                 ],
             ],
         ],
     ],
 
     'infolist' => [
-        'name'  => 'Name',
-        'color' => 'Color',
+        'name'  => 'الاسم',
+        'color' => 'اللون',
     ],
 ];

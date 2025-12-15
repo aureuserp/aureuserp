@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'day'      => 'Day',
-    'half-day' => 'Half Day',
-    'hour'     => 'Hour',
+    'day'      => 'يوم',
+    'half-day' => 'نصف يوم',
+    'hour'     => 'ساعة',
 ];

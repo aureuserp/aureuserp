@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'start' => 'At the start of the accrual period',
-    'end'   => 'At the end of the accrual period',
+    'start' => 'في بداية فترة الاستحقاق',
+    'end'   => 'في نهاية فترة الاستحقاق',
 ];

@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'at-confirm' => 'At Confirm',
-    'manual'     => 'Manual',
-    'by-date'    => 'Before Scheduled Date',
+    'at-confirm' => 'عند التأكيد',
+    'manual'     => 'يدوي',
+    'by-date'    => 'قبل التاريخ المجدول',
 ];

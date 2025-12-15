@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'draft' => 'Draft',
-    'done'  => 'Done',
+    'draft' => 'مسودة',
+    'done'  => 'مكتمل',
 ];

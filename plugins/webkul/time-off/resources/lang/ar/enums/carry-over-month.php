@@ -1,16 +1,16 @@
 <?php
 
 return [
-    'jan' => 'January',
-    'feb' => 'February',
-    'mar' => 'March',
-    'apr' => 'April',
-    'may' => 'May',
-    'jun' => 'June',
-    'jul' => 'July',
-    'aug' => 'August',
-    'sep' => 'September',
-    'oct' => 'October',
-    'nov' => 'November',
-    'dec' => 'December',
+    'jan' => 'يناير',
+    'feb' => 'فبراير',
+    'mar' => 'مارس',
+    'apr' => 'أبريل',
+    'may' => 'مايو',
+    'jun' => 'يونيو',
+    'jul' => 'يوليو',
+    'aug' => 'أغسطس',
+    'sep' => 'سبتمبر',
+    'oct' => 'أكتوبر',
+    'nov' => 'نوفمبر',
+    'dec' => 'ديسمبر',
 ];

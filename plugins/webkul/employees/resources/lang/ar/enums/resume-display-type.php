@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'classic' => 'Classic',
+    'classic' => 'كلاسيكي',
 ];

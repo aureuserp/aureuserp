@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'leave' => 'Absence',
-    'other' => 'Worked Time',
+    'leave' => 'غياب',
+    'other' => 'وقت العمل',
 ];

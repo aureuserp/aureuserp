@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'morning'   => 'Morning',
-    'afternoon' => 'Afternoon',
-    'evening'   => 'Evening',
-    'night'     => 'Night',
+    'morning'   => 'صباحاً',
+    'afternoon' => 'بعد الظهر',
+    'evening'   => 'مساءً',
+    'night'     => 'ليلاً',
 ];

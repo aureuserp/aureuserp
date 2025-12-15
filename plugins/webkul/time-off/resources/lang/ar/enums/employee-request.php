@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'yes' => 'Extra Days Request Allowed',
-    'no'  => 'Not Allowed',
+    'yes' => 'مسموح بطلب أيام إضافية',
+    'no'  => 'غير مسموح',
 ];

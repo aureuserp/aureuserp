@@ -1,33 +1,33 @@
 <?php
 
 return [
-    'title'      => 'Accrual Plan',
+    'title'      => 'خطة الاستحقاق',
     'navigation' => [
-        'title' => 'Accrual Plan',
+        'title' => 'خطة الاستحقاق',
     ],
 
     'form' => [
         'fields' => [
-            'name'                    => 'Title',
-            'is-based-on-worked-time' => 'Is Based on Worked Time',
-            'accrued-gain-time'       => 'Accrued Gain Time',
-            'carry-over-time'         => 'Carry Over Time',
-            'carry-over-date'         => 'Carry Over Date',
-            'status'                  => 'Status',
+            'name'                    => 'العنوان',
+            'is-based-on-worked-time' => 'بناءً على وقت العمل',
+            'accrued-gain-time'       => 'وقت اكتساب الاستحقاق',
+            'carry-over-time'         => 'وقت الترحيل',
+            'carry-over-date'         => 'تاريخ الترحيل',
+            'status'                  => 'الحالة',
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'   => 'Name',
-            'levels' => 'Levels',
+            'name'   => 'الاسم',
+            'levels' => 'المستويات',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Accrual Plan deleted',
-                    'body'  => 'The Accrual Plan has been deleted successfully.',
+                    'title' => 'تم حذف خطة الاستحقاق',
+                    'body'  => 'تم حذف خطة الاستحقاق بنجاح.',
                 ],
             ],
         ],
@@ -35,8 +35,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Accrual Plan deleted',
-                    'body'  => 'The Accrual Plan has been deleted successfully.',
+                    'title' => 'تم حذف خطة الاستحقاق',
+                    'body'  => 'تم حذف خطة الاستحقاق بنجاح.',
                 ],
             ],
         ],
@@ -44,12 +44,12 @@ return [
 
     'infolist' => [
         'entries' => [
-            'name'                    => 'Name',
-            'is-based-on-worked-time' => 'Is Based on Worked Time',
-            'accrued-gain-time'       => 'Accrued Gain Time',
-            'carry-over-time'         => 'Carry Over Time',
-            'carry-over-day'          => 'Carry Over Day',
-            'carry-over-month'        => 'Carry Over Month',
+            'name'                    => 'الاسم',
+            'is-based-on-worked-time' => 'بناءً على وقت العمل',
+            'accrued-gain-time'       => 'وقت اكتساب الاستحقاق',
+            'carry-over-time'         => 'وقت الترحيل',
+            'carry-over-day'          => 'يوم الترحيل',
+            'carry-over-month'        => 'شهر الترحيل',
         ],
     ],
 ];

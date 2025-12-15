@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'pull'      => 'Pull From',
-    'push'      => 'Push To',
-    'pull-push' => 'Pull & Push',
-    'buy'       => 'Buy',
+    'pull'      => 'سحب من',
+    'push'      => 'دفع إلى',
+    'pull-push' => 'سحب ودفع',
+    'buy'       => 'شراء',
 ];

@@ -1,42 +1,42 @@
 <?php
 
 return [
-    'title'      => 'Leave Type',
+    'title'      => 'نوع الإجازة',
     'navigation' => [
-        'title' => 'Leave Type',
+        'title' => 'نوع الإجازة',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title'  => 'General Information',
+                'title'  => 'معلومات عامة',
                 'fields' => [
-                    'name'                => 'Title',
-                    'approval'            => 'Approval',
-                    'requires-allocation' => 'Requires Allocation',
-                    'employee-requests'   => 'Employee Requests',
-                    'display-option'      => 'Display Option',
+                    'name'                => 'العنوان',
+                    'approval'            => 'الموافقة',
+                    'requires-allocation' => 'يتطلب تخصيص',
+                    'employee-requests'   => 'طلبات الموظفين',
+                    'display-option'      => 'خيار العرض',
                 ],
             ],
             'display-option' => [
-                'title'  => 'Display Option',
+                'title'  => 'خيار العرض',
                 'fields' => [
-                    'color' => 'Color',
+                    'color' => 'اللون',
                 ],
             ],
             'configuration' => [
-                'title' => 'Configuration',
+                'title' => 'الإعدادات',
 
                 'fields' => [
-                    'notified-time-off-officers'          => 'Notified Time Off Officers',
-                    'take-time-off-in'                    => 'Take Time Off In',
-                    'public-holiday-included'             => 'Public Holiday Included',
-                    'allow-to-attach-supporting-document' => 'Allow to Attach Supporting Document',
-                    'show-on-dashboard'                   => 'Show on Dashboard',
-                    'allow-negative-cap'                  => 'Allow Negative Cap',
-                    'kind-off-time'                       => 'Kind of Time',
-                    'max-negative-cap'                    => 'Max Negative Cap',
-                    'kind-of-time'                        => 'Kind of Time Off',
+                    'notified-time-off-officers'          => 'مسؤولو الإجازات المُبلَّغون',
+                    'take-time-off-in'                    => 'أخذ الإجازة بـ',
+                    'public-holiday-included'             => 'تشمل العطل الرسمية',
+                    'allow-to-attach-supporting-document' => 'السماح بإرفاق مستند داعم',
+                    'show-on-dashboard'                   => 'العرض في لوحة التحكم',
+                    'allow-negative-cap'                  => 'السماح بالرصيد السالب',
+                    'kind-off-time'                       => 'نوع الوقت',
+                    'max-negative-cap'                    => 'الحد الأقصى للرصيد السالب',
+                    'kind-of-time'                        => 'نوع الإجازة',
                 ],
             ],
         ],
@@ -44,37 +44,37 @@ return [
 
     'table' => [
         'columns' => [
-            'name'                      => 'Name',
-            'company-name'              => 'Company',
-            'color'                     => 'Color',
-            'notified-time-officers'    => 'Notified Time Officers',
-            'time-off-approval'         => 'Time Off Approval',
-            'requires-allocation'       => 'Requires Allocation',
-            'allocation-approval'       => 'Allocation Approval',
-            'employee-request'          => 'Employee Request',
+            'name'                      => 'الاسم',
+            'company-name'              => 'الشركة',
+            'color'                     => 'اللون',
+            'notified-time-officers'    => 'مسؤولو الإجازات المُبلَّغون',
+            'time-off-approval'         => 'موافقة الإجازة',
+            'requires-allocation'       => 'يتطلب تخصيص',
+            'allocation-approval'       => 'موافقة التخصيص',
+            'employee-request'          => 'طلب الموظف',
         ],
 
         'filters' => [
-            'name'                => 'Name',
-            'company-name'        => 'Company',
-            'time-off-approval'   => 'Time Off Approval',
-            'requires-allocation' => 'Requires Allocation',
-            'time-type'           => 'Time Type',
-            'request-unit'        => 'Request Unit',
-            'created-by'          => 'Created By',
+            'name'                => 'الاسم',
+            'company-name'        => 'الشركة',
+            'time-off-approval'   => 'موافقة الإجازة',
+            'requires-allocation' => 'يتطلب تخصيص',
+            'time-type'           => 'نوع الوقت',
+            'request-unit'        => 'وحدة الطلب',
+            'created-by'          => 'أنشئ بواسطة',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Leave Type deleted',
-                    'body'  => 'The Leave type has been deleted successfully.',
+                    'title' => 'تم حذف نوع الإجازة',
+                    'body'  => 'تم حذف نوع الإجازة بنجاح.',
                 ],
             ],
             'restore' => [
                 'notification' => [
-                    'title' => 'Leave Type restored',
-                    'body'  => 'The Leave type has been restored successfully.',
+                    'title' => 'تم استعادة نوع الإجازة',
+                    'body'  => 'تم استعادة نوع الإجازة بنجاح.',
                 ],
             ],
         ],
@@ -82,27 +82,27 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Leave Type restored',
-                    'body'  => 'The Leave Type has been restored successfully.',
+                    'title' => 'تم استعادة نوع الإجازة',
+                    'body'  => 'تم استعادة نوع الإجازة بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Leave Type deleted',
-                    'body'  => 'The Leave Type has been deleted successfully.',
+                    'title' => 'تم حذف نوع الإجازة',
+                    'body'  => 'تم حذف نوع الإجازة بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Leave Type force deleted',
-                        'body'  => 'The Leave Type has been force deleted successfully.',
+                        'title' => 'تم حذف نوع الإجازة نهائياً',
+                        'body'  => 'تم حذف نوع الإجازة نهائياً بنجاح.',
                     ],
                     'error' => [
-                        'title' => 'Leave Type could not be deleted',
-                        'body'  => 'The Leave Type cannot be deleted because it is currently in use.',
+                        'title' => 'تعذر حذف نوع الإجازة',
+                        'body'  => 'لا يمكن حذف نوع الإجازة لأنه قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -112,33 +112,33 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title'   => 'General Information',
+                'title'   => 'معلومات عامة',
                 'entries' => [
-                    'name'                => 'Title',
-                    'approval'            => 'Approval',
-                    'requires-allocation' => 'Requires Allocation',
-                    'employee-requests'   => 'Employee Requests',
-                    'display-option'      => 'Display Option',
+                    'name'                => 'العنوان',
+                    'approval'            => 'الموافقة',
+                    'requires-allocation' => 'يتطلب تخصيص',
+                    'employee-requests'   => 'طلبات الموظفين',
+                    'display-option'      => 'خيار العرض',
                 ],
             ],
             'display-option' => [
-                'title'   => 'Display Option',
+                'title'   => 'خيار العرض',
                 'entries' => [
-                    'color' => 'Color',
+                    'color' => 'اللون',
                 ],
             ],
             'configuration' => [
-                'title' => 'Configuration',
+                'title' => 'الإعدادات',
 
                 'entries' => [
-                    'notified-time-off-officers'          => 'Notified Time Off Officers',
-                    'take-time-off-in'                    => 'Take Time Off In',
-                    'public-holiday-included'             => 'Public Holiday Included',
-                    'allow-to-attach-supporting-document' => 'Allow to Attach Supporting Document',
-                    'show-on-dashboard'                   => 'Show on Dashboard',
-                    'kind-off-time'                       => 'Kind of Time',
-                    'max-negative-cap'                    => 'Max Negative Cap',
-                    'kind-of-time'                        => 'Kind of Time Off',
+                    'notified-time-off-officers'          => 'مسؤولو الإجازات المُبلَّغون',
+                    'take-time-off-in'                    => 'أخذ الإجازة بـ',
+                    'public-holiday-included'             => 'تشمل العطل الرسمية',
+                    'allow-to-attach-supporting-document' => 'السماح بإرفاق مستند داعم',
+                    'show-on-dashboard'                   => 'العرض في لوحة التحكم',
+                    'kind-off-time'                       => 'نوع الوقت',
+                    'max-negative-cap'                    => 'الحد الأقصى للرصيد السالب',
+                    'kind-of-time'                        => 'نوع الإجازة',
                 ],
             ],
         ],

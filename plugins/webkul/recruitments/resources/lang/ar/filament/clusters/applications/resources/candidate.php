@@ -1,59 +1,59 @@
 <?php
 
 return [
-    'title' => 'Candidate',
+    'title' => 'المرشح',
 
     'navigation' => [
-        'title' => 'Candidates',
+        'title' => 'المرشحون',
     ],
 
     'form' => [
         'sections' => [
             'basic-information' => [
-                'title' => 'Basic Information',
+                'title' => 'المعلومات الأساسية',
 
                 'fields' => [
-                    'full-name' => 'Full Name',
-                    'email'     => 'Email Address',
-                    'phone'     => 'Phone Number',
-                    'linkedin'  => 'LinkedIn Profile',
-                    'contact'   => 'Contact',
+                    'full-name' => 'الاسم الكامل',
+                    'email'     => 'البريد الإلكتروني',
+                    'phone'     => 'رقم الهاتف',
+                    'linkedin'  => 'ملف LinkedIn',
+                    'contact'   => 'جهة الاتصال',
                 ],
             ],
 
             'additional-details' => [
-                'title' => 'Additional Details',
+                'title' => 'تفاصيل إضافية',
 
                 'fields' => [
-                    'company'           => 'Company',
-                    'degree'            => 'Degree',
-                    'tags'              => 'Tags',
-                    'manager'           => 'Manager',
-                    'availability-date' => 'Availability Date',
+                    'company'           => 'الشركة',
+                    'degree'            => 'الدرجة العلمية',
+                    'tags'              => 'الوسوم',
+                    'manager'           => 'المدير',
+                    'availability-date' => 'تاريخ التوفر',
 
                     'priority-options' => [
-                        'low'    => 'Low',
-                        'medium' => 'Medium',
-                        'high'   => 'High',
+                        'low'    => 'منخفضة',
+                        'medium' => 'متوسطة',
+                        'high'   => 'عالية',
                     ],
                 ],
             ],
 
             'status-and-evaluation' => [
-                'title' => 'Status',
+                'title' => 'الحالة',
 
                 'fields' => [
-                    'active'     => 'Active',
-                    'evaluation' => 'Evaluation',
+                    'active'     => 'نشط',
+                    'evaluation' => 'التقييم',
                 ],
             ],
 
             'communication' => [
-                'title' => 'Communication',
+                'title' => 'التواصل',
 
                 'fields' => [
-                    'cc-email'      => 'CC Email',
-                    'email-bounced' => 'Email Bounced',
+                    'cc-email'      => 'نسخة البريد الإلكتروني',
+                    'email-bounced' => 'بريد مرتجع',
                 ],
             ],
         ],
@@ -61,35 +61,35 @@ return [
 
     'table' => [
         'columns' => [
-            'name'       => 'Full Name',
-            'tags'       => 'Tags',
-            'evaluation' => 'Evaluation',
+            'name'       => 'الاسم الكامل',
+            'tags'       => 'الوسوم',
+            'evaluation' => 'التقييم',
         ],
 
         'filters' => [
-            'company'      => 'Company',
-            'partner-name' => 'Contact',
-            'degree'       => 'Degree',
-            'manager-name' => 'Manager',
+            'company'      => 'الشركة',
+            'partner-name' => 'جهة الاتصال',
+            'degree'       => 'الدرجة العلمية',
+            'manager-name' => 'المدير',
         ],
 
         'groups' => [
-            'manager-name' => 'Manager',
+            'manager-name' => 'المدير',
         ],
 
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Candidate Deleted',
-                    'body'  => 'The candidates has been deleted successfully.',
+                    'title' => 'تم حذف المرشح',
+                    'body'  => 'تم حذف المرشح بنجاح.',
                 ],
             ],
 
             'empty-state-actions' => [
                 'create' => [
                     'notification' => [
-                        'title' => 'Candidate Created',
-                        'body'  => 'The candidates has been created successfully.',
+                        'title' => 'تم إنشاء المرشح',
+                        'body'  => 'تم إنشاء المرشح بنجاح.',
                     ],
                 ],
             ],
@@ -98,8 +98,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Candidates Deleted',
-                    'body'  => 'The candidates has been deleted successfully.',
+                    'title' => 'تم حذف المرشحين',
+                    'body'  => 'تم حذف المرشحين بنجاح.',
                 ],
             ],
         ],
@@ -108,50 +108,50 @@ return [
     'infolist' => [
         'sections' => [
             'basic-information' => [
-                'title' => 'Basic Information',
+                'title' => 'المعلومات الأساسية',
 
                 'entries' => [
-                    'full-name' => 'Full Name',
-                    'email'     => 'Email Address',
-                    'phone'     => 'Phone Number',
-                    'linkedin'  => 'LinkedIn Profile',
-                    'contact'   => 'Contact',
+                    'full-name' => 'الاسم الكامل',
+                    'email'     => 'البريد الإلكتروني',
+                    'phone'     => 'رقم الهاتف',
+                    'linkedin'  => 'ملف LinkedIn',
+                    'contact'   => 'جهة الاتصال',
                 ],
             ],
 
             'additional-details' => [
-                'title' => 'Additional Details',
+                'title' => 'تفاصيل إضافية',
 
                 'entries' => [
-                    'company'           => 'Company',
-                    'degree'            => 'Degree',
-                    'tags'              => 'Tags',
-                    'manager'           => 'Manager',
-                    'availability-date' => 'Availability Date',
+                    'company'           => 'الشركة',
+                    'degree'            => 'الدرجة العلمية',
+                    'tags'              => 'الوسوم',
+                    'manager'           => 'المدير',
+                    'availability-date' => 'تاريخ التوفر',
 
                     'priority-options' => [
-                        'low'    => 'Low',
-                        'medium' => 'Medium',
-                        'high'   => 'High',
+                        'low'    => 'منخفضة',
+                        'medium' => 'متوسطة',
+                        'high'   => 'عالية',
                     ],
                 ],
             ],
 
             'status-and-evaluation' => [
-                'title' => 'Status',
+                'title' => 'الحالة',
 
                 'entries' => [
-                    'active'     => 'Active',
-                    'evaluation' => 'Evaluation',
+                    'active'     => 'نشط',
+                    'evaluation' => 'التقييم',
                 ],
             ],
 
             'communication' => [
-                'title' => 'Communication',
+                'title' => 'التواصل',
 
                 'entries' => [
-                    'cc-email'      => 'CC Email',
-                    'email-bounced' => 'Email Bounced',
+                    'cc-email'      => 'نسخة البريد الإلكتروني',
+                    'email-bounced' => 'بريد مرتجع',
                 ],
             ],
         ],

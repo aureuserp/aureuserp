@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'make-to-stock' => 'Take From Stock',
-    'make-to-order' => 'Trigger Another Rule',
-    'mts-else-mto'  => 'Take From Stock, if unavailable, Trigger Another Rule',
+    'make-to-stock' => 'أخذ من المخزون',
+    'make-to-order' => 'تفعيل قاعدة أخرى',
+    'mts-else-mto'  => 'أخذ من المخزون، وإن لم يتوفر، تفعيل قاعدة أخرى',
 ];

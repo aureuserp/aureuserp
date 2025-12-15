@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'kilometer' => 'Kilometer',
-    'meter'     => 'Meter',
+    'kilometer' => 'كيلومتر',
+    'meter'     => 'متر',
 ];

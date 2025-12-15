@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'incoming' => 'Receipt',
-    'outgoing' => 'Delivery',
-    'internal' => 'Internal',
-    'dropship' => 'Dropship',
+    'incoming' => 'استلام',
+    'outgoing' => 'تسليم',
+    'internal' => 'داخلي',
+    'dropship' => 'شحن مباشر',
 ];

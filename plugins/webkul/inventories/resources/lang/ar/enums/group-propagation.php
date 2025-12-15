@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'none'      => 'Leave Empty',
-    'propagate' => 'Propagate',
-    'fixed'     => 'Fixed',
+    'none'      => 'اتركه فارغاً',
+    'propagate' => 'نشر',
+    'fixed'     => 'ثابت',
 ];
