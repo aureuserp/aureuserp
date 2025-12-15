@@ -2,35 +2,35 @@
 
 return [
     'navigation' => [
-        'title' => 'Routes',
-        'group' => 'Warehouse Management',
+        'title' => 'المسارات',
+        'group' => 'إدارة المستودعات',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title'  => 'General',
+                'title'  => 'عام',
 
                 'fields' => [
-                    'route'             => 'Route',
-                    'route-placeholder' => 'eg. Two Step Reception',
-                    'company'           => 'Company',
+                    'route'             => 'المسار',
+                    'route-placeholder' => 'مثال: استلام من خطوتين',
+                    'company'           => 'الشركة',
                 ],
             ],
 
             'applicable-on' => [
-                'title'       => 'Applicable On',
-                'description' => 'Choose the locations where this route can be applied.',
+                'title'       => 'ينطبق على',
+                'description' => 'اختر المواقع التي يمكن تطبيق هذا المسار عليها.',
 
                 'fields' => [
-                    'products'                        => 'Products',
-                    'products-hint-tooltip'           => 'If selected, this route will be available for selection on the product.',
-                    'product-categories'              => 'Product Categories',
-                    'product-categories-hint-tooltip' => 'If selected, this route will be available for selection on the product category.',
-                    'warehouses'                      => 'Warehouses',
-                    'warehouses-hint-tooltip'         => 'When a warehouse is assigned to this route, it will be considered the default route for products moving through that warehouse.',
-                    'packaging'                       => 'Packaging',
-                    'packaging-hint-tooltip'          => 'If selected, this route will be available for selection on the packaging.',
+                    'products'                        => 'المنتجات',
+                    'products-hint-tooltip'           => 'إذا تم تحديده، سيكون هذا المسار متاحاً للاختيار على المنتج.',
+                    'product-categories'              => 'فئات المنتجات',
+                    'product-categories-hint-tooltip' => 'إذا تم تحديده، سيكون هذا المسار متاحاً للاختيار على فئة المنتج.',
+                    'warehouses'                      => 'المستودعات',
+                    'warehouses-hint-tooltip'         => 'عند تعيين مستودع لهذا المسار، سيتم اعتباره المسار الافتراضي للمنتجات المتحركة عبر ذلك المستودع.',
+                    'packaging'                       => 'التغليف',
+                    'packaging-hint-tooltip'          => 'إذا تم تحديده، سيكون هذا المسار متاحاً للاختيار على التغليف.',
                 ],
             ],
         ],
@@ -38,54 +38,54 @@ return [
 
     'table' => [
         'columns' => [
-            'route'      => 'Route',
-            'company'    => 'Company',
-            'deleted-at' => 'Deleted At',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'route'      => 'المسار',
+            'company'    => 'الشركة',
+            'deleted-at' => 'تاريخ الحذف',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'company'  => 'Company',
+            'company'  => 'الشركة',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Route updated',
-                    'body'  => 'The route has been updated successfully.',
+                    'title' => 'تم تحديث المسار',
+                    'body'  => 'تم تحديث المسار بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Route restored',
-                    'body'  => 'The route has been restored successfully.',
+                    'title' => 'تم استعادة المسار',
+                    'body'  => 'تم استعادة المسار بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Route deleted',
-                    'body'  => 'The route has been deleted successfully.',
+                    'title' => 'تم حذف المسار',
+                    'body'  => 'تم حذف المسار بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Route force deleted',
-                        'body'  => 'The route has been force deleted successfully.',
+                        'title' => 'تم حذف المسار نهائياً',
+                        'body'  => 'تم حذف المسار نهائياً بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Route could not be deleted',
-                        'body'  => 'The route cannot be deleted because it is currently in use.',
+                        'title' => 'تعذر حذف المسار',
+                        'body'  => 'لا يمكن حذف المسار لأنه قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -94,28 +94,28 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Routes restored',
-                    'body'  => 'The routes has been restored successfully.',
+                    'title' => 'تم استعادة المسارات',
+                    'body'  => 'تم استعادة المسارات بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Routes deleted',
-                    'body'  => 'The routes has been deleted successfully.',
+                    'title' => 'تم حذف المسارات',
+                    'body'  => 'تم حذف المسارات بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Routes force deleted',
-                        'body'  => 'The routes has been force deleted successfully.',
+                        'title' => 'تم حذف المسارات نهائياً',
+                        'body'  => 'تم حذف المسارات نهائياً بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Routes could not be deleted',
-                        'body'  => 'The routes cannot be deleted because they are currently in use.',
+                        'title' => 'تعذر حذف المسارات',
+                        'body'  => 'لا يمكن حذف المسارات لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -125,38 +125,38 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title'  => 'General',
+                'title'  => 'عام',
 
                 'entries' => [
-                    'route'             => 'Route',
-                    'route-placeholder' => 'eg. Two Step Reception',
-                    'company'           => 'Company',
+                    'route'             => 'المسار',
+                    'route-placeholder' => 'مثال: استلام من خطوتين',
+                    'company'           => 'الشركة',
                 ],
             ],
 
             'applicable-on' => [
-                'title'       => 'Applicable On',
-                'description' => 'Select the places where this route can be selected.',
+                'title'       => 'ينطبق على',
+                'description' => 'اختر الأماكن التي يمكن اختيار هذا المسار فيها.',
 
                 'entries' => [
-                    'products'                        => 'Products',
-                    'products-hint-tooltip'           => 'If selected, this route will be available for selection on the product.',
-                    'product-categories'              => 'Product Categories',
-                    'product-categories-hint-tooltip' => 'If selected, this route will be available for selection on the product category.',
-                    'warehouses'                      => 'Warehouses',
-                    'warehouses-hint-tooltip'         => 'When a warehouse is assigned to this route, it will be considered the default route for products moving through that warehouse.',
-                    'packaging'                       => 'Packaging',
-                    'packaging-hint-tooltip'          => 'If selected, this route will be available for selection on the packaging.',
+                    'products'                        => 'المنتجات',
+                    'products-hint-tooltip'           => 'إذا تم تحديده، سيكون هذا المسار متاحاً للاختيار على المنتج.',
+                    'product-categories'              => 'فئات المنتجات',
+                    'product-categories-hint-tooltip' => 'إذا تم تحديده، سيكون هذا المسار متاحاً للاختيار على فئة المنتج.',
+                    'warehouses'                      => 'المستودعات',
+                    'warehouses-hint-tooltip'         => 'عند تعيين مستودع لهذا المسار، سيتم اعتباره المسار الافتراضي للمنتجات المتحركة عبر ذلك المستودع.',
+                    'packaging'                       => 'التغليف',
+                    'packaging-hint-tooltip'          => 'إذا تم تحديده، سيكون هذا المسار متاحاً للاختيار على التغليف.',
                 ],
             ],
 
             'record-information' => [
-                'title' => 'Record Information',
+                'title' => 'معلومات السجل',
 
                 'entries' => [
-                    'created-by'   => 'Created By',
-                    'created-at'   => 'Created At',
-                    'last-updated' => 'Last Updated',
+                    'created-by'   => 'أنشئ بواسطة',
+                    'created-at'   => 'تاريخ الإنشاء',
+                    'last-updated' => 'آخر تحديث',
                 ],
             ],
         ],

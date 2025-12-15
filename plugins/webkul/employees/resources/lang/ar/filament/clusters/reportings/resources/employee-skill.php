@@ -1,30 +1,30 @@
 <?php
 
 return [
-    'title' => 'Skills',
+    'title' => 'المهارات',
 
     'navigation' => [
-        'title' => 'Skills',
+        'title' => 'المهارات',
     ],
 
     'form' => [
         'sections' => [
             'skill-details' => [
-                'title' => 'Skill Details',
+                'title' => 'تفاصيل المهارة',
 
                 'fields' => [
-                    'employee'       => 'Employee',
-                    'skill'          => 'Skill',
-                    'skill-level'    => 'Level',
-                    'skill-type'     => 'Skill Type',
+                    'employee'       => 'الموظف',
+                    'skill'          => 'المهارة',
+                    'skill-level'    => 'المستوى',
+                    'skill-type'     => 'نوع المهارة',
                 ],
             ],
             'addition-information' => [
-                'title' => 'Additional Information',
+                'title' => 'معلومات إضافية',
 
                 'fields' => [
-                    'created-by' => 'Created By',
-                    'updated-by' => 'Updated By',
+                    'created-by' => 'أنشئ بواسطة',
+                    'updated-by' => 'حُدث بواسطة',
                 ],
             ],
         ],
@@ -32,53 +32,53 @@ return [
 
     'table' => [
         'columns' => [
-            'id'              => 'ID',
-            'employee'        => 'Employee',
-            'skill'           => 'Skill',
-            'skill-level'     => 'Level',
-            'skill-type'      => 'Skill Type',
-            'user'            => 'User',
-            'proficiency'     => 'Proficiency',
-            'created-by'      => 'Created By',
-            'created-at'      => 'Created At',
+            'id'              => 'المعرف',
+            'employee'        => 'الموظف',
+            'skill'           => 'المهارة',
+            'skill-level'     => 'المستوى',
+            'skill-type'      => 'نوع المهارة',
+            'user'            => 'المستخدم',
+            'proficiency'     => 'الإتقان',
+            'created-by'      => 'أنشئ بواسطة',
+            'created-at'      => 'تاريخ الإنشاء',
         ],
 
         'filters' => [
-            'employee'        => 'Employee',
-            'skill'           => 'Skill',
-            'skill-level'     => 'Level',
-            'skill-type'      => 'Skill Type',
-            'user'            => 'User',
-            'created-by'      => 'Created By',
-            'created-at'      => 'Created At',
-            'updated-at'      => 'Updated At',
+            'employee'        => 'الموظف',
+            'skill'           => 'المهارة',
+            'skill-level'     => 'المستوى',
+            'skill-type'      => 'نوع المهارة',
+            'user'            => 'المستخدم',
+            'created-by'      => 'أنشئ بواسطة',
+            'created-at'      => 'تاريخ الإنشاء',
+            'updated-at'      => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'employee'   => 'Employee',
-            'skill-type' => 'Skill Type',
+            'employee'   => 'الموظف',
+            'skill-type' => 'نوع المهارة',
         ],
     ],
 
     'infolist' => [
         'sections' => [
             'skill-details' => [
-                'title' => 'Skill Details',
+                'title' => 'تفاصيل المهارة',
 
                 'entries' => [
-                    'employee'        => 'Employee',
-                    'skill'           => 'Skill',
-                    'skill-level'     => 'Level',
-                    'skill-type'      => 'Skill Type',
+                    'employee'        => 'الموظف',
+                    'skill'           => 'المهارة',
+                    'skill-level'     => 'المستوى',
+                    'skill-type'      => 'نوع المهارة',
                 ],
             ],
 
             'additional-information' => [
-                'title' => 'Additional Information',
+                'title' => 'معلومات إضافية',
 
                 'entries' => [
-                    'created-by' => 'Created By',
-                    'updated-by' => 'Updated By',
+                    'created-by' => 'أنشئ بواسطة',
+                    'updated-by' => 'حُدث بواسطة',
                 ],
             ],
         ],

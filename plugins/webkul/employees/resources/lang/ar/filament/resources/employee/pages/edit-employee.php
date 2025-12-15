@@ -2,17 +2,17 @@
 
 return [
     'notification' => [
-        'title' => 'Employee updated',
-        'body'  => 'The employee has been updated successfully.',
+        'title' => 'تم تحديث الموظف',
+        'body'  => 'تم تحديث الموظف بنجاح.',
     ],
 
     'header-actions' => [
         'delete' => [
-            'label' => 'New Employee',
+            'label' => 'موظف جديد',
 
             'notification' => [
-                'title' => 'Employee deleted',
-                'body'  => 'The employee has been deleted successfully.',
+                'title' => 'تم حذف الموظف',
+                'body'  => 'تم حذف الموظف بنجاح.',
             ],
         ],
     ],

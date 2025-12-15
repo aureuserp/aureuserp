@@ -2,111 +2,111 @@
 
 return [
     'navigation' => [
-        'title' => 'Locations',
-        'group' => 'Warehouse Management',
+        'title' => 'المواقع',
+        'group' => 'إدارة المستودعات',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title'  => 'General',
+                'title'  => 'عام',
 
                 'fields' => [
-                    'location'                     => 'Location',
-                    'location-placeholder'         => 'eg. Spare Stock',
-                    'parent-location'              => 'Parent Location',
-                    'parent-location-hint-tooltip' => 'The main location that encompasses this location. For example, the \'Dispatch Zone\' is part of the \'Gate 1\' parent location.',
-                    'external-notes'               => 'External Notes',
+                    'location'                     => 'الموقع',
+                    'location-placeholder'         => 'مثال: مخزون احتياطي',
+                    'parent-location'              => 'الموقع الأصلي',
+                    'parent-location-hint-tooltip' => 'الموقع الرئيسي الذي يشمل هذا الموقع. على سبيل المثال، "منطقة الإرسال" هي جزء من الموقع الأصلي "البوابة 1".',
+                    'external-notes'               => 'ملاحظات خارجية',
                 ],
             ],
 
             'settings' => [
-                'title'  => 'Settings',
+                'title'  => 'الإعدادات',
 
                 'fields' => [
-                    'location-type'                 => 'Location Type',
-                    'company'                       => 'Company',
-                    'storage-category'              => 'Storage Category',
-                    'is-scrap'                      => 'Is a Scrap Location?',
-                    'is-scrap-hint-tooltip'         => 'Select this checkbox to designate this location for storing scrapped or damaged goods.',
-                    'is-dock'                       => 'Is a Dock Location?',
-                    'is-dock-hint-tooltip'          => 'Select this checkbox to designate this location for storing goods that are ready for shipment.',
-                    'is-replenish'                  => 'Is a Replenish Location?',
-                    'is-replenish-hint-tooltip'     => 'Enable this function to retrieve all quantities needed for replenishment at this location.',
-                    'logistics'                     => 'Logistics',
-                    'removal-strategy'              => 'Removal Strategy',
-                    'removal-strategy-hint-tooltip' => 'Specifies the default method for determining the exact shelf, lot, and location from which to pick products. This method can be enforced at the product category level, with a fallback to parent locations if not set here.',
-                    'cyclic-counting'               => 'Cyclic Counting',
-                    'inventory-frequency'           => 'Inventory Frequency',
-                    'last-inventory'                => 'Last Inventory',
-                    'last-inventory-hint-tooltip'   => 'Date of the last inventory at this location.',
-                    'next-expected'                 => 'Next expected',
-                    'next-expected-hint-tooltip'    => 'Date for next planned inventory based on cyclic schedule.',
+                    'location-type'                 => 'نوع الموقع',
+                    'company'                       => 'الشركة',
+                    'storage-category'              => 'فئة التخزين',
+                    'is-scrap'                      => 'موقع خردة؟',
+                    'is-scrap-hint-tooltip'         => 'حدد هذا الخيار لتعيين هذا الموقع لتخزين البضائع التالفة أو المرفوضة.',
+                    'is-dock'                       => 'موقع رصيف؟',
+                    'is-dock-hint-tooltip'          => 'حدد هذا الخيار لتعيين هذا الموقع لتخزين البضائع الجاهزة للشحن.',
+                    'is-replenish'                  => 'موقع تجديد؟',
+                    'is-replenish-hint-tooltip'     => 'فعّل هذه الوظيفة لاسترداد جميع الكميات المطلوبة للتجديد في هذا الموقع.',
+                    'logistics'                     => 'اللوجستيات',
+                    'removal-strategy'              => 'استراتيجية السحب',
+                    'removal-strategy-hint-tooltip' => 'تحدد الطريقة الافتراضية لتحديد الرف والدفعة والموقع الدقيق لسحب المنتجات. يمكن فرض هذه الطريقة على مستوى فئة المنتج، مع الرجوع إلى المواقع الأصلية إذا لم يتم تعيينها هنا.',
+                    'cyclic-counting'               => 'الجرد الدوري',
+                    'inventory-frequency'           => 'تكرار الجرد',
+                    'last-inventory'                => 'آخر جرد',
+                    'last-inventory-hint-tooltip'   => 'تاريخ آخر جرد في هذا الموقع.',
+                    'next-expected'                 => 'المتوقع التالي',
+                    'next-expected-hint-tooltip'    => 'تاريخ الجرد المخطط التالي بناءً على الجدول الدوري.',
                 ],
             ],
 
             'additional' => [
-                'title'  => 'Additional Information',
+                'title'  => 'معلومات إضافية',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'location'         => 'Location',
-            'type'             => 'Type',
-            'storage-category' => 'Storage Category',
-            'company'          => 'Company',
-            'deleted-at'       => 'deleted At',
-            'created-at'       => 'Created At',
-            'updated-at'       => 'Updated At',
+            'location'         => 'الموقع',
+            'type'             => 'النوع',
+            'storage-category' => 'فئة التخزين',
+            'company'          => 'الشركة',
+            'deleted-at'       => 'تاريخ الحذف',
+            'created-at'       => 'تاريخ الإنشاء',
+            'updated-at'       => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'warehouse'       => 'Warehouse',
-            'type'            => 'Type',
-            'created-at'      => 'Created At',
-            'updated-at'      => 'Updated At',
+            'warehouse'       => 'المستودع',
+            'type'            => 'النوع',
+            'created-at'      => 'تاريخ الإنشاء',
+            'updated-at'      => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'location' => 'Location',
-            'type'     => 'Type',
-            'company'  => 'Company',
+            'location' => 'الموقع',
+            'type'     => 'النوع',
+            'company'  => 'الشركة',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Location updated',
-                    'body'  => 'The location has been updated successfully.',
+                    'title' => 'تم تحديث الموقع',
+                    'body'  => 'تم تحديث الموقع بنجاح.',
                 ],
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Location restored',
-                    'body'  => 'The location has been restored successfully.',
+                    'title' => 'تم استعادة الموقع',
+                    'body'  => 'تم استعادة الموقع بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Location deleted',
-                    'body'  => 'The location has been deleted successfully.',
+                    'title' => 'تم حذف الموقع',
+                    'body'  => 'تم حذف الموقع بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Location force deleted',
-                        'body'  => 'The location has been force deleted successfully.',
+                        'title' => 'تم حذف الموقع نهائياً',
+                        'body'  => 'تم حذف الموقع نهائياً بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Location could not be deleted',
-                        'body'  => 'The location cannot be deleted because it is currently in use.',
+                        'title' => 'تعذر حذف الموقع',
+                        'body'  => 'لا يمكن حذف الموقع لأنه قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -114,33 +114,33 @@ return [
 
         'bulk-actions' => [
             'print' => [
-                'label' => 'Print Barcode',
+                'label' => 'طباعة الباركود',
             ],
 
             'restore' => [
                 'notification' => [
-                    'title' => 'Locations restored',
-                    'body'  => 'The locations has been restored successfully.',
+                    'title' => 'تم استعادة المواقع',
+                    'body'  => 'تم استعادة المواقع بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Locations deleted',
-                    'body'  => 'The locations has been deleted successfully.',
+                    'title' => 'تم حذف المواقع',
+                    'body'  => 'تم حذف المواقع بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Locations force deleted',
-                        'body'  => 'The locations has been force deleted successfully.',
+                        'title' => 'تم حذف المواقع نهائياً',
+                        'body'  => 'تم حذف المواقع نهائياً بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Locations could not be deleted',
-                        'body'  => 'The locations cannot be deleted because they are currently in use.',
+                        'title' => 'تعذر حذف المواقع',
+                        'body'  => 'لا يمكن حذف المواقع لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -150,53 +150,53 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title'  => 'General',
+                'title'  => 'عام',
 
                 'entries' => [
-                    'location'                     => 'Location',
-                    'location-placeholder'         => 'eg. Spare Stock',
-                    'parent-location'              => 'Parent Location',
-                    'parent-location-hint-tooltip' => 'The main location that encompasses this location. For example, the \'Dispatch Zone\' is part of the \'Gate 1\' parent location.',
-                    'external-notes'               => 'External Notes',
+                    'location'                     => 'الموقع',
+                    'location-placeholder'         => 'مثال: مخزون احتياطي',
+                    'parent-location'              => 'الموقع الأصلي',
+                    'parent-location-hint-tooltip' => 'الموقع الرئيسي الذي يشمل هذا الموقع. على سبيل المثال، "منطقة الإرسال" هي جزء من الموقع الأصلي "البوابة 1".',
+                    'external-notes'               => 'ملاحظات خارجية',
                 ],
             ],
 
             'settings' => [
-                'title'  => 'Settings',
+                'title'  => 'الإعدادات',
 
                 'entries' => [
-                    'location-type'                 => 'Location Type',
-                    'company'                       => 'Company',
-                    'storage-category'              => 'Storage Category',
-                    'is-scrap'                      => 'Is a Scrap Location?',
-                    'is-scrap-hint-tooltip'         => 'Select this checkbox to designate this location for storing scrapped or damaged goods.',
-                    'is-dock'                       => 'Is a Dock Location?',
-                    'is-dock-hint-tooltip'          => 'Select this checkbox to designate this location for storing goods that are ready for shipment.',
-                    'is-replenish'                  => 'Is a Replenish Location?',
-                    'is-replenish-hint-tooltip'     => 'Enable this function to retrieve all quantities needed for replenishment at this location.',
-                    'logistics'                     => 'Logistics',
-                    'removal-strategy'              => 'Removal Strategy',
-                    'removal-strategy-hint-tooltip' => 'Specifies the default method for determining the exact shelf, lot, and location from which to pick products. This method can be enforced at the product category level, with a fallback to parent locations if not set here.',
-                    'cyclic-counting'               => 'Cyclic Counting',
-                    'inventory-frequency'           => 'Inventory Frequency',
-                    'last-inventory'                => 'Last Inventory',
-                    'last-inventory-hint-tooltip'   => 'Date of the last inventory at this location.',
-                    'next-expected'                 => 'Next expected',
-                    'next-expected-hint-tooltip'    => 'Date for next planned inventory based on cyclic schedule.',
+                    'location-type'                 => 'نوع الموقع',
+                    'company'                       => 'الشركة',
+                    'storage-category'              => 'فئة التخزين',
+                    'is-scrap'                      => 'موقع خردة؟',
+                    'is-scrap-hint-tooltip'         => 'حدد هذا الخيار لتعيين هذا الموقع لتخزين البضائع التالفة أو المرفوضة.',
+                    'is-dock'                       => 'موقع رصيف؟',
+                    'is-dock-hint-tooltip'          => 'حدد هذا الخيار لتعيين هذا الموقع لتخزين البضائع الجاهزة للشحن.',
+                    'is-replenish'                  => 'موقع تجديد؟',
+                    'is-replenish-hint-tooltip'     => 'فعّل هذه الوظيفة لاسترداد جميع الكميات المطلوبة للتجديد في هذا الموقع.',
+                    'logistics'                     => 'اللوجستيات',
+                    'removal-strategy'              => 'استراتيجية السحب',
+                    'removal-strategy-hint-tooltip' => 'تحدد الطريقة الافتراضية لتحديد الرف والدفعة والموقع الدقيق لسحب المنتجات. يمكن فرض هذه الطريقة على مستوى فئة المنتج، مع الرجوع إلى المواقع الأصلية إذا لم يتم تعيينها هنا.',
+                    'cyclic-counting'               => 'الجرد الدوري',
+                    'inventory-frequency'           => 'تكرار الجرد',
+                    'last-inventory'                => 'آخر جرد',
+                    'last-inventory-hint-tooltip'   => 'تاريخ آخر جرد في هذا الموقع.',
+                    'next-expected'                 => 'المتوقع التالي',
+                    'next-expected-hint-tooltip'    => 'تاريخ الجرد المخطط التالي بناءً على الجدول الدوري.',
                 ],
             ],
 
             'additional' => [
-                'title'  => 'Additional Information',
+                'title'  => 'معلومات إضافية',
             ],
 
             'record-information' => [
-                'title' => 'Record Information',
+                'title' => 'معلومات السجل',
 
                 'entries' => [
-                    'created-by'   => 'Created By',
-                    'created-at'   => 'Created At',
-                    'last-updated' => 'Last Updated',
+                    'created-by'   => 'أنشئ بواسطة',
+                    'created-at'   => 'تاريخ الإنشاء',
+                    'last-updated' => 'آخر تحديث',
                 ],
             ],
         ],

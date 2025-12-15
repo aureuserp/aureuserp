@@ -2,93 +2,93 @@
 
 return [
     'navigation' => [
-        'title' => 'Warehouses',
-        'group' => 'Warehouse Management',
+        'title' => 'المستودعات',
+        'group' => 'إدارة المستودعات',
     ],
 
     'form' => [
         'sections' => [
             'general' => [
-                'title'  => 'General',
+                'title'  => 'عام',
                 'fields' => [
-                    'name'               => 'Name',
-                    'name-placeholder'   => 'eg. Central Warehouse',
-                    'code'               => 'Short Name',
-                    'code-placeholder'   => 'eg. CW',
-                    'code-hint-tooltip'  => 'The short name serves as an identifier for the warehouse.',
-                    'company'            => 'Company',
-                    'address'            => 'Address',
+                    'name'               => 'الاسم',
+                    'name-placeholder'   => 'مثال: المستودع المركزي',
+                    'code'               => 'الاسم المختصر',
+                    'code-placeholder'   => 'مثال: MC',
+                    'code-hint-tooltip'  => 'الاسم المختصر يعمل كمعرف للمستودع.',
+                    'company'            => 'الشركة',
+                    'address'            => 'العنوان',
                 ],
             ],
 
             'settings' => [
-                'title'  => 'Settings',
+                'title'  => 'الإعدادات',
 
                 'fields' => [
-                    'shipment-management'              => 'Shipment Management',
-                    'incoming-shipments'               => 'Incoming Shipments',
-                    'incoming-shipments-hint-tooltip'  => 'Default incoming route to follow',
-                    'outgoing-shipments'               => 'Outgoing Shipments',
-                    'outgoing-shipments-hint-tooltip'  => 'Default outgoing route to follow',
-                    'resupply-management'              => 'Resupply Management',
-                    'resupply-management-hint-tooltip' => 'Routes will be automatically generated to resupply this warehouse from the selected warehouses.',
-                    'resupply-from'                    => 'Resupply From',
+                    'shipment-management'              => 'إدارة الشحنات',
+                    'incoming-shipments'               => 'الشحنات الواردة',
+                    'incoming-shipments-hint-tooltip'  => 'مسار الوارد الافتراضي للاتباع',
+                    'outgoing-shipments'               => 'الشحنات الصادرة',
+                    'outgoing-shipments-hint-tooltip'  => 'مسار الصادر الافتراضي للاتباع',
+                    'resupply-management'              => 'إدارة إعادة التوريد',
+                    'resupply-management-hint-tooltip' => 'سيتم إنشاء المسارات تلقائياً لإعادة تموين هذا المستودع من المستودعات المحددة.',
+                    'resupply-from'                    => 'إعادة التوريد من',
                 ],
             ],
 
             'additional' => [
-                'title'  => 'Additional Information',
+                'title'  => 'معلومات إضافية',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'       => 'Name',
-            'code'       => 'Short Name',
-            'company'    => 'Company',
-            'address'    => 'Address',
-            'deleted-at' => 'deleted At',
-            'created-at' => 'Created At',
-            'updated-at' => 'Updated At',
+            'name'       => 'الاسم',
+            'code'       => 'الاسم المختصر',
+            'company'    => 'الشركة',
+            'address'    => 'العنوان',
+            'deleted-at' => 'تاريخ الحذف',
+            'created-at' => 'تاريخ الإنشاء',
+            'updated-at' => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'address'       => 'Address',
-            'company'       => 'Company',
-            'created-at'    => 'Created At',
-            'updated-at'    => 'Updated At',
+            'address'       => 'العنوان',
+            'company'       => 'الشركة',
+            'created-at'    => 'تاريخ الإنشاء',
+            'updated-at'    => 'تاريخ التحديث',
         ],
 
         'filters' => [
-            'company' => 'Company',
+            'company' => 'الشركة',
         ],
 
         'actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Warehouse restored',
-                    'body'  => 'The warehouse has been restored successfully.',
+                    'title' => 'تم استعادة المستودع',
+                    'body'  => 'تم استعادة المستودع بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Warehouse deleted',
-                    'body'  => 'The warehouse has been deleted successfully.',
+                    'title' => 'تم حذف المستودع',
+                    'body'  => 'تم حذف المستودع بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Warehouse force deleted',
-                        'body'  => 'The warehouse has been force deleted successfully.',
+                        'title' => 'تم حذف المستودع نهائياً',
+                        'body'  => 'تم حذف المستودع نهائياً بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Warehouse could not be deleted',
-                        'body'  => 'The warehouse cannot be deleted because it is currently in use.',
+                        'title' => 'تعذر حذف المستودع',
+                        'body'  => 'لا يمكن حذف المستودع لأنه قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -97,28 +97,28 @@ return [
         'bulk-actions' => [
             'restore' => [
                 'notification' => [
-                    'title' => 'Warehouses restored',
-                    'body'  => 'The warehouses has been restored successfully.',
+                    'title' => 'تم استعادة المستودعات',
+                    'body'  => 'تم استعادة المستودعات بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Warehouses deleted',
-                    'body'  => 'The warehouses has been deleted successfully.',
+                    'title' => 'تم حذف المستودعات',
+                    'body'  => 'تم حذف المستودعات بنجاح.',
                 ],
             ],
 
             'force-delete' => [
                 'notification' => [
                     'success' => [
-                        'title' => 'Warehouses force deleted',
-                        'body'  => 'The warehouses has been force deleted successfully.',
+                        'title' => 'تم حذف المستودعات نهائياً',
+                        'body'  => 'تم حذف المستودعات نهائياً بنجاح.',
                     ],
 
                     'error' => [
-                        'title' => 'Warehouses could not be deleted',
-                        'body'  => 'The warehouses cannot be deleted because they are currently in use.',
+                        'title' => 'تعذر حذف المستودعات',
+                        'body'  => 'لا يمكن حذف المستودعات لأنها قيد الاستخدام حالياً.',
                     ],
                 ],
             ],
@@ -128,35 +128,35 @@ return [
     'infolist' => [
         'sections' => [
             'general' => [
-                'title' => 'General Information',
+                'title' => 'معلومات عامة',
 
                 'entries' => [
-                    'name'    => 'Warehouse Name',
-                    'code'    => 'Warehouse Code',
-                    'company' => 'Company',
-                    'address' => 'Address',
+                    'name'    => 'اسم المستودع',
+                    'code'    => 'رمز المستودع',
+                    'company' => 'الشركة',
+                    'address' => 'العنوان',
                 ],
             ],
 
             'settings' => [
-                'title' => 'Settings',
+                'title' => 'الإعدادات',
 
                 'entries' => [
-                    'shipment-management' => 'Shipment Management',
-                    'incoming-shipments'  => 'Incoming Shipments',
-                    'outgoing-shipments'  => 'Outgoing Shipments',
-                    'resupply-management' => 'Resupply Management',
-                    'resupply-from'       => 'Resupply From',
+                    'shipment-management' => 'إدارة الشحنات',
+                    'incoming-shipments'  => 'الشحنات الواردة',
+                    'outgoing-shipments'  => 'الشحنات الصادرة',
+                    'resupply-management' => 'إدارة إعادة التوريد',
+                    'resupply-from'       => 'إعادة التوريد من',
                 ],
             ],
 
             'record-information' => [
-                'title' => 'Record Information',
+                'title' => 'معلومات السجل',
 
                 'entries' => [
-                    'created-by'   => 'Created By',
-                    'created-at'   => 'Created At',
-                    'last-updated' => 'Last Updated',
+                    'created-by'   => 'أنشئ بواسطة',
+                    'created-at'   => 'تاريخ الإنشاء',
+                    'last-updated' => 'آخر تحديث',
                 ],
             ],
         ],

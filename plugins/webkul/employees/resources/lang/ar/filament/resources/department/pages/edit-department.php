@@ -4,15 +4,15 @@ return [
     'update' => [
         'success' => [
             'notification' => [
-                'title' => 'Department updated',
-                'body'  => 'The department has been updated successfully.',
+                'title' => 'تم تحديث القسم',
+                'body'  => 'تم تحديث القسم بنجاح.',
             ],
         ],
 
         'error' => [
             'notification' => [
-                'title' => 'Department update failed',
-                'body'  => 'There was an error updating the department.',
+                'title' => 'فشل تحديث القسم',
+                'body'  => 'حدث خطأ أثناء تحديث القسم.',
             ],
         ],
     ],
@@ -20,8 +20,8 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Department deleted',
-                'body'  => 'The department has been deleted successfully.',
+                'title' => 'تم حذف القسم',
+                'body'  => 'تم حذف القسم بنجاح.',
             ],
         ],
     ],

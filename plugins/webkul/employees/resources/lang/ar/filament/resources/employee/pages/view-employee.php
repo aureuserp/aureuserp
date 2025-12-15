@@ -4,8 +4,8 @@ return [
     'header-actions' => [
         'delete' => [
             'notification' => [
-                'title' => 'Employee deleted',
-                'body'  => 'The employee has been deleted successfully.',
+                'title' => 'تم حذف الموظف',
+                'body'  => 'تم حذف الموظف بنجاح.',
             ],
         ],
     ],

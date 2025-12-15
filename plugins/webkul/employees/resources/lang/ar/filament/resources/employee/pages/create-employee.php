@@ -2,7 +2,7 @@
 
 return [
     'notification' => [
-        'title' => 'Employee created',
-        'body'  => 'The employee has been created successfully.',
+        'title' => 'تم إنشاء الموظف',
+        'body'  => 'تم إنشاء الموظف بنجاح.',
     ],
 ];

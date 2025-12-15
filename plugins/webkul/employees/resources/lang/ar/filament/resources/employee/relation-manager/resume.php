@@ -4,68 +4,68 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'title'        => 'Title',
-                'type'         => 'Type',
-                'name'         => 'Name',
-                'type'         => 'Type',
-                'create-type'  => 'Create Type',
-                'duration'     => 'Duration',
-                'start-date'   => 'Start Date',
-                'end-date'     => 'End Date',
-                'display-type' => 'Display Type',
-                'description'  => 'Description',
+                'title'        => 'العنوان',
+                'type'         => 'النوع',
+                'name'         => 'الاسم',
+                'type'         => 'النوع',
+                'create-type'  => 'إنشاء نوع',
+                'duration'     => 'المدة',
+                'start-date'   => 'تاريخ البداية',
+                'end-date'     => 'تاريخ النهاية',
+                'display-type' => 'نوع العرض',
+                'description'  => 'الوصف',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'title'        => 'Title',
-            'start-date'   => 'Start Date',
-            'end-date'     => 'End Date',
-            'display-type' => 'Display Type',
-            'description'  => 'Description',
-            'created-by'   => 'Created By',
-            'created-at'   => 'Created At',
-            'updated-at'   => 'Updated At',
+            'title'        => 'العنوان',
+            'start-date'   => 'تاريخ البداية',
+            'end-date'     => 'تاريخ النهاية',
+            'display-type' => 'نوع العرض',
+            'description'  => 'الوصف',
+            'created-by'   => 'أنشئ بواسطة',
+            'created-at'   => 'تاريخ الإنشاء',
+            'updated-at'   => 'تاريخ التحديث',
         ],
 
         'groups' => [
-            'group-by-type'         => 'Group By Type',
-            'group-by-display-type' => 'Group By Display Type',
+            'group-by-type'         => 'تجميع حسب النوع',
+            'group-by-display-type' => 'تجميع حسب نوع العرض',
         ],
 
         'header-actions' => [
-            'add-resume' => 'Add Resume',
+            'add-resume' => 'إضافة سيرة ذاتية',
         ],
 
         'filters' => [
-            'type'            => 'Type',
-            'start-date-from' => 'Start Date From',
-            'start-date-to'   => 'Start Date To',
-            'created-from'    => 'Created From',
-            'created-to'      => 'Created To',
+            'type'            => 'النوع',
+            'start-date-from' => 'تاريخ البداية من',
+            'start-date-to'   => 'تاريخ البداية إلى',
+            'created-from'    => 'أنشئ من',
+            'created-to'      => 'أنشئ إلى',
         ],
 
         'actions' => [
             'edit' => [
                 'notification' => [
-                    'title' => 'Skill Level updated',
-                    'body'  => 'The skill level has been updated successfully.',
+                    'title' => 'تم تحديث مستوى المهارة',
+                    'body'  => 'تم تحديث مستوى المهارة بنجاح.',
                 ],
             ],
 
             'create' => [
                 'notification' => [
-                    'title' => 'Skill Level created',
-                    'body'  => 'The skill level has been created successfully.',
+                    'title' => 'تم إنشاء مستوى المهارة',
+                    'body'  => 'تم إنشاء مستوى المهارة بنجاح.',
                 ],
             ],
 
             'delete' => [
                 'notification' => [
-                    'title' => 'Skill Level deleted',
-                    'body'  => 'The skill level has been deleted successfully.',
+                    'title' => 'تم حذف مستوى المهارة',
+                    'body'  => 'تم حذف مستوى المهارة بنجاح.',
                 ],
             ],
         ],
@@ -73,8 +73,8 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Skills deleted',
-                    'body'  => 'The skills has been deleted successfully.',
+                    'title' => 'تم حذف المهارات',
+                    'body'  => 'تم حذف المهارات بنجاح.',
                 ],
             ],
         ],
@@ -82,13 +82,13 @@ return [
 
     'infolist' => [
         'entries' => [
-            'title'        => 'Title',
-            'display-type' => 'Display Type',
-            'type'         => 'Type',
-            'description'  => 'Description',
-            'duration'     => 'Duration',
-            'start-date'   => 'Start Date',
-            'end-date'     => 'End Date',
+            'title'        => 'العنوان',
+            'display-type' => 'نوع العرض',
+            'type'         => 'النوع',
+            'description'  => 'الوصف',
+            'duration'     => 'المدة',
+            'start-date'   => 'تاريخ البداية',
+            'end-date'     => 'تاريخ النهاية',
         ],
     ],
 ];
