@@ -8,6 +8,8 @@ class Vendors extends Cluster
 {
     protected static ?string $slug = 'accounting/vendors';
 
+    protected static ?int $navigationSort = 3;
+
     public static function getNavigationLabel(): string
     {
         return __('accounting::filament/clusters/vendors.navigation.title');

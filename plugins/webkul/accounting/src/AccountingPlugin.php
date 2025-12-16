@@ -38,7 +38,7 @@ class AccountingPlugin implements Plugin
                             ->label(fn () => __('accounting::app.navigation.settings.label'))
                             ->url(fn () => ManageProducts::getUrl())
                             ->group(fn () => __('accounting::app.navigation.settings.group'))
-                            ->sort(4)
+                            ->sort(6)
                             ->visible(fn () => ManageProducts::canAccess()),
                     ]);
             });

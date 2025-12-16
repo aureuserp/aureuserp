@@ -8,6 +8,8 @@ class Accounting extends Cluster
 {
     protected static ?string $slug = 'accounting/accounting';
 
+    protected static ?int $navigationSort = 4;
+
     public static function getNavigationLabel(): string
     {
         return __('accounting::filament/clusters/accounting.navigation.title');

@@ -22,7 +22,7 @@ class ManageProducts extends SettingsPage
 
     protected static string|\UnitEnum|null $navigationGroup = 'Accounting';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 8;
 
     protected static string $settings = ProductSettings::class;
 

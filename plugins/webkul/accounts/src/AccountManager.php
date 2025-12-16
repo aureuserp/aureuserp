@@ -690,8 +690,6 @@ class AccountManager
 
             $untaxedAmount = $untaxedAmountCurrency;
 
-            // $sign = $move->direction_sign;
-
             [$baseLines, $taxLines] = $this->getRoundedBaseAndTaxLines($move, false);
 
             $baseLines = TaxFacade::addAccountingDataInBaseLinesTaxDetails($baseLines, $move->company, $move->always_tax_exigible);
