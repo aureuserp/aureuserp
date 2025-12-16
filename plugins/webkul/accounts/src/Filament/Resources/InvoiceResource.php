@@ -582,6 +582,7 @@ class InvoiceResource extends Resource
                             ->badge(),
                     ])
                     ->compact(),
+
                 Section::make(__('accounts::filament/resources/invoice.infolist.section.general.title'))
                     ->icon('heroicon-o-document-text')
                     ->schema([
@@ -595,6 +596,7 @@ class InvoiceResource extends Resource
                                     ->size(TextSize::Large),
                             ])
                             ->columns(2),
+
                         Grid::make()
                             ->schema([
                                 Grid::make()
@@ -610,6 +612,7 @@ class InvoiceResource extends Resource
                                             ->visible(fn ($record) => $record->partner_id === null)
                                             ->icon('heroicon-o-user'),
                                     ]),
+
                                 Grid::make()
                                     ->schema([
                                         TextEntry::make('invoice_date')
@@ -644,6 +647,7 @@ class InvoiceResource extends Resource
                             ])
                             ->columns(2),
                     ]),
+                    
                 Tabs::make()
                     ->columnSpan('full')
                     ->tabs([

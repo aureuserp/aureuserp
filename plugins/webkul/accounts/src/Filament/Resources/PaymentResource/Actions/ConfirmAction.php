@@ -30,16 +30,12 @@ class ConfirmAction extends Action
                     $record->generateJournalEntry();
 
                     $record->refresh();
-
-                    AccountFacade::confirmMove($record->move);
                 }
                 
                 AccountFacade::confirmMove($record->move);
 
                 $livewire->refreshFormData(['state']);
             })
-            ->hidden(function (Payment $record) {
-                return $record->state != PaymentStatus::DRAFT;
-            });
+            ->hidden(fn (Payment $record) => $record->state != PaymentStatus::DRAFT);
     }
 }

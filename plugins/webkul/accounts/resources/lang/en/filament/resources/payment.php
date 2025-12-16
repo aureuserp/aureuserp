@@ -18,8 +18,10 @@ return [
                 'currency'              => 'Currency',
                 'payment-method'        => 'Payment Method',
                 'customer'              => 'Customer',
+                'vendor'                => 'Vendor',
                 'journal'               => 'Journal',
                 'customer-bank-account' => 'Customer Bank Account',
+                'vendor-bank-account'   => 'Vendor Bank Account',
             ],
         ],
     ],
@@ -88,26 +90,16 @@ return [
                 'title'   => 'Payment Information',
                 'entries' => [
                     'state'                 => 'State',
+                    'vendor'                => 'Vendor',
+                    'customer'              => 'Customer',
                     'payment-type'          => 'Payment Type',
                     'journal'               => 'Journal',
                     'customer-bank-account' => 'Customer Bank Account',
-                    'customer'              => 'Customer',
-                ],
-            ],
-
-            'payment-details' => [
-                'title'   => 'Payment Details',
-                'entries' => [
-                    'amount' => 'Amount',
-                    'date'   => 'Date',
-                    'memo'   => 'Memo',
-                ],
-            ],
-
-            'payment-method' => [
-                'title'   => 'Payment Method',
-                'entries' => [
-                    'payment-method' => 'Payment Method',
+                    'vendor-bank-account'   => 'Vendor Bank Account',
+                    'amount'                => 'Amount',
+                    'payment-method'        => 'Payment Method',
+                    'date'                  => 'Date',
+                    'memo'                  => 'Memo',
                 ],
             ],
         ],

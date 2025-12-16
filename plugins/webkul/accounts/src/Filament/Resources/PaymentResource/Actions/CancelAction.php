@@ -6,6 +6,7 @@ use Filament\Actions\Action;
 use Livewire\Component;
 use Webkul\Account\Enums\PaymentStatus;
 use Webkul\Account\Models\Payment;
+use Webkul\Account\Facades\Account as AccountFacade;
 
 class CancelAction extends Action
 {
@@ -26,10 +27,10 @@ class CancelAction extends Action
                 $record->state = PaymentStatus::CANCELED;
                 $record->save();
 
+                $record->move?->delete();
+
                 $livewire->refreshFormData(['state']);
             })
-            ->hidden(function (Payment $record) {
-                return $record->state == PaymentStatus::CANCELED;
-            });
+            ->hidden(fn (Payment $record) => in_array($record->state, [PaymentStatus::DRAFT, PaymentStatus::CANCELED]));
     }
 }

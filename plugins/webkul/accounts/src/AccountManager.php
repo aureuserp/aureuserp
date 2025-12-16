@@ -1925,46 +1925,46 @@ class AccountManager
     {
         if (! $record->partner_id) {
             if ($record->isSaleDocument(true)) {
-                throw new \Exception(__('accounts::account-manager.errors.customer-required'));
+                throw new \Exception(__('accounts::account-manager.post-action-validate.customer-required'));
             } elseif ($record->isPurchaseDocument(true)) {
-                throw new \Exception(__('accounts::account-manager.errors.vendor-required'));
+                throw new \Exception(__('accounts::account-manager.post-action-validate.vendor-required'));
             }
         }
 
         if ($record->partnerBank?->trashed()) {
-            throw new \Exception(__('accounts::account-manager.errors.bank-archived'));
+            throw new \Exception(__('accounts::account-manager.post-action-validate.bank-archived'));
         }
 
         if (float_compare($record->amount_total, 0, precisionRounding: $record->currency->rounding) < 0) {
-            throw new \Exception(__('accounts::account-manager.errors.negative-amount'));
+            throw new \Exception(__('accounts::account-manager.post-action-validate.negative-amount'));
         }
 
         if (! $record->invoice_date) {
             if ($record->isSaleDocument(true)) {
                 $record->invoice_date = now();
             } elseif ($record->isPurchaseDocument(true)) {
-                throw new \Exception(__('accounts::account-manager.errors.date-required'));
+                throw new \Exception(__('accounts::account-manager.post-action-validate.date-required'));
             }
         }
 
         if (in_array($record->state, [MoveState::POSTED, MoveState::CANCEL])) {
-            throw new \Exception(__('accounts::account-manager.errors.draft-state-required'));
+            throw new \Exception(__('accounts::account-manager.post-action-validate.draft-state-required'));
         }
 
         if ($record->lines->isEmpty()) {
-            throw new \Exception(__('accounts::account-manager.errors.lines-required'));
+            throw new \Exception(__('accounts::account-manager.post-action-validate.lines-required'));
         }
 
         if ($record->lines->some(fn ($line) => $line->account->deprecated)) {
-            throw new \Exception(__('accounts::account-manager.errors.account-deprecated'));
+            throw new \Exception(__('accounts::account-manager.post-action-validate.account-deprecated'));
         }
 
         if (! $record->journal) {
-            throw new \Exception(__('accounts::account-manager.errors.journal-archived'));
+            throw new \Exception(__('accounts::account-manager.post-action-validate.journal-archived'));
         }
 
         if (! $record->currency) {
-            throw new \Exception(__('accounts::account-manager.errors.currency-archived'));
+            throw new \Exception(__('accounts::account-manager.post-action-validate.currency-archived'));
         }
     }
 

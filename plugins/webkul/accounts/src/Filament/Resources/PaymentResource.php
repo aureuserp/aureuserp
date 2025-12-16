@@ -53,18 +53,45 @@ class PaymentResource extends Resource
     {
         return $schema
             ->components([
-                Grid::make()
-                    ->schema([
-                        ProgressStepper::make('state')
-                            ->hiddenLabel()
-                            ->inline()
-                            ->options(PaymentStatus::class)
-                            ->default(PaymentStatus::DRAFT->value)
-                            ->columnSpan('full')
-                            ->disabled()
-                            ->live()
-                            ->reactive(),
-                    ])->columns(2),
+                ProgressStepper::make('state')
+                    ->hiddenLabel()
+                    ->inline()
+                    ->options(function ($record) {
+                        $options = PaymentStatus::options();
+
+                        if (
+                            $record
+                            && $record->state != PaymentStatus::NOT_PAID
+                        ) {
+                            unset($options[PaymentStatus::NOT_PAID->value]);
+                        }
+
+                        if (
+                            $record
+                            && $record->state != PaymentStatus::CANCELED
+                        ) {
+                            unset($options[PaymentStatus::CANCELED->value]);
+                        }
+
+                        if (
+                            $record
+                            && $record->state != PaymentStatus::REJECTED
+                        ) {
+                            unset($options[PaymentStatus::REJECTED->value]);
+                        }
+
+                        if ($record == null) {
+                            unset($options[PaymentStatus::CANCELED->value]);
+                        }
+
+                        return $options;
+                    })
+                    ->default(PaymentStatus::DRAFT->value)
+                    ->columnSpan('full')
+                    ->disabled()
+                    ->live()
+                    ->reactive(),
+                    
                 Section::make()
                     ->schema([
                         Group::make()
@@ -72,7 +99,6 @@ class PaymentResource extends Resource
                                 ToggleButtons::make('payment_type')
                                     ->label(__('accounts::filament/resources/payment.form.sections.fields.payment-type'))
                                     ->options(PaymentType::class)
-                                    ->default(PaymentType::RECEIVE->value)
                                     ->inline(true)
                                     ->live(),
                             ]),
@@ -82,11 +108,15 @@ class PaymentResource extends Resource
                                 Group::make()
                                     ->schema([
                                         Select::make('partner_id')
-                                            ->label(__('accounts::filament/resources/payment.form.sections.fields.customer'))
+                                            ->label(
+                                                fn (Get $get) => $get('payment_type') === PaymentType::RECEIVE
+                                                    ? __('accounts::filament/resources/payment.form.sections.fields.customer')
+                                                    : __('accounts::filament/resources/payment.form.sections.fields.vendor')
+                                            )
                                             ->relationship(
                                                 'partner',
                                                 'name',
-                                                fn ($query) => $query->where('sub_type', 'customer')->orderBy('id'),
+                                                fn (Builder $query, Get $get) => $query->orderBy('id'),
                                             )
                                             ->reactive()
                                             ->afterStateUpdated(function (Set $set, $state) {
@@ -97,6 +127,7 @@ class PaymentResource extends Resource
                                             })
                                             ->searchable()
                                             ->preload(),
+
                                         Group::make()
                                             ->schema([
                                                 TextInput::make('amount')
@@ -118,6 +149,7 @@ class PaymentResource extends Resource
                                                     ->default(fn () => filament()->auth()->user()->defaultCompany?->currency_id),
                                             ])
                                             ->columns(2),
+
                                         DatePicker::make('date')
                                             ->label(__('accounts::filament/resources/payment.form.sections.fields.date'))
                                             ->native(false)
@@ -128,6 +160,8 @@ class PaymentResource extends Resource
                                             ->maxLength(255),
                                     ])
                                     ->columns(1),
+                                    
+                                
                                 Group::make()
                                     ->schema([
                                         Select::make('journal_id')
@@ -178,11 +212,15 @@ class PaymentResource extends Resource
                                             ->preload()
                                             ->live(),
                                         Select::make('partner_bank_id')
-                                            ->label(__('accounts::filament/resources/payment.form.sections.fields.customer-bank-account'))
+                                            ->label(
+                                                fn (Get $get) => $get('payment_type') === PaymentType::RECEIVE
+                                                    ? __('accounts::filament/resources/payment.form.sections.fields.customer-bank-account')
+                                                    : __('accounts::filament/resources/payment.form.sections.fields.vendor-bank-account')
+                                            )
                                             ->relationship(
                                                 'partnerBank',
                                                 'account_number',
-                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->withTrashed()->where('partner_id', $get('partner_id')),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
                                                 return $record->account_number.' - '.$record->bank->name.($record->trashed() ? ' (Deleted)' : '');
@@ -415,43 +453,99 @@ class PaymentResource extends Resource
         return $schema
             ->columns(1)
             ->components([
+                Grid::make()
+                    ->schema([
+                        ProgressStepper::make('state')
+                            ->hiddenLabel()
+                            ->inline()
+                            ->options(function ($record) {
+                                $options = PaymentStatus::options();
+
+                                if (
+                                    $record
+                                    && $record->state != PaymentStatus::NOT_PAID
+                                ) {
+                                    unset($options[PaymentStatus::NOT_PAID->value]);
+                                }
+
+                                if (
+                                    $record
+                                    && $record->state != PaymentStatus::CANCELED
+                                ) {
+                                    unset($options[PaymentStatus::CANCELED->value]);
+                                }
+
+                                if (
+                                    $record
+                                    && $record->state != PaymentStatus::REJECTED
+                                ) {
+                                    unset($options[PaymentStatus::REJECTED->value]);
+                                }
+
+                                if ($record == null) {
+                                    unset($options[PaymentStatus::CANCELED->value]);
+                                }
+
+                                return $options;
+                            })
+                            ->columnSpan('full')
+                            ->disabled(),
+                    ])->columns(2),
+
                 Section::make()
                     ->schema([
                         Group::make()
                             ->schema([
-                                TextEntry::make('state')
-                                    ->badge()
-                                    ->label(__('accounts::filament/resources/payment.infolist.sections.payment-information.entries.state')),
                                 TextEntry::make('payment_type')
                                     ->label(__('accounts::filament/resources/payment.infolist.sections.payment-information.entries.payment-type'))
                                     ->badge(),
-                                TextEntry::make('partnerBank.account_number')
-                                    ->label(__('accounts::filament/resources/payment.infolist.sections.payment-information.entries.customer-bank-account'))
-                                    ->icon('heroicon-o-building-library')
-                                    ->placeholder('—'),
                                 TextEntry::make('partner.name')
-                                    ->label(__('accounts::filament/resources/payment.infolist.sections.payment-information.entries.customer'))
+                                    ->label(
+                                        fn ($record) => $record->payment_type === PaymentType::RECEIVE
+                                            ? __('accounts::filament/resources/payment.infolist.sections.payment-information.entries.customer')
+                                            : __('accounts::filament/resources/payment.infolist.sections.payment-information.entries.vendor')
+                                    )
                                     ->icon('heroicon-o-user')
-                                    ->placeholder('—'),
-                                TextEntry::make('paymentMethodLine.name')
-                                    ->label(__('accounts::filament/resources/payment.infolist.sections.payment-method.entries.payment-method'))
-                                    ->icon('heroicon-o-credit-card')
                                     ->placeholder('—'),
                                 TextEntry::make('amount')
                                     ->icon('heroicon-o-currency-dollar')
-                                    ->label(__('accounts::filament/resources/payment.infolist.sections.payment-details.entries.amount'))
+                                    ->label(__('accounts::filament/resources/payment.infolist.sections.payment-information.entries.amount'))
+                                    ->money(fn (Payment $record) => $record->currency->name, true)
                                     ->placeholder('—'),
                                 TextEntry::make('date')
                                     ->icon('heroicon-o-calendar')
-                                    ->label(__('accounts::filament/resources/payment.infolist.sections.payment-details.entries.date'))
+                                    ->label(__('accounts::filament/resources/payment.infolist.sections.payment-information.entries.date'))
                                     ->placeholder('—')
                                     ->date(),
                                 TextEntry::make('memo')
-                                    ->label(__('accounts::filament/resources/payment.infolist.sections.payment-details.entries.memo'))
+                                    ->label(__('accounts::filament/resources/payment.infolist.sections.payment-information.entries.memo'))
                                     ->icon('heroicon-o-document-text')
                                     ->placeholder('—'),
-                            ])->columns(2),
-                    ]),
+                            ])
+                            ->columns(1),
+                            
+                        Group::make()
+                            ->schema([
+                                TextEntry::make('journal.name')
+                                    ->label(__('accounts::filament/resources/payment.infolist.sections.payment-information.entries.journal'))
+                                    ->icon('heroicon-o-building-library')
+                                    ->placeholder('—'),
+                                TextEntry::make('paymentMethodLine.name')
+                                    ->label(__('accounts::filament/resources/payment.infolist.sections.payment-information.entries.payment-method'))
+                                    ->icon('heroicon-o-credit-card')
+                                    ->placeholder('—'),
+                                TextEntry::make('partnerBank.account_number')
+                                    ->label(
+                                        fn ($record) => $record->payment_type === PaymentType::RECEIVE
+                                            ? __('accounts::filament/resources/payment.infolist.sections.payment-information.entries.customer-bank-account')
+                                            : __('accounts::filament/resources/payment.infolist.sections.payment-information.entries.vendor-bank-account')
+                                    )
+                                    ->icon('heroicon-o-building-library')
+                                    ->placeholder('—'),
+                            ])
+                            ->columns(1),
+                    ])
+                    ->columns(2),
             ]);
     }
 

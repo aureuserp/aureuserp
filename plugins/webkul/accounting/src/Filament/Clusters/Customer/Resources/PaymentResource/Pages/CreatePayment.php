@@ -4,6 +4,7 @@ namespace Webkul\Accounting\Filament\Clusters\Customer\Resources\PaymentResource
 
 use Webkul\Account\Filament\Resources\PaymentResource\Pages\CreatePayment as BaseCreatePayment;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\PaymentResource;
+use Webkul\Account\Enums\PaymentType;
 
 class CreatePayment extends BaseCreatePayment
 {
@@ -16,5 +17,14 @@ class CreatePayment extends BaseCreatePayment
         }
 
         return [];
+    }
+
+    public function mount(): void
+    {
+        parent::mount();
+
+        $this->data['payment_type'] ??= PaymentType::RECEIVE;
+
+        $this->form->fill($this->data);
     }
 }

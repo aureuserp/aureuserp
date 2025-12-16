@@ -2,9 +2,7 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Vendors\Resources;
 
-use Filament\Forms;
-use Filament\Schemas\Schema;
-use Webkul\Account\Enums\PaymentType;
+use Filament\Resources\Pages\Page;
 use Webkul\Account\Filament\Resources\PaymentResource as BasePaymentResource;
 use Webkul\Accounting\Filament\Clusters\Vendors;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\CreatePayment;
@@ -38,56 +36,12 @@ class PaymentResource extends BasePaymentResource
         return null;
     }
 
-    public static function form(Schema $schema): Schema
+    public static function getRecordSubNavigation(Page $page): array
     {
-        $form = parent::form($schema);
-
-        $components = $form->getComponents();
-
-        $group = $components[1]?->getChildComponents()[0] ?? null;
-
-        if ($group) {
-            $fields = $group->getChildComponents();
-            $fields[0] = $fields[0]->default(PaymentType::SEND->value);
-
-            $fields[1] = $fields[1]->label(__('accounting::filament/resources/payment.form.sections.fields.vender-bank-account'));
-
-            $fields[2] = Forms\Components\Select::make('partner_id')
-                ->label(__('accounting::filament/resources/payment.form.sections.fields.vender'))
-                ->relationship(
-                    'partner',
-                    'name',
-                    fn ($query) => $query->where('sub_type', 'supplier')->orderBy('id')
-                )
-                ->searchable()
-                ->preload();
-
-            $group->childComponents($fields);
-            $components[1]->childComponents([$group]);
-        }
-
-        return $form->components($components);
-    }
-
-    public static function infolist(Schema $schema): Schema
-    {
-        $infolist = parent::infolist($schema);
-
-        $components = $infolist->getComponents();
-
-        $group = $components[0]?->getChildComponents()[0] ?? null;
-
-        if ($group) {
-            $fields = $group->getChildComponents();
-
-            $fields[2] = $fields[2]->label(__('accounting::filament/resources/payment.form.sections.fields.vender-bank-account'));
-            $fields[3] = $fields[3]->label(__('accounting::filament/resources/payment.form.sections.fields.vender'));
-
-            $group->childComponents($fields);
-            $components[0]->childComponents([$group]);
-        }
-
-        return $infolist->components($components);
+        return $page->generateNavigationItems([
+            ViewPayment::class,
+            EditPayment::class,
+        ]);
     }
 
     public static function getPages(): array

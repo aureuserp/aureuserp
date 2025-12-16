@@ -28,8 +28,6 @@ class RejectAction extends Action
 
                 $livewire->refreshFormData(['state']);
             })
-            ->hidden(function (Payment $record) {
-                return $record->state != PaymentStatus::IN_PROCESS;
-            });
+            ->hidden(fn (Payment $record) => true || $record->state != PaymentStatus::IN_PROCESS);
     }
 }

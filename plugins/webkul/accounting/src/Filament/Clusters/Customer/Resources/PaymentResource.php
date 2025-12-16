@@ -2,6 +2,7 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Customer\Resources;
 
+use Filament\Resources\Pages\Page;
 use Webkul\Account\Filament\Resources\PaymentResource as BasePaymentResource;
 use Webkul\Accounting\Filament\Clusters\Customer;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\PaymentResource\Pages\CreatePayment;
@@ -28,6 +29,14 @@ class PaymentResource extends BasePaymentResource
     public static function getNavigationLabel(): string
     {
         return __('accounting::filament/clusters/customers/resources/payment.navigation.title');
+    }
+
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            ViewPayment::class,
+            EditPayment::class,
+        ]);
     }
 
     public static function getPages(): array

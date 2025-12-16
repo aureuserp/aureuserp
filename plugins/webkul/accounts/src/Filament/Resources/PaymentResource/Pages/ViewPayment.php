@@ -22,7 +22,11 @@ class ViewPayment extends ViewRecord
         return [
             ChatterActions\ChatterAction::make()
                 ->setResource(static::$resource),
-            EditAction::make(),
+            BaseActions\ConfirmAction::make(),
+            BaseActions\ResetToDraftAction::make(),
+            BaseActions\MarkAsSendAdnUnsentAction::make(),
+            BaseActions\CancelAction::make(),
+            BaseActions\RejectAction::make(),
             DeleteAction::make()
                 ->successNotification(
                     Notification::make()
@@ -30,11 +34,6 @@ class ViewPayment extends ViewRecord
                         ->title(__('accounts::filament/resources/payment/pages/view-payment.header-actions.delete.notification.title'))
                         ->body(__('accounts::filament/resources/payment/pages/view-payment.header-actions.delete.notification.body'))
                 ),
-            BaseActions\ConfirmAction::make(),
-            BaseActions\ResetToDraftAction::make(),
-            BaseActions\MarkAsSendAdnUnsentAction::make(),
-            BaseActions\CancelAction::make(),
-            BaseActions\RejectAction::make(),
         ];
     }
 }

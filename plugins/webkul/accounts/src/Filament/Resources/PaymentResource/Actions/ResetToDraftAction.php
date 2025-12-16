@@ -26,7 +26,9 @@ class ResetToDraftAction extends Action
                 $record->state = PaymentStatus::DRAFT;
                 $record->save();
 
-                $record = AccountFacade::resetToDraftMove($record->move);
+                if ($record->move) {
+                    $record->move = AccountFacade::resetToDraftMove($record->move);
+                }
 
                 $livewire->refreshFormData(['state']);
             })

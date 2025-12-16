@@ -488,16 +488,17 @@ class BillResource extends Resource
                                             ->placeholder('-')
                                             ->money(fn ($record) => $record->currency->name),
                                     ]),
+
                                 Livewire::make(InvoiceSummary::class, function ($record) {
+                                    $rounding = $record->roundingLines->sum('balance');
+
                                     return [
-                                        'currency'  => $record->currency,
-                                        'amountTax' => $record->amount_tax ?? 0,
-                                        'products'  => $record->lines->map(function ($item) {
-                                            return [
-                                                ...$item->toArray(),
-                                                'taxes' => $item->taxes->pluck('id')->toArray() ?? [],
-                                            ];
-                                        })->toArray(),
+                                        'currency'   => $record->currency,
+                                        'subtotal'   => $record->amount_untaxed ?? 0,
+                                        'totalTax'   => $record->amount_tax ?? 0,
+                                        'amountTax'  => $record->amount_tax ?? 0,
+                                        'grandTotal' => $record->amount_total ?? 0,
+                                        'rounding'   => $rounding,
                                     ];
                                 }),
                             ]),
