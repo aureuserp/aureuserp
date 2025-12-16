@@ -11,6 +11,7 @@ use Filament\Support\Facades\FilamentView;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\CreditNoteResource;
 use Webkul\Account\Models\Move;
@@ -71,10 +72,14 @@ class CreditNoteAction extends Action
 
             $moveReversal->moves()->attach($record);
 
+            $defaultValues = $this->prepareMoveValues($record, $moveReversal);
+
+            $isCancelNeeded = ! $defaultValues['auto_post'] && $record->move_type == MoveType::ENTRY;
+
             $reversedMoves = AccountFacade::reverseMoves(
                 collect([$record]),
-                $this->prepareMoveValues($record, $moveReversal),
-                false
+                $defaultValues,
+                $isCancelNeeded
             )->each(function (Move $move) use ($moveReversal) {
                 $moveReversal->newMoves()->attach($move->id);
             });

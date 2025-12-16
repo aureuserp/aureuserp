@@ -11,6 +11,7 @@ use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -207,6 +208,34 @@ class MoveLine extends Model implements Sortable
         return null;
     }
 
+    public function getIsRefundAttribute()
+    {
+        $isRefund = false;
+
+        if (in_array($this->move->move_type, [MoveType::OUT_REFUND, MoveType::IN_REFUND])) {
+            $isRefund = true;
+        } elseif ($this->move->move_type == MoveType::ENTRY) {
+            if ($this->taxRepartitionLine) {
+                $isRefund = $this->taxRepartitionLine->document_type == 'refund';
+            } else {
+                $tax = $this->taxes->first();
+                $taxType = $tax?->type_tax_use;
+
+                if ($taxType == 'sale' && $this->credit == 0.0) {
+                    $isRefund = true;
+                } elseif ($taxType == 'purchase' && $this->debit == 0.0) {
+                    $isRefund = true;
+                }
+
+                if ($this->taxes->isNotEmpty() && $this->move->reversed_entry_id) {
+                    $isRefund = ! $isRefund;
+                }
+            }
+        }
+
+        return $isRefund;
+    }
+
     /**
      * Bootstrap any application services.
      */
@@ -241,7 +270,6 @@ class MoveLine extends Model implements Sortable
 
             $moveLine->computeName();
 
-            // TODO: check
             $moveLine->computeTaxTagInvert();
         });
     }
@@ -446,6 +474,29 @@ class MoveLine extends Model implements Sortable
     public function computeTaxTagInvert()
     {
         $this->tax_tag_invert = true;
+
+        $originMove = $this->move->tax_cash_basis_origin_move_id ?: $this->move;
+
+        if (! $this->tax_repartition_line_id && $this->taxes->isEmpty()) {
+            $this->tax_tag_invert = $this->taxTags?->isNotEmpty() && $originMove->isInbound();
+        } elseif ($originMove->move_type == MoveType::ENTRY) {
+            $tax = $this->taxRepartitionLine->tax ?? $this->taxes->first();
+
+            if ($this->display_type == DisplayType::EPD) {
+                $this->tax_tag_invert = $tax->type_tax_use == 'purchase';
+            } else {
+                $this->tax_tag_invert = (
+                        $tax->type_tax_use == 'purchase'
+                        && $this->is_refund
+                    )
+                    || (
+                        $tax->type_tax_use == 'sale'
+                        && ! $this->is_refund
+                    );
+            }
+        } else {
+            $this->tax_tag_invert = $originMove->isInbound();
+        }
     }
 
     public function computeBalance()
