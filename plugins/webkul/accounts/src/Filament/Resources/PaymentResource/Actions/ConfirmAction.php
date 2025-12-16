@@ -33,6 +33,8 @@ class ConfirmAction extends Action
 
                     AccountFacade::confirmMove($record->move);
                 }
+                
+                AccountFacade::confirmMove($record->move);
 
                 $livewire->refreshFormData(['state']);
             })

@@ -622,7 +622,7 @@ class Move extends Model implements Sortable
             $oppositeMoveTypes = $row->opposite_move_types;
 
             if (is_string($oppositeMoveTypes)) {
-                $oppositeMoveTypes = str_replace(['{', '}'], '', $oppositeMoveTypes);
+                $oppositeMoveTypes = str_replace(['["', '"]'], '', $oppositeMoveTypes);
 
                 $oppositeMoveTypes = $oppositeMoveTypes ? explode(',', $oppositeMoveTypes) : [];
             }
@@ -642,7 +642,7 @@ class Move extends Model implements Sortable
 
         $currency = $currencies->count() === 1
             ? Currency::find($currencies->first())
-            : $this->company->currency_id;
+            : Currency::find($this->company->currency_id);
 
         $reconciliationVals = $paymentData;
 
@@ -701,26 +701,26 @@ class Move extends Model implements Sortable
 
                     $inReverse = in_array($this->move_type, [MoveType::IN_INVOICE, MoveType::IN_RECEIPT])
                         && (
-                            $reverseMoveTypes === [MoveType::IN_REFUND]
+                            $reverseMoveTypes === [MoveType::IN_REFUND->value]
                             || (
                                 count($reverseMoveTypes) === 2
-                                && in_array(MoveType::IN_REFUND, $reverseMoveTypes)
-                                && in_array(MoveType::ENTRY, $reverseMoveTypes)
+                                && in_array(MoveType::IN_REFUND->value, $reverseMoveTypes)
+                                && in_array(MoveType::ENTRY->value, $reverseMoveTypes)
                             )
                         );
 
                     $outReverse = in_array($this->move_type, [MoveType::OUT_INVOICE, MoveType::OUT_RECEIPT])
                         && (
-                            $reverseMoveTypes === [MoveType::OUT_REFUND]
+                            $reverseMoveTypes === [MoveType::OUT_REFUND->value]
                             || (
                                 count($reverseMoveTypes) === 2
-                                && in_array(MoveType::OUT_REFUND, $reverseMoveTypes)
-                                && in_array(MoveType::ENTRY, $reverseMoveTypes)
+                                && in_array(MoveType::OUT_REFUND->value, $reverseMoveTypes)
+                                && in_array(MoveType::ENTRY->value, $reverseMoveTypes)
                             )
                         );
 
                     $miscReverse = in_array($this->move_type, [MoveType::ENTRY, MoveType::OUT_REFUND, MoveType::IN_REFUND])
-                        && $reverseMoveTypes === ['entry'];
+                        && $reverseMoveTypes === [MoveType::ENTRY->value];
 
                     if ($inReverse || $outReverse || $miscReverse) {
                         $newPaymentState = PaymentState::REVERSED;
@@ -915,7 +915,7 @@ class Move extends Model implements Sortable
                 'date' => $counterpartLine->date,
                 'partial_id' => $reconciledPartial['partial_id'],
                 'account_payment_id' => $counterpartLine->payment_id,
-                'payment_method_name' => $counterpartLine->payment->paymentMethodLine->name,
+                'payment_method_name' => $counterpartLine->payment?->paymentMethodLine->name,
                 'move_id' => $counterpartLine->move_id,
                 'ref' => $reconciliationRef,
                 'is_exchange' => $reconciledPartial['is_exchange'],

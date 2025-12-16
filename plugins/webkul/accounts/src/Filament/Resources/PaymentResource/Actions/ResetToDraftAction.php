@@ -6,6 +6,7 @@ use Filament\Actions\Action;
 use Livewire\Component;
 use Webkul\Account\Enums\PaymentStatus;
 use Webkul\Account\Models\Payment;
+use Webkul\Account\Facades\Account as AccountFacade;
 
 class ResetToDraftAction extends Action
 {
@@ -25,10 +26,10 @@ class ResetToDraftAction extends Action
                 $record->state = PaymentStatus::DRAFT;
                 $record->save();
 
+                $record = AccountFacade::resetToDraftMove($record->move);
+
                 $livewire->refreshFormData(['state']);
             })
-            ->hidden(function (Payment $record) {
-                return $record->state == PaymentStatus::DRAFT;
-            });
+            ->hidden(fn (Payment $record) => $record->state == PaymentStatus::DRAFT);
     }
 }

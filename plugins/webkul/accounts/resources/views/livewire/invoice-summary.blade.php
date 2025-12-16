@@ -153,11 +153,11 @@
                 @endforeach
             @endif
 
-            <!-- Amount due or rededula -->
+            <!-- Amount due or residual -->
             @if ($record?->state === \Webkul\Account\Enums\MoveState::POSTED)
                 <div class="divider"></div>
 
-                <div class="invoice-item font-bold total">
+                <div class="invoice-item total font-bold">
                     <span>
                         Amount Due
                     </span>

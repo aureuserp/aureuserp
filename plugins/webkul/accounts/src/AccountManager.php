@@ -127,6 +127,8 @@ class AccountManager
 
         $record = $this->computeAccountMove($record);
 
+        $record->save();
+
         return $record;
     }
 
@@ -1148,8 +1150,8 @@ class AccountManager
 
         if ($move = $partialReconcile->exchangeMove) {
             $defaultValues = [[
-                'date' => $move->date,
-                'ref'  => __('Reversal of: :name', ['name' => $move->name]),
+                'date'      => $move->date,
+                'reference' => __('Reversal of: :name', ['name' => $move->name]),
             ]];
 
             $this->reverseMoves([$move], $defaultValues, true);

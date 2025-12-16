@@ -38,15 +38,15 @@ class EditInvoice extends EditRecord
         return [
             ChatterActions\ChatterAction::make()
                 ->setResource($this->getResource()),
+            BaseActions\PrintAndSendAction::make(),
+            BaseActions\PreviewAction::make()
+                ->setTemplate('accounts::invoice/actions/preview.index'),
             BaseActions\PayAction::make(),
             BaseActions\ConfirmAction::make(),
             BaseActions\CancelAction::make(),
-            BaseActions\ResetToDraftAction::make(),
             BaseActions\SetAsCheckedAction::make(),
-            BaseActions\PreviewAction::make()
-                ->setTemplate('accounts::invoice/actions/preview.index'),
-            BaseActions\PrintAndSendAction::make(),
             BaseActions\CreditNoteAction::make(),
+            BaseActions\ResetToDraftAction::make(),
             DeleteAction::make(),
         ];
     }

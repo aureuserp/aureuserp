@@ -8,6 +8,7 @@ return [
 
         'form' => [
             'reason' => 'Reason displayed on Credit Note',
+            'journal' => 'Journal',
             'date'   => 'Date',
         ],
     ],

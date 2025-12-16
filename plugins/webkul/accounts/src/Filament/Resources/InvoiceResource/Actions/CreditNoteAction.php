@@ -4,19 +4,16 @@ namespace Webkul\Account\Filament\Resources\InvoiceResource\Actions;
 
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Schema;
 use Filament\Support\Facades\FilamentView;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveState;
-use Webkul\Account\Enums\MoveType;
-use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\CreditNoteResource;
 use Webkul\Account\Models\Move;
-use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\MoveReversal;
 use Webkul\Support\Traits\PDFHandler;
 
@@ -47,6 +44,15 @@ class CreditNoteAction extends Action
                         ->label(__('accounts::filament/resources/invoice/actions/credit-note.modal.form.reason'))
                         ->maxLength(245)
                         ->required(),
+                    Select::make('journal_id')
+                        ->label(__('accounts::filament/resources/invoice/actions/credit-note.modal.form.journal'))
+                        ->relationship(
+                            'journal',
+                            'name',
+                            modifyQueryUsing: fn ($query) => $query->whereIn('id', [$this->getRecord()->journal_id])
+                        )
+                        ->required()
+                        ->default(fn () => $this->getRecord()->journal_id),
                     DatePicker::make('date')
                         ->label(__('accounts::filament/resources/invoice/actions/credit-note.modal.form.date'))
                         ->default(now())
@@ -57,64 +63,43 @@ class CreditNoteAction extends Action
         );
 
         $this->action(function (Move $record, array $data, $livewire) {
-            $user = Auth::user();
-
-            $creditNote = MoveReversal::create([
-                'reason'     => $data['reason'],
+            $moveReversal = MoveReversal::create([
+                'journal_id' => $data['journal_id'],
                 'date'       => $data['date'],
-                'company_id' => $record->company_id,
-                'creator_id' => $user->id,
+                'reason'     => $data['reason'],
             ]);
 
-            $creditNote->moves()->attach($record);
+            $moveReversal->moves()->attach($record);
 
-            $move = $this->createMove($creditNote, $record);
+            $reversedMoves = AccountFacade::reverseMoves(
+                collect([$record]),
+                $this->prepareMoveValues($record, $moveReversal),
+                false
+            )->each(function (Move $move) use ($moveReversal) {
+                $moveReversal->newMoves()->attach($move->id);
+            });
 
-            AccountFacade::computeAccountMove($move);
+            AccountFacade::computeAccountMove($record);
 
-            $redirectUrl = CreditNoteResource::getUrl('edit', ['record' => $move->id]);
+            $redirectUrl = CreditNoteResource::getUrl('edit', ['record' => $reversedMoves->first()->id]);
 
             $livewire->redirect($redirectUrl, navigate: FilamentView::hasSpaMode());
         });
     }
 
-    private function createMove(MoveReversal $creditNote, Move $record): Move
+    private function prepareMoveValues(Move $move, MoveReversal $moveReversal): array
     {
-        $newMove = $record->replicate()->fill([
+        return [
             'reference'         => Str::limit(
-                "Reversal of: {$record->name}, {$creditNote->reason}",
+                "Reversal of: {$move->name}, {$moveReversal->reason}",
                 250
             ),
-            'reversed_entry_id' => $record->id,
-            'state'             => MoveState::DRAFT,
-            'move_type'         => MoveType::OUT_REFUND,
-            'payment_state'     => PaymentState::NOT_PAID,
+            'date'              => $moveReversal->date,
+            'invoice_date_due'  => $moveReversal->date,
+            'invoice_date'      => $move->isInvoice(true) ? $moveReversal->date : null,
+            'journal_id'        => $moveReversal->journal_id,
+            'invoice_user_id'   => $move->invoice_user_id,
             'auto_post'         => 0,
-        ]);
-
-        $newMove->save();
-
-        $creditNote->newMoves()->attach($newMove->id);
-
-        $this->createMoveLines($newMove, $record);
-
-        return $newMove;
-    }
-
-    private function createMoveLines(Move $newMove, Move $record): void
-    {
-        $record->lines->each(function (MoveLine $line) use ($newMove, $record) {
-            if ($line->display_type == DisplayType::PRODUCT) {
-                $newMoveLine = $line->replicate()->fill([
-                    'state'     => $newMove->state,
-                    'reference' => $record->reference,
-                    'move_id'   => $newMove->id,
-                ]);
-
-                $newMoveLine->save();
-
-                $newMoveLine->taxes()->sync($line->taxes->pluck('id'));
-            }
-        });
+        ];
     }
 }
