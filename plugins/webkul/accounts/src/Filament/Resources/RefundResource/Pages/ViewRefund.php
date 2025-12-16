@@ -3,7 +3,7 @@
 namespace Webkul\Account\Filament\Resources\RefundResource\Pages;
 
 use Filament\Actions\DeleteAction;
-use Filament\Resources\Pages\ViewRecord;
+use Webkul\Account\Filament\Resources\BillResource\Pages\ViewBill as ViewRecord;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Account\Filament\Resources\RefundResource;
 use Webkul\Chatter\Filament\Actions as ChatterActions;

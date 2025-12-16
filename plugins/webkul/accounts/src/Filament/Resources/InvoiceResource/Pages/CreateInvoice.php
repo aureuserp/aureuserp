@@ -58,8 +58,6 @@ class CreateInvoice extends CreateRecord
     {
         $data['move_type'] ??= MoveType::OUT_INVOICE;
 
-        $data['date'] = now();
-
         return $data;
     }
 

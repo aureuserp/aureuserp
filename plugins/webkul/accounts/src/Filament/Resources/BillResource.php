@@ -21,8 +21,11 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
+use Webkul\Account\Models\CashRounding;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Webkul\Account\Facades\Account as AccountFacade;
+use Webkul\Account\Facades\Tax as TaxFacade;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\Size;
 use Filament\Support\Enums\TextSize;
@@ -31,10 +34,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\TypeTaxUse;
-use Webkul\Account\Facades\Tax;
 use Webkul\Account\Filament\Resources\BillResource\Pages\CreateBill;
 use Webkul\Account\Filament\Resources\BillResource\Pages\EditBill;
 use Webkul\Account\Filament\Resources\BillResource\Pages\ListBills;
@@ -43,12 +47,14 @@ use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Product;
+use Webkul\Account\Models\Tax;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
 use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
+use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
 
@@ -100,6 +106,7 @@ class BillResource extends Resource
                     ->disabled()
                     ->live()
                     ->reactive(),
+
                 Section::make(__('accounts::filament/resources/bill.form.section.general.title'))
                     ->icon('heroicon-o-document-text')
                     ->schema([
@@ -111,6 +118,7 @@ class BillResource extends Resource
                                 ->label(fn ($record) => $record->payment_state->getLabel())
                                 ->size(Size::ExtraLarge->value),
                         ]),
+
                         Group::make()
                             ->schema([
                                 Group::make()
@@ -217,6 +225,7 @@ class BillResource extends Resource
                                                     ->preload()
                                                     ->live()
                                                     ->reactive()
+                                                    ->default(Auth::user()->defaultCompany?->currency_id)
                                                     ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
                                             ])
                                             ->columns(2),
@@ -231,14 +240,25 @@ class BillResource extends Resource
                             ->icon('heroicon-o-list-bullet')
                             ->schema([
                                 static::getProductRepeater(),
-                                Livewire::make(InvoiceSummary::class, function (Get $get) {
+                                
+                                Livewire::make(InvoiceSummary::class, function  (Get $get, $record, $livewire) {
+                                    $totals = self::calculateInvoiceTotals($get, $livewire);
+
+                                    $currency = Currency::find($get('currency_id'));
+
                                     return [
-                                        'currency' => Currency::find($get('currency_id')),
-                                        'products' => $get('products'),
+                                        'record'     => $record,
+                                        'rounding'   => $totals['rounding'],
+                                        'amountTax'  => $totals['totalTax'],
+                                        'subtotal'   => $totals['subtotal'],
+                                        'totalTax'   => $totals['totalTax'],
+                                        'grandTotal' => $totals['grandTotal'] + $totals['rounding'],
+                                        'currency'   => $currency,
                                     ];
                                 })
-                                    ->live()
-                                    ->reactive(),
+                                ->key('invoiceSummary')
+                                ->reactive()
+                                ->visible(fn (Get $get) => $get('currency_id') && ! empty($get('products'))),
                             ]),
 
                         Tab::make(__('accounts::filament/resources/bill.form.tabs.other-information.title'))
@@ -570,18 +590,18 @@ class BillResource extends Resource
                     ->markAsRequired()
                     ->visible(fn () => resolve(ProductSettings::class)->enable_uom)
                     ->toggleable(),
-                TableColumn::make('taxes')
-                    ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.columns.taxes'))
-                    ->width(250)
-                    ->toggleable(),
-                TableColumn::make('discount')
-                    ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.columns.discount-percentage'))
-                    ->width(150)
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TableColumn::make('price_unit')
                     ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.columns.unit-price'))
                     ->width(150)
                     ->markAsRequired(),
+                TableColumn::make('discount')
+                    ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.columns.discount-percentage'))
+                    ->width(150)
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TableColumn::make('taxes')
+                    ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.columns.taxes'))
+                    ->width(250)
+                    ->toggleable(),
                 TableColumn::make('price_subtotal')
                     ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.columns.sub-total'))
                     ->width(150)
@@ -652,6 +672,27 @@ class BillResource extends Resource
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterUOMUpdated($set, $get))
                     ->visible(fn (ProductSettings $settings) => $settings->enable_uom),
+                TextInput::make('price_unit')
+                    ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.fields.unit-price'))
+                    ->numeric()
+                    ->default(0)
+                    ->minValue(0)
+                    ->maxValue(99999999999)
+                    ->required()
+                    ->live(onBlur: true)
+                    ->dehydrated()
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
+                TextInput::make('discount')
+                    ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.fields.discount-percentage'))
+                    ->numeric()
+                    ->default(0)
+                    ->minValue(0)
+                    ->maxValue(99999999999)
+                    ->live(onBlur: true)
+                    ->dehydrated()
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
                 Select::make('taxes')
                     ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.fields.taxes'))
                     ->relationship(
@@ -669,27 +710,6 @@ class BillResource extends Resource
                     ->afterStateHydrated(fn (Get $get, Set $set) => self::calculateLineTotals($set, $get))
                     ->afterStateUpdated(fn (Get $get, Set $set) => self::calculateLineTotals($set, $get))
                     ->live(),
-                TextInput::make('discount')
-                    ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.fields.discount-percentage'))
-                    ->numeric()
-                    ->default(0)
-                    ->minValue(0)
-                    ->maxValue(99999999999)
-                    ->live(onBlur: true)
-                    ->dehydrated()
-                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
-                TextInput::make('price_unit')
-                    ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.fields.unit-price'))
-                    ->numeric()
-                    ->default(0)
-                    ->minValue(0)
-                    ->maxValue(99999999999)
-                    ->required()
-                    ->live(onBlur: true)
-                    ->dehydrated()
-                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
                 TextInput::make('price_subtotal')
                     ->label(__('accounts::filament/resources/bill.form.tabs.invoice-lines.repeater.products.fields.sub-total'))
                     ->default(0)
@@ -794,41 +814,184 @@ class BillResource extends Resource
     {
         if (! $get('product_id')) {
             $set('price_unit', 0);
-
             $set('discount', 0);
-
             $set('price_tax', 0);
-
             $set('price_subtotal', 0);
-
             $set('price_total', 0);
 
             return;
         }
 
-        $priceUnit = floatval($get('price_unit'));
+        $currencyId = $get('../../currency_id');
+        $companyId = $get('../../company_id');
+        $productId = $get('product_id');
 
-        $quantity = floatval($get('quantity') ?? 1);
-
-        $subTotal = $priceUnit * $quantity;
-
-        $discountValue = floatval($get('discount') ?? 0);
-
-        if ($discountValue > 0) {
-            $discountAmount = $subTotal * ($discountValue / 100);
-
-            $subTotal = $subTotal - $discountAmount;
+        if (! $currencyId || ! $companyId || ! $productId) {
+            return;
         }
 
+        $currency = Currency::find($currencyId);
+        $company = Company::find($companyId);
+        $product = Product::find($productId);
+        
+        if (! $currency || ! $company || ! $product) {
+            return;
+        }
+
+        $mockLine = new MoveLine([
+            'quantity'     => $get('quantity') ?? 1,
+            'price_unit'   => $get('price_unit') ?? 0,
+            'discount'     => $get('discount') ?? 0,
+            'display_type' => DisplayType::PRODUCT,
+        ]);
+
+        $mockMove = new AccountMove([
+            'move_type'   => $get('../../move_type'),
+            'currency_id' => $currencyId,
+            'company_id'  => $companyId,
+        ]);
+
         $taxIds = $get('taxes') ?? [];
+        $mockLine->setRelation('taxes', Tax::whereIn('id', $taxIds)->get());
+        $mockLine->setRelation('currency', $currency);
+        $mockLine->setRelation('company', $company);
+        $mockLine->setRelation('product', $product);
+        $mockLine->setRelation('move', $mockMove);
 
-        [$subTotal, $taxAmount] = Tax::collect($taxIds, $subTotal, $quantity);
+        $mockMove->setRelation('currency', $currency);
+        $mockMove->setRelation('company', $company);
 
-        $set('price_subtotal', round($subTotal, 4));
+        $baseLine = AccountFacade::prepareProductBaseLineForTaxesComputation($mockLine);
 
-        $set('price_tax', $taxAmount);
+        $baseLine = TaxFacade::addTaxDetailsInBaseLine($baseLine, $company);
 
-        $set('price_total', $subTotal + $taxAmount);
+        $subtotal = $baseLine['tax_details']['raw_total_excluded_currency'];
+        $total = $baseLine['tax_details']['raw_total_included_currency'];
+        $tax = $total - $subtotal;
+
+        $set('price_subtotal', round($subtotal, 4));
+        $set('price_tax', round($tax, 4));
+        $set('price_total', round($total, 4));
+    }
+
+    private static function calculateInvoiceTotals(Get $get, $livewire): array
+    {
+        $defaultTotals = [
+            'subtotal'   => 0,
+            'totalTax'   => 0,
+            'grandTotal' => 0,
+            'rounding'   => 0,
+        ];
+
+        $currencyId = $get('currency_id');
+        $companyId = $get('company_id');
+        $products = $get('products') ?? [];
+
+
+        if (! $currencyId || ! $companyId || empty($products)) {
+            $livewire->dispatch('itemUpdated', $defaultTotals);
+
+            return $defaultTotals;
+        }
+
+        $currency = Currency::find($currencyId);
+        $company = Company::find($companyId);
+
+        if (! $currency || ! $company) {
+            $livewire->dispatch('itemUpdated', $defaultTotals);
+
+            return $defaultTotals;
+        }
+
+        $cashRoundingId = $get('invoice_cash_rounding_id');
+
+        $mockMove = new AccountMove([
+            'move_type'                => $get('move_type'),
+            'currency_id'              => $currency->id,
+            'company_id'               => $company->id,
+            'invoice_cash_rounding_id' => $cashRoundingId,
+        ]);
+
+        $mockMove->setRelation('currency', $currency);
+        $mockMove->setRelation('company', $company);
+
+        if ($cashRoundingId) {
+            $cashRounding = CashRounding::find($cashRoundingId);
+
+            if ($cashRounding) {
+                $mockMove->setRelation('invoiceCashRounding', $cashRounding);
+            }
+        }
+
+        $mockLines = collect($products)
+            ->filter(fn($productData) => !empty($productData['product_id']))
+            ->map(function ($productData) use ($currency, $company, $mockMove) {
+                $product = Product::find($productData['product_id']);
+
+                if (!$product) {
+                    return null;
+                }
+
+                $mockLine = new MoveLine([
+                    'quantity'     => $productData['quantity'] ?? 1,
+                    'price_unit'   => $productData['price_unit'] ?? 0,
+                    'discount'     => $productData['discount'] ?? 0,
+                    'display_type' => DisplayType::PRODUCT,
+                ]);
+
+                $mockLine->setRelation('taxes', Tax::whereIn('id', $productData['taxes'] ?? [])->get());
+                $mockLine->setRelation('currency', $currency);
+                $mockLine->setRelation('company', $company);
+                $mockLine->setRelation('product', $product);
+                $mockLine->setRelation('move', $mockMove);
+
+                return $mockLine;
+            })
+            ->filter();
+
+        if ($mockLines->isEmpty()) {
+            $livewire->dispatch('itemUpdated', $defaultTotals);
+
+            return $defaultTotals;
+        }
+
+        $mockMove->setRelation('lines', $mockLines);
+
+        [$baseLines] = AccountFacade::getRoundedBaseAndTaxLines($mockMove, false);
+
+        $subtotal = 0;
+        $grandTotal = 0;
+        $rounding = 0;
+
+        foreach ($baseLines as $baseLine) {
+            $specialType = $baseLine['special_type'] ?? null;
+
+            if ($specialType === 'cash_rounding') {
+                $rounding = $baseLine['tax_details']['raw_total_excluded_currency'];
+            } else {
+                $subtotal += $baseLine['tax_details']['raw_total_excluded_currency'] ?? 0;
+                $grandTotal += $baseLine['tax_details']['raw_total_included_currency'] ?? 0;
+            }
+        }
+
+        if ($rounding == 0 && $cashRoundingId) {
+            $cashRounding = CashRounding::find($cashRoundingId);
+
+            if ($cashRounding) {
+                $rounding = $cashRounding->computeDifference($currency, $grandTotal);
+            }
+        }
+
+        $defaultTotals = [
+            'subtotal'   => round($subtotal, 2),
+            'totalTax'   => round($grandTotal - $subtotal, 2),
+            'grandTotal' => round($grandTotal, 2),
+            'rounding'   => round($rounding, 2),
+        ];
+
+        $livewire->dispatch('itemUpdated', $defaultTotals);
+
+        return $defaultTotals;
     }
 
     public static function getEloquentQuery(): Builder

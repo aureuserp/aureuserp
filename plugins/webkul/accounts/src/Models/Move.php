@@ -429,6 +429,8 @@ class Move extends Model implements Sortable
 
         static::creating(function ($move) {
             $move->creator_id = auth()->id();
+
+            $move->date ??= now();
         });
 
         static::created(function ($move) {
@@ -494,6 +496,7 @@ class Move extends Model implements Sortable
         $this->invoice_partner_display_name = $vendorDisplayName;
     }
 
+    //TODO: compute currency rate based on date and company settings
     public function computeInvoiceCurrencyRate()
     {
         $this->invoice_currency_rate = 1;

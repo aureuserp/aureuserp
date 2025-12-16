@@ -49,21 +49,6 @@ class EditBill extends EditRecord
         ];
     }
 
-    protected function mutateFormDataBeforeSave(array $data): array
-    {
-        $user = Auth::user();
-
-        $record = $this->getRecord();
-
-        $data['partner_id'] ??= $record->partner_id;
-        $data['invoice_date'] ??= $record->invoice_date;
-        $data['name'] ??= $record->name;
-        $data['auto_post'] ??= $record->auto_post;
-        $data['invoice_currency_rate'] ??= 1.0;
-
-        return $data;
-    }
-
     protected function afterSave(): void
     {
         AccountFacade::computeAccountMove($this->getRecord());

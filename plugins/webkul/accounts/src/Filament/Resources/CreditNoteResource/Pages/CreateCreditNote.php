@@ -25,11 +25,18 @@ class CreateCreditNote extends CreateRecord
             ->body(__('accounts::filament/resources/credit-note/pages/create-credit-note.notification.body'));
     }
 
+    public function mount(): void
+    {
+        parent::mount();
+
+        $this->data['move_type'] ??= MoveType::OUT_REFUND->value;
+
+        $this->form->fill($this->data);
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['move_type'] ??= MoveType::OUT_REFUND;
-
-        $data['date'] = now();
 
         return $data;
     }

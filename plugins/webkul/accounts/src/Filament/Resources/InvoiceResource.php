@@ -160,6 +160,7 @@ class InvoiceResource extends Resource
                                             })
                                             ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
                                     ]),
+
                                 Group::make()
                                     ->schema([
                                         DatePicker::make('invoice_date')
@@ -196,6 +197,7 @@ class InvoiceResource extends Resource
                                                     ->label(__('accounts::filament/resources/invoice.form.section.general.fields.payment-term')),
                                             ])
                                             ->columns(2),
+                                            
                                         Group::make()
                                             ->schema([
                                                 Select::make('journal_id')
@@ -1090,6 +1092,7 @@ class InvoiceResource extends Resource
         $currency = Currency::find($currencyId);
         $company = Company::find($companyId);
         $product = Product::find($productId);
+
         if (! $currency || ! $company || ! $product) {
             return;
         }

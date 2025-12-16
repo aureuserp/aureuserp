@@ -5,7 +5,7 @@ namespace Webkul\Account\Filament\Resources\RefundResource\Pages;
 use Filament\Notifications\Notification;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
-use Webkul\Account\Filament\Resources\InvoiceResource\Pages\CreateInvoice as CreateBaseRefund;
+use Webkul\Account\Filament\Resources\BillResource\Pages\CreateBill as CreateBaseRefund;
 use Webkul\Account\Filament\Resources\RefundResource;
 
 class CreateRefund extends CreateBaseRefund
@@ -25,11 +25,18 @@ class CreateRefund extends CreateBaseRefund
             ->body(__('accounts::filament/resources/refund/pages/create-refund.notification.body'));
     }
 
+    public function mount(): void
+    {
+        parent::mount();
+
+        $this->data['move_type'] ??= MoveType::IN_REFUND->value;
+
+        $this->form->fill($this->data);
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['move_type'] ??= MoveType::IN_REFUND;
-
-        $data['date'] = now();
 
         return $data;
     }
