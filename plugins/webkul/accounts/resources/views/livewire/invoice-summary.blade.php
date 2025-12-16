@@ -31,12 +31,11 @@
 
         .invoice-item.font-bold span {
             font-weight: 700 !important;
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .invoice-item.font-semibold span {
-            font-weight: 700 !important;
-            font-size: 16px;
+            font-weight: 600 !important;
         }
 
         .invoice-item button {

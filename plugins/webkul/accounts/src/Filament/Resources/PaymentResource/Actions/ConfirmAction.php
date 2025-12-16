@@ -21,7 +21,7 @@ class ConfirmAction extends Action
 
         $this
             ->label(__('accounts::filament/resources/payment/actions/confirm-action.title'))
-            ->color('gray')
+            ->color('primary')
             ->requiresConfirmation()
             ->action(function (Payment $record, Component $livewire): void {
                 $record = AccountFacade::postPayment($record);

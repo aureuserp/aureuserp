@@ -191,12 +191,23 @@ class Payment extends Model
             ->values();
     }
 
-    // TODO: need to fetch company outstanding account based on payment type
     public function getOutstandingAccount($paymentType)
     {
-        $transferAccountId = (new DefaultAccountSettings)->transfer_account_id;
+        $defaultAccountSettings = new DefaultAccountSettings();
 
-        return Account::find($transferAccountId);
+        if ($this->payment_type == PaymentType::RECEIVE) {
+            $accountId = $defaultAccountSettings->account_journal_payment_debit_account_id;
+        } else {
+            $accountId = $defaultAccountSettings->account_journal_payment_credit_account_id;
+        }
+
+        $account = Account::find($accountId);
+
+        if (! $account) {
+            $account = Account::find($defaultAccountSettings->transfer_account_id);
+        }
+
+        return $account;
     }
 
     protected static function boot()
@@ -407,14 +418,16 @@ class Payment extends Model
 
     public function computeAmountCompanyCurrencySigned()
     {
-        $this->amount_company_currency_signed = $this->move_id
-            ? $this->seekForLines()[0]->sum('balance')
-            : $this->currency->convert(
+        if ($this->move_id) {
+            $this->amount_company_currency_signed = $this->seekForLines()[0]->sum('balance');
+        } else {
+            $this->amount_company_currency_signed = $this->currency->convert(
                 fromAmount: $this->amount,
                 toCurrency: $this->company->currency,
                 company: $this->company,
                 date: $this->date
             );
+        }
     }
 
     public function computePaymentMethodLineId()
