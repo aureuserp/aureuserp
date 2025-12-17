@@ -428,11 +428,11 @@ class Move extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($move) {
-            $move->creator_id = auth()->id();
-
-            $move->date ??= now();
+            $move->computeCreatorId();
 
             $move->computeCurrencyId();
+
+            $move->date ??= now();
         });
 
         static::created(function ($move) {
@@ -442,6 +442,10 @@ class Move extends Model implements Sortable
         });
 
         static::saving(function ($move) {
+            $move->computeCreatorId();
+
+            $move->computeCurrencyId();
+
             $move->computePartnerDisplayInfo();
 
             $move->computePartnerShippingId();
@@ -456,6 +460,15 @@ class Move extends Model implements Sortable
 
             $move->computePaymentState();
         });
+    }
+
+    public function computeCreatorId()
+    {
+        if ($this->creator_id) {
+            return;
+        }
+
+        $this->creator_id = auth()->id();
     }
 
     public function computeName()
