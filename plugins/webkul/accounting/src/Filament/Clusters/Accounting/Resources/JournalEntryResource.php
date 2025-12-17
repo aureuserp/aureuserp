@@ -2,6 +2,7 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Accounting\Resources;
 
+use Dom\Text;
 use Filament\Resources\Pages\Page;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -48,6 +49,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\DisplayType;
+use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\TypeTaxUse;
@@ -63,6 +65,8 @@ use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Product;
+use Webkul\Account\Filament\Resources\JournalResource;
+use Webkul\Account\Filament\Resources\BankAccountResource;
 use Webkul\Account\Models\Tax;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Product\Settings\ProductSettings;
@@ -89,13 +93,23 @@ class JournalEntryResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
 
+    public static function getModelLabel(): string
+    {
+        return __('accounting::filament/clusters/accounting/resources/journal-entry.title');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('accounting::filament/clusters/accounting/resources/journal-entry.navigation.title');
+    }
+
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            __('accounts::filament/resources/invoice.global-search.number')           => $record?->name ?? '—',
-            __('accounts::filament/resources/invoice.global-search.customer')         => $record?->invoice_partner_display_name ?? '—',
-            __('accounts::filament/resources/invoice.global-search.invoice-date')     => $record?->invoice_date ?? '—',
-            __('accounts::filament/resources/invoice.global-search.invoice-date-due') => $record?->invoice_date_due ?? '—',
+            __('accounting::filament/clusters/accounting/resources/journal-entry.global-search.number')           => $record?->name ?? '—',
+            __('accounting::filament/clusters/accounting/resources/journal-entry.global-search.customer')         => $record?->invoice_partner_display_name ?? '—',
+            __('accounting::filament/clusters/accounting/resources/journal-entry.global-search.invoice-date')     => $record?->invoice_date ?? '—',
+            __('accounting::filament/clusters/accounting/resources/journal-entry.global-search.invoice-date-due') => $record?->invoice_date_due ?? '—',
         ];
     }
 
@@ -128,7 +142,7 @@ class JournalEntryResource extends Resource
                     ->live()
                     ->reactive(),
 
-                Section::make(__('accounts::filament/resources/invoice.form.section.general.title'))
+                Section::make(__('accounting::filament/clusters/accounting/resources/journal-entry.form.section.general.title'))
                     ->icon('heroicon-o-document-text')
                     ->schema([
                         Actions::make([
@@ -144,107 +158,44 @@ class JournalEntryResource extends Resource
                             ->schema([
                                 Group::make()
                                     ->schema([
-                                        Select::make('partner_id')
-                                            ->label(__('accounts::filament/resources/invoice.form.section.general.fields.customer'))
-                                            ->getOptionLabelFromRecordUsing(fn ($record): string => $record->name.($record->trashed() ? ' (Deleted)' : ''))
-                                            ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
-                                            ->relationship(
-                                                'partner',
-                                                'name',
-                                                fn (Builder $query) => $query->where('sub_type', 'customer')->orderBy('id')->withTrashed(),
-                                            )
-                                            ->searchable()
-                                            ->preload()
-                                            ->live()
-                                            ->afterStateUpdated(function (Set $set, $state) {
-                                                $partner = $state ? Partner::find($state) : null;
-
-                                                $set('invoice_user_id', $partner?->user_id);
-
-                                                $set('preferred_payment_method_line_id', $partner?->property_inbound_payment_method_line_id);
-
-                                                $set('invoice_payment_term_id', $partner?->property_payment_term_id);
-                                            })
+                                        TextInput::make('reference')
+                                            ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.section.general.fields.reference'))
                                             ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
                                     ]),
 
                                 Group::make()
                                     ->schema([
-                                        DatePicker::make('invoice_date')
-                                            ->label(__('accounts::filament/resources/invoice.form.section.general.fields.invoice-date'))
+                                        DatePicker::make('date')
+                                            ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.section.general.fields.accounting-date'))
                                             ->default(now())
                                             ->native(false)
                                             ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
-                                        Group::make()
-                                            ->schema([
-                                                DatePicker::make('invoice_date_due')
-                                                    ->required()
-                                                    ->default(now())
-                                                    ->native(false)
-                                                    ->live()
-                                                    ->hidden(fn (Get $get) => $get('invoice_payment_term_id') !== null)
-                                                    ->label(__('accounts::filament/resources/invoice.form.section.general.fields.due-date')),
-                                                Select::make('invoice_payment_term_id')
-                                                    ->relationship(
-                                                        'invoicePaymentTerm',
-                                                        'name',
-                                                        modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
-                                                    )
-                                                    ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
-                                                    })
-                                                    ->disableOptionWhen(function ($label) {
-                                                        return str_contains($label, ' (Deleted)');
-                                                    })
-                                                    ->required(fn (Get $get) => $get('invoice_date_due') === null)
-                                                    ->live()
-                                                    ->searchable()
-                                                    ->preload()
-                                                    ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL]))
-                                                    ->label(__('accounts::filament/resources/invoice.form.section.general.fields.payment-term')),
-                                            ])
-                                            ->columns(2),
                                             
-                                        Group::make()
-                                            ->schema([
-                                                Select::make('journal_id')
-                                                    ->relationship('journal', 'name')
-                                                    ->searchable()
-                                                    ->preload()
-                                                    ->required()
-                                                    ->label(__('accounts::filament/resources/invoice.form.section.general.fields.journal'))
-                                                    ->createOptionForm(fn ($form) => JournalResource::form($form))
-                                                    ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
-
-                                                Select::make('currency_id')
-                                                    ->label(__('accounts::filament/resources/invoice.form.section.general.fields.currency'))
-                                                    ->relationship(
-                                                        'currency',
-                                                        'name',
-                                                        modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
-                                                    )
-                                                    ->required()
-                                                    ->searchable()
-                                                    ->preload()
-                                                    ->live()
-                                                    ->reactive()
-                                                    ->default(Auth::user()->defaultCompany?->currency_id)
-                                                    ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
-                                            ])
-                                            ->columns(2),
+                                        Select::make('journal_id')
+                                            ->relationship(
+                                                'journal',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->where('type', JournalType::GENERAL),
+                                            )
+                                            ->searchable()
+                                            ->preload()
+                                            ->required()
+                                            ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.section.general.fields.journal'))
+                                            ->createOptionForm(fn ($form) => JournalResource::form($form))
+                                            ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
                                     ]),
                             ])->columns(2),
                     ]),
 
                 Tabs::make()
                     ->schema([
-                        Tab::make(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.title'))
+                        Tab::make(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.title'))
                             ->icon('heroicon-o-list-bullet')
                             ->schema([
-                                static::getProductRepeater(),
+                                static::getLineRepeater(),
                                 
                                 Livewire::make(InvoiceSummary::class, function  (Get $get, $record, $livewire) {
-                                    $totals = self::calculateInvoiceTotals($get, $livewire);
+                                    $totals = self::calculateMoveTotals($get, $livewire);
 
                                     $currency = Currency::find($get('currency_id'));
 
@@ -260,111 +211,47 @@ class JournalEntryResource extends Resource
                                 })
                                 ->key('invoiceSummary')
                                 ->reactive()
-                                ->visible(fn (Get $get) => $get('currency_id') && ! empty($get('products'))),
+                                ->visible(fn (Get $get) => $get('currency_id') && ! empty($get('lines'))),
                             ]),
 
-                        Tab::make(__('accounts::filament/resources/invoice.form.tabs.other-information.title'))
+                        Tab::make(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.other-information.title'))
                             ->icon('heroicon-o-information-circle')
                             ->schema([
-                                Fieldset::make(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.invoice.title'))
-                                    ->schema([
-                                        TextInput::make('reference')
-                                            ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.invoice.fields.customer-reference'))
-                                            ->maxLength(255),
-                                        Select::make('invoice_user_id')
-                                            ->relationship('invoiceUser', 'name')
-                                            ->searchable()
-                                            ->preload()
-                                            ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.invoice.fields.sales-person')),
-                                        Select::make('partner_bank_id')
-                                            ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.invoice.fields.recipient-bank'))
-                                            ->relationship(
-                                                'partnerBank',
-                                                'account_number',
-                                                modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('partner_id', $get('partner_id'))->withTrashed(),
-                                            )
-                                            ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                return $record->account_number.' - '.$record->bank->name.($record->trashed() ? ' (Deleted)' : '');
-                                            })
-                                            ->disableOptionWhen(function ($label) {
-                                                return str_contains($label, ' (Deleted)');
-                                            })
-                                            ->searchable()
-                                            ->preload()
-                                            ->createOptionForm(fn (Schema $form, Get $get) => BankAccountResource::form($form)->fill([
-                                                'partner_id' => $get('partner_id'),
-                                            ]))
-                                            ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
-                                        TextInput::make('payment_reference')
-                                            ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.invoice.fields.payment-reference')),
-                                        DatePicker::make('delivery_date')
-                                            ->native(false)
-                                            ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.invoice.fields.delivery-date'))
-                                            ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
-                                    ])
-                                    ->columns(1),
+                                Select::make('company_id')
+                                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.other-information.fields.company'))
+                                    ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query) => $query->withTrashed())
+                                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                    })
+                                    ->disableOptionWhen(function ($label) {
+                                        return str_contains($label, ' (Deleted)');
+                                    })
+                                    ->searchable()
+                                    ->preload()
+                                    ->reactive()
+                                    ->afterStateUpdated(fn (callable $set, $state) => $set('currency_id', Company::find($state)?->currency_id))
+                                    ->default(Auth::user()->default_company_id)
+                                    ->live()
+                                    ->afterStateUpdated(function (Get $get, Set $set) {
+                                        $company = Company::find($get('company_id'));
 
-                                Fieldset::make(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.title'))
-                                    ->schema([
-                                        Select::make('company_id')
-                                            ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.company'))
-                                            ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query) => $query->withTrashed())
-                                            ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
-                                            })
-                                            ->disableOptionWhen(function ($label) {
-                                                return str_contains($label, ' (Deleted)');
-                                            })
-                                            ->searchable()
-                                            ->preload()
-                                            ->reactive()
-                                            ->afterStateUpdated(fn (callable $set, $state) => $set('currency_id', Company::find($state)?->currency_id))
-                                            ->default(Auth::user()->default_company_id)
-                                            ->live()
-                                            ->afterStateUpdated(function (Get $get, Set $set) {
-                                                $company = Company::find($get('company_id'));
-
-                                                if ($company?->currency_id) {
-                                                    $set('currency_id', $company->currency_id);
-                                                }
-                                            }),
-                                        Select::make('invoice_incoterm_id')
-                                            ->relationship('invoiceIncoterm', 'name')
-                                            ->searchable()
-                                            ->preload()
-                                            ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.incoterm')),
-                                        TextInput::make('incoterm_location')
-                                            ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.incoterm-location')),
-                                        Select::make('preferred_payment_method_line_id')
-                                            ->relationship('paymentMethodLine', 'name')
-                                            ->preload()
-                                            ->searchable()
-                                            ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.payment-method')),
-                                        Select::make('fiscal_position_id')
-                                            ->relationship('fiscalPosition', 'name')
-                                            ->preload()
-                                            ->searchable()
-                                            ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.fiscal-position'))
-                                            ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.fiscal-position-tooltip'))
-                                            ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
-                                        Select::make('invoice_cash_rounding_id')
-                                            ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.cash-rounding'))
-                                            ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.cash-rounding-tooltip'))
-                                            ->relationship('invoiceCashRounding', 'name')
-                                            ->searchable()
-                                            ->preload()
-                                            ->reactive()
-                                            ->live()
-                                            ->nullable()
-                                            ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
-                                        Toggle::make('checked')
-                                            ->inline(false)
-                                            ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.checked')),
-                                    ])
-                                    ->columns(1),
+                                        if ($company?->currency_id) {
+                                            $set('currency_id', $company->currency_id);
+                                        }
+                                    }),
+                                Toggle::make('checked')
+                                    ->inline(false)
+                                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.other-information.fields.checked')),
+                                Select::make('fiscal_position_id')
+                                    ->relationship('fiscalPosition', 'name')
+                                    ->preload()
+                                    ->searchable()
+                                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.other-information.fields.fiscal-position'))
+                                    ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.other-information.fields.fiscal-position-tooltip'))
+                                    ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
                             ])
                             ->columns(2),
-                        Tab::make(__('accounts::filament/resources/invoice.form.tabs.term-and-conditions.title'))
+                        Tab::make(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.term-and-conditions.title'))
                             ->icon('heroicon-o-clipboard-document-list')
                             ->schema([
                                 RichEditor::make('narration')
@@ -381,149 +268,85 @@ class JournalEntryResource extends Resource
             ->reorderableColumns()
             ->columnManagerColumns(2)
             ->columns([
-                TextColumn::make('name')
-                    ->placeholder('-')
-                    ->label(__('accounts::filament/resources/invoice.table.columns.number'))
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('state')
-                    ->placeholder('-')
-                    ->label(__('accounts::filament/resources/invoice.table.columns.state'))
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: false),
-                TextColumn::make('invoice_partner_display_name')
-                    ->label(__('accounts::filament/resources/invoice.table.columns.customer'))
-                    ->placeholder('-')
-                    ->searchable()
-                    ->sortable(),
                 TextColumn::make('invoice_date')
                     ->date()
                     ->placeholder('-')
-                    ->label(__('accounts::filament/resources/invoice.table.columns.invoice-date'))
-                    ->sortable(),
-                TextColumn::make('invoice_date_due')
-                    ->date()
-                    ->placeholder('-')
-                    ->label(__('accounts::filament/resources/invoice.table.columns.due-date'))
-                    ->sortable(),
-                TextColumn::make('amount_untaxed_in_currency_signed')
-                    ->label(__('accounts::filament/resources/invoice.table.columns.tax-excluded'))
-                    ->searchable()
-                    ->placeholder('-')
-                    ->sortable()
-                    ->money(fn ($record) => $record->currency?->name)
-                    ->summarize(Sum::make()->label(__('accounts::filament/resources/invoice.table.total')))
-                    ->toggleable(isToggledHiddenByDefault: false),
-                TextColumn::make('amount_tax_signed')
-                    ->label(__('accounts::filament/resources/invoice.table.columns.tax'))
-                    ->searchable()
-                    ->placeholder('-')
-                    ->sortable()
-                    ->money(fn ($record) => $record->currency?->name)
-                    ->summarize(Sum::make()->label(__('accounts::filament/resources/invoice.table.total')))
-                    ->toggleable(isToggledHiddenByDefault: false),
-                TextColumn::make('amount_total_in_currency_signed')
-                    ->label(__('accounts::filament/resources/invoice.table.columns.total'))
-                    ->searchable()
-                    ->placeholder('-')
-                    ->sortable()
-                    ->summarize(Sum::make()->label(__('accounts::filament/resources/invoice.table.total')))
-                    ->money(fn ($record) => $record->currency?->name)
-                    ->toggleable(isToggledHiddenByDefault: false),
-                TextColumn::make('amount_residual_signed')
-                    ->label(__('accounts::filament/resources/invoice.table.columns.amount-due'))
-                    ->searchable()
-                    ->placeholder('-')
-                    ->sortable()
-                    ->summarize(Sum::make()->label(__('accounts::filament/resources/invoice.table.summarizers.total')))
-                    ->money(fn ($record) => $record->currency?->name)
-                    ->toggleable(isToggledHiddenByDefault: false),
-                TextColumn::make('payment_state')
-                    ->label(__('Payment State'))
-                    ->placeholder('-')
-                    ->color(fn (PaymentState $state) => $state->getColor())
-                    ->icon(fn (PaymentState $state) => $state->getIcon())
-                    ->formatStateUsing(fn (PaymentState $state) => $state->getLabel())
-                    ->badge()
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: false),
-                IconColumn::make('checked')
-                    ->boolean()
-                    ->placeholder('-')
-                    ->label(__('accounts::filament/resources/invoice.table.columns.checked'))
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.columns.invoice-date'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('date')
                     ->date()
                     ->placeholder('-')
-                    ->label(__('accounts::filament/resources/invoice.table.columns.accounting-date'))
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.columns.date'))
                     ->searchable()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('invoice_origin')
+                    ->sortable(),
+                TextColumn::make('name')
                     ->placeholder('-')
-                    ->label(__('accounts::filament/resources/invoice.table.columns.source-document'))
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.columns.number'))
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('invoice_partner_display_name')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.columns.partner'))
+                    ->placeholder('-')
                     ->searchable()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 TextColumn::make('reference')
-                    ->label(__('accounts::filament/resources/invoice.table.columns.reference'))
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.columns.reference'))
+                    ->searchable()
+                    ->placeholder('-')
+                    ->sortable(),
+                TextColumn::make('journal.name')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.columns.journal'))
+                    ->searchable()
+                    ->placeholder('-')
+                    ->sortable(),
+                TextColumn::make('company.name')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.columns.company'))
                     ->searchable()
                     ->placeholder('-')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('invoiceUser.name')
-                    ->label(__('accounts::filament/resources/invoice.table.columns.sales-person'))
+                    ->toggleable(),
+                TextColumn::make('amount_total_in_currency_signed')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.columns.total'))
                     ->searchable()
                     ->placeholder('-')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('currency.name')
-                    ->label(__('accounts::filament/resources/invoice.table.columns.invoice-currency'))
-                    ->searchable()
+                    ->summarize(Sum::make()->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.total')))
+                    ->money(fn ($record) => $record->company->currency?->name),
+                TextColumn::make('state')
                     ->placeholder('-')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.columns.state'))
+                    ->sortable(),
+                IconColumn::make('checked')
+                    ->boolean()
+                    ->placeholder('-')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.columns.checked'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->groups([
-                Tables\Grouping\Group::make('name')
-                    ->label(__('accounts::filament/resources/invoice.table.groups.name'))
-                    ->collapsible(),
                 Tables\Grouping\Group::make('invoice_partner_display_name')
-                    ->label(__('accounts::filament/resources/invoice.table.groups.invoice-partner-display-name'))
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.groups.partner'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('invoice_date')
-                    ->label(__('accounts::filament/resources/invoice.table.groups.invoice-date'))
+                Tables\Grouping\Group::make('journal.name')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.groups.journal'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('checked')
-                    ->label(__('accounts::filament/resources/invoice.table.groups.checked'))
+                Tables\Grouping\Group::make('state')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.groups.state'))
+                    ->collapsible(),
+                Tables\Grouping\Group::make('paymentMethodLine.name')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.groups.payment-method'))
                     ->collapsible(),
                 Tables\Grouping\Group::make('date')
                     ->date()
-                    ->label(__('accounts::filament/resources/invoice.table.groups.date'))
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.groups.date'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('invoice_date_due')
-                    ->date()
-                    ->label(__('accounts::filament/resources/invoice.table.groups.invoice-due-date'))
+                Tables\Grouping\Group::make('invoice_date')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.groups.invoice-date'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('invoice_origin')
-                    ->label(__('accounts::filament/resources/invoice.table.groups.invoice-origin'))
-                    ->collapsible(),
-                Tables\Grouping\Group::make('invoiceUser.name')
-                    ->date()
-                    ->label(__('accounts::filament/resources/invoice.table.groups.sales-person'))
-                    ->collapsible(),
-                Tables\Grouping\Group::make('currency.name')
-                    ->label(__('accounts::filament/resources/invoice.table.groups.currency'))
-                    ->collapsible(),
-                Tables\Grouping\Group::make('created_at')
-                    ->label(__('accounts::filament/resources/invoice.table.groups.created-at'))
-                    ->date()
-                    ->collapsible(),
-                Tables\Grouping\Group::make('updated_at')
-                    ->label(__('accounts::filament/resources/invoice.table.groups.updated-at'))
-                    ->date()
+                Tables\Grouping\Group::make('company.name')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.groups.company'))
                     ->collapsible(),
             ])
             ->filtersFormColumns(2)
@@ -532,21 +355,21 @@ class JournalEntryResource extends Resource
                     ->constraintPickerColumns(2)
                     ->constraints([
                         TextConstraint::make('name')
-                            ->label(__('accounts::filament/resources/invoice.table.filters.number')),
+                            ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.filters.number')),
                         TextConstraint::make('invoice_origin')
-                            ->label(__('accounts::filament/resources/invoice.table.filters.invoice-origin')),
+                            ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.filters.invoice-origin')),
                         TextConstraint::make('reference')
-                            ->label(__('accounts::filament/resources/invoice.table.filters.reference')),
+                            ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.filters.reference')),
                         TextConstraint::make('invoice_partner_display_name')
-                            ->label(__('accounts::filament/resources/invoice.table.filters.invoice-partner-display-name')),
+                            ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.filters.invoice-partner-display-name')),
                         DateConstraint::make('invoice_date')
-                            ->label(__('accounts::filament/resources/invoice.table.filters.invoice-date')),
+                            ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.filters.invoice-date')),
                         DateConstraint::make('invoice_date_due')
-                            ->label(__('accounts::filament/resources/invoice.table.filters.invoice-due-date')),
+                            ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.filters.invoice-due-date')),
                         DateConstraint::make('created_at')
-                            ->label(__('accounts::filament/resources/invoice.table.filters.created-at')),
+                            ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.filters.created-at')),
                         DateConstraint::make('updated_at')
-                            ->label(__('accounts::filament/resources/invoice.table.filters.updated-at')),
+                            ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.filters.updated-at')),
                     ]),
             ])
             ->recordActions([
@@ -557,8 +380,8 @@ class JournalEntryResource extends Resource
                         ->successNotification(
                             Notification::make()
                                 ->success()
-                                ->title(__('accounts::filament/resources/invoice.table.actions.delete.notification.title'))
-                                ->body(__('accounts::filament/resources/invoice.table.actions.delete.notification.body'))
+                                ->title(__('accounting::filament/clusters/accounting/resources/journal-entry.table.actions.delete.notification.title'))
+                                ->body(__('accounting::filament/clusters/accounting/resources/journal-entry.table.actions.delete.notification.body'))
                         ),
                 ]),
             ])
@@ -568,8 +391,8 @@ class JournalEntryResource extends Resource
                         ->successNotification(
                             Notification::make()
                                 ->success()
-                                ->title(__('accounts::filament/resources/invoice.table.bulk-actions.delete.notification.title'))
-                                ->body(__('accounts::filament/resources/invoice.table.bulk-actions.delete.notification.body'))
+                                ->title(__('accounting::filament/clusters/accounting/resources/journal-entry.table.bulk-actions.delete.notification.title'))
+                                ->body(__('accounting::filament/clusters/accounting/resources/journal-entry.table.bulk-actions.delete.notification.body'))
                         ),
                 ]),
             ])
@@ -578,6 +401,179 @@ class JournalEntryResource extends Resource
             });
     }
 
+
+    public static function getLineRepeater(): Repeater
+    {
+        return Repeater::make('lines')
+            ->relationship('invoiceLines')
+            ->hiddenLabel()
+            ->compact()
+            ->live()
+            ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.title'))
+            ->addActionLabel(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.add-item'))
+            ->collapsible()
+            ->defaultItems(0)
+            ->deleteAction(function(Action $action) {
+                $action->requiresConfirmation();
+
+                $action->after(function (Get $get, $livewire) {
+                    $totals = self::calculateMoveTotals($get, $livewire);
+
+                    $livewire->dispatch('itemUpdated', $totals);
+                });
+            })
+            ->addable(fn ($record): bool => ! in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL]))
+            ->deletable(fn ($record): bool => ! in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL]))
+            ->table([
+                TableColumn::make('account_id')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.columns.account'))
+                    ->width(200)
+                    ->markAsRequired(),
+                TableColumn::make('partner_id')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.columns.partner'))
+                    ->width(160)
+                    ->toggleable(),
+                TableColumn::make('name')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.columns.label'))
+                    ->width(160)
+                    ->toggleable(),
+                TableColumn::make('amount_currency')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.columns.amount-currency'))
+                    ->width(160)
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TableColumn::make('currency_id')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.columns.currency'))
+                    ->width(100)
+                    ->markAsRequired()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TableColumn::make('debit')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.columns.debit'))
+                    ->width(100)
+                    ->markAsRequired(),
+                TableColumn::make('credit')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.columns.credit'))
+                    ->width(100)
+                    ->markAsRequired(),
+                TableColumn::make('discount_amount_currency')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.columns.discount-amount-currency'))
+                    ->width(200)
+                    ->wrapHeader()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->schema([
+                Select::make('account_id')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.account'))
+                    ->relationship('account', 'name')
+                    ->searchable()
+                    ->required()
+                    ->preload()
+                    ->live()
+                    ->selectablePlaceholder(false)
+                    ->dehydrated()
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
+                Select::make('partner_id')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.partner'))
+                    ->relationship('partner', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->selectablePlaceholder(false)
+                    ->dehydrated()
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
+                TextInput::make('name')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.label'))
+                    ->dehydrated()
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
+                TextInput::make('amount_currency')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.amount-currency'))
+                    ->numeric()
+                    ->default(0)
+                    ->minValue(0)
+                    ->maxValue(99999999999)
+                    ->live(onBlur: true)
+                    ->dehydrated()
+                    ->afterStateUpdated(fn (Set $set, Get $get) => self::amountCurrencyUpdated($set, $get))
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
+                Select::make('currency_id')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.currency'))
+                    ->relationship(
+                        'currency',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                    )
+                    ->default(Auth::user()->defaultCompany?->currency_id)
+                    ->required()
+                    ->live()
+                    ->selectablePlaceholder(false)
+                    ->dehydrated()
+                    ->afterStateUpdated(fn (Set $set, Get $get) => self::currencyUpdated($set, $get))
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
+                TextInput::make('debit')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.debit'))
+                    ->numeric()
+                    ->default(0)
+                    ->minValue(0)
+                    ->maxValue(99999999999)
+                    ->required()
+                    ->live(onBlur: true)
+                    ->dehydrated()
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->afterStateUpdated(fn (Set $set, Get $get) => self::debitUpdated($set, $get)),
+                TextInput::make('credit')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.credit'))
+                    ->numeric()
+                    ->default(0)
+                    ->minValue(0)
+                    ->maxValue(99999999999)
+                    ->required()
+                    ->live(onBlur: true)
+                    ->dehydrated()
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->afterStateUpdated(fn (Set $set, Get $get) => self::creditUpdated($set, $get)),
+                TextInput::make('discount_amount_currency')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.discount-amount-currency'))
+                    ->numeric()
+                    ->default(0)
+                    ->minValue(0)
+                    ->maxValue(99999999999)
+                    ->live(onBlur: true)
+                    ->dehydrated()
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->afterStateUpdated(fn (Set $set, Get $get) => self::discountAmountCurrencyUpdated($set, $get)),
+            ]);
+    }
+
+    private static function currencyUpdated(Set $set, Get $get): void
+    {
+    }
+
+    private static function amountCurrencyUpdated(Set $set, Get $get): void
+    {
+        if ($get('amount_currency') >= 0) {
+            $set('debit', $get('amount_currency'));
+            $set('credit', 0);
+        } else {
+            $set('debit', 0);
+            $set('credit', abs($get('amount_currency')));
+        }
+    }
+
+    private static function debitUpdated(Set $set, Get $get): void
+    {
+        $set('credit', 0);
+
+        $set('amount_currency', $get('debit'));
+    }
+
+    private static function creditUpdated(Set $set, Get $get): void
+    {
+        $set('debit', 0);
+
+        $set('amount_currency', -1 * $get('credit'));
+    }
+
+    private static function discountAmountCurrencyUpdated(Set $set, Get $get): void
+    {
+    }
 
     public static function getRecordSubNavigation(Page $page): array
     {

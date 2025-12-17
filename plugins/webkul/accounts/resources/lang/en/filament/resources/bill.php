@@ -96,6 +96,74 @@ return [
         ],
     ],
 
+    'table' => [
+        'total'   => 'Total',
+        'columns' => [
+            'number'           => 'Number',
+            'state'            => 'State',
+            'customer'         => 'Customer',
+            'bill-date'     => 'Bill Date',
+            'checked'          => 'Checked',
+            'accounting-date'  => 'Accounting',
+            'due-date'         => 'Due Date',
+            'source-document'  => 'Source Document',
+            'reference'        => 'Reference',
+            'sales-person'     => 'Sales Person',
+            'tax-excluded'     => 'Tax Excluded',
+            'tax'              => 'Tax',
+            'total'            => 'Total',
+            'amount-due'       => 'Amount Due',
+            'bill-currency' => 'Bill Currency',
+        ],
+
+        'summarizers' => [
+            'total' => 'Total',
+        ],
+
+        'groups' => [
+            'name'                         => 'Name',
+            'bill-partner-display-name'    => 'Bill Partner Display Name',
+            'bill-date'                    => 'Bill Date',
+            'checked'                      => 'Checked',
+            'date'                         => 'Date',
+            'bill-due-date'                => 'Bill Due Date',
+            'bill-origin'                  => 'Bill Origin',
+            'sales-person'                 => 'Sales Person',
+            'currency'                     => 'Currency',
+            'created-at'                   => 'Created At',
+            'updated-at'                   => 'Updated At',
+        ],
+
+        'filters' => [
+            'number'                       => 'Number',
+            'bill-partner-display-name'    => 'Bill Partner Display Name',
+            'bill-date'                    => 'Bill Date',
+            'bill-due-date'                => 'Bill Due Date',
+            'bill-origin'                  => 'Bill Origin',
+            'reference'                    => 'Reference',
+            'created-at'                   => 'Created At',
+            'updated-at'                   => 'Updated At',
+        ],
+
+        'actions' => [
+            'delete' => [
+                'notification' => [
+                    'title' => 'Payment deleted',
+                    'body'  => 'The payment has been deleted successfully.',
+                ],
+            ],
+        ],
+
+        'bulk-actions' => [
+            'delete' => [
+                'notification' => [
+                    'title' => 'Payments deleted',
+                    'body'  => 'The payments has been deleted successfully.',
+                ],
+            ],
+        ],
+    ],
+
     'infolist' => [
         'section' => [
             'general' => [

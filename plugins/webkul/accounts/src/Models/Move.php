@@ -431,6 +431,8 @@ class Move extends Model implements Sortable
             $move->creator_id = auth()->id();
 
             $move->date ??= now();
+
+            $move->computeCurrencyId();
         });
 
         static::created(function ($move) {
@@ -479,6 +481,15 @@ class Move extends Model implements Sortable
         );
 
         $this->name = $this->sequence_prefix.'/'.$this->id;
+    }
+
+    public function computeCurrencyId()
+    {
+        if ($this->currency_id) {
+            return;
+        }
+
+        $this->currency_id = $this->journal->currency_id ?? $this->journal->company->currency_id;
     }
 
     public function computePartnerDisplayInfo()

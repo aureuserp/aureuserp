@@ -3,6 +3,12 @@
 namespace Webkul\Account\Filament\Resources;
 
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
@@ -24,11 +30,19 @@ use Filament\Schemas\Components\Utilities\Get;
 use Webkul\Account\Models\CashRounding;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Notifications\Notification;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Facades\Tax as TaxFacade;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\Size;
 use Filament\Support\Enums\TextSize;
+use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -37,6 +51,7 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\DisplayType;
+use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Filament\Resources\BillResource\Pages\CreateBill;
@@ -205,7 +220,11 @@ class BillResource extends Resource
                                         Group::make()
                                             ->schema([
                                                 Select::make('journal_id')
-                                                    ->relationship('journal', 'name')
+                                                    ->relationship(
+                                                        'journal',
+                                                        'name',
+                                                        modifyQueryUsing: fn (Builder $query) => $query->where('type', JournalType::PURCHASE),
+                                                    )
                                                     ->searchable()
                                                     ->preload()
                                                     ->required()
@@ -242,7 +261,7 @@ class BillResource extends Resource
                                 static::getProductRepeater(),
                                 
                                 Livewire::make(InvoiceSummary::class, function  (Get $get, $record, $livewire) {
-                                    $totals = self::calculateInvoiceTotals($get, $livewire);
+                                    $totals = self::calculateMoveTotals($get, $livewire);
 
                                     $currency = Currency::find($get('currency_id'));
 
@@ -330,7 +349,205 @@ class BillResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return InvoiceResource::table($table);
+        return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
+            ->columns([
+                TextColumn::make('name')
+                    ->placeholder('-')
+                    ->label(__('accounts::filament/resources/bill.table.columns.number'))
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('state')
+                    ->placeholder('-')
+                    ->label(__('accounts::filament/resources/bill.table.columns.state'))
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('invoice_partner_display_name')
+                    ->label(__('accounts::filament/resources/bill.table.columns.customer'))
+                    ->placeholder('-')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('invoice_date')
+                    ->date()
+                    ->placeholder('-')
+                    ->label(__('accounts::filament/resources/bill.table.columns.bill-date'))
+                    ->sortable(),
+                TextColumn::make('invoice_date_due')
+                    ->date()
+                    ->placeholder('-')
+                    ->label(__('accounts::filament/resources/bill.table.columns.due-date'))
+                    ->sortable(),
+                TextColumn::make('amount_untaxed_in_currency_signed')
+                    ->label(__('accounts::filament/resources/bill.table.columns.tax-excluded'))
+                    ->searchable()
+                    ->placeholder('-')
+                    ->sortable()
+                    ->money(fn ($record) => $record->currency?->name)
+                    ->summarize(Sum::make()->label(__('accounts::filament/resources/bill.table.total')))
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('amount_tax_signed')
+                    ->label(__('accounts::filament/resources/bill.table.columns.tax'))
+                    ->searchable()
+                    ->placeholder('-')
+                    ->sortable()
+                    ->money(fn ($record) => $record->currency?->name)
+                    ->summarize(Sum::make()->label(__('accounts::filament/resources/bill.table.total')))
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('amount_total_in_currency_signed')
+                    ->label(__('accounts::filament/resources/bill.table.columns.total'))
+                    ->searchable()
+                    ->placeholder('-')
+                    ->sortable()
+                    ->summarize(Sum::make()->label(__('accounts::filament/resources/bill.table.total')))
+                    ->money(fn ($record) => $record->currency?->name)
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('amount_residual_signed')
+                    ->label(__('accounts::filament/resources/bill.table.columns.amount-due'))
+                    ->searchable()
+                    ->placeholder('-')
+                    ->sortable()
+                    ->summarize(Sum::make()->label(__('accounts::filament/resources/bill.table.summarizers.total')))
+                    ->money(fn ($record) => $record->currency?->name)
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('payment_state')
+                    ->label(__('Payment State'))
+                    ->placeholder('-')
+                    ->color(fn (PaymentState $state) => $state->getColor())
+                    ->icon(fn (PaymentState $state) => $state->getIcon())
+                    ->formatStateUsing(fn (PaymentState $state) => $state->getLabel())
+                    ->badge()
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                IconColumn::make('checked')
+                    ->boolean()
+                    ->placeholder('-')
+                    ->label(__('accounts::filament/resources/bill.table.columns.checked'))
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('date')
+                    ->date()
+                    ->placeholder('-')
+                    ->label(__('accounts::filament/resources/bill.table.columns.accounting-date'))
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('invoice_origin')
+                    ->placeholder('-')
+                    ->label(__('accounts::filament/resources/bill.table.columns.source-document'))
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('reference')
+                    ->label(__('accounts::filament/resources/bill.table.columns.reference'))
+                    ->searchable()
+                    ->placeholder('-')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('invoiceUser.name')
+                    ->label(__('accounts::filament/resources/bill.table.columns.sales-person'))
+                    ->searchable()
+                    ->placeholder('-')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('currency.name')
+                    ->label(__('accounts::filament/resources/bill.table.columns.bill-currency'))
+                    ->searchable()
+                    ->placeholder('-')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->groups([
+                Tables\Grouping\Group::make('name')
+                    ->label(__('accounts::filament/resources/bill.table.groups.name'))
+                    ->collapsible(),
+                Tables\Grouping\Group::make('invoice_partner_display_name')
+                    ->label(__('accounts::filament/resources/bill.table.groups.bill-partner-display-name'))
+                    ->collapsible(),
+                Tables\Grouping\Group::make('invoice_date')
+                    ->label(__('accounts::filament/resources/bill.table.groups.bill-date'))
+                    ->collapsible(),
+                Tables\Grouping\Group::make('checked')
+                    ->label(__('accounts::filament/resources/bill.table.groups.checked'))
+                    ->collapsible(),
+                Tables\Grouping\Group::make('date')
+                    ->date()
+                    ->label(__('accounts::filament/resources/bill.table.groups.date'))
+                    ->collapsible(),
+                Tables\Grouping\Group::make('invoice_date_due')
+                    ->date()
+                    ->label(__('accounts::filament/resources/bill.table.groups.bill-due-date'))
+                    ->collapsible(),
+                Tables\Grouping\Group::make('invoice_origin')
+                    ->label(__('accounts::filament/resources/bill.table.groups.bill-origin'))
+                    ->collapsible(),
+                Tables\Grouping\Group::make('invoiceUser.name')
+                    ->date()
+                    ->label(__('accounts::filament/resources/bill.table.groups.sales-person'))
+                    ->collapsible(),
+                Tables\Grouping\Group::make('currency.name')
+                    ->label(__('accounts::filament/resources/bill.table.groups.currency'))
+                    ->collapsible(),
+                Tables\Grouping\Group::make('created_at')
+                    ->label(__('accounts::filament/resources/bill.table.groups.created-at'))
+                    ->date()
+                    ->collapsible(),
+                Tables\Grouping\Group::make('updated_at')
+                    ->label(__('accounts::filament/resources/bill.table.groups.updated-at'))
+                    ->date()
+                    ->collapsible(),
+            ])
+            ->filtersFormColumns(2)
+            ->filters([
+                QueryBuilder::make()
+                    ->constraintPickerColumns(2)
+                    ->constraints([
+                        TextConstraint::make('name')
+                            ->label(__('accounts::filament/resources/bill.table.filters.number')),
+                        TextConstraint::make('invoice_origin')
+                            ->label(__('accounts::filament/resources/bill.table.filters.bill-origin')),
+                        TextConstraint::make('reference')
+                            ->label(__('accounts::filament/resources/bill.table.filters.reference')),
+                        TextConstraint::make('invoice_partner_display_name')
+                            ->label(__('accounts::filament/resources/bill.table.filters.bill-partner-display-name')),
+                        DateConstraint::make('invoice_date')
+                            ->label(__('accounts::filament/resources/bill.table.filters.bill-date')),
+                        DateConstraint::make('invoice_date_due')
+                            ->label(__('accounts::filament/resources/bill.table.filters.bill-due-date')),
+                        DateConstraint::make('created_at')
+                            ->label(__('accounts::filament/resources/bill.table.filters.created-at')),
+                        DateConstraint::make('updated_at')
+                            ->label(__('accounts::filament/resources/bill.table.filters.updated-at')),
+                    ]),
+            ])
+            ->recordActions([
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make()
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title(__('accounts::filament/resources/bill.table.actions.delete.notification.title'))
+                                ->body(__('accounts::filament/resources/bill.table.actions.delete.notification.body'))
+                        ),
+                ]),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->successNotification(
+                            Notification::make()
+                                ->success()
+                                ->title(__('accounts::filament/resources/bill.table.bulk-actions.delete.notification.title'))
+                                ->body(__('accounts::filament/resources/bill.table.bulk-actions.delete.notification.body'))
+                        ),
+                ]),
+            ])
+            ->modifyQueryUsing(function (Builder $query) {
+                $query->with('currency');
+            });
     }
 
     public static function infolist(Schema $schema): Schema
@@ -875,7 +1092,7 @@ class BillResource extends Resource
         $set('price_total', round($total, 4));
     }
 
-    private static function calculateInvoiceTotals(Get $get, $livewire): array
+    private static function calculateMoveTotals(Get $get, $livewire): array
     {
         $defaultTotals = [
             'subtotal'   => 0,

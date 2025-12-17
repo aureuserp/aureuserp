@@ -47,6 +47,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\DisplayType;
+use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\TypeTaxUse;
@@ -201,7 +202,11 @@ class InvoiceResource extends Resource
                                         Group::make()
                                             ->schema([
                                                 Select::make('journal_id')
-                                                    ->relationship('journal', 'name')
+                                                    ->relationship(
+                                                        'journal',
+                                                        'name',
+                                                        modifyQueryUsing: fn (Builder $query) => $query->where('type', JournalType::SALE),
+                                                    )
                                                     ->searchable()
                                                     ->preload()
                                                     ->required()
@@ -237,7 +242,7 @@ class InvoiceResource extends Resource
                                 static::getProductRepeater(),
                                 
                                 Livewire::make(InvoiceSummary::class, function  (Get $get, $record, $livewire) {
-                                    $totals = self::calculateInvoiceTotals($get, $livewire);
+                                    $totals = self::calculateMoveTotals($get, $livewire);
 
                                     $currency = Currency::find($get('currency_id'));
 
@@ -825,7 +830,7 @@ class InvoiceResource extends Resource
                 $action->requiresConfirmation();
 
                 $action->after(function (Get $get, $livewire) {
-                    $totals = self::calculateInvoiceTotals($get, $livewire);
+                    $totals = self::calculateMoveTotals($get, $livewire);
 
                     $livewire->dispatch('itemUpdated', $totals);
                 });
@@ -941,7 +946,6 @@ class InvoiceResource extends Resource
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get)),
                 TextInput::make('discount')
-                    ->label(__('Discount Percentage'))
                     ->label(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.fields.discount-percentage'))
                     ->numeric()
                     ->default(0)
@@ -1137,7 +1141,7 @@ class InvoiceResource extends Resource
         $set('price_total', round($total, 4));
     }
 
-    private static function calculateInvoiceTotals(Get $get, $livewire): array
+    private static function calculateMoveTotals(Get $get, $livewire): array
     {
         $defaultTotals = [
             'subtotal'   => 0,
