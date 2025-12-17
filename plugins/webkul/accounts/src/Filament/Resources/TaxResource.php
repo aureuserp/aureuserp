@@ -69,18 +69,18 @@ class TaxResource extends Resource
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.name'))
                                     ->required(),
                                 Select::make('type_tax_use')
-                                    ->options(TypeTaxUse::options())
+                                    ->options(TypeTaxUse::class)
                                     ->native(false)
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.tax-type'))
                                     ->required(),
                                 Select::make('amount_type')
                                     ->native(false)
-                                    ->options(AmountType::options())
+                                    ->options(AmountType::class)
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.tax-computation'))
                                     ->required(),
                                 Select::make('tax_scope')
                                     ->native(false)
-                                    ->options(TaxScope::options())
+                                    ->options(TaxScope::class)
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.tax-scope')),
                                 Toggle::make('is_active')
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.status'))
@@ -295,7 +295,6 @@ class TaxResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('type_tax_use')
                     ->label(__('accounts::filament/resources/tax.table.columns.tax-type'))
-                    ->formatStateUsing(fn ($state) => TypeTaxUse::options()[$state])
                     ->sortable(),
                 TextColumn::make('tax_scope')
                     ->label(__('accounts::filament/resources/tax.table.columns.tax-scope'))
@@ -304,7 +303,6 @@ class TaxResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('amount_type')
                     ->label(__('accounts::filament/resources/tax.table.columns.amount-type'))
-                    ->formatStateUsing(fn ($state) => AmountType::options()[$state])
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('invoice_label')

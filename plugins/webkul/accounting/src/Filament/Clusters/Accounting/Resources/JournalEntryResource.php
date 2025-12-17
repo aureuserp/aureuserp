@@ -446,6 +446,10 @@ class JournalEntryResource extends Resource
                     ->width(100)
                     ->markAsRequired()
                     ->toggleable(isToggledHiddenByDefault: true),
+                TableColumn::make('taxes')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.columns.taxes'))
+                    ->width(150)
+                    ->toggleable(),
                 TableColumn::make('debit')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.columns.debit'))
                     ->width(100)
@@ -507,6 +511,20 @@ class JournalEntryResource extends Resource
                     ->dehydrated()
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::currencyUpdated($set, $get))
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
+                Select::make('taxes')
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.taxes'))
+                    ->relationship('taxes', 'name')
+                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                        return $record->name.' ('.$record->type_tax_use->getLabel().')';
+                    })
+                    ->searchable()
+                    ->multiple()
+                    ->preload()
+                    ->dehydrated()
+                    ->live()
+                    ->afterStateHydrated(fn (Get $get, Set $set) => self::taxesUpdated($set, $get))
+                    ->afterStateUpdated(fn (Get $get, Set $set) => self::taxesUpdated($set, $get))
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
                 TextInput::make('debit')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.debit'))
                     ->numeric()
@@ -543,6 +561,10 @@ class JournalEntryResource extends Resource
     }
 
     private static function currencyUpdated(Set $set, Get $get): void
+    {
+    }
+
+    private static function taxesUpdated(Set $set, Get $get): void
     {
     }
 

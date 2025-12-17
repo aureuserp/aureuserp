@@ -12,6 +12,7 @@ use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
+use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -221,9 +222,9 @@ class MoveLine extends Model implements Sortable
                 $tax = $this->taxes->first();
                 $taxType = $tax?->type_tax_use;
 
-                if ($taxType == 'sale' && $this->credit == 0.0) {
+                if ($taxType == TypeTaxUse::SALE && $this->credit == 0.0) {
                     $isRefund = true;
-                } elseif ($taxType == 'purchase' && $this->debit == 0.0) {
+                } elseif ($taxType == TypeTaxUse::PURCHASE && $this->debit == 0.0) {
                     $isRefund = true;
                 }
 
@@ -483,14 +484,14 @@ class MoveLine extends Model implements Sortable
             $tax = $this->taxRepartitionLine->tax ?? $this->taxes->first();
 
             if ($this->display_type == DisplayType::EPD) {
-                $this->tax_tag_invert = $tax->type_tax_use == 'purchase';
+                $this->tax_tag_invert = $tax->type_tax_use == TypeTaxUse::PURCHASE;
             } else {
                 $this->tax_tag_invert = (
-                        $tax->type_tax_use == 'purchase'
+                        $tax->type_tax_use == TypeTaxUse::PURCHASE
                         && $this->is_refund
                     )
                     || (
-                        $tax->type_tax_use == 'sale'
+                        $tax->type_tax_use == TypeTaxUse::SALE
                         && ! $this->is_refund
                     );
             }

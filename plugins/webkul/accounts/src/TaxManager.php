@@ -11,6 +11,7 @@ use Webkul\Account\Settings\TaxesSettings;
 use Webkul\Partner\Models\Partner;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Account\Enums\AmountType;
 
 class TaxManager
 {
@@ -48,7 +49,7 @@ class TaxManager
             $currentTaxAmount = 0;
 
             if ($tax->price_include_override == 'tax_included') {
-                if ($tax->amount_type == 'percent') {
+                if ($tax->amount_type == AmountType::PERCENT) {
                     $taxFactor = $amount / 100;
 
                     $currentTaxAmount = $currentTaxBase - ($currentTaxBase / (1 + $taxFactor));
@@ -62,7 +63,7 @@ class TaxManager
 
                 $adjustedSubTotal -= $currentTaxAmount;
             } else {
-                if ($tax->amount_type == 'percent') {
+                if ($tax->amount_type == AmountType::PERCENT) {
                     $currentTaxAmount = $currentTaxBase * $amount / 100;
                 } else {
                     $currentTaxAmount = $amount * $quantity;
@@ -1028,7 +1029,7 @@ class TaxManager
         $taxes = $taxes->sortBy('sequence');
 
         foreach ($taxes as $tax) {
-            if ($tax->amount_type === 'group') {
+            if ($tax->amount_type === AmountType::GROUP) {
                 $children = $tax->childrenTaxes()->orderBy('sequence')->get();
 
                 $results['sorted_taxes'] = $results['sorted_taxes']->merge($children);

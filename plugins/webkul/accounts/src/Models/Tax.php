@@ -11,6 +11,8 @@ use Webkul\Account\Settings\TaxesSettings;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
+use Webkul\Account\Enums\TypeTaxUse;
+use Webkul\Account\Enums\AmountType;
 
 class Tax extends Model implements Sortable
 {
@@ -39,6 +41,11 @@ class Tax extends Model implements Sortable
         'include_base_amount',
         'is_base_affected',
         'analytic',
+    ];
+
+    protected $casts = [
+        'amount_type'    => AmountType::class,
+        'type_tax_use' => TypeTaxUse::class,
     ];
 
     public $sortable = [
@@ -96,14 +103,14 @@ class Tax extends Model implements Sortable
 
     public function evalTaxAmountFixedAmount($batch, $rawBase, $evaluationContext)
     {
-        if ($this->amount_type === 'fixed') {
+        if ($this->amount_type === AmountType::FIXED) {
             return $evaluationContext['quantity'] + $this->amount;
         }
     }
 
     public function evalTaxAmountPriceIncluded($batch, $rawBase, $evaluationContext)
     {
-        if ($this->amount_type === 'percent') {
+        if ($this->amount_type === AmountType::PERCENT) {
             $totalPercentage = array_sum(array_map(function ($tax) {
                 return $tax->amount;
             }, $batch)) / 100.0;
@@ -115,18 +122,18 @@ class Tax extends Model implements Sortable
             return $rawBase * $toPriceExcludedFactor * $this->amount / 100.0;
         }
 
-        if ($this->amount_type === 'division') {
+        if ($this->amount_type === AmountType::DIVISION) {
             return $rawBase * $this->amount / 100.0;
         }
     }
 
     public function evalTaxAmountPriceExcluded($batch, $rawBase, $evaluationContext)
     {
-        if ($this->amount_type === 'percent') {
+        if ($this->amount_type === AmountType::PERCENT) {
             return $rawBase * $this->amount / 100.0;
         }
 
-        if ($this->amount_type === 'division') {
+        if ($this->amount_type === AmountType::DIVISION) {
             $totalPercentage = array_sum(array_map(function ($tax) {
                 return $tax->amount;
             }, $batch)) / 100.0;

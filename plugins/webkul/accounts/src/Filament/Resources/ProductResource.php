@@ -43,7 +43,7 @@ class ProductResource extends BaseProductResource
                 ->relationship(
                     'productTaxes',
                     'name',
-                    fn ($query) => $query->where('type_tax_use', TypeTaxUse::SALE->value),
+                    modifyQueryUsing: fn ($query) => $query->where('type_tax_use', TypeTaxUse::SALE),
                 )
                 ->multiple()
                 ->live()
@@ -111,7 +111,7 @@ class ProductResource extends BaseProductResource
                 ->relationship(
                     'supplierTaxes',
                     'name',
-                    fn ($query) => $query->where('type_tax_use', TypeTaxUse::PURCHASE->value),
+                    modifyQueryUsing: fn ($query) => $query->where('type_tax_use', TypeTaxUse::PURCHASE),
                 )
                 ->multiple()
                 ->live()

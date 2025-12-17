@@ -996,9 +996,7 @@ class OrderResource extends Resource
                     ->relationship(
                         'taxes',
                         'name',
-                        function (Builder $query) {
-                            return $query->where('type_tax_use', TypeTaxUse::PURCHASE->value);
-                        },
+                        modifyQueryUsing: fn (Builder $query) => $query->where('type_tax_use', TypeTaxUse::PURCHASE),
                     )
                     ->searchable()
                     ->multiple()
