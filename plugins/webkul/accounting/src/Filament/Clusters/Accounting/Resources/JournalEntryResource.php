@@ -10,6 +10,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -367,7 +368,7 @@ class JournalEntryResource extends Resource
     public static function getLineRepeater(): Repeater
     {
         return Repeater::make('lines')
-            ->relationship('invoiceLines')
+            ->relationship('lines')
             ->hiddenLabel()
             ->compact()
             ->live()
@@ -422,6 +423,7 @@ class JournalEntryResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->schema([
+                Hidden::make('display_type'),
                 Select::make('account_id')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.account'))
                     ->relationship('account', 'name')
@@ -581,12 +583,10 @@ class JournalEntryResource extends Resource
         $journal = $journalId ? Journal::find($journalId) : null;
         $suspenseAccountId = $journal?->suspense_account_id ?? (new DefaultAccountSettings)->account_journal_suspense_account_id;
 
-        // Remove auto-generated lines by checking name patterns
         $lines = collect($lines)
             ->reject(function ($line) {
                 $name = $line['name'] ?? '';
 
-                // Remove tax lines (name starts with "Tax:") and balancing lines (name is "Automatic Balancing")
                 return str_starts_with($name, 'Tax:') || $name === 'Automatic Balancing';
             })
             ->values()
@@ -653,6 +653,7 @@ class JournalEntryResource extends Resource
                         $taxName = $taxData['tax']->name ?? 'Tax';
 
                         $taxLinesMap[$key] = [
+                            'display_type'             => 'tax',
                             'account_id'               => $accountId,
                             'partner_id'               => $partnerId,
                             'name'                     => 'Tax: '.$taxName,
