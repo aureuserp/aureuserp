@@ -13,7 +13,7 @@ use Webkul\Purchase\Facades\PurchaseOrder;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Actions as OrderActions;
 use Webkul\Purchase\Models\Order;
-use Webkul\Support\Filament\Forms\Components\Repeater\Concerns\HasRepeaterColumnManager;
+use Webkul\Support\Filament\Forms\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditOrder extends EditRecord
@@ -67,7 +67,7 @@ class EditOrder extends EditRecord
             OrderActions\UnlockAction::make(),
             OrderActions\CancelAction::make(),
             DeleteAction::make()
-                ->hidden(fn() => $this->getRecord()->state == OrderState::DONE)
+                ->hidden(fn () => $this->getRecord()->state == OrderState::DONE)
                 ->action(function (DeleteAction $action, Order $record) {
                     try {
                         $record->delete();

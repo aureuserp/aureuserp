@@ -9,7 +9,7 @@ use Webkul\Chatter\Filament\Actions as ChatterActions;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions as BaseActions;
-use Webkul\Support\Filament\Forms\Components\Repeater\Concerns\HasRepeatableEntryColumnManager;
+use Webkul\Support\Filament\Forms\Concerns\HasRepeatableEntryColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewQuotation extends ViewRecord
@@ -32,7 +32,7 @@ class ViewQuotation extends ViewRecord
             BaseActions\SendByEmailAction::make(),
             BaseActions\LockAndUnlockAction::make(),
             DeleteAction::make()
-                ->hidden(fn() => $this->getRecord()->state == OrderState::SALE)
+                ->hidden(fn () => $this->getRecord()->state == OrderState::SALE)
                 ->successNotification(
                     Notification::make()
                         ->success()

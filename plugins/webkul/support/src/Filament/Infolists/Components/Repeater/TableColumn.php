@@ -12,7 +12,7 @@ use Filament\Support\Concerns\HasWidth;
 use Filament\Tables\Columns\Concerns\CanBeToggled;
 use Illuminate\Contracts\Support\Htmlable;
 use LogicException;
-use Webkul\Support\Filament\Forms\Components\Repeater\Concerns\CanBeHidden;
+use Webkul\Support\Filament\Forms\Concerns\CanBeHidden;
 
 class TableColumn extends Component
 {
