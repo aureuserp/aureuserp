@@ -10,6 +10,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -48,7 +49,6 @@ use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Tax;
-use Webkul\Account\Settings\DefaultAccountSettings;
 use Webkul\Accounting\Filament\Clusters\Accounting;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource\Pages\CreateJournalEntry;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource\Pages\EditJournalEntry;
@@ -431,7 +431,8 @@ class JournalEntryResource extends Resource
                     ->live()
                     ->selectablePlaceholder(false)
                     ->dehydrated()
-                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->extraInputAttributes(fn (Get $get) => $get('is_auto_generated') ? ['class' => 'bg-gray-50 italic'] : []),
                 Select::make('partner_id')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.partner'))
                     ->relationship('partner', 'name')
@@ -439,11 +440,13 @@ class JournalEntryResource extends Resource
                     ->preload()
                     ->selectablePlaceholder(false)
                     ->dehydrated()
-                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->extraInputAttributes(fn (Get $get) => $get('is_auto_generated') ? ['class' => 'bg-gray-50 italic'] : []),
                 TextInput::make('name')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.label'))
                     ->dehydrated()
-                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->extraInputAttributes(fn (Get $get) => $get('is_auto_generated') ? ['class' => 'bg-gray-50 italic'] : []),
                 TextInput::make('amount_currency')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.amount-currency'))
                     ->numeric()
@@ -452,7 +455,8 @@ class JournalEntryResource extends Resource
                     ->live(onBlur: true)
                     ->dehydrated()
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::amountCurrencyUpdated($set, $get))
-                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->extraInputAttributes(fn (Get $get) => $get('is_auto_generated') ? ['class' => 'bg-gray-50 italic'] : []),
                 Select::make('currency_id')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.currency'))
                     ->relationship(
@@ -466,7 +470,8 @@ class JournalEntryResource extends Resource
                     ->selectablePlaceholder(false)
                     ->dehydrated()
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::currencyUpdated($set, $get))
-                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->extraInputAttributes(fn (Get $get) => $get('is_auto_generated') ? ['class' => 'bg-gray-50 italic'] : []),
                 Select::make('taxes')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.taxes'))
                     ->relationship('taxes', 'name')
@@ -479,7 +484,8 @@ class JournalEntryResource extends Resource
                     ->dehydrated()
                     ->live()
                     ->afterStateUpdated(fn (Get $get, Set $set) => self::taxesUpdated($set, $get))
-                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL])),
+                    ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
+                    ->extraInputAttributes(fn (Get $get) => $get('is_auto_generated') ? ['class' => 'bg-gray-50 italic'] : []),
                 TextInput::make('debit')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.debit'))
                     ->numeric()
@@ -490,7 +496,8 @@ class JournalEntryResource extends Resource
                     ->live(onBlur: true)
                     ->dehydrated()
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                    ->afterStateUpdated(fn (Set $set, Get $get) => self::debitUpdated($set, $get)),
+                    ->afterStateUpdated(fn (Set $set, Get $get) => self::debitUpdated($set, $get))
+                    ->extraInputAttributes(fn (Get $get) => $get('is_auto_generated') ? ['class' => 'bg-gray-50 italic'] : []),
                 TextInput::make('credit')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.credit'))
                     ->numeric()
@@ -501,7 +508,8 @@ class JournalEntryResource extends Resource
                     ->live(onBlur: true)
                     ->dehydrated()
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                    ->afterStateUpdated(fn (Set $set, Get $get) => self::creditUpdated($set, $get)),
+                    ->afterStateUpdated(fn (Set $set, Get $get) => self::creditUpdated($set, $get))
+                    ->extraInputAttributes(fn (Get $get) => $get('is_auto_generated') ? ['class' => 'bg-gray-50 italic'] : []),
                 TextInput::make('discount_amount_currency')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.form.tabs.lines.repeater.fields.discount-amount-currency'))
                     ->numeric()
@@ -511,7 +519,14 @@ class JournalEntryResource extends Resource
                     ->live(onBlur: true)
                     ->dehydrated()
                     ->disabled(fn ($record) => in_array($record?->parent_state, [MoveState::POSTED, MoveState::CANCEL]))
-                    ->afterStateUpdated(fn (Set $set, Get $get) => self::discountAmountCurrencyUpdated($set, $get)),
+                    ->afterStateUpdated(fn (Set $set, Get $get) => self::discountAmountCurrencyUpdated($set, $get))
+                    ->extraInputAttributes(fn (Get $get) => $get('is_auto_generated') ? ['class' => 'bg-gray-50 italic'] : []),
+                Hidden::make('is_auto_generated')
+                    ->default(false)
+                    ->dehydrated(),
+                Hidden::make('auto_type')
+                    ->default(null)
+                    ->dehydrated(),
             ]);
     }
 
@@ -519,6 +534,10 @@ class JournalEntryResource extends Resource
 
     private static function taxesUpdated(Set $set, Get $get): void
     {
+        if ($get('is_auto_generated')) {
+            return;
+        }
+
         self::recalculateJournalTaxLines($get, $set);
     }
 
@@ -532,7 +551,11 @@ class JournalEntryResource extends Resource
             $set('credit', abs($get('amount_currency')));
         }
 
-        self::recalculateJournalTaxLines($get, $set);
+        if (! $get('is_auto_generated') && ! empty($get('taxes'))) {
+            self::recalculateJournalTaxLines($get, $set);
+        } elseif ($get('is_auto_generated')) {
+            self::recalculateBalancingLineOnly($get, $set);
+        }
     }
 
     private static function debitUpdated(Set $set, Get $get): void
@@ -541,7 +564,11 @@ class JournalEntryResource extends Resource
 
         $set('amount_currency', $get('debit'));
 
-        self::recalculateJournalTaxLines($get, $set);
+        if (! $get('is_auto_generated') && ! empty($get('taxes'))) {
+            self::recalculateJournalTaxLines($get, $set);
+        } elseif ($get('is_auto_generated')) {
+            self::recalculateBalancingLineOnly($get, $set);
+        }
     }
 
     private static function creditUpdated(Set $set, Get $get): void
@@ -550,7 +577,11 @@ class JournalEntryResource extends Resource
 
         $set('amount_currency', -1 * $get('credit'));
 
-        self::recalculateJournalTaxLines($get, $set);
+        if (! $get('is_auto_generated') && ! empty($get('taxes'))) {
+            self::recalculateJournalTaxLines($get, $set);
+        } elseif ($get('is_auto_generated')) {
+            self::recalculateBalancingLineOnly($get, $set);
+        }
     }
 
     private static function discountAmountCurrencyUpdated(Set $set, Get $get): void {}
@@ -578,19 +609,13 @@ class JournalEntryResource extends Resource
             return;
         }
 
-        $journal = $journalId ? Journal::find($journalId) : null;
-        $suspenseAccountId = $journal?->suspense_account_id ?? (new DefaultAccountSettings)->account_journal_suspense_account_id;
+        $journal = $journalId ? \Webkul\Account\Models\Journal::find($journalId) : null;
+        $suspenseAccountId = $journal?->suspense_account_id
+            ?? (new \Webkul\Account\Settings\DefaultAccountSettings)->account_journal_suspense_account_id
+            ?? null;
 
-        // Remove auto-generated lines by checking name patterns
-        $lines = collect($lines)
-            ->reject(function ($line) {
-                $name = $line['name'] ?? '';
-
-                // Remove tax lines (name starts with "Tax:") and balancing lines (name is "Automatic Balancing")
-                return str_starts_with($name, 'Tax:') || $name === 'Automatic Balancing';
-            })
-            ->values()
-            ->all();
+        $lines = array_filter($lines, fn ($line) => ! ($line['is_auto_generated'] ?? false));
+        $lines = array_values($lines);
 
         if (empty($lines)) {
             $set('../../lines', []);
@@ -607,25 +632,28 @@ class JournalEntryResource extends Resource
         $mockMove->setRelation('currency', $currency);
         $mockMove->setRelation('company', $company);
 
-        $totalDebit = collect($lines)->sum(fn ($lineData) => $lineData['debit'] ?? 0);
-        $totalCredit = collect($lines)->sum(fn ($lineData) => $lineData['credit'] ?? 0);
-
         $baseLines = [];
+        $totalDebit = 0;
+        $totalCredit = 0;
 
         foreach ($lines as $lineData) {
-            if (empty($lineData['taxes'])) {
+            $taxIds = $lineData['taxes'] ?? [];
+            $totalDebit += $lineData['debit'] ?? 0;
+            $totalCredit += $lineData['credit'] ?? 0;
+
+            if (empty($taxIds)) {
                 continue;
             }
 
             $mockLine = self::createMockMoveLine($lineData, $mockMove, $currency, $company);
-
             $baseLine = AccountFacade::prepareProductBaseLineForTaxesComputation($mockLine);
-
             $baseLine = TaxFacade::addTaxDetailsInBaseLine($baseLine, $company);
-
             $baseLine = TaxFacade::addAccountingDataToBaseLineTaxDetails($baseLine, $company);
-
             $baseLines[] = $baseLine;
+        }
+
+        if (! empty($baseLines)) {
+            $baseLines = TaxFacade::roundBaseLinesTaxDetails($baseLines, $company);
         }
 
         $taxLinesMap = [];
@@ -639,14 +667,14 @@ class JournalEntryResource extends Resource
                 }
 
                 foreach ($taxData['tax_reps_data'] as $taxRepData) {
-                    $accountId = $taxRepData['account']?->id ?? null;
+                    $account = $taxRepData['account'] ?? null;
+                    $accountId = $account?->id ?? null;
 
                     if (! $accountId) {
                         continue;
                     }
 
                     $partnerId = $baseLine['partner']->id ?? null;
-
                     $key = $accountId.'_'.($partnerId ?? 'null');
 
                     if (! isset($taxLinesMap[$key])) {
@@ -662,11 +690,12 @@ class JournalEntryResource extends Resource
                             'debit'                    => 0,
                             'credit'                   => 0,
                             'discount_amount_currency' => 0,
+                            'is_auto_generated'        => true,
+                            'auto_type'                => 'tax',
                         ];
                     }
 
                     $taxAmount = $taxRepData['tax_amount'] ?? $taxRepData['tax_amount_currency'] ?? 0;
-
                     $taxLinesMap[$key]['amount_currency'] += $taxAmount;
 
                     if ($taxAmount < 0) {
@@ -678,17 +707,11 @@ class JournalEntryResource extends Resource
             }
         }
 
-        $lines = array_values($lines);
-
-        foreach ($taxLinesMap as $key => $taxLine) {
+        foreach ($taxLinesMap as $taxLine) {
             $taxLine['debit'] = round($taxLine['debit'], 2);
             $taxLine['credit'] = round($taxLine['credit'], 2);
             $taxLine['amount_currency'] = round($taxLine['amount_currency'], 2);
-
-            $taxLinesMap[$key] = $taxLine;
-
             $lines[] = $taxLine;
-
             $totalDebit += $taxLine['debit'];
             $totalCredit += $taxLine['credit'];
         }
@@ -753,17 +776,24 @@ class JournalEntryResource extends Resource
             return;
         }
 
-        $journal = $journalId ? Journal::find($journalId) : null;
+        $journal = $journalId ? \Webkul\Account\Models\Journal::find($journalId) : null;
+        $suspenseAccountId = $journal?->suspense_account_id
+            ?? (new \Webkul\Account\Settings\DefaultAccountSettings)->account_journal_suspense_account_id
+            ?? null;
 
-        $suspenseAccountId = $journal?->suspense_account_id ?? (new DefaultAccountSettings)->account_journal_suspense_account_id;
+        $linesWithoutBalancing = array_filter($lines, function ($line) {
+            return ! (($line['is_auto_generated'] ?? false) && ($line['auto_type'] ?? null) === 'balancing');
+        });
 
-        $linesWithoutBalancing = collect($lines)
-            ->reject(fn ($line) => ($line['is_auto_generated'] ?? false) && ($line['auto_type'] ?? null) === 'balancing')
-            ->values()
-            ->all();
+        $linesWithoutBalancing = array_values($linesWithoutBalancing);
 
-        $totalDebit = collect($linesWithoutBalancing)->sum(fn ($lineData) => data_get($lineData, 'debit', 0));
-        $totalCredit = collect($linesWithoutBalancing)->sum(fn ($lineData) => data_get($lineData, 'credit', 0));
+        $totalDebit = 0;
+        $totalCredit = 0;
+
+        foreach ($linesWithoutBalancing as $lineData) {
+            $totalDebit += $lineData['debit'] ?? 0;
+            $totalCredit += $lineData['credit'] ?? 0;
+        }
 
         $balancingLine = self::calculateBalancingLine($totalDebit, $totalCredit, $company, $suspenseAccountId);
 

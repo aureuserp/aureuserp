@@ -400,7 +400,7 @@ class MoveLine extends Model implements Sortable
 
                     $accountId = $account?->id;
                 } elseif ($this->partner) {
-                    $accountId = (new Account)->getMostFrequentAccountsForPartner(
+                    $accountId = $this->account_id ?? (new Account)->getMostFrequentAccountsForPartner(
                         companyId: $this->move->company_id,
                         partnerId: $this->partner_id,
                         moveType: $this->move->type,
@@ -429,7 +429,7 @@ class MoveLine extends Model implements Sortable
                 break;
         }
 
-        $this->account_id = $accountId;
+        $this->account_id = $accountId ?? $this->account_id;
     }
 
     public function computeDisplayType()
@@ -506,6 +506,7 @@ class MoveLine extends Model implements Sortable
             $this->balance = 0.0;
         } elseif (! $this->move->isInvoice(true)) {
             // TODO: Handle other move types if needed
+            $this->balance = $this->debit - $this->credit;
         } else {
             $this->balance = $this->balance;
         }
