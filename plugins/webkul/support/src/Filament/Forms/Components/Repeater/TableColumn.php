@@ -11,11 +11,13 @@ use Filament\Support\Concerns\HasAlignment;
 use Filament\Support\Concerns\HasWidth;
 use Filament\Tables\Columns\Concerns\CanBeToggled;
 use LogicException;
+use Webkul\Support\Filament\Forms\Components\Repeater\Concerns\CanBeSummarized;
 use Webkul\Support\Filament\Forms\Concerns\CanBeHidden;
 
 class TableColumn extends Component
 {
     use CanBeHidden;
+    use CanBeSummarized;
     use CanBeToggled;
     use CanWrapHeader;
     use HasAlignment;

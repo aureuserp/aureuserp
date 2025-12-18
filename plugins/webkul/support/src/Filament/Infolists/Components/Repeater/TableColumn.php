@@ -13,10 +13,12 @@ use Filament\Tables\Columns\Concerns\CanBeToggled;
 use Illuminate\Contracts\Support\Htmlable;
 use LogicException;
 use Webkul\Support\Filament\Forms\Concerns\CanBeHidden;
+use Webkul\Support\Filament\Infolists\Components\Repeater\Concerns\CanBeSummarized;
 
 class TableColumn extends Component
 {
     use CanBeHidden;
+    use CanBeSummarized;
     use CanBeToggled;
     use CanWrapHeader;
     use HasAlignment;
