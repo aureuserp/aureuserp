@@ -12,12 +12,12 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource;
 use Webkul\Inventory\Models\Receipt;
-use Webkul\Support\Concerns\HasRepeatableEntryColumnManager;
+use Webkul\Support\Filament\Forms\Components\Repeater\Concerns\HasRepeatableEntryColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewReceipt extends ViewRecord
 {
-    use HasRecordNavigationTabs,HasRepeatableEntryColumnManager;
+    use HasRecordNavigationTabs, HasRepeatableEntryColumnManager;
 
     protected static string $resource = ReceiptResource::class;
 
@@ -37,7 +37,7 @@ class ViewReceipt extends ViewRecord
                 ->color('gray')
                 ->button(),
             DeleteAction::make()
-                ->hidden(fn () => $this->getRecord()->state == OperationState::DONE)
+                ->hidden(fn() => $this->getRecord()->state == OperationState::DONE)
                 ->action(function (DeleteAction $action, Receipt $record) {
                     try {
                         $record->delete();

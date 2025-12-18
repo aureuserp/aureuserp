@@ -9,7 +9,7 @@ use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\InvoiceResource;
 use Webkul\Account\Models\Journal;
-use Webkul\Support\Concerns\HasRepeaterColumnManager;
+use Webkul\Support\Filament\Forms\Components\Repeater\Concerns\HasRepeaterColumnManager;
 
 class CreateInvoice extends CreateRecord
 {

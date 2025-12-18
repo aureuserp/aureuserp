@@ -12,12 +12,12 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource;
 use Webkul\Inventory\Models\Dropship;
-use Webkul\Support\Concerns\HasRepeatableEntryColumnManager;
+use Webkul\Support\Filament\Forms\Components\Repeater\Concerns\HasRepeatableEntryColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewDropship extends ViewRecord
 {
-    use HasRecordNavigationTabs,HasRepeatableEntryColumnManager;
+    use HasRecordNavigationTabs, HasRepeatableEntryColumnManager;
 
     protected static string $resource = DropshipResource::class;
 
@@ -37,7 +37,7 @@ class ViewDropship extends ViewRecord
                 ->color('gray')
                 ->button(),
             DeleteAction::make()
-                ->hidden(fn () => $this->getRecord()->state == OperationState::DONE)
+                ->hidden(fn() => $this->getRecord()->state == OperationState::DONE)
                 ->action(function (DeleteAction $action, Dropship $record) {
                     try {
                         $record->delete();

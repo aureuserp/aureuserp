@@ -12,7 +12,7 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource;
 use Webkul\Inventory\Models\Delivery;
-use Webkul\Support\Concerns\HasRepeatableEntryColumnManager;
+use Webkul\Support\Filament\Forms\Components\Repeater\Concerns\HasRepeatableEntryColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewDelivery extends ViewRecord
@@ -37,7 +37,7 @@ class ViewDelivery extends ViewRecord
                 ->color('gray')
                 ->button(),
             DeleteAction::make()
-                ->hidden(fn () => $this->getRecord()->state == OperationState::DONE)
+                ->hidden(fn() => $this->getRecord()->state == OperationState::DONE)
                 ->action(function (DeleteAction $action, Delivery $record) {
                     try {
                         $record->delete();

@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\Support\Concerns;
+namespace Webkul\Support\Filament\Forms\Components\Repeater\Concerns;
 
 use Closure;
 

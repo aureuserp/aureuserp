@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\Support\Concerns;
+namespace Webkul\Support\Filament\Forms\Components\Repeater\Concerns;
 
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
 
@@ -9,6 +9,7 @@ trait HasRepeatableEntryColumnManager
     public function applyRepeaterColumnManager(string $repeaterKey, array $columns): void
     {
         $repeater = $this->getRepeaterComponent($repeaterKey);
+
         if ($repeater) {
             $repeater->applyTableColumnManager($columns);
         }
