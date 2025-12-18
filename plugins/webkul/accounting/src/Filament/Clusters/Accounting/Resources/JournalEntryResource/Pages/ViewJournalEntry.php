@@ -5,10 +5,10 @@ namespace Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryR
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
-use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
+use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
-use Webkul\Support\Concerns\HasRepeatableEntryColumnManager;
+use Webkul\Support\Filament\Forms\Concerns\HasRepeatableEntryColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewJournalEntry extends ViewRecord
@@ -21,7 +21,7 @@ class ViewJournalEntry extends ViewRecord
     {
         return [
             ChatterActions\ChatterAction::make()
-                ->setResource($this->getResource()),
+                ->resource($this->getResource()),
             BaseActions\PrintAndSendAction::make(),
             BaseActions\PreviewAction::make()
                 ->setTemplate('accounts::invoice/actions/preview.index'),

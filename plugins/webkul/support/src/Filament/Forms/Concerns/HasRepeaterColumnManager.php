@@ -1,14 +1,15 @@
 <?php
 
-namespace Webkul\Support\Concerns;
+namespace Webkul\Support\Filament\Forms\Concerns;
 
-use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
+use Webkul\Support\Filament\Forms\Components\Repeater;
 
-trait HasRepeatableEntryColumnManager
+trait HasRepeaterColumnManager
 {
     public function applyRepeaterColumnManager(string $repeaterKey, array $columns): void
     {
         $repeater = $this->getRepeaterComponent($repeaterKey);
+
         if ($repeater) {
             $repeater->applyTableColumnManager($columns);
         }
@@ -23,13 +24,12 @@ trait HasRepeatableEntryColumnManager
         }
     }
 
-    protected function getRepeaterComponent(string $repeaterKey): ?RepeatableEntry
+    protected function getRepeaterComponent(string $repeaterKey): ?Repeater
     {
+        $form = $this->form->getFlatComponents();
 
-        $infolist = $this->infolist->getFlatComponents();
-
-        foreach ($infolist as $component) {
-            if ($component instanceof RepeatableEntry && $component->getStatePath() === $repeaterKey) {
+        foreach ($form as $component) {
+            if ($component instanceof Repeater && $component->getStatePath() === $repeaterKey) {
                 return $component;
             }
 
@@ -45,10 +45,10 @@ trait HasRepeatableEntryColumnManager
         return null;
     }
 
-    protected function findRepeaterInComponents(array $components, string $repeaterKey): ?RepeatableEntry
+    protected function findRepeaterInComponents(array $components, string $repeaterKey): ?Repeater
     {
         foreach ($components as $component) {
-            if ($component instanceof RepeatableEntry && $component->getStatePath() === $repeaterKey) {
+            if ($component instanceof Repeater && $component->getStatePath() === $repeaterKey) {
                 return $component;
             }
 

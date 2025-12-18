@@ -10,7 +10,7 @@ use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Facades\SaleOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions as BaseActions;
-use Webkul\Support\Concerns\HasRepeaterColumnManager;
+use Webkul\Support\Filament\Forms\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditQuotation extends EditRecord

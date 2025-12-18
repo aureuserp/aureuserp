@@ -11,7 +11,7 @@ use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
 use Webkul\Purchase\Models\Order;
-use Webkul\Support\Concerns\HasRepeatableEntryColumnManager;
+use Webkul\Support\Filament\Forms\Concerns\HasRepeatableEntryColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewOrder extends ViewRecord

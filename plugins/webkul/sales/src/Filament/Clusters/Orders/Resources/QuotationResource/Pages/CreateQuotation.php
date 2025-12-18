@@ -9,7 +9,7 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Facades\SaleOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
-use Webkul\Support\Concerns\HasRepeaterColumnManager;
+use Webkul\Support\Filament\Forms\Concerns\HasRepeaterColumnManager;
 
 class CreateQuotation extends CreateRecord
 {
