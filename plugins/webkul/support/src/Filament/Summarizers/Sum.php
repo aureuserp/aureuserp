@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\Support\Filament\Forms\Components\Repeater\Summarizers;
+namespace Webkul\Support\Filament\Summarizers;
 
 use Illuminate\Support\Collection;
 

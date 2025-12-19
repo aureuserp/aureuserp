@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Facades\PurchaseOrder;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
-use Webkul\Support\Filament\Forms\Concerns\HasRepeaterColumnManager;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateOrder extends CreateRecord
 {

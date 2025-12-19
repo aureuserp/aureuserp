@@ -1,9 +1,9 @@
 <?php
 
-namespace Webkul\Support\Filament\Infolists\Components\Repeater\Concerns;
+namespace Webkul\Support\Filament\Concerns;
 
 use Closure;
-use Webkul\Support\Filament\Forms\Components\Repeater\Summarizers\Summarizer;
+use Webkul\Support\Filament\Summarizers\Summarizer;
 
 trait CanBeSummarized
 {

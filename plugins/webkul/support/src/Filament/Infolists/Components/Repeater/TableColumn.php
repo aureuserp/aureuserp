@@ -12,8 +12,8 @@ use Filament\Support\Concerns\HasWidth;
 use Filament\Tables\Columns\Concerns\CanBeToggled;
 use Illuminate\Contracts\Support\Htmlable;
 use LogicException;
-use Webkul\Support\Filament\Forms\Concerns\CanBeHidden;
-use Webkul\Support\Filament\Infolists\Components\Repeater\Concerns\CanBeSummarized;
+use Webkul\Support\Filament\Concerns\CanBeHidden;
+use Webkul\Support\Filament\Concerns\CanBeSummarized;
 
 class TableColumn extends Component
 {

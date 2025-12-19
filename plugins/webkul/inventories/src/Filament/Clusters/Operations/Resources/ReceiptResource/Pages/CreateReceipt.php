@@ -10,7 +10,7 @@ use Webkul\Inventory\Enums;
 use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource;
 use Webkul\Inventory\Models\OperationType;
-use Webkul\Support\Filament\Forms\Concerns\HasRepeaterColumnManager;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateReceipt extends CreateRecord
 {

@@ -9,7 +9,7 @@ use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Journal;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource;
-use Webkul\Support\Filament\Forms\Concerns\HasRepeaterColumnManager;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateJournalEntry extends CreateRecord
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\Support\Filament\Forms\Concerns;
+namespace Webkul\Support\Filament\Concerns;
 
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
 
