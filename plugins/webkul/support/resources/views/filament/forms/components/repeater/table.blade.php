@@ -49,7 +49,7 @@
         }}
     >
         @if (count($items))
-            <table class="fi-absolute-positioning-context">
+            <table class="fi-absolute-positioning-context overflow-hidden">
                 <thead>
                     <tr>
                         @if (
