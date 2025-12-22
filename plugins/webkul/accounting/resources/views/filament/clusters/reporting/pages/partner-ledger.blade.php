@@ -16,8 +16,10 @@
                         <colgroup>
                             <col style="width: 50px;">
                             <col style="min-width: 250px;">
-                            <col style="width: 120px;">
                             <col style="width: 180px;">
+                            <col style="width: 180px;">
+                            <col style="width: 120px;">
+                            <col style="width: 120px;">
                             <col style="width: 120px; min-width: 120px;">
                             <col style="width: 120px; min-width: 120px;">
                             <col style="width: 120px; min-width: 120px;">
@@ -25,9 +27,11 @@
                         <thead>
                             <tr class="border-b-2 border-gray-300 dark:border-gray-600">
                                 <th class="px-4 py-2 text-left"></th>
-                                <th class="px-4 py-2 text-left">Communication</th>
-                                <th class="px-4 py-2 text-left">Date</th>
+                                <th class="px-4 py-2 text-left"></th>
+                                <th class="px-4 py-2 text-left">Journal</th>
                                 <th class="px-4 py-2 text-left">Account</th>
+                                <th class="px-4 py-2 text-left">Invoice Date</th>
+                                <th class="px-4 py-2 text-left">Due Date</th>
                                 <th class="px-4 py-2 text-right">Debit</th>
                                 <th class="px-4 py-2 text-right">Credit</th>
                                 <th class="px-4 py-2 text-right">Balance</th>
@@ -67,6 +71,8 @@
                                         <td class="px-4 py-2">
                                             {{ $partner->name }}
                                         </td>
+                                        <td class="px-4 py-2"></td>
+                                        <td class="px-4 py-2"></td>
                                         <td class="px-4 py-2"></td>
                                         <td class="px-4 py-2"></td>
                                         <td class="px-4 py-2 text-right">{{ number_format($partner->period_debit, 2) }}</td>
@@ -110,13 +116,19 @@
                                                     <span class="text-xs text-gray-500">({{ $move['ref'] }})</span>
                                                 @endif
                                             </td>
-                                            <td class="px-4 py-1 text-gray-600 dark:text-gray-300" style="white-space: nowrap;">
-                                                {{ \Carbon\Carbon::parse($move['date'])->format('M d, Y') }}
+                                            <td class="px-4 py-1 text-gray-600 dark:text-gray-300">
+                                                {{ $move['journal_name'] }}
                                             </td>
                                             <td class="px-4 py-1 text-gray-600 dark:text-gray-300">
                                                 @if($move['account_code'])
                                                     {{ $move['account_code'] }} {{ $move['account_name'] }}
                                                 @endif
+                                            </td>
+                                            <td class="px-4 py-1 text-gray-600 dark:text-gray-300" style="white-space: nowrap;">
+                                                {{ \Carbon\Carbon::parse($move['invoice_date'])->format('M d, Y') }}
+                                            </td>
+                                            <td class="px-4 py-1 text-gray-600 dark:text-gray-300" style="white-space: nowrap;">
+                                                {{ \Carbon\Carbon::parse($move['invoice_date_due'])->format('M d, Y') }}
                                             </td>
                                             <td class="px-4 py-1 text-right">
                                                 {{ $move['debit'] > 0 ? number_format($move['debit'], 2) : '' }}
@@ -133,6 +145,8 @@
                                 <tr class="border-t-4 border-gray-400 bg-gray-200 text-base font-bold dark:border-gray-500 dark:bg-gray-600">
                                     <td class="px-4 py-3"></td>
                                     <td class="px-4 py-3">Total</td>
+                                    <td class="px-4 py-3"></td>
+                                    <td class="px-4 py-3"></td>
                                     <td class="px-4 py-3"></td>
                                     <td class="px-4 py-3"></td>
                                     <td class="px-4 py-3 text-right">{{ number_format($totalDebit, 2) }}</td>

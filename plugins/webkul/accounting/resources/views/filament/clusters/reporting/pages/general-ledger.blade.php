@@ -18,15 +18,18 @@
                             <col style="min-width: 250px;">
                             <col style="width: 120px;">
                             <col style="width: 180px;">
+                            <col style="width: 180px;">
                             <col style="width: 120px; min-width: 120px;">
                             <col style="width: 120px; min-width: 120px;">
                             <col style="width: 120px; min-width: 120px;">
                         </colgroup>
+
                         <thead>
                             <tr class="border-b-2 border-gray-300 dark:border-gray-600">
                                 <th class="px-4 py-2 text-left"></th>
-                                <th class="px-4 py-2 text-left">Communication</th>
+                                <th class="px-4 py-2 text-left"></th>
                                 <th class="px-4 py-2 text-left">Date</th>
+                                <th class="px-4 py-2 text-left">Communication</th>
                                 <th class="px-4 py-2 text-left">Partner</th>
                                 <th class="px-4 py-2 text-right">Debit</th>
                                 <th class="px-4 py-2 text-right">Credit</th>
@@ -68,6 +71,7 @@
                                     </td>
                                     <td class="px-4 py-2"></td>
                                     <td class="px-4 py-2"></td>
+                                    <td class="px-4 py-2"></td>
                                     <td class="px-4 py-2 text-right">{{ number_format($account->period_debit, 2) }}</td>
                                     <td class="px-4 py-2 text-right">{{ number_format($account->period_credit, 2) }}</td>
                                     <td class="px-4 py-2 text-right">{{ number_format($account->ending_balance, 2) }}</td>
@@ -81,6 +85,7 @@
                                         <td class="px-4 py-1 text-gray-600 dark:text-gray-300" style="white-space: nowrap;">
                                             {{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }}
                                         </td>
+                                        <td class="px-4 py-1"></td>
                                         <td class="px-4 py-1"></td>
                                         <td class="px-4 py-1 text-right">
                                             {{ $account->opening_balance > 0 ? number_format($account->opening_balance, 2) : '' }}
@@ -101,6 +106,7 @@
                                     @php
                                         $runningBalance += ($move['debit'] - $move['credit']);
                                     @endphp
+
                                     <tr class="border-t border-gray-100 text-sm hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-700" x-show="expandedAccounts.includes('{{ $accountId }}')">
                                         <td class="px-4 py-1"></td>
                                         <td class="px-4 py-1 text-gray-600 dark:text-gray-300">
@@ -111,6 +117,11 @@
                                         </td>
                                         <td class="px-4 py-1 text-gray-600 dark:text-gray-300" style="white-space: nowrap;">
                                             {{ \Carbon\Carbon::parse($move['date'])->format('M d, Y') }}
+                                        </td>
+                                        <td class="px-4 py-1 text-gray-600 dark:text-gray-300">
+                                            @if ($move['move_type'] == 'entry')
+                                                {{ $move['name'] }}
+                                            @endif
                                         </td>
                                         <td class="px-4 py-1 text-gray-600 dark:text-gray-300">{{ $move['partner_name'] }}</td>
                                         <td class="px-4 py-1 text-right">
@@ -128,6 +139,7 @@
                             <tr class="border-t-4 border-gray-400 bg-gray-200 text-base font-bold dark:border-gray-500 dark:bg-gray-600">
                                 <td class="px-4 py-3"></td>
                                 <td class="px-4 py-3">Total</td>
+                                <td class="px-4 py-3"></td>
                                 <td class="px-4 py-3"></td>
                                 <td class="px-4 py-3"></td>
                                 <td class="px-4 py-3 text-right">{{ number_format($totalDebit, 2) }}</td>

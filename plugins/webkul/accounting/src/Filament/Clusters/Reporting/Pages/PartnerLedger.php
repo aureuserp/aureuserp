@@ -141,7 +141,8 @@ class PartnerLedger extends Page implements HasForms
         $query = MoveLine::select(
             'accounts_account_move_lines.*',
             'accounts_account_moves.name as move_name',
-            'accounts_account_moves.date',
+            'accounts_account_moves.invoice_date',
+            'accounts_account_moves.invoice_date_due',
             'accounts_account_moves.reference as ref',
             'accounts_journals.name as journal_name',
             'accounts_accounts.code as account_code',
