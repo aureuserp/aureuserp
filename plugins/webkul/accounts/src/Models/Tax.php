@@ -6,13 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Account\Enums\AmountType;
 use Webkul\Account\Enums\DocumentType;
+use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Settings\TaxesSettings;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
-use Webkul\Account\Enums\TypeTaxUse;
-use Webkul\Account\Enums\AmountType;
 
 class Tax extends Model implements Sortable
 {
@@ -45,7 +45,7 @@ class Tax extends Model implements Sortable
 
     protected $casts = [
         'amount_type'    => AmountType::class,
-        'type_tax_use' => TypeTaxUse::class,
+        'type_tax_use'   => TypeTaxUse::class,
     ];
 
     public $sortable = [

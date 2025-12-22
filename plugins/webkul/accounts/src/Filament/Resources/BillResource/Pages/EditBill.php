@@ -7,7 +7,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\BillResource;
-use Webkul\Account\Filament\Resources\BillResource\Actions\CreditNoteAction;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
@@ -43,7 +42,9 @@ class EditBill extends EditRecord
             BaseActions\ResetToDraftAction::make(),
             BaseActions\SetAsCheckedAction::make(),
             BaseActions\PrintAndSendAction::make(),
-            CreditNoteAction::make(),
+            BaseActions\ReverseAction::make()
+                ->label(__('accounts::filament/resources/bill/pages/edit-bill.header-actions.reverse.label'))
+                ->modalHeading(__('accounts::filament/resources/bill/pages/edit-bill.header-actions.reverse.modal-heading')),
             DeleteAction::make(),
         ];
     }

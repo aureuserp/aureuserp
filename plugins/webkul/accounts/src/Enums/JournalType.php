@@ -15,7 +15,7 @@ enum JournalType: string implements HasLabel
     case BANK = 'bank';
 
     case CREDIT_CARD = 'credit';
-    
+
     case GENERAL = 'general';
 
     public function getLabel(): ?string

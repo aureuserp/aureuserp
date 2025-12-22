@@ -42,7 +42,7 @@ class ViewOrder extends ViewRecord
                 ->record(\Webkul\Purchase\Models\Order::find($this->getRecord()->id))
                 ->setResource(static::$resource),
             DeleteAction::make()
-                ->hidden(fn() => $this->getRecord()->state == OrderState::DONE)
+                ->hidden(fn () => $this->getRecord()->state == OrderState::DONE)
                 ->action(function (DeleteAction $action, Order $record) {
                     try {
                         $record->delete();

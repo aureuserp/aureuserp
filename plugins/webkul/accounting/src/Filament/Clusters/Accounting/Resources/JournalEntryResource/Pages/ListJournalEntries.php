@@ -5,9 +5,9 @@ namespace Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryR
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
+use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
-use Webkul\Account\Enums\JournalType;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;

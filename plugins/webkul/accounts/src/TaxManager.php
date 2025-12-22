@@ -3,6 +3,7 @@
 namespace Webkul\Account;
 
 use Illuminate\Database\Eloquent\Model;
+use Webkul\Account\Enums\AmountType;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Product;
 use Webkul\Account\Models\Tax;
@@ -11,7 +12,6 @@ use Webkul\Account\Settings\TaxesSettings;
 use Webkul\Partner\Models\Partner;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
-use Webkul\Account\Enums\AmountType;
 
 class TaxManager
 {

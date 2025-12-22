@@ -37,7 +37,7 @@ class ViewDropship extends ViewRecord
                 ->color('gray')
                 ->button(),
             DeleteAction::make()
-                ->hidden(fn() => $this->getRecord()->state == OperationState::DONE)
+                ->hidden(fn () => $this->getRecord()->state == OperationState::DONE)
                 ->action(function (DeleteAction $action, Dropship $record) {
                     try {
                         $record->delete();

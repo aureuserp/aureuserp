@@ -80,7 +80,7 @@ abstract class Summarizer extends Component
 
         if ($this->using) {
             $value = $this->evaluate($this->using, [
-                'items' => $items,
+                'items'      => $items,
                 'columnName' => $columnName,
             ]);
 
@@ -92,7 +92,7 @@ abstract class Summarizer extends Component
 
     abstract protected function calculateSummary(Collection $items, string $columnName): int|float|string|null;
 
-    public function id(string | Closure | null $id): static
+    public function id(string|Closure|null $id): static
     {
         $this->id = $id;
 

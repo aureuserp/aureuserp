@@ -91,7 +91,7 @@ class PaymentResource extends Resource
                     ->disabled()
                     ->live()
                     ->reactive(),
-                    
+
                 Section::make()
                     ->schema([
                         Group::make()
@@ -160,8 +160,7 @@ class PaymentResource extends Resource
                                             ->maxLength(255),
                                     ])
                                     ->columns(1),
-                                    
-                                
+
                                 Group::make()
                                     ->schema([
                                         Select::make('journal_id')
@@ -523,7 +522,7 @@ class PaymentResource extends Resource
                                     ->placeholder('—'),
                             ])
                             ->columns(1),
-                            
+
                         Group::make()
                             ->schema([
                                 TextEntry::make('journal.name')

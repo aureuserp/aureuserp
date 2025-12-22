@@ -29,7 +29,7 @@ class ConfirmAction extends Action
 
                 try {
                     $record = AccountFacade::confirmMove($record);
-                    
+
                     $livewire->refreshFormData(['state', 'parent_state']);
                 } catch (\Exception $e) {
                     Notification::make()

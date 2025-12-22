@@ -6,7 +6,6 @@ use Filament\Actions\Action;
 use Livewire\Component;
 use Webkul\Account\Enums\PaymentStatus;
 use Webkul\Account\Models\Payment;
-use Webkul\Account\Facades\Account as AccountFacade;
 
 class CancelAction extends Action
 {

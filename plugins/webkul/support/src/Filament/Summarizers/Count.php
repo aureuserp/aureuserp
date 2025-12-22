@@ -13,7 +13,7 @@ class Count extends Summarizer
         $this->numeric();
     }
 
-    protected function calculateSummary(Collection $items, string $columnName): int|null
+    protected function calculateSummary(Collection $items, string $columnName): ?int
     {
         return $items->count();
     }

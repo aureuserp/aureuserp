@@ -487,9 +487,9 @@ class MoveLine extends Model implements Sortable
                 $this->tax_tag_invert = $tax->type_tax_use == TypeTaxUse::PURCHASE;
             } else {
                 $this->tax_tag_invert = (
-                        $tax->type_tax_use == TypeTaxUse::PURCHASE
-                        && $this->is_refund
-                    )
+                    $tax->type_tax_use == TypeTaxUse::PURCHASE
+                    && $this->is_refund
+                )
                     || (
                         $tax->type_tax_use == TypeTaxUse::SALE
                         && ! $this->is_refund

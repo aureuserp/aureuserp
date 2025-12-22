@@ -47,7 +47,7 @@ class Repeater extends BaseRepeater
 
     public function getColumnManagerSessionKey(): string
     {
-        return $this->columnManagerSessionKey ??= 'repeater_' . $this->getStatePath() . '_column_manager';
+        return $this->columnManagerSessionKey ??= 'repeater_'.$this->getStatePath().'_column_manager';
     }
 
     public function getMappedColumns(): array
@@ -112,7 +112,7 @@ class Repeater extends BaseRepeater
     {
         $columns = $this->evaluate($this->tableColumns) ?? [];
 
-        return collect($columns)->contains(fn($column) => $column->isToggleable());
+        return collect($columns)->contains(fn ($column) => $column->isToggleable());
     }
 
     public function getColumnManagerApplyAction(): Action
@@ -163,8 +163,8 @@ class Repeater extends BaseRepeater
         }
 
         $columnState = collect($columns)
-            ->filter(fn($column) => filled(data_get($column, 'name')) && ! is_null(data_get($column, 'isToggled')))
-            ->mapWithKeys(fn($column) => [
+            ->filter(fn ($column) => filled(data_get($column, 'name')) && ! is_null(data_get($column, 'isToggled')))
+            ->mapWithKeys(fn ($column) => [
                 data_get($column, 'name') => [
                     'isToggled'    => data_get($column, 'isToggled'),
                     'isToggleable' => data_get($column, 'isToggleable', true),
@@ -188,7 +188,7 @@ class Repeater extends BaseRepeater
     public function getSummaryForColumn(string $columnName): ?string
     {
         $column = collect($this->getTableColumns())
-            ->first(fn(TableColumn $col) => $col->getName() === $columnName);
+            ->first(fn (TableColumn $col) => $col->getName() === $columnName);
 
         if (
             ! $column
@@ -223,6 +223,6 @@ class Repeater extends BaseRepeater
     public function hasAnySummarizers(): bool
     {
         return collect($this->getTableColumns())
-            ->some(fn(TableColumn $column) => $column->hasSummarizer());
+            ->some(fn (TableColumn $column) => $column->hasSummarizer());
     }
 }

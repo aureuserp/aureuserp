@@ -4,8 +4,8 @@ namespace Webkul\Account\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Enums\AmountType;
+use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Models\TaxGroup;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;

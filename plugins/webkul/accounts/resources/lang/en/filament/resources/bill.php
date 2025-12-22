@@ -102,7 +102,7 @@ return [
             'number'           => 'Number',
             'state'            => 'State',
             'customer'         => 'Customer',
-            'bill-date'     => 'Bill Date',
+            'bill-date'        => 'Bill Date',
             'checked'          => 'Checked',
             'accounting-date'  => 'Accounting',
             'due-date'         => 'Due Date',
@@ -113,7 +113,7 @@ return [
             'tax'              => 'Tax',
             'total'            => 'Total',
             'amount-due'       => 'Amount Due',
-            'bill-currency' => 'Bill Currency',
+            'bill-currency'    => 'Bill Currency',
         ],
 
         'summarizers' => [

@@ -49,7 +49,7 @@ class EditPurchaseAgreement extends EditRecord
 
                     $this->fillForm();
                 })
-                ->visible(fn() => $this->getRecord()->state == RequisitionState::DRAFT),
+                ->visible(fn () => $this->getRecord()->state == RequisitionState::DRAFT),
             Action::make('close')
                 ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.close.label'))
                 ->color('primary')
@@ -60,7 +60,7 @@ class EditPurchaseAgreement extends EditRecord
 
                     $this->fillForm();
                 })
-                ->visible(fn() => $this->getRecord()->state == RequisitionState::CONFIRMED),
+                ->visible(fn () => $this->getRecord()->state == RequisitionState::CONFIRMED),
             Action::make('cancelRecord')
                 ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.cancel.label'))
                 ->color('gray')
@@ -71,7 +71,7 @@ class EditPurchaseAgreement extends EditRecord
 
                     $this->fillForm();
                 })
-                ->visible(fn() => ! in_array($this->getRecord()->state, [
+                ->visible(fn () => ! in_array($this->getRecord()->state, [
                     RequisitionState::CLOSED,
                     RequisitionState::CANCELED,
                 ])),
@@ -88,10 +88,10 @@ class EditPurchaseAgreement extends EditRecord
 
                     return response()->streamDownload(function () use ($pdf) {
                         echo $pdf->output();
-                    }, 'Purchase Agreement-' . str_replace('/', '_', $record->name) . '.pdf');
+                    }, 'Purchase Agreement-'.str_replace('/', '_', $record->name).'.pdf');
                 }),
             DeleteAction::make()
-                ->hidden(fn() => $this->getRecord()->state == RequisitionState::CLOSED)
+                ->hidden(fn () => $this->getRecord()->state == RequisitionState::CLOSED)
                 ->successNotification(
                     Notification::make()
                         ->success()

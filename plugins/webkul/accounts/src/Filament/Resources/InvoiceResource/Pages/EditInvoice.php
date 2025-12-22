@@ -43,7 +43,9 @@ class EditInvoice extends EditRecord
             BaseActions\ConfirmAction::make(),
             BaseActions\CancelAction::make(),
             BaseActions\SetAsCheckedAction::make(),
-            BaseActions\CreditNoteAction::make(),
+            BaseActions\ReverseAction::make()
+                ->label(__('accounts::filament/resources/invoice/pages/edit-invoice.header-actions.reverse.label'))
+                ->modalHeading(__('accounts::filament/resources/invoice/pages/view-invoice.header-actions.reverse.modal-heading')),
             BaseActions\ResetToDraftAction::make(),
             DeleteAction::make(),
         ];

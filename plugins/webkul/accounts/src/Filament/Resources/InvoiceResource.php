@@ -11,7 +11,6 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -198,7 +197,7 @@ class InvoiceResource extends Resource
                                                     ->label(__('accounts::filament/resources/invoice.form.section.general.fields.payment-term')),
                                             ])
                                             ->columns(2),
-                                            
+
                                         Group::make()
                                             ->schema([
                                                 Select::make('journal_id')
@@ -240,8 +239,8 @@ class InvoiceResource extends Resource
                             ->icon('heroicon-o-list-bullet')
                             ->schema([
                                 static::getProductRepeater(),
-                                
-                                Livewire::make(InvoiceSummary::class, function  (Get $get, $record, $livewire) {
+
+                                Livewire::make(InvoiceSummary::class, function (Get $get, $record, $livewire) {
                                     $totals = self::calculateMoveTotals($get, $livewire);
 
                                     $currency = Currency::find($get('currency_id'));
@@ -256,9 +255,9 @@ class InvoiceResource extends Resource
                                         'currency'   => $currency,
                                     ];
                                 })
-                                ->key('invoiceSummary')
-                                ->reactive()
-                                ->visible(fn (Get $get) => $get('currency_id') && ! empty($get('products'))),
+                                    ->key('invoiceSummary')
+                                    ->reactive()
+                                    ->visible(fn (Get $get) => $get('currency_id') && ! empty($get('products'))),
                             ]),
 
                         Tab::make(__('accounts::filament/resources/invoice.form.tabs.other-information.title'))
@@ -652,7 +651,7 @@ class InvoiceResource extends Resource
                             ])
                             ->columns(2),
                     ]),
-                    
+
                 Tabs::make()
                     ->columnSpan('full')
                     ->tabs([
@@ -826,7 +825,7 @@ class InvoiceResource extends Resource
             ->addActionLabel(__('accounts::filament/resources/invoice.form.tabs.invoice-lines.repeater.products.add-product'))
             ->collapsible()
             ->defaultItems(0)
-            ->deleteAction(function(Action $action) {
+            ->deleteAction(function (Action $action) {
                 $action->requiresConfirmation();
 
                 $action->after(function (Get $get, $livewire) {
@@ -1152,7 +1151,6 @@ class InvoiceResource extends Resource
         $companyId = $get('company_id');
         $products = $get('products') ?? [];
 
-
         if (! $currencyId || ! $companyId || empty($products)) {
             $livewire->dispatch('itemUpdated', $defaultTotals);
 
@@ -1189,11 +1187,11 @@ class InvoiceResource extends Resource
         }
 
         $mockLines = collect($products)
-            ->filter(fn($productData) => !empty($productData['product_id']))
+            ->filter(fn ($productData) => ! empty($productData['product_id']))
             ->map(function ($productData) use ($currency, $company, $mockMove) {
                 $product = Product::find($productData['product_id']);
 
-                if (!$product) {
+                if (! $product) {
                     return null;
                 }
 

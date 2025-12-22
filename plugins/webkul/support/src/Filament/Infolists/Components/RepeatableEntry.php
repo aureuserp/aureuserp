@@ -36,7 +36,7 @@ class RepeatableEntry extends BaseRepeatableEntry
 
     public function getColumnManagerSessionKey(): string
     {
-        return $this->columnManagerSessionKey ??= 'repeatable_entry_' . $this->getStatePath() . '_column_manager';
+        return $this->columnManagerSessionKey ??= 'repeatable_entry_'.$this->getStatePath().'_column_manager';
     }
 
     public function getMappedColumns(): array
@@ -124,7 +124,7 @@ class RepeatableEntry extends BaseRepeatableEntry
     {
         $columns = $this->evaluate($this->tableColumns) ?? [];
 
-        return collect($columns)->contains(fn($column) => $column->isToggleable());
+        return collect($columns)->contains(fn ($column) => $column->isToggleable());
     }
 
     public function hasColumnManager(): bool
@@ -157,8 +157,8 @@ class RepeatableEntry extends BaseRepeatableEntry
         }
 
         $columnState = collect($columns)
-            ->filter(fn($column) => filled(data_get($column, 'name')) && ! is_null(data_get($column, 'isToggled')))
-            ->mapWithKeys(fn($column) => [
+            ->filter(fn ($column) => filled(data_get($column, 'name')) && ! is_null(data_get($column, 'isToggled')))
+            ->mapWithKeys(fn ($column) => [
                 data_get($column, 'name') => [
                     'isToggled'    => data_get($column, 'isToggled'),
                     'isToggleable' => data_get($column, 'isToggleable', true),
@@ -212,34 +212,33 @@ class RepeatableEntry extends BaseRepeatableEntry
     {
         return $this->wrapEmbeddedHtml(
             view('support::filament.infolists.components.repeatable-entry.table', [
-                'getItems'                      => fn() => $this->getItems(),
-                'getTableColumns'               => fn() => $this->getTableColumns(),
-                'getExtraItemActions'           => fn() => $this->getExtraItemActions(),
-                'hasColumnManager'              => fn() => $this->hasColumnManager(),
-                'getExtraAttributeBag'          => fn() => $this->getExtraAttributeBag(),
-                'getEmptyTooltip'               => fn() => $this->getEmptyTooltip(),
-                'getPlaceholder'                => fn() => $this->getPlaceholder(),
-                'getColumnManagerMaxHeight'     => fn() => $this->getColumnManagerMaxHeight(),
-                'getColumnManagerWidth'         => fn() => $this->getColumnManagerWidth(),
-                'getId'                         => fn() => $this->getId(),
-                'getStatePath'                  => fn() => $this->getStatePath(),
-                'getColumnManagerTriggerAction' => fn() => $this->getColumnManagerTriggerAction(),
-                'getColumnManagerApplyAction'   => fn() => $this->getColumnManagerApplyAction(),
-                'getMappedColumns'              => fn() => $this->getMappedColumns(),
-                'getColumnManagerColumns'       => fn() => $this->getColumnManagerColumns(),
-                'hasToggleableColumns'          => fn() => $this->hasToggleableColumns(),
-                'wrapEmbeddedHtml'              => fn($html) => $this->wrapEmbeddedHtml($html),
-                'hasAnySummarizers'             => fn() => $this->hasAnySummarizers(),
-                'getSummaryForColumn'          => fn(string $columnName) => $this->getSummaryForColumn($columnName),
+                'getItems'                      => fn () => $this->getItems(),
+                'getTableColumns'               => fn () => $this->getTableColumns(),
+                'getExtraItemActions'           => fn () => $this->getExtraItemActions(),
+                'hasColumnManager'              => fn () => $this->hasColumnManager(),
+                'getExtraAttributeBag'          => fn () => $this->getExtraAttributeBag(),
+                'getEmptyTooltip'               => fn () => $this->getEmptyTooltip(),
+                'getPlaceholder'                => fn () => $this->getPlaceholder(),
+                'getColumnManagerMaxHeight'     => fn () => $this->getColumnManagerMaxHeight(),
+                'getColumnManagerWidth'         => fn () => $this->getColumnManagerWidth(),
+                'getId'                         => fn () => $this->getId(),
+                'getStatePath'                  => fn () => $this->getStatePath(),
+                'getColumnManagerTriggerAction' => fn () => $this->getColumnManagerTriggerAction(),
+                'getColumnManagerApplyAction'   => fn () => $this->getColumnManagerApplyAction(),
+                'getMappedColumns'              => fn () => $this->getMappedColumns(),
+                'getColumnManagerColumns'       => fn () => $this->getColumnManagerColumns(),
+                'hasToggleableColumns'          => fn () => $this->hasToggleableColumns(),
+                'wrapEmbeddedHtml'              => fn ($html) => $this->wrapEmbeddedHtml($html),
+                'hasAnySummarizers'             => fn () => $this->hasAnySummarizers(),
+                'getSummaryForColumn'           => fn (string $columnName) => $this->getSummaryForColumn($columnName),
             ])->render()
         );
     }
 
-
     public function getSummaryForColumn(string $columnName): ?string
     {
         $column = collect($this->getTableColumns())
-            ->first(fn(TableColumn $col) => $col->getName() === $columnName);
+            ->first(fn (TableColumn $col) => $col->getName() === $columnName);
 
         if (
             ! $column
@@ -274,6 +273,6 @@ class RepeatableEntry extends BaseRepeatableEntry
     public function hasAnySummarizers(): bool
     {
         return collect($this->getTableColumns())
-            ->some(fn(TableColumn $column) => $column->hasSummarizer());
+            ->some(fn (TableColumn $column) => $column->hasSummarizer());
     }
 }

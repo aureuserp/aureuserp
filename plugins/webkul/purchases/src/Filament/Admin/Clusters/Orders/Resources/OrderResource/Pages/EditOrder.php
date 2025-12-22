@@ -67,7 +67,7 @@ class EditOrder extends EditRecord
             OrderActions\UnlockAction::make(),
             OrderActions\CancelAction::make(),
             DeleteAction::make()
-                ->hidden(fn() => $this->getRecord()->state == OrderState::DONE)
+                ->hidden(fn () => $this->getRecord()->state == OrderState::DONE)
                 ->action(function (DeleteAction $action, Order $record) {
                     try {
                         $record->delete();

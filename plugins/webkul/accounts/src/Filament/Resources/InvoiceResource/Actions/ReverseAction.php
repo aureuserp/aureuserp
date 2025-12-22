@@ -8,7 +8,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Schema;
 use Filament\Support\Facades\FilamentView;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
@@ -18,7 +17,7 @@ use Webkul\Account\Models\Move;
 use Webkul\Account\Models\MoveReversal;
 use Webkul\Support\Traits\PDFHandler;
 
-class CreditNoteAction extends Action
+class ReverseAction extends Action
 {
     use PDFHandler;
 
@@ -32,21 +31,21 @@ class CreditNoteAction extends Action
         parent::setUp();
 
         $this
-            ->label(__('accounts::filament/resources/invoice/actions/credit-note.title'))
+            ->label(__('accounts::filament/resources/invoice/actions/reverse.title'))
             ->color('gray')
             ->visible(fn (Move $record) => $record->state == MoveState::POSTED)
             ->icon('heroicon-o-receipt-refund')
-            ->modalHeading(__('accounts::filament/resources/invoice/actions/credit-note.modal.heading'));
+            ->modalHeading(__('accounts::filament/resources/invoice/actions/reverse.modal.heading'));
 
         $this->schema(
             function (Schema $schema) {
                 return $schema->components([
                     Textarea::make('reason')
-                        ->label(__('accounts::filament/resources/invoice/actions/credit-note.modal.form.reason'))
+                        ->label(__('accounts::filament/resources/invoice/actions/reverse.modal.form.reason'))
                         ->maxLength(245)
                         ->required(),
                     Select::make('journal_id')
-                        ->label(__('accounts::filament/resources/invoice/actions/credit-note.modal.form.journal'))
+                        ->label(__('accounts::filament/resources/invoice/actions/reverse.modal.form.journal'))
                         ->relationship(
                             'journal',
                             'name',
@@ -55,7 +54,7 @@ class CreditNoteAction extends Action
                         ->required()
                         ->default(fn () => $this->getRecord()->journal_id),
                     DatePicker::make('date')
-                        ->label(__('accounts::filament/resources/invoice/actions/credit-note.modal.form.date'))
+                        ->label(__('accounts::filament/resources/invoice/actions/reverse.modal.form.date'))
                         ->default(now())
                         ->native(false)
                         ->required(),

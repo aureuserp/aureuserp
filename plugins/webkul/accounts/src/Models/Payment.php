@@ -193,7 +193,7 @@ class Payment extends Model
 
     public function getOutstandingAccount($paymentType)
     {
-        $defaultAccountSettings = new DefaultAccountSettings();
+        $defaultAccountSettings = new DefaultAccountSettings;
 
         if ($this->payment_type == PaymentType::RECEIVE) {
             $accountId = $defaultAccountSettings->account_journal_payment_debit_account_id;

@@ -8,5 +8,10 @@ return [
                 'body'  => 'The invoice has been deleted successfully.',
             ],
         ],
+
+        'reverse' => [
+            'label' => 'Credit Note',
+            'modal-heading' => 'Create Credit Note',
+        ],
     ],
 ];

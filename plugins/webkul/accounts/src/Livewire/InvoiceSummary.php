@@ -61,7 +61,6 @@ class InvoiceSummary extends Component implements HasActions, HasSchemas
                 $lines = $lines->merge($this->record->lines->filter(fn ($line) => $line->account_id == $lines->first()->account_id && ! $line->reconciled
                 ));
 
-
                 AccountFacade::reconcile($lines);
             })
             ->after(fn () => $this->js('window.location.reload()'));

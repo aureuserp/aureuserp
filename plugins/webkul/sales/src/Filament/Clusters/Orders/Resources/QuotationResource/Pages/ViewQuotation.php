@@ -32,7 +32,7 @@ class ViewQuotation extends ViewRecord
             BaseActions\SendByEmailAction::make(),
             BaseActions\LockAndUnlockAction::make(),
             DeleteAction::make()
-                ->hidden(fn() => $this->getRecord()->state == OrderState::SALE)
+                ->hidden(fn () => $this->getRecord()->state == OrderState::SALE)
                 ->successNotification(
                     Notification::make()
                         ->success()

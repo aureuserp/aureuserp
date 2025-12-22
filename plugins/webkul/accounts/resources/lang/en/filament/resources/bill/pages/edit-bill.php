@@ -10,5 +10,10 @@ return [
         'preview' => [
             'modal-heading' => 'Preview Bill',
         ],
+
+        'reverse' => [
+            'label' => 'Refund',
+            'modal-heading' => 'Create Refund',
+        ],
     ],
 ];

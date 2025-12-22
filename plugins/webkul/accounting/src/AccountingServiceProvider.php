@@ -2,6 +2,8 @@
 
 namespace Webkul\Accounting;
 
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 use Webkul\Support\Console\Commands\InstallCommand;
 use Webkul\Support\Console\Commands\UninstallCommand;
 use Webkul\Support\Package;
@@ -25,5 +27,17 @@ class AccountingServiceProvider extends PackageServiceProvider
                 $command->installDependencies();
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {});
+    }
+
+    public function packageBooted(): void
+    {
+        $this->registerCustomCss();
+    }
+
+    public function registerCustomCss()
+    {
+        FilamentAsset::register([
+            Css::make('accounting', __DIR__.'/../resources/dist/accounting.css'),
+        ], 'accounting');
     }
 }

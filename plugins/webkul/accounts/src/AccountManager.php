@@ -14,9 +14,9 @@ use Webkul\Account\Enums\PaymentStatus;
 use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Mail\Invoice\Actions\InvoiceEmail;
+use Webkul\Account\Models\Account;
 use Webkul\Account\Models\FullReconcile;
 use Webkul\Account\Models\Move;
-use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\PartialReconcile;
@@ -47,8 +47,7 @@ class AccountManager
             $this->reconcileReversedMoves([$record->reversedEntry], [$record]);
 
             $tempNumbers = $record->lines
-                ->filter(fn ($line) =>
-                    ! empty($line->matching_number) &&
+                ->filter(fn ($line) => ! empty($line->matching_number) &&
                     str_starts_with($line->matching_number, 'I')
                 )
                 ->pluck('matching_number')
@@ -59,7 +58,7 @@ class AccountManager
                 $grouped = MoveLine::with(['move', 'account'])
                     ->whereIn('matching_number', $tempNumbers)
                     ->get()
-                    ->groupBy(fn ($line) => $line->matching_number . ':' . $line->account_id);
+                    ->groupBy(fn ($line) => $line->matching_number.':'.$line->account_id);
 
                 foreach ($grouped as $groupLines) {
                     if (! $groupLines->every(fn ($line) => $line->move->state === MoveState::POSTED)) {
@@ -113,7 +112,7 @@ class AccountManager
             throw new \Exception('You cannot reset to draft an exchange difference journal entry.');
         }
 
-        $record->lines->each(function($line) {
+        $record->lines->each(function ($line) {
             $line->matchedDebits->each(fn ($partial) => $this->unReconcile($partial));
 
             $line->matchedCredits->each(fn ($partial) => $this->unReconcile($partial));
@@ -1109,7 +1108,7 @@ class AccountManager
         foreach ($moves->zip($reverseMoves) as [$move, $reverseMove]) {
             $groupedLines = $move->lines->merge($reverseMove->lines)
                 ->reject(fn ($line) => $line->reconciled)
-                ->groupBy(fn ($line) => $line->account_id . '|' . ($line->currency_id ?? 'null'));
+                ->groupBy(fn ($line) => $line->account_id.'|'.($line->currency_id ?? 'null'));
 
             foreach ($groupedLines as $key => $lines) {
                 [$accountId] = explode('|', $key);
@@ -1784,9 +1783,7 @@ class AccountManager
     }
 
     // TODO: Implement this method
-    public function createExchangeDifferenceMoves(array $exchangeValuesList) {
-
-    }
+    public function createExchangeDifferenceMoves(array $exchangeValuesList) {}
 
     protected function updateMatchingNumbers(array $lineIds): void
     {
@@ -1865,7 +1862,7 @@ class AccountManager
             $lines = $moves->flatMap(fn ($move) => $move->lines);
 
             if ($lines->isNotEmpty()) {
-                $lines->each(function($line) {
+                $lines->each(function ($line) {
                     $line->matchedDebits->each(fn ($partial) => $partial->delete());
 
                     $line->matchedCredits->each(fn ($partial) => $partial->delete());

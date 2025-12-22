@@ -156,13 +156,13 @@ class Move extends Model implements Sortable
     ];
 
     public $typeReverseMapping = [
-        MoveType::ENTRY->value => MoveType::ENTRY,
+        MoveType::ENTRY->value       => MoveType::ENTRY,
         MoveType::OUT_INVOICE->value => MoveType::OUT_REFUND,
-        MoveType::OUT_REFUND->value => MoveType::OUT_INVOICE,
-        MoveType::IN_INVOICE->value => MoveType::IN_REFUND,
-        MoveType::IN_REFUND->value => MoveType::IN_INVOICE,
+        MoveType::OUT_REFUND->value  => MoveType::OUT_INVOICE,
+        MoveType::IN_INVOICE->value  => MoveType::IN_REFUND,
+        MoveType::IN_REFUND->value   => MoveType::IN_INVOICE,
         MoveType::OUT_RECEIPT->value => MoveType::OUT_REFUND,
-        MoveType::IN_RECEIPT->value => MoveType::IN_REFUND,
+        MoveType::IN_RECEIPT->value  => MoveType::IN_REFUND,
     ];
 
     public $sortable = [
@@ -520,7 +520,7 @@ class Move extends Model implements Sortable
         $this->invoice_partner_display_name = $vendorDisplayName;
     }
 
-    //TODO: compute currency rate based on date and company settings
+    // TODO: compute currency rate based on date and company settings
     public function computeInvoiceCurrencyRate()
     {
         $this->invoice_currency_rate = 1;
@@ -837,7 +837,7 @@ class Move extends Model implements Sortable
             'title'       => $this->isInbound() ? 'Outstanding credits' : 'Outstanding debits',
             'move_id'     => $this->id,
             'outstanding' => false,
-            'lines'     => [],
+            'lines'       => [],
         ];
 
         if (
@@ -903,9 +903,9 @@ class Move extends Model implements Sortable
     public function getReconciledPayments()
     {
         $paymentVals = [
-            'title' => 'Less Payment',
+            'title'       => 'Less Payment',
             'outstanding' => false,
-            'lines' => [],
+            'lines'       => [],
         ];
 
         if ($this->state !== MoveState::POSTED || ! $this->isInvoice(true)) {
@@ -916,7 +916,7 @@ class Move extends Model implements Sortable
 
         foreach ($reconciledPartials as $reconciledPartial) {
             $counterpartLine = $reconciledPartial['line'];
-            
+
             if ($counterpartLine->move->ref) {
                 $reconciliationRef = sprintf('%s (%s)', $counterpartLine->move->name, $counterpartLine->move->ref);
             } else {
@@ -930,25 +930,25 @@ class Move extends Model implements Sortable
             }
 
             $paymentVals['lines'][] = [
-                'name' => $counterpartLine->name,
+                'name'         => $counterpartLine->name,
                 'journal_name' => $counterpartLine->journal->name,
-                'company_name' => $counterpartLine->journal->company_id != $this->company_id 
-                    ? $counterpartLine->journal->company->name 
+                'company_name' => $counterpartLine->journal->company_id != $this->company_id
+                    ? $counterpartLine->journal->company->name
                     : false,
-                'amount' => $reconciledPartial['amount'],
-                'currency_id' => $reconciledPartial['is_exchange'] 
-                    ? $this->company->currency_id 
+                'amount'      => $reconciledPartial['amount'],
+                'currency_id' => $reconciledPartial['is_exchange']
+                    ? $this->company->currency_id
                     : $reconciledPartial['currency']->id,
-                'date' => $counterpartLine->date,
-                'partial_id' => $reconciledPartial['partial_id'],
-                'account_payment_id' => $counterpartLine->payment_id,
-                'payment_method_name' => $counterpartLine->payment?->paymentMethodLine->name,
-                'move_id' => $counterpartLine->move_id,
-                'ref' => $reconciliationRef,
-                'is_exchange' => $reconciledPartial['is_exchange'],
+                'date'                    => $counterpartLine->date,
+                'partial_id'              => $reconciledPartial['partial_id'],
+                'account_payment_id'      => $counterpartLine->payment_id,
+                'payment_method_name'     => $counterpartLine->payment?->paymentMethodLine->name,
+                'move_id'                 => $counterpartLine->move_id,
+                'ref'                     => $reconciliationRef,
+                'is_exchange'             => $reconciledPartial['is_exchange'],
                 'amount_company_currency' => money(abs($counterpartLine->balance), $counterpartLine->company->currency->name),
-                'amount_foreign_currency' => $foreignCurrency 
-                    ? money(abs($counterpartLine->amount_currency), $foreignCurrency->name) 
+                'amount_foreign_currency' => $foreignCurrency
+                    ? money(abs($counterpartLine->amount_currency), $foreignCurrency->name)
                     : null,
             ];
         }
@@ -958,7 +958,7 @@ class Move extends Model implements Sortable
 
     protected function getAllReconciledInvoicePartials()
     {
-        $reconciledLines = $this->lines->filter(function($line) {
+        $reconciledLines = $this->lines->filter(function ($line) {
             return in_array($line->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE]);
         });
 
@@ -968,14 +968,14 @@ class Move extends Model implements Sortable
 
         $lineIds = $reconciledLines->pluck('id')->toArray();
 
-        $sql = "
+        $sql = '
             SELECT
                 part.id,
                 part.exchange_move_id,
                 part.debit_amount_currency AS amount,
                 part.credit_move_id AS counterpart_line_id
             FROM accounts_partial_reconciles part
-            WHERE part.debit_move_id IN (" . implode(',', $lineIds) . ")
+            WHERE part.debit_move_id IN ('.implode(',', $lineIds).')
 
             UNION ALL
 
@@ -985,16 +985,16 @@ class Move extends Model implements Sortable
                 part.credit_amount_currency AS amount,
                 part.debit_move_id AS counterpart_line_id
             FROM accounts_partial_reconciles part
-            WHERE part.credit_move_id IN (" . implode(',', $lineIds) . ")
-        ";
+            WHERE part.credit_move_id IN ('.implode(',', $lineIds).')
+        ';
 
         $results = DB::select($sql);
 
-        $partialValuesList = collect($results)->map(fn($values) => [
-            'line_id' => $values->counterpart_line_id,
+        $partialValuesList = collect($results)->map(fn ($values) => [
+            'line_id'    => $values->counterpart_line_id,
             'partial_id' => $values->id,
-            'amount' => $values->amount,
-            'currency' => $this->currency,
+            'amount'     => $values->amount,
+            'currency'   => $this->currency,
         ])->all();
 
         $counterpartLineIds = collect($results)->pluck('counterpart_line_id')->all();
@@ -1005,14 +1005,14 @@ class Move extends Model implements Sortable
 
             $counterpartLineIdsStr = implode(',', array_unique($counterpartLineIds));
 
-            $sql = "
+            $sql = '
                 SELECT
                     part.id,
                     part.credit_move_id AS counterpart_line_id
                 FROM accounts_partial_reconciles part
                 JOIN account_move_line credit_line ON credit_line.id = part.credit_move_id
-                WHERE credit_line.move_id IN (" . $exchangeMoveIdsStr . ") 
-                    AND part.debit_move_id IN (" . $counterpartLineIdsStr . ")
+                WHERE credit_line.move_id IN ('.$exchangeMoveIdsStr.') 
+                    AND part.debit_move_id IN ('.$counterpartLineIdsStr.')
 
                 UNION ALL
 
@@ -1021,9 +1021,9 @@ class Move extends Model implements Sortable
                     part.debit_move_id AS counterpart_line_id
                 FROM accounts_partial_reconciles part
                 JOIN account_move_line debit_line ON debit_line.id = part.debit_move_id
-                WHERE debit_line.move_id IN (" . $exchangeMoveIdsStr . ") 
-                    AND part.credit_move_id IN (" . $counterpartLineIdsStr . ")
-            ";
+                WHERE debit_line.move_id IN ('.$exchangeMoveIdsStr.') 
+                    AND part.credit_move_id IN ('.$counterpartLineIdsStr.')
+            ';
 
             $exchangeResults = DB::select($sql);
 
@@ -1031,9 +1031,9 @@ class Move extends Model implements Sortable
                 $counterpartLineIds[] = $row->counterpart_line_id;
 
                 $partialValuesList[] = [
-                    'line_id' => $row->counterpart_line_id,
+                    'line_id'    => $row->counterpart_line_id,
                     'partial_id' => $row->id,
-                    'currency' => $this->company->currency_id,
+                    'currency'   => $this->company->currency_id,
                 ];
             }
         }
@@ -1046,7 +1046,7 @@ class Move extends Model implements Sortable
             $partialValues['line'] = $counterpartLines[$partialValues['line_id']];
 
             $partialValues['is_exchange'] = in_array($partialValues['line']->move_id, $exchangeMoveIds);
-            
+
             if ($partialValues['is_exchange']) {
                 $partialValues['amount'] = abs($partialValues['line']->balance);
             }

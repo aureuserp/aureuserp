@@ -6,7 +6,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Account\Filament\Resources\BillResource;
-use Webkul\Account\Filament\Resources\BillResource\Actions\CreditNoteAction;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
 use Webkul\Support\Filament\Concerns\HasRepeatableEntryColumnManager;
@@ -28,7 +27,9 @@ class ViewBill extends ViewRecord
             BaseActions\CancelAction::make(),
             BaseActions\ResetToDraftAction::make(),
             BaseActions\SetAsCheckedAction::make(),
-            CreditNoteAction::make(),
+            BaseActions\ReverseAction::make()
+                ->label(__('accounts::filament/resources/bill/pages/view-bill.header-actions.reverse.label'))
+                ->modalHeading(__('accounts::filament/resources/bill/pages/view-bill.header-actions.reverse.modal-heading')),
             DeleteAction::make()
                 ->successNotification(
                     Notification::make()

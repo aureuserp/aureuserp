@@ -33,7 +33,7 @@ return [
 
                 'repeater' => [
                     'title'       => 'Items',
-                    'add-item' => 'Add Item',
+                    'add-item'    => 'Add Item',
 
                     'columns' => [
                         'account'                  => 'Account',
@@ -65,8 +65,8 @@ return [
                 'title'    => 'Other Information',
 
                 'fields' => [
-                    'checked' => 'Checked',
-                    'company' => 'Company',
+                    'checked'         => 'Checked',
+                    'company'         => 'Company',
                     'fiscal-position' => 'Fiscal Position',
                 ],
             ],

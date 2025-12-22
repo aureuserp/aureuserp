@@ -35,13 +35,13 @@ class Range extends Summarizer
         return $this;
     }
 
-    protected function calculateSummary(Collection $items, string $columnName): string|null
+    protected function calculateSummary(Collection $items, string $columnName): ?string
     {
         if ($items->isEmpty()) {
             return null;
         }
 
-        $values = $items->pluck($columnName)->filter(fn($value) => !is_null($value));
+        $values = $items->pluck($columnName)->filter(fn ($value) => ! is_null($value));
 
         if ($values->isEmpty()) {
             return null;

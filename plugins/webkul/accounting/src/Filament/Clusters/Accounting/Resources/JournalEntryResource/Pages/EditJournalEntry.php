@@ -36,14 +36,9 @@ class EditJournalEntry extends EditRecord
         return [
             ChatterActions\ChatterAction::make()
                 ->setResource($this->getResource()),
-            BaseActions\PrintAndSendAction::make(),
-            BaseActions\PreviewAction::make()
-                ->setTemplate('accounts::invoice/actions/preview.index'),
-            BaseActions\PayAction::make(),
             BaseActions\ConfirmAction::make(),
             BaseActions\CancelAction::make(),
-            BaseActions\SetAsCheckedAction::make(),
-            BaseActions\CreditNoteAction::make(),
+            BaseActions\ReverseAction::make(),
             BaseActions\ResetToDraftAction::make(),
             DeleteAction::make(),
         ];

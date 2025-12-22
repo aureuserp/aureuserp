@@ -17,6 +17,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Fieldset;
@@ -27,12 +28,8 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
-use Webkul\Account\Models\CashRounding;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
-use Filament\Notifications\Notification;
-use Webkul\Account\Facades\Account as AccountFacade;
-use Webkul\Account\Facades\Tax as TaxFacade;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\Size;
 use Filament\Support\Enums\TextSize;
@@ -48,18 +45,21 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Account\Models\MoveLine;
-use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\JournalType;
+use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\TypeTaxUse;
+use Webkul\Account\Facades\Account as AccountFacade;
+use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Filament\Resources\BillResource\Pages\CreateBill;
 use Webkul\Account\Filament\Resources\BillResource\Pages\EditBill;
 use Webkul\Account\Filament\Resources\BillResource\Pages\ListBills;
 use Webkul\Account\Filament\Resources\BillResource\Pages\ViewBill;
 use Webkul\Account\Livewire\InvoiceSummary;
+use Webkul\Account\Models\CashRounding;
 use Webkul\Account\Models\Move as AccountMove;
+use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Product;
 use Webkul\Account\Models\Tax;
@@ -259,8 +259,8 @@ class BillResource extends Resource
                             ->icon('heroicon-o-list-bullet')
                             ->schema([
                                 static::getProductRepeater(),
-                                
-                                Livewire::make(InvoiceSummary::class, function  (Get $get, $record, $livewire) {
+
+                                Livewire::make(InvoiceSummary::class, function (Get $get, $record, $livewire) {
                                     $totals = self::calculateMoveTotals($get, $livewire);
 
                                     $currency = Currency::find($get('currency_id'));
@@ -275,9 +275,9 @@ class BillResource extends Resource
                                         'currency'   => $currency,
                                     ];
                                 })
-                                ->key('invoiceSummary')
-                                ->reactive()
-                                ->visible(fn (Get $get) => $get('currency_id') && ! empty($get('products'))),
+                                    ->key('invoiceSummary')
+                                    ->reactive()
+                                    ->visible(fn (Get $get) => $get('currency_id') && ! empty($get('products'))),
                             ]),
 
                         Tab::make(__('accounts::filament/resources/bill.form.tabs.other-information.title'))
@@ -1049,7 +1049,7 @@ class BillResource extends Resource
         $currency = Currency::find($currencyId);
         $company = Company::find($companyId);
         $product = Product::find($productId);
-        
+
         if (! $currency || ! $company || ! $product) {
             return;
         }
@@ -1103,7 +1103,6 @@ class BillResource extends Resource
         $companyId = $get('company_id');
         $products = $get('products') ?? [];
 
-
         if (! $currencyId || ! $companyId || empty($products)) {
             $livewire->dispatch('itemUpdated', $defaultTotals);
 
@@ -1140,11 +1139,11 @@ class BillResource extends Resource
         }
 
         $mockLines = collect($products)
-            ->filter(fn($productData) => !empty($productData['product_id']))
+            ->filter(fn ($productData) => ! empty($productData['product_id']))
             ->map(function ($productData) use ($currency, $company, $mockMove) {
                 $product = Product::find($productData['product_id']);
 
-                if (!$product) {
+                if (! $product) {
                     return null;
                 }
 
