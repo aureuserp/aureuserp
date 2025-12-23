@@ -38,7 +38,11 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Filters\QueryBuilder\Constraints\BooleanConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\NumberConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -511,10 +515,82 @@ class BillResource extends Resource
                             ->label(__('accounts::filament/resources/bill.table.filters.reference')),
                         TextConstraint::make('invoice_partner_display_name')
                             ->label(__('accounts::filament/resources/bill.table.filters.bill-partner-display-name')),
+                        TextConstraint::make('payment_reference')
+                            ->label(__('accounts::filament/resources/bill.table.filters.payment-reference')),
+                        TextConstraint::make('narration')
+                            ->label(__('accounts::filament/resources/bill.table.filters.narration')),
+                        RelationshipConstraint::make('partner')
+                            ->label(__('accounts::filament/resources/bill.table.filters.partner'))
+                            ->multiple()
+                            ->selectable(
+                                IsRelatedToOperator::make()
+                                    ->titleAttribute('name')
+                                    ->searchable()
+                                    ->multiple()
+                                    ->preload(),
+                            ),
+                        RelationshipConstraint::make('journal')
+                            ->label(__('accounts::filament/resources/bill.table.filters.journal'))
+                            ->multiple()
+                            ->selectable(
+                                IsRelatedToOperator::make()
+                                    ->titleAttribute('name')
+                                    ->searchable()
+                                    ->multiple()
+                                    ->preload(),
+                            ),
+                        RelationshipConstraint::make('fiscalPosition')
+                            ->label(__('accounts::filament/resources/bill.table.filters.fiscal-position'))
+                            ->multiple()
+                            ->selectable(
+                                IsRelatedToOperator::make()
+                                    ->titleAttribute('name')
+                                    ->searchable()
+                                    ->multiple()
+                                    ->preload(),
+                            ),
+                        RelationshipConstraint::make('currency')
+                            ->label(__('accounts::filament/resources/bill.table.filters.currency'))
+                            ->multiple()
+                            ->selectable(
+                                IsRelatedToOperator::make()
+                                    ->titleAttribute('name')
+                                    ->searchable()
+                                    ->multiple()
+                                    ->preload(),
+                            ),
+                        RelationshipConstraint::make('company')
+                            ->label(__('accounts::filament/resources/bill.table.filters.company'))
+                            ->multiple()
+                            ->selectable(
+                                IsRelatedToOperator::make()
+                                    ->titleAttribute('name')
+                                    ->searchable()
+                                    ->multiple()
+                                    ->preload(),
+                            ),
+                        DateConstraint::make('date')
+                            ->label(__('accounts::filament/resources/bill.table.filters.date')),
                         DateConstraint::make('invoice_date')
                             ->label(__('accounts::filament/resources/bill.table.filters.bill-date')),
                         DateConstraint::make('invoice_date_due')
                             ->label(__('accounts::filament/resources/bill.table.filters.bill-due-date')),
+                        DateConstraint::make('delivery_date')
+                            ->label(__('accounts::filament/resources/bill.table.filters.delivery-date')),
+                        NumberConstraint::make('amount_untaxed')
+                            ->label(__('accounts::filament/resources/bill.table.filters.amount-untaxed')),
+                        NumberConstraint::make('amount_tax')
+                            ->label(__('accounts::filament/resources/bill.table.filters.amount-tax')),
+                        NumberConstraint::make('amount_total')
+                            ->label(__('accounts::filament/resources/bill.table.filters.amount-total')),
+                        NumberConstraint::make('amount_residual')
+                            ->label(__('accounts::filament/resources/bill.table.filters.amount-residual')),
+                        BooleanConstraint::make('checked')
+                            ->label(__('accounts::filament/resources/bill.table.filters.checked')),
+                        BooleanConstraint::make('posted_before')
+                            ->label(__('accounts::filament/resources/bill.table.filters.posted-before')),
+                        BooleanConstraint::make('is_move_sent')
+                            ->label(__('accounts::filament/resources/bill.table.filters.is-move-sent')),
                         DateConstraint::make('created_at')
                             ->label(__('accounts::filament/resources/bill.table.filters.created-at')),
                         DateConstraint::make('updated_at')

@@ -141,65 +141,42 @@ return [
             'general' => [
                 'title'   => 'General',
                 'entries' => [
-                    'customer-invoice' => 'Customer Invoice',
-                    'customer'         => 'Customer',
-                    'invoice-date'     => 'Invoice Date',
-                    'due-date'         => 'Due Date',
-                    'payment-term'     => 'Payment Term',
-                    'journal'          => 'Journal',
-                    'currency'         => 'Currency',
+                    'number'          => 'Number',
+                    'reference'       => 'Reference',
+                    'accounting-date' => 'Accounting Date',
+                    'journal'         => 'Journal',
                 ],
             ],
         ],
 
         'tabs' => [
-            'invoice-lines' => [
-                'title' => 'Invoice Lines',
+            'lines' => [
+                'title' => 'Journal Items',
 
                 'repeater' => [
-                    'products' => [
-                        'entries' => [
-                            'product'             => 'Product',
-                            'quantity'            => 'Quantity',
-                            'unit'                => 'Unit Of Measure',
-                            'taxes'               => 'Taxes',
-                            'discount-percentage' => 'Discount Percentage',
-                            'unit-price'          => 'Unit Price',
-                            'sub-total'           => 'Sub Total',
-                            'total'               => 'Total',
-                        ],
+                    'entries' => [
+                        'account'  => 'Account',
+                        'partner'  => 'Partner',
+                        'label'    => 'Label',
+                        'currency' => 'Currency',
+                        'taxes'    => 'Taxes',
+                        'debit'    => 'Debit',
+                        'credit'   => 'Credit',
                     ],
                 ],
             ],
 
             'other-information' => [
-                'title'    => 'Other Information',
+                'title' => 'Other Information',
 
                 'fieldset' => [
-                    'invoice' => [
-                        'title'   => 'Invoice',
-
-                        'entries' => [
-                            'customer-reference' => 'Customer Reference',
-                            'sales-person'       => 'Sales Person',
-                            'payment-reference'  => 'Payment Reference',
-                            'recipient-bank'     => 'Recipient Bank',
-                            'delivery-date'      => 'Delivery Date',
-                        ],
-                    ],
-
                     'accounting' => [
                         'title' => 'Accounting',
 
                         'entries' => [
-                            'company'           => 'Company',
-                            'incoterm'          => 'Incoterm',
-                            'incoterm-location' => 'Incoterm Location',
-                            'payment-method'    => 'Payment Method',
-                            'cash-rounding'     => 'Cash Rounding Method',
-                            'fiscal-position'   => 'Fiscal Position',
-                            'auto-post'         => 'Auto Post',
-                            'checked'           => 'Checked',
+                            'company'         => 'Company',
+                            'fiscal-position' => 'Fiscal Position',
+                            'checked'         => 'Checked',
                         ],
                     ],
                 ],
