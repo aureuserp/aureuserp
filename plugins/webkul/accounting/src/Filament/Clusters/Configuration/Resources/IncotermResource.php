@@ -5,9 +5,12 @@ namespace Webkul\Accounting\Filament\Clusters\Configuration\Resources;
 use Webkul\Account\Filament\Resources\IncotermResource as BaseIncotermResource;
 use Webkul\Accounting\Filament\Clusters\Configuration;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\IncotermResource\Pages\ManageIncoterms;
+use Webkul\Accounting\Models\Incoterm;
 
 class IncotermResource extends BaseIncotermResource
 {
+    protected static ?string $model = Incoterm::class;
+
     protected static bool $shouldRegisterNavigation = true;
 
     protected static ?int $navigationSort = 2;

@@ -423,8 +423,8 @@ class MoveLine extends Model implements Sortable
                     ->get();
 
                 $accountId = $previousAccounts->count() === 1 && $this->move->lines()->count() > 2
-                    ? $previousAccounts->first()?->id
-                    : $this->move->journal?->defaultAccount?->id;
+                    ? $previousAccounts->first()?->account_id
+                    : $this->move->journal?->default_account_id;
 
                 break;
         }

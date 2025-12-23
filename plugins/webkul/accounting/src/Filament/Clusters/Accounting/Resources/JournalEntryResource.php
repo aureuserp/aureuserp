@@ -46,6 +46,7 @@ use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Filament\Resources\JournalResource;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Journal;
+use Webkul\Accounting\Models\JournalEntry;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Tax;
@@ -64,7 +65,7 @@ use Webkul\Support\Models\Currency;
 
 class JournalEntryResource extends Resource
 {
-    protected static ?string $model = AccountMove::class;
+    protected static ?string $model = JournalEntry::class;
 
     protected static bool $shouldRegisterNavigation = true;
 

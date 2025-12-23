@@ -18,6 +18,8 @@ class DefaultAccountSettings extends Settings
 
     public int $account_journal_suspense_account_id;
 
+    public int $transfer_account_id;
+
     public int $account_journal_payment_debit_account_id;
 
     public int $account_journal_payment_credit_account_id;
@@ -25,8 +27,6 @@ class DefaultAccountSettings extends Settings
     public int $income_account_id;
 
     public int $expense_account_id;
-
-    public int $transfer_account_id;
 
     public static function group(): string
     {

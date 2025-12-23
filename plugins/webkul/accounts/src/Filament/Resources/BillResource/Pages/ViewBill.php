@@ -8,6 +8,8 @@ use Filament\Resources\Pages\ViewRecord;
 use Webkul\Account\Filament\Resources\BillResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
+use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Models\Move;
 use Webkul\Support\Filament\Concerns\HasRepeatableEntryColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
@@ -31,6 +33,7 @@ class ViewBill extends ViewRecord
                 ->label(__('accounts::filament/resources/bill/pages/view-bill.header-actions.reverse.label'))
                 ->modalHeading(__('accounts::filament/resources/bill/pages/view-bill.header-actions.reverse.modal-heading')),
             DeleteAction::make()
+                ->hidden(fn (Move $record): bool => $record->state == MoveState::POSTED)
                 ->successNotification(
                     Notification::make()
                         ->success()

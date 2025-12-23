@@ -64,6 +64,7 @@ use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Product;
 use Webkul\Account\Models\Tax;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
+use Webkul\Inventory\Models\Move;
 use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
@@ -551,6 +552,7 @@ class InvoiceResource extends Resource
                     ViewAction::make(),
                     EditAction::make(),
                     DeleteAction::make()
+                        ->hidden(fn (Model $record): bool => $record->state == MoveState::POSTED)
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -570,6 +572,9 @@ class InvoiceResource extends Resource
                         ),
                 ]),
             ])
+            ->checkIfRecordIsSelectableUsing(
+                fn (Model $record): bool => static::can('delete', $record) && $record->state !== MoveState::POSTED,
+            )
             ->modifyQueryUsing(function (Builder $query) {
                 $query->with('currency');
             });

@@ -23,14 +23,9 @@ class ProductResource extends BaseProductResource
 
     protected static ?int $navigationSort = 6;
 
-    public static function getModelLabel(): string
-    {
-        return __('accounting::filament/clusters/customers/resources/products.title');
-    }
-
     public static function getNavigationLabel(): string
     {
-        return __('accounting::filament/clusters/customers/resources/products.navigation.title');
+        return __('accounting::filament/clusters/customers/resources/product.navigation.title');
     }
 
     public static function getRecordSubNavigation(Page $page): array

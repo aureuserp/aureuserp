@@ -8,9 +8,12 @@ use Webkul\Accounting\Filament\Clusters\Configuration\Resources\TaxResource\Page
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\TaxResource\Pages\EditTax;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\TaxResource\Pages\ListTaxes;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\TaxResource\Pages\ViewTax;
+use Webkul\Accounting\Models\Tax;
 
 class TaxResource extends BaseTaxResource
 {
+    protected static ?string $model = Tax::class;
+
     protected static bool $shouldRegisterNavigation = true;
 
     protected static ?int $navigationSort = 8;

@@ -30,7 +30,7 @@ class ProductResource extends BaseProductResource
 
     public static function getNavigationLabel(): string
     {
-        return __('invoices::filament/clusters/vendors/resources/product.navigation.title');
+        return __('accounting::filament/clusters/vendors/resources/product.navigation.title');
     }
 
     public static function getRecordSubNavigation(Page $page): array

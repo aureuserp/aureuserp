@@ -1,12 +1,12 @@
 <?php
 
-namespace Webkul\Accounting\Filament\Clusters\Customer\Resources\PartnerResource\Pages;
+namespace Webkul\Accounting\Filament\Clusters\Customer\Resources\CustomerResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\PartnerResource;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\CustomerResource;
 use Webkul\Partner\Filament\Resources\BankAccountResource;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
@@ -14,7 +14,7 @@ class ManageBankAccounts extends ManageRelatedRecords
 {
     use HasRecordNavigationTabs;
 
-    protected static string $resource = PartnerResource::class;
+    protected static string $resource = CustomerResource::class;
 
     protected static string $relationship = 'bankAccounts';
 

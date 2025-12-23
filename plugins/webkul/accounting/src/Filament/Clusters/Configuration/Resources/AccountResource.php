@@ -5,9 +5,12 @@ namespace Webkul\Accounting\Filament\Clusters\Configuration\Resources;
 use Webkul\Account\Filament\Resources\AccountResource as BaseAccountResource;
 use Webkul\Accounting\Filament\Clusters\Configuration;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\AccountResource\Pages\ManageAccounts;
+use Webkul\Accounting\Models\Account;
 
 class AccountResource extends BaseAccountResource
 {
+    protected static ?string $model = Account::class;
+
     protected static bool $shouldRegisterNavigation = true;
 
     protected static ?int $navigationSort = 3;

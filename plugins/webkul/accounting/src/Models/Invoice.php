@@ -7,12 +7,6 @@ use Webkul\Account\Models\MoveLine;
 
 class Invoice extends BaseMove
 {
-    public function paymentTermLines()
-    {
-        return $this->hasMany(MoveLine::class, 'move_id')
-            ->where('display_type', 'payment_term');
-    }
-
     public function getResourceUrl(?string $page = 'edit'): ?string
     {
         if (! $this->id || ! $this->move_type) {

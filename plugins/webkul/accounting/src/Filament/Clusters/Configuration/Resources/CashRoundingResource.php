@@ -5,9 +5,12 @@ namespace Webkul\Accounting\Filament\Clusters\Configuration\Resources;
 use Webkul\Account\Filament\Resources\CashRoundingResource as BaseCashRoundingResource;
 use Webkul\Accounting\Filament\Clusters\Configuration;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\CashRoundingResource\Pages\ListCashRoundings;
+use Webkul\Accounting\Models\CashRounding;
 
 class CashRoundingResource extends BaseCashRoundingResource
 {
+    protected static ?string $model = CashRounding::class;
+
     protected static bool $shouldRegisterNavigation = true;
 
     protected static ?int $navigationSort = 9;

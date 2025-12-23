@@ -5,20 +5,20 @@ namespace Webkul\Accounting\Filament\Clusters\Customer\Resources;
 use Filament\Resources\Pages\Page;
 use Filament\Tables\Table;
 use Webkul\Accounting\Filament\Clusters\Customer;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\PartnerResource\Pages\CreatePartner;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\PartnerResource\Pages\EditPartner;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\PartnerResource\Pages\ListPartners;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\PartnerResource\Pages\ManageAddresses;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\PartnerResource\Pages\ManageBankAccounts;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\PartnerResource\Pages\ManageContacts;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\PartnerResource\Pages\ViewPartner;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\CustomerResource\Pages\CreateCustomer;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\CustomerResource\Pages\EditCustomer;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\CustomerResource\Pages\ListCustomers;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\CustomerResource\Pages\ManageAddresses;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\CustomerResource\Pages\ManageBankAccounts;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\CustomerResource\Pages\ManageContacts;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\CustomerResource\Pages\ViewCustomer;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\VendorResource as BasePartnerResource;
-use Webkul\Accounting\Models\Partner;
+use Webkul\Accounting\Models\Customer as CustomerModel;
 use Webkul\Partner\Filament\Resources\PartnerResource as BaseVendorResource;
 
-class PartnerResource extends BasePartnerResource
+class CustomerResource extends BasePartnerResource
 {
-    protected static ?string $model = Partner::class;
+    protected static ?string $model = CustomerModel::class;
 
     protected static bool $shouldRegisterNavigation = true;
 
@@ -57,8 +57,8 @@ class PartnerResource extends BasePartnerResource
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            ViewPartner::class,
-            EditPartner::class,
+            ViewCustomer::class,
+            EditCustomer::class,
             ManageContacts::class,
             ManageAddresses::class,
             ManageBankAccounts::class,
@@ -68,10 +68,10 @@ class PartnerResource extends BasePartnerResource
     public static function getPages(): array
     {
         return [
-            'index'        => ListPartners::route('/'),
-            'create'       => CreatePartner::route('/create'),
-            'view'         => ViewPartner::route('/{record}'),
-            'edit'         => EditPartner::route('/{record}/edit'),
+            'index'        => ListCustomers::route('/'),
+            'create'       => CreateCustomer::route('/create'),
+            'view'         => ViewCustomer::route('/{record}'),
+            'edit'         => EditCustomer::route('/{record}/edit'),
             'contacts'     => ManageContacts::route('/{record}/contacts'),
             'addresses'    => ManageAddresses::route('/{record}/addresses'),
             'bank-account' => ManageBankAccounts::route('/{record}/bank-accounts'),

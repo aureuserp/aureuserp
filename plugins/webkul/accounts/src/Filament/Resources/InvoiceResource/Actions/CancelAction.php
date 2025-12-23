@@ -28,10 +28,6 @@ class CancelAction extends Action
 
                 $livewire->refreshFormData(['state', 'parent_state']);
             })
-            ->hidden(function (Move $record) {
-                return
-                    $record->state != MoveState::DRAFT
-                    || $record->move_type == MoveType::ENTRY;
-            });
+            ->hidden(fn (Move $record) => $record->state != MoveState::DRAFT);
     }
 }

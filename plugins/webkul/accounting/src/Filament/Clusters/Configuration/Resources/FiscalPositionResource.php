@@ -9,9 +9,12 @@ use Webkul\Accounting\Filament\Clusters\Configuration\Resources\FiscalPositionRe
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\FiscalPositionResource\Pages\EditFiscalPosition;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\FiscalPositionResource\Pages\ListFiscalPositions;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\FiscalPositionResource\Pages\ViewFiscalPosition;
+use Webkul\Accounting\Models\FiscalPosition;
 
 class FiscalPositionResource extends BaseFiscalPositionResource
 {
+    protected static ?string $model = FiscalPosition::class;
+
     protected static bool $shouldRegisterNavigation = true;
 
     protected static ?int $navigationSort = 6;

@@ -23,7 +23,7 @@ class PaymentResource extends BasePaymentResource
 
     public static function getModelLabel(): string
     {
-        return __('accounting::filament/clusters/customers/resources/payment.title');
+        return __('accounting::filament/clusters/customers/resources/payment.model-label');
     }
 
     public static function getNavigationLabel(): string

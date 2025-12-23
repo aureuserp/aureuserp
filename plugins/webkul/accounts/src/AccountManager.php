@@ -36,6 +36,12 @@ class AccountManager
 
         $record = $this->computeAccountMove($record);
 
+        $record->refresh();
+
+        foreach ($record->lines as $line) {
+            $line->update(['parent_state' => MoveState::CANCEL]);
+        }
+
         return $record;
     }
 
@@ -84,6 +90,12 @@ class AccountManager
 
         $record = $this->computeAccountMove($record);
 
+        $record->refresh();
+
+        foreach ($record->lines as $line) {
+            $line->update(['parent_state' => MoveState::POSTED]);
+        }
+
         return $record;
     }
 
@@ -127,6 +139,12 @@ class AccountManager
         $record = $this->computeAccountMove($record);
 
         $record->save();
+
+        $record->refresh();
+
+        foreach ($record->lines as $line) {
+            $line->update(['parent_state' => MoveState::DRAFT]);
+        }
 
         return $record;
     }

@@ -8,9 +8,12 @@ use Webkul\Accounting\Filament\Clusters\Configuration\Resources\CurrencyResource
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\CurrencyResource\Pages\ListCurrencies;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\CurrencyResource\Pages\ViewCurrency;
 use Webkul\Support\Filament\Resources\CurrencyResource as BaseCurrencyResource;
+use Webkul\Accounting\Models\Currency;
 
 class CurrencyResource extends BaseCurrencyResource
 {
+    protected static ?string $model = Currency::class;
+
     protected static bool $shouldRegisterNavigation = true;
 
     protected static ?int $navigationSort = 5;

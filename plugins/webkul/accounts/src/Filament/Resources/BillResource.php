@@ -526,6 +526,7 @@ class BillResource extends Resource
                     ViewAction::make(),
                     EditAction::make(),
                     DeleteAction::make()
+                        ->hidden(fn (Model $record): bool => $record->state == MoveState::POSTED)
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -545,6 +546,9 @@ class BillResource extends Resource
                         ),
                 ]),
             ])
+            ->checkIfRecordIsSelectableUsing(
+                fn (Model $record): bool => static::can('delete', $record) && $record->state !== MoveState::POSTED,
+            )
             ->modifyQueryUsing(function (Builder $query) {
                 $query->with('currency');
             });

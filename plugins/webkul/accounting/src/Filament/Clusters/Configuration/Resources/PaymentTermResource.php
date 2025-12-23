@@ -9,9 +9,12 @@ use Webkul\Accounting\Filament\Clusters\Configuration\Resources\PaymentTermResou
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\PaymentTermResource\Pages\EditPaymentTerm;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\PaymentTermResource\Pages\ListPaymentTerms;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\PaymentTermResource\Pages\ViewPaymentTerm;
+use Webkul\Accounting\Models\PaymentTerm;
 
 class PaymentTermResource extends BasePaymentTermResource
 {
+    protected static ?string $model = PaymentTerm::class;
+
     protected static bool $shouldRegisterNavigation = true;
 
     protected static ?int $navigationSort = 1;

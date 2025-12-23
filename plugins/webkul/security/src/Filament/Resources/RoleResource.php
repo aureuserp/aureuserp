@@ -201,25 +201,42 @@ class RoleResource extends RolesRoleResource
         return collect(static::getPluginResources())
             ->sortKeys()
             ->map(function ($plugin, $key) {
+                $hasAnyOptions = collect($plugin)->contains(function ($entity) {
+                    $checkbox = static::getCheckBoxListComponentForResource($entity);
+
+                    return ! empty($checkbox->getOptions());
+                });
+
+                if (! $hasAnyOptions) {
+                    return;
+                }
+
                 return Section::make($key)
                     ->collapsible()
                     ->schema([
                         Grid::make()
                             ->schema(function () use ($plugin) {
                                 return collect($plugin)
-                                    ->map(function ($entity) {
+                                    ->flatMap(function ($entity) {
+                                        $checkbox = static::getCheckBoxListComponentForResource($entity);
+
+                                        if (empty($checkbox->getOptions())) {
+                                            return [];
+                                        }
+
                                         $fieldsetLabel = strval(
                                             static::shield()->hasLocalizedPermissionLabels()
                                                 ? FilamentShield::getLocalizedResourceLabel($entity['resourceFqcn'])
                                                 : $entity['model']
                                         );
 
-                                        return Fieldset::make($fieldsetLabel)
-                                            ->schema([
-                                                static::getCheckBoxListComponentForResource($entity)
-                                                    ->hiddenLabel(),
-                                            ])
-                                            ->columnSpan(static::shield()->getSectionColumnSpan());
+                                        return [
+                                            Fieldset::make($fieldsetLabel)
+                                                ->schema([
+                                                    $checkbox->hiddenLabel()
+                                                ])
+                                                ->columnSpan(static::shield()->getSectionColumnSpan())
+                                        ];
                                     })
                                     ->toArray();
                             })

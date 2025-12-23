@@ -51,7 +51,6 @@ class PayAction extends Action
                 $paymentRegister->journal_id = $paymentRegister->available_journal_ids[0] ?? null;
                 $paymentRegister->journal = Journal::find($paymentRegister->journal_id);
 
-                // Compute payment method line
                 $paymentRegister->computePaymentMethodLineId();
 
                 $amountsToPay = $paymentRegister->getTotalAmountsToPay($paymentRegister->batches);

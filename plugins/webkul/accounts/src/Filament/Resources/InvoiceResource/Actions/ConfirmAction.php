@@ -23,7 +23,7 @@ class ConfirmAction extends Action
 
         $this
             ->label(__('accounts::filament/resources/invoice/actions/confirm-action.title'))
-            ->color('gray')
+            ->color('primary')
             ->action(function (Move $record, Component $livewire): void {
                 $record->checked = $record->journal->auto_check_on_post;
 
