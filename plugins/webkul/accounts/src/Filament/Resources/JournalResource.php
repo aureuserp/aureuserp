@@ -301,8 +301,7 @@ class JournalResource extends Resource
                                                             ->label(__('accounts::filament/resources/journal.form.tabs.advanced-settings.fields.communication-standard')),
                                                     ]),
                                             ]),
-                                    ])
-                                    ->persistTabInQueryString(),
+                                    ]),
                             ])
                             ->columnSpan(['lg' => 2]),
                         Group::make()

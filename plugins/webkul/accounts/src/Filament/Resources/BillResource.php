@@ -800,6 +800,74 @@ class BillResource extends Resource
                                 }),
                             ]),
 
+                        Tab::make(__('accounts::filament/resources/bill.infolist.tabs.journal-items.title'))
+                            ->icon('heroicon-o-list-bullet')
+                            ->schema([
+                                RepeatableEntry::make('lines')
+                                    ->hiddenLabel()
+                                    ->columnManager()
+                                    ->live()
+                                    ->table([
+                                        InfolistTableColumn::make('account')
+                                            ->alignCenter()
+                                            ->toggleable()
+                                            ->label(__('accounts::filament/resources/bill.infolist.tabs.journal-items.repeater.entries.account')),
+                                        InfolistTableColumn::make('partner')
+                                            ->alignCenter()
+                                            ->toggleable()
+                                            ->label(__('accounts::filament/resources/bill.infolist.tabs.journal-items.repeater.entries.partner')),
+                                        InfolistTableColumn::make('name')
+                                            ->alignCenter()
+                                            ->toggleable()
+                                            ->label(__('accounts::filament/resources/bill.infolist.tabs.journal-items.repeater.entries.label')),
+                                        InfolistTableColumn::make('currency')
+                                            ->alignCenter()
+                                            ->toggleable(isToggledHiddenByDefault: true)
+                                            ->label(__('accounts::filament/resources/bill.infolist.tabs.journal-items.repeater.entries.currency')),
+                                        InfolistTableColumn::make('taxes')
+                                            ->alignCenter()
+                                            ->toggleable()
+                                            ->label(__('accounts::filament/resources/bill.infolist.tabs.journal-items.repeater.entries.taxes')),
+                                        InfolistTableColumn::make('debit')
+                                            ->alignCenter()
+                                            ->toggleable()
+                                            ->label(__('accounts::filament/resources/bill.infolist.tabs.journal-items.repeater.entries.debit')),
+                                        InfolistTableColumn::make('credit')
+                                            ->alignCenter()
+                                            ->toggleable()
+                                            ->label(__('accounts::filament/resources/bill.infolist.tabs.journal-items.repeater.entries.credit')),
+                                    ])
+                                    ->schema([
+                                        TextEntry::make('account')
+                                            ->placeholder('-')
+                                            ->formatStateUsing(fn ($state) => $state['name'] ?? '-'),
+                                        TextEntry::make('partner')
+                                            ->placeholder('-')
+                                            ->formatStateUsing(fn ($state) => $state ? ($state['name'] ?? '-') : '-'),
+                                        TextEntry::make('name')
+                                            ->placeholder('-'),
+                                        TextEntry::make('currency')
+                                            ->placeholder('-')
+                                            ->formatStateUsing(fn ($state) => $state['name'] ?? '-'),
+                                        TextEntry::make('taxes')
+                                            ->badge()
+                                            ->state(function ($record): array {
+                                                return $record->taxes->map(fn ($tax) => [
+                                                    'name' => $tax->name,
+                                                ])->toArray();
+                                            })
+                                            ->formatStateUsing(fn ($state) => $state['name'] ?? '-')
+                                            ->placeholder('-')
+                                            ->weight(FontWeight::Bold),
+                                        TextEntry::make('debit')
+                                            ->placeholder('-')
+                                            ->money(fn ($record) => $record->currency?->name),
+                                        TextEntry::make('credit')
+                                            ->placeholder('-')
+                                            ->money(fn ($record) => $record->currency?->name),
+                                    ])->columns(5),
+                            ]),
+
                         Tab::make(__('accounts::filament/resources/bill.infolist.tabs.other-information.title'))
                             ->icon('heroicon-o-information-circle')
                             ->schema([
@@ -839,8 +907,7 @@ class BillResource extends Resource
                                     ->html()
                                     ->hiddenLabel(),
                             ]),
-                    ])
-                    ->persistTabInQueryString(),
+                    ]),
             ])
             ->columns(1);
     }

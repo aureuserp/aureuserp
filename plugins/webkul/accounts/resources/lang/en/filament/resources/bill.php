@@ -246,6 +246,22 @@ return [
             'term-and-conditions' => [
                 'title' => 'Term & Conditions',
             ],
+
+            'journal-items' => [
+                'title' => 'Journal Items',
+
+                'repeater' => [
+                    'entries' => [
+                        'account'  => 'Account',
+                        'partner'  => 'Partner',
+                        'label'    => 'Label',
+                        'currency' => 'Currency',
+                        'taxes'    => 'Taxes',
+                        'debit'    => 'Debit',
+                        'credit'   => 'Credit',
+                    ],
+                ],
+            ],
         ],
     ],
 ];

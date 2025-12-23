@@ -46,6 +46,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Facades\Tax as TaxFacade;
@@ -61,6 +62,8 @@ use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResourc
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource\Pages\EditJournalEntry;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource\Pages\ListJournalEntries;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource\Pages\ViewJournalEntry;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource;
+use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource;
 use Webkul\Accounting\Models\JournalEntry;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Partner\Models\Partner;
@@ -347,8 +350,30 @@ class JournalEntryResource extends Resource
             ])
             ->recordActions([
                 ActionGroup::make([
-                    ViewAction::make(),
-                    EditAction::make(),
+                    ViewAction::make()
+                        ->url(function (Model $record): string {
+                            if (in_array($record->move_type, [MoveType::OUT_INVOICE, MoveType::OUT_REFUND])) {
+                                return InvoiceResource::getUrl('view', ['record' => $record]);
+                            }
+
+                            if (in_array($record->move_type, [MoveType::IN_INVOICE, MoveType::IN_REFUND])) {
+                                return BillResource::getUrl('view', ['record' => $record]);
+                            }
+
+                            return static::getUrl('view', ['record' => $record]);
+                        }),
+                    EditAction::make()
+                        ->url(function (Model $record): string {
+                            if (in_array($record->move_type, [MoveType::OUT_INVOICE, MoveType::OUT_REFUND])) {
+                                return InvoiceResource::getUrl('edit', ['record' => $record]);
+                            }
+
+                            if (in_array($record->move_type, [MoveType::IN_INVOICE, MoveType::IN_REFUND])) {
+                                return BillResource::getUrl('edit', ['record' => $record]);
+                            }
+
+                            return static::getUrl('edit', ['record' => $record]);
+                        }),
                     DeleteAction::make()
                         ->successNotification(
                             Notification::make()

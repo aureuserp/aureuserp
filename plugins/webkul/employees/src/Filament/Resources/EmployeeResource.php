@@ -792,8 +792,7 @@ class EmployeeResource extends Resource
                                     ->columns(3),
                             ]),
                     ])
-                    ->columnSpan('full')
-                    ->persistTabInQueryString(),
+                    ->columnSpan('full'),
             ]);
     }
 
@@ -1726,7 +1725,6 @@ class EmployeeResource extends Resource
 
                             ]),
                     ])
-                    ->persistTabInQueryString()
                     ->columnSpan('full'),
             ]);
     }
