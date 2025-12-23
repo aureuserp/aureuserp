@@ -7,13 +7,6 @@ return [
         'title' => 'Journal Items',
     ],
 
-    'global-search' => [
-        'number'  => 'Number',
-        'partner' => 'Partner',
-        'account' => 'Account',
-        'date'    => 'Date',
-    ],
-
     'table' => [
         'total'   => 'Total',
         'columns' => [

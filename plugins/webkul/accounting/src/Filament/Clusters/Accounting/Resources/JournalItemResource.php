@@ -46,16 +46,6 @@ class JournalItemResource extends Resource
         return __('accounting::filament/clusters/accounting/resources/journal-item.navigation.title');
     }
 
-    public static function getGlobalSearchResultDetails(Model $record): array
-    {
-        return [
-            __('accounting::filament/clusters/accounting/resources/journal-item.global-search.number')   => $record?->move_name ?? '—',
-            __('accounting::filament/clusters/accounting/resources/journal-item.global-search.partner')  => $record?->partner?->name ?? '—',
-            __('accounting::filament/clusters/accounting/resources/journal-item.global-search.account')  => $record?->account?->name ?? '—',
-            __('accounting::filament/clusters/accounting/resources/journal-item.global-search.date')     => $record?->date ?? '—',
-        ];
-    }
-
     public static function table(Table $table): Table
     {
         return $table
