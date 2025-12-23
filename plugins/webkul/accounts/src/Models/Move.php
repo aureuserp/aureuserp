@@ -520,10 +520,22 @@ class Move extends Model implements Sortable
         $this->invoice_partner_display_name = $vendorDisplayName;
     }
 
-    // TODO: compute currency rate based on date and company settings
     public function computeInvoiceCurrencyRate()
     {
-        $this->invoice_currency_rate = 1;
+        if (! $this->isInvoice(true)) {
+            return 1;
+        }
+
+        if ($this->currency_id) {
+            $this->invoice_currency_rate = $this->currency->getConversionRate(
+                fromCurrency: $this->company->currency,
+                toCurrency: $this->currency,
+                company: $this->company,
+                date: $this->invoice_date ?? now()->toDateString(),
+            );
+        } else {
+            $this->invoice_currency_rate = 1;
+        }
     }
 
     public function computePartnerShippingId()

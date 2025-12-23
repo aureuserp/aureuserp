@@ -505,7 +505,6 @@ class MoveLine extends Model implements Sortable
         if (in_array($this->display_type, [DisplayType::LINE_SECTION, DisplayType::LINE_NOTE])) {
             $this->balance = 0.0;
         } elseif (! $this->move->isInvoice(true)) {
-            // TODO: Handle other move types if needed
             $this->balance = $this->debit - $this->credit;
         } else {
             $this->balance = $this->balance;

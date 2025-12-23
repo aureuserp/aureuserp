@@ -13,6 +13,7 @@ use Webkul\Account\Models\Tax;
 use Webkul\Account\Models\FiscalPosition;
 use Webkul\Support\Models\Country;
 use Filament\Schemas\Components\Text;
+use Webkul\Accounting\Models\Invoice;
 use Filament\Forms\Components\Radio;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Support\Filament\Clusters\Settings;
@@ -79,11 +80,10 @@ class ManageTaxes extends SettingsPage
                         'round_globally' => __('accounting::filament/clusters/settings/pages/manage-taxes.form.rounding-method.options.round-globally'),
                     ]),
 
-                //TODO: Disable if have invoices/moves
                 Select::make('account_price_include')
                     ->label(__('accounting::filament/clusters/settings/pages/manage-taxes.form.prices.label'))
                     ->options(TaxIncludeOverride::class)
-                    ->hidden(),
+                    ->disabled(fn () => Invoice::count() > 0),
 
                 Select::make('account_fiscal_country_id')
                     ->label(__('accounting::filament/clusters/settings/pages/manage-taxes.form.fiscal-country.label'))
