@@ -21,6 +21,7 @@ use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Support\Filament\Clusters\Settings;
 use Webkul\Account\Enums\TypeTaxUse;
 use Filament\Schemas\Components\Fieldset;
+use Webkul\Account\Enums\AccountType;
 
 class ManageDefaultAccounts extends SettingsPage
 {
@@ -68,12 +69,12 @@ class ManageDefaultAccounts extends SettingsPage
                             ->searchable(),
                         Select::make('income_currency_exchange_account_id')
                             ->label(__('accounting::filament/clusters/settings/pages/manage-default-accounts.form.exchange-difference-entries.fields.gain.label'))
-                            ->options(Account::all()->pluck('name', 'id'))
+                            ->options(Account::whereIn('account_type', [AccountType::INCOME, AccountType::INCOME_OTHER])->where('deprecated', false)->get()->pluck('name', 'id'))
                             ->inlineLabel()
                             ->searchable(),
                         Select::make('expense_currency_exchange_account_id')
                             ->label(__('accounting::filament/clusters/settings/pages/manage-default-accounts.form.exchange-difference-entries.fields.loss.label'))
-                            ->options(Account::all()->pluck('name', 'id'))
+                            ->options(Account::whereIn('account_type', [AccountType::EXPENSE, AccountType::EXPENSE_DEPRECIATION, AccountType::EXPENSE_DIRECT_COST])->where('deprecated', false)->get()->pluck('name', 'id'))
                             ->inlineLabel()
                             ->searchable(),
                     ])
@@ -83,12 +84,12 @@ class ManageDefaultAccounts extends SettingsPage
                     ->schema([
                         Select::make('account_journal_suspense_account_id')
                             ->label(__('accounting::filament/clusters/settings/pages/manage-default-accounts.form.bank-transfer-and-payments.fields.bank-suspense-account.label'))
-                            ->options(Account::all()->pluck('name', 'id'))
+                            ->options(Account::whereIn('account_type', [AccountType::ASSET_CURRENT, AccountType::LIABILITY_CURRENT])->where('deprecated', false)->get()->pluck('name', 'id'))
                             ->inlineLabel()
                             ->searchable(),
                         Select::make('transfer_account_id')
                             ->label(__('accounting::filament/clusters/settings/pages/manage-default-accounts.form.bank-transfer-and-payments.fields.transfer-account.label'))
-                            ->options(Account::all()->pluck('name', 'id'))
+                            ->options(Account::where('account_type', AccountType::ASSET_CURRENT)->where('deprecated', false)->where('reconcile', true)->get()->pluck('name', 'id'))
                             ->inlineLabel()
                             ->searchable(),
                     ])
@@ -98,12 +99,12 @@ class ManageDefaultAccounts extends SettingsPage
                     ->schema([
                         Select::make('income_account_id')
                             ->label(__('accounting::filament/clusters/settings/pages/manage-default-accounts.form.product-accounts.fields.income-account.label'))
-                            ->options(Account::all()->pluck('name', 'id'))
+                            ->options(Account::whereNotIn('account_type', [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE, AccountType::ASSET_CASH, AccountType::LIABILITY_CREDIT_CARD, AccountType::OFF_BALANCE])->where('deprecated', false)->get()->pluck('name', 'id'))
                             ->inlineLabel()
                             ->searchable(),
                         Select::make('expense_account_id')
                             ->label(__('accounting::filament/clusters/settings/pages/manage-default-accounts.form.product-accounts.fields.expense-account.label'))
-                            ->options(Account::all()->pluck('name', 'id'))
+                            ->options(Account::whereNotIn('account_type', [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE, AccountType::ASSET_CASH, AccountType::LIABILITY_CREDIT_CARD, AccountType::OFF_BALANCE])->where('deprecated', false)->get()->pluck('name', 'id'))
                             ->inlineLabel()
                             ->searchable(),
                     ])

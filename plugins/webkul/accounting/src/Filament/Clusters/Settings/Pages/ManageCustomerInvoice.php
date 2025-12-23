@@ -4,12 +4,14 @@ namespace Webkul\Accounting\Filament\Clusters\Settings\Pages;
 
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Select;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\HtmlString;
 use Webkul\Accounting\Filament\Clusters\Configurations\Resources\PackagingResource;
 use Webkul\Account\Settings\CustomerInvoiceSettings;
+use Webkul\Accounting\Models\Incoterm;
 use Webkul\Support\Filament\Clusters\Settings;
 
 class ManageCustomerInvoice extends SettingsPage
@@ -52,8 +54,11 @@ class ManageCustomerInvoice extends SettingsPage
                 Toggle::make('group_cash_rounding')
                     ->label(__('accounting::filament/clusters/settings/pages/manage-customer-invoice.form.cash-rounding.label'))
                     ->helperText(__('accounting::filament/clusters/settings/pages/manage-customer-invoice.form.cash-rounding.helper-text')),
-                Toggle::make('incoterm_id')
-                    ->label(__('accounting::filament/clusters/settings/pages/manage-customer-invoice.form.incoterm.label')),
+                Select::make('incoterm_id')
+                    ->label(__('accounting::filament/clusters/settings/pages/manage-customer-invoice.form.incoterm.label'))
+                    ->options(Incoterm::all()->pluck('name', 'id'))
+                    ->inlineLabel()
+                    ->searchable(),
             ]);
     }
 }

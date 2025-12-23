@@ -22,6 +22,7 @@ use Webkul\Account\Enums\RoundingMethod;
 use Webkul\Account\Enums\RoundingStrategy;
 use Webkul\Account\Filament\Resources\CashRoundingResource\Pages\ListCashRoundings;
 use Webkul\Account\Models\CashRounding;
+use Webkul\Account\Settings\CustomerInvoiceSettings;
 
 class CashRoundingResource extends Resource
 {
@@ -30,6 +31,15 @@ class CashRoundingResource extends Resource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-adjustments-horizontal';
 
     protected static bool $shouldRegisterNavigation = false;
+
+    public static function isDiscovered(): bool
+    {
+        if (app()->runningInConsole()) {
+            return true;
+        }
+
+        return app(CustomerInvoiceSettings::class)->group_cash_rounding;
+    }
 
     public static function form(Schema $schema): Schema
     {

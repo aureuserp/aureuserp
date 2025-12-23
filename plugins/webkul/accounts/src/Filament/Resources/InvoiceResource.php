@@ -67,6 +67,7 @@ use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Product;
 use Webkul\Account\Models\Tax;
+use Webkul\Account\Settings\CustomerInvoiceSettings;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
@@ -330,10 +331,11 @@ class InvoiceResource extends Resource
                                                 }
                                             }),
                                         Select::make('invoice_incoterm_id')
+                                            ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.incoterm'))
                                             ->relationship('invoiceIncoterm', 'name')
                                             ->searchable()
                                             ->preload()
-                                            ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.incoterm')),
+                                            ->default(fn (CustomerInvoiceSettings $settings) => $settings->incoterm_id),
                                         TextInput::make('incoterm_location')
                                             ->label(__('accounts::filament/resources/invoice.form.tabs.other-information.fieldset.accounting.fields.incoterm-location')),
                                         Select::make('preferred_payment_method_line_id')
@@ -357,6 +359,7 @@ class InvoiceResource extends Resource
                                             ->reactive()
                                             ->live()
                                             ->nullable()
+                                            ->visible(fn (CustomerInvoiceSettings $settings) => (bool) $settings->group_cash_rounding)
                                             ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
                                         Toggle::make('checked')
                                             ->inline(false)
