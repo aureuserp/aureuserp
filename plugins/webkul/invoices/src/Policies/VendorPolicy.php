@@ -3,10 +3,10 @@
 namespace Webkul\Invoice\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Webkul\Invoice\Models\Attribute;
+use Webkul\Invoice\Models\Vendor;
 use Webkul\Security\Models\User;
 
-class AttributePolicy
+class VendorPolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class AttributePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_invoice_product::attribute');
+        return $user->can('view_any_invoice_vendor');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Attribute $attribute): bool
+    public function view(User $user, Vendor $vendor): bool
     {
-        return $user->can('view_invoice_product::attribute');
+        return $user->can('view_invoice_vendor');
     }
 
     /**
@@ -31,23 +31,23 @@ class AttributePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_invoice_product::attribute');
+        return $user->can('create_invoice_vendor');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Attribute $attribute): bool
+    public function update(User $user, Vendor $vendor): bool
     {
-        return $user->can('update_invoice_product::attribute');
+        return $user->can('update_invoice_vendor');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Attribute $attribute): bool
+    public function delete(User $user, Vendor $vendor): bool
     {
-        return $user->can('delete_invoice_product::attribute');
+        return $user->can('delete_invoice_vendor');
     }
 
     /**
@@ -55,15 +55,15 @@ class AttributePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_invoice_product::attribute');
+        return $user->can('delete_any_invoice_vendor');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Attribute $attribute): bool
+    public function forceDelete(User $user, Vendor $vendor): bool
     {
-        return $user->can('force_delete_invoice_product::attribute');
+        return $user->can('force_delete_invoice_vendor');
     }
 
     /**
@@ -71,15 +71,15 @@ class AttributePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_invoice_product::attribute');
+        return $user->can('force_delete_any_invoice_vendor');
     }
 
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Attribute $attribute): bool
+    public function restore(User $user, Vendor $vendor): bool
     {
-        return $user->can('restore_invoice_product::attribute');
+        return $user->can('restore_invoice_vendor');
     }
 
     /**
@@ -87,6 +87,6 @@ class AttributePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_invoice_product::attribute');
+        return $user->can('restore_any_invoice_vendor');
     }
 }

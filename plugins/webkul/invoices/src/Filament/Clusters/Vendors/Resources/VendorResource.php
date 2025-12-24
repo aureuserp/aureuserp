@@ -30,14 +30,14 @@ use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\Mana
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ManageContacts;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ViewVendor;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\RelationManagers\BankAccountsRelationManager;
-use Webkul\Invoice\Models\Partner;
+use Webkul\Invoice\Models\Vendor;
 use Webkul\Partner\Filament\Resources\PartnerResource as BaseVendorResource;
 
 class VendorResource extends BaseVendorResource
 {
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $model = Partner::class;
+    protected static ?string $model = Vendor::class;
 
     protected static ?string $slug = '';
 

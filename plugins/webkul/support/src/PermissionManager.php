@@ -90,9 +90,21 @@ class PermissionManager
             /**
              * Invoice Resources
              */
-            \Webkul\Invoice\Filament\Clusters\Configuration\Resources\ProductCategoryResource::class,
             \Webkul\Invoice\Filament\Clusters\Configuration\Resources\BankAccountResource::class,
-            \Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource::class,
+            \Webkul\Invoice\Filament\Clusters\Configuration\Resources\PaymentTermResource::class,
+            \Webkul\Invoice\Filament\Clusters\Configuration\Resources\ProductAttributeResource::class,
+            \Webkul\Invoice\Filament\Clusters\Configuration\Resources\ProductCategoryResource::class,
+            \Webkul\Invoice\Filament\Clusters\Configuration\Resources\TaxGroupResource::class,
+            \Webkul\Invoice\Filament\Clusters\Configuration\Resources\TaxResource::class,
+            \Webkul\Invoice\Filament\Clusters\Configuration\Resources\IncotermResource::class,
+            \Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource::class,
+            \Webkul\Invoice\Filament\Clusters\Customer\Resources\CustomerResource::class,
+            \Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource::class,
+            \Webkul\Invoice\Filament\Clusters\Customer\Resources\PaymentResource::class,
+            \Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource::class,
+            \Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource::class,
+            \Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource::class,
+            \Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource::class,
 
             /**
              * Accounting Resources
@@ -109,7 +121,7 @@ class PermissionManager
             \Webkul\Accounting\Filament\Clusters\Configuration\Resources\FiscalPositionResource::class,
             \Webkul\Accounting\Filament\Clusters\Configuration\Resources\IncotermResource::class,
             \Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource::class,
-            \Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNotesResource::class,
+            \Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource::class,
             \Webkul\Accounting\Filament\Clusters\Customer\Resources\CustomerResource::class,
             \Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource::class,
             \Webkul\Accounting\Filament\Clusters\Customer\Resources\PaymentResource::class,

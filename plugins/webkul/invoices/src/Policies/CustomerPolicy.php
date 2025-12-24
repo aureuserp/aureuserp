@@ -3,10 +3,10 @@
 namespace Webkul\Invoice\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Webkul\Invoice\Models\Partner;
+use Webkul\Invoice\Models\Customer;
 use Webkul\Security\Models\User;
 
-class PartnerPolicy
+class CustomerPolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class PartnerPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_partner');
+        return $user->can('view_any_invoice_customer');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Partner $partner): bool
+    public function view(User $user, Customer $customer): bool
     {
-        return $user->can('view_partner');
+        return $user->can('view_invoice_customer');
     }
 
     /**
@@ -31,23 +31,23 @@ class PartnerPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_partner');
+        return $user->can('create_invoice_customer');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Partner $partner): bool
+    public function update(User $user, Customer $customer): bool
     {
-        return $user->can('update_partner');
+        return $user->can('update_invoice_customer');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Partner $partner): bool
+    public function delete(User $user, Customer $customer): bool
     {
-        return $user->can('delete_partner');
+        return $user->can('delete_invoice_customer');
     }
 
     /**
@@ -55,15 +55,15 @@ class PartnerPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_partner');
+        return $user->can('delete_any_invoice_customer');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Partner $partner): bool
+    public function forceDelete(User $user, Customer $customer): bool
     {
-        return $user->can('force_delete_partner');
+        return $user->can('force_delete_invoice_customer');
     }
 
     /**
@@ -71,15 +71,15 @@ class PartnerPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_partner');
+        return $user->can('force_delete_any_invoice_customer');
     }
 
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Partner $partner): bool
+    public function restore(User $user, Customer $customer): bool
     {
-        return $user->can('restore_partner');
+        return $user->can('restore_invoice_customer');
     }
 
     /**
@@ -87,6 +87,6 @@ class PartnerPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_partner');
+        return $user->can('restore_any_invoice_customer');
     }
 }

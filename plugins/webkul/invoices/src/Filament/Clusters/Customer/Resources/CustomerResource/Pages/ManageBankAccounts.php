@@ -1,17 +1,17 @@
 <?php
 
-namespace Webkul\Invoice\Filament\Clusters\Customer\Resources\PartnerResource\Pages;
+namespace Webkul\Invoice\Filament\Clusters\Customer\Resources\CustomerResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\PartnerResource;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\CustomerResource;
 use Webkul\Partner\Filament\Resources\BankAccountResource;
 
 class ManageBankAccounts extends ManageRelatedRecords
 {
-    protected static string $resource = PartnerResource::class;
+    protected static string $resource = CustomerResource::class;
 
     protected static string $relationship = 'bankAccounts';
 

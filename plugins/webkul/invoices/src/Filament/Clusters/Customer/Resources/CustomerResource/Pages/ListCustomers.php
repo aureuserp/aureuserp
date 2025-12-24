@@ -1,15 +1,15 @@
 <?php
 
-namespace Webkul\Invoice\Filament\Clusters\Customer\Resources\PartnerResource\Pages;
+namespace Webkul\Invoice\Filament\Clusters\Customer\Resources\CustomerResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Illuminate\Contracts\Support\Htmlable;
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\PartnerResource;
-use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ListVendors as BaseListPartners;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\CustomerResource;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ListVendors as BaseListCustomers;
 
-class ListPartners extends BaseListPartners
+class ListCustomers extends BaseListCustomers
 {
-    protected static string $resource = PartnerResource::class;
+    protected static string $resource = CustomerResource::class;
 
     public function getTitle(): string|Htmlable
     {
