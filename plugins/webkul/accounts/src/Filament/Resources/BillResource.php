@@ -827,6 +827,10 @@ class BillResource extends Resource
                                             ->alignCenter()
                                             ->toggleable(isToggledHiddenByDefault: true)
                                             ->label(__('accounts::filament/resources/bill.infolist.tabs.journal-items.repeater.entries.currency')),
+                                        InfolistTableColumn::make('date_maturity')
+                                            ->alignCenter()
+                                            ->toggleable(isToggledHiddenByDefault: true)
+                                            ->label(__('accounts::filament/resources/bill.infolist.tabs.journal-items.repeater.entries.due-date')),
                                         InfolistTableColumn::make('taxes')
                                             ->alignCenter()
                                             ->toggleable()
@@ -852,6 +856,9 @@ class BillResource extends Resource
                                         TextEntry::make('currency')
                                             ->placeholder('-')
                                             ->formatStateUsing(fn ($state) => $state['name'] ?? '-'),
+                                        TextEntry::make('date_maturity')
+                                            ->placeholder('-')
+                                            ->date(),
                                         TextEntry::make('taxes')
                                             ->badge()
                                             ->state(function ($record): array {

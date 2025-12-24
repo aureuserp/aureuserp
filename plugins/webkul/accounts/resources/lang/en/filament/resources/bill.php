@@ -255,6 +255,7 @@ return [
                         'account'  => 'Account',
                         'partner'  => 'Partner',
                         'label'    => 'Label',
+                        'due-date' => 'Due Date',
                         'currency' => 'Currency',
                         'taxes'    => 'Taxes',
                         'debit'    => 'Debit',

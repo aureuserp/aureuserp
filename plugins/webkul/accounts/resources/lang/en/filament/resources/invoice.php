@@ -271,6 +271,7 @@ return [
                         'partner'  => 'Partner',
                         'label'    => 'Label',
                         'currency' => 'Currency',
+                        'due-date' => 'Due Date',
                         'taxes'    => 'Taxes',
                         'debit'    => 'Debit',
                         'credit'   => 'Credit',
