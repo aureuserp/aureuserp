@@ -55,6 +55,7 @@ return [
 
         'filters' => [
             'company'                          => 'Company',
+            'journal'                          => 'Journal',
             'customer-bank-account'            => 'Customer Bank Account',
             'paired-internal-transfer-payment' => 'Paired Internal Transfer Payment',
             'payment-method'                   => 'Payment Method',

@@ -152,7 +152,7 @@ class JournalSeeder extends Seeder
                 'restrict_mode_hash_table' => false,
                 'refund_order'             => false,
                 'payment_order'            => false,
-                'show_on_dashboard'        => false,
+                'show_on_dashboard'        => true,
             ],
 
             [
@@ -179,7 +179,7 @@ class JournalSeeder extends Seeder
                 'restrict_mode_hash_table' => false,
                 'refund_order'             => false,
                 'payment_order'            => false,
-                'show_on_dashboard'        => false,
+                'show_on_dashboard'        => true,
             ],
         ];
 

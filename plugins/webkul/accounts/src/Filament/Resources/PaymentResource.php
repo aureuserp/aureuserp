@@ -333,6 +333,18 @@ class PaymentResource extends Resource
                 QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
+                        RelationshipConstraint::make('journal')
+                            ->label(__('accounts::filament/resources/payment.table.filters.journal'))
+                            ->icon('heroicon-o-book-open')
+                            ->multiple()
+                            ->selectable(
+                                IsRelatedToOperator::make()
+                                    ->titleAttribute('name')
+                                    ->label(__('accounts::filament/resources/payment.table.filters.journal'))
+                                    ->searchable()
+                                    ->multiple()
+                                    ->preload(),
+                            ),
                         RelationshipConstraint::make('company')
                             ->label(__('accounts::filament/resources/payment.table.filters.company'))
                             ->icon('heroicon-o-user')

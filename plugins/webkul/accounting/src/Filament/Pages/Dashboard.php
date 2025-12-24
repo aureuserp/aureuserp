@@ -3,6 +3,7 @@
 namespace Webkul\Accounting\Filament\Pages;
 
 use Filament\Pages\Page;
+use Webkul\Accounting\Filament\Widgets\JournalChartsWidget;
 
 class Dashboard extends Page
 {
@@ -11,5 +12,12 @@ class Dashboard extends Page
     public static function getNavigationGroup(): string
     {
         return __('accounting::filament/pages/dashboard.navigation.group');
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            JournalChartsWidget::class,
+        ];
     }
 }

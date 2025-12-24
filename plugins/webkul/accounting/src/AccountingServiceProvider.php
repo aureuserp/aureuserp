@@ -4,6 +4,8 @@ namespace Webkul\Accounting;
 
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
+use Livewire\Livewire;
+use Webkul\Accounting\Filament\Widgets\JournalChartWidget;
 use Webkul\Support\Console\Commands\InstallCommand;
 use Webkul\Support\Console\Commands\UninstallCommand;
 use Webkul\Support\Package;
@@ -32,6 +34,12 @@ class AccountingServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         $this->registerCustomCss();
+        $this->registerLivewireComponents();
+    }
+
+    public function registerLivewireComponents()
+    {
+        Livewire::component('accounting::journal-chart', JournalChartWidget::class);
     }
 
     public function registerCustomCss()
