@@ -1109,7 +1109,7 @@ class BillResource extends Resource
 
         $set('uom_id', $product->uom_id);
 
-        $priceUnit = static::calculateUnitPrice($get('uom_id'), $product->cost ?: $product->price);
+        $priceUnit = static::calculateUnitPrice($get('uom_id'), $product);
 
         $set('price_unit', round($priceUnit, 2));
 
@@ -1147,7 +1147,7 @@ class BillResource extends Resource
 
         $product = Product::find($get('product_id'));
 
-        $priceUnit = static::calculateUnitPrice($get('uom_id'), $product->cost ?: $product->price);
+        $priceUnit = static::calculateUnitPrice($get('uom_id'), $product);
 
         $set('price_unit', round($priceUnit, 2));
 
@@ -1165,15 +1165,17 @@ class BillResource extends Resource
         return (float) ($quantity ?? 0) / $uom->factor;
     }
 
-    private static function calculateUnitPrice($uomId, $price)
+    private static function calculateUnitPrice($uomId, $product)
     {
+        $price = $product->price ?? $product->cost;
+
         if (! $uomId) {
             return $price;
         }
 
-        $uom = Uom::find($uomId);
+        $uomQty = Uom::find($uomId)->computeQuantity(1, $product->uom, true, 'HALF-UP');
 
-        return (float) ($price / $uom->factor);
+        return (float) ($price * $uomQty);
     }
 
     private static function calculateLineTotals(Set $set, Get $get): void
