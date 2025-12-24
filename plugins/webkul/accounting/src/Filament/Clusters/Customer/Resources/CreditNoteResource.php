@@ -5,13 +5,13 @@ namespace Webkul\Accounting\Filament\Clusters\Customer\Resources;
 use Filament\Resources\Pages\Page;
 use Webkul\Account\Filament\Resources\CreditNoteResource as BaseCreditNoteResource;
 use Webkul\Accounting\Filament\Clusters\Customer;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNotesResource\Pages\CreateCreditNotes;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNotesResource\Pages\EditCreditNotes;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNotesResource\Pages\ListCreditNotes;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNotesResource\Pages\ViewCreditNote;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\CreateCreditNote;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\EditCreditNote;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ListCreditNotes;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ViewCreditNote;
 use Webkul\Accounting\Models\CreditNote;
 
-class CreditNotesResource extends BaseCreditNoteResource
+class CreditNoteResource extends BaseCreditNoteResource
 {
     protected static ?string $model = CreditNote::class;
 
@@ -40,7 +40,7 @@ class CreditNotesResource extends BaseCreditNoteResource
     {
         return $page->generateNavigationItems([
             ViewCreditNote::class,
-            EditCreditNotes::class,
+            EditCreditNote::class,
         ]);
     }
 
@@ -48,8 +48,8 @@ class CreditNotesResource extends BaseCreditNoteResource
     {
         return [
             'index'  => ListCreditNotes::route('/'),
-            'create' => CreateCreditNotes::route('/create'),
-            'edit'   => EditCreditNotes::route('/{record}/edit'),
+            'create' => CreateCreditNote::route('/create'),
+            'edit'   => EditCreditNote::route('/{record}/edit'),
             'view'   => ViewCreditNote::route('/{record}'),
         ];
     }

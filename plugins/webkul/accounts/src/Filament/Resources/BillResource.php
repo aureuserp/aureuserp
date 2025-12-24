@@ -49,9 +49,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Account as AccountFacade;
@@ -381,7 +383,8 @@ class BillResource extends Resource
                     ->label(__('accounts::filament/resources/bill.table.columns.bill-date'))
                     ->sortable(),
                 TextColumn::make('invoice_date_due')
-                    ->date()
+                    ->state(fn ($record) => $record->invoice_date_due?->diffForHumans())
+                    ->color(fn ($record) => $record->invoice_date_due?->isPast() ? 'danger' : null)
                     ->placeholder('-')
                     ->label(__('accounts::filament/resources/bill.table.columns.due-date'))
                     ->sortable(),
@@ -1371,6 +1374,9 @@ class BillResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
+            ->when(Str::contains(static::class, 'BillResource'), function (Builder $query) {
+                $query->where('move_type', MoveType::IN_INVOICE);
+            })
             ->orderByDesc('id');
     }
 }

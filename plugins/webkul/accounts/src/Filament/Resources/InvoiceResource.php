@@ -49,9 +49,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Account as AccountFacade;
@@ -406,7 +408,32 @@ class InvoiceResource extends Resource
                     ->label(__('accounts::filament/resources/invoice.table.columns.invoice-date'))
                     ->sortable(),
                 TextColumn::make('invoice_date_due')
-                    ->date()
+                    ->state(function ($record) {
+                        if (! $record->invoice_date_due) {
+                            return '-';
+                        }
+
+                        if ($record->invoice_date_due->isToday()) {
+                            return 'Today';
+                        }
+
+                        return $record->invoice_date_due->diffForHumans();
+                    })
+                    ->color(function ($record) {
+                        if (! $record->invoice_date_due) {
+                            return null;
+                        }
+
+                        if ($record->invoice_date_due->isToday()) {
+                            return 'warning';
+                        }
+
+                        if ($record->invoice_date_due->isPast()) {
+                            return 'danger';
+                        }
+
+                        return null;
+                    })
                     ->placeholder('-')
                     ->label(__('accounts::filament/resources/invoice.table.columns.due-date'))
                     ->sortable(),
@@ -1420,6 +1447,9 @@ class InvoiceResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
+            ->when(Str::contains(static::class, 'InvoiceResource'), function (Builder $query) {
+                $query->where('move_type', MoveType::OUT_INVOICE);
+            })
             ->orderByDesc('id');
     }
 }

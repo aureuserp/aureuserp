@@ -550,37 +550,19 @@ class Move extends Model implements Sortable
 
     public function computeInvoiceDateDue()
     {
-        $dateMaturity = now();
+        $today = now();
 
-        if ($this->invoicePaymentTerm) {
-            $dueTerm = $this->invoicePaymentTerm->dueTerm;
+        $neededTerms = $this->paymentTermLines->filter(function ($line) {
+            return $line->date_maturity !== null;
+        });
 
-            if ($dueTerm) {
-                switch ($dueTerm->delay_type) {
-                    case DelayType::DAYS_AFTER->value:
-                        $dateMaturity = $dateMaturity->addDays((int) $dueTerm->nb_days);
+        if ($neededTerms->isNotEmpty()) {
+            $maxDateMaturity = $neededTerms->max('date_maturity');
 
-                        break;
-
-                    case DelayType::DAYS_AFTER_END_OF_MONTH->value:
-                        $dateMaturity = $dateMaturity->endOfMonth()->addDays((int) $dueTerm->nb_days);
-
-                        break;
-
-                    case DelayType::DAYS_AFTER_END_OF_NEXT_MONTH->value:
-                        $dateMaturity = $dateMaturity->addMonth()->endOfMonth()->addDays((int) $dueTerm->days_next_month);
-
-                        break;
-
-                    case DelayType::DAYS_END_OF_MONTH_NO_THE->value:
-                        $dateMaturity = $dateMaturity->endOfMonth();
-
-                        break;
-                }
-            }
+            $this->invoice_date_due = $maxDateMaturity;
+        } elseif (! $this->invoice_date_due) {
+            $this->invoice_date_due = $today;
         }
-
-        $this->invoice_date_due = $dateMaturity;
     }
 
     public function computeJournalId()
