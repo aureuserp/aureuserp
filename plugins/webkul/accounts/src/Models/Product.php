@@ -4,6 +4,7 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Webkul\Account\Enums\AccountType;
+use Webkul\Account\Settings\DefaultAccountSettings;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
@@ -88,8 +89,8 @@ class Product extends BaseProduct
     public function getAccounts(): array
     {
         return [
-            'income'  => $this->propertyAccountIncome ?? $this->category?->propertyAccountIncome,
-            'expense' => $this->propertyAccountExpense ?? $this->category?->propertyAccountExpense,
+            'income'  => $this->propertyAccountIncome ?? $this->category?->propertyAccountIncome ?? app(DefaultAccountSettings::class)->income_account_id,
+            'expense' => $this->propertyAccountExpense ?? $this->category?->propertyAccountExpense ?? app(DefaultAccountSettings::class)->expense_account_id,
         ];
     }
 

@@ -591,12 +591,16 @@ class TaxManager
             $tax = $taxData['tax'];
 
             if ($taxData['is_reverse_charge']) {
-                $taxRepartitions = $tax->{$repartitionLinesField}->filter(fn ($x) => $x->repartition_type === 'tax' && $x->factor < 0.0
+                $taxRepartitions = $tax->{$repartitionLinesField}->filter(
+                    fn ($x) => $x->repartition_type === 'tax' && $x->factor < 0.0
                 );
+
                 $taxRepartitionSign = -1.0;
             } else {
-                $taxRepartitions = $tax->{$repartitionLinesField}->filter(fn ($x) => $x->repartition_type === 'tax' && $x->factor >= 0.0
+                $taxRepartitions = $tax->{$repartitionLinesField}->filter(
+                    fn ($x) => $x->repartition_type === 'tax' && $x->factor >= 0.0
                 );
+                
                 $taxRepartitionSign = 1.0;
             }
 

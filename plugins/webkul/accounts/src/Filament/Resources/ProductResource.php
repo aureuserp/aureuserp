@@ -21,6 +21,7 @@ use Webkul\Account\Filament\Resources\ProductResource\Pages\ViewProduct;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Product;
 use Webkul\Account\Models\Tax;
+use Webkul\Account\Settings\DefaultAccountSettings;
 use Webkul\Product\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Support\Models\UOM;
 
@@ -137,7 +138,7 @@ class ProductResource extends BaseProductResource
                     ->relationship('propertyAccountIncome', 'name')
                     ->preload()
                     ->searchable()
-                    ->default(fn () => Account::where('account_type', AccountType::INCOME->value)->first()?->id),
+                    ->default(fn (DefaultAccountSettings $settings) => $settings->income_account_id),
 
                 Select::make('property_account_expense_id')
                     ->label(__('accounts::filament/resources/category.form.fieldsets.account-properties.fields.expense-account'))
@@ -148,7 +149,7 @@ class ProductResource extends BaseProductResource
                     ->relationship('propertyAccountExpense', 'name')
                     ->preload()
                     ->searchable()
-                    ->default(fn () => Account::where('account_type', AccountType::EXPENSE->value)->first()?->id),
+                    ->default(fn (DefaultAccountSettings $settings) => $settings->expense_account_id),
             ]);
 
         $policyComponent = [

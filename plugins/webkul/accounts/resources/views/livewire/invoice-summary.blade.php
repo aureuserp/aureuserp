@@ -117,7 +117,7 @@
                         </div>
 
                         <span class="font-semibold">
-                            {{ $line['amount_company_currency'] }}
+                            {{ $line['amount_currency'] }}
                         </span>
                     </div>
                 @endforeach

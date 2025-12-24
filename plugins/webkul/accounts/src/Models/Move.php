@@ -947,8 +947,9 @@ class Move extends Model implements Sortable
                 'company_name' => $counterpartLine->journal->company_id != $this->company_id
                     ? $counterpartLine->journal->company->name
                     : false,
-                'amount'      => $reconciledPartial['amount'],
-                'currency_id' => $reconciledPartial['is_exchange']
+                'amount'                  => $reconciledPartial['amount'],
+                'amount_currency'         => money($reconciledPartial['amount'], $counterpartLine->currency->name),
+                'currency_id'             => $reconciledPartial['is_exchange']
                     ? $this->company->currency_id
                     : $reconciledPartial['currency']->id,
                 'date'                    => $counterpartLine->date,
