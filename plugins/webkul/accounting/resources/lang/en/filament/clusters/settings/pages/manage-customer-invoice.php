@@ -5,7 +5,7 @@ return [
 
     'form' => [
         'cash-rounding' => [
-            'label' => 'Cash Rounding',
+            'label'       => 'Cash Rounding',
             'helper-text' => 'Specify the lowest denomination of the currency accepted for cash payments.',
         ],
 

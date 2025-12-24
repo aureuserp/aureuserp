@@ -10,7 +10,7 @@ return [
         ],
 
         'reverse' => [
-            'label' => 'Refund',
+            'label'         => 'Refund',
             'modal-heading' => 'Create Refund',
         ],
     ],

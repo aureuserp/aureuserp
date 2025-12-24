@@ -5,7 +5,7 @@ return [
 
     'form' => [
         'default-taxes' => [
-            'label' => 'Default Taxes',
+            'label'       => 'Default Taxes',
             'helper-text' => 'Default will be applied on products if no tax is selected',
         ],
 
@@ -22,7 +22,7 @@ return [
         ],
 
         'rounding-method' => [
-            'label' => 'Rounding Method',
+            'label'       => 'Rounding Method',
             'helper-text' => 'Method used to round tax amounts',
 
             'options' => [

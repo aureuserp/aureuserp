@@ -10,7 +10,7 @@ return [
         ],
 
         'reverse' => [
-            'label' => 'Credit Note',
+            'label'         => 'Credit Note',
             'modal-heading' => 'Create Credit Note',
         ],
     ],

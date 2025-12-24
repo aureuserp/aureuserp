@@ -13,13 +13,13 @@ return [
                 'body'  => 'Bill has been deleted successfully.',
             ],
         ],
-        
+
         'preview' => [
             'modal-heading' => 'Preview Bill',
         ],
 
         'reverse' => [
-            'label' => 'Refund',
+            'label'         => 'Refund',
             'modal-heading' => 'Create Refund',
         ],
     ],

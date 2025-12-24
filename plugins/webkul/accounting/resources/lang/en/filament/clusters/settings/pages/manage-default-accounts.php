@@ -19,7 +19,7 @@ return [
                 'loss' => [
                     'label' => 'Loss',
                 ],
-            ]
+            ],
         ],
 
         'bank-transfer-and-payments' => [
@@ -33,7 +33,7 @@ return [
                 'transfer-account' => [
                     'label' => 'Transfer Account',
                 ],
-            ]
+            ],
         ],
 
         'product-accounts' => [
@@ -43,11 +43,11 @@ return [
                 'income-account' => [
                     'label' => 'Income Account',
                 ],
-                
+
                 'expense-account' => [
                     'label' => 'Expense Account',
                 ],
-            ]
+            ],
         ],
     ],
 ];

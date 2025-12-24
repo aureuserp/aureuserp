@@ -7,8 +7,8 @@ use Webkul\Accounting\Filament\Clusters\Configuration\Resources\CurrencyResource
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\CurrencyResource\Pages\EditCurrency;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\CurrencyResource\Pages\ListCurrencies;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\CurrencyResource\Pages\ViewCurrency;
-use Webkul\Support\Filament\Resources\CurrencyResource as BaseCurrencyResource;
 use Webkul\Accounting\Models\Currency;
+use Webkul\Support\Filament\Resources\CurrencyResource as BaseCurrencyResource;
 
 class CurrencyResource extends BaseCurrencyResource
 {

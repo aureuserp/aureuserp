@@ -5,7 +5,6 @@ namespace Webkul\Account\Filament\Resources\InvoiceResource\Actions;
 use Filament\Actions\Action;
 use Livewire\Component;
 use Webkul\Account\Enums\MoveState;
-use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Move;
 

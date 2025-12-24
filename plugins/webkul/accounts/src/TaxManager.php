@@ -600,7 +600,7 @@ class TaxManager
                 $taxRepartitions = $tax->{$repartitionLinesField}->filter(
                     fn ($x) => $x->repartition_type === 'tax' && $x->factor >= 0.0
                 );
-                
+
                 $taxRepartitionSign = 1.0;
             }
 

@@ -233,9 +233,9 @@ class RoleResource extends RolesRoleResource
                                         return [
                                             Fieldset::make($fieldsetLabel)
                                                 ->schema([
-                                                    $checkbox->hiddenLabel()
+                                                    $checkbox->hiddenLabel(),
                                                 ])
-                                                ->columnSpan(static::shield()->getSectionColumnSpan())
+                                                ->columnSpan(static::shield()->getSectionColumnSpan()),
                                         ];
                                     })
                                     ->toArray();

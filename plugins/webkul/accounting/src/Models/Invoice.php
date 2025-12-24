@@ -3,7 +3,6 @@
 namespace Webkul\Accounting\Models;
 
 use Webkul\Account\Models\Move as BaseMove;
-use Webkul\Account\Models\MoveLine;
 
 class Invoice extends BaseMove
 {
