@@ -1220,9 +1220,9 @@ class OrderResource extends Resource
             return $vendorPrice;
         }
 
-        $uom = Uom::find($get('uom_id'));
+        $uomQty = Uom::find($get('uom_id'))->computeQuantity(1, $product->uom, true, 'HALF-UP');
 
-        return (float) ($vendorPrice / $uom->factor);
+        return (float) ($vendorPrice * $uomQty);
     }
 
     private static function getBestPackaging($productId, $quantity)
