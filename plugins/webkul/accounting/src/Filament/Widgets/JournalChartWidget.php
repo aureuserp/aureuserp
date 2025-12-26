@@ -51,7 +51,7 @@ class JournalChartWidget extends Component
                 ],
                 'unpaid' => [
                     'label' => 'Unpaid',
-                    'url'   => $this->getUrl('index', ['activeTableView' => 'to_pay']),
+                    'url'   => $this->getUrl('index', ['activeTableView' => 'unpaid']),
                     'value' => (clone $baseQuery)
                         ->where('state', MoveState::POSTED)
                         ->whereNotIn('payment_state', [PaymentState::PAID, PaymentState::IN_PAYMENT])

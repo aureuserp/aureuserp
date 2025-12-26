@@ -53,6 +53,15 @@ class ListInvoices extends ListRecords
                             PaymentState::PARTIAL,
                         ]);
                 }),
+            'unpaid' => PresetView::make(__('accounts::filament/resources/invoice/pages/list-invoice.tabs.unpaid'))
+                ->icon('heroicon-s-banknotes')
+                ->modifyQueryUsing(function (Builder $query) {
+                    $query->where('state', MoveState::POSTED)
+                        ->whereNotIn('payment_state', [
+                            PaymentState::NOT_PAID,
+                            PaymentState::IN_PAYMENT,
+                        ]);
+                }),
             'in_payment' => PresetView::make(__('accounts::filament/resources/invoice/pages/list-invoice.tabs.in-payment'))
                 ->icon('heroicon-s-banknotes')
                 ->modifyQueryUsing(function (Builder $query) {
