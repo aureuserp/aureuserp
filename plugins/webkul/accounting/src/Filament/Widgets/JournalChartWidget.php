@@ -63,14 +63,14 @@ class JournalChartWidget extends Component
                     'url'   => $this->getUrl('index', ['activeTableView' => 'overdue']),
                     'value' => (clone $baseQuery)
                         ->where('state', MoveState::POSTED)
-                        ->where('invoice_date_due', '<', now())
-                        ->whereNot('payment_state', PaymentState::PAID)
+                        ->where('payment_state', PaymentState::NOT_PAID)
+                        ->where('invoice_date_due', '<', today())
                         ->count(),
                     'amount' => $amount = (clone $baseQuery)
                         ->where('state', MoveState::POSTED)
-                        ->where('invoice_date_due', '<', now())
-                        ->whereNot('payment_state', PaymentState::PAID)
-                        ->sum('amount_total'),
+                        ->where('payment_state', PaymentState::NOT_PAID)
+                        ->where('invoice_date_due', '<', today())
+                        ->sum('amount_residual'),
                     'formatted_amount' => money($amount),
                 ],
                 'to_pay' => [
@@ -83,7 +83,7 @@ class JournalChartWidget extends Component
                     'amount' => $amount = (clone $baseQuery)
                         ->where('state', MoveState::POSTED)
                         ->whereIn('payment_state', [PaymentState::NOT_PAID, PaymentState::PARTIAL])
-                        ->sum('amount_total'),
+                        ->sum('amount_residual'),
                     'formatted_amount' => money($amount),
                 ],
             ];
@@ -101,14 +101,14 @@ class JournalChartWidget extends Component
                     'url'   => $this->getUrl('index', ['activeTableView' => 'overdue']),
                     'value' => (clone $baseQuery)
                         ->where('state', MoveState::POSTED)
-                        ->where('invoice_date_due', '<', now())
-                        ->whereNot('payment_state', PaymentState::PAID)
+                        ->where('payment_state', PaymentState::NOT_PAID)
+                        ->where('invoice_date_due', '<', today())
                         ->count(),
                     'amount' => $amount = (clone $baseQuery)
                         ->where('state', MoveState::POSTED)
-                        ->where('invoice_date_due', '<', now())
-                        ->whereNot('payment_state', PaymentState::PAID)
-                        ->sum('amount_total'),
+                        ->where('payment_state', PaymentState::NOT_PAID)
+                        ->where('invoice_date_due', '<', today())
+                        ->sum('amount_residual'),
                     'formatted_amount' => money($amount),
                 ],
                 'to_pay' => [
@@ -121,7 +121,7 @@ class JournalChartWidget extends Component
                     'amount' => $amount = (clone $baseQuery)
                         ->where('state', MoveState::POSTED)
                         ->whereIn('payment_state', [PaymentState::NOT_PAID, PaymentState::PARTIAL])
-                        ->sum('amount_total'),
+                        ->sum('amount_residual'),
                     'formatted_amount' => money($amount),
                 ],
             ];
@@ -150,16 +150,8 @@ class JournalChartWidget extends Component
             ];
         }
 
-        // Checks (sequence holes, unhashed entries, etc.)
-        $data['checks'] = [
-            'has_sequence_holes' => $this->hasSequenceHoles(),
-            'has_unhashed_entries' => $this->hasUnhashedEntries(),
-        ];
-
-        // Actions (create, reconcile, etc.)
         $data['actions'] = $this->getActions();
 
-        // Graph
         $data['graph'] = $this->getChartData();
 
         return $data;
@@ -176,18 +168,6 @@ class JournalChartWidget extends Component
         } else {
             return PaymentResource::getUrl($name, $parameters);
         }
-    }
-
-    private function hasSequenceHoles(): bool
-    {
-        // TODO: Implement logic to check for sequence holes in journal entries
-        return false;
-    }
-
-    private function hasUnhashedEntries(): bool
-    {
-        // TODO: Implement logic to check for unhashed entries in journal
-        return false;
     }
 
     private function getActions(): array
@@ -220,41 +200,104 @@ class JournalChartWidget extends Component
 
     public function getChartData(): array
     {
-        $months = collect();
-        for ($i = 11; $i >= 0; $i--) {
-            $date = Carbon::now()->subMonths($i);
-            $months->push([
-                'month'      => $date->format('Y-m'),
-                'label'      => $date->format('M Y'),
-                'start_date' => $date->startOfMonth()->toDateString(),
-                'end_date'   => $date->endOfMonth()->toDateString(),
-            ]);
+        $now = Carbon::now();
+        
+        $thisWeekStart = $now->copy()->startOfWeek(Carbon::SUNDAY);
+        $thisWeekEnd = $now->copy()->endOfWeek(Carbon::SATURDAY);
+        
+        $prevWeekStart = $thisWeekStart->copy()->subWeek();
+        $prevWeekEnd = $thisWeekEnd->copy()->subWeek();
+        
+        $nextWeekStart = $thisWeekStart->copy()->addWeek();
+        $nextWeekEnd = $thisWeekEnd->copy()->addWeek();
+        
+        $nextToNextWeekStart = $thisWeekStart->copy()->addWeeks(2);
+        $nextToNextWeekEnd = $thisWeekEnd->copy()->addWeeks(2);
+
+        $labels = [
+            'Due',
+            $prevWeekStart->format('d M') . ' - ' . $prevWeekEnd->format('d M'),
+            'This Week',
+            $nextWeekStart->format('d M') . ' - ' . $nextWeekEnd->format('d M'),
+            $nextToNextWeekStart->format('d M') . ' - ' . $nextToNextWeekEnd->format('d M'),
+            'Not Due',
+        ];
+
+        $invoices = Move::query()
+            ->where('journal_id', $this->journal->id)
+            ->where('state', 'posted')
+            ->whereIn('payment_state', ['not_paid', 'partial'])
+            ->where('amount_residual', '>', 0)
+            ->get();
+
+        $lateData = [0, 0, 0, 0, 0, 0];
+        $onTimeData = [0, 0, 0, 0, 0, 0];
+
+        $today = $now->copy()->startOfDay();
+        
+        foreach ($invoices as $invoice) {
+            $dueDate = Carbon::parse($invoice->invoice_date_due);
+            $residual = (float) $invoice->amount_residual;
+            $isLate = $dueDate->lt($today);
+
+            if ($isLate) {
+                $lateData[0] += $residual;
+            }
+            
+            if (!$isLate) {
+                $onTimeData[5] += $residual;
+            }
+
+            if ($dueDate->between($prevWeekStart, $prevWeekEnd, true)) {
+                if ($isLate) {
+                    $lateData[1] += $residual;
+                } else {
+                    $onTimeData[1] += $residual;
+                }
+            } elseif ($dueDate->between($thisWeekStart, $thisWeekEnd, true)) {
+                if ($isLate) {
+                    $lateData[2] += $residual;
+                } else {
+                    $onTimeData[2] += $residual;
+                }
+            } elseif ($dueDate->between($nextWeekStart, $nextWeekEnd, true)) {
+                $onTimeData[3] += $residual;
+            } elseif ($dueDate->between($nextToNextWeekStart, $nextToNextWeekEnd, true)) {
+                $onTimeData[4] += $residual;
+            }
         }
-        $data = $months->map(function ($month) {
-            $total = Move::where('journal_id', $this->journal->id)
-                ->where('state', 'posted')
-                ->whereBetween('invoice_date', [$month['start_date'], $month['end_date']])
-                ->sum('amount_total');
-            return [
-                'label' => $month['label'],
-                'value' => (float) $total,
-            ];
-        });
-        $color = $this->journalColor ?? '#3b82f6';
-        if (! str_starts_with($color, '#')) {
-            $color = '#3b82f6';
-        }
+
         $type = $this->journal->type;
         $graphType = in_array($type, [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD]) ? 'line' : 'bar';
+        
         return [
             'type'     => $graphType,
-            'labels'   => $data->pluck('label')->toArray(),
+            'labels'   => $labels,
             'datasets' => [
                 [
-                    'label'           => $this->journal->name,
-                    'data'            => $data->pluck('value')->toArray(),
-                    'backgroundColor' => $color,
-                    'borderColor'     => $color,
+                    'label'           => 'Overdue',
+                    'data'            => $lateData,
+                    'backgroundColor' => '#ef4444',
+                    'borderColor'     => '#ef4444',
+                    'stack'           => 'stack0',
+                ],
+                [
+                    'label'           => 'On Time',
+                    'data'            => $onTimeData,
+                    'backgroundColor' => '#22c55e',
+                    'borderColor'     => '#22c55e',
+                    'stack'           => 'stack0',
+                ],
+            ],
+            'options' => [
+                'scales' => [
+                    'x' => [
+                        'stacked' => true,
+                    ],
+                    'y' => [
+                        'stacked' => true,
+                        'beginAtZero' => true,
+                    ],
                 ],
             ],
         ];
