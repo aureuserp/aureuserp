@@ -97,10 +97,6 @@ class BalanceSheet extends Page implements HasForms
         $companyId = Auth::user()->default_company_id;
         $journalIds = $this->data['journals'] ?? [];
 
-        if (! $companyId) {
-            return [];
-        }
-
         $query = MoveLine::query()
             ->select([
                 'accounts_account_move_lines.account_id',

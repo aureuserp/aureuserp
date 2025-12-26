@@ -9,40 +9,44 @@
                 $data = $this->generalLedgerData;
             @endphp
             
-            @if(!empty($data))
-                {{-- General Ledger Table --}}
-                <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-white/5!">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-white/5!">
-                        <colgroup>
-                            <col style="width: 50px;">
-                            <col style="min-width: 250px;">
-                            <col style="width: 120px;">
-                            <col style="width: 180px;">
-                            <col style="width: 180px;">
-                            <col style="width: 120px; min-width: 120px;">
-                            <col style="width: 120px; min-width: 120px;">
-                            <col style="width: 120px; min-width: 120px;">
-                        </colgroup>
+            <x-slot name="heading">
+                General Ledger - From {{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }} to {{ \Carbon\Carbon::parse($data['date_to'])->format('M d, Y') }}
+            </x-slot>
+            
+            {{-- General Ledger Table --}}
+            <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-white/5!">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-white/5!">
+                    <colgroup>
+                        <col style="width: 50px;">
+                        <col style="min-width: 250px;">
+                        <col style="width: 120px;">
+                        <col style="width: 180px;">
+                        <col style="width: 180px;">
+                        <col style="width: 120px; min-width: 120px;">
+                        <col style="width: 120px; min-width: 120px;">
+                        <col style="width: 120px; min-width: 120px;">
+                    </colgroup>
 
-                        <thead class="bg-gray-50/50 dark:bg-white/5">
-                            <tr>
-                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400"></th>
-                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Account</th>
-                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Date</th>
-                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Communication</th>
-                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Partner</th>
-                                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Debit</th>
-                                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Credit</th>
-                                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Balance</th>
-                            </tr>
-                        </thead>
-                        
-                        <tbody class="divide-y divide-gray-200 dark:divide-white/5!">
-                            @php
-                                $totalDebit = 0;
-                                $totalCredit = 0;
-                            @endphp
+                    <thead class="bg-gray-50/50 dark:bg-white/5">
+                        <tr>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400"></th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Account</th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Date</th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Communication</th>
+                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Partner</th>
+                            <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Debit</th>
+                            <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Credit</th>
+                            <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Balance</th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody class="divide-y divide-gray-200 dark:divide-white/5!">
+                        @php
+                            $totalDebit = 0;
+                            $totalCredit = 0;
+                        @endphp
 
+                        @if($data['accounts']->isNotEmpty())
                             @foreach($data['accounts'] as $account)
                                 @php
                                     $totalDebit += $account->period_debit;
@@ -63,19 +67,27 @@
                                             </div>
                                         </td>
                                         <td class="px-4 py-3 whitespace-nowrap">
-                                            <span class="font-medium text-gray-900 dark:text-white">{{ $account->code }} {{ $account->name }}</span>
+                                            <span class="font-medium text-gray-900 dark:text-white">
+                                                {{ $account->code }} {{ $account->name }}
+                                            </span>
                                         </td>
                                         <td class="px-4 py-3"></td>
                                         <td class="px-4 py-3"></td>
                                         <td class="px-4 py-3"></td>
                                         <td class="px-4 py-3 text-right whitespace-nowrap">
-                                            <span class="text-gray-900 dark:text-white">{{ number_format($account->period_debit, 2) }}</span>
+                                            <span class="text-gray-900 dark:text-white">
+                                                {{ number_format($account->period_debit, 2) }}
+                                            </span>
                                         </td>
                                         <td class="px-4 py-3 text-right whitespace-nowrap">
-                                            <span class="text-gray-900 dark:text-white">{{ number_format($account->period_credit, 2) }}</span>
+                                            <span class="text-gray-900 dark:text-white">
+                                                {{ number_format($account->period_credit, 2) }}
+                                            </span>
                                         </td>
                                         <td class="px-4 py-3 text-right whitespace-nowrap font-semibold">
-                                            <span class="text-gray-900 dark:text-white">{{ number_format($account->ending_balance, 2) }}</span>
+                                            <span class="text-gray-900 dark:text-white">
+                                                {{ number_format($account->ending_balance, 2) }}
+                                            </span>
                                         </td>
                                     </tr>
 
@@ -84,7 +96,9 @@
                                         <tr x-show="expanded" x-cloak class="bg-white dark:bg-gray-900">
                                             <td class="px-4 py-2"></td>
                                             <td class="px-4 py-2 pl-8 whitespace-nowrap text-sm">
-                                                <span class="italic text-gray-600 dark:text-gray-400">Opening Balance</span>
+                                                <span class="italic text-gray-600 dark:text-gray-400">
+                                                    Opening Balance
+                                                </span>
                                             </td>
                                             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                                                 {{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }}
@@ -108,11 +122,10 @@
                                     @endif
 
                                     @php
-                                        $moves = $this->getAccountMoves($account->id);
                                         $runningBalance = $account->opening_balance;
                                     @endphp
 
-                                    @foreach($moves as $move)
+                                    @foreach($this->getAccountMoves($account->id) as $move)
                                         @php
                                             $runningBalance += ($move['debit'] - $move['credit']);
                                         @endphp
@@ -121,8 +134,11 @@
                                             <td class="px-4 py-2"></td>
                                             <td class="px-4 py-2 pl-8 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                                                 {{ $move['move_name'] }}
+
                                                 @if($move['ref'])
-                                                    <span class="text-xs text-gray-500 dark:text-gray-500">({{ $move['ref'] }})</span>
+                                                    <span class="text-xs text-gray-500 dark:text-gray-500">
+                                                        ({{ $move['ref'] }})
+                                                    </span>
                                                 @endif
                                             </td>
                                             <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
@@ -133,7 +149,9 @@
                                                     {{ $move['name'] }}
                                                 @endif
                                             </td>
-                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">{{ $move['partner_name'] }}</td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                                                {{ $move['partner_name'] }}
+                                            </td>
                                             <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
                                                 <span class="text-gray-600 dark:text-gray-400">
                                                     {{ $move['debit'] > 0 ? number_format($move['debit'], 2) : '' }}
@@ -145,7 +163,9 @@
                                                 </span>
                                             </td>
                                             <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
-                                                <span class="font-medium text-gray-600 dark:text-gray-400">{{ number_format($runningBalance, 2) }}</span>
+                                                <span class="font-medium text-gray-600 dark:text-gray-400">
+                                                    {{ number_format($runningBalance, 2) }}
+                                                </span>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -156,21 +176,33 @@
                                 {{-- Total Row --}}
                                 <tr class="bg-gray-100/80 dark:bg-white/5 font-semibold border-t-2 border-gray-300 dark:border-white/5!">
                                     <td class="px-4 py-3"></td>
-                                    <td class="px-4 py-3 text-gray-900 dark:text-white">Total General Ledger</td>
+                                    <td class="px-4 py-3 text-gray-900 dark:text-white">
+                                        Total General Ledger
+                                    </td>
                                     <td class="px-4 py-3"></td>
                                     <td class="px-4 py-3"></td>
                                     <td class="px-4 py-3"></td>
-                                    <td class="px-4 py-3 text-right whitespace-nowrap text-gray-900 dark:text-white">{{ number_format($totalDebit, 2) }}</td>
-                                    <td class="px-4 py-3 text-right whitespace-nowrap text-gray-900 dark:text-white">{{ number_format($totalCredit, 2) }}</td>
+                                    <td class="px-4 py-3 text-right whitespace-nowrap text-gray-900 dark:text-white">
+                                        {{ number_format($totalDebit, 2) }}
+                                    </td>
+                                    <td class="px-4 py-3 text-right whitespace-nowrap text-gray-900 dark:text-white">
+                                        {{ number_format($totalCredit, 2) }}
+                                    </td>
                                     <td class="px-4 py-3"></td>
                                 </tr>
                             </tbody>
-                        </tbody>
-                    </table>
-                </div>
-            @else
-                <p class="text-gray-500 dark:text-gray-400">No data available for the selected filters.</p>
-            @endif
+                        @else
+                            <tbody>
+                                <tr>
+                                    <td colspan="9" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                                        No accounts with transactions in this period
+                                    </td>
+                                </tr>
+                            </tbody>
+                        @endif
+                    </tbody>
+                </table>
+            </div>
         </x-filament::section>
     </div>
 </x-filament-panels::page>

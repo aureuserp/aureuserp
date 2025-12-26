@@ -96,10 +96,6 @@ class TrialBalance extends Page implements HasForms
         $companyId = Auth::user()->default_company_id;
         $journalIds = $this->data['journals'] ?? [];
 
-        if (! $companyId) {
-            return [];
-        }
-
         $accountsQuery = Account::select(
             'accounts_accounts.id',
             'accounts_accounts.code',

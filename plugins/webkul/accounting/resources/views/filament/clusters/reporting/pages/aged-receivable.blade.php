@@ -13,19 +13,15 @@
         @endphp
 
         <x-filament::section>
+            <x-slot name="heading">
+                Aged Receivable - As of {{ $asOfDate->format('m/d/Y') }}
+            </x-slot>
+            
             @if($hasUnposted)
-                <div class="mt-4 p-4 bg-warning-50 border border-warning-200 rounded-lg dark:bg-warning-900/20 dark:border-warning-800">
-                    <p class="text-sm text-warning-800 dark:text-warning-300">
-                        There are unposted Journal Entries prior or included in this period.
-                    </p>
-                </div>
+                <x-filament::badge color="warning" size="xl" class="mb-4 px-4 py-2 w-full justify-start text-sm!">
+                    There are unposted Journal Entries prior or included in this period.
+                </x-filament::badge>
             @endif
-
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
-                    Aged Receivable - As of {{ $asOfDate->format('m/d/Y') }}
-                </h2>
-            </div>
 
             @if(empty($partners))
                 <div class="p-8 text-center text-gray-500 dark:text-gray-400">
@@ -106,7 +102,9 @@
                                             </div>
                                         </td>
                                         <td class="px-4 py-3 whitespace-nowrap">
-                                            <span class="font-medium text-gray-900 dark:text-white">{{ $partner['partner_name'] }}</span>
+                                            <span class="font-medium text-gray-900 dark:text-white">
+                                                {{ $partner['partner_name'] }}
+                                            </span>
                                         </td>
                                         <td class="px-4 py-3"></td>
                                         <td class="px-4 py-3 text-right whitespace-nowrap">
@@ -206,7 +204,9 @@
                                 {{-- Totals Row --}}
                                 <tr class="bg-gray-100/80 dark:bg-white/5 font-semibold border-t-2 border-gray-300 dark:border-white/5!">
                                     <td class="px-4 py-3"></td>
-                                    <td class="px-4 py-3 text-gray-900 dark:text-white">Total Aged Receivable</td>
+                                    <td class="px-4 py-3 text-gray-900 dark:text-white">
+                                        Total Aged Receivable
+                                    </td>
                                     <td class="px-4 py-3"></td>
                                     <td class="px-4 py-3 text-right whitespace-nowrap">
                                         <span class="{{ $totals['at_date'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">

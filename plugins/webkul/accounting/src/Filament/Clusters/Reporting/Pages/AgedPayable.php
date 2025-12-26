@@ -175,8 +175,10 @@ class AgedPayable extends Page implements HasForms
             ->get();
 
         $partnerData = [];
+        
         foreach ($moveLines as $line) {
             $partnerId = $line->partner_id;
+            
             if (! isset($partnerData[$partnerId])) {
                 $partnerData[$partnerId] = [
                     'partner_name' => $line->partner_name,

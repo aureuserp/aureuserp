@@ -49,7 +49,7 @@ class PartnerLedger extends Page implements HasForms
             Section::make()
                 ->columns([
                     'default' => 1,
-                    'sm'      => 2,
+                    'sm'      => 3,
                 ])
                 ->schema([
                     DateRangePicker::make('date_range')
@@ -67,6 +67,14 @@ class PartnerLedger extends Page implements HasForms
                             'Last Year'    => [now()->subYear()->startOfYear(), now()->subYear()->endOfYear()],
                         ])
                         ->alwaysShowCalendar()
+                        ->live()
+                        ->afterStateUpdated(fn () => null),
+
+                    Select::make('partners')
+                        ->label('Partners')
+                        ->multiple()
+                        ->options(Partner::pluck('name', 'id'))
+                        ->searchable()
                         ->live()
                         ->afterStateUpdated(fn () => null),
 
@@ -94,6 +102,7 @@ class PartnerLedger extends Page implements HasForms
         $dateFrom = $dateRange ? Carbon::parse($dateRange[0]) : now()->startOfYear();
         $dateTo = $dateRange ? Carbon::parse($dateRange[1]) : now();
 
+        $partnerIds = $this->form->getState()['partners'] ?? [];
         $journalIds = $this->form->getState()['journals'] ?? [];
         $companyId = Auth::user()->default_company_id;
 
@@ -117,14 +126,16 @@ class PartnerLedger extends Page implements HasForms
             ->havingRaw('(COALESCE(SUM(CASE WHEN accounts_account_moves.date <= ? THEN ABS(accounts_account_move_lines.debit) ELSE 0 END), 0) + COALESCE(SUM(CASE WHEN accounts_account_moves.date <= ? THEN ABS(accounts_account_move_lines.credit) ELSE 0 END), 0)) > 0', [$dateTo, $dateTo])
             ->orderBy('partners_partners.name');
 
+        if (! empty($partnerIds)) {
+            $partnersQuery->whereIn('partners_partners.id', $partnerIds);
+        }
+
         if (! empty($journalIds)) {
             $partnersQuery->whereIn('accounts_account_moves.journal_id', $journalIds);
         }
 
-        $partners = $partnersQuery->get();
-
         return [
-            'partners'  => $partners,
+            'partners'  => $partnersQuery->get(),
             'date_from' => $dateFrom,
             'date_to'   => $dateTo,
         ];

@@ -153,6 +153,7 @@ class InvoiceResource extends Resource
                                                 'name',
                                                 fn (Builder $query) => $query->where('sub_type', 'customer')->orderBy('id')->withTrashed(),
                                             )
+                                            ->required()
                                             ->searchable()
                                             ->preload()
                                             ->live()

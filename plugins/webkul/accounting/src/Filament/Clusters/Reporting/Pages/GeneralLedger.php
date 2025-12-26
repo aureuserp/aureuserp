@@ -123,10 +123,8 @@ class GeneralLedger extends Page implements HasForms
             $accountsQuery->whereIn('accounts_account_moves.journal_id', $journalIds);
         }
 
-        $accounts = $accountsQuery->get();
-
         return [
-            'accounts'  => $accounts,
+            'accounts'  => $accountsQuery->get(),
             'date_from' => $dateFrom,
             'date_to'   => $dateTo,
         ];

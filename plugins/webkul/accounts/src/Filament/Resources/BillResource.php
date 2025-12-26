@@ -152,6 +152,7 @@ class BillResource extends Resource
                                                 'name',
                                                 fn ($query) => $query->where('sub_type', 'supplier')->orderBy('id'),
                                             )
+                                            ->required()
                                             ->searchable()
                                             ->preload()
                                             ->live()
@@ -175,6 +176,7 @@ class BillResource extends Resource
                                         DatePicker::make('invoice_date')
                                             ->label(__('accounts::filament/resources/bill.form.section.general.fields.bill-date'))
                                             ->native(false)
+                                            ->required()
                                             ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
                                         DatePicker::make('date')
                                             ->label(__('accounts::filament/resources/bill.form.section.general.fields.accounting-date'))
