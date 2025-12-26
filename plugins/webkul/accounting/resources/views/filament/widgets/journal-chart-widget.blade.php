@@ -66,7 +66,7 @@
             const chartData = @js($this->getChartData());
             
             ctx.chart = new Chart(ctx, {
-                type: 'bar',
+                type: chartData.type,
                 data: chartData,
                 options: {
                     responsive: true,

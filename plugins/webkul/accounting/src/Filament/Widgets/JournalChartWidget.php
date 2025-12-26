@@ -13,7 +13,6 @@ use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\PaymentResource;
 
-
 class JournalChartWidget extends Component
 {
     public ?object $journal = null;
@@ -27,11 +26,12 @@ class JournalChartWidget extends Component
     {
         $type = $this->journal->type;
         $baseQuery = Move::where('journal_id', $this->journal->id);
+
         $data = [
-            'stats' => [],
-            'checks' => [],
+            'stats'   => [],
+            'checks'  => [],
             'actions' => [],
-            'graph' => [],
+            'graph'   => [],
         ];
 
         if ($type === JournalType::SALE) {
@@ -55,7 +55,7 @@ class JournalChartWidget extends Component
                         ->where('state', MoveState::POSTED)
                         ->where('amount_residual', '>', 0)
                         ->whereNotIn('payment_state', [PaymentState::PAID, PaymentState::IN_PAYMENT])
-                        ->sum('amount_total'),
+                        ->sum('amount_residual'),
                     'formatted_amount' => money($amount),
                 ],
                 'late' => [
@@ -125,7 +125,7 @@ class JournalChartWidget extends Component
                     'formatted_amount' => money($amount),
                 ],
             ];
-        } elseif ($type == JournalType::GENERAL) {
+        } elseif ($type === JournalType::GENERAL) {
             $data['stats'] = [
                 'entries_count' => [
                     'label' => 'Entries',
@@ -136,11 +136,7 @@ class JournalChartWidget extends Component
             $data['stats'] = [
                 'payments' => [
                     'label' => 'Payments',
-                    'url'   => $this->getUrl('index', [
-                        'filters[queryBuilder][rules][89kL][type]' => 'journal',
-                        'filters[queryBuilder][rules][89kL][data][operator]' => 'isRelatedTo',
-                        'filters[queryBuilder][rules][89kL][data][settings][values][0]' => $this->journal->id,
-                    ]),
+                    'url'   => $this->getUrl('index'),
                     'value' => null,
                     'amount' => $amount = (clone $baseQuery)
                         ->where('state', MoveState::POSTED)
@@ -151,153 +147,130 @@ class JournalChartWidget extends Component
         }
 
         $data['actions'] = $this->getActions();
-
-        $data['graph'] = $this->getChartData();
+        $data['graph']   = $this->getChartData();
 
         return $data;
     }
 
     private function getUrl(string $name, array $parameters = []): ?string
     {
-        if ($this->journal->type == JournalType::SALE) {
-            return InvoiceResource::getUrl($name, $parameters);
-        } elseif ($this->journal->type == JournalType::PURCHASE) {
-            return BillResource::getUrl($name, $parameters);
-        } elseif ($this->journal->type == JournalType::GENERAL) {
-            return JournalEntryResource::getUrl($name, $parameters);
-        } else {
-            return PaymentResource::getUrl($name, $parameters);
-        }
+        return match ($this->journal->type) {
+            JournalType::SALE     => InvoiceResource::getUrl($name, $parameters),
+            JournalType::PURCHASE => BillResource::getUrl($name, $parameters),
+            JournalType::GENERAL  => JournalEntryResource::getUrl($name, $parameters),
+            default               => PaymentResource::getUrl($name, $parameters),
+        };
     }
 
     private function getActions(): array
     {
-        $type = $this->journal->type;
-        $actions = [];
-        if ($type == JournalType::GENERAL) {
-            $actions[] = [
-                'label' => 'New Entry',
-                'url' => $this->getUrl('create'),
-            ];
-        } elseif ($type == JournalType::SALE) {
-            $actions[] = [
-                'label' => 'New Invoice',
-                'url' => $this->getUrl('create'),
-            ];
-        } elseif ($type == JournalType::PURCHASE) {
-            $actions[] = [
-                'label' => 'New Bill',
-                'url' => $this->getUrl('create'),
-            ];
-        } else {
-            $actions[] = [
-                'label' => 'New Payment',
-                'url' => $this->getUrl('create'),
-            ];
-        }
-        return $actions;
+        return match ($this->journal->type) {
+            JournalType::GENERAL  => [['label' => 'New Entry',   'url' => $this->getUrl('create')]],
+            JournalType::SALE     => [['label' => 'New Invoice', 'url' => $this->getUrl('create')]],
+            JournalType::PURCHASE => [['label' => 'New Bill',    'url' => $this->getUrl('create')]],
+            default               => [['label' => 'New Payment', 'url' => $this->getUrl('create')]],
+        };
     }
 
     public function getChartData(): array
     {
-        $now = Carbon::now();
-        
-        $thisWeekStart = $now->copy()->startOfWeek(Carbon::SUNDAY);
-        $thisWeekEnd = $now->copy()->endOfWeek(Carbon::SATURDAY);
-        
-        $prevWeekStart = $thisWeekStart->copy()->subWeek();
-        $prevWeekEnd = $thisWeekEnd->copy()->subWeek();
-        
-        $nextWeekStart = $thisWeekStart->copy()->addWeek();
-        $nextWeekEnd = $thisWeekEnd->copy()->addWeek();
-        
-        $nextToNextWeekStart = $thisWeekStart->copy()->addWeeks(2);
-        $nextToNextWeekEnd = $thisWeekEnd->copy()->addWeeks(2);
+        return $this->isLiquidityJournal()
+            ? $this->getLiquidityChartData()
+            : $this->getInvoiceChartData();
+    }
 
-        $labels = [
-            'Due',
-            $prevWeekStart->format('d M') . ' - ' . $prevWeekEnd->format('d M'),
-            'This Week',
-            $nextWeekStart->format('d M') . ' - ' . $nextWeekEnd->format('d M'),
-            $nextToNextWeekStart->format('d M') . ' - ' . $nextToNextWeekEnd->format('d M'),
-            'Not Due',
-        ];
+    private function isLiquidityJournal(): bool
+    {
+        return in_array($this->journal->type, [
+            JournalType::BANK,
+            JournalType::CASH,
+            JournalType::CREDIT_CARD,
+        ]);
+    }
 
-        $invoices = Move::query()
+    private function getLiquidityChartData(): array
+    {
+        $start = now()->subWeeks(5)->startOfWeek();
+        $end   = now()->endOfWeek();
+
+        $moves = Move::query()
             ->where('journal_id', $this->journal->id)
-            ->where('state', 'posted')
-            ->whereIn('payment_state', ['not_paid', 'partial'])
+            ->where('state', MoveState::POSTED)
+            ->whereBetween('date', [$start, $end])
+            ->orderBy('date')
+            ->get();
+
+        $labels = [];
+        $balances = [];
+        $runningBalance = 0;
+
+        foreach ($moves->groupBy(fn ($m) => Carbon::parse($m->date)->format('Y-m-d')) as $week => $weekMoves) {
+            $labels[] = Carbon::parse($week)->format('d M');
+
+            foreach ($weekMoves as $move) {
+                $runningBalance += (float) $move->amount_total;
+            }
+
+            $balances[] = $runningBalance;
+        }
+
+        return [
+            'type'   => 'line',
+            'labels' => $labels,
+            'datasets' => [
+                [
+                    'label'       => 'Balance',
+                    'data'        => $balances,
+                    'borderColor' => '#3b82f6',
+                    'tension'     => 0.3,
+                    'fill'        => false,
+                ],
+            ],
+        ];
+    }
+
+    private function getInvoiceChartData(): array
+    {
+        $now = now();
+
+        $thisWeekStart = $now->copy()->startOfWeek();
+        $thisWeekEnd   = $now->copy()->endOfWeek();
+
+        $labels = ['Due', 'Previous', 'This Week', 'Next Week', 'Future', 'Not Due'];
+        $late = array_fill(0, 6, 0);
+        $ontime = array_fill(0, 6, 0);
+
+        $moves = Move::query()
+            ->where('journal_id', $this->journal->id)
+            ->where('state', MoveState::POSTED)
+            ->whereIn('payment_state', [PaymentState::NOT_PAID, PaymentState::PARTIAL])
             ->where('amount_residual', '>', 0)
             ->get();
 
-        $lateData = [0, 0, 0, 0, 0, 0];
-        $onTimeData = [0, 0, 0, 0, 0, 0];
+        foreach ($moves as $move) {
+            $residual = (float) $move->amount_residual;
+            $due = Carbon::parse($move->invoice_date_due);
 
-        $today = $now->copy()->startOfDay();
-        
-        foreach ($invoices as $invoice) {
-            $dueDate = Carbon::parse($invoice->invoice_date_due);
-            $residual = (float) $invoice->amount_residual;
-            $isLate = $dueDate->lt($today);
-
-            if ($isLate) {
-                $lateData[0] += $residual;
-            }
-            
-            if (!$isLate) {
-                $onTimeData[5] += $residual;
-            }
-
-            if ($dueDate->between($prevWeekStart, $prevWeekEnd, true)) {
-                if ($isLate) {
-                    $lateData[1] += $residual;
-                } else {
-                    $onTimeData[1] += $residual;
-                }
-            } elseif ($dueDate->between($thisWeekStart, $thisWeekEnd, true)) {
-                if ($isLate) {
-                    $lateData[2] += $residual;
-                } else {
-                    $onTimeData[2] += $residual;
-                }
-            } elseif ($dueDate->between($nextWeekStart, $nextWeekEnd, true)) {
-                $onTimeData[3] += $residual;
-            } elseif ($dueDate->between($nextToNextWeekStart, $nextToNextWeekEnd, true)) {
-                $onTimeData[4] += $residual;
+            if ($due->lt(today())) {
+                $late[0] += $residual;
+            } else {
+                $ontime[5] += $residual;
             }
         }
 
-        $type = $this->journal->type;
-        $graphType = in_array($type, [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD]) ? 'line' : 'bar';
-        
         return [
-            'type'     => $graphType,
-            'labels'   => $labels,
+            'type'   => 'bar',
+            'labels' => $labels,
             'datasets' => [
                 [
-                    'label'           => 'Overdue',
-                    'data'            => $lateData,
+                    'label' => 'Overdue',
+                    'data'  => $late,
                     'backgroundColor' => '#ef4444',
-                    'borderColor'     => '#ef4444',
-                    'stack'           => 'stack0',
                 ],
                 [
-                    'label'           => 'On Time',
-                    'data'            => $onTimeData,
+                    'label' => 'On Time',
+                    'data'  => $ontime,
                     'backgroundColor' => '#22c55e',
-                    'borderColor'     => '#22c55e',
-                    'stack'           => 'stack0',
-                ],
-            ],
-            'options' => [
-                'scales' => [
-                    'x' => [
-                        'stacked' => true,
-                    ],
-                    'y' => [
-                        'stacked' => true,
-                        'beginAtZero' => true,
-                    ],
                 ],
             ],
         ];

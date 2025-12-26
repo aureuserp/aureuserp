@@ -305,6 +305,9 @@ class PaymentResource extends Resource
                 Tables\Grouping\Group::make('company.name')
                     ->label(__('accounts::filament/resources/payment.table.groups.company'))
                     ->collapsible(),
+                Tables\Grouping\Group::make('journal.name')
+                    ->label(__('accounts::filament/resources/payment.table.groups.journal'))
+                    ->collapsible(),
                 Tables\Grouping\Group::make('paymentMethodLine.name')
                     ->label(__('accounts::filament/resources/payment.table.groups.payment-method-line'))
                     ->collapsible(),

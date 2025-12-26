@@ -44,6 +44,7 @@ return [
         'groups' => [
             'name'                             => 'Name',
             'company'                          => 'Company',
+            'journal'                          => 'Journal',
             'partner'                          => 'Partner',
             'payment-method-line'              => 'Payment Method Line',
             'payment-method'                   => 'Payment Method',
