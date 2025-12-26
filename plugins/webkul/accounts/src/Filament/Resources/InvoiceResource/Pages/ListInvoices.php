@@ -57,9 +57,10 @@ class ListInvoices extends ListRecords
                 ->icon('heroicon-s-banknotes')
                 ->modifyQueryUsing(function (Builder $query) {
                     $query->where('state', MoveState::POSTED)
+                        ->where('amount_residual', '>', 0)
                         ->whereNotIn('payment_state', [
-                            PaymentState::NOT_PAID,
-                            PaymentState::IN_PAYMENT,
+                            PaymentState::PAID,
+                            PaymentState::IN_PAYMENT
                         ]);
                 }),
             'in_payment' => PresetView::make(__('accounts::filament/resources/invoice/pages/list-invoice.tabs.in-payment'))

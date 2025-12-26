@@ -22,19 +22,19 @@
     </x-slot>
 
     <div class="flex flex-col gap-3 mb-4 items-end">
-        @foreach ($this->getStats() as $key => $stat)
-            @if ($stat['value'] > 0 || $stat['amount'])
+        @foreach ($dashboard['stats'] as $key => $stat)
+            @if (($stat['value'] ?? 0) > 0 || ($stat['amount'] ?? null))
                 <div class="flex gap-6 items-center">
                     <x-filament::link
                         tag="a"
-                        href="{{ $stat['url'] }}"
+                        href="{{ $stat['url'] ?? '#' }}"
                         class="inline-flex items-center"
                     >
-                        @if ($stat['value'] > 0)
+                        @if (($stat['value'] ?? 0) > 0)
                             {{ $stat['value'] }}
                         @endif
 
-                        {{ $stat['label'] }}
+                        {{ $stat['label'] ?? '' }}
                     </x-filament::link>
 
                     <span>
