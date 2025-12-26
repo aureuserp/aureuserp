@@ -4,7 +4,7 @@
         {{ $this->form }}
 
         {{-- Report Header --}}
-        <div class="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+        <x-filament::section>
             @php
                 $data = $this->partnerLedgerData;
             @endphp
@@ -18,8 +18,8 @@
                             <col style="min-width: 250px;">
                             <col style="width: 180px;">
                             <col style="width: 180px;">
-                            <col style="width: 120px;">
-                            <col style="width: 120px;">
+                            <col style="width: 140px;">
+                            <col style="width: 140px;">
                             <col style="width: 120px; min-width: 120px;">
                             <col style="width: 120px; min-width: 120px;">
                             <col style="width: 120px; min-width: 120px;">
@@ -50,7 +50,7 @@
                                         $totalCredit += $partner->period_credit;
                                     @endphp
                                     
-                                    <tbody x-data="{ expanded: false }">
+                                    <tbody x-data="{ expanded: false }" class="bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-700">
                                         {{-- Partner Header Row --}}
                                         <tr 
                                             class="bg-gray-50 dark:bg-gray-800 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -188,6 +188,6 @@
             @else
                 <p class="text-gray-500 dark:text-gray-400">No data available for the selected filters.</p>
             @endif
-        </div>
+        </x-filament::section>
     </div>
 </x-filament-panels::page>

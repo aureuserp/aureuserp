@@ -4,7 +4,7 @@
         {{ $this->form }}
 
         {{-- Report Header --}}
-        <div class="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
+        <x-filament::section>
             @php
                 $data = $this->balanceSheetData;
             @endphp
@@ -81,6 +81,6 @@
             @else
                 <p class="text-gray-500 dark:text-gray-400">No data available for the selected filters.</p>
             @endif
-        </div>
+        </x-filament::section>
     </div>
 </x-filament-panels::page>
