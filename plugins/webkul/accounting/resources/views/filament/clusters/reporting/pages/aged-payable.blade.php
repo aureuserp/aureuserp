@@ -32,8 +32,8 @@
                     No receivables found for the selected criteria.
                 </div>
             @else
-                <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-white/5!">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-white/5!">
                         <colgroup>
                             <col style="width: 50px;">
                             <col style="min-width: 250px;">
@@ -46,7 +46,7 @@
                             <col style="width: 120px; min-width: 120px;">
                             <col style="width: 120px; min-width: 120px;">
                         </colgroup>
-                        <thead class="bg-gray-50 dark:bg-gray-800">
+                        <thead class="bg-gray-50/50 dark:bg-white/5">
                             <tr>
                                 <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400" style="width: 50px;"></th>
                                 <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
@@ -78,7 +78,7 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-700">
+                        <tbody class="divide-y divide-gray-200 dark:divide-white/5!">
                             @php
                                 $totals = [
                                     'at_date' => 0,
@@ -92,9 +92,9 @@
                             @endphp
 
                             @foreach($partners as $partnerId => $partner)
-                                <tbody x-data="{ expanded: false }" class="bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-700">
+                                <tbody x-data="{ expanded: false }" class="divide-y divide-gray-200 dark:divide-white/5!">
                                     {{-- Partner Header --}}
-                                    <tr class="bg-gray-50 dark:bg-gray-800 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    <tr class="bg-gray-50/50 dark:bg-white/5 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/5!"
                                         @click="expanded = !expanded">
                                         <td class="px-4 py-3 whitespace-nowrap">
                                             <div class="flex items-center">
@@ -146,7 +146,7 @@
 
                                     {{-- Partner Lines --}}
                                     @foreach($partner['lines'] as $line)
-                                        <tr x-show="expanded" x-cloak class="bg-white dark:bg-gray-900">
+                                        <tr x-show="expanded" x-cloak class="hover:bg-gray-50 dark:hover:bg-white/5!">
                                             <td class="px-4 py-2"></td>
                                             <td class="px-4 py-2 pl-12 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                                                 {{ $line['move_name'] }}
@@ -202,7 +202,7 @@
 
                             <tbody>
                                 {{-- Totals Row --}}
-                                <tr class="bg-gray-100 dark:bg-gray-800 font-semibold border-t-2 border-gray-300 dark:border-gray-600">
+                                <tr class="bg-gray-100/80 dark:bg-white/5 font-semibold border-t-2 border-gray-300 dark:border-white/5!">
                                     <td class="px-4 py-3"></td>
                                     <td class="px-4 py-3 text-gray-900 dark:text-white">Total Aged Payable</td>
                                     <td class="px-4 py-3"></td>
