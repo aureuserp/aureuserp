@@ -59,6 +59,7 @@ class AgedReceivable extends Page implements HasForms
                     DatePicker::make('as_of_date')
                         ->label('As of')
                         ->default(now())
+                        ->native(false)
                         ->suffixIcon('heroicon-o-calendar')
                         ->live()
                         ->afterStateUpdated(fn () => null),

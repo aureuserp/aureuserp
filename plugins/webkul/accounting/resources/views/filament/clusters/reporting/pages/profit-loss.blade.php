@@ -19,6 +19,7 @@
                                 <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Amount</th>
                             </tr>
                         </thead>
+                        
                         <tbody class="divide-y divide-gray-200 dark:divide-white/5!">
                             @foreach($data['sections'] as $sectionIndex => $section)
                                 {{-- Section Header --}}
