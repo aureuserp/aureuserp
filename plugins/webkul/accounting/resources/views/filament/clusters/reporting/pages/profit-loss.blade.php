@@ -11,44 +11,44 @@
             
             @if(!empty($data))
                 {{-- Profit & Loss Table --}}
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead>
-                            <tr class="border-b-2 border-gray-300 dark:border-gray-600">
-                                <th class="px-4 py-2 text-left"></th>
-                                <th class="px-4 py-2 text-right font-semibold">Amount</th>
+                <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-800">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Account</th>
+                                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Amount</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-700">
                             @foreach($data['sections'] as $sectionIndex => $section)
                                 {{-- Section Header --}}
-                                <tr class="{{ $sectionIndex > 0 ? 'border-t-4 border-gray-400 dark:border-gray-500' : '' }} bg-gray-100 dark:bg-gray-700">
-                                    <td colspan="2" class="px-4 py-2 {{ $sectionIndex > 0 ? 'pt-4' : '' }} text-base font-bold">{{ $section['title'] }}</td>
+                                <tr class="bg-gray-100 dark:bg-gray-800">
+                                    <td colspan="2" class="px-4 py-3 text-base font-bold text-gray-900 dark:text-white">{{ $section['title'] }}</td>
                                 </tr>
 
                                 {{-- Accounts --}}
                                 @if(count($section['accounts']) > 0)
                                     @foreach($section['accounts'] as $account)
-                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                            <td class="px-4 py-1 text-gray-600 dark:text-gray-300" style="padding-left: 2rem;">
+                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                                            <td class="px-4 py-2 text-sm text-gray-600 dark:text-gray-400" style="padding-left: 2rem;">
                                                 {{ $account['code'] ? $account['code'] . ' - ' : '' }}{{ $account['name'] }}
                                             </td>
-                                            <td class="px-4 py-1 text-right {{ isset($section['is_expense']) && $section['is_expense'] ? 'text-red-600 dark:text-red-400' : '' }}">
+                                            <td class="px-4 py-2 text-right text-sm {{ isset($section['is_expense']) && $section['is_expense'] ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-gray-100' }}">
                                                 {{ number_format($account['balance'], 2) }}
                                             </td>
                                         </tr>
                                     @endforeach
 
                                     {{-- Section Total --}}
-                                    <tr class="border-t border-gray-200 font-semibold dark:border-gray-600">
-                                        <td class="px-4 py-2">{{ $section['total_label'] }}</td>
-                                        <td class="px-4 py-2 text-right {{ isset($section['is_expense']) && $section['is_expense'] ? 'text-red-600 dark:text-red-400' : '' }}">
+                                    <tr class="border-t border-gray-200 font-semibold bg-gray-50 dark:border-gray-700 dark:bg-gray-900">
+                                        <td class="px-4 py-2 text-gray-900 dark:text-white">{{ $section['total_label'] }}</td>
+                                        <td class="px-4 py-2 text-right {{ isset($section['is_expense']) && $section['is_expense'] ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
                                             {{ number_format($section['total'], 2) }}
                                         </td>
                                     </tr>
                                 @else
-                                    <tr>
-                                        <td colspan="2" class="px-4 py-2 italic text-gray-500 dark:text-gray-400" style="padding-left: 2rem;">
+                                    <tr class="bg-white dark:bg-gray-900">
+                                        <td colspan="2" class="px-4 py-2 text-sm italic text-gray-500 dark:text-gray-400" style="padding-left: 2rem;">
                                             {{ $section['empty_message'] }}
                                         </td>
                                     </tr>
@@ -56,9 +56,9 @@
                             @endforeach
 
                             {{-- NET INCOME/LOSS --}}
-                            <tr class="border-t-2 border-gray-300 font-bold dark:border-gray-600">
-                                <td class="px-4 py-2">{{ $data['is_profit'] ? 'Net Profit' : 'Net Loss' }}</td>
-                                <td class="text-right py-2 px-4 {{ $data['is_profit'] ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
+                            <tr class="border-t-2 border-gray-300 font-bold bg-gray-100 dark:border-gray-600 dark:bg-gray-800">
+                                <td class="px-4 py-3 text-gray-900 dark:text-white">{{ $data['is_profit'] ? 'Net Profit' : 'Net Loss' }}</td>
+                                <td class="px-4 py-3 text-right {{ $data['is_profit'] ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
                                     {{ number_format(abs($data['net_income']), 2) }}
                                 </td>
                             </tr>
