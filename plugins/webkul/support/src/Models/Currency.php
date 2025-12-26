@@ -53,23 +53,17 @@ class Currency extends Model
             return 1;
         }
 
-        $company = $company ?? auth()->user()->company ?? null;
+        $company = $company ?? auth()->user()->defaultCompany ?? null;
 
         $date = $date ?? now()->toDateString();
 
-        $rateRecord = $fromCurrency->rates
-            ->where('company_id', $company->id ?? null)
+        $toRateRecord = $toCurrency->rates()
+            //->where('company_id', $company?->id)
             ->whereDate('name', '<=', $date)
-            ->sortByDesc('name')
+            ->orderByDesc('name')
             ->first();
 
-        if (! $rateRecord) {
-            return 1;
-        }
-
-        $inverseRate = $rateRecord->inverse_rate ?? (1 / $rateRecord->rate);
-
-        return $inverseRate;
+        return $toRateRecord->rate ?? 1.0;
     }
 
     /**

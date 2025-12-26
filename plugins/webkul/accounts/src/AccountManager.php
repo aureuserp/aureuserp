@@ -1801,7 +1801,39 @@ class AccountManager
     }
 
     // TODO: Implement this method
-    public function createExchangeDifferenceMoves(array $exchangeValuesList) {}
+    public function createExchangeDifferenceMoves(array $exchangeDiffValuesList)
+    {
+        $exchangeMoves = [];
+        
+        foreach ($exchangeDiffValuesList as $exchangeDiffValues) {
+            $moveValues = $exchangeDiffValues['move_values'];
+            
+            if (empty($moveValues['lines'])) {
+                continue;
+            }
+            
+            $exchangeMove = AccountMove::create($moveValues);
+            $exchangeMove->state = 'posted';
+            $exchangeMove->save();
+
+            collect($moveValues['lines'])->each(fn ($lineVals) => MoveLine::create($lineVals + ['move_id' => $exchangeMove->id]));
+
+            $exchangeMove = $this->computeAccountMove($exchangeMove);
+            
+            foreach ($exchangeDiffValues['to_reconcile'] as $reconcileData) {
+                $sourceLine = $reconcileData['source_line'];
+                $exchangeLineSequence = $reconcileData['sequence'];
+                
+                $exchangeLine = $exchangeMove->lines[$exchangeLineSequence];
+                
+                $this->reconcilePlan([$sourceLine->id, $exchangeLine->id]);
+            }
+            
+            $exchangeMoves[] = $exchangeMove;
+        }
+        
+        return $exchangeMoves;
+    }
 
     protected function updateMatchingNumbers(array $lineIds): void
     {

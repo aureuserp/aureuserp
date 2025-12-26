@@ -11,10 +11,15 @@ class JournalChartsWidget extends Widget
 
     protected int|string|array $columnSpan = 'full';
 
+    public string $activeTab = 'all';
+
     public function getJournals()
     {
         return Journal::where('show_on_dashboard', true)
             ->orderBy('id', 'asc')
+            ->when($this->activeTab !== 'all', function ($query) {
+                $query->where('type', $this->activeTab);
+            })
             ->get();
     }
 }

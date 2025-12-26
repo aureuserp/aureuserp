@@ -1123,6 +1123,16 @@ class BillResource extends Resource
 
         $priceUnit = static::calculateUnitPrice($get('uom_id'), $product);
 
+        if ($get('../../currency_id')) {
+            $currency = Currency::find($get('../../currency_id'));
+            
+            $priceUnit = Auth::user()->defaultCompany->currency->convert(
+                $priceUnit,
+                $currency,
+                Auth::user()->defaultCompany
+            );
+        }
+
         $set('price_unit', round($priceUnit, 2));
 
         $set('taxes', $product->productTaxes->pluck('id')->toArray());

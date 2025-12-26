@@ -550,6 +550,10 @@ class Move extends Model implements Sortable
 
     public function computeInvoiceDateDue()
     {
+        if (! $this->invoice_payment_term_id) {
+            return;
+        }
+
         $today = now();
 
         $neededTerms = $this->paymentTermLines->filter(function ($line) {
