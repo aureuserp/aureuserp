@@ -24,7 +24,7 @@
                             <col style="width: 120px; min-width: 120px;">
                             <col style="width: 120px; min-width: 120px;">
                         </colgroup>
-                        <thead class="bg-gray-50 dark:bg-gray-800">
+                        <thead class="bg-gray-50/50 dark:bg-gray-800/50">
                             <tr>
                                 <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400"></th>
                                 <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Partner</th>
@@ -37,7 +37,7 @@
                                 <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Balance</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-700">
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                             @php
                                 $totalDebit = 0;
                                 $totalCredit = 0;
@@ -50,10 +50,10 @@
                                         $totalCredit += $partner->period_credit;
                                     @endphp
                                     
-                                    <tbody x-data="{ expanded: false }" class="bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-700">
+                                    <tbody x-data="{ expanded: false }">
                                         {{-- Partner Header Row --}}
                                         <tr 
-                                            class="bg-gray-50 dark:bg-gray-800 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                                            class="bg-gray-50/50 dark:bg-gray-800/50 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-gray-700/50"
                                             @click="expanded = !expanded"
                                         >
                                             <td class="px-4 py-3 whitespace-nowrap">
@@ -161,7 +161,7 @@
 
                                 <tbody>
                                     {{-- Total Row --}}
-                                    <tr class="bg-gray-100 dark:bg-gray-800 font-semibold border-t-2 border-gray-300 dark:border-gray-600">
+                                    <tr class="bg-gray-100/80 dark:bg-gray-800/80 font-semibold border-t-2 border-gray-300 dark:border-gray-600">
                                         <td class="px-4 py-3"></td>
                                         <td class="px-4 py-3 text-gray-900 dark:text-white">Total Partner Ledger</td>
                                         <td class="px-4 py-3"></td>

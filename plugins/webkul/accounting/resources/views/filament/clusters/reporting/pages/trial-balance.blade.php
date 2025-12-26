@@ -23,7 +23,7 @@
                             <col style="width: 120px;">
                         </colgroup>
                         
-                        <thead class="bg-gray-50 dark:bg-gray-800">
+                        <thead class="bg-gray-50/50 dark:bg-gray-800/50">
                             <tr>
                                 <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400"></th>
                                 <th colspan="2" scope="col" class="border-b border-gray-200 px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider dark:border-gray-600 dark:text-gray-400">Initial Balance</th>
@@ -42,7 +42,7 @@
                             </tr>
                         </thead>
 
-                        <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-700">
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                             @if(count($data['accounts']) > 0)
                                 @foreach($data['accounts'] as $account)
                                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
@@ -71,7 +71,7 @@
                                 @endforeach
                                 
                                 {{-- Total Row --}}
-                                <tr class="bg-gray-100 dark:bg-gray-800 font-semibold border-t-2 border-gray-300 dark:border-gray-600">
+                                <tr class="bg-gray-100/80 dark:bg-gray-800/80 font-semibold border-t-2 border-gray-300 dark:border-gray-600">
                                     <td class="px-4 py-3 text-gray-900 dark:text-white">Total</td>
                                     <td class="px-4 py-3 text-right whitespace-nowrap text-gray-900 dark:text-white">{{ number_format($data['totals']['initial_debit'], 2) }}</td>
                                     <td class="px-4 py-3 text-right whitespace-nowrap text-gray-900 dark:text-white">{{ number_format($data['totals']['initial_credit'], 2) }}</td>
