@@ -11,8 +11,8 @@
             
             @if(!empty($data))
                 {{-- General Ledger Table --}}
-                <div class="overflow-x-auto" x-data="{ expandedAccounts: [] }">
-                    <table class="w-full text-sm">
+                <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <colgroup>
                             <col style="width: 50px;">
                             <col style="min-width: 250px;">
@@ -24,19 +24,19 @@
                             <col style="width: 120px; min-width: 120px;">
                         </colgroup>
 
-                        <thead>
-                            <tr class="border-b-2 border-gray-300 dark:border-gray-600">
-                                <th class="px-4 py-2 text-left"></th>
-                                <th class="px-4 py-2 text-left"></th>
-                                <th class="px-4 py-2 text-left">Date</th>
-                                <th class="px-4 py-2 text-left">Communication</th>
-                                <th class="px-4 py-2 text-left">Partner</th>
-                                <th class="px-4 py-2 text-right">Debit</th>
-                                <th class="px-4 py-2 text-right">Credit</th>
-                                <th class="px-4 py-2 text-right">Balance</th>
+                        <thead class="bg-gray-50 dark:bg-gray-800">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400"></th>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Account</th>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Date</th>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Communication</th>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Partner</th>
+                                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Debit</th>
+                                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Credit</th>
+                                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Balance</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-700">
                             @php
                                 $totalDebit = 0;
                                 $totalCredit = 0;
@@ -44,108 +44,126 @@
 
                             @foreach($data['accounts'] as $account)
                                 @php
-                                    $accountId = 'account-' . $account->id;
                                     $totalDebit += $account->period_debit;
                                     $totalCredit += $account->period_credit;
                                 @endphp
 
-                                {{-- Account Header Row --}}
-                                <tr 
-                                    class="cursor-pointer bg-gray-100 font-semibold hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
-                                    @click="expandedAccounts.includes('{{ $accountId }}') ? expandedAccounts = expandedAccounts.filter(id => id !== '{{ $accountId }}') : expandedAccounts.push('{{ $accountId }}')"
-                                >
-                                    <td class="px-4 py-2" style="width: 50px;">
-                                        <x-filament::icon
-                                            icon="heroicon-m-chevron-right"
-                                            class="inline-block h-4 w-4"
-                                            x-show="!expandedAccounts.includes('{{ $accountId }}')"
-                                        />
-                                        <x-filament::icon
-                                            icon="heroicon-m-chevron-down"
-                                            class="inline-block h-4 w-4"
-                                            x-show="expandedAccounts.includes('{{ $accountId }}')"
-                                        />
-                                    </td>
-                                    <td class="px-4 py-2">
-                                        {{ $account->code }} {{ $account->name }}
-                                    </td>
-                                    <td class="px-4 py-2"></td>
-                                    <td class="px-4 py-2"></td>
-                                    <td class="px-4 py-2"></td>
-                                    <td class="px-4 py-2 text-right">{{ number_format($account->period_debit, 2) }}</td>
-                                    <td class="px-4 py-2 text-right">{{ number_format($account->period_credit, 2) }}</td>
-                                    <td class="px-4 py-2 text-right">{{ number_format($account->ending_balance, 2) }}</td>
-                                </tr>
-
-                                {{-- Account Moves (Hidden by default) --}}
-                                @if($account->opening_balance != 0)
-                                    <tr class="bg-blue-50 text-sm dark:bg-blue-900/20" x-show="expandedAccounts.includes('{{ $accountId }}')">
-                                        <td class="px-4 py-1"></td>
-                                        <td class="px-4 py-1 italic text-gray-600 dark:text-gray-300">Opening Balance</td>
-                                        <td class="px-4 py-1 text-gray-600 dark:text-gray-300" style="white-space: nowrap;">
-                                            {{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }}
+                                <tbody x-data="{ expanded: false }">
+                                    {{-- Account Header Row --}}
+                                    <tr 
+                                        class="bg-gray-50 dark:bg-gray-800 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        @click="expanded = !expanded"
+                                    >
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-90': expanded }" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                                </svg>
+                                            </div>
                                         </td>
-                                        <td class="px-4 py-1"></td>
-                                        <td class="px-4 py-1"></td>
-                                        <td class="px-4 py-1 text-right">
-                                            {{ $account->opening_balance > 0 ? number_format($account->opening_balance, 2) : '' }}
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <span class="font-medium text-gray-900 dark:text-white">{{ $account->code }} {{ $account->name }}</span>
                                         </td>
-                                        <td class="px-4 py-1 text-right">
-                                            {{ $account->opening_balance < 0 ? number_format(abs($account->opening_balance), 2) : '' }}
+                                        <td class="px-4 py-3"></td>
+                                        <td class="px-4 py-3"></td>
+                                        <td class="px-4 py-3"></td>
+                                        <td class="px-4 py-3 text-right whitespace-nowrap">
+                                            <span class="text-gray-900 dark:text-white">{{ number_format($account->period_debit, 2) }}</span>
                                         </td>
-                                        <td class="px-4 py-1 text-right font-semibold">{{ number_format($account->opening_balance, 2) }}</td>
+                                        <td class="px-4 py-3 text-right whitespace-nowrap">
+                                            <span class="text-gray-900 dark:text-white">{{ number_format($account->period_credit, 2) }}</span>
+                                        </td>
+                                        <td class="px-4 py-3 text-right whitespace-nowrap font-semibold">
+                                            <span class="text-gray-900 dark:text-white">{{ number_format($account->ending_balance, 2) }}</span>
+                                        </td>
                                     </tr>
-                                @endif
 
-                                @php
-                                    $moves = $this->getAccountMoves($account->id);
-                                    $runningBalance = $account->opening_balance;
-                                @endphp
+                                    {{-- Opening Balance Row --}}
+                                    @if($account->opening_balance != 0)
+                                        <tr x-show="expanded" x-cloak class="bg-white dark:bg-gray-900">
+                                            <td class="px-4 py-2"></td>
+                                            <td class="px-4 py-2 pl-8 whitespace-nowrap text-sm">
+                                                <span class="italic text-gray-600 dark:text-gray-400">Opening Balance</span>
+                                            </td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                                                {{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }}
+                                            </td>
+                                            <td class="px-4 py-2"></td>
+                                            <td class="px-4 py-2"></td>
+                                            <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
+                                                <span class="text-gray-600 dark:text-gray-400">
+                                                    {{ $account->opening_balance > 0 ? number_format($account->opening_balance, 2) : '' }}
+                                                </span>
+                                            </td>
+                                            <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
+                                                <span class="text-gray-600 dark:text-gray-400">
+                                                    {{ $account->opening_balance < 0 ? number_format(abs($account->opening_balance), 2) : '' }}
+                                                </span>
+                                            </td>
+                                            <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
+                                                <span class="font-semibold text-gray-600 dark:text-gray-400">{{ number_format($account->opening_balance, 2) }}</span>
+                                            </td>
+                                        </tr>
+                                    @endif
 
-                                @foreach($moves as $move)
                                     @php
-                                        $runningBalance += ($move['debit'] - $move['credit']);
+                                        $moves = $this->getAccountMoves($account->id);
+                                        $runningBalance = $account->opening_balance;
                                     @endphp
 
-                                    <tr class="border-t border-gray-100 text-sm hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-700" x-show="expandedAccounts.includes('{{ $accountId }}')">
-                                        <td class="px-4 py-1"></td>
-                                        <td class="px-4 py-1 text-gray-600 dark:text-gray-300">
-                                            {{ $move['move_name'] }}
-                                            @if($move['ref'])
-                                                <span class="text-xs text-gray-500">({{ $move['ref'] }})</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-4 py-1 text-gray-600 dark:text-gray-300" style="white-space: nowrap;">
-                                            {{ \Carbon\Carbon::parse($move['date'])->format('M d, Y') }}
-                                        </td>
-                                        <td class="px-4 py-1 text-gray-600 dark:text-gray-300">
-                                            @if ($move['move_type'] == 'entry')
-                                                {{ $move['name'] }}
-                                            @endif
-                                        </td>
-                                        <td class="px-4 py-1 text-gray-600 dark:text-gray-300">{{ $move['partner_name'] }}</td>
-                                        <td class="px-4 py-1 text-right">
-                                            {{ $move['debit'] > 0 ? number_format($move['debit'], 2) : '' }}
-                                        </td>
-                                        <td class="px-4 py-1 text-right">
-                                            {{ $move['credit'] > 0 ? number_format($move['credit'], 2) : '' }}
-                                        </td>
-                                        <td class="px-4 py-1 text-right font-medium">{{ number_format($runningBalance, 2) }}</td>
-                                    </tr>
-                                @endforeach
+                                    @foreach($moves as $move)
+                                        @php
+                                            $runningBalance += ($move['debit'] - $move['credit']);
+                                        @endphp
+
+                                        <tr x-show="expanded" x-cloak class="bg-white dark:bg-gray-900">
+                                            <td class="px-4 py-2"></td>
+                                            <td class="px-4 py-2 pl-8 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                                                {{ $move['move_name'] }}
+                                                @if($move['ref'])
+                                                    <span class="text-xs text-gray-500 dark:text-gray-500">({{ $move['ref'] }})</span>
+                                                @endif
+                                            </td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                                                {{ \Carbon\Carbon::parse($move['date'])->format('M d, Y') }}
+                                            </td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                                                @if ($move['move_type'] == 'entry')
+                                                    {{ $move['name'] }}
+                                                @endif
+                                            </td>
+                                            <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">{{ $move['partner_name'] }}</td>
+                                            <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
+                                                <span class="text-gray-600 dark:text-gray-400">
+                                                    {{ $move['debit'] > 0 ? number_format($move['debit'], 2) : '' }}
+                                                </span>
+                                            </td>
+                                            <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
+                                                <span class="text-gray-600 dark:text-gray-400">
+                                                    {{ $move['credit'] > 0 ? number_format($move['credit'], 2) : '' }}
+                                                </span>
+                                            </td>
+                                            <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
+                                                <span class="font-medium text-gray-600 dark:text-gray-400">{{ number_format($runningBalance, 2) }}</span>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
                             @endforeach
 
-                            {{-- Total Row --}}
-                            <tr class="border-t-4 border-gray-400 bg-gray-200 text-base font-bold dark:border-gray-500 dark:bg-gray-600">
-                                <td class="px-4 py-3"></td>
-                                <td class="px-4 py-3">Total</td>
-                                <td class="px-4 py-3"></td>
-                                <td class="px-4 py-3"></td>
-                                <td class="px-4 py-3"></td>
-                                <td class="px-4 py-3 text-right">{{ number_format($totalDebit, 2) }}</td>
-                                <td class="px-4 py-3 text-right">{{ number_format($totalCredit, 2) }}</td>
-                                <td class="px-4 py-3 text-right"></td>
-                            </tr>
+                            <tbody>
+                                {{-- Total Row --}}
+                                <tr class="bg-gray-100 dark:bg-gray-800 font-semibold border-t-2 border-gray-300 dark:border-gray-600">
+                                    <td class="px-4 py-3"></td>
+                                    <td class="px-4 py-3 text-gray-900 dark:text-white">Total General Ledger</td>
+                                    <td class="px-4 py-3"></td>
+                                    <td class="px-4 py-3"></td>
+                                    <td class="px-4 py-3"></td>
+                                    <td class="px-4 py-3 text-right whitespace-nowrap text-gray-900 dark:text-white">{{ number_format($totalDebit, 2) }}</td>
+                                    <td class="px-4 py-3 text-right whitespace-nowrap text-gray-900 dark:text-white">{{ number_format($totalCredit, 2) }}</td>
+                                    <td class="px-4 py-3"></td>
+                                </tr>
+                            </tbody>
                         </tbody>
                     </table>
                 </div>

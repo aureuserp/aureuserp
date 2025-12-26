@@ -11,8 +11,8 @@
             
             @if(!empty($data))
                 {{-- Trial Balance Table --}}
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
+                <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <colgroup>
                             <col style="width: auto;">
                             <col style="width: 120px;">
@@ -23,66 +23,66 @@
                             <col style="width: 120px;">
                         </colgroup>
                         
-                        <thead>
-                            <tr class="border-b-2 border-gray-300 dark:border-gray-600">
-                                <th class="px-4 py-2 text-left"></th>
-                                <th colspan="2" class="border-b border-gray-200 px-4 py-2 text-center font-semibold dark:border-gray-600">Initial Balance</th>
-                                <th colspan="2" class="border-b border-gray-200 px-4 py-2 text-center font-semibold dark:border-gray-600">{{ \Carbon\Carbon::parse($data['date_from'])->format('M Y') }}</th>
-                                <th colspan="2" class="border-b border-gray-200 px-4 py-2 text-center font-semibold dark:border-gray-600">End Balance</th>
+                        <thead class="bg-gray-50 dark:bg-gray-800">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400"></th>
+                                <th colspan="2" scope="col" class="border-b border-gray-200 px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider dark:border-gray-600 dark:text-gray-400">Initial Balance</th>
+                                <th colspan="2" scope="col" class="border-b border-gray-200 px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider dark:border-gray-600 dark:text-gray-400">{{ \Carbon\Carbon::parse($data['date_from'])->format('M Y') }}</th>
+                                <th colspan="2" scope="col" class="border-b border-gray-200 px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider dark:border-gray-600 dark:text-gray-400">End Balance</th>
                             </tr>
 
-                            <tr class="border-b border-gray-300 dark:border-gray-600">
-                                <th class="px-4 py-2 text-left"></th>
-                                <th class="px-4 py-2 text-right text-xs">Debit</th>
-                                <th class="px-4 py-2 text-right text-xs">Credit</th>
-                                <th class="px-4 py-2 text-right text-xs">Debit</th>
-                                <th class="px-4 py-2 text-right text-xs">Credit</th>
-                                <th class="px-4 py-2 text-right text-xs">Debit</th>
-                                <th class="px-4 py-2 text-right text-xs">Credit</th>
+                            <tr class="border-b border-gray-200 dark:border-gray-700">
+                                <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Account</th>
+                                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Debit</th>
+                                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Credit</th>
+                                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Debit</th>
+                                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Credit</th>
+                                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Debit</th>
+                                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Credit</th>
                             </tr>
                         </thead>
 
-                        <tbody>
+                        <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-900 dark:divide-gray-700">
                             @if(count($data['accounts']) > 0)
                                 @foreach($data['accounts'] as $account)
-                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                        <td class="px-4 py-1 text-gray-900 dark:text-gray-100">
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             {{ $account->code ? $account->code . ' ' : '' }}{{ $account->name }}
                                         </td>
-                                        <td class="px-4 py-1 text-right text-gray-900 dark:text-gray-100">
+                                        <td class="px-4 py-3 text-right whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             {{ $account->initial_debit > 0 ? number_format($account->initial_debit, 2) : '0.00' }}
                                         </td>
-                                        <td class="px-4 py-1 text-right text-gray-900 dark:text-gray-100">
+                                        <td class="px-4 py-3 text-right whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             {{ $account->initial_credit > 0 ? number_format($account->initial_credit, 2) : '0.00' }}
                                         </td>
-                                        <td class="px-4 py-1 text-right text-gray-900 dark:text-gray-100">
+                                        <td class="px-4 py-3 text-right whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             {{ $account->period_debit > 0 ? number_format($account->period_debit, 2) : '0.00' }}
                                         </td>
-                                        <td class="px-4 py-1 text-right text-gray-900 dark:text-gray-100">
+                                        <td class="px-4 py-3 text-right whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             {{ $account->period_credit > 0 ? number_format($account->period_credit, 2) : '0.00' }}
                                         </td>
-                                        <td class="px-4 py-1 text-right text-gray-900 dark:text-gray-100">
+                                        <td class="px-4 py-3 text-right whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             {{ $account->end_debit > 0 ? number_format($account->end_debit, 2) : '0.00' }}
                                         </td>
-                                        <td class="px-4 py-1 text-right text-gray-900 dark:text-gray-100">
+                                        <td class="px-4 py-3 text-right whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             {{ $account->end_credit > 0 ? number_format($account->end_credit, 2) : '0.00' }}
                                         </td>
                                     </tr>
                                 @endforeach
                                 
                                 {{-- Total Row --}}
-                                <tr class="border-t-2 border-gray-300 bg-gray-50 font-bold dark:border-gray-600 dark:bg-gray-700">
-                                    <td class="px-4 py-2">Total</td>
-                                    <td class="px-4 py-2 text-right">{{ number_format($data['totals']['initial_debit'], 2) }}</td>
-                                    <td class="px-4 py-2 text-right">{{ number_format($data['totals']['initial_credit'], 2) }}</td>
-                                    <td class="px-4 py-2 text-right">{{ number_format($data['totals']['period_debit'], 2) }}</td>
-                                    <td class="px-4 py-2 text-right">{{ number_format($data['totals']['period_credit'], 2) }}</td>
-                                    <td class="px-4 py-2 text-right">{{ number_format($data['totals']['end_debit'], 2) }}</td>
-                                    <td class="px-4 py-2 text-right">{{ number_format($data['totals']['end_credit'], 2) }}</td>
+                                <tr class="bg-gray-100 dark:bg-gray-800 font-semibold border-t-2 border-gray-300 dark:border-gray-600">
+                                    <td class="px-4 py-3 text-gray-900 dark:text-white">Total</td>
+                                    <td class="px-4 py-3 text-right whitespace-nowrap text-gray-900 dark:text-white">{{ number_format($data['totals']['initial_debit'], 2) }}</td>
+                                    <td class="px-4 py-3 text-right whitespace-nowrap text-gray-900 dark:text-white">{{ number_format($data['totals']['initial_credit'], 2) }}</td>
+                                    <td class="px-4 py-3 text-right whitespace-nowrap text-gray-900 dark:text-white">{{ number_format($data['totals']['period_debit'], 2) }}</td>
+                                    <td class="px-4 py-3 text-right whitespace-nowrap text-gray-900 dark:text-white">{{ number_format($data['totals']['period_credit'], 2) }}</td>
+                                    <td class="px-4 py-3 text-right whitespace-nowrap text-gray-900 dark:text-white">{{ number_format($data['totals']['end_debit'], 2) }}</td>
+                                    <td class="px-4 py-3 text-right whitespace-nowrap text-gray-900 dark:text-white">{{ number_format($data['totals']['end_credit'], 2) }}</td>
                                 </tr>
                             @else
                                 <tr>
-                                    <td colspan="7" class="py-8 text-center italic text-gray-500 dark:text-gray-400">
+                                    <td colspan="7" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                                         No accounts with transactions in this period
                                     </td>
                                 </tr>
