@@ -25,6 +25,7 @@ class AccountingServiceProvider extends PackageServiceProvider
             ->hasDependencies([
                 'accounts',
             ])
+            ->icon('accounting')
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command->installDependencies();
             })
