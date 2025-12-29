@@ -149,13 +149,7 @@ class AgedReceivable extends Page implements HasForms
             ->leftJoin('partners_partners', 'accounts_account_move_lines.partner_id', '=', 'partners_partners.id')
             ->where('accounts_accounts.account_type', AccountType::ASSET_RECEIVABLE)
             ->where('accounts_account_moves.company_id', $companyId)
-            ->where(function ($q) use ($asOfDate, $basis) {
-                if ($basis === 'due_date') {
-                    $q->where('accounts_account_moves.invoice_date_due', '<=', $asOfDate);
-                } else {
-                    $q->where('accounts_account_moves.invoice_date', '<=', $asOfDate);
-                }
-            })
+            ->where('accounts_account_move_lines.amount_residual', '!=', 0)
             ->whereNotNull('accounts_account_move_lines.partner_id');
 
         if ($postedOnly) {
@@ -198,7 +192,7 @@ class AgedReceivable extends Page implements HasForms
                 : Carbon::parse($line->invoice_date);
 
             $daysOverdue = $referenceDate->diffInDays($asOfDate, false);
-            $amount = (float) $line->balance;
+            $amount = (float) $line->amount_residual;
 
             $lineData = [
                 'move_name'        => $line->move_name,
@@ -239,7 +233,7 @@ class AgedReceivable extends Page implements HasForms
             $partnerData[$partnerId]['lines'][] = $lineData;
         }
 
-        $partnerData = array_filter($partnerData, fn ($p) => abs($p['total']) > 0.01);
+        $partnerData = array_filter($partnerData, fn ($partner) => abs($partner['total']) > 0.01);
 
         $hasUnposted = MoveLine::join('accounts_account_moves', 'accounts_account_move_lines.move_id', '=', 'accounts_account_moves.id')
             ->join('accounts_accounts', 'accounts_account_move_lines.account_id', '=', 'accounts_accounts.id')

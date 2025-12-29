@@ -109,37 +109,37 @@
                                         <td class="px-4 py-3"></td>
                                         <td class="px-4 py-3 text-right whitespace-nowrap">
                                             <span class="{{ $partner['at_date'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
-                                                {{ $partner['at_date'] != 0 ? '$' . number_format(abs($partner['at_date']), 2) : '' }}
+                                                {{ $partner['at_date'] != 0 ? '$' . number_format($partner['at_date'], 2) : '' }}
                                             </span>
                                         </td>
                                         <td class="px-4 py-3 text-right whitespace-nowrap">
                                             <span class="{{ $partner['period_1'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
-                                                {{ $partner['period_1'] != 0 ? '$' . number_format(abs($partner['period_1']), 2) : '' }}
+                                                {{ $partner['period_1'] != 0 ? '$' . number_format($partner['period_1'], 2) : '' }}
                                             </span>
                                         </td>
                                         <td class="px-4 py-3 text-right whitespace-nowrap">
                                             <span class="{{ $partner['period_2'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
-                                                {{ $partner['period_2'] != 0 ? '$' . number_format(abs($partner['period_2']), 2) : '' }}
+                                                {{ $partner['period_2'] != 0 ? '$' . number_format($partner['period_2'], 2) : '' }}
                                             </span>
                                         </td>
                                         <td class="px-4 py-3 text-right whitespace-nowrap">
                                             <span class="{{ $partner['period_3'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
-                                                {{ $partner['period_3'] != 0 ? '$' . number_format(abs($partner['period_3']), 2) : '' }}
+                                                {{ $partner['period_3'] != 0 ? '$' . number_format($partner['period_3'], 2) : '' }}
                                             </span>
                                         </td>
                                         <td class="px-4 py-3 text-right whitespace-nowrap">
                                             <span class="{{ $partner['period_4'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
-                                                {{ $partner['period_4'] != 0 ? '$' . number_format(abs($partner['period_4']), 2) : '' }}
+                                                {{ $partner['period_4'] != 0 ? '$' . number_format($partner['period_4'], 2) : '' }}
                                             </span>
                                         </td>
                                         <td class="px-4 py-3 text-right whitespace-nowrap">
                                             <span class="{{ $partner['older'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
-                                                {{ $partner['older'] != 0 ? '$' . number_format(abs($partner['older']), 2) : '' }}
+                                                {{ $partner['older'] != 0 ? '$' . number_format($partner['older'], 2) : '' }}
                                             </span>
                                         </td>
                                         <td class="px-4 py-3 text-right whitespace-nowrap font-semibold">
                                             <span class="{{ $partner['total'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
-                                                ${{ number_format(abs($partner['total']), 2) }}
+                                                ${{ number_format($partner['total'], 2) }}
                                             </span>
                                         </td>
                                     </tr>
@@ -156,32 +156,32 @@
                                             </td>
                                             <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
                                                 <span class="{{ $line['at_date'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400' }}">
-                                                    {{ $line['at_date'] != 0 ? '$' . number_format(abs($line['at_date']), 2) : '' }}
+                                                    {{ $line['at_date'] != 0 ? '$' . number_format($line['at_date'], 2) : '' }}
                                                 </span>
                                             </td>
                                             <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
                                                 <span class="{{ $line['period_1'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400' }}">
-                                                    {{ $line['period_1'] != 0 ? '$' . number_format(abs($line['period_1']), 2) : '' }}
+                                                    {{ $line['period_1'] != 0 ? '$' . number_format($line['period_1'], 2) : '' }}
                                                 </span>
                                             </td>
                                             <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
                                                 <span class="{{ $line['period_2'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400' }}">
-                                                    {{ $line['period_2'] != 0 ? '$' . number_format(abs($line['period_2']), 2) : '' }}
+                                                    {{ $line['period_2'] != 0 ? '$' . number_format($line['period_2'], 2) : '' }}
                                                 </span>
                                             </td>
                                             <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
                                                 <span class="{{ $line['period_3'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400' }}">
-                                                    {{ $line['period_3'] != 0 ? '$' . number_format(abs($line['period_3']), 2) : '' }}
+                                                    {{ $line['period_3'] != 0 ? '$' . number_format($line['period_3'], 2) : '' }}
                                                 </span>
                                             </td>
                                             <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
                                                 <span class="{{ $line['period_4'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400' }}">
-                                                    {{ $line['period_4'] != 0 ? '$' . number_format(abs($line['period_4']), 2) : '' }}
+                                                    {{ $line['period_4'] != 0 ? '$' . number_format($line['period_4'], 2) : '' }}
                                                 </span>
                                             </td>
                                             <td class="px-4 py-2 text-right text-sm whitespace-nowrap">
                                                 <span class="{{ $line['older'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-600 dark:text-gray-400' }}">
-                                                    {{ $line['older'] != 0 ? '$' . number_format(abs($line['older']), 2) : '' }}
+                                                    {{ $line['older'] != 0 ? '$' . number_format($line['older'], 2) : '' }}
                                                 </span>
                                             </td>
                                             <td class="px-4 py-2"></td>
@@ -210,36 +210,36 @@
                                     <td class="px-4 py-3"></td>
                                     <td class="px-4 py-3 text-right whitespace-nowrap">
                                         <span class="{{ $totals['at_date'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
-                                            {{ $totals['at_date'] != 0 ? '$' . number_format(abs($totals['at_date']), 2) : '' }}
+                                            {{ $totals['at_date'] != 0 ? '$' . number_format($totals['at_date'], 2) : '' }}
                                         </span>
                                     </td>
                                     <td class="px-4 py-3 text-right whitespace-nowrap">
                                         <span class="{{ $totals['period_1'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
-                                            {{ $totals['period_1'] != 0 ? '$' . number_format(abs($totals['period_1']), 2) : '' }}
+                                            {{ $totals['period_1'] != 0 ? '$' . number_format($totals['period_1'], 2) : '' }}
                                         </span>
                                     </td>
                                     <td class="px-4 py-3 text-right whitespace-nowrap">
                                         <span class="{{ $totals['period_2'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
-                                            {{ $totals['period_2'] != 0 ? '$' . number_format(abs($totals['period_2']), 2) : '' }}
+                                            {{ $totals['period_2'] != 0 ? '$' . number_format($totals['period_2'], 2) : '' }}
                                         </span>
                                     </td>
                                     <td class="px-4 py-3 text-right whitespace-nowrap">
                                         <span class="{{ $totals['period_3'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
-                                            {{ $totals['period_3'] != 0 ? '$' . number_format(abs($totals['period_3']), 2) : '' }}
+                                            {{ $totals['period_3'] != 0 ? '$' . number_format($totals['period_3'], 2) : '' }}
                                         </span>
                                     </td>
                                     <td class="px-4 py-3 text-right whitespace-nowrap">
                                         <span class="{{ $totals['period_4'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
-                                            {{ $totals['period_4'] != 0 ? '$' . number_format(abs($totals['period_4']), 2) : '' }}
+                                            {{ $totals['period_4'] != 0 ? '$' . number_format($totals['period_4'], 2) : '' }}
                                         </span>
                                     </td>
                                     <td class="px-4 py-3 text-right whitespace-nowrap">
                                         <span class="{{ $totals['older'] < 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">
-                                            {{ $totals['older'] != 0 ? '$' . number_format(abs($totals['older']), 2) : '' }}
+                                            {{ $totals['older'] != 0 ? '$' . number_format($totals['older'], 2) : '' }}
                                         </span>
                                     </td>
                                     <td class="px-4 py-3 text-right whitespace-nowrap text-gray-900 dark:text-white">
-                                        ${{ number_format(abs($totals['total']), 2) }}
+                                        ${{ number_format($totals['total'], 2) }}
                                     </td>
                                 </tr>
                             </tbody>

@@ -25,6 +25,11 @@ use Webkul\Account\Models\Payment;
 use Webkul\Account\Models\PaymentRegister;
 use Webkul\Account\Settings\DefaultAccountSettings;
 use Webkul\Support\Services\EmailService;
+use Webkul\Account\Events\MoveConfirmed;
+use Webkul\Account\Events\MoveCancelled;
+use Webkul\Account\Events\MoveReversed;
+use Webkul\Account\Events\MoveDrafted;
+use Webkul\Account\Events\MovePaid;
 
 class AccountManager
 {
@@ -41,6 +46,8 @@ class AccountManager
         foreach ($record->lines as $line) {
             $line->update(['parent_state' => MoveState::CANCEL]);
         }
+
+        MoveCancelled::dispatch($record);
 
         return $record;
     }
@@ -96,6 +103,8 @@ class AccountManager
             $line->update(['parent_state' => MoveState::POSTED]);
         }
 
+        MoveConfirmed::dispatch($record);
+
         return $record;
     }
 
@@ -145,6 +154,8 @@ class AccountManager
         foreach ($record->lines as $line) {
             $line->update(['parent_state' => MoveState::DRAFT]);
         }
+
+        MoveDrafted::dispatch($record);
 
         return $record;
     }
@@ -859,6 +870,10 @@ class AccountManager
         $this->postPayments($paymentsToProcess, $editMode);
 
         $this->reconcilePayments($paymentsToProcess, $editMode);
+
+        $moves = $paymentRegister->lines->map(fn ($line) => $line->move)->unique();
+
+        $moves->each(fn ($move) => MovePaid::dispatch($move));
     }
 
     public function createPaymentValsFromFirstBatch($paymentRegister, $batchResult)
@@ -1960,6 +1975,10 @@ class AccountManager
             foreach ($reverseMoves as $reverseMove) {
                 $this->confirmMove($reverseMove);
             }
+        }
+
+        foreach ($moves as $move) {
+            MoveReversed::dispatch($move);
         }
 
         return $reverseMoves;
