@@ -9,8 +9,13 @@ use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 class Dashboard extends Page
 {
     use HasPageShield;
-    
+
     protected string $view = 'accounting::filament.pages.dashboard';
+
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_accounting_dashboard';
+    }
 
     public static function getNavigationGroup(): string
     {

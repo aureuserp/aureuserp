@@ -29,6 +29,11 @@ class ManageDefaultAccounts extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_accounting_manage_default_accounts';
+    }
+
     public function getBreadcrumbs(): array
     {
         return [

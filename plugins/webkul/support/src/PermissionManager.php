@@ -4,72 +4,65 @@ namespace Webkul\Support;
 
 use BezhanSalleh\FilamentShield\Facades\FilamentShield;
 use Illuminate\Support\Str;
+use Filament\Pages\BasePage as Page;
+use Filament\Resources\Resource;
+use Filament\Widgets\Widget;
 
 class PermissionManager
 {
     public function managePermissions(): void
     {
-        FilamentShield::buildPermissionKeyUsing(function (string $entity, string $affix, string $subject): string {
-            $affix = Str::snake($affix);
+        FilamentShield::buildPermissionKeyUsing(function (string $entity, string $affix, string $subject, string $case, string $separator) {
+            $pluginKey = null;
 
-            if (
-                $entity === 'BezhanSalleh\FilamentShield\Resources\Roles\RoleResource'
-                || $entity === 'App\Filament\Resources\RoleResource'
-            ) {
-                return $affix.'_role';
-            }
-
-            if (
-                class_exists($entity)
-                && method_exists($entity, 'getModel')
-            ) {
-                $resourceIdentifier = Str::of($entity)
-                    ->afterLast('Resources\\')
-                    ->beforeLast('Resource')
-                    ->replace('\\', '')
+            if (in_array(
+                needle: $entity,
+                haystack: $this->getPluginPrefixRequiredEntities(),
+                strict: true
+            )) {
+                $pluginKey = Str::of($entity)
+                    ->after('Webkul\\')
+                    ->before('\\')
                     ->snake()
-                    ->replace('_', '::')
                     ->toString();
+            }
 
-                if (in_array(
-                    needle: $entity,
-                    haystack: $this->getConflictingResources(),
-                    strict: true
-                )) {
-                    $pluginPrefix = '';
-
-                    if (Str::contains($entity, 'Webkul\\')) {
-                        $pluginPrefix = Str::of($entity)
-                            ->after('Webkul\\')
-                            ->before('\\')
+            return match(true) {
+                is_subclass_of($entity, Resource::class) => Str::of($affix)
+                    ->snake()
+                    ->when($pluginKey, fn ($str) => $str->append('_')->append($pluginKey))
+                    ->append('_')
+                    ->append(
+                        Str::of($entity)
+                            ->afterLast('\\')
+                            ->beforeLast('Resource')
+                            ->replace('\\', '')
                             ->snake()
-                            ->toString();
-                    }
-
-                    if ($pluginPrefix) {
-                        return "{$affix}_{$pluginPrefix}_{$resourceIdentifier}";
-                    }
-                }
-
-                return "{$affix}_{$resourceIdentifier}";
-            }
-
-            if (Str::contains($entity, 'Pages\\')) {
-                return 'page_'.Str::snake(class_basename($entity));
-            }
-
-            if (
-                Str::contains($entity, 'Widgets\\')
-                || Str::endsWith($entity, 'Widget')
-            ) {
-                return 'widget_'.Str::snake(class_basename($entity));
-            }
-
-            return $affix.'_'.Str::snake($subject);
+                            ->replace('_', '::')
+                    )
+                    ->toString(),
+                is_subclass_of($entity, Page::class) => Str::of('page')
+                    ->when($pluginKey, fn ($str) => $str->append('_')->append($pluginKey))
+                    ->append(class_basename($entity))
+                    ->snake()
+                    ->toString(),
+                is_subclass_of($entity, Widget::class) => Str::of('widget')
+                    ->when($pluginKey, fn ($str) => $str->append('_')->append($pluginKey))
+                    ->append(class_basename($entity))
+                    ->snake()
+                    ->toString(),
+                default => Str::of($affix)
+                    ->snake()
+                    ->when($pluginKey, fn ($str) => $str->append('_')->append($pluginKey))
+                    ->append('_')
+                    ->append($subject)
+                    ->snake()
+                    ->toString(),
+            };
         });
     }
 
-    protected function getConflictingResources(): array
+    protected function getPluginPrefixRequiredEntities(): array
     {
         return [
             /**
@@ -105,6 +98,7 @@ class PermissionManager
             \Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource::class,
             \Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource::class,
             \Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource::class,
+            \Webkul\Invoice\Filament\Clusters\Settings\Pages\Products::class,
 
             /**
              * Accounting Resources
@@ -129,6 +123,19 @@ class PermissionManager
             \Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource::class,
             \Webkul\Accounting\Filament\Clusters\Vendors\Resources\RefundResource::class,
             \Webkul\Accounting\Filament\Clusters\Vendors\Resources\VendorResource::class,
+            \Webkul\Accounting\Filament\Pages\Dashboard::class,
+            \Webkul\Accounting\Filament\Clusters\Reporting\Pages\AgedPayable::class,
+            \Webkul\Accounting\Filament\Clusters\Reporting\Pages\AgedReceivable::class,
+            \Webkul\Accounting\Filament\Clusters\Reporting\Pages\BalanceSheet::class,
+            \Webkul\Accounting\Filament\Clusters\Reporting\Pages\GeneralLedger::class,
+            \Webkul\Accounting\Filament\Clusters\Reporting\Pages\PartnerLedger::class,
+            \Webkul\Accounting\Filament\Clusters\Reporting\Pages\ProfitLoss::class,
+            \Webkul\Accounting\Filament\Clusters\Reporting\Pages\TrialBalance::class,
+            \Webkul\Accounting\Filament\Clusters\Settings\Pages\ManageCustomerInvoice::class,
+            \Webkul\Accounting\Filament\Clusters\Settings\Pages\ManageDefaultAccounts::class,
+            \Webkul\Accounting\Filament\Clusters\Settings\Pages\ManageProducts::class,
+            \Webkul\Accounting\Filament\Clusters\Settings\Pages\ManageTaxes::class,
+
 
             /**
              * Other Plugins Resources

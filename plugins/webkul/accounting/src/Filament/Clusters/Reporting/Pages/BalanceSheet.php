@@ -35,6 +35,11 @@ class BalanceSheet extends Page implements HasForms
 
     public ?array $data = [];
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_accounting_balance_sheet';
+    }
+
     public static function getNavigationGroup(): ?string
     {
         return 'Statement Reports';

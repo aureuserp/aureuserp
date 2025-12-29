@@ -34,6 +34,11 @@ class ManageTaxes extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_accounting_manage_taxes';
+    }
+
     public function getBreadcrumbs(): array
     {
         return [

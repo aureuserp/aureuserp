@@ -34,6 +34,11 @@ class AgedPayable extends Page implements HasForms
 
     public ?array $data = [];
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_accounting_aged_payable';
+    }
+
     public static function getNavigationGroup(): ?string
     {
         return 'Partner Reports';

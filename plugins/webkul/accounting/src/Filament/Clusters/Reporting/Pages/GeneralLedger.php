@@ -35,6 +35,11 @@ class GeneralLedger extends Page implements HasForms
 
     public ?array $data = [];
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_accounting_general_ledger';
+    }
+
     public static function getNavigationGroup(): ?string
     {
         return 'Audit Reports';
