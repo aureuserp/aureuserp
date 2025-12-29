@@ -52,6 +52,8 @@ class SupportServiceProvider extends PackageServiceProvider
                 '2025_01_10_094325_create_utm_campaigns_table',
                 '2025_04_04_061507_add_address_columns_in_companies_table',
                 '2025_04_04_062023_alter_companies_table',
+                '2025_10_10_080114_create_currency_rates_table',
+                '2025_11_14_102615_alter_currency_rates_table',
             ])
             ->runsMigrations()
             ->hasCommands([
@@ -61,7 +63,7 @@ class SupportServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        include __DIR__ . '/helpers.php';
+        include __DIR__.'/helpers.php';
 
         Livewire::component('accept-invitation', AcceptInvitation::class);
 
@@ -78,7 +80,7 @@ class SupportServiceProvider extends PackageServiceProvider
         ])->where(['filename' => '[ \w\\.\\/\\-\\@\(\)\=]+']);
 
         FilamentAsset::register([
-            Css::make('support', __DIR__ . '/../resources/dist/support.css'),
+            Css::make('support', __DIR__.'/../resources/dist/support.css'),
         ], 'support');
 
         $this->app->make(PermissionManager::class)->managePermissions();
@@ -88,7 +90,7 @@ class SupportServiceProvider extends PackageServiceProvider
     {
         $this->registerHooks();
 
-        $this->app->singleton(PermissionManager::class, fn () => new PermissionManager());
+        $this->app->singleton(PermissionManager::class, fn () => new PermissionManager);
     }
 
     protected function registerHooks(): void
@@ -97,7 +99,7 @@ class SupportServiceProvider extends PackageServiceProvider
 
         FilamentView::registerRenderHook(
             PanelsRenderHook::USER_MENU_PROFILE_BEFORE,
-            fn(): string => Blade::render(<<<'BLADE'
+            fn (): string => Blade::render(<<<'BLADE'
                 <x-filament::dropdown.list>
                     <x-filament::dropdown.list.item>
                         <div class="flex items-center gap-2">

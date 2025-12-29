@@ -46,7 +46,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Tax as TaxFacade;
-use Webkul\Account\Filament\Resources\IncoTermResource;
+use Webkul\Account\Filament\Resources\IncotermResource;
 use Webkul\Account\Models\Partner;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
@@ -293,7 +293,7 @@ class OrderResource extends Resource
                                             ->relationship('incoterm', 'name')
                                             ->searchable()
                                             ->preload()
-                                            ->createOptionForm(fn (Schema $schema) => IncoTermResource::form($schema))
+                                            ->createOptionForm(fn (Schema $schema) => IncotermResource::form($schema))
                                             ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('purchases::filament/admin/clusters/orders/resources/order.form.tabs.additional.fields.incoterm-tooltip'))
                                             ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT, OrderState::PURCHASE])),
                                         TextInput::make('reference')
@@ -999,9 +999,7 @@ class OrderResource extends Resource
                     ->relationship(
                         'taxes',
                         'name',
-                        function (Builder $query) {
-                            return $query->where('type_tax_use', TypeTaxUse::PURCHASE->value);
-                        },
+                        modifyQueryUsing: fn (Builder $query) => $query->where('type_tax_use', TypeTaxUse::PURCHASE),
                     )
                     ->searchable()
                     ->multiple()
@@ -1225,9 +1223,9 @@ class OrderResource extends Resource
             return $vendorPrice;
         }
 
-        $uom = Uom::find($get('uom_id'));
+        $uomQty = Uom::find($get('uom_id'))->computeQuantity(1, $product->uom, true, 'HALF-UP');
 
-        return (float) ($vendorPrice / $uom->factor);
+        return (float) ($vendorPrice * $uomQty);
     }
 
     private static function getBestPackaging($productId, $quantity)

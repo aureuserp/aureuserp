@@ -12,7 +12,7 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource;
 use Webkul\Inventory\Models\Delivery;
-use Webkul\Support\Concerns\HasRepeatableEntryColumnManager;
+use Webkul\Support\Filament\Concerns\HasRepeatableEntryColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewDelivery extends ViewRecord

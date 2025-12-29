@@ -11,6 +11,7 @@ use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Filament\Resources\InvoiceResource;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
+use Filament\Tables\Table;
 
 class ListInvoices extends ListRecords
 {
@@ -21,11 +22,6 @@ class ListInvoices extends ListRecords
     public function getPresetTableViews(): array
     {
         return [
-            'invoice' => PresetView::make(__('accounts::filament/resources/invoice/pages/list-invoice.tabs.invoices'))
-                ->favorite()
-                ->setAsDefault()
-                ->icon('heroicon-s-receipt-percent')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('move_type', MoveType::OUT_INVOICE)),
             'draft' => PresetView::make(__('accounts::filament/resources/invoice/pages/list-invoice.tabs.draft'))
                 ->favorite()
                 ->icon('heroicon-s-stop')
@@ -42,9 +38,6 @@ class ListInvoices extends ListRecords
                 ->favorite()
                 ->icon('heroicon-s-shield-exclamation')
                 ->modifyQueryUsing(fn (Builder $query) => $query->whereNotNull('inalterable_hash')),
-            'in_refund' => PresetView::make(__('accounts::filament/resources/invoice/pages/list-invoice.tabs.refund'))
-                ->icon('heroicon-s-receipt-refund')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('move_type', MoveType::IN_REFUND)),
             'to_check' => PresetView::make(__('accounts::filament/resources/invoice/pages/list-invoice.tabs.to-check'))
                 ->icon('heroicon-s-check-badge')
                 ->modifyQueryUsing(function (Builder $query) {
@@ -54,24 +47,34 @@ class ListInvoices extends ListRecords
             'to_pay' => PresetView::make(__('accounts::filament/resources/invoice/pages/list-invoice.tabs.to-pay'))
                 ->icon('heroicon-s-banknotes')
                 ->modifyQueryUsing(function (Builder $query) {
-                    $query->whereNot('state', MoveState::POSTED)
+                    $query->where('state', MoveState::POSTED)
                         ->whereIn('payment_state', [
                             PaymentState::NOT_PAID,
                             PaymentState::PARTIAL,
                         ]);
                 }),
+            'unpaid' => PresetView::make(__('accounts::filament/resources/invoice/pages/list-invoice.tabs.unpaid'))
+                ->icon('heroicon-s-banknotes')
+                ->modifyQueryUsing(function (Builder $query) {
+                    $query->where('state', MoveState::POSTED)
+                        ->where('amount_residual', '>', 0)
+                        ->whereNotIn('payment_state', [
+                            PaymentState::PAID,
+                            PaymentState::IN_PAYMENT
+                        ]);
+                }),
             'in_payment' => PresetView::make(__('accounts::filament/resources/invoice/pages/list-invoice.tabs.in-payment'))
                 ->icon('heroicon-s-banknotes')
                 ->modifyQueryUsing(function (Builder $query) {
-                    $query->whereNot('state', MoveState::POSTED)
+                    $query->where('state', MoveState::POSTED)
                         ->where('payment_state', PaymentState::IN_PAYMENT);
                 }),
             'overdue' => PresetView::make(__('accounts::filament/resources/invoice/pages/list-invoice.tabs.overdue'))
                 ->icon('heroicon-s-banknotes')
                 ->modifyQueryUsing(function (Builder $query) {
-                    $query->whereNot('state', MoveState::POSTED)
+                    $query->where('state', MoveState::POSTED)
                         ->where('payment_state', PaymentState::NOT_PAID)
-                        ->where('invoice_date_due', '<', now());
+                        ->where('invoice_date_due', '<', today());
                 }),
         ];
     }

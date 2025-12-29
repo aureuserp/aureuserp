@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Webkul\Account\Enums as AccountEnums;
+use Webkul\Account\Enums\InvoicePolicy;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Facades\Tax;
 use Webkul\Account\Models\Move as AccountMove;
@@ -17,7 +18,6 @@ use Webkul\Inventory\Models\Operation as InventoryOperation;
 use Webkul\Inventory\Models\Product as InventoryProduct;
 use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Models\Warehouse;
-use Webkul\Invoice\Enums as InvoiceEnums;
 use Webkul\Partner\Models\Partner;
 use Webkul\Sale\Enums\AdvancedPayment;
 use Webkul\Sale\Enums\InvoiceStatus;
@@ -200,7 +200,7 @@ class SaleManager
 
         $line->price_reduce_taxexcl = $line->price_unit - ($line->price_unit * ($line->discount / 100));
 
-        $line->price_reduce_taxinc = round($line->price_reduce_taxexcl + ($line->price_reduce_taxexcl * ($line->taxes->sum('amount') / 100)), 2); // Todo:: This calculation is wrong
+        $line->price_reduce_taxinc = round($line->price_reduce_taxexcl + ($line->price_reduce_taxexcl * ($line->taxes->sum('amount') / 100)), 2); // TODO:: This calculation is wrong
 
         $line->state = $line->order->state;
 
@@ -372,7 +372,7 @@ class SaleManager
             && $line->untaxed_amount_to_invoice == 0
         ) {
             $line->invoice_status = InvoiceStatus::INVOICED;
-        } elseif ($policy === InvoiceEnums\InvoicePolicy::ORDER->value) {
+        } elseif ($policy === InvoicePolicy::ORDER->value) {
             if ($line->qty_invoiced >= $line->product_uom_qty) {
                 $line->invoice_status = InvoiceStatus::INVOICED;
             } elseif ($line->qty_delivered > $line->product_uom_qty) {
@@ -380,7 +380,7 @@ class SaleManager
             } else {
                 $line->invoice_status = InvoiceStatus::TO_INVOICE;
             }
-        } elseif ($policy === InvoiceEnums\InvoicePolicy::DELIVERY->value) {
+        } elseif ($policy === InvoicePolicy::DELIVERY->value) {
             if ($line->qty_invoiced >= $line->product_uom_qty) {
                 $line->invoice_status = InvoiceStatus::INVOICED;
             } elseif ($line->qty_to_invoice != 0 || $line->qty_delivered == $line->product_uom_qty) {
@@ -391,6 +391,7 @@ class SaleManager
         } else {
             $line->invoice_status = InvoiceStatus::NO;
         }
+
         return $line;
     }
 
@@ -404,7 +405,7 @@ class SaleManager
 
         $priceSubtotal = 0;
 
-        if ($line->product->invoice_policy === InvoiceEnums\InvoicePolicy::DELIVERY->value) {
+        if ($line->product->invoice_policy === InvoicePolicy::DELIVERY->value) {
             $uomQtyToConsider = $line->qty_delivered;
         } else {
             $uomQtyToConsider = $line->product_uom_qty;
@@ -622,7 +623,7 @@ class SaleManager
         $productInvoicePolicy = $orderLine->product?->invoice_policy;
         $invoiceSetting = $this->invoiceSettings->invoice_policy->value;
 
-        $quantity = ($productInvoicePolicy ?? $invoiceSetting) === InvoiceEnums\InvoicePolicy::ORDER->value
+        $quantity = ($productInvoicePolicy ?? $invoiceSetting) === InvoicePolicy::ORDER->value
             ? $orderLine->product_uom_qty
             : $orderLine->qty_to_invoice;
 

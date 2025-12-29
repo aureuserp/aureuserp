@@ -13,7 +13,7 @@ class ManageFiscalPositionTax extends ManageRelatedRecords
 
     protected static string $resource = FiscalPositionResource::class;
 
-    protected static string $relationship = 'fiscalPositionTaxes';
+    protected static string $relationship = 'taxes';
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document';
 

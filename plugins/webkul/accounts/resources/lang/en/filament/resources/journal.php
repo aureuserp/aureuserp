@@ -16,6 +16,11 @@ return [
                             'sort-code'                      => 'Sort',
                             'currency'                       => 'Currency',
                             'color'                          => 'Color',
+                            'default-account'                => 'Default Account',
+                            'profit-account'                 => 'Profit Account',
+                            'loss-account'                   => 'Loss Account',
+                            'suspense-account'               => 'Suspense Account',
+                            'bank-account'                   => 'Bank Account',
                         ],
                     ],
                     'bank-account-number' => [
@@ -73,6 +78,17 @@ return [
             'status'     => 'Status',
         ],
 
+        'relation-managers' => [
+            'moves-relation-manager' => [
+                'columns' => [
+                    'journal-entry' => 'Journal Entry',
+                    'account'       => 'Account',
+                    'partner'       => 'Partner',
+                    'label'         => 'Label',
+                ],
+            ],
+        ],
+
         'actions' => [
             'delete' => [
                 'notification' => [
@@ -107,6 +123,10 @@ return [
                             'sort-code'                      => 'Sort',
                             'currency'                       => 'Currency',
                             'color'                          => 'Color',
+                            'default-account'                => 'Default Account',
+                            'profit-account'                 => 'Profit Account',
+                            'loss-account'                   => 'Loss Account',
+                            'suspense-account'               => 'Suspense Account',
                         ],
                     ],
                     'bank-account-number' => [

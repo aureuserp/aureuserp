@@ -8,5 +8,10 @@ return [
                 'body'  => 'Bill has been deleted successfully.',
             ],
         ],
+
+        'reverse' => [
+            'label'         => 'Refund',
+            'modal-heading' => 'Create Refund',
+        ],
     ],
 ];

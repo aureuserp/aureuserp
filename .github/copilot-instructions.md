@@ -13,6 +13,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel/framework (LARAVEL) - v11
 - laravel/prompts (PROMPTS) - v0
 - livewire/livewire (LIVEWIRE) - v3
+- laravel/mcp (MCP) - v0
 - laravel/pint (PINT) - v1
 - laravel/sail (SAIL) - v1
 - phpunit/phpunit (PHPUNIT) - v11
@@ -293,7 +294,7 @@ Forms\Components\Select::make('user_id')
 
 ## Livewire Core
 - Use the `search-docs` tool to find exact version specific documentation for how to write Livewire & Livewire tests.
-- Use the `php artisan make:livewire [Posts\\CreatePost]` artisan command to create new components
+- Use the `php artisan make:livewire [Posts\CreatePost]` artisan command to create new components
 - State should live on the server, with the UI reflecting it.
 - All Livewire requests hit the Laravel backend, they're like regular HTTP requests. Always validate form data, and run authorization checks in Livewire actions.
 
@@ -310,7 +311,7 @@ Forms\Components\Select::make('user_id')
     @endforeach
     ```
 
-- Prefer lifecycle hooks like `mount()`, `updatedFoo()`) for initialization and reactive side effects:
+- Prefer lifecycle hooks like `mount()`, `updatedFoo()` for initialization and reactive side effects:
 
 <code-snippet name="Lifecycle hook examples" lang="php">
     public function mount(User $user) { $this->user = $user; }
@@ -431,7 +432,7 @@ document.addEventListener('livewire:init', function () {
 - `corePlugins` is not supported in Tailwind v4.
 - In Tailwind v4, you import Tailwind using a regular CSS `@import` statement, not using the `@tailwind` directives used in v3:
 
-<code-snippet name="Tailwind v4 Import Tailwind Diff" lang="diff"
+<code-snippet name="Tailwind v4 Import Tailwind Diff" lang="diff">
    - @tailwind base;
    - @tailwind components;
    - @tailwind utilities;

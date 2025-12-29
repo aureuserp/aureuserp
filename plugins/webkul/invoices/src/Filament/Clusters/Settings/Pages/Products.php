@@ -6,7 +6,7 @@ use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\Toggle;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Schema;
-use Webkul\Invoice\Settings\ProductSettings;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Clusters\Settings;
 
 class Products extends SettingsPage

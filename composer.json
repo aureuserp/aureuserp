@@ -22,6 +22,7 @@
         "hugomyb/filament-media-action": "^4.0",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
+        "malzariey/filament-daterangepicker-filter": "^4.0",
         "milon/barcode": "^11.0",
         "spatie/eloquent-sortable": "^4.4",
         "wikimedia/composer-merge-plugin": "^2.1"

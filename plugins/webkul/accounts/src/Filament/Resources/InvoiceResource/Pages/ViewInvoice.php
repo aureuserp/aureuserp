@@ -5,10 +5,12 @@ namespace Webkul\Account\Filament\Resources\InvoiceResource\Pages;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
+use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Filament\Resources\InvoiceResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
+use Webkul\Account\Models\Move;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
-use Webkul\Support\Concerns\HasRepeatableEntryColumnManager;
+use Webkul\Support\Filament\Concerns\HasRepeatableEntryColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewInvoice extends ViewRecord
@@ -22,16 +24,19 @@ class ViewInvoice extends ViewRecord
         return [
             ChatterActions\ChatterAction::make()
                 ->setResource($this->getResource()),
+            BaseActions\PrintAndSendAction::make(),
+            BaseActions\PreviewAction::make()
+                ->setTemplate('accounts::invoice/actions/preview.index'),
             BaseActions\PayAction::make(),
             BaseActions\ConfirmAction::make(),
             BaseActions\CancelAction::make(),
-            BaseActions\ResetToDraftAction::make(),
             BaseActions\SetAsCheckedAction::make(),
-            BaseActions\PreviewAction::make()
-                ->setTemplate('accounts::invoice/actions/preview.index'),
-            BaseActions\PrintAndSendAction::make(),
-            BaseActions\CreditNoteAction::make(),
+            BaseActions\ReverseAction::make()
+                ->label(__('accounts::filament/resources/invoice/pages/view-invoice.header-actions.reverse.label'))
+                ->modalHeading(__('accounts::filament/resources/invoice/pages/view-invoice.header-actions.reverse.modal-heading')),
+            BaseActions\ResetToDraftAction::make(),
             DeleteAction::make()
+                ->hidden(fn (Move $record): bool => $record->state == MoveState::POSTED)
                 ->successNotification(
                     Notification::make()
                         ->success()

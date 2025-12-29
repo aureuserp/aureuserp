@@ -17,10 +17,10 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Webkul\Invoice\Enums\AutoPostBills;
-use Webkul\Invoice\Enums\InvoiceFormat;
-use Webkul\Invoice\Enums\InvoiceSendingMethod;
-use Webkul\Invoice\Enums\PartyIdentificationScheme;
+use Webkul\Account\Enums\AutoPostBills;
+use Webkul\Account\Enums\InvoiceFormat;
+use Webkul\Account\Enums\InvoiceSendingMethod;
+use Webkul\Account\Enums\PartyIdentificationScheme;
 use Webkul\Invoice\Filament\Clusters\Vendors;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\CreateVendor;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\EditVendor;
@@ -30,14 +30,14 @@ use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\Mana
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ManageContacts;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ViewVendor;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\RelationManagers\BankAccountsRelationManager;
-use Webkul\Invoice\Models\Partner;
+use Webkul\Invoice\Models\Vendor;
 use Webkul\Partner\Filament\Resources\PartnerResource as BaseVendorResource;
 
 class VendorResource extends BaseVendorResource
 {
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $model = Partner::class;
+    protected static ?string $model = Vendor::class;
 
     protected static ?string $slug = '';
 

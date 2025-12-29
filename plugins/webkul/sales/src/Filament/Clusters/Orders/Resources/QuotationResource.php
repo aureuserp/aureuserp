@@ -64,7 +64,6 @@ use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ViewQ
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource;
 use Webkul\Sale\Livewire\Summary;
 use Webkul\Sale\Models\Order;
-use Webkul\Sale\Models\OrderLine;
 use Webkul\Sale\Models\Partner;
 use Webkul\Sale\Models\Product;
 use Webkul\Sale\Settings;
@@ -1449,7 +1448,7 @@ class QuotationResource extends Resource
                     ->relationship(
                         'taxes',
                         'name',
-                        fn (Builder $query) => $query->where('type_tax_use', TypeTaxUse::SALE->value),
+                        fn (Builder $query) => $query->where('type_tax_use', TypeTaxUse::SALE),
                     )
                     ->searchable()
                     ->multiple()
@@ -1676,9 +1675,9 @@ class QuotationResource extends Resource
             return $vendorPrice;
         }
 
-        $uom = Uom::find($get('product_uom_id'));
+        $uomQty = Uom::find($get('product_uom_id'))->computeQuantity(1, $product->uom, true, 'HALF-UP');
 
-        return (float) ($vendorPrice / $uom->factor);
+        return (float) ($vendorPrice * $uomQty);
     }
 
     private static function getBestPackaging($productId, $quantity)

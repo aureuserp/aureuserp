@@ -15,7 +15,7 @@ class RefundPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_refund');
+        return $user->can('view_any_invoice_refund');
     }
 
     /**
@@ -23,7 +23,7 @@ class RefundPolicy
      */
     public function view(User $user, Refund $refund): bool
     {
-        return $user->can('view_refund');
+        return $user->can('view_invoice_refund');
     }
 
     /**
@@ -31,7 +31,7 @@ class RefundPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_refund');
+        return $user->can('create_invoice_refund');
     }
 
     /**
@@ -39,7 +39,7 @@ class RefundPolicy
      */
     public function update(User $user, Refund $refund): bool
     {
-        return $user->can('update_refund');
+        return $user->can('update_invoice_refund');
     }
 
     /**
@@ -47,7 +47,7 @@ class RefundPolicy
      */
     public function delete(User $user, Refund $refund): bool
     {
-        return $user->can('delete_refund');
+        return $user->can('delete_invoice_refund');
     }
 
     /**
@@ -55,6 +55,6 @@ class RefundPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_refund');
+        return $user->can('delete_any_invoice_refund');
     }
 }

@@ -6,8 +6,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 use Webkul\Partner\Models\Tag;
 use Webkul\Security\Models\User;
 
-
-class tagPolicy
+class TagPolicy
 {
     use HandlesAuthorization;
 
@@ -90,5 +89,4 @@ class tagPolicy
     {
         return $user->can('restore_any_tag');
     }
-
 }

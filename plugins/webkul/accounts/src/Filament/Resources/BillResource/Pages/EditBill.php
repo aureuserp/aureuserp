@@ -5,13 +5,13 @@ namespace Webkul\Account\Filament\Resources\BillResource\Pages;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\Facades\Auth;
-use Webkul\Account\Facades\Account;
+use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\BillResource;
-use Webkul\Account\Filament\Resources\BillResource\Actions\CreditNoteAction;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
+use Webkul\Account\Models\Move;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
-use Webkul\Support\Concerns\HasRepeaterColumnManager;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditBill extends EditRecord
@@ -44,28 +44,22 @@ class EditBill extends EditRecord
             BaseActions\ResetToDraftAction::make(),
             BaseActions\SetAsCheckedAction::make(),
             BaseActions\PrintAndSendAction::make(),
-            CreditNoteAction::make(),
-            DeleteAction::make(),
+            BaseActions\ReverseAction::make()
+                ->label(__('accounts::filament/resources/bill/pages/edit-bill.header-actions.reverse.label'))
+                ->modalHeading(__('accounts::filament/resources/bill/pages/edit-bill.header-actions.reverse.modal-heading')),
+            DeleteAction::make()
+                ->hidden(fn (Move $record): bool => $record->state == MoveState::POSTED)
+                ->successNotification(
+                    Notification::make()
+                        ->success()
+                        ->title(__('accounts::filament/resources/bill/pages/edit-bill.header-actions.delete.notification.title'))
+                        ->body(__('accounts::filament/resources/bill/pages/edit-bill.header-actions.delete.notification.body'))
+                ),
         ];
-    }
-
-    protected function mutateFormDataBeforeSave(array $data): array
-    {
-        $user = Auth::user();
-
-        $record = $this->getRecord();
-
-        $data['partner_id'] ??= $record->partner_id;
-        $data['invoice_date'] ??= $record->invoice_date;
-        $data['name'] ??= $record->name;
-        $data['auto_post'] ??= $record->auto_post;
-        $data['invoice_currency_rate'] ??= 1.0;
-
-        return $data;
     }
 
     protected function afterSave(): void
     {
-        Account::computeAccountMove($this->getRecord());
+        AccountFacade::computeAccountMove($this->getRecord());
     }
 }

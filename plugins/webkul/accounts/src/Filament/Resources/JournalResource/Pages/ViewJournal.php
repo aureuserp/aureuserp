@@ -7,9 +7,12 @@ use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Account\Filament\Resources\JournalResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewJournal extends ViewRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = JournalResource::class;
 
     protected function getHeaderActions(): array
@@ -20,8 +23,8 @@ class ViewJournal extends ViewRecord
                 ->successNotification(
                     Notification::make()
                         ->success()
-                        ->title(__('accounts::filament/resources/journal/pages/view-journal.notification.title'))
-                        ->body(__('accounts::filament/resources/journal/pages/view-journal.notification.body'))
+                        ->title(__('accounts::filament/resources/journal/pages/view-journal.header-actions.delete.notification.title'))
+                        ->body(__('accounts::filament/resources/journal/pages/view-journal.header-actions.delete.notification.body'))
                 ),
         ];
     }

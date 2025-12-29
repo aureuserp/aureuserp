@@ -40,7 +40,7 @@ class ProjectPlugin implements Plugin
                             ->url(fn () => ManageTasks::getUrl())
                             ->group('Project')
                             ->sort(3)
-                            ->visible(fn() => ManageTasks::canAccess()),
+                            ->visible(fn () => ManageTasks::canAccess()),
                     ]);
             });
     }
@@ -54,6 +54,6 @@ class ProjectPlugin implements Plugin
     {
         $reflector = new ReflectionClass(get_class($this));
 
-        return dirname($reflector->getFileName()) . ($path ?? '');
+        return dirname($reflector->getFileName()).($path ?? '');
     }
 }

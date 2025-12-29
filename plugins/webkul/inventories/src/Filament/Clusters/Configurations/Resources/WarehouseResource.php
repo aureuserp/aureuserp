@@ -373,7 +373,7 @@ class WarehouseResource extends Resource
             ->columns(3);
     }
 
-    static public function getWarehouseSettings(): WarehouseSettings
+    public static function getWarehouseSettings(): WarehouseSettings
     {
         return once(fn () => app(WarehouseSettings::class));
     }

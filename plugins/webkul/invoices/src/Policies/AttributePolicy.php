@@ -15,7 +15,7 @@ class AttributePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_product::attribute');
+        return $user->can('view_any_invoice_product::attribute');
     }
 
     /**
@@ -23,7 +23,7 @@ class AttributePolicy
      */
     public function view(User $user, Attribute $attribute): bool
     {
-        return $user->can('view_product::attribute');
+        return $user->can('view_invoice_product::attribute');
     }
 
     /**
@@ -31,7 +31,7 @@ class AttributePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_product::attribute');
+        return $user->can('create_invoice_product::attribute');
     }
 
     /**
@@ -39,7 +39,7 @@ class AttributePolicy
      */
     public function update(User $user, Attribute $attribute): bool
     {
-        return $user->can('update_product::attribute');
+        return $user->can('update_invoice_product::attribute');
     }
 
     /**
@@ -47,7 +47,7 @@ class AttributePolicy
      */
     public function delete(User $user, Attribute $attribute): bool
     {
-        return $user->can('delete_product::attribute');
+        return $user->can('delete_invoice_product::attribute');
     }
 
     /**
@@ -55,7 +55,7 @@ class AttributePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_product::attribute');
+        return $user->can('delete_any_invoice_product::attribute');
     }
 
     /**
@@ -63,7 +63,7 @@ class AttributePolicy
      */
     public function forceDelete(User $user, Attribute $attribute): bool
     {
-        return $user->can('force_delete_product::attribute');
+        return $user->can('force_delete_invoice_product::attribute');
     }
 
     /**
@@ -71,7 +71,7 @@ class AttributePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_product::attribute');
+        return $user->can('force_delete_any_invoice_product::attribute');
     }
 
     /**
@@ -79,7 +79,7 @@ class AttributePolicy
      */
     public function restore(User $user, Attribute $attribute): bool
     {
-        return $user->can('restore_product::attribute');
+        return $user->can('restore_invoice_product::attribute');
     }
 
     /**
@@ -87,6 +87,6 @@ class AttributePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_product::attribute');
+        return $user->can('restore_any_invoice_product::attribute');
     }
 }
