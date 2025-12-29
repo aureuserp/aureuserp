@@ -11,6 +11,7 @@ use Filament\Schemas\Components\Section;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Models\Account;
@@ -20,7 +21,7 @@ use Webkul\Accounting\Filament\Clusters\Reporting;
 
 class BalanceSheet extends Page implements HasForms
 {
-    use Concerns\NormalizeDateFilter, InteractsWithForms;
+    use Concerns\NormalizeDateFilter, InteractsWithForms, HasPageShield;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.balance-sheet';
 

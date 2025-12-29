@@ -344,6 +344,7 @@ return [
         'exclude' => [
             \Filament\Widgets\AccountWidget::class,
             \Filament\Widgets\FilamentInfoWidget::class,
+            \Webkul\Accounting\Filament\Widgets\JournalChartsWidget::class,
         ],
     ],
 

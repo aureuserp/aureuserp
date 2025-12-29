@@ -14,11 +14,12 @@ use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Journal;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Webkul\Accounting\Filament\Clusters\Reporting;
 
 class TrialBalance extends Page implements HasForms
 {
-    use Concerns\NormalizeDateFilter, InteractsWithForms;
+    use Concerns\NormalizeDateFilter, InteractsWithForms, HasPageShield;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.trial-balance';
 

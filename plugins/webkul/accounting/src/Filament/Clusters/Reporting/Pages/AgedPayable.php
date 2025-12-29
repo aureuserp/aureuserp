@@ -15,11 +15,12 @@ use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Accounting\Filament\Clusters\Reporting;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Webkul\Partner\Models\Partner;
 
 class AgedPayable extends Page implements HasForms
 {
-    use InteractsWithForms;
+    use InteractsWithForms, HasPageShield;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.aged-payable';
 
