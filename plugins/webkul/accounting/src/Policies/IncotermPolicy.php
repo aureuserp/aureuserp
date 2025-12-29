@@ -15,7 +15,7 @@ class IncotermPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_accounting_inco::term');
+        return $user->can('view_any_accounting_incoterm');
     }
 
     /**
@@ -23,7 +23,7 @@ class IncotermPolicy
      */
     public function view(User $user, Incoterm $incoterm): bool
     {
-        return $user->can('view_accounting_inco::term');
+        return $user->can('view_accounting_incoterm');
     }
 
     /**
@@ -31,7 +31,7 @@ class IncotermPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_accounting_inco::term');
+        return $user->can('create_accounting_incoterm');
     }
 
     /**
@@ -39,7 +39,7 @@ class IncotermPolicy
      */
     public function update(User $user, Incoterm $incoterm): bool
     {
-        return $user->can('update_accounting_inco::term');
+        return $user->can('update_accounting_incoterm');
     }
 
     /**
@@ -47,7 +47,7 @@ class IncotermPolicy
      */
     public function delete(User $user, Incoterm $incoterm): bool
     {
-        return $user->can('delete_accounting_inco::term');
+        return $user->can('delete_accounting_incoterm');
     }
 
     /**
@@ -55,7 +55,7 @@ class IncotermPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_accounting_inco::term');
+        return $user->can('delete_any_accounting_incoterm');
     }
 
     /**
@@ -63,7 +63,7 @@ class IncotermPolicy
      */
     public function forceDelete(User $user, Incoterm $incoterm): bool
     {
-        return $user->can('force_delete_accounting_inco::term');
+        return $user->can('force_delete_accounting_incoterm');
     }
 
     /**
@@ -71,7 +71,7 @@ class IncotermPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_accounting_inco::term');
+        return $user->can('force_delete_any_accounting_incoterm');
     }
 
     /**
@@ -79,7 +79,7 @@ class IncotermPolicy
      */
     public function restore(User $user, Incoterm $incoterm): bool
     {
-        return $user->can('restore_accounting_inco::term');
+        return $user->can('restore_accounting_incoterm');
     }
 
     /**
@@ -87,6 +87,6 @@ class IncotermPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_accounting_inco::term');
+        return $user->can('restore_any_accounting_incoterm');
     }
 }
