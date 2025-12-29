@@ -385,8 +385,40 @@ class BillResource extends Resource
                     ->label(__('accounts::filament/resources/bill.table.columns.bill-date'))
                     ->sortable(),
                 TextColumn::make('invoice_date_due')
-                    ->state(fn ($record) => $record->invoice_date_due?->diffForHumans())
-                    ->color(fn ($record) => $record->invoice_date_due?->isPast() ? 'danger' : null)
+                    ->state(function ($record) {
+                        if ($record->payment_state == PaymentState::PAID) {
+                            return null;
+                        }
+
+                        if (! $record->invoice_date_due) {
+                            return '-';
+                        }
+
+                        if ($record->invoice_date_due->isToday()) {
+                            return 'Today';
+                        }
+
+                        return $record->invoice_date_due->diffForHumans();
+                    })
+                    ->color(function ($record) {
+                        if ($record->payment_state == PaymentState::PAID) {
+                            return null;
+                        }
+
+                        if (! $record->invoice_date_due) {
+                            return null;
+                        }
+
+                        if ($record->invoice_date_due->isToday()) {
+                            return 'warning';
+                        }
+
+                        if ($record->invoice_date_due->isPast()) {
+                            return 'danger';
+                        }
+
+                        return null;
+                    })
                     ->placeholder('-')
                     ->label(__('accounts::filament/resources/bill.table.columns.due-date'))
                     ->sortable(),

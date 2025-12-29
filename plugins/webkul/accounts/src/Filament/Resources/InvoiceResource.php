@@ -410,6 +410,10 @@ class InvoiceResource extends Resource
                     ->sortable(),
                 TextColumn::make('invoice_date_due')
                     ->state(function ($record) {
+                        if ($record->payment_state == PaymentState::PAID) {
+                            return null;
+                        }
+
                         if (! $record->invoice_date_due) {
                             return '-';
                         }
@@ -421,6 +425,10 @@ class InvoiceResource extends Resource
                         return $record->invoice_date_due->diffForHumans();
                     })
                     ->color(function ($record) {
+                        if ($record->payment_state == PaymentState::PAID) {
+                            return null;
+                        }
+
                         if (! $record->invoice_date_due) {
                             return null;
                         }
