@@ -267,7 +267,7 @@ class PaymentRegister extends Model
         }
 
         if ($availablePaymentMethodLines) {
-            $movePaymentMethodLines = $this->lines->pluck('move')->pluck('paymentMethodLine')->unique();
+            $movePaymentMethodLines = $this->lines->pluck('move')->pluck('paymentMethodLine')->unique()->filter();
 
             if ($movePaymentMethodLines->count() == 1 && $availablePaymentMethodLines->pluck('id')->contains($movePaymentMethodLines->first()->id)) {
                 $this->paymentMethodLine = $movePaymentMethodLines->first();

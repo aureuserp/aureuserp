@@ -233,12 +233,29 @@ class JournalChartWidget extends Component
     {
         $now = now();
 
-        $thisWeekStart = $now->copy()->startOfWeek();
-        $thisWeekEnd   = $now->copy()->endOfWeek();
+        $thisWeekStart = $now->copy()->startOfWeek(Carbon::SUNDAY);
+        $thisWeekEnd = $now->copy()->endOfWeek(Carbon::SATURDAY);
+        
+        $prevWeekStart = $now->copy()->subWeek()->startOfWeek(Carbon::SUNDAY);
+        $prevWeekEnd = $now->copy()->subWeek()->endOfWeek(Carbon::SATURDAY);
+        
+        $nextWeekStart = $now->copy()->addWeek()->startOfWeek(Carbon::SUNDAY);
+        $nextWeekEnd = $now->copy()->addWeek()->endOfWeek(Carbon::SATURDAY);
+        
+        $futureWeekStart = $now->copy()->addWeeks(2)->startOfWeek(Carbon::SUNDAY);
+        $futureWeekEnd = $now->copy()->addWeeks(2)->endOfWeek(Carbon::SATURDAY);
 
-        $labels = ['Due', 'Previous', 'This Week', 'Next Week', 'Future', 'Not Due'];
+        $labels = [
+            'Overdue',
+            $prevWeekStart->format('d M') . ' - ' . $prevWeekEnd->format('d M'),
+            'This Week',
+            $nextWeekStart->format('d M') . ' - ' . $nextWeekEnd->format('d M'),
+            $futureWeekStart->format('d M') . ' - ' . $futureWeekEnd->format('d M'),
+            'Not Due',
+        ];
+
         $late = array_fill(0, 6, 0);
-        $ontime = array_fill(0, 6, 0);
+        $onTime = array_fill(0, 6, 0);
 
         $moves = Move::query()
             ->where('journal_id', $this->journal->id)
@@ -250,11 +267,20 @@ class JournalChartWidget extends Component
         foreach ($moves as $move) {
             $residual = (float) $move->amount_residual;
             $due = Carbon::parse($move->invoice_date_due);
+            $isLate = $due->lt(today());
 
             if ($due->lt(today())) {
                 $late[0] += $residual;
+            } elseif ($due->between($prevWeekStart, $prevWeekEnd)) {
+                $isLate ? $late[1] += $residual : $onTime[1] += $residual;
+            } elseif ($due->between($thisWeekStart, $thisWeekEnd)) {
+                $isLate ? $late[2] += $residual : $onTime[2] += $residual;
+            } elseif ($due->between($nextWeekStart, $nextWeekEnd)) {
+                $isLate ? $late[3] += $residual : $onTime[3] += $residual;
+            } elseif ($due->between($futureWeekStart, $futureWeekEnd)) {
+                $isLate ? $late[4] += $residual : $onTime[4] += $residual;
             } else {
-                $ontime[5] += $residual;
+                $onTime[5] += $residual;
             }
         }
 
@@ -266,10 +292,9 @@ class JournalChartWidget extends Component
                     'label' => 'Overdue',
                     'data'  => $late,
                     'backgroundColor' => '#ef4444',
-                ],
-                [
+                ], [
                     'label' => 'On Time',
-                    'data'  => $ontime,
+                    'data'  => $onTime,
                     'backgroundColor' => '#22c55e',
                 ],
             ],

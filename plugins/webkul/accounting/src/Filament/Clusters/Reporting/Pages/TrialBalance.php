@@ -33,6 +33,11 @@ class TrialBalance extends Page implements HasForms
 
     public ?array $data = [];
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_accounting_trial_balance';
+    }
+
     public static function getNavigationGroup(): ?string
     {
         return 'Audit Reports';

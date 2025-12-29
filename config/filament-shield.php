@@ -324,6 +324,13 @@ return [
         'prefix'  => 'view',
         'exclude' => [
             \Filament\Pages\Dashboard::class,
+            \Webkul\Accounting\Filament\Clusters\Vendors::class,
+            \Webkul\Accounting\Filament\Clusters\Customer::class,
+            \Webkul\Accounting\Filament\Clusters\Accounting::class,
+            \Webkul\Accounting\Filament\Clusters\Configuration::class,
+            \Webkul\Invoice\Filament\Clusters\Vendors::class,
+            \Webkul\Invoice\Filament\Clusters\Customer::class,
+            \Webkul\Invoice\Filament\Clusters\Configuration::class,
         ],
     ],
 
