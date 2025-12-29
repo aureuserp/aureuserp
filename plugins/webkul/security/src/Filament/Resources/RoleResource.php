@@ -159,9 +159,41 @@ class RoleResource extends RolesRoleResource
                 ->schema(static::getPluginResourceEntitiesSchema());
     }
 
+    public static function getTabFormComponentForPage(): Component
+    {
+        $options = static::getPageOptions();
+        $count = count($options);
+
+        return Tab::make('pages')
+            ->label(__('filament-shield::filament-shield.pages'))
+            ->visible(fn (): bool => Utils::isPageTabEnabled() && $count > 0)
+            ->badge($count)
+            ->schema(static::getPluginPageEntitiesSchema());
+
+        return Tab::make('pages')
+            ->label(__('filament-shield::filament-shield.pages'))
+            ->visible(fn (): bool => Utils::isPageTabEnabled() && $count > 0)
+            ->badge($count)
+            ->schema([
+                static::getCheckboxListFormComponent(
+                    name: 'pages_tab',
+                    options: $options,
+                ),
+            ]);
+    }
+
     public static function getPluginResources(): ?array
     {
         return collect(static::getResources())
+            ->groupBy(function ($value, $key) {
+                return explode('\\', $key)[1] ?? 'Unknown';
+            })
+            ->toArray();
+    }
+
+    public static function getPluginPages(): array
+    {
+        return collect(FilamentShield::getPages())
             ->groupBy(function ($value, $key) {
                 return explode('\\', $key)[1] ?? 'Unknown';
             })
@@ -243,6 +275,33 @@ class RoleResource extends RolesRoleResource
                             ->columns(static::shield()->getGridColumns()),
                     ]);
             })
+            ->toArray();
+    }
+
+    public static function getPluginPageEntitiesSchema(): ?array
+    {
+        return collect(static::getPluginPages())
+            ->sortKeys()
+            ->map(function ($plugin, $key) {
+                return Section::make($key)
+                    ->collapsible()
+                    ->schema([
+                        Grid::make()
+                            ->schema(function () use ($plugin, $key) {
+                                $options = collect($plugin)
+                                    ->flatMap(fn ($page) => $page['permissions'])
+                                    ->toArray();
+
+                                return [
+                                    static::getCheckboxListFormComponent(
+                                        name: $key . '_pages_tab',
+                                        options: $options,
+                                    ),
+                                ];
+                            }),
+                    ]);
+            })
+            ->values()
             ->toArray();
     }
 
