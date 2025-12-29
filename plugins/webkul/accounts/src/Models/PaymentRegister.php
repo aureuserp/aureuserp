@@ -567,10 +567,11 @@ class PaymentRegister extends Model
         ];
     }
 
-    // TODO: need to pass context
     public function getNextPaymentDateInContext()
     {
-        return $this->payment_date;
+        return $this->lines
+            ->filter(fn ($line) => ! $line->reconciled && ! empty($line->payment_date))
+            ->min('payment_date') ?? false;
     }
 
     public function convertToCurrentCurrency($installments)
@@ -617,8 +618,11 @@ class PaymentRegister extends Model
 
             $label = $move->payment_reference ?: ($move->ref ?: $move->name);
         } else {
-            // TODO: need to calculate the Batch sequence number later
-            $label = 'Batch';
+            $label = sprintf(
+                'BATCH/%s/%s',
+                now()->format('Y'),
+                $this->id
+            );
         }
 
         return $label;

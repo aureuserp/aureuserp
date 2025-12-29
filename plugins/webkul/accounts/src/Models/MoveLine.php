@@ -81,6 +81,7 @@ class MoveLine extends Model implements Sortable
         'date'                  => 'date',
         'date_maturity'         => 'date',
         'invoice_date'          => 'date',
+        'discount_date'         => 'date',
         'analytic_distribution' => 'array',
         'parent_state'          => MoveState::class,
         'display_type'          => DisplayType::class,
@@ -235,6 +236,15 @@ class MoveLine extends Model implements Sortable
         }
 
         return $isRefund;
+    }
+
+    public function getPaymentDateAttribute()
+    {
+        if ($this->discount_date && today()->toDateString() <= $this->discount_date->toDateString()) {
+            return $this->discount_date;
+        }
+
+        return $this->date_maturity;
     }
 
     /**

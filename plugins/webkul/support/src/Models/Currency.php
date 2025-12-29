@@ -66,12 +66,9 @@ class Currency extends Model
         return $toRateRecord->rate ?? 1.0;
     }
 
-    /**
-     * //TODO: Implement proper rounding logic.
-     */
     public function round(float $amount): float
     {
-        return $amount;
+        return float_round($amount, precisionRounding: $this->rounding);
     }
 
     public function compareAmounts($amount1, $amount2)
