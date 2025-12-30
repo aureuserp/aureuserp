@@ -26,6 +26,11 @@ class ManageQuotationAndOrder extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_sale_manage_quotation_and_order';
+    }
+
     public function getBreadcrumbs(): array
     {
         return [
