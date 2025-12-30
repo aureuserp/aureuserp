@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources;
 
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -25,6 +26,8 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Webkul\Account\Enums\AccountType;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\AccountResource\Pages\ManageAccounts;
 use Webkul\Account\Models\Account;
 
@@ -165,21 +168,59 @@ class AccountResource extends Resource
                             ->body(__('accounts::filament/resources/account.table.actions.edit.notification.body'))
                     ),
                 DeleteAction::make()
+                    ->action(function (Account $record, DeleteAction $action) {
+                        if ($record->moveLines()->count() > 0) {
+                            $action->failure();
+
+                            return;
+                        }
+
+                        $record->delete();
+
+                        $action->success();
+                    })
+                    ->failureNotification(
+                        Notification::make()
+                            ->danger()
+                            ->title(__('accounts::filament/resources/account.table.actions.delete.notification.error.title'))
+                            ->body(__('accounts::filament/resources/account.table.actions.delete.notification.error.body'))
+                    )
                     ->successNotification(
                         Notification::make()
                             ->success()
-                            ->title(__('accounts::filament/resources/account.table.actions.delete.notification.title'))
-                            ->body(__('accounts::filament/resources/account.table.actions.delete.notification.body'))
+                            ->title(__('accounts::filament/resources/account.table.actions.delete.notification.success.title'))
+                            ->body(__('accounts::filament/resources/account.table.actions.delete.notification.success.body'))
                     ),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
+                        ->action(function (Collection $records, DeleteBulkAction $action) {
+                            $hasMoveLines = $records->contains(function ($record) {
+                                return $record->moveLines()->exists();
+                            });
+
+                            if ($hasMoveLines) {
+                                $action->failure();
+
+                                return;
+                            }
+
+                            $records->each(fn (Model $record) => $record->delete());
+
+                            $action->success();
+                        })
+                        ->failureNotification(
+                            Notification::make()
+                                ->danger()
+                                ->title(__('accounts::filament/resources/account.table.bulk-actions.delete.notification.error.title'))
+                                ->body(__('accounts::filament/resources/account.table.bulk-actions.delete.notification.error.body'))
+                        )
                         ->successNotification(
                             Notification::make()
                                 ->success()
-                                ->title(__('accounts::filament/resources/account.table.bulk-options.delete.notification.title'))
-                                ->body(__('accounts::filament/resources/account.table.bulk-options.delete.notification.body'))
+                                ->title(__('accounts::filament/resources/account.table.bulk-actions.delete.notification.success.title'))
+                                ->body(__('accounts::filament/resources/account.table.bulk-actions.delete.notification.success.body'))
                         ),
                 ]),
             ]);
