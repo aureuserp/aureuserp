@@ -92,8 +92,15 @@ return [
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Incoterm deleted',
-                    'body'  => 'The incoterm has been deleted successfully.',
+                    'success' => [
+                        'title' => 'Journal deleted',
+                        'body'  => 'The journal has been deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Journal deletion failed',
+                        'body'  => 'The journal cannot be deleted because it is currently in use.',
+                    ],
                 ],
             ],
         ],
@@ -101,8 +108,15 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Journal deleted',
-                    'body'  => 'The journal has been deleted successfully.',
+                    'success' => [
+                        'title' => 'Journal deleted',
+                        'body'  => 'The journal has been deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Journals deletion failed',
+                        'body'  => 'The journals cannot be deleted because they are currently in use.',
+                    ],
                 ],
             ],
         ],
@@ -116,6 +130,7 @@ return [
                 'field-set' => [
                     'accounting-information' => [
                         'title'   => 'Accounting Information',
+                        
                         'entries' => [
                             'dedicated-credit-note-sequence' => 'Dedicated Credit Note Sequence',
                             'dedicated-payment-sequence'     => 'Dedicated Payment Sequence',
@@ -129,6 +144,7 @@ return [
                             'suspense-account'               => 'Suspense Account',
                         ],
                     ],
+
                     'bank-account-number' => [
                         'title' => 'Bank Account Number',
                     ],
@@ -142,6 +158,7 @@ return [
                     'relation-notes-placeholder' => 'Enter any relation details',
                 ],
             ],
+
             'outgoing-payments' => [
                 'title' => 'Outgoing Payments',
 
@@ -150,6 +167,7 @@ return [
                     'relation-notes-placeholder' => 'Enter any relation details',
                 ],
             ],
+
             'advanced-settings' => [
                 'title'   => 'Advanced Settings',
                 'entries' => [

@@ -101,6 +101,11 @@ class Journal extends Model implements Sortable
         return $this->belongsToMany(Account::class, 'accounts_journal_accounts', 'journal_id', 'account_id');
     }
 
+    public function moves()
+    {
+        return $this->hasMany(Move::class, 'journal_id');
+    }
+
     public function moveLines()
     {
         return $this->hasMany(MoveLine::class, 'journal_id');

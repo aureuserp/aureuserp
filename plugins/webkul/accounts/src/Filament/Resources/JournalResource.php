@@ -10,6 +10,9 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\ColorEntry;
 use Filament\Infolists\Components\IconEntry;
@@ -372,19 +375,51 @@ class JournalResource extends Resource
                 ViewAction::make(),
                 EditAction::make(),
                 DeleteAction::make()
+                    ->action(function (Journal $record, DeleteAction $action) {
+                        try {
+                            $record->delete();
+                                
+                            $action->success();
+                        } catch (QueryException $e) {
+                            $action->failure();
+                        }
+                    })
+                    ->failureNotification(
+                        Notification::make()
+                            ->danger()
+                            ->title(__('accounts::filament/resources/journal.table.actions.delete.notification.error.title'))
+                            ->body(__('accounts::filament/resources/journal.table.actions.delete.notification.error.body'))
+                    )
                     ->successNotification(
                         Notification::make()
-                            ->title(__('accounts::filament/resources/journal.table.actions.delete.notification.title'))
-                            ->body(__('accounts::filament/resources/journal.table.actions.delete.notification.body'))
+                            ->success()
+                            ->title(__('accounts::filament/resources/journal.table.actions.delete.notification.success.title'))
+                            ->body(__('accounts::filament/resources/journal.table.actions.delete.notification.success.body'))
                     ),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
+                        ->action(function (Collection $records, DeleteBulkAction $action) {
+                            try {
+                                $records->each(fn (Model $record) => $record->delete());
+
+                                $action->success();
+                            } catch (QueryException $e) {
+                                $action->failure();
+                            }
+                        })
+                        ->failureNotification(
+                            Notification::make()
+                                ->danger()
+                                ->title(__('accounts::filament/resources/journal.table.bulk-actions.delete.notification.error.title'))
+                                ->body(__('accounts::filament/resources/journal.table.bulk-actions.delete.notification.error.body'))
+                        )
                         ->successNotification(
                             Notification::make()
-                                ->title(__('accounts::filament/resources/journal.table.bulk-actions.delete.notification.title'))
-                                ->body(__('accounts::filament/resources/journal.table.bulk-actions.delete.notification.body'))
+                                ->success()
+                                ->title(__('accounts::filament/resources/journal.table.bulk-actions.delete.notification.success.title'))
+                                ->body(__('accounts::filament/resources/journal.table.bulk-actions.delete.notification.success.body'))
                         ),
                 ]),
             ]);
