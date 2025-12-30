@@ -157,6 +157,35 @@ class PermissionManager
             \Webkul\Accounting\Filament\Clusters\Settings\Pages\ManageProducts::class,
             \Webkul\Accounting\Filament\Clusters\Settings\Pages\ManageTaxes::class,
 
+            /**
+             * Inventory Plugins Resources/Pages
+             */
+            \Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource::class,
+            \Webkul\Inventory\Filament\Clusters\Configurations\Resources\OperationTypeResource::class,
+            \Webkul\Inventory\Filament\Clusters\Configurations\Resources\PackageTypeResource::class,
+            \Webkul\Inventory\Filament\Clusters\Configurations\Resources\PackagingResource::class,
+            \Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductAttributeResource::class,
+            \Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryResource::class,
+            \Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource::class,
+            \Webkul\Inventory\Filament\Clusters\Configurations\Resources\RuleResource::class,
+            \Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource::class,
+            \Webkul\Inventory\Filament\Clusters\Configurations\Resources\WarehouseResource::class,
+            \Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource::class,
+            \Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource::class,
+            \Webkul\Inventory\Filament\Clusters\Operations\Resources\InternalResource::class,
+            \Webkul\Inventory\Filament\Clusters\Operations\Resources\QuantityResource::class,
+            \Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource::class,
+            \Webkul\Inventory\Filament\Clusters\Operations\Resources\ReplenishmentResource::class,
+            \Webkul\Inventory\Filament\Clusters\Operations\Resources\ScrapResource::class,
+            \Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource::class,
+            \Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource::class,
+            \Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource::class,
+            \Webkul\Inventory\Filament\Clusters\Settings\Pages\ManageLogistics::class,
+            \Webkul\Inventory\Filament\Clusters\Settings\Pages\ManageOperations::class,
+            \Webkul\Inventory\Filament\Clusters\Settings\Pages\ManageProducts::class,
+            \Webkul\Inventory\Filament\Clusters\Settings\Pages\ManageTraceability::class,
+            \Webkul\Inventory\Filament\Clusters\Settings\Pages\ManageWarehouses::class,
+
 
             /**
              * Other Plugins Resources

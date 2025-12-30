@@ -16,7 +16,7 @@ class DeliveryPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_delivery');
+        return $user->can('view_any_inventory_delivery');
     }
 
     /**
@@ -24,7 +24,7 @@ class DeliveryPolicy
      */
     public function view(User $user, Delivery $delivery): bool
     {
-        return $user->can('view_delivery');
+        return $user->can('view_inventory_delivery');
     }
 
     /**
@@ -32,7 +32,7 @@ class DeliveryPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_delivery');
+        return $user->can('create_inventory_delivery');
     }
 
     /**
@@ -40,7 +40,7 @@ class DeliveryPolicy
      */
     public function update(User $user, Delivery $delivery): bool
     {
-        if (! $user->can('update_delivery')) {
+        if (! $user->can('update_inventory_delivery')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class DeliveryPolicy
      */
     public function delete(User $user, Delivery $delivery): bool
     {
-        if (! $user->can('delete_delivery')) {
+        if (! $user->can('delete_inventory_delivery')) {
             return false;
         }
         // dd($this->hasAccess($user, $delivery));
@@ -65,6 +65,6 @@ class DeliveryPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_delivery');
+        return $user->can('delete_any_inventory_delivery');
     }
 }

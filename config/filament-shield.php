@@ -338,6 +338,9 @@ return [
             \Webkul\Purchase\Filament\Admin\Clusters\Orders::class,
             \Webkul\Purchase\Filament\Admin\Clusters\Configurations::class,
             \Webkul\Purchase\Filament\Admin\Clusters\Products::class,
+            \Webkul\Inventory\Filament\Clusters\Configurations::class,
+            \Webkul\Inventory\Filament\Clusters\Operations::class,
+            \Webkul\Inventory\Filament\Clusters\Products::class,
 
         ],
     ],
