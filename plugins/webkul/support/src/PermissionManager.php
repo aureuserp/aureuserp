@@ -68,17 +68,38 @@ class PermissionManager
             /**
              * Purchase Resources
              */
+            \Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\PackagingResource::class,
+            \Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\ProductAttributeResource::class,
             \Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\ProductCategoryResource::class,
+            \Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\VendorPriceResource::class,
+            \Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource::class,
+            \Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseOrderResource::class,
+            \Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource::class,
+            \Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\VendorResource::class,
             \Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource::class,
+            \Webkul\Purchase\Filament\Admin\Clusters\Settings\Pages\ManageOrders::class,
+            \Webkul\Purchase\Filament\Admin\Clusters\Settings\Pages\ManageProducts::class,
 
             /**
              * Sale Resources
              */
             \Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityPlanResource::class,
             \Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityTypeResource::class,
-            \Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource::class,
-            \Webkul\Sale\Filament\Clusters\Configuration\Resources\TagResource::class,
+            \Webkul\Sale\Filament\Clusters\Configuration\Resources\PackagingResource::class,
+            \Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductAttributeResource::class,
             \Webkul\Sale\Filament\Clusters\Configuration\Resources\ProductCategoryResource::class,
+            \Webkul\Sale\Filament\Clusters\Configuration\Resources\TagResource::class,
+            \Webkul\Sale\Filament\Clusters\Configuration\Resources\TeamResource::class,
+            \Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource::class,
+            \Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource::class,
+            \Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource::class,
+            \Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource::class,
+            \Webkul\Sale\Filament\Clusters\Settings\Pages\ManageInvoice::class,
+            \Webkul\Sale\Filament\Clusters\Settings\Pages\ManagePricing::class,
+            \Webkul\Sale\Filament\Clusters\Settings\Pages\ManageProducts::class,
+            \Webkul\Sale\Filament\Clusters\Settings\Pages\ManageQuotationAndOrder::class,
+            \Webkul\Sale\Filament\Clusters\ToInvoice\Resources\OrderToInvoiceResource::class,
+            \Webkul\Sale\Filament\Clusters\ToInvoice\Resources\OrderToUpsellResource::class,
 
             /**
              * Invoice Resources

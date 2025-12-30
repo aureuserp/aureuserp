@@ -1,13 +1,13 @@
 <?php
 
-namespace Webkul\Purchase\Policies;
+namespace Webkul\Sale\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Webkul\Purchase\Models\Requisition;
+use Webkul\Sale\Models\OrderToUpsell as Order;
 use Webkul\Security\Models\User;
 use Webkul\Security\Traits\HasScopedPermissions;
 
-class RequisitionPolicy
+class OrderToUpsellPolicy
 {
     use HandlesAuthorization, HasScopedPermissions;
 
@@ -16,15 +16,15 @@ class RequisitionPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_purchase_purchase::agreement');
+        return $user->can('view_any_sale_order::to::upsell');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Requisition $requisition): bool
+    public function view(User $user, Order $order): bool
     {
-        return $user->can('view_purchase_purchase::agreement');
+        return $user->can('view_sale_order::to::upsell');
     }
 
     /**
@@ -32,31 +32,31 @@ class RequisitionPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_purchase_purchase::agreement');
+        return $user->can('create_sale_order::to::upsell');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Requisition $requisition): bool
+    public function update(User $user, Order $order): bool
     {
-        if (! $user->can('update_purchase_purchase::agreement')) {
+        if (! $user->can('update_sale_order::to::upsell')) {
             return false;
         }
 
-        return $this->hasAccess($user, $requisition);
+        return $this->hasAccess($user, $order);
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Requisition $requisition): bool
+    public function delete(User $user, Order $order): bool
     {
-        if (! $user->can('delete_purchase_purchase::agreement')) {
+        if (! $user->can('delete_sale_order::to::upsell')) {
             return false;
         }
 
-        return $this->hasAccess($user, $requisition);
+        return $this->hasAccess($user, $order);
     }
 
     /**
@@ -64,19 +64,19 @@ class RequisitionPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_purchase_purchase::agreement');
+        return $user->can('delete_any_sale_order::to::upsell');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Requisition $requisition): bool
+    public function forceDelete(User $user, Order $order): bool
     {
-        if (! $user->can('force_delete_purchase_purchase::agreement')) {
+        if (! $user->can('force_delete_sale_order::to::upsell')) {
             return false;
         }
 
-        return $this->hasAccess($user, $requisition);
+        return $this->hasAccess($user, $order);
     }
 
     /**
@@ -84,19 +84,19 @@ class RequisitionPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_purchase_purchase::agreement');
+        return $user->can('force_delete_any_sale_order::to::upsell');
     }
 
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Requisition $requisition): bool
+    public function restore(User $user, Order $order): bool
     {
-        if (! $user->can('restore_purchase_purchase::agreement')) {
+        if (! $user->can('restore_sale_order::to::upsell')) {
             return false;
         }
 
-        return $this->hasAccess($user, $requisition);
+        return $this->hasAccess($user, $order);
     }
 
     /**
@@ -104,6 +104,6 @@ class RequisitionPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_purchase_purchase::agreement');
+        return $user->can('restore_any_sale_order::to::upsell');
     }
 }

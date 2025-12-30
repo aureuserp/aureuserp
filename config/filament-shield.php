@@ -331,6 +331,14 @@ return [
             \Webkul\Invoice\Filament\Clusters\Vendors::class,
             \Webkul\Invoice\Filament\Clusters\Customer::class,
             \Webkul\Invoice\Filament\Clusters\Configuration::class,
+            \Webkul\Sale\Filament\Clusters\Configuration::class,
+            \Webkul\Sale\Filament\Clusters\Orders::class,
+            \Webkul\Sale\Filament\Clusters\Products::class,
+            \Webkul\Sale\Filament\Clusters\ToInvoice::class,
+            \Webkul\Purchase\Filament\Admin\Clusters\Orders::class,
+            \Webkul\Purchase\Filament\Admin\Clusters\Configurations::class,
+            \Webkul\Purchase\Filament\Admin\Clusters\Products::class,
+
         ],
     ],
 

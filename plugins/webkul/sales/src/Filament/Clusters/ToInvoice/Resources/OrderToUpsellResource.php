@@ -9,7 +9,7 @@ use Webkul\Sale\Enums\InvoiceStatus;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Sale\Filament\Clusters\ToInvoice;
 use Webkul\Sale\Filament\Clusters\ToInvoice\Resources\OrderToUpsellResource\Pages\ListOrderToUpsells;
-use Webkul\Sale\Models\Order;
+use Webkul\Sale\Models\OrderToUpsell as Order;
 
 class OrderToUpsellResource extends Resource
 {
