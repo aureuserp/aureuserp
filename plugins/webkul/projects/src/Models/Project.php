@@ -32,6 +32,11 @@ class Project extends Model implements Sortable
      */
     protected $table = 'projects_projects';
 
+    public function getModelTitle(): string
+    {
+        return __('projects::models/project.title');
+    }
+
     /**
      * Fillable.
      *
@@ -77,26 +82,29 @@ class Project extends Model implements Sortable
         'allow_task_dependencies' => 'boolean',
     ];
 
-    protected array $logAttributes = [
-        'name',
-        'tasks_label',
-        'description',
-        'visibility',
-        'color',
-        'sort',
-        'start_date',
-        'end_date',
-        'allocated_hours',
-        'allow_timesheets',
-        'allow_milestones',
-        'allow_task_dependencies',
-        'is_active',
-        'stage.name'   => 'Stage',
-        'partner.name' => 'Customer',
-        'company.name' => 'Company',
-        'user.name'    => 'Project Manager',
-        'creator.name' => 'Creator',
-    ];
+    protected function getLogAttributeLabels(): array
+    {
+        return [
+            'name'                    => __('projects::models/project.log-attributes.name'),
+            'tasks_label'             => __('projects::models/project.log-attributes.tasks_label'),
+            'description'             => __('projects::models/project.log-attributes.description'),
+            'visibility'              => __('projects::models/project.log-attributes.visibility'),
+            'color'                   => __('projects::models/project.log-attributes.color'),
+            'sort'                    => __('projects::models/project.log-attributes.sort'),
+            'start_date'              => __('projects::models/project.log-attributes.start_date'),
+            'end_date'                => __('projects::models/project.log-attributes.end_date'),
+            'allocated_hours'         => __('projects::models/project.log-attributes.allocated_hours'),
+            'allow_timesheets'        => __('projects::models/project.log-attributes.allow_timesheets'),
+            'allow_milestones'        => __('projects::models/project.log-attributes.allow_milestones'),
+            'allow_task_dependencies' => __('projects::models/project.log-attributes.allow_task_dependencies'),
+            'is_active'               => __('projects::models/project.log-attributes.is_active'),
+            'stage.name'              => __('projects::models/project.log-attributes.stage'),
+            'partner.name'            => __('projects::models/project.log-attributes.partner'),
+            'company.name'            => __('projects::models/project.log-attributes.company'),
+            'user.name'               => __('projects::models/project.log-attributes.user'),
+            'creator.name'            => __('projects::models/project.log-attributes.creator'),
+        ];
+    }
 
     public $sortable = [
         'order_column_name'  => 'sort',

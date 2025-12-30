@@ -29,6 +29,11 @@ class Product extends Model implements Sortable
      */
     protected $table = 'products_products';
 
+    public function getModelTitle(): string
+    {
+        return __('products::models/product.title');
+    }
+
     /**
      * Fillable.
      *
@@ -67,38 +72,43 @@ class Product extends Model implements Sortable
      * @var string
      */
     protected $casts = [
-        'type'            => ProductType::class,
-        'enable_sales'    => 'boolean',
-        'enable_purchase' => 'boolean',
-        'is_favorite'     => 'boolean',
-        'is_configurable' => 'boolean',
-        'images'          => 'array',
-        'cost'            => 'float',
-        'price'           => 'float',
+        'type'             => ProductType::class,
+        'enable_sales'     => 'boolean',
+        'enable_purchase'  => 'boolean',
+        'is_favorite'      => 'boolean',
+        'is_configurable'  => 'boolean',
+        'images'           => 'array',
+        'cost'             => 'float',
+        'price'            => 'float',
+        'volume'           => 'decimal:4',
+        'weight'           => 'decimal:4',
     ];
 
-    protected array $logAttributes = [
-        'type',
-        'name',
-        'service_tracking',
-        'reference',
-        'barcode',
-        'price',
-        'cost',
-        'volume',
-        'weight',
-        'description',
-        'description_purchase',
-        'description_sale',
-        'enable_sales',
-        'enable_purchase',
-        'is_favorite',
-        'is_configurable',
-        'parent.name'   => 'Parent',
-        'category.name' => 'Category',
-        'company.name'  => 'Company',
-        'creator.name'  => 'Creator',
-    ];
+    protected function getLogAttributeLabels(): array
+    {
+        return [
+            'type'                 => __('products::models/product.log-attributes.type'),
+            'name'                 => __('products::models/product.log-attributes.name'),
+            'service_tracking'     => __('products::models/product.log-attributes.service_tracking'),
+            'reference'            => __('products::models/product.log-attributes.reference'),
+            'barcode'              => __('products::models/product.log-attributes.barcode'),
+            'price'                => __('products::models/product.log-attributes.price'),
+            'cost'                 => __('products::models/product.log-attributes.cost'),
+            'volume'               => __('products::models/product.log-attributes.volume'),
+            'weight'               => __('products::models/product.log-attributes.weight'),
+            'description'          => __('products::models/product.log-attributes.description'),
+            'description_purchase' => __('products::models/product.log-attributes.description_purchase'),
+            'description_sale'     => __('products::models/product.log-attributes.description_sale'),
+            'enable_sales'         => __('products::models/product.log-attributes.enable_sales'),
+            'enable_purchase'      => __('products::models/product.log-attributes.enable_purchase'),
+            'is_favorite'          => __('products::models/product.log-attributes.is_favorite'),
+            'is_configurable'      => __('products::models/product.log-attributes.is_configurable'),
+            'parent.name'          => __('products::models/product.log-attributes.parent'),
+            'category.name'        => __('products::models/product.log-attributes.category'),
+            'company.name'         => __('products::models/product.log-attributes.company'),
+            'creator.name'         => __('products::models/product.log-attributes.creator'),
+        ];
+    }
 
     public $sortable = [
         'order_column_name'  => 'sort',

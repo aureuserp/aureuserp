@@ -39,7 +39,7 @@ class EditPartner extends EditRecord
     {
         return [
             ChatterAction::make()
-                ->setResource(static::$resource),
+                ->resource(static::$resource),
             ViewAction::make(),
             DeleteAction::make()
                 ->successNotification(

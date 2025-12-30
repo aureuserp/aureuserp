@@ -7,8 +7,8 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Account\Filament\Resources\PaymentResource;
 use Webkul\Account\Filament\Resources\PaymentResource\Actions as BaseActions;
-use Webkul\Chatter\Filament\Actions as ChatterActions;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Webkul\Chatter\Filament\Actions\ChatterAction;
 
 class EditPayment extends EditRecord
 {
@@ -32,8 +32,8 @@ class EditPayment extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            ChatterActions\ChatterAction::make()
-                ->setResource(static::$resource),
+            ChatterAction::make()
+                ->resource(static::$resource),
             BaseActions\ConfirmAction::make(),
             BaseActions\ResetToDraftAction::make(),
             BaseActions\MarkAsSendAdnUnsentAction::make(),

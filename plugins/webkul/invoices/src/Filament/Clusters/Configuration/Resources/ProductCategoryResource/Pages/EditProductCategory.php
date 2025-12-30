@@ -2,7 +2,7 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Configuration\Resources\ProductCategoryResource\Pages;
 
-use Webkul\Chatter\Filament\Actions as ChatterActions;
+use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Invoice\Filament\Clusters\Configuration\Resources\ProductCategoryResource;
 use Webkul\Product\Filament\Resources\CategoryResource\Pages\EditCategory;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
@@ -17,8 +17,8 @@ class EditProductCategory extends EditCategory
     {
         return [
 
-            ChatterActions\ChatterAction::make()
-                ->setResource(static::$resource),
+            ChatterAction::make()
+                ->resource(static::$resource),
             ...parent::getHeaderActions(),
         ];
     }

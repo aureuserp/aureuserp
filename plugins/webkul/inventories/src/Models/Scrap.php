@@ -28,6 +28,11 @@ class Scrap extends Model
      */
     protected $table = 'inventories_scraps';
 
+    public function getModelTitle(): string
+    {
+        return __('inventories::models/scrap.title');
+    }
+
     /**
      * Fillable.
      *
@@ -52,24 +57,27 @@ class Scrap extends Model
         'creator_id',
     ];
 
-    protected array $logAttributes = [
-        'name',
-        'origin',
-        'state',
-        'qty',
-        'should_replenish',
-        'closed_at',
-        'product.name'                  => 'Product',
-        'uom.name'                      => 'UOM',
-        'lot.name'                      => 'Lot',
-        'package.name'                  => 'Package',
-        'partner.name'                  => 'Partner',
-        'operation.name'                => 'Operation',
-        'sourceLocation.full_name'      => 'Source Location',
-        'destinationLocation.full_name' => 'Destination Location',
-        'company.name'                  => 'Company',
-        'creator.name'                  => 'Creator',
-    ];
+    protected function getLogAttributeLabels(): array
+    {
+        return [
+            'name'                                      => __('inventories::models/scrap.log-attributes.name'),
+            'origin'                                    => __('inventories::models/scrap.log-attributes.origin'),
+            'state'                                     => __('inventories::models/scrap.log-attributes.state'),
+            'qty'                                       => __('inventories::models/scrap.log-attributes.qty'),
+            'should_replenish'                          => __('inventories::models/scrap.log-attributes.should_replenish'),
+            'closed_at'                                 => __('inventories::models/scrap.log-attributes.closed_at'),
+            'product.name'                              => __('inventories::models/scrap.log-attributes.product'),
+            'uom.name'                                  => __('inventories::models/scrap.log-attributes.uom'),
+            'lot.name'                                  => __('inventories::models/scrap.log-attributes.lot'),
+            'package.name'                              => __('inventories::models/scrap.log-attributes.package'),
+            'partner.name'                              => __('inventories::models/scrap.log-attributes.partner'),
+            'operation.name'                            => __('inventories::models/scrap.log-attributes.operation'),
+            'sourceLocation.full_name'                  => __('inventories::models/scrap.log-attributes.source-location'),
+            'destinationLocation.full_name'             => __('inventories::models/scrap.log-attributes.destination-location'),
+            'company.name'                              => __('inventories::models/scrap.log-attributes.company'),
+            'creator.name'                              => __('inventories::models/scrap.log-attributes.creator'),
+        ];
+    }
 
     /**
      * Table name.
@@ -80,6 +88,7 @@ class Scrap extends Model
         'state'            => ScrapState::class,
         'should_replenish' => 'boolean',
         'closed_at'        => 'datetime',
+        'qty'              => 'decimal:4',
     ];
 
     public function product(): BelongsTo

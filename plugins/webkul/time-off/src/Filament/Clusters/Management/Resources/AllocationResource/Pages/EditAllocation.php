@@ -6,7 +6,7 @@ use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Webkul\Chatter\Filament\Actions as ChatterActions;
+use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\TimeOff\Enums\State;
 use Webkul\TimeOff\Filament\Clusters\Management\Resources\AllocationResource;
 
@@ -39,8 +39,8 @@ class EditAllocation extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            ChatterActions\ChatterAction::make()
-                ->setResource(static::$resource),
+            ChatterAction::make()
+                ->resource(static::$resource),
             Action::make('approved')
                 ->label(__('time-off::filament/clusters/management/resources/allocation/pages/edit-allocation.header-actions.approved.title'))
                 ->color('gray')

@@ -29,6 +29,11 @@ class Order extends Model
 {
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity;
 
+    public function getModelTitle(): string
+    {
+        return __('purchases::models/order.title');
+    }
+
     /**
      * Table name.
      *
@@ -97,35 +102,39 @@ class Order extends Model
         'planned_at'               => 'datetime',
         'calendar_start_at'        => 'datetime',
         'effective_date'           => 'datetime',
+        'untaxed_amount'           => 'decimal:4',
     ];
 
-    protected array $logAttributes = [
-        'name',
-        'description',
-        'priority',
-        'origin',
-        'partner_reference',
-        'state',
-        'invoice_status',
-        'receipt_status',
-        'untaxed_amount',
-        'currency_rate',
-        'ordered_at',
-        'approved_at',
-        'planned_at',
-        'calendar_start_at',
-        'incoterm_location',
-        'effective_date',
-        'requisition.name'    => 'Requisition',
-        'partner.name'        => 'Vendor',
-        'currency.name'       => 'Currency',
-        'fiscalPosition'      => 'Fiscal Position',
-        'paymentTerm.name'    => 'Payment Term',
-        'incoterm.name'       => 'Buyer',
-        'user.name'           => 'Buyer',
-        'company.name'        => 'Company',
-        'creator.name'        => 'Creator',
-    ];
+    public function getLogAttributeLabels(): array
+    {
+        return [
+            'name'               => __('purchases::models/order.log-attributes.name'),
+            'description'        => __('purchases::models/order.log-attributes.description'),
+            'priority'           => __('purchases::models/order.log-attributes.priority'),
+            'origin'             => __('purchases::models/order.log-attributes.origin'),
+            'partner_reference'  => __('purchases::models/order.log-attributes.partner_reference'),
+            'state'              => __('purchases::models/order.log-attributes.state'),
+            'invoice_status'     => __('purchases::models/order.log-attributes.invoice_status'),
+            'receipt_status'     => __('purchases::models/order.log-attributes.receipt_status'),
+            'untaxed_amount'     => __('purchases::models/order.log-attributes.untaxed_amount'),
+            'currency_rate'      => __('purchases::models/order.log-attributes.currency_rate'),
+            'ordered_at'         => __('purchases::models/order.log-attributes.ordered_at'),
+            'approved_at'        => __('purchases::models/order.log-attributes.approved_at'),
+            'planned_at'         => __('purchases::models/order.log-attributes.planned_at'),
+            'calendar_start_at'  => __('purchases::models/order.log-attributes.calendar_start_at'),
+            'incoterm_location'  => __('purchases::models/order.log-attributes.incoterm_location'),
+            'effective_date'     => __('purchases::models/order.log-attributes.effective_date'),
+            'requisition.name'   => __('purchases::models/order.log-attributes.requisition'),
+            'partner.name'       => __('purchases::models/order.log-attributes.vendor'),
+            'currency.name'      => __('purchases::models/order.log-attributes.currency'),
+            'fiscalPosition'     => __('purchases::models/order.log-attributes.fiscal_position'),
+            'paymentTerm.name'   => __('purchases::models/order.log-attributes.payment_term'),
+            'incoterm.name'      => __('purchases::models/order.log-attributes.incoterm'),
+            'user.name'          => __('purchases::models/order.log-attributes.buyer'),
+            'company.name'       => __('purchases::models/order.log-attributes.company'),
+            'creator.name'       => __('purchases::models/order.log-attributes.creator'),
+        ];
+    }
 
     /**
      * Checks if new invoice is allow or not

@@ -14,7 +14,7 @@ use Filament\Resources\Pages\EditRecord;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Chatter\Filament\Actions as ChatterActions;
+use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Employee\Filament\Resources\EmployeeResource;
 use Webkul\Recruitment\Enums\ApplicationStatus;
 use Webkul\Recruitment\Enums\RecruitmentState;
@@ -112,8 +112,8 @@ class EditApplicant extends EditRecord
 
                     return redirect(EmployeeResource::getUrl('view', ['record' => $employee]));
                 }),
-            ChatterActions\ChatterAction::make()
-                ->setResource(static::$resource),
+            ChatterAction::make()
+                ->resource(static::$resource),
             Action::make('createEmployee')
                 ->label(__('recruitments::filament/clusters/applications/resources/applicant/pages/edit-applicant.create-employee'))
                 ->hidden(fn ($record) => $record->application_status->value == ApplicationStatus::HIRED->value || $record->candidate->employee_id)

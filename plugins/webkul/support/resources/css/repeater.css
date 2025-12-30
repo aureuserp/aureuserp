@@ -227,10 +227,10 @@
             @apply justify-end;
         }
     }
-}
-
-.fi-select-input {
-    & .fi-select-input-ctn {
+    
+    .fi-select-input {
+        & .fi-select-input-ctn {
         @apply static;
+    }
     }
 }

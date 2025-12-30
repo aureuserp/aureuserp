@@ -25,6 +25,11 @@ class Employee extends Model
 
     protected $table = 'employees_employees';
 
+    public function getModelTitle(): string
+    {
+        return __('employees::models/employee.title');
+    }
+
     /**
      * The attributes that are mass assignable.
      *

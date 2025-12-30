@@ -18,6 +18,11 @@ class LeaveAllocation extends Model
 
     protected $table = 'time_off_leave_allocations';
 
+    public function getModelTitle(): string
+    {
+        return __('time-off::models/leave-allocation.title');
+    }
+
     protected $fillable = [
         'holiday_status_id',
         'employee_id',
@@ -46,37 +51,41 @@ class LeaveAllocation extends Model
         'expiring_carryover_days',
     ];
 
-    protected array $logAttributes = [
-        'holidayStatus.name'                => 'Time Off Type',
-        'employee.name'                     => 'Employee',
-        'employeeCompany.name'              => 'Employee Company',
-        'approver.name'                     => 'Approver',
-        'secondApprover.name'               => 'Second Approver',
-        'department.name'                   => 'Department',
-        'accrualPlan.name'                  => 'Accrual Plan',
-        'createdBy.name'                    => 'Created By',
-        'name'                              => 'Name',
-        'state'                             => 'State',
-        'allocation_type'                   => 'Allocation Type',
-        'date_from'                         => 'Date From',
-        'date_to'                           => 'Date To',
-        'last_executed_carryover_date'      => 'Last Executed Carryover Date',
-        'last_called'                       => 'Last Called',
-        'actual_last_called'                => 'Actual Last Called',
-        'next_call'                         => 'Next Call',
-        'carried_over_days_expiration_date' => 'Carried Over Days Expiration Date',
-        'notes'                             => 'Notes',
-        'already_accrued'                   => 'Already Accrued',
-        'number_of_days'                    => 'Number Of Days',
-        'number_of_hours_display'           => 'Number Of Hours Display',
-        'yearly_accrued_amount'             => 'Yearly Accrued Amount',
-        'expiring_carryover_days'           => 'Expiring Carryover Days',
-        'created_at'                        => 'Created At',
-        'updated_at'                        => 'Updated At',
-    ];
+    public function getLogAttributeLabels(): array
+    {
+        return [
+            'holidayStatus.name'                => __('time-off::models/leave-allocation.log-attributes.time_off_type'),
+            'employee.name'                     => __('time-off::models/leave-allocation.log-attributes.employee'),
+            'employeeCompany.name'              => __('time-off::models/leave-allocation.log-attributes.employee_company'),
+            'approver.name'                     => __('time-off::models/leave-allocation.log-attributes.approver'),
+            'secondApprover.name'               => __('time-off::models/leave-allocation.log-attributes.second_approver'),
+            'department.name'                   => __('time-off::models/leave-allocation.log-attributes.department'),
+            'accrualPlan.name'                  => __('time-off::models/leave-allocation.log-attributes.accrual_plan'),
+            'createdBy.name'                    => __('time-off::models/leave-allocation.log-attributes.created_by'),
+            'name'                              => __('time-off::models/leave-allocation.log-attributes.name'),
+            'state'                             => __('time-off::models/leave-allocation.log-attributes.state'),
+            'allocation_type'                   => __('time-off::models/leave-allocation.log-attributes.allocation_type'),
+            'date_from'                         => __('time-off::models/leave-allocation.log-attributes.date_from'),
+            'date_to'                           => __('time-off::models/leave-allocation.log-attributes.date_to'),
+            'last_executed_carryover_date'      => __('time-off::models/leave-allocation.log-attributes.last_executed_carryover_date'),
+            'last_called'                       => __('time-off::models/leave-allocation.log-attributes.last_called'),
+            'actual_last_called'                => __('time-off::models/leave-allocation.log-attributes.actual_last_called'),
+            'next_call'                         => __('time-off::models/leave-allocation.log-attributes.next_call'),
+            'carried_over_days_expiration_date' => __('time-off::models/leave-allocation.log-attributes.carried_over_days_expiration_date'),
+            'notes'                             => __('time-off::models/leave-allocation.log-attributes.notes'),
+            'already_accrued'                   => __('time-off::models/leave-allocation.log-attributes.already_accrued'),
+            'number_of_days'                    => __('time-off::models/leave-allocation.log-attributes.number_of_days'),
+            'number_of_hours_display'           => __('time-off::models/leave-allocation.log-attributes.number_of_hours_display'),
+            'yearly_accrued_amount'             => __('time-off::models/leave-allocation.log-attributes.yearly_accrued_amount'),
+            'expiring_carryover_days'           => __('time-off::models/leave-allocation.log-attributes.expiring_carryover_days'),
+        ];
+    }
 
     protected $casts = [
         'allocation_type' => AllocationType::class,
+        'date_to'         => 'date',
+        'date_from'       => 'date',
+        'number_of_days'  => 'decimal:4',
     ];
 
     public function employee()

@@ -201,6 +201,7 @@ class ActivityAction extends Action
                 $action->label(__('chatter::filament/resources/actions/chatter/activity-action.setup.submit-action-title'));
                 $action->icon('heroicon-m-paper-airplane');
             })
-            ->slideOver(false);
+            ->slideOver(false)
+            ->extraModalWindowAttributes(['class' => 'activity-modal']);
     }
 }

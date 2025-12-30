@@ -10,16 +10,19 @@ use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Inventory\Enums\ScrapState;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ScrapResource;
 use Webkul\Inventory\Models\Scrap;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewScrap extends ViewRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = ScrapResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
             ChatterAction::make()
-                ->setResource(static::$resource),
+                ->resource(static::$resource),
             DeleteAction::make()
                 ->hidden(fn () => $this->getRecord()->state == ScrapState::DONE)
                 ->action(function (DeleteAction $action, Scrap $record) {

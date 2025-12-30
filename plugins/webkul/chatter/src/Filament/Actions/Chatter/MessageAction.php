@@ -2,7 +2,6 @@
 
 namespace Webkul\Chatter\Filament\Actions\Chatter;
 
-use Exception;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
@@ -14,6 +13,7 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Throwable;
 use Webkul\Chatter\Mail\MessageMail;
 use Webkul\Support\Services\EmailService;
 
@@ -143,7 +143,7 @@ class MessageAction extends Action
                         ->title(__('chatter::filament/resources/actions/chatter/message-action.setup.actions.notification.success.title'))
                         ->body(__('chatter::filament/resources/actions/chatter/message-action.setup.actions.notification.success.body'))
                         ->send();
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     report($e);
                     Notification::make()
                         ->danger()
@@ -170,7 +170,7 @@ class MessageAction extends Action
     private function notifyFollower(mixed $record, mixed $message): void
     {
         foreach ($record->followers as $follower) {
-            if ($follower?->partner) {
+            if ($follower?->partner?->email) {
                 app(EmailService::class)->send(
                     mailClass: MessageMail::class,
                     view: $this->getMessageMailView(),

@@ -7,7 +7,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Account\Filament\Resources\PaymentResource;
 use Webkul\Account\Filament\Resources\PaymentResource\Actions as BaseActions;
-use Webkul\Chatter\Filament\Actions as ChatterActions;
+use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewPayment extends ViewRecord
@@ -19,8 +19,8 @@ class ViewPayment extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            ChatterActions\ChatterAction::make()
-                ->setResource(static::$resource),
+            ChatterAction::make()
+                ->resource(static::$resource),
             BaseActions\ConfirmAction::make(),
             BaseActions\ResetToDraftAction::make(),
             BaseActions\MarkAsSendAdnUnsentAction::make(),

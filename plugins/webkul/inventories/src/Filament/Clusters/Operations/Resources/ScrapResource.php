@@ -67,6 +67,8 @@ class ScrapResource extends Resource
 
     protected static ?int $navigationSort = 5;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     protected static ?string $cluster = Operations::class;
 
     public static function getNavigationLabel(): string

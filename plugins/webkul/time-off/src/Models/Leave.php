@@ -21,6 +21,11 @@ class Leave extends Model
 
     protected $table = 'time_off_leaves';
 
+    public function getModelTitle(): string
+    {
+        return __('time-off::models/leave.title');
+    }
+
     protected $fillable = [
         'user_id',
         'manager_id',
@@ -52,36 +57,43 @@ class Leave extends Model
         'request_hour_to',
     ];
 
-    protected array $logAttributes = [
-        'user.name'                => 'User',
-        'manger.name'              => 'Manager',
-        'holidayStatus.name'       => 'Holiday Status',
-        'employee.name'            => 'Employee',
-        'employeeCompany.name'     => 'Employee Company',
-        'department.name'          => 'Department',
-        'calendar.name'            => 'Calendar',
-        'firstApprover.name'       => 'First Approver',
-        'lastApprover.name'        => 'Last Approver',
-        'private_name'             => 'Description',
-        'state'                    => 'State',
-        'duration_display'         => 'Duration Display',
-        'request_date_from_period' => 'Request Date From Period',
-        'request_date_from'        => 'Request Date From',
-        'request_date_to'          => 'Request Date To',
-        'notes'                    => 'Notes',
-        'request_unit_half'        => 'Request Unit Half',
-        'request_unit_hours'       => 'Request Unit Hours',
-        'date_from'                => 'Date From',
-        'date_to'                  => 'Date To',
-        'number_of_days'           => 'Number Of Days',
-        'number_of_hours'          => 'Number Of Hours',
-        'request_hour_from'        => 'Request Hour From',
-        'request_hour_to'          => 'Request Hour To',
-    ];
+    public function getLogAttributeLabels(): array
+    {
+        return [
+            'user.name'                => __('time-off::models/leave.log-attributes.user'),
+            'manger.name'              => __('time-off::models/leave.log-attributes.manager'),
+            'holidayStatus.name'       => __('time-off::models/leave.log-attributes.holiday_status'),
+            'employee.name'            => __('time-off::models/leave.log-attributes.employee'),
+            'employeeCompany.name'     => __('time-off::models/leave.log-attributes.employee_company'),
+            'department.name'          => __('time-off::models/leave.log-attributes.department'),
+            'calendar.name'            => __('time-off::models/leave.log-attributes.calendar'),
+            'firstApprover.name'       => __('time-off::models/leave.log-attributes.first_approver'),
+            'lastApprover.name'        => __('time-off::models/leave.log-attributes.last_approver'),
+            'private_name'             => __('time-off::models/leave.log-attributes.description'),
+            'state'                    => __('time-off::models/leave.log-attributes.state'),
+            'duration_display'         => __('time-off::models/leave.log-attributes.duration_display'),
+            'request_date_from_period' => __('time-off::models/leave.log-attributes.request_date_from_period'),
+            'request_date_from'        => __('time-off::models/leave.log-attributes.request_date_from'),
+            'request_date_to'          => __('time-off::models/leave.log-attributes.request_date_to'),
+            'notes'                    => __('time-off::models/leave.log-attributes.notes'),
+            'request_unit_half'        => __('time-off::models/leave.log-attributes.request_unit_half'),
+            'request_unit_hours'       => __('time-off::models/leave.log-attributes.request_unit_hours'),
+            'date_from'                => __('time-off::models/leave.log-attributes.date_from'),
+            'date_to'                  => __('time-off::models/leave.log-attributes.date_to'),
+            'number_of_days'           => __('time-off::models/leave.log-attributes.number_of_days'),
+            'number_of_hours'          => __('time-off::models/leave.log-attributes.number_of_hours'),
+            'request_hour_from'        => __('time-off::models/leave.log-attributes.request_hour_from'),
+            'request_hour_to'          => __('time-off::models/leave.log-attributes.request_hour_to'),
+        ];
+    }
 
     protected $casts = [
         'state'                    => State::class,
         'request_date_from_period' => RequestDateFromPeriod::class,
+        'request_date_from'        => 'date',
+        'date_from'                => 'date',
+        'request_unit_half'        => 'boolean',
+        'number_of_hours'          => 'decimal:4',
     ];
 
     public function user(): BelongsTo

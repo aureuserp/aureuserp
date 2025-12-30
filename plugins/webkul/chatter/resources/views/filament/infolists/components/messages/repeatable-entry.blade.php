@@ -55,12 +55,8 @@
                     <article
                         @class([
                             'rounded-xl px-3 py-2 text-base overflow-x-hidden [overflow-wrap:anywhere] space-y-1 m-0.5',
-                            'bg-gray-50/80 ring-gray-200 dark:bg-gray-950 dark:ring-gray-800' => data_get($container->getRecord(), 'type') === 'note',
                             'ring-black/5  dark:ring-white/5' => data_get($container->getRecord(), 'type') !== 'note',
-                            'shadow-sm ring-1 bg-gray-50/80 dark:bg-gray-950' => ! (
-                                data_get($container->getRecord(), 'type') === 'notification' &&
-                                data_get($container->getRecord(), 'event') === 'updated'
-                            ),
+                            'shadow-sm ring-1 ring-amber-100 dark:ring-amber-950 bg-amber-50 dark:bg-amber-900' => data_get($container->getRecord(), 'type') === 'note',
                         ])
                     >
                         {{ $container }}

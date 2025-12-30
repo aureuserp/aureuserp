@@ -33,6 +33,11 @@ class Move extends Model implements Sortable
 
     protected $table = 'accounts_account_moves';
 
+    public function getModelTitle(): string
+    {
+        return __('accounts::models/move.title');
+    }
+
     protected $fillable = [
         'sort',
         'journal_id',
@@ -100,59 +105,73 @@ class Move extends Model implements Sortable
         'medium_id',
     ];
 
-    protected array $logAttributes = [
-        'medium.name'                       => 'Medium',
-        'source.name'                       => 'UTM Source',
-        'partner.name'                      => 'Customer',
-        'commercialPartner.name'            => 'Commercial Partner',
-        'partnerShipping.name'              => 'Shipping Address',
-        'partnerBank.name'                  => 'Bank Account',
-        'fiscalPosition.name'               => 'Fiscal Position',
-        'currency.name'                     => 'Currency',
-        'reversedEntry.name'                => 'Reversed Entry',
-        'invoiceUser.name'                  => 'Invoice User',
-        'invoiceIncoterm.name'              => 'Invoice Incoterm',
-        'invoiceCashRounding.name'          => 'Invoice Cash Rounding',
-        'createdBy.name'                    => 'Created By',
-        'name'                              => 'Invoice Reference',
-        'state'                             => 'Invoice Status',
-        'reference'                         => 'Reference',
-        'invoiceSourceEmail'                => 'Source Email',
-        'invoicePartnerDisplayName'         => 'Partner Display Name',
-        'invoiceOrigin'                     => 'Invoice Origin',
-        'incotermLocation'                  => 'Incoterm Location',
-        'date'                              => 'Invoice Date',
-        'invoice_date'                      => 'Invoice Date',
-        'invoice_date_due'                  => 'Due Date',
-        'delivery_date'                     => 'Delivery Date',
-        'narration'                         => 'Notes',
-        'amount_untaxed'                    => 'Subtotal',
-        'amount_tax'                        => 'Tax',
-        'amount_total'                      => 'Total',
-        'amount_residual'                   => 'Residual',
-        'amount_untaxed_signed'             => 'Subtotal (Signed)',
-        'amount_untaxed_in_currency_signed' => 'Subtotal (In Currency) (Signed)',
-        'amount_tax_signed'                 => 'Tax (Signed)',
-        'amount_total_signed'               => 'Total (Signed)',
-        'amount_total_in_currency_signed'   => 'Total (In Currency) (Signed)',
-        'amount_residual_signed'            => 'Residual (Signed)',
-        'quick_edit_total_amount'           => 'Quick Edit Total Amount',
-        'is_storno'                         => 'Is Storno',
-        'always_tax_exigible'               => 'Always Tax Exigible',
-        'checked'                           => 'Checked',
-        'posted_before'                     => 'Posted Before',
-        'made_sequence_gap'                 => 'Made Sequence Gap',
-        'is_manually_modified'              => 'Is Manually Modified',
-        'is_move_sent'                      => 'Is Move Sent',
-    ];
+    protected function getLogAttributeLabels(): array
+    {
+        return [
+            'medium.name'                       => __('accounts::models/move.log-attributes.medium'),
+            'source.name'                       => __('accounts::models/move.log-attributes.source'),
+            'partner.name'                      => __('accounts::models/move.log-attributes.partner'),
+            'commercialPartner.name'            => __('accounts::models/move.log-attributes.commercialPartner'),
+            'partnerShipping.name'              => __('accounts::models/move.log-attributes.partnerShipping'),
+            'partnerBank.name'                  => __('accounts::models/move.log-attributes.partnerBank'),
+            'fiscalPosition.name'               => __('accounts::models/move.log-attributes.fiscalPosition'),
+            'currency.name'                     => __('accounts::models/move.log-attributes.currency'),
+            'reversedEntry.name'                => __('accounts::models/move.log-attributes.reversedEntry'),
+            'invoiceUser.name'                  => __('accounts::models/move.log-attributes.invoiceUser'),
+            'invoiceIncoterm.name'              => __('accounts::models/move.log-attributes.invoiceIncoterm'),
+            'invoiceCashRounding.name'          => __('accounts::models/move.log-attributes.invoiceCashRounding'),
+            'createdBy.name'                    => __('accounts::models/move.log-attributes.createdBy'),
+            'name'                              => __('accounts::models/move.log-attributes.name'),
+            'state'                             => __('accounts::models/move.log-attributes.state'),
+            'reference'                         => __('accounts::models/move.log-attributes.reference'),
+            'invoiceSourceEmail'                => __('accounts::models/move.log-attributes.invoiceSourceEmail'),
+            'invoicePartnerDisplayName'         => __('accounts::models/move.log-attributes.invoicePartnerDisplayName'),
+            'invoiceOrigin'                     => __('accounts::models/move.log-attributes.invoiceOrigin'),
+            'incotermLocation'                  => __('accounts::models/move.log-attributes.incotermLocation'),
+            'date'                              => __('accounts::models/move.log-attributes.date'),
+            'invoice_date'                      => __('accounts::models/move.log-attributes.invoice_date'),
+            'invoice_date_due'                  => __('accounts::models/move.log-attributes.invoice_date_due'),
+            'delivery_date'                     => __('accounts::models/move.log-attributes.delivery_date'),
+            'narration'                         => __('accounts::models/move.log-attributes.narration'),
+            'amount_untaxed'                    => __('accounts::models/move.log-attributes.amount_untaxed'),
+            'amount_tax'                        => __('accounts::models/move.log-attributes.amount_tax'),
+            'amount_total'                      => __('accounts::models/move.log-attributes.amount_total'),
+            'amount_residual'                   => __('accounts::models/move.log-attributes.amount_residual'),
+            'amount_untaxed_signed'             => __('accounts::models/move.log-attributes.amount_untaxed_signed'),
+            'amount_untaxed_in_currency_signed' => __('accounts::models/move.log-attributes.amount_untaxed_in_currency_signed'),
+            'amount_tax_signed'                 => __('accounts::models/move.log-attributes.amount_tax_signed'),
+            'amount_total_signed'               => __('accounts::models/move.log-attributes.amount_total_signed'),
+            'amount_total_in_currency_signed'   => __('accounts::models/move.log-attributes.amount_total_in_currency_signed'),
+            'amount_residual_signed'            => __('accounts::models/move.log-attributes.amount_residual_signed'),
+            'quick_edit_total_amount'           => __('accounts::models/move.log-attributes.quick_edit_total_amount'),
+            'is_storno'                         => __('accounts::models/move.log-attributes.is_storno'),
+            'always_tax_exigible'               => __('accounts::models/move.log-attributes.always_tax_exigible'),
+            'checked'                           => __('accounts::models/move.log-attributes.checked'),
+            'posted_before'                     => __('accounts::models/move.log-attributes.posted_before'),
+            'made_sequence_gap'                 => __('accounts::models/move.log-attributes.made_sequence_gap'),
+            'is_manually_modified'              => __('accounts::models/move.log-attributes.is_manually_modified'),
+            'is_move_sent'                      => __('accounts::models/move.log-attributes.is_move_sent'),
+        ];
+    }
 
     protected $casts = [
-        'invoice_date'     => 'date',
-        'date'             => 'date',
-        'invoice_date_due' => 'datetime',
-        'state'            => MoveState::class,
-        'payment_state'    => PaymentState::class,
-        'move_type'        => MoveType::class,
+        'checked'                           => 'boolean',
+        'invoice_date_due'                  => 'date',
+        'amount_tax'                        => 'decimal:4',
+        'amount_total'                      => 'decimal:4',
+        'amount_residual'                   => 'decimal:4',
+        'amount_untaxed'                    => 'decimal:4',
+        'amount_tax_signed'                 => 'decimal:4',
+        'amount_residual_signed'            => 'decimal:4',
+        'amount_untaxed_signed'             => 'decimal:4',
+        'amount_total_in_currency_signed'   => 'decimal:4',
+        'amount_untaxed_in_currency_signed' => 'decimal:4',
+        'amount_total_signed'               => 'decimal:4',
+        'state'                             => MoveState::class,
+        'payment_state'                     => PaymentState::class,
+        'move_type'                         => MoveType::class,
+        'invoice_date'                      => 'date',
+        'date'                              => 'date',
     ];
 
     public $typeReverseMapping = [
@@ -493,7 +512,7 @@ class Move extends Model implements Sortable
             $this->date->format('Y'),
         );
 
-        $this->name = $this->sequence_prefix.'/'.$this->id;
+        $this->name = $this->sequence_prefix . '/' . $this->id;
     }
 
     public function computeCurrencyId()
@@ -974,7 +993,7 @@ class Move extends Model implements Sortable
                 part.debit_amount_currency AS amount,
                 part.credit_move_id AS counterpart_line_id
             FROM accounts_partial_reconciles part
-            WHERE part.debit_move_id IN ('.implode(',', $lineIds).')
+            WHERE part.debit_move_id IN (' . implode(',', $lineIds) . ')
 
             UNION ALL
 
@@ -984,12 +1003,12 @@ class Move extends Model implements Sortable
                 part.credit_amount_currency AS amount,
                 part.debit_move_id AS counterpart_line_id
             FROM accounts_partial_reconciles part
-            WHERE part.credit_move_id IN ('.implode(',', $lineIds).')
+            WHERE part.credit_move_id IN (' . implode(',', $lineIds) . ')
         ';
 
         $results = DB::select($sql);
 
-        $partialValuesList = collect($results)->map(fn ($values) => [
+        $partialValuesList = collect($results)->map(fn($values) => [
             'line_id'    => $values->counterpart_line_id,
             'partial_id' => $values->id,
             'amount'     => $values->amount,
@@ -1010,8 +1029,8 @@ class Move extends Model implements Sortable
                     part.credit_move_id AS counterpart_line_id
                 FROM accounts_partial_reconciles part
                 JOIN account_move_line credit_line ON credit_line.id = part.credit_move_id
-                WHERE credit_line.move_id IN ('.$exchangeMoveIdsStr.') 
-                    AND part.debit_move_id IN ('.$counterpartLineIdsStr.')
+                WHERE credit_line.move_id IN (' . $exchangeMoveIdsStr . ') 
+                    AND part.debit_move_id IN (' . $counterpartLineIdsStr . ')
 
                 UNION ALL
 
@@ -1020,8 +1039,8 @@ class Move extends Model implements Sortable
                     part.debit_move_id AS counterpart_line_id
                 FROM accounts_partial_reconciles part
                 JOIN account_move_line debit_line ON debit_line.id = part.debit_move_id
-                WHERE debit_line.move_id IN ('.$exchangeMoveIdsStr.') 
-                    AND part.credit_move_id IN ('.$counterpartLineIdsStr.')
+                WHERE debit_line.move_id IN (' . $exchangeMoveIdsStr . ') 
+                    AND part.credit_move_id IN (' . $counterpartLineIdsStr . ')
             ';
 
             $exchangeResults = DB::select($sql);

@@ -23,6 +23,11 @@ class Category extends Model
      */
     protected $table = 'products_categories';
 
+    public function getModelTitle(): string
+    {
+        return __('products::models/category.title');
+    }
+
     /**
      * Fillable.
      *
@@ -36,13 +41,16 @@ class Category extends Model
         'creator_id',
     ];
 
-    protected $logAttributes = [
-        'name',
-        'full_name',
-        'parent_path',
-        'parent.name'  => 'Parent Category',
-        'creator.name' => 'Creator',
-    ];
+    protected function getLogAttributeLabels(): array
+    {
+        return [
+            'name'                 => __('products::models/category.log-attributes.name'),
+            'full_name'            => __('products::models/category.log-attributes.full_name'),
+            'parent_path'          => __('products::models/category.log-attributes.parent_path'),
+            'parent.name'          => __('products::models/category.log-attributes.parent'),
+            'creator.name'         => __('products::models/category.log-attributes.creator'),
+        ];
+    }
 
     public function parent(): BelongsTo
     {

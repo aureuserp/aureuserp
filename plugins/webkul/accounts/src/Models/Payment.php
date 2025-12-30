@@ -27,6 +27,11 @@ class Payment extends Model
 
     protected $table = 'accounts_account_payments';
 
+    public function getModelTitle(): string
+    {
+        return __('accounts::models/payment.title');
+    }
+
     protected $fillable = [
         'move_id',
         'journal_id',
@@ -71,22 +76,25 @@ class Payment extends Model
         'date',
     ];
 
-    protected array $logAttributes = [
-        'name',
-        'move.name'          => 'Move',
-        'company.name'       => 'Company',
-        'partner.name'       => 'Partner',
-        'partner_type'       => 'Partner Type',
-        'paymentMethod.name' => 'Payment Method',
-        'currency.name'      => 'Currency',
-        'paymentToken',
-        'sourcePayment.name'      => 'Source Payment',
-        'paymentTransaction.name' => 'Payment Transaction',
-        'destinationAccount.name' => 'Destination Account',
-        'outstandingAccount.name' => 'Outstanding Account',
-        'is_sent'                 => 'Is Sent',
-        'state'                   => 'State',
-    ];
+    protected function getLogAttributeLabels(): array
+    {
+        return [
+            'name'                    => __('accounts::models/payment.log-attributes.name'),
+            'move.name'               => __('accounts::models/payment.log-attributes.move'),
+            'company.name'            => __('accounts::models/payment.log-attributes.company'),
+            'partner.name'            => __('accounts::models/payment.log-attributes.partner'),
+            'partner_type'            => __('accounts::models/payment.log-attributes.partner_type'),
+            'paymentMethod.name'      => __('accounts::models/payment.log-attributes.payment_method'),
+            'currency.name'           => __('accounts::models/payment.log-attributes.currency'),
+            'paymentToken'            => __('accounts::models/payment.log-attributes.payment_token'),
+            'sourcePayment.name'      => __('accounts::models/payment.log-attributes.source_payment'),
+            'paymentTransaction.name' => __('accounts::models/payment.log-attributes.payment_transaction'),
+            'destinationAccount.name' => __('accounts::models/payment.log-attributes.destination_account'),
+            'outstandingAccount.name' => __('accounts::models/payment.log-attributes.outstanding_account'),
+            'is_sent'                 => __('accounts::models/payment.log-attributes.is_sent'),
+            'state'                   => __('accounts::models/payment.log-attributes.state'),
+        ];
+    }
 
     public function move()
     {
@@ -264,7 +272,7 @@ class Payment extends Model
                 $prefix,
                 $this->journal->code,
                 $this->date->format('Y'),
-            ).'/'.$this->id;
+            ) . '/' . $this->id;
         }
     }
 
@@ -314,7 +322,7 @@ class Payment extends Model
         if (
             $this->state === PaymentStatus::IN_PROCESS
             && $this->invoices()->exists()
-            && $this->invoices->every(fn ($invoice) => $invoice->payment_state === PaymentStatus::PAID)
+            && $this->invoices->every(fn($invoice) => $invoice->payment_state === PaymentStatus::PAID)
         ) {
             $this->state = PaymentStatus::PAID;
         }
@@ -358,12 +366,12 @@ class Payment extends Model
 
         $this->is_matched = $this->journal->default_account_id
             && $liquidity->pluck('account_id')->contains($this->journal->default_account_id)
-                ? true
-                : $this->currency->isZero($liquidity->sum($residualField));
+            ? true
+            : $this->currency->isZero($liquidity->sum($residualField));
 
         $reconcileLines = $counterpart
             ->merge($writeoff)
-            ->filter(fn ($line) => $line->account->reconcile);
+            ->filter(fn($line) => $line->account->reconcile);
 
         $this->is_reconciled = $this->currency->isZero($reconcileLines->sum($residualField));
     }
@@ -411,9 +419,9 @@ class Payment extends Model
 
         $this->destination_account_id = $this->partner?->{$mapping['partner_property']}
             ?? Account::where('account_type', $mapping['account_type'])
-                ->where('deprecated', false)
-                ->first()
-                ?->id;
+            ->where('deprecated', false)
+            ->first()
+            ?->id;
     }
 
     public function computeAmountCompanyCurrencySigned()
@@ -484,7 +492,7 @@ class Payment extends Model
 
         $lines = $lines ?: $this->prepareMoveLineDefaultVals($writeOffLineVals, $forceBalance);
 
-        collect($lines)->each(fn ($lineVals) => MoveLine::create($lineVals + ['move_id' => $move->id]));
+        collect($lines)->each(fn($lineVals) => MoveLine::create($lineVals + ['move_id' => $move->id]));
 
         AccountFacade::computeAccountMove($move);
 
@@ -498,8 +506,8 @@ class Payment extends Model
     {
         if (! $this->outstanding_account_id) {
             throw new \Exception(
-                "You can't create a new payment without an outstanding payments/receipts account set either on the company or the ".
-                $this->paymentMethodLine->name.' payment method in the '.$this->journal->display_name.' journal.'
+                "You can't create a new payment without an outstanding payments/receipts account set either on the company or the " .
+                    $this->paymentMethodLine->name . ' payment method in the ' . $this->journal->display_name . ' journal.'
             );
         }
 
@@ -539,7 +547,8 @@ class Payment extends Model
                 'balance'         => $liquidityBalance,
                 'partner_id'      => $this->partner_id,
                 'account_id'      => $this->outstanding_account_id,
-            ], [
+            ],
+            [
                 'name'            => $lineName,
                 'date_maturity'   => $this->date,
                 'amount_currency' => $counterpartAmountCurrency,
@@ -590,7 +599,7 @@ class Payment extends Model
 
             $lineIdsCommands = array_merge(
                 $lineIdsCommands,
-                $writeoffLines->map(fn ($line) => ['delete' => $line->id])->all(),
+                $writeoffLines->map(fn($line) => ['delete' => $line->id])->all(),
                 array_slice($lineValsList, 2)
             );
 

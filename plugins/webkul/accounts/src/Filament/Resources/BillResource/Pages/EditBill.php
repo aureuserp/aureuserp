@@ -9,8 +9,8 @@ use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\BillResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
+use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Account\Models\Move;
-use Webkul\Chatter\Filament\Actions as ChatterActions;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
@@ -36,8 +36,8 @@ class EditBill extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            ChatterActions\ChatterAction::make()
-                ->setResource($this->getResource()),
+            ChatterAction::make()
+                ->resource($this->getResource()),
             BaseActions\PayAction::make(),
             BaseActions\ConfirmAction::make(),
             BaseActions\CancelAction::make(),
@@ -48,7 +48,7 @@ class EditBill extends EditRecord
                 ->label(__('accounts::filament/resources/bill/pages/edit-bill.header-actions.reverse.label'))
                 ->modalHeading(__('accounts::filament/resources/bill/pages/edit-bill.header-actions.reverse.modal-heading')),
             DeleteAction::make()
-                ->hidden(fn (Move $record): bool => $record->state == MoveState::POSTED)
+                ->hidden(fn(Move $record): bool => $record->state == MoveState::POSTED)
                 ->successNotification(
                     Notification::make()
                         ->success()

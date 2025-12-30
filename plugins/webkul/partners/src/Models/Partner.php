@@ -32,6 +32,11 @@ class Partner extends Authenticatable implements FilamentUser
      */
     protected $table = 'partners_partners';
 
+    public function getModelTitle(): string
+    {
+        return 'Partner';
+    }
+
     /**
      * Fillable.
      *

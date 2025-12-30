@@ -60,8 +60,9 @@ class AccountManager
             $this->reconcileReversedMoves([$record->reversedEntry], [$record]);
 
             $tempNumbers = $record->lines
-                ->filter(fn ($line) => ! empty($line->matching_number) &&
-                    str_starts_with($line->matching_number, 'I')
+                ->filter(
+                    fn($line) => ! empty($line->matching_number) &&
+                        str_starts_with($line->matching_number, 'I')
                 )
                 ->pluck('matching_number')
                 ->unique()
@@ -71,10 +72,10 @@ class AccountManager
                 $grouped = MoveLine::with(['move', 'account'])
                     ->whereIn('matching_number', $tempNumbers)
                     ->get()
-                    ->groupBy(fn ($line) => $line->matching_number.':'.$line->account_id);
+                    ->groupBy(fn($line) => $line->matching_number . ':' . $line->account_id);
 
                 foreach ($grouped as $groupLines) {
-                    if (! $groupLines->every(fn ($line) => $line->move->state === MoveState::POSTED)) {
+                    if (! $groupLines->every(fn($line) => $line->move->state === MoveState::POSTED)) {
                         continue;
                     }
 
@@ -134,9 +135,9 @@ class AccountManager
         }
 
         $record->lines->each(function ($line) {
-            $line->matchedDebits->each(fn ($partial) => $this->unReconcile($partial));
+            $line->matchedDebits->each(fn($partial) => $this->unReconcile($partial));
 
-            $line->matchedCredits->each(fn ($partial) => $this->unReconcile($partial));
+            $line->matchedCredits->each(fn($partial) => $this->unReconcile($partial));
         });
 
         $record->state = MoveState::DRAFT;
@@ -324,7 +325,7 @@ class AccountManager
         if ($move->move_type == MoveType::ENTRY) {
             $move->amount_total_in_currency_signed = abs($move->amount_total);
         } else {
-            $move->amount_total_in_currency_signed = -($sign * $move->amount_total);
+            $move->amount_total_in_currency_signed = - ($sign * $move->amount_total);
         }
 
         return $move;
@@ -575,7 +576,7 @@ class AccountManager
         $neededTerms = $this->prepareNeededTerms($move);
 
         $existingLines = $move->paymentTermLines
-            ->keyBy(fn ($line) => json_encode($line->term_key ?? []));
+            ->keyBy(fn($line) => json_encode($line->term_key ?? []));
 
         $neededMapping = collect($neededTerms)->mapWithKeys(function ($data) {
             $key = [
@@ -809,7 +810,7 @@ class AccountManager
 
         if (empty($batches)) {
             throw new \Exception(
-                'To record payments with '.$paymentRegister->paymentMethodLine->name.', the recipient bank account must be manually validated. You should go on the partner bank account in order to validate it.'
+                'To record payments with ' . $paymentRegister->paymentMethodLine->name . ', the recipient bank account must be manually validated. You should go on the partner bank account in order to validate it.'
             );
         }
 
@@ -845,8 +846,8 @@ class AccountManager
                 $batches = collect($batches)
                     ->flatMap(function ($batchResult) use ($linesToPay) {
                         return collect($batchResult['lines'])
-                            ->filter(fn ($line) => $linesToPay->contains($line))
-                            ->map(fn ($line) => array_merge($batchResult, [
+                            ->filter(fn($line) => $linesToPay->contains($line))
+                            ->map(fn($line) => array_merge($batchResult, [
                                 'payment_values' => array_merge($batchResult['payment_values'], [
                                     'payment_type' => $line->balance > 0 ? PaymentType::RECEIVE : PaymentType::SEND,
                                 ]),
@@ -871,9 +872,9 @@ class AccountManager
 
         $this->reconcilePayments($paymentsToProcess, $editMode);
 
-        $moves = $paymentRegister->lines->map(fn ($line) => $line->move)->unique();
+        $moves = $paymentRegister->lines->map(fn($line) => $line->move)->unique();
 
-        $moves->each(fn ($move) => MovePaid::dispatch($move));
+        $moves->each(fn($move) => MovePaid::dispatch($move));
     }
 
     public function createPaymentValsFromFirstBatch($paymentRegister, $batchResult)
@@ -953,7 +954,7 @@ class AccountManager
             'write_off_line_vals'    => [],
         ];
 
-        return array_filter($paymentVals + ['partner_bank_id' => $partnerBankId], fn ($value) => $value !== null);
+        return array_filter($paymentVals + ['partner_bank_id' => $partnerBankId], fn($value) => $value !== null);
     }
 
     public function initiatePayments($paymentRegister, &$paymentsToProcess, $editMode = false)
@@ -1031,9 +1032,9 @@ class AccountManager
 
             $mergedLines = $liquidityLines->merge($counterpartLines);
 
-            $debitLines = $mergedLines->filter(fn ($line) => $line->debit > 0);
+            $debitLines = $mergedLines->filter(fn($line) => $line->debit > 0);
 
-            $creditLines = $mergedLines->filter(fn ($line) => $line->credit > 0);
+            $creditLines = $mergedLines->filter(fn($line) => $line->credit > 0);
 
             if ($debitLines->isNotEmpty() && $creditLines->isNotEmpty()) {
                 $debitLines[0]->update([
@@ -1060,8 +1061,8 @@ class AccountManager
     {
         if ($payment->require_partner_bank_account && ! $payment->partnerBank->can_send_money) {
             throw new \Exception(__(
-                'To record payments with :method_name, the recipient bank account must be manually validated. '.
-                'You should go on the partner bank account of :partner in order to validate it.',
+                'To record payments with :method_name, the recipient bank account must be manually validated. ' .
+                    'You should go on the partner bank account of :partner in order to validate it.',
                 [
                     'method_name' => $payment->paymentMethodLine->name,
                     'partner'     => $payment->partner->display_name,
@@ -1140,8 +1141,8 @@ class AccountManager
     {
         foreach ($moves->zip($reverseMoves) as [$move, $reverseMove]) {
             $groupedLines = $move->lines->merge($reverseMove->lines)
-                ->reject(fn ($line) => $line->reconciled)
-                ->groupBy(fn ($line) => $line->account_id.'|'.($line->currency_id ?? 'null'));
+                ->reject(fn($line) => $line->reconciled)
+                ->groupBy(fn($line) => $line->account_id . '|' . ($line->currency_id ?? 'null'));
 
             foreach ($groupedLines as $key => $lines) {
                 [$accountId] = explode('|', $key);
@@ -1235,7 +1236,7 @@ class AccountManager
             $plan['nodes'] = [];
 
             foreach ($currencies as $currencyId) {
-                $currencyLines = $sortedLines->filter(fn ($line) => $line->currency_id == $currencyId);
+                $currencyLines = $sortedLines->filter(fn($line) => $line->currency_id == $currencyId);
 
                 $plan['nodes'][] = [
                     'lines'    => $currencyLines,
@@ -1266,10 +1267,10 @@ class AccountManager
         }
 
         if (! empty($plan['lines'])) {
-            $remainingLines = $plan['lines']->reject(fn ($line) => in_array($line->id, $fullyReconciledIds));
+            $remainingLines = $plan['lines']->reject(fn($line) => in_array($line->id, $fullyReconciledIds));
 
             if ($remainingLines->isNotEmpty()) {
-                $lineValuesMapping = $remainingLines->mapWithKeys(fn ($line) => [
+                $lineValuesMapping = $remainingLines->mapWithKeys(fn($line) => [
                     $line->id => [
                         'line'                     => $line,
                         'amount_residual'          => $line->amount_residual,
@@ -1353,10 +1354,14 @@ class AccountManager
 
     protected function prepareReconciliationLines(array $valuesList): array
     {
-        $debitValuesList = array_values(array_filter($valuesList, fn ($values) => $values['line']->balance > 0.0 || $values['line']->amount_currency > 0.0
+        $debitValuesList = array_values(array_filter(
+            $valuesList,
+            fn($values) => $values['line']->balance > 0.0 || $values['line']->amount_currency > 0.0
         ));
 
-        $creditValuesList = array_values(array_filter($valuesList, fn ($values) => $values['line']->balance < 0.0 || $values['line']->amount_currency < 0.0
+        $creditValuesList = array_values(array_filter(
+            $valuesList,
+            fn($values) => $values['line']->balance < 0.0 || $values['line']->amount_currency < 0.0
         ));
 
         $debitIndex = 0;
@@ -1654,8 +1659,8 @@ class AccountManager
 
         if (
             ! $journalId = $defaultAccountsSettings->currency_exchange_journal_id
-            || ! $expenseAccountId = $defaultAccountsSettings->expense_currency_exchange_account_id
-            || ! $incomeAccountId = $defaultAccountsSettings->income_currency_exchange_account_id
+                || ! $expenseAccountId = $defaultAccountsSettings->expense_currency_exchange_account_id
+                    || ! $incomeAccountId = $defaultAccountsSettings->income_currency_exchange_account_id
         ) {
             throw new \Exception('Exchange difference journal and accounts must be configured');
         }
@@ -1729,11 +1734,12 @@ class AccountManager
             'currency',
         ]);
 
-        $groups = $lines->groupBy(fn ($line) => $line->matching_number ?? 'auto_'.$line->id);
+        $groups = $lines->groupBy(fn($line) => $line->matching_number ?? 'auto_' . $line->id);
 
         foreach ($groups as $groupKey => $groupLines) {
-            $groupFullyReconciled = $groupLines->every(fn ($line) => $line->company->currency->isZero($line->amount_residual)
-                && $line->currency->isZero($line->amount_residual_currency)
+            $groupFullyReconciled = $groupLines->every(
+                fn($line) => $line->company->currency->isZero($line->amount_residual)
+                    && $line->currency->isZero($line->amount_residual_currency)
             );
 
             if (! $groupFullyReconciled) {
@@ -1741,20 +1747,22 @@ class AccountManager
             }
 
             $invoiceMoves = $groupLines->pluck('move')
-                ->filter(fn ($move) => $move->isInvoice(true))
+                ->filter(fn($move) => $move->isInvoice(true))
                 ->unique();
 
             $allInvoiceLinesReconciled = $invoiceMoves->every(function ($move) {
-                return $move->paymentTermLines->every(fn ($line) => $line->company->currency->isZero($line->amount_residual)
-                    && $line->currency->isZero($line->amount_residual_currency)
+                return $move->paymentTermLines->every(
+                    fn($line) => $line->company->currency->isZero($line->amount_residual)
+                        && $line->currency->isZero($line->amount_residual_currency)
                 );
             });
 
             $exchangeLinesToFix = $groupLines
-                ->filter(fn ($line) => ! $line->company->currency->isZero($line->amount_residual)
-                    || ! $line->currency->isZero($line->amount_residual_currency)
+                ->filter(
+                    fn($line) => ! $line->company->currency->isZero($line->amount_residual)
+                        || ! $line->currency->isZero($line->amount_residual_currency)
                 )
-                ->map(fn ($line) => [
+                ->map(fn($line) => [
                     'line'            => $line,
                     'amount_residual' => ! $line->company->currency->isZero($line->amount_residual)
                         ? $line->amount_residual
@@ -1775,7 +1783,7 @@ class AccountManager
             }
 
             $partialReconcileIds = $groupLines
-                ->flatMap(fn ($line) => $line->matchedCredits->pluck('id')->merge($line->matchedDebits->pluck('id')))
+                ->flatMap(fn($line) => $line->matchedCredits->pluck('id')->merge($line->matchedDebits->pluck('id')))
                 ->unique()
                 ->all();
 
@@ -1791,7 +1799,7 @@ class AccountManager
 
                 $allReconciledLineIds = PartialReconcile::whereIn('id', $partialReconcileIds)
                     ->get()
-                    ->flatMap(fn ($partial) => [$partial->debit_move_id, $partial->credit_move_id])
+                    ->flatMap(fn($partial) => [$partial->debit_move_id, $partial->credit_move_id])
                     ->unique()
                     ->values();
 
@@ -1818,34 +1826,34 @@ class AccountManager
     public function createExchangeDifferenceMoves(array $exchangeDiffValuesList)
     {
         $exchangeMoves = [];
-        
+
         foreach ($exchangeDiffValuesList as $exchangeDiffValues) {
             $moveValues = $exchangeDiffValues['move_values'];
-            
+
             if (empty($moveValues['lines'])) {
                 continue;
             }
-            
+
             $exchangeMove = AccountMove::create($moveValues);
             $exchangeMove->state = 'posted';
             $exchangeMove->save();
 
-            collect($moveValues['lines'])->each(fn ($lineVals) => MoveLine::create($lineVals + ['move_id' => $exchangeMove->id]));
+            collect($moveValues['lines'])->each(fn($lineVals) => MoveLine::create($lineVals + ['move_id' => $exchangeMove->id]));
 
             $exchangeMove = $this->computeAccountMove($exchangeMove);
-            
+
             foreach ($exchangeDiffValues['to_reconcile'] as $reconcileData) {
                 $sourceLine = $reconcileData['source_line'];
                 $exchangeLineSequence = $reconcileData['sequence'];
-                
+
                 $exchangeLine = $exchangeMove->lines[$exchangeLineSequence];
-                
+
                 $this->reconcilePlan([$sourceLine->id, $exchangeLine->id]);
             }
-            
+
             $exchangeMoves[] = $exchangeMove;
         }
-        
+
         return $exchangeMoves;
     }
 
@@ -1858,7 +1866,7 @@ class AccountManager
         $lines = MoveLine::whereIn('id', $lineIds)->get();
 
         $allPartials = collect($lines)
-            ->flatMap(fn ($line) => $line->matchedDebits->merge($line->matchedCredits))
+            ->flatMap(fn($line) => $line->matchedDebits->merge($line->matchedCredits))
             ->unique('id')
             ->sortBy('id')
             ->values();
@@ -1906,7 +1914,7 @@ class AccountManager
                 if ($line->full_reconcile_id) {
                     $line->matching_number = (string) $line->full_reconcile_id;
                 } else {
-                    $line->matching_number = 'P'.$matchingNumber;
+                    $line->matching_number = 'P' . $matchingNumber;
                 }
             } else {
                 $line->matching_number = null;
@@ -1919,17 +1927,17 @@ class AccountManager
     public function reverseMoves($moves, $defaultValues = [], $cancel = false)
     {
         if (empty($defaultValues)) {
-            $defaultValues = $moves->flatMap(fn ($move) => []);
+            $defaultValues = $moves->flatMap(fn($move) => []);
         }
 
         if ($cancel) {
-            $lines = $moves->flatMap(fn ($move) => $move->lines);
+            $lines = $moves->flatMap(fn($move) => $move->lines);
 
             if ($lines->isNotEmpty()) {
                 $lines->each(function ($line) {
-                    $line->matchedDebits->each(fn ($partial) => $partial->delete());
+                    $line->matchedDebits->each(fn($partial) => $partial->delete());
 
-                    $line->matchedCredits->each(fn ($partial) => $partial->delete());
+                    $line->matchedCredits->each(fn($partial) => $partial->delete());
                 });
             }
         }
@@ -2018,7 +2026,7 @@ class AccountManager
             throw new \Exception(__('accounts::account-manager.post-action-validate.lines-required'));
         }
 
-        if ($record->lines->some(fn ($line) => $line->account->deprecated)) {
+        if ($record->lines->some(fn($line) => $line->account->deprecated)) {
             throw new \Exception(__('accounts::account-manager.post-action-validate.account-deprecated'));
         }
 
@@ -2037,11 +2045,11 @@ class AccountManager
             return;
         }
 
-        if ($lines->contains(fn ($line) => $line->reconciled)) {
+        if ($lines->contains(fn($line) => $line->reconciled)) {
             throw new \Exception(__('You are trying to reconcile some entries that are already reconciled.'));
         }
 
-        if ($lines->contains(fn ($line) => $line->parent_state != MoveState::POSTED)) {
+        if ($lines->contains(fn($line) => $line->parent_state != MoveState::POSTED)) {
             throw new \Exception(__('You can only reconcile posted entries.'));
         }
 
