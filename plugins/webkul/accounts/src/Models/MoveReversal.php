@@ -11,11 +11,21 @@ class MoveReversal extends Model
     protected $table = 'accounts_accounts_move_reversals';
 
     protected $fillable = [
-        'company_id',
-        'creator_id',
         'reason',
         'date',
+        'journal_id',
+        'company_id',
+        'creator_id',
     ];
+
+    protected $casts = [
+        'date' => 'date',
+    ];
+
+    public function journal()
+    {
+        return $this->belongsTo(Journal::class);
+    }
 
     public function newMoves()
     {
@@ -35,5 +45,16 @@ class MoveReversal extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($moveReversal) {
+            $moveReversal->creator_id = filament()->auth()->id();
+
+            $moveReversal->company_id = filament()->auth()->user()->default_company_id;
+        });
     }
 }

@@ -647,12 +647,12 @@ class ProjectResource extends Resource
             ->columns(3);
     }
 
-    static public function getTaskSettings(): TaskSettings
+    public static function getTaskSettings(): TaskSettings
     {
         return once(fn () => app(TaskSettings::class));
     }
 
-    static public function getTimeSettings(): TimeSettings
+    public static function getTimeSettings(): TimeSettings
     {
         return once(fn () => app(TimeSettings::class));
     }

@@ -5,6 +5,7 @@ namespace Webkul\Account\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Security\Models\User;
+use Webkul\Support\Models\Currency;
 
 class CashRounding extends Model
 {
@@ -35,5 +36,19 @@ class CashRounding extends Model
     public function lossAccount()
     {
         return $this->belongsTo(Account::class, 'loss_account_id');
+    }
+
+    public function computeDifference(Currency $currency, float $amount = 0): float
+    {
+        $amount = $currency->round($amount);
+
+        $difference = $this->round($amount) - $amount;
+
+        return $currency->round($difference);
+    }
+
+    public function round(float $amount): float
+    {
+        return float_round($amount, precisionRounding: $this->rounding, roundingMethod: $this->rounding_method);
     }
 }

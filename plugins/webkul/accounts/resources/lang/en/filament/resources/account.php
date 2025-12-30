@@ -13,8 +13,9 @@ return [
                 'journals'      => 'Journals',
                 'currency'      => 'Currency',
                 'deprecated'    => 'Deprecated',
-                'reconcile'     => 'Reconcile',
+                'reconcile'     => 'Allow Reconcile',
                 'non-trade'     => 'Non Trade',
+                'companies'     => 'Companies',
             ],
         ],
     ],
@@ -23,18 +24,43 @@ return [
         'columns' => [
             'code'         => 'Code',
             'account-name' => 'Account Name',
-            'account-type' => 'Account Type',
+            'account-type' => 'Account',
             'currency'     => 'Currency',
-            'deprecated'   => 'Deprecated',
-            'reconcile'    => 'Reconcile',
-            'non-trade'    => 'Non Trade',
+            'journals'     => 'Journals',
+            'reconcile'    => 'Allow Reconcile',
+        ],
+
+        'grouping' => [
+            'account-type' => 'Account Type',
+        ],
+
+        'filters' => [
+            'account-type'     => 'Account Type',
+            'allow-reconcile'  => 'Allow Reconcile',
+            'currency'         => 'Currency',
+            'account-journals' => 'Journals',
+            'non-trade'        => 'Non Trade',
         ],
 
         'actions' => [
+            'edit' => [
+                'notification' => [
+                    'title' => 'Account updated',
+                    'body'  => 'The account has been updated successfully.',
+                ],
+            ],
+
             'delete' => [
                 'notification' => [
-                    'title' => 'Account deleted',
-                    'body'  => 'The account has been deleted successfully.',
+                    'success' => [
+                        'title' => 'Account deleted',
+                        'body'  => 'The account has been deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Account deletion failed',
+                        'body'  => 'The account could not be deleted because it has associated journal items.',
+                    ],
                 ],
             ],
         ],
@@ -42,43 +68,14 @@ return [
         'bulk-actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Accounts deleted',
-                    'body'  => 'The accounts has been deleted successfully.',
-                ],
-            ],
-        ],
-    ],
-
-    'infolist' => [
-        'sections' => [
-            'entries' => [
-                'name'            => 'Name',
-                'tax-type'        => 'Tax Type',
-                'tax-computation' => 'Tax Computation',
-                'tax-scope'       => 'Tax Scope',
-                'status'          => 'Status',
-                'amount'          => 'Amount',
-            ],
-
-            'field-set' => [
-                'advanced-options' => [
-                    'title' => 'Advanced Options',
-
-                    'entries' => [
-                        'invoice-label'       => 'Invoice label',
-                        'tax-group'           => 'Tax Group',
-                        'country'             => 'Country',
-                        'include-in-price'    => 'Include in price',
-                        'include-base-amount' => 'Include base amount',
-                        'is-base-affected'    => 'Is base affected',
+                    'success' => [
+                        'title' => 'Accounts deleted',
+                        'body'  => 'The accounts has been deleted successfully.',
                     ],
-                ],
 
-                'description-and-legal-notes' => [
-                    'title'   => 'Description & Invoice Legal Notes',
-                    'entries' => [
-                        'description' => 'Description',
-                        'legal-notes' => 'Legal Notes',
+                    'error' => [
+                        'title' => 'Accounts deletion failed',
+                        'body'  => 'The accounts could not be deleted because they have associated journal items.',
                     ],
                 ],
             ],

@@ -8,6 +8,7 @@ use Webkul\Support\Filament\Resources\ActivityTypeResource\Pages\CreateActivityT
 class CreateActivityType extends BaseCreateActivityType
 {
     protected static string $resource = ActivityTypeResource::class;
+
     public function getSubNavigation(): array
     {
         if (filled($cluster = static::getCluster())) {

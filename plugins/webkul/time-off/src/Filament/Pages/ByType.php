@@ -9,7 +9,8 @@ use Webkul\TimeOff\Filament\Widgets\LeaveTypeWidget;
 
 class ByType extends BaseDashboard
 {
-     use HasPageShield;
+    use HasPageShield;
+
     protected static string $routePath = 'reporting/by-type';
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-folder';

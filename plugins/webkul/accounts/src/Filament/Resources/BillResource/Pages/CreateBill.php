@@ -4,10 +4,12 @@ namespace Webkul\Account\Filament\Resources\BillResource\Pages;
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveType;
-use Webkul\Account\Facades\Account;
+use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\BillResource;
-use Webkul\Support\Concerns\HasRepeaterColumnManager;
+use Webkul\Account\Models\Journal;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateBill extends CreateRecord
 {
@@ -37,6 +39,21 @@ class CreateBill extends CreateRecord
             ->body(__('accounts::filament/resources/bill/pages/create-bill.notification.body'));
     }
 
+    public function mount(): void
+    {
+        parent::mount();
+
+        $journal = Journal::where('type', JournalType::PURCHASE)
+            ->where('company_id', filament()->auth()->user()->default_company_id)
+            ->first();
+
+        $this->data['move_type'] ??= MoveType::IN_INVOICE->value;
+
+        $this->data['journal_id'] = $journal?->id;
+
+        $this->form->fill($this->data);
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['move_type'] ??= MoveType::IN_INVOICE;
@@ -48,6 +65,6 @@ class CreateBill extends CreateRecord
 
     protected function afterCreate(): void
     {
-        Account::computeAccountMove($this->getRecord());
+        AccountFacade::computeAccountMove($this->getRecord());
     }
 }

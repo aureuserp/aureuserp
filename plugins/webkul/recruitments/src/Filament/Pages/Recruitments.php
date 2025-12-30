@@ -21,8 +21,8 @@ use Webkul\Support\Models\Company;
 
 class Recruitments extends BaseDashboard
 {
-     use HasPageShield;
     use BaseDashboard\Concerns\HasFiltersForm;
+    use HasPageShield;
 
     protected static string $routePath = 'recruitment';
 

@@ -6,7 +6,7 @@ use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\Radio;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Schema;
-use Webkul\Invoice\Enums\InvoicePolicy;
+use Webkul\Account\Enums\InvoicePolicy;
 use Webkul\Sale\Settings\InvoiceSettings;
 use Webkul\Support\Filament\Clusters\Settings;
 

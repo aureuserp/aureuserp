@@ -10,6 +10,7 @@ use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Collection;
 use ReflectionClass;
 use Webkul\Support\Package;
+use Webkul\Website\Filament\Admin\Clusters\Settings\Pages\ManageContacts;
 use Webkul\Website\Filament\Customer\Auth\Login;
 use Webkul\Website\Filament\Customer\Auth\PasswordReset\RequestPasswordReset;
 use Webkul\Website\Filament\Customer\Auth\PasswordReset\ResetPassword;
@@ -74,7 +75,15 @@ class WebsitePlugin implements Plugin
                     ->discoverResources(in: $this->getPluginBasePath('/Filament/Admin/Resources'), for: 'Webkul\\Website\\Filament\\Admin\\Resources')
                     ->discoverPages(in: $this->getPluginBasePath('/Filament/Admin/Pages'), for: 'Webkul\\Website\\Filament\\Admin\\Pages')
                     ->discoverClusters(in: $this->getPluginBasePath('/Filament/Admin/Clusters'), for: 'Webkul\\Website\\Filament\\Admin\\Clusters')
-                    ->discoverClusters(in: $this->getPluginBasePath('/Filament/Admin/Widgets'), for: 'Webkul\\Website\\Filament\\Admin\\Widgets');
+                    ->discoverClusters(in: $this->getPluginBasePath('/Filament/Admin/Widgets'), for: 'Webkul\\Website\\Filament\\Admin\\Widgets')
+                    ->navigationItems([
+                        NavigationItem::make('settings')
+                            ->label(fn () => __('website::filament/app.navigation.settings.label'))
+                            ->url(fn () => ManageContacts::getUrl())
+                            ->group(fn () => __('website::filament/app.navigation.settings.group'))
+                            ->sort(5)
+                            ->visible(fn () => ManageContacts::canAccess()),
+                    ]);
             });
     }
 

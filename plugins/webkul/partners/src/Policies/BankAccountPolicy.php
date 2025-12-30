@@ -6,7 +6,6 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Security\Models\User;
 
-
 class BankAccountPolicy
 {
     use HandlesAuthorization;

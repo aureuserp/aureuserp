@@ -37,6 +37,10 @@ class ProductServiceProvider extends PackageServiceProvider
             ])
             ->hasSeeder('Webkul\\Product\\Database\Seeders\\DatabaseSeeder')
             ->runsMigrations()
+            ->hasSettings([
+                '2025_01_17_094022_create_products_product_settings',
+            ])
+            ->runsSettings()
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->runsMigrations()

@@ -20,11 +20,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Webkul\Account\Enums\RoundingMethod;
 use Webkul\Account\Enums\RoundingStrategy;
-use Webkul\Account\Filament\Resources\CashRoundingResource\Pages\CreateCashRounding;
-use Webkul\Account\Filament\Resources\CashRoundingResource\Pages\EditCashRounding;
-use Webkul\Account\Filament\Resources\CashRoundingResource\Pages\ListCashRounding;
-use Webkul\Account\Filament\Resources\CashRoundingResource\Pages\ViewCashRounding;
+use Webkul\Account\Filament\Resources\CashRoundingResource\Pages\ListCashRoundings;
 use Webkul\Account\Models\CashRounding;
+use Webkul\Account\Settings\CustomerInvoiceSettings;
 
 class CashRoundingResource extends Resource
 {
@@ -33,6 +31,15 @@ class CashRoundingResource extends Resource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-adjustments-horizontal';
 
     protected static bool $shouldRegisterNavigation = false;
+
+    public static function isDiscovered(): bool
+    {
+        if (app()->runningInConsole()) {
+            return true;
+        }
+
+        return app(CustomerInvoiceSettings::class)->group_cash_rounding;
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -49,10 +56,12 @@ class CashRoundingResource extends Resource
                                 TextInput::make('rounding')
                                     ->label(__('accounts::filament/resources/cash-rounding.form.fields.rounding-precision'))
                                     ->required()
-                                    ->numeric()
                                     ->default(0.01)
-                                    ->minValue(0)
-                                    ->maxValue(99999999999),
+                                    ->rules([
+                                        'numeric',
+                                        'min:0',
+                                        'max:99999999999',
+                                    ]),
                                 Select::make('strategy')
                                     ->options(RoundingStrategy::class)
                                     ->default(RoundingStrategy::BIGGEST_TAX->value)
@@ -63,8 +72,22 @@ class CashRoundingResource extends Resource
                                     ->label(__('accounts::filament/resources/cash-rounding.form.fields.rounding-method'))
                                     ->required()
                                     ->autofocus(),
-                            ]),
-                    ])->columns(2),
+                                Select::make('profit_account_id')
+                                    ->label(__('Profit Account'))
+                                    ->relationship('profitAccount', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+
+                                Select::make('loss_account_id')
+                                    ->label(__('Loss Account'))
+                                    ->relationship('lossAccount', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+
+                            ])->columns(2),
+                    ])->columnSpanFull(),
             ]);
     }
 
@@ -156,18 +179,27 @@ class CashRoundingResource extends Resource
                                     ->label(__('accounts::filament/resources/cash-rounding.infolist.entries.rounding-method'))
                                     ->icon('heroicon-o-adjustments-horizontal')
                                     ->formatStateUsing(fn (string $state): string => RoundingMethod::options()[$state]),
+                                TextEntry::make('profit_account_id')
+                                    ->label(__('Profit Account'))
+                                    ->formatStateUsing(function ($record) {
+                                        return $record->profitAccount?->name;
+                                    }),
+
+                                TextEntry::make('loss_account_id')
+                                    ->label(__('Loss Account'))
+                                    ->formatStateUsing(function ($record) {
+                                        return $record->lossAccount?->name;
+                                    }),
+
                             ])->columns(2),
-                    ])->columns(2),
+                    ])->columnSpanFull(),
             ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => ListCashRounding::route('/'),
-            'create' => CreateCashRounding::route('/create'),
-            'view'   => ViewCashRounding::route('/{record}'),
-            'edit'   => EditCashRounding::route('/{record}/edit'),
+            'index'  => ListCashRoundings::route('/'),
         ];
     }
 }

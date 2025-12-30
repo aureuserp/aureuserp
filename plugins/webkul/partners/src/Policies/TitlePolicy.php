@@ -6,7 +6,6 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 use Webkul\Partner\Models\Title;
 use Webkul\Security\Models\User;
 
-
 class TitlePolicy
 {
     use HandlesAuthorization;

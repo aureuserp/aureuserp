@@ -2,39 +2,10 @@
 
 namespace Webkul\Invoice\Models;
 
-use Webkul\Account\Models\Tax;
-use Webkul\Chatter\Traits\HasChatter;
-use Webkul\Chatter\Traits\HasLogActivity;
-use Webkul\Field\Traits\HasCustomFields;
-use Webkul\Product\Models\Product as BaseProduct;
+use Webkul\Account\Models\Product as BaseProduct;
 
 class Product extends BaseProduct
 {
-    use HasChatter, HasCustomFields, HasLogActivity;
-
-    /**
-     * Create a new Eloquent model instance.
-     *
-     * @return void
-     */
-    public function __construct(array $attributes = [])
-    {
-        $this->mergeFillable([
-            'property_account_income_id',
-            'property_account_expense_id',
-            'image',
-            'service_type',
-            'sale_line_warn',
-            'expense_policy',
-            'invoice_policy',
-            'sale_line_warn_msg',
-            'sales_ok',
-            'purchase_ok',
-        ]);
-
-        parent::__construct($attributes);
-    }
-
     public function getModelTitle(): string
     {
         return __('invoices::models/product.title');
@@ -64,15 +35,5 @@ class Product extends BaseProduct
             'company.name'         => __('invoices::models/product.log-attributes.company'),
             'creator.name'         => __('invoices::models/product.log-attributes.creator'),
         ];
-    }
-
-    public function productTaxes()
-    {
-        return $this->belongsToMany(Tax::class, 'accounts_product_taxes', 'product_id', 'tax_id');
-    }
-
-    public function supplierTaxes()
-    {
-        return $this->belongsToMany(Tax::class, 'accounts_product_supplier_taxes', 'product_id', 'tax_id');
     }
 }

@@ -310,6 +310,6 @@ class ActivityTemplateRelationManager extends RelationManager
                         ])->columnSpan(1),
                     ]),
             ])
-                ->columns(1);
+            ->columns(1);
     }
 }

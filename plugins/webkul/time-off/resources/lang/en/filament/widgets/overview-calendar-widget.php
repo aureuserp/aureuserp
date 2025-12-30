@@ -7,7 +7,7 @@ return [
 
     'modal-actions' => [
         'edit' => [
-            'title' => 'Edit',
+            'title'        => 'Edit',
             'notification' => [
                 'title' => 'Time Off Updated',
                 'body'  => 'Time off request has been updated successfully.',

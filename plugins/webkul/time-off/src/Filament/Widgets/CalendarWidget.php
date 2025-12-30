@@ -25,9 +25,9 @@ use Webkul\TimeOff\Traits\TimeOffHelper;
 
 class CalendarWidget extends FullCalendarWidget
 {
+    use HasWidgetShield;
     use TimeOffHelper;
 
-     use HasWidgetShield;
     public Model|string|null $model = Leave::class;
 
     public function getHeading(): string|Htmlable|null

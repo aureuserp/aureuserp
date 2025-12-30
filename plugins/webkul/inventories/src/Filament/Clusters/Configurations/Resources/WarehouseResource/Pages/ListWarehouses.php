@@ -9,7 +9,6 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\WarehouseResource;
 use Webkul\Inventory\Models\Warehouse;
-use Webkul\Inventory\Settings\WarehouseSettings;
 
 class ListWarehouses extends ListRecords
 {

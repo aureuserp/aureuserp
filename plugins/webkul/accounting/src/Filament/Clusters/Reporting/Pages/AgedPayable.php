@@ -1,0 +1,258 @@
+<?php
+
+namespace Webkul\Accounting\Filament\Clusters\Reporting\Pages;
+
+use Carbon\Carbon;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
+use Illuminate\Support\Facades\Auth;
+use Webkul\Account\Enums\AccountType;
+use Webkul\Account\Enums\MoveState;
+use Webkul\Account\Models\Journal;
+use Webkul\Account\Models\MoveLine;
+use Webkul\Accounting\Filament\Clusters\Reporting;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
+use Webkul\Partner\Models\Partner;
+
+class AgedPayable extends Page implements HasForms
+{
+    use InteractsWithForms, HasPageShield;
+
+    protected string $view = 'accounting::filament.clusters.reporting.pages.aged-payable';
+
+    protected static ?string $cluster = Reporting::class;
+
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
+
+    protected static ?string $navigationLabel = 'Aged Payable';
+
+    protected static ?int $navigationSort = 7;
+
+    public ?array $data = [];
+
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_accounting_aged_payable';
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Partner Reports';
+    }
+
+    public function mount(): void
+    {
+        $this->form->fill([
+            'as_of_date' => now()->toDateString(),
+            'basis'      => 'due_date',
+            'period'     => 30,
+        ]);
+    }
+
+    protected function getFormSchema(): array
+    {
+        return [
+            Section::make()
+                ->columns([
+                    'default' => 1,
+                    'sm'      => 3,
+                ])
+                ->schema([
+                    DatePicker::make('as_of_date')
+                        ->label('As of')
+                        ->default(now())
+                        ->native(false)
+                        ->suffixIcon('heroicon-o-calendar')
+                        ->live()
+                        ->afterStateUpdated(fn () => null),
+
+                    Select::make('basis')
+                        ->label('Based on')
+                        ->options([
+                            'due_date'     => 'Due Date',
+                            'invoice_date' => 'Invoice Date',
+                        ])
+                        ->default('due_date')
+                        ->live()
+                        ->afterStateUpdated(fn () => null),
+
+                    Select::make('period')
+                        ->label('Period Length (days)')
+                        ->options([
+                            30 => '30 Days',
+                            60 => '60 Days',
+                            90 => '90 Days',
+                        ])
+                        ->default(30)
+                        ->live()
+                        ->afterStateUpdated(fn () => null),
+
+                    Select::make('journals')
+                        ->label('Journals')
+                        ->multiple()
+                        ->options(Journal::pluck('name', 'id'))
+                        ->searchable()
+                        ->live()
+                        ->afterStateUpdated(fn () => null),
+
+                    Select::make('partners')
+                        ->label('Partners')
+                        ->multiple()
+                        ->options(Partner::pluck('name', 'id'))
+                        ->searchable()
+                        ->live()
+                        ->afterStateUpdated(fn () => null),
+
+                    Select::make('posted_entries')
+                        ->label('Entries')
+                        ->options([
+                            'posted' => 'Posted Entries',
+                            'all'    => 'All Entries',
+                        ])
+                        ->default('posted')
+                        ->live()
+                        ->afterStateUpdated(fn () => null),
+                ])
+                ->columnSpanFull(),
+        ];
+    }
+
+    protected function getFormStatePath(): string
+    {
+        return 'data';
+    }
+
+    #[\Livewire\Attributes\Computed]
+    public function agedPayableData(): array
+    {
+        $state = $this->form->getState();
+        $asOfDate = Carbon::parse($state['as_of_date'] ?? now());
+        $basis = $state['basis'] ?? 'due_date';
+        $period = $state['period'] ?? 30;
+        $journalIds = $state['journals'] ?? [];
+        $partnerIds = $state['partners'] ?? [];
+        $postedOnly = ($state['posted_entries'] ?? 'posted') === 'posted';
+        $companyId = Auth::user()->default_company_id;
+
+        $query = MoveLine::select(
+            'accounts_account_move_lines.*',
+            'accounts_account_moves.name as move_name',
+            'accounts_account_moves.invoice_date',
+            'accounts_account_moves.invoice_date_due',
+            'accounts_account_moves.reference',
+            'accounts_account_moves.state',
+            'accounts_journals.name as journal_name',
+            'partners_partners.name as partner_name',
+            'partners_partners.id as partner_id'
+        )
+            ->join('accounts_account_moves', 'accounts_account_move_lines.move_id', '=', 'accounts_account_moves.id')
+            ->join('accounts_accounts', 'accounts_account_move_lines.account_id', '=', 'accounts_accounts.id')
+            ->leftJoin('accounts_journals', 'accounts_account_moves.journal_id', '=', 'accounts_journals.id')
+            ->leftJoin('partners_partners', 'accounts_account_move_lines.partner_id', '=', 'partners_partners.id')
+            ->where('accounts_accounts.account_type', AccountType::LIABILITY_PAYABLE)
+            ->where('accounts_account_moves.company_id', $companyId)
+            ->where('accounts_account_move_lines.amount_residual', '!=', 0)
+            ->whereNotNull('accounts_account_move_lines.partner_id');
+
+        if ($postedOnly) {
+            $query->where('accounts_account_moves.state', MoveState::POSTED);
+        }
+
+        if (! empty($journalIds)) {
+            $query->whereIn('accounts_account_moves.journal_id', $journalIds);
+        }
+
+        if (! empty($partnerIds)) {
+            $query->whereIn('accounts_account_move_lines.partner_id', $partnerIds);
+        }
+
+        $moveLines = $query->orderBy('partners_partners.name')
+            ->orderBy('accounts_account_moves.invoice_date')
+            ->get();
+
+        $partnerData = [];
+        
+        foreach ($moveLines as $line) {
+            $partnerId = $line->partner_id;
+            
+            if (! isset($partnerData[$partnerId])) {
+                $partnerData[$partnerId] = [
+                    'partner_name' => $line->partner_name,
+                    'at_date'      => 0,
+                    'period_1'     => 0,
+                    'period_2'     => 0,
+                    'period_3'     => 0,
+                    'period_4'     => 0,
+                    'older'        => 0,
+                    'total'        => 0,
+                    'lines'        => [],
+                ];
+            }
+
+            $referenceDate = $basis === 'due_date'
+                ? Carbon::parse($line->invoice_date_due)
+                : Carbon::parse($line->invoice_date);
+
+            $daysOverdue = $referenceDate->diffInDays($asOfDate, false);
+            $amount = -(float) $line->amount_residual;
+
+            $lineData = [
+                'move_name'        => $line->move_name,
+                'invoice_date'     => $line->invoice_date,
+                'invoice_date_due' => $line->invoice_date_due,
+                'reference'        => $line->reference,
+                'journal_name'     => $line->journal_name,
+                'days_overdue'     => $daysOverdue,
+                'at_date'          => 0,
+                'period_1'         => 0,
+                'period_2'         => 0,
+                'period_3'         => 0,
+                'period_4'         => 0,
+                'older'            => 0,
+            ];
+
+            if ($daysOverdue < 0) {
+                $lineData['at_date'] = $amount;
+                $partnerData[$partnerId]['at_date'] += $amount;
+            } elseif ($daysOverdue <= $period) {
+                $lineData['period_1'] = $amount;
+                $partnerData[$partnerId]['period_1'] += $amount;
+            } elseif ($daysOverdue <= $period * 2) {
+                $lineData['period_2'] = $amount;
+                $partnerData[$partnerId]['period_2'] += $amount;
+            } elseif ($daysOverdue <= $period * 3) {
+                $lineData['period_3'] = $amount;
+                $partnerData[$partnerId]['period_3'] += $amount;
+            } elseif ($daysOverdue <= $period * 4) {
+                $lineData['period_4'] = $amount;
+                $partnerData[$partnerId]['period_4'] += $amount;
+            } else {
+                $lineData['older'] = $amount;
+                $partnerData[$partnerId]['older'] += $amount;
+            }
+
+            $partnerData[$partnerId]['total'] += $amount;
+            $partnerData[$partnerId]['lines'][] = $lineData;
+        }
+
+        $partnerData = array_filter($partnerData, fn ($partner) => abs($partner['total']) > 0.01);
+
+        $hasUnposted = MoveLine::join('accounts_account_moves', 'accounts_account_move_lines.move_id', '=', 'accounts_account_moves.id')
+            ->join('accounts_accounts', 'accounts_account_move_lines.account_id', '=', 'accounts_accounts.id')
+            ->where('accounts_accounts.account_type', AccountType::LIABILITY_PAYABLE)
+            ->where('accounts_account_moves.company_id', $companyId)
+            ->where('accounts_account_moves.state', '!=', MoveState::POSTED)
+            ->exists();
+
+        return [
+            'partners'     => $partnerData,
+            'as_of_date'   => $asOfDate,
+            'period'       => $period,
+            'has_unposted' => $hasUnposted,
+        ];
+    }
+}

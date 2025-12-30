@@ -175,6 +175,11 @@ class Product extends Model implements Sortable
         return $this->hasMany(PriceRuleItem::class);
     }
 
+    public function getDisplayNameAttribute(): string
+    {
+        return $this->name;
+    }
+
     public function supplierInformation(): HasMany
     {
         if ($this->is_configurable) {

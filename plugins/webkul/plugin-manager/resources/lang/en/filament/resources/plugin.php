@@ -11,7 +11,7 @@ return [
     'table' => [
         'version'             => 'Version',
         'dependencies'        => 'Dependencies',
-        'dependencies_suffix' => 'Dependencies',
+        'dependencies_suffix' => ' Dependencies',
     ],
 
     'status' => [

@@ -277,8 +277,8 @@ class ChatterAction extends Action
             ->modalCancelAction(false)
             ->closeModalByEscaping()
             ->modalHeading(__('chatter::filament/resources/actions/chatter-action.title'))
-            ->badge(fn (Model $record): int => $record->unRead()->count())
-            ->modalContent(fn (Model $record): View => $this->renderModalContent($record));
+            ->badge(fn(Model $record): int => $record->unRead()->count())
+            ->modalContent(fn(Model $record): View => $this->renderModalContent($record));
     }
 
     protected function renderModalContent(Model $record): View
@@ -293,7 +293,7 @@ class ChatterAction extends Action
                 'activityPlans'           => $this->getActivityPlans(),
                 'chatterAction'           => $this,
             ]),
-            fn () => $record->markAsRead()
+            fn() => $record->markAsRead()
         );
     }
 

@@ -7,6 +7,8 @@
 
     $attributes = $getExtraAttributeBag()
         ->class(['fi-fo-table-repeater', 'fi-compact']);
+
+    $hasSummary = $hasAnySummarizers();
 @endphp
 
 @if (empty($items))
@@ -27,7 +29,7 @@
     </div>
 @else
     <div {{ $attributes }}>
-        <table class="fi-absolute-positioning-context">
+        <table class="fi-absolute-positioning-context overflow-hidden">
             <thead>
                 <tr>
                     @foreach ($tableColumns as $column)
@@ -107,7 +109,7 @@
                             @continue(! $visibleColumns->has($component->getName()))
 
                             <td>
-                                <div style="min-width: max-content; padding: 6px 2px;">
+                                <div>
                                     {!! $component->toHtml() !!}
                                 </div>
                             </td>
@@ -131,6 +133,24 @@
                     </tr>
                 @endforeach
             </tbody>
+
+            @if ($hasSummary)
+                <tfoot class="fi-ta-row fi-ta-summary-row fi-striped">
+                    <tr>
+                        @foreach ($tableColumns as $tableColumn)
+                            <td class="fi-ta-cell px-3 py-3 font-semibold">
+                                @if ($tableColumn->hasSummarizer())
+                                    {{ $getSummaryForColumn($tableColumn->getName()) }}
+                                @endif
+                            </td>
+                        @endforeach
+
+                        @if ($hasColumnManager)
+                            <td></td>
+                        @endif
+                    </tr>
+                </tfoot>
+            @endif
         </table>
     </div>
 @endif

@@ -5,10 +5,11 @@ namespace Webkul\Account\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Account\Enums\JournalType;
+use Webkul\Account\Enums\PaymentType;
+use Webkul\Account\Settings\DefaultAccountSettings;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -49,6 +50,10 @@ class Journal extends Model implements Sortable
     public $sortable = [
         'order_column_name'  => 'sort',
         'sort_when_creating' => true,
+    ];
+
+    protected $casts = [
+        'type' => JournalType::class,
     ];
 
     public function bankAccount()
@@ -96,56 +101,114 @@ class Journal extends Model implements Sortable
         return $this->belongsToMany(Account::class, 'accounts_journal_accounts', 'journal_id', 'account_id');
     }
 
-    public function getAvailablePaymentMethodLines(string $paymentType): mixed
+    public function moves()
     {
-        if (! $this->exists) {
-            return PaymentMethodLine::query()->whereNull('id')->get();
+        return $this->hasMany(Move::class, 'journal_id');
+    }
+
+    public function moveLines()
+    {
+        return $this->hasMany(MoveLine::class, 'journal_id');
+    }
+
+    public function getPaymentSequenceAttribute()
+    {
+        if (in_array($this->type, [JournalType::CASH, JournalType::BANK, JournalType::CREDIT_CARD])) {
+            return true;
         }
 
-        return match ($paymentType) {
-            'inbound'  => $this->inboundPaymentMethodLines,
-            'outbound' => $this->outboundPaymentMethodLines,
-            default    => throw new InvalidArgumentException('Invalid payment type'),
-        };
+        return false;
+    }
+
+    public function getRefundSequenceAttribute()
+    {
+        if (in_array($this->type, [JournalType::SALE, JournalType::PURCHASE])) {
+            return true;
+        }
+
+        return false;
     }
 
     public function inboundPaymentMethodLines(): HasMany
     {
-        return $this->hasMany(PaymentMethodLine::class)->where('type', 'inbound');
+        return $this->hasMany(PaymentMethodLine::class)
+            ->whereHas('paymentMethod', function ($q) {
+                $q->where('payment_type', PaymentType::RECEIVE);
+            });
     }
 
     public function outboundPaymentMethodLines(): HasMany
     {
-        return $this->hasMany(PaymentMethodLine::class)->where('type', 'outbound');
+        return $this->hasMany(PaymentMethodLine::class)
+            ->whereHas('paymentMethod', function ($q) {
+                $q->where('payment_type', PaymentType::SEND);
+            });
     }
 
-    public function computeInboundPaymentMethodLines(): void
+    public function getAvailablePaymentMethodLines($paymentType)
     {
-        if (! in_array($this->type, ['bank', 'cash', 'credit'])) {
-            $this->inboundPaymentMethodLines()->delete();
-
-            return;
+        if ($paymentType == PaymentType::RECEIVE) {
+            return $this->inboundPaymentMethodLines;
+        } else {
+            return $this->outboundPaymentMethodLines;
         }
+    }
 
-        DB::transaction(function () {
-            $this->inboundPaymentMethodLines()->delete();
+    protected static function boot()
+    {
+        parent::boot();
 
-            $defaultMethods = $this->getDefaultInboundPaymentMethods();
-
-            foreach ($defaultMethods as $method) {
-                $this->inboundPaymentMethodLines()->create([
-                    'name'              => $method->name,
-                    'payment_method_id' => $method->id,
-                    'type'              => 'inbound',
-                ]);
-            }
+        static::saving(function ($journal) {
+            $journal->computeSuspenseAccountId();
         });
     }
 
-    protected function getDefaultInboundPaymentMethods(): mixed
+    public function computeSuspenseAccountId()
     {
-        return PaymentMethod::where('type', 'inbound')
-            ->where('active', true)
+        if (! in_array($this->type, [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD])) {
+            $this->suspense_account_id = null;
+        } elseif ($this->suspense_account_id) {
+            $this->suspense_account_id = $this->suspense_account_id;
+        } elseif ($accountId = (new DefaultAccountSettings)->account_journal_suspense_account_id) {
+            $this->suspense_account_id = $accountId;
+        } else {
+            $this->suspense_account_id = null;
+        }
+    }
+
+    /**
+     * Get default inbound payment method lines data
+     */
+    public static function getDefaultInboundPaymentMethodLines(): array
+    {
+        $defaultMethods = PaymentMethod::where('code', 'manual')
+            ->where('payment_type', PaymentType::RECEIVE)
             ->get();
+
+        return $defaultMethods->map(function ($method) {
+            return [
+                'payment_method_id'  => $method->id,
+                'name'               => $method->name,
+                'payment_account_id' => null,
+            ];
+        })->toArray();
+    }
+
+    /**
+     * Get default outbound payment method lines data
+     */
+    public static function getDefaultOutboundPaymentMethodLines(): array
+    {
+        $defaultMethods = PaymentMethod::where('code', 'manual')
+            ->where('payment_type', PaymentType::SEND)
+            ->get();
+
+        return $defaultMethods->map(function ($method) {
+            return [
+                'payment_method_id'  => $method->id,
+                'name'               => $method->name,
+                'payment_account_id' => null,
+            ];
+        })->toArray();
     }
 }

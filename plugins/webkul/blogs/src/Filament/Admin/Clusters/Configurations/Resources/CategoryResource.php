@@ -56,7 +56,7 @@ class CategoryResource extends Resource
                     ->live(onBlur: true)
                     ->placeholder(__('blogs::filament/admin/clusters/configurations/resources/category.form.fields.name-placeholder'))
                     ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;'])
-                    ->afterStateUpdated(fn(string $operation, $state, Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
+                    ->afterStateUpdated(fn (string $operation, $state, Set $set) => $operation === 'create' ? $set('slug', Str::slug($state)) : null),
                 TextInput::make('slug')
                     ->disabled()
                     ->dehydrated()
@@ -84,7 +84,7 @@ class CategoryResource extends Resource
             ])
             ->recordActions([
                 EditAction::make()
-                    ->hidden(fn($record) => $record->trashed())
+                    ->hidden(fn ($record) => $record->trashed())
                     ->successNotification(
                         Notification::make()
                             ->success()

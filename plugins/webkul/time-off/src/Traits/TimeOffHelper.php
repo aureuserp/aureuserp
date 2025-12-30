@@ -300,7 +300,7 @@ trait TimeOffHelper
         $totalTaken = Leave::where('employee_id', $employee->id)
             ->where('holiday_status_id', $leaveTypeId)
             ->where('state', '!=', State::REFUSE->value)
-            ->where(fn ($q) => true)  
+            ->where(fn ($q) => true)
             ->sum('number_of_days');
 
         $availableBalance = round($totalAllocated - $totalTaken, 1);

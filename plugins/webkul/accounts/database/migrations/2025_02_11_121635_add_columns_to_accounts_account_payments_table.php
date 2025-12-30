@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('accounts_moves_lines', function (Blueprint $table) {
-            //
+            $table->dropColumn('full_reconcile_id');
         });
     }
 };

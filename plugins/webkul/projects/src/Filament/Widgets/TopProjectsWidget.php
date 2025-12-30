@@ -24,8 +24,8 @@ class TopProjectsWidget extends BaseWidget
     {
         return __('projects::filament/widgets/top-projects.heading.title');
     }
-    
-    public function getTableRecordKey(Model | array $record): string
+
+    public function getTableRecordKey(Model|array $record): string
     {
         return 'id';
     }

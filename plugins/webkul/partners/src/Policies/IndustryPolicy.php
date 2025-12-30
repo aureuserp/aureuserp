@@ -6,7 +6,6 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 use Webkul\Partner\Models\Industry;
 use Webkul\Security\Models\User;
 
-
 class IndustryPolicy
 {
     use HandlesAuthorization;
@@ -90,5 +89,4 @@ class IndustryPolicy
     {
         return $user->can('restore_any_industry');
     }
-
 }
