@@ -106,9 +106,6 @@
     .fi-modal-content:has(> .chatter-panel-container) {
         padding: 0.5rem 1rem 1rem;
     }
-    .fi-modal.fi-modal-slide-over>.fi-modal-window-ctn>.fi-modal-window {
-        overflow-y: hidden !important;
-    }
     .activity-modal .fi-dropdown-panel , .fi-fo-date-time-picker-panel{
         left: auto !important;
     }
