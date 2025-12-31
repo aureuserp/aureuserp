@@ -241,6 +241,13 @@ class PermissionManager
              */
             \Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryResource::class,
             \Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource::class,
+
+            /**
+             * Website Resources/Pages
+             */
+            \Webkul\Website\Filament\Admin\Clusters\Settings\Pages\ManageContacts::class,
+            \Webkul\Website\Filament\Admin\Resources\PageResource::class,
+            \Webkul\Website\Filament\Admin\Resources\PartnerResource::class,
         ];
     }
 }

@@ -164,6 +164,15 @@ class Partner extends Authenticatable implements FilamentUser
         return $this->belongsToMany(Tag::class, 'partners_partner_tag', 'partner_id', 'tag_id');
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($partner) {
+            $partner->creator_id = filament()->auth()->id();
+        });
+    }
+
     protected static function newFactory(): PartnerFactory
     {
         return PartnerFactory::new();

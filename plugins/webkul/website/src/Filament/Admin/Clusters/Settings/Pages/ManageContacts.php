@@ -28,6 +28,11 @@ class ManageContacts extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_website_manage_contacts';
+    }
+
     public function getBreadcrumbs(): array
     {
         return [

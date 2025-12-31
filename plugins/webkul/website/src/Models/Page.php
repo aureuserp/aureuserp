@@ -56,6 +56,15 @@ class Page extends Model
         return $this->belongsTo(User::class);
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($page) {
+            $page->creator_id = filament()->auth()->id();
+        });
+    }
+
     protected static function newFactory(): PageFactory
     {
         return PageFactory::new();
