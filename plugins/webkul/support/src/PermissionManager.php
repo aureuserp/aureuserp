@@ -296,6 +296,16 @@ class PermissionManager
             \Webkul\Contact\Filament\Clusters\Configurations\Resources\BankAccountResource::class,
             \Webkul\Contact\Filament\Resources\AddressResource::class,
             \Webkul\Contact\Filament\Resources\PartnerResource::class,
+
+            /**
+             * Field Resources/Pages
+             */
+            \Webkul\Field\Filament\Resources\FieldResource::class,
+
+            /**
+             * PluginManager Resources/Pages
+             */
+            \Webkul\PluginManager\Filament\Resources\PluginResource::class,
         ];
     }
 }

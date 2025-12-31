@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema as DBSchema;
 use Webkul\PluginManager\Filament\Resources\PluginResource\Pages;
-use Webkul\Support\Models\Plugin;
+use Webkul\PluginManager\Models\Plugin;
 use Webkul\Support\Package;
 
 class PluginResource extends Resource
