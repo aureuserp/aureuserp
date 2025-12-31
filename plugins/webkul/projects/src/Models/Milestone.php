@@ -58,7 +58,7 @@ class Milestone extends Model
     {
         parent::boot();
 
-        static::saving(function ($milestone) {
+        static::creating(function ($milestone) {
             $milestone->creator_id = filament()->auth()->id();
         });
     }

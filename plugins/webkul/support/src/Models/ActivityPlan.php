@@ -52,7 +52,7 @@ class ActivityPlan extends Model
     {
         parent::boot();
 
-        static::saving(function ($activityPlan) {
+        static::creating(function ($activityPlan) {
             $activityPlan->creator_id = filament()->auth()->id();
 
             $activityPlan->company_id ??= filament()->auth()->user()->default_company_id;

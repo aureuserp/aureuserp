@@ -206,12 +206,6 @@ class PermissionManager
             \Webkul\Project\Filament\Widgets\TopProjectsWidget::class,
 
             /**
-             * Other Plugins Resources/Pages
-             */
-            \Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources\CategoryResource::class,
-            \Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources\TagResource::class,
-
-            /**
              * Employee Resources/Pages
              */
             \Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResource::class,
@@ -248,6 +242,13 @@ class PermissionManager
             \Webkul\Website\Filament\Admin\Clusters\Settings\Pages\ManageContacts::class,
             \Webkul\Website\Filament\Admin\Resources\PageResource::class,
             \Webkul\Website\Filament\Admin\Resources\PartnerResource::class,
+
+            /**
+             * Blog Plugins Resources/Pages
+             */
+            \Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources\CategoryResource::class,
+            \Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources\TagResource::class,
+            \Webkul\Blog\Filament\Admin\Resources\PostResource::class,
         ];
     }
 }

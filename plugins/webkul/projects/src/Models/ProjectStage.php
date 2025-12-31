@@ -72,7 +72,7 @@ class ProjectStage extends Model implements Sortable
     {
         parent::boot();
 
-        static::saving(function ($projectStage) {
+        static::creating(function ($projectStage) {
             $projectStage->creator_id = filament()->auth()->id();
         });
     }

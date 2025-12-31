@@ -60,7 +60,7 @@ class Page extends Model
     {
         parent::boot();
 
-        static::saving(function ($page) {
+        static::creating(function ($page) {
             $page->creator_id = filament()->auth()->id();
         });
     }

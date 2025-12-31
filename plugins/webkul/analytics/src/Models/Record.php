@@ -69,7 +69,7 @@ class Record extends Model
     {
         parent::boot();
 
-        static::saving(function ($record) {
+        static::creating(function ($record) {
             $record->creator_id = filament()->auth()->id();
         });
     }

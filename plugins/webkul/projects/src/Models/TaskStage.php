@@ -84,7 +84,7 @@ class TaskStage extends Model implements Sortable
     {
         parent::boot();
 
-        static::saving(function ($taskStage) {
+        static::creating(function ($taskStage) {
             $taskStage->creator_id = filament()->auth()->id();
         });
     }

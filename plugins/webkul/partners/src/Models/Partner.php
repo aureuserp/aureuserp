@@ -168,7 +168,7 @@ class Partner extends Authenticatable implements FilamentUser
     {
         parent::boot();
 
-        static::saving(function ($partner) {
+        static::creating(function ($partner) {
             $partner->creator_id = filament()->auth()->id();
         });
     }

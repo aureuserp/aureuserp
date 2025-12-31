@@ -20,11 +20,6 @@ class ManageCategories extends ManageRecords
             CreateAction::make()
                 ->label(__('blogs::filament/admin/clusters/configurations/resources/category/pages/manage-categories.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
-                ->mutateDataUsing(function (array $data): array {
-                    $data['creator_id'] = Auth::id();
-
-                    return $data;
-                })
                 ->after(function ($record) {
                     return redirect(
                         static::$resource::getUrl('index', ['record' => $record]),

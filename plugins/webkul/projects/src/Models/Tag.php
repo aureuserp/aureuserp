@@ -40,7 +40,7 @@ class Tag extends Model
     {
         parent::boot();
 
-        static::saving(function ($tag) {
+        static::creating(function ($tag) {
             $tag->creator_id = filament()->auth()->id();
         });
     }
