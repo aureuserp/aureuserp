@@ -144,7 +144,7 @@ class PermissionManager
             \Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource::class,
             \Webkul\Accounting\Filament\Clusters\Vendors\Resources\RefundResource::class,
             \Webkul\Accounting\Filament\Clusters\Vendors\Resources\VendorResource::class,
-            \Webkul\Accounting\Filament\Pages\Dashboard::class,
+            \Webkul\Accounting\Filament\Pages\Overview::class,
             \Webkul\Accounting\Filament\Clusters\Reporting\Pages\AgedPayable::class,
             \Webkul\Accounting\Filament\Clusters\Reporting\Pages\AgedReceivable::class,
             \Webkul\Accounting\Filament\Clusters\Reporting\Pages\BalanceSheet::class,
