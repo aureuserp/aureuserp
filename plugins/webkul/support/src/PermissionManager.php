@@ -15,9 +15,11 @@ class PermissionManager
         FilamentShield::buildPermissionKeyUsing(function (string $entity, string $affix, string $subject, string $case, string $separator) {
             $pluginKey = null;
 
-            if (in_array(
+            if (! in_array(
                 needle: $entity,
-                haystack: $this->getPluginPrefixRequiredEntities(),
+                haystack: [
+                    \Webkul\Security\Filament\Resources\RoleResource::class,
+                ],
                 strict: true
             )) {
                 $pluginKey = Str::of($entity)
@@ -25,8 +27,6 @@ class PermissionManager
                     ->before('\\')
                     ->snake()
                     ->toString();
-            } else {
-                // \Log::info($entity);
             }
 
             return match(true) {
@@ -306,6 +306,22 @@ class PermissionManager
              * PluginManager Resources/Pages
              */
             \Webkul\PluginManager\Filament\Resources\PluginResource::class,
+
+            /**
+             * Security Resources/Pages
+             */
+            \Webkul\Security\Filament\Resources\CompanyResource::class,
+            // \Webkul\Security\Filament\Resources\RoleResource::class,
+            \Webkul\Security\Filament\Resources\TeamResource::class,
+            \Webkul\Security\Filament\Resources\UserResource::class,
+            \Webkul\Security\Filament\Clusters\Settings\Pages\ManageActivity::class,
+            \Webkul\Security\Filament\Clusters\Settings\Pages\ManageCurrency::class,
+            \Webkul\Security\Filament\Clusters\Settings\Pages\ManageUsers::class,
+
+            /**
+             * Support Resources/Pages
+             */
+            \Webkul\Support\Filament\Pages\Profile::class,
         ];
     }
 }
