@@ -207,13 +207,7 @@ class ActivityPlanResource extends BaseActivityPlanResource
                 CreateAction::make()
                     ->icon('heroicon-o-plus-circle')
                     ->mutateDataUsing(function (array $data): array {
-                        $user = Auth::user();
-
                         $data['plugin'] = 'recruitments';
-
-                        $data['creator_id'] = $user->id;
-
-                        $data['company_id'] ??= $user->defaultCompany?->id;
 
                         return $data;
                     })

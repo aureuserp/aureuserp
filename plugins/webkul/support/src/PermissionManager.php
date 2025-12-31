@@ -25,6 +25,8 @@ class PermissionManager
                     ->before('\\')
                     ->snake()
                     ->toString();
+            } else {
+                // \Log::info($entity);
             }
 
             return match(true) {
@@ -125,6 +127,7 @@ class PermissionManager
              * Accounting Resources/Pages
              */
             \Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource::class,
+            \Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalItemResource::class,
             \Webkul\Accounting\Filament\Clusters\Configuration\Resources\AccountResource::class,
             \Webkul\Accounting\Filament\Clusters\Configuration\Resources\CashRoundingResource::class,
             \Webkul\Accounting\Filament\Clusters\Configuration\Resources\CurrencyResource::class,
@@ -228,12 +231,24 @@ class PermissionManager
             /**
              * Recruitment Resources/Pages
              */
+            \Webkul\Recruitment\Filament\Clusters\Applications\Resources\ApplicantResource::class,
+            \Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource::class,
+            \Webkul\Recruitment\Filament\Clusters\Applications\Resources\JobByPositionResource::class,
             \Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ActivityPlanResource::class,
             \Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ActivityTypeResource::class,
+            \Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ApplicantCategoryResource::class,
+            \Webkul\Recruitment\Filament\Clusters\Configurations\Resources\DegreeResource::class,
             \Webkul\Recruitment\Filament\Clusters\Configurations\Resources\DepartmentResource::class,
             \Webkul\Recruitment\Filament\Clusters\Configurations\Resources\EmploymentTypeResource::class,
             \Webkul\Recruitment\Filament\Clusters\Configurations\Resources\JobPositionResource::class,
+            \Webkul\Recruitment\Filament\Clusters\Configurations\Resources\RefuseReasonResource::class,
             \Webkul\Recruitment\Filament\Clusters\Configurations\Resources\SkillTypeResource::class,
+            \Webkul\Recruitment\Filament\Clusters\Configurations\Resources\StageResource::class,
+            \Webkul\Recruitment\Filament\Clusters\Configurations\Resources\UTMMediumResource::class,
+            \Webkul\Recruitment\Filament\Clusters\Configurations\Resources\UTMSourceResource::class,
+            \Webkul\Recruitment\Filament\Pages\Recruitments::class,
+            \Webkul\Recruitment\Filament\Widgets\ApplicantChartWidget::class,
+            \Webkul\Recruitment\Filament\Widgets\JobPositionStatsWidget::class,
 
             /**
              * TimeOff Resources/Pages

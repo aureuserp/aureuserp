@@ -16,7 +16,7 @@ class CandidatePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_candidate');
+        return $user->can('view_any_recruitment_candidate');
     }
 
     /**
@@ -24,7 +24,7 @@ class CandidatePolicy
      */
     public function view(User $user, Candidate $candidate): bool
     {
-        return $user->can('view_candidate');
+        return $user->can('view_recruitment_candidate');
     }
 
     /**
@@ -32,7 +32,7 @@ class CandidatePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_candidate');
+        return $user->can('create_recruitment_candidate');
     }
 
     /**
@@ -40,7 +40,7 @@ class CandidatePolicy
      */
     public function update(User $user, Candidate $candidate): bool
     {
-        if (! $user->can('update_candidate')) {
+        if (! $user->can('update_recruitment_candidate')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class CandidatePolicy
      */
     public function delete(User $user, Candidate $candidate): bool
     {
-        if (! $user->can('delete_candidate')) {
+        if (! $user->can('delete_recruitment_candidate')) {
             return false;
         }
 
@@ -64,6 +64,6 @@ class CandidatePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_candidate');
+        return $user->can('delete_any_recruitment_candidate');
     }
 }

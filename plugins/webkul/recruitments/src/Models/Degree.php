@@ -24,4 +24,13 @@ class Degree extends Model implements Sortable
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($degree) {
+            $degree->creator_id ??= filament()->auth()->id();
+        });
+    }
 }

@@ -15,7 +15,7 @@ class UTMMediumPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_u::t::m::medium');
+        return $user->can('view_any_recruitment_u::t::m::medium');
     }
 
     /**
@@ -23,7 +23,7 @@ class UTMMediumPolicy
      */
     public function view(User $user, UTMMedium $uTMMedium): bool
     {
-        return $user->can('view_u::t::m::medium');
+        return $user->can('view_recruitment_u::t::m::medium');
     }
 
     /**
@@ -31,7 +31,7 @@ class UTMMediumPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_u::t::m::medium');
+        return $user->can('create_recruitment_u::t::m::medium');
     }
 
     /**
@@ -39,7 +39,7 @@ class UTMMediumPolicy
      */
     public function update(User $user, UTMMedium $uTMMedium): bool
     {
-        return $user->can('update_u::t::m::medium');
+        return $user->can('update_recruitment_u::t::m::medium');
     }
 
     /**
@@ -47,7 +47,7 @@ class UTMMediumPolicy
      */
     public function delete(User $user, UTMMedium $uTMMedium): bool
     {
-        return $user->can('delete_u::t::m::medium');
+        return $user->can('delete_recruitment_u::t::m::medium');
     }
 
     /**
@@ -55,6 +55,6 @@ class UTMMediumPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_u::t::m::medium');
+        return $user->can('delete_any_recruitment_u::t::m::medium');
     }
 }

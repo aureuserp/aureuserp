@@ -49,4 +49,13 @@ class Stage extends Model implements Sortable
     {
         return $this->belongsToMany(EmployeeJobPosition::class, 'recruitments_stages_jobs', 'stage_id', 'job_id');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($stage) {
+            $stage->creator_id ??= filament()->auth()->id();
+        });
+    }
 }

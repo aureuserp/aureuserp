@@ -83,8 +83,6 @@ class CandidateResource extends Resource
                     ->schema([
                         Section::make(__('recruitments::filament/clusters/applications/resources/candidate.form.sections.basic-information.title'))
                             ->schema([
-                                Hidden::make('creator_id')
-                                    ->default(Auth::id()),
                                 TextInput::make('name')
                                     ->label(__('recruitments::filament/clusters/applications/resources/candidate.form.sections.basic-information.fields.full-name'))
                                     ->required()

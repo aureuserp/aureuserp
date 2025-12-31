@@ -75,9 +75,6 @@ class StageResource extends Resource
                                 ->schema([
                                     Section::make(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.general-information.title'))
                                         ->schema([
-                                            Hidden::make('creator_id')
-                                                ->default(Auth::id())
-                                                ->required(),
                                             TextInput::make('name')
                                                 ->label(__('recruitments::filament/clusters/configurations/resources/stage.form.sections.general-information.fields.stage-name'))
                                                 ->required(),

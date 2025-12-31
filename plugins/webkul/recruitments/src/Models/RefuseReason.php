@@ -24,4 +24,13 @@ class RefuseReason extends Model implements Sortable
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($refuseReason) {
+            $refuseReason->creator_id ??= filament()->auth()->id();
+        });
+    }
 }

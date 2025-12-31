@@ -18,13 +18,13 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Webkul\Account\Models\MoveLine;
+use Webkul\Accounting\Models\JournalItem;
 use Webkul\Accounting\Filament\Clusters\Accounting;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalItemResource\Pages\ListJournalItems;
 
 class JournalItemResource extends Resource
 {
-    protected static ?string $model = MoveLine::class;
+    protected static ?string $model = JournalItem::class;
 
     protected static bool $shouldRegisterNavigation = true;
 

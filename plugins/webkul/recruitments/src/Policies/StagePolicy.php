@@ -15,7 +15,7 @@ class StagePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_stage');
+        return $user->can('view_any_recruitment_stage');
     }
 
     /**
@@ -23,7 +23,7 @@ class StagePolicy
      */
     public function view(User $user, Stage $stage): bool
     {
-        return $user->can('view_stage');
+        return $user->can('view_recruitment_stage');
     }
 
     /**
@@ -31,7 +31,7 @@ class StagePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_stage');
+        return $user->can('create_recruitment_stage');
     }
 
     /**
@@ -39,7 +39,7 @@ class StagePolicy
      */
     public function update(User $user, Stage $stage): bool
     {
-        return $user->can('update_stage');
+        return $user->can('update_recruitment_stage');
     }
 
     /**
@@ -47,7 +47,7 @@ class StagePolicy
      */
     public function delete(User $user, Stage $stage): bool
     {
-        return $user->can('delete_stage');
+        return $user->can('delete_recruitment_stage');
     }
 
     /**
@@ -55,7 +55,7 @@ class StagePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_stage');
+        return $user->can('delete_any_recruitment_stage');
     }
 
     /**
@@ -63,6 +63,6 @@ class StagePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_stage');
+        return $user->can('reorder_recruitment_stage');
     }
 }
