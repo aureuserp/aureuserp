@@ -5,7 +5,6 @@ namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanR
 use Filament\Notifications\Notification;
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\Auth;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource;
 
 class CreateAccrualPlan extends CreateRecord
@@ -37,15 +36,5 @@ class CreateAccrualPlan extends CreateRecord
             ->success()
             ->title(__('time-off::filament/clusters/configurations/resources/accrual-plan/pages/create-accrual-plan.notification.title'))
             ->body(__('time-off::filament/clusters/configurations/resources/accrual-plan/pages/create-accrual-plan.notification.body'));
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $user = Auth::user();
-
-        $data['company_id'] = $user?->default_company_id;
-        $data['creator_id'] = $user->id;
-
-        return $data;
     }
 }

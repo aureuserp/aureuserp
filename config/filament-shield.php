@@ -358,6 +358,11 @@ return [
             \Webkul\Employee\Filament\Clusters\Reportings::class,
             \Webkul\Recruitment\Filament\Clusters\Applications::class,
             \Webkul\Recruitment\Filament\Clusters\Configurations::class,
+            \Webkul\TimeOff\Filament\Clusters\Configurations::class,
+            \Webkul\TimeOff\Filament\Clusters\Management::class,
+            \Webkul\TimeOff\Filament\Clusters\MyTime::class,
+            \Webkul\TimeOff\Filament\Clusters\Overview::class,
+            \Webkul\TimeOff\Filament\Clusters\Reporting::class,
         ],
     ],
 

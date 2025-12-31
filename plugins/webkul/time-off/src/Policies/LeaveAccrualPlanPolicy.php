@@ -15,7 +15,7 @@ class LeaveAccrualPlanPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_accrual::plan');
+        return $user->can('view_any_time_off_accrual::plan');
     }
 
     /**
@@ -23,7 +23,7 @@ class LeaveAccrualPlanPolicy
      */
     public function view(User $user, LeaveAccrualPlan $leaveAccrualPlan): bool
     {
-        return $user->can('view_accrual::plan');
+        return $user->can('view_time_off_accrual::plan');
     }
 
     /**
@@ -31,7 +31,7 @@ class LeaveAccrualPlanPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_accrual::plan');
+        return $user->can('create_time_off_accrual::plan');
     }
 
     /**
@@ -39,7 +39,7 @@ class LeaveAccrualPlanPolicy
      */
     public function update(User $user, LeaveAccrualPlan $leaveAccrualPlan): bool
     {
-        return $user->can('update_accrual::plan');
+        return $user->can('update_time_off_accrual::plan');
     }
 
     /**
@@ -47,7 +47,7 @@ class LeaveAccrualPlanPolicy
      */
     public function delete(User $user, LeaveAccrualPlan $leaveAccrualPlan): bool
     {
-        return $user->can('delete_accrual::plan');
+        return $user->can('delete_time_off_accrual::plan');
     }
 
     /**
@@ -55,6 +55,6 @@ class LeaveAccrualPlanPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_accrual::plan');
+        return $user->can('delete_any_time_off_accrual::plan');
     }
 }

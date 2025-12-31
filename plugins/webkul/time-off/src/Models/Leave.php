@@ -150,4 +150,15 @@ class Leave extends Model
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($leave) {
+            $leave->creator_id = filament()->auth()->id();
+
+            $leave->company_id = filament()->auth()->user()->default_company_id;
+        });
+    }
 }

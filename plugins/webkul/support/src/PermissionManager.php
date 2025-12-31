@@ -253,7 +253,23 @@ class PermissionManager
             /**
              * TimeOff Resources/Pages
              */
+            \Webkul\TimeOff\Filament\Clusters\Configurations\Resources\AccrualPlanResource::class,
             \Webkul\TimeOff\Filament\Clusters\Configurations\Resources\ActivityTypeResource::class,
+            \Webkul\TimeOff\Filament\Clusters\Configurations\Resources\LeaveTypeResource::class,
+            \Webkul\TimeOff\Filament\Clusters\Configurations\Resources\MandatoryDayResource::class,
+            \Webkul\TimeOff\Filament\Clusters\Configurations\Resources\PublicHolidayResource::class,
+            \Webkul\TimeOff\Filament\Clusters\Management\Resources\AllocationResource::class,
+            \Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource::class,
+            \Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyAllocationResource::class,
+            \Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOffResource::class,
+            \Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource::class,
+            \Webkul\TimeOff\Filament\Pages\ByType::class,
+            \Webkul\TimeOff\Filament\Pages\Dashboard::class,
+            \Webkul\TimeOff\Filament\Pages\Overview::class,
+            \Webkul\TimeOff\Filament\Widgets\CalendarWidget::class,
+            \Webkul\TimeOff\Filament\Widgets\LeaveTypeWidget::class,
+            \Webkul\TimeOff\Filament\Widgets\MyTimeOffWidget::class,
+            \Webkul\TimeOff\Filament\Widgets\OverviewCalendarWidget::class,
 
             /**
              * Website Resources/Pages

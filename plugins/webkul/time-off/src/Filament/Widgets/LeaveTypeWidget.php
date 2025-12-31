@@ -23,6 +23,11 @@ class LeaveTypeWidget extends ChartWidget
 
     protected ?string $maxHeight = '400px';
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'widget_time_off_leave_type_widget';
+    }
+
     protected function getData(): array
     {
         $query = Leave::query();

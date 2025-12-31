@@ -20,6 +20,11 @@ class Dashboard extends BaseDashboard
 
     protected static ?int $navigationSort = 1;
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_time_off_dashboard';
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('time-off::filament/pages/dashboard.navigation.title');

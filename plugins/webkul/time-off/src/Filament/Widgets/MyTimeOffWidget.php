@@ -17,6 +17,11 @@ class MyTimeOffWidget extends BaseWidget
 {
     use HasWidgetShield;
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'widget_time_off_my_time_off_widget';
+    }
+
     protected function getHeading(): ?string
     {
         return __('time-off::filament/widgets/my-time-off-widget.heading.title');

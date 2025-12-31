@@ -57,4 +57,13 @@ class LeaveAccrualLevel extends Model implements Sortable
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($leaveAccrualLevel) {
+            $leaveAccrualLevel->creator_id = filament()->auth()->id();
+        });
+    }
 }
