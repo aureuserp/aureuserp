@@ -28,6 +28,11 @@ class Dashboard extends BaseDashboard
 
     protected static string $routePath = 'project';
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_project_dashboard';
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('projects::filament/pages/dashboard.navigation.title');

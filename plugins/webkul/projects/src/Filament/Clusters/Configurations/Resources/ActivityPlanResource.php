@@ -31,7 +31,7 @@ use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResour
 use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\ListActivityPlans;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\ViewActivityPlan;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResource\RelationManagers\ActivityTemplateRelationManager;
-use Webkul\Support\Models\ActivityPlan;
+use Webkul\Project\Models\ActivityPlan;
 
 class ActivityPlanResource extends Resource
 {

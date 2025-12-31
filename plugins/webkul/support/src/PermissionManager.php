@@ -66,7 +66,7 @@ class PermissionManager
     {
         return [
             /**
-             * Purchase Resources
+             * Purchase Resources/Pages
              */
             \Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\PackagingResource::class,
             \Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\ProductAttributeResource::class,
@@ -81,7 +81,7 @@ class PermissionManager
             \Webkul\Purchase\Filament\Admin\Clusters\Settings\Pages\ManageProducts::class,
 
             /**
-             * Sale Resources
+             * Sale Resources/Pages
              */
             \Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityPlanResource::class,
             \Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityTypeResource::class,
@@ -102,7 +102,7 @@ class PermissionManager
             \Webkul\Sale\Filament\Clusters\ToInvoice\Resources\OrderToUpsellResource::class,
 
             /**
-             * Invoice Resources
+             * Invoice Resources/Pages
              */
             \Webkul\Invoice\Filament\Clusters\Configuration\Resources\BankAccountResource::class,
             \Webkul\Invoice\Filament\Clusters\Configuration\Resources\PaymentTermResource::class,
@@ -122,7 +122,7 @@ class PermissionManager
             \Webkul\Invoice\Filament\Clusters\Settings\Pages\Products::class,
 
             /**
-             * Accounting Resources
+             * Accounting Resources/Pages
              */
             \Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource::class,
             \Webkul\Accounting\Filament\Clusters\Configuration\Resources\AccountResource::class,
@@ -186,25 +186,43 @@ class PermissionManager
             \Webkul\Inventory\Filament\Clusters\Settings\Pages\ManageTraceability::class,
             \Webkul\Inventory\Filament\Clusters\Settings\Pages\ManageWarehouses::class,
 
+            /**
+             * Project Plugins Resources/Pages
+             */
+            \Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResource::class,
+            \Webkul\Project\Filament\Clusters\Configurations\Resources\MilestoneResource::class,
+            \Webkul\Project\Filament\Clusters\Configurations\Resources\ProjectStageResource::class,
+            \Webkul\Project\Filament\Clusters\Configurations\Resources\TagResource::class,
+            \Webkul\Project\Filament\Clusters\Configurations\Resources\TaskStageResource::class,
+            \Webkul\Project\Filament\Clusters\Settings\Pages\ManageTasks::class,
+            \Webkul\Project\Filament\Clusters\Settings\Pages\ManageTime::class,
+            \Webkul\Project\Filament\Pages\Dashboard::class,
+            \Webkul\Project\Filament\Resources\ProjectResource::class,
+            \Webkul\Project\Filament\Resources\TaskResource::class,
+            \Webkul\Project\Filament\Widgets\StatsOverviewWidget::class,
+            \Webkul\Project\Filament\Widgets\TaskByStageChart::class,
+            \Webkul\Project\Filament\Widgets\TaskByStateChart::class,
+            \Webkul\Project\Filament\Widgets\TopAssigneesWidget::class,
+            \Webkul\Project\Filament\Widgets\TopProjectsWidget::class,
 
             /**
-             * Other Plugins Resources
+             * Other Plugins Resources/Pages
              */
             \Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources\CategoryResource::class,
             \Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources\TagResource::class,
 
             /**
-             * Employee Resources
+             * Employee Resources/Pages
              */
             \Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResource::class,
 
             /**
-             * Project Resources
+             * Project Resources/Pages
              */
             \Webkul\Project\Filament\Clusters\Configurations\Resources\TagResource::class,
 
             /**
-             * Recruitment Resources
+             * Recruitment Resources/Pages
              */
             \Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ActivityPlanResource::class,
             \Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ActivityTypeResource::class,
@@ -214,12 +232,12 @@ class PermissionManager
             \Webkul\Recruitment\Filament\Clusters\Configurations\Resources\SkillTypeResource::class,
 
             /**
-             * TimeOff Resources
+             * TimeOff Resources/Pages
              */
             \Webkul\TimeOff\Filament\Clusters\Configurations\Resources\ActivityTypeResource::class,
 
             /**
-             * Inventory Resources
+             * Inventory Resources/Pages
              */
             \Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryResource::class,
             \Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource::class,

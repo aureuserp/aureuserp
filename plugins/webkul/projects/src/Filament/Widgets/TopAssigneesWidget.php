@@ -20,6 +20,11 @@ class TopAssigneesWidget extends BaseWidget
 
     protected static bool $isLazy = false;
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'widget_project_top_assignees_widget';
+    }
+
     public function getHeading(): string|Htmlable|null
     {
         return __('projects::filament/widgets/top-assignees.heading.title');

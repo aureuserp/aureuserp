@@ -341,7 +341,7 @@ return [
             \Webkul\Inventory\Filament\Clusters\Configurations::class,
             \Webkul\Inventory\Filament\Clusters\Operations::class,
             \Webkul\Inventory\Filament\Clusters\Products::class,
-
+            \Webkul\Project\Filament\Clusters\Configurations::class,
         ],
     ],
 
