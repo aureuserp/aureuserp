@@ -343,6 +343,7 @@ return [
             \Webkul\Inventory\Filament\Clusters\Products::class,
             \Webkul\Project\Filament\Clusters\Configurations::class,
             \Webkul\Website\Filament\Admin\Clusters\Configurations::class,
+            \Webkul\Contact\Filament\Clusters\Configurations::class,
         ],
     ],
 

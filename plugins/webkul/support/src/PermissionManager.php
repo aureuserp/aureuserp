@@ -216,11 +216,6 @@ class PermissionManager
             \Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResource::class,
 
             /**
-             * Project Resources/Pages
-             */
-            \Webkul\Project\Filament\Clusters\Configurations\Resources\TagResource::class,
-
-            /**
              * Recruitment Resources/Pages
              */
             \Webkul\Recruitment\Filament\Clusters\Configurations\Resources\ActivityPlanResource::class,
@@ -236,12 +231,6 @@ class PermissionManager
             \Webkul\TimeOff\Filament\Clusters\Configurations\Resources\ActivityTypeResource::class,
 
             /**
-             * Inventory Resources/Pages
-             */
-            \Webkul\Inventory\Filament\Clusters\Configurations\Resources\ProductCategoryResource::class,
-            \Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource::class,
-
-            /**
              * Website Resources/Pages
              */
             \Webkul\Website\Filament\Admin\Clusters\Settings\Pages\ManageContacts::class,
@@ -254,6 +243,18 @@ class PermissionManager
             \Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources\CategoryResource::class,
             \Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources\TagResource::class,
             \Webkul\Blog\Filament\Admin\Resources\PostResource::class,
+
+            /**
+             * Contact Plugins Resources/Pages
+             */
+            \Webkul\Contact\Filament\Clusters\Configurations\Resources\BankAccountResource::class,
+            \Webkul\Contact\Filament\Clusters\Configurations\Resources\BankResource::class,
+            \Webkul\Contact\Filament\Clusters\Configurations\Resources\IndustryResource::class,
+            \Webkul\Contact\Filament\Clusters\Configurations\Resources\TagResource::class,
+            \Webkul\Contact\Filament\Clusters\Configurations\Resources\TitleResource::class,
+            \Webkul\Contact\Filament\Clusters\Configurations\Resources\BankAccountResource::class,
+            \Webkul\Contact\Filament\Resources\AddressResource::class,
+            \Webkul\Contact\Filament\Resources\PartnerResource::class,
         ];
     }
 }

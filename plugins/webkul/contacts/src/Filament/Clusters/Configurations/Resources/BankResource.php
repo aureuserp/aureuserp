@@ -5,9 +5,12 @@ namespace Webkul\Contact\Filament\Clusters\Configurations\Resources;
 use Webkul\Contact\Filament\Clusters\Configurations;
 use Webkul\Contact\Filament\Clusters\Configurations\Resources\BankResource\Pages\ManageBanks;
 use Webkul\Partner\Filament\Resources\BankResource as BaseBankResource;
+use Webkul\Contact\Models\Bank;
 
 class BankResource extends BaseBankResource
 {
+    protected static ?string $model = Bank::class;
+
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-library';
 
     protected static bool $shouldRegisterNavigation = true;

@@ -14,7 +14,7 @@ use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ViewPartner;
 use Webkul\Partner\Filament\Resources\PartnerResource as BasePartnerResource;
 use Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers\AddressesRelationManager;
 use Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers\ContactsRelationManager;
-use Webkul\Partner\Models\Partner;
+use Webkul\Contact\Models\Partner;
 
 class PartnerResource extends BasePartnerResource
 {

@@ -95,8 +95,6 @@ class BankResource extends Resource
                         TextInput::make('zip')
                             ->label(__('partners::filament/resources/bank.form.sections.address.fields.zip'))
                             ->maxLength(255),
-                        Hidden::make('creator_id')
-                            ->default(Auth::user()->id),
                     ])
                     ->columns(2),
             ]);
