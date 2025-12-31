@@ -206,6 +206,11 @@ class PermissionManager
             \Webkul\Project\Filament\Widgets\TopProjectsWidget::class,
 
             /**
+             * Timesheet Resources/Pages
+             */
+            \Webkul\Timesheet\Filament\Resources\TimesheetResource::class,
+
+            /**
              * Employee Resources/Pages
              */
             \Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResource::class,
