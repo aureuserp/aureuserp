@@ -7,7 +7,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\TaskStageResource;
 
 class TaskStagesRelationManager extends RelationManager
@@ -28,11 +27,6 @@ class TaskStagesRelationManager extends RelationManager
                 CreateAction::make()
                     ->label(__('projects::filament/resources/project/relation-managers/task-stages.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
-                    ->mutateDataUsing(function (array $data): array {
-                        $data['creator_id'] = Auth::id();
-
-                        return $data;
-                    })
                     ->successNotification(
                         Notification::make()
                             ->success()

@@ -36,6 +36,15 @@ class Tag extends Model
         return $this->belongsTo(User::class);
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($tag) {
+            $tag->creator_id = filament()->auth()->id();
+        });
+    }
+
     protected static function newFactory(): TagFactory
     {
         return TagFactory::new();

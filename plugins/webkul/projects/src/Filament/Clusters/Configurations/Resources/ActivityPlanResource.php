@@ -164,10 +164,6 @@ class ActivityPlanResource extends Resource
 
                         $data['plugin'] = 'projects';
 
-                        $data['creator_id'] = $user->id;
-
-                        $data['company_id'] ??= $user->defaultCompany?->id;
-
                         return $data;
                     })
                     ->successNotification(

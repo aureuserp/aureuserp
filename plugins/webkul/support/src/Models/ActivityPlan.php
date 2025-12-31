@@ -47,4 +47,15 @@ class ActivityPlan extends Model
     {
         return $this->hasMany(ActivityPlanTemplate::class, 'plan_id');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($activityPlan) {
+            $activityPlan->creator_id = filament()->auth()->id();
+
+            $activityPlan->company_id ??= filament()->auth()->user()->default_company_id;
+        });
+    }
 }

@@ -54,6 +54,15 @@ class Milestone extends Model
         return $this->belongsTo(User::class);
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($milestone) {
+            $milestone->creator_id = filament()->auth()->id();
+        });
+    }
+
     protected static function newFactory(): MilestoneFactory
     {
         return MilestoneFactory::new();

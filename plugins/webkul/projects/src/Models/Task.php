@@ -185,6 +185,12 @@ class Task extends Model implements Sortable
     {
         parent::boot();
 
+        static::saving(function ($task) {
+            $task->creator_id = filament()->auth()->id();
+
+            $task->company_id = filament()->auth()->user()->default_company_id;
+        });
+
         static::updated(function ($task) {
             $task->timesheets()->update([
                 'project_id' => $task->project_id,
