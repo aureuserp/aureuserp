@@ -245,6 +245,7 @@ class RoleResource extends RolesRoleResource
 
                 return Section::make($key)
                     ->collapsible()
+                    ->persistCollapsed()
                     ->schema([
                         Grid::make()
                             ->schema(function () use ($plugin) {
@@ -285,6 +286,7 @@ class RoleResource extends RolesRoleResource
             ->map(function ($plugin, $key) {
                 return Section::make($key)
                     ->collapsible()
+                    ->persistCollapsed()
                     ->schema([
                         Grid::make()
                             ->schema(function () use ($plugin, $key) {

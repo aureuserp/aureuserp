@@ -35,4 +35,13 @@ class EmployeeResume extends Model
     {
         return $this->belongsTo(EmployeeResumeLineType::class, 'employee_resume_line_type_id');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($employeeResume) {
+            $employeeResume->creator_id = filament()->auth()->id();
+        });
+    }
 }

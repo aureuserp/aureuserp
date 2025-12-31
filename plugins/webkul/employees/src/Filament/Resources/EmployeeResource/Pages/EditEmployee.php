@@ -57,12 +57,4 @@ class EditEmployee extends EditRecord
             ...$partner ? $partner->toArray() : [],
         ];
     }
-
-    protected function mutateFormDataBeforeSave(array $data): array
-    {
-        return [
-            ...$data,
-            'creator_id' => Auth::user()->id,
-        ];
-    }
 }

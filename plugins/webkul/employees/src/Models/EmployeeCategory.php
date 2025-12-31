@@ -21,6 +21,18 @@ class EmployeeCategory extends Model
         return $this->belongsTo(User::class, 'creator_id');
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($employeeCategory) {
+            $employeeCategory->creator_id = filament()->auth()->id();
+
+            $employeeCategory->color ??= fake()->hexColor();
+
+        });
+    }
+
     /**
      * Get the factory instance for the model.
      */

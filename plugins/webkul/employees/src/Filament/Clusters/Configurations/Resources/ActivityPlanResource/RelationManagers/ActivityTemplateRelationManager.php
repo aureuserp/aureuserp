@@ -202,12 +202,6 @@ class ActivityTemplateRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make()
                     ->modalWidth(Width::FitContent)
-                    ->mutateDataUsing(function (array $data): array {
-                        return [
-                            ...$data,
-                            'creator_id' => Auth::user()->id,
-                        ];
-                    })
                     ->icon('heroicon-o-plus-circle')
                     ->successNotification(
                         Notification::make()
@@ -221,12 +215,6 @@ class ActivityTemplateRelationManager extends RelationManager
                     ViewAction::make(),
                     EditAction::make()
                         ->modalWidth(Width::FitContent)
-                        ->mutateDataUsing(function (array $data): array {
-                            return [
-                                ...$data,
-                                'creator_id' => Auth::user()->id,
-                            ];
-                        })
                         ->successNotification(
                             Notification::make()
                                 ->success()

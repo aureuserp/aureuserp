@@ -23,12 +23,4 @@ class CreateEmployee extends CreateRecord
             ->title(__('employees::filament/resources/employee/pages/create-employee.notification.title'))
             ->body(__('employees::filament/resources/employee/pages/create-employee.notification.body'));
     }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        return [
-            ...$data,
-            'creator_id' => Auth::user()->id,
-        ];
-    }
 }

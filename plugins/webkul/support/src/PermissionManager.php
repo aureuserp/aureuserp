@@ -214,6 +214,16 @@ class PermissionManager
              * Employee Resources/Pages
              */
             \Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResource::class,
+            \Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource::class,
+            \Webkul\Employee\Filament\Clusters\Configurations\Resources\DepartureReasonResource::class,
+            \Webkul\Employee\Filament\Clusters\Configurations\Resources\EmployeeCategoryResource::class,
+            \Webkul\Employee\Filament\Clusters\Configurations\Resources\EmploymentTypeResource::class,
+            \Webkul\Employee\Filament\Clusters\Configurations\Resources\JobPositionResource::class,
+            \Webkul\Employee\Filament\Clusters\Configurations\Resources\SkillTypeResource::class,
+            \Webkul\Employee\Filament\Clusters\Configurations\Resources\WorkLocationResource::class,
+            \Webkul\Employee\Filament\Clusters\Reportings\Resources\EmployeeSkillResource::class,
+            \Webkul\Employee\Filament\Resources\DepartmentResource::class,
+            \Webkul\Employee\Filament\Resources\EmployeeResource::class,
 
             /**
              * Recruitment Resources/Pages

@@ -37,8 +37,6 @@ class SkillsRelationManager extends RelationManager
                 TextInput::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/skills.form.name'))
                     ->required(),
-                Hidden::make('creator_id')
-                    ->default(Auth::user()->id),
             ])->columns(1);
     }
 

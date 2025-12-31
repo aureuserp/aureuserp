@@ -55,8 +55,6 @@ class EmploymentTypeResource extends Resource
     {
         return $schema
             ->components([
-                Hidden::make('creator_id')
-                    ->default(Auth::user()->id),
                 TextInput::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/employment-type.form.fields.name'))
                     ->required()

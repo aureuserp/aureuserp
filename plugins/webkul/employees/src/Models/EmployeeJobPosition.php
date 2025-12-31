@@ -74,6 +74,15 @@ class EmployeeJobPosition extends Model implements Sortable
         return $this->belongsTo(EmploymentType::class, 'employment_type_id');
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($employeeJobPosition) {
+            $employeeJobPosition->creator_id = filament()->auth()->id();
+        });
+    }
+
     protected static function newFactory(): EmployeeJobPositionFactory
     {
         return EmployeeJobPositionFactory::new();

@@ -344,6 +344,8 @@ return [
             \Webkul\Project\Filament\Clusters\Configurations::class,
             \Webkul\Website\Filament\Admin\Clusters\Configurations::class,
             \Webkul\Contact\Filament\Clusters\Configurations::class,
+            \Webkul\Employee\Filament\Clusters\Configurations::class,
+            \Webkul\Employee\Filament\Clusters\Reportings::class,
         ],
     ],
 
