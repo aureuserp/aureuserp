@@ -35,8 +35,10 @@ class TaxManager
         foreach ($taxes as $tax) {
             $amount = floatval($tax->amount);
 
-            $tax->price_include_override ??= TaxIncludeOverride::TAX_INCLUDED;
-
+            if (! $tax->price_include_override) {
+                $tax->price_include_override = app(TaxesSettings::class)->account_price_include ?? TaxIncludeOverride::TAX_INCLUDED;
+            }
+            
             $currentTaxBase = $adjustedSubTotal;
 
             if ($tax->is_base_affected) {

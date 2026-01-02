@@ -108,24 +108,22 @@ class SaleManager
 
     public function createInvoice(Order $record, array $data = [])
     {
-        DB::transaction(function () use ($record, $data) {
-            if ($data['advance_payment_method'] == AdvancedPayment::DELIVERED->value) {
-                $this->createAccountMove($record);
-            }
+        if ($data['advance_payment_method'] == AdvancedPayment::DELIVERED->value) {
+            $this->createAccountMove($record);
+        }
 
-            $advancedPaymentInvoice = AdvancedPaymentInvoice::create([
-                ...$data,
-                'currency_id'          => $record->currency_id,
-                'company_id'           => $record->company_id,
-                'creator_id'           => Auth::id(),
-                'deduct_down_payments' => true,
-                'consolidated_billing' => true,
-            ]);
+        $advancedPaymentInvoice = AdvancedPaymentInvoice::create([
+            ...$data,
+            'currency_id'          => $record->currency_id,
+            'company_id'           => $record->company_id,
+            'creator_id'           => Auth::id(),
+            'deduct_down_payments' => true,
+            'consolidated_billing' => true,
+        ]);
 
-            $advancedPaymentInvoice->orders()->attach($record->id);
+        $advancedPaymentInvoice->orders()->attach($record->id);
 
-            return $this->computeSaleOrder($record);
-        });
+        return $this->computeSaleOrder($record);
     }
 
     /**
@@ -348,10 +346,14 @@ class SaleManager
 
     public function computeOrderLineDeliveryMethod(OrderLine $line): OrderLine
     {
+        if ($line->qty_delivered_method) {
+            return $line;
+        }
+
         if ($line->is_expense) {
             $line->qty_delivered_method = 'analytic';
         } else {
-            $line->qty_delivered_method = 'stock_move';
+            $line->qty_delivered_method ??= 'stock_move';
         }
 
         return $line;

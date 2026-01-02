@@ -211,12 +211,12 @@ class Order extends Model
 
     public function lines()
     {
-        return $this->hasMany(OrderLine::class);
+        return $this->hasMany(OrderLine::class, 'order_id');
     }
 
     public function optionalLines()
     {
-        return $this->hasMany(OrderOption::class);
+        return $this->hasMany(OrderOption::class, 'order_id');
     }
 
     public function quotationTemplate()
