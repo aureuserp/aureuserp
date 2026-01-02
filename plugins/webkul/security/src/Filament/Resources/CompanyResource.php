@@ -176,7 +176,11 @@ class CompanyResource extends Resource
                                 Section::make(__('security::filament/resources/company.form.sections.additional-information.title'))
                                     ->schema([
                                         Select::make('currency_id')
-                                            ->relationship('currency', 'full_name')
+                                            ->relationship(
+                                                'currency',
+                                                'full_name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                            )
                                             ->label(__('security::filament/resources/company.form.sections.additional-information.fields.default-currency'))
                                             ->searchable()
                                             ->required()

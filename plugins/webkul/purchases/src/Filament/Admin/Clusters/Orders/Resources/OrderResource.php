@@ -208,7 +208,11 @@ class OrderResource extends Resource
                                     ->live(),
                                 Select::make('currency_id')
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.sections.general.fields.currency'))
-                                    ->relationship('currency', 'name')
+                                    ->relationship(
+                                        'currency',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                    )
                                     ->required()
                                     ->searchable()
                                     ->preload()

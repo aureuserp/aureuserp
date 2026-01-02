@@ -150,7 +150,11 @@ class BranchesRelationManager extends RelationManager
                                 Section::make(__('security::filament/resources/company/relation-managers/manage-branch.form.tabs.address-information.sections.additional-information.title'))
                                     ->schema([
                                         Select::make('currency_id')
-                                            ->relationship('currency', 'full_name')
+                                            ->relationship(
+                                                'currency',
+                                                'full_name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                            )
                                             ->label(__('security::filament/resources/company/relation-managers/manage-branch.form.tabs.address-information.sections.additional-information.fields.default-currency'))
                                             ->relationship('currency', 'full_name')
                                             ->searchable()

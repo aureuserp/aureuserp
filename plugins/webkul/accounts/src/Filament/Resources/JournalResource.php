@@ -30,6 +30,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\CommunicationStandard;
@@ -87,7 +88,11 @@ class JournalResource extends Resource
                                                                     ->placeholder(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.accounting-information.fields.sort-code-placeholder')),
                                                                 Select::make('currency_id')
                                                                     ->label(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.accounting-information.fields.currency'))
-                                                                    ->relationship('currency', 'name')
+                                                                    ->relationship(
+                                                                        'currency',
+                                                                        'name',
+                                                                        modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                                                    )
                                                                     ->preload()
                                                                     ->searchable()
                                                                     ->live()
