@@ -142,6 +142,7 @@ class PaymentResource extends Resource
                                                     ->relationship(
                                                         'currency',
                                                         'name',
+                                                        modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
                                                     )
                                                     ->required()
                                                     ->searchable()

@@ -118,7 +118,11 @@ class VendorPriceResource extends Resource
                                             ->default(0),
                                         Select::make('currency_id')
                                             ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.fields.currency'))
-                                            ->relationship('currency', 'name')
+                                            ->relationship(
+                                                'currency',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                            )
                                             ->required()
                                             ->searchable()
                                             ->default(Auth::user()->defaultCompany?->currency_id)
