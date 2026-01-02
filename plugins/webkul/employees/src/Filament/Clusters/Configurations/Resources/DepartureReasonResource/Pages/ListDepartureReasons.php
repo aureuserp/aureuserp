@@ -22,12 +22,7 @@ class ListDepartureReasons extends ListRecords
                         ->success()
                         ->title(__('employees::filament/clusters/configurations/resources/departure-reason/pages/list-departure.header-actions.create.notification.title'))
                         ->body(__('employees::filament/clusters/configurations/resources/departure-reason/pages/list-departure.header-actions.create.notification.body')),
-                )
-                ->mutateDataUsing(function (array $data): array {
-                    $data['reason_code'] = crc32($data['name']) % 100000;
-
-                    return $data;
-                }),
+                ),
         ];
     }
 }

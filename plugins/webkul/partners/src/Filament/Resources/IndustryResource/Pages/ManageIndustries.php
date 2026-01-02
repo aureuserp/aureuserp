@@ -20,11 +20,6 @@ class ManageIndustries extends ManageRecords
             CreateAction::make()
                 ->label(__('partners::filament/resources/industry/pages/manage-industries.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
-                ->mutateDataUsing(function (array $data): array {
-                    $data['creator_id'] = Auth::id();
-
-                    return $data;
-                })
                 ->successNotification(
                     Notification::make()
                         ->success()

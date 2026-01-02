@@ -51,6 +51,15 @@ class WorkLocation extends Model
         return $query->where('is_active', true);
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($workLocation) {
+            $workLocation->creator_id = filament()->auth()->id();
+        });
+    }
+
     /**
      * Get the factory instance for the model.
      */

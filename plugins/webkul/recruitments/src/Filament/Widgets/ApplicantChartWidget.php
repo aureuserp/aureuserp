@@ -15,6 +15,11 @@ class ApplicantChartWidget extends ChartWidget
 
     protected ?string $maxHeight = '400px';
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'widget_recruitment_applicant_chart_widget';
+    }
+
     public function getHeading(): string|Htmlable|null
     {
         return __('recruitments::filament/widgets/applicant.heading.title');

@@ -13,7 +13,7 @@ use Webkul\Sale\Filament\Clusters\ToInvoice;
 use Webkul\Sale\Filament\Clusters\ToInvoice\Resources\OrderToInvoiceResource\Pages\EditOrderToInvoice;
 use Webkul\Sale\Filament\Clusters\ToInvoice\Resources\OrderToInvoiceResource\Pages\ListOrderToInvoices;
 use Webkul\Sale\Filament\Clusters\ToInvoice\Resources\OrderToInvoiceResource\Pages\ViewOrderToInvoice;
-use Webkul\Sale\Models\Order;
+use Webkul\Sale\Models\OrderToInvoice as Order;
 
 class OrderToInvoiceResource extends Resource
 {

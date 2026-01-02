@@ -68,6 +68,15 @@ class ProjectStage extends Model implements Sortable
         return $this->hasMany(Project::class, 'stage_id');
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($projectStage) {
+            $projectStage->creator_id = filament()->auth()->id();
+        });
+    }
+
     protected static function newFactory(): ProjectStageFactory
     {
         return ProjectStageFactory::new();

@@ -93,9 +93,6 @@ class DepartmentResource extends Resource
                             ->schema([
                                 Section::make(__('employees::filament/resources/department.form.sections.general.title'))
                                     ->schema([
-                                        Hidden::make('creator_id')
-                                            ->default(Auth::id())
-                                            ->required(),
                                         TextInput::make('name')
                                             ->label(__('employees::filament/resources/department.form.sections.general.fields.name'))
                                             ->required()

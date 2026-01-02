@@ -83,6 +83,8 @@ class Department extends Model
         parent::boot();
 
         static::creating(function ($department) {
+            $department->creator_id = filament()->auth()->id();
+
             if (! static::validateNoRecursion($department)) {
                 throw new InvalidArgumentException('Circular reference detected in department hierarchy');
             }

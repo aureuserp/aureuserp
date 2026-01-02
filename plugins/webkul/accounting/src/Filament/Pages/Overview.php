@@ -6,20 +6,27 @@ use Filament\Pages\Page;
 use Webkul\Accounting\Filament\Widgets\JournalChartsWidget;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
-class Dashboard extends Page
+class Overview extends Page
 {
     use HasPageShield;
 
-    protected string $view = 'accounting::filament.pages.dashboard';
+    protected static ?string $slug = 'accounting/overview';
+
+    protected string $view = 'accounting::filament.pages.overview';
 
     protected static function getPagePermission(): ?string
     {
-        return 'page_accounting_dashboard';
+        return 'page_accounting_overview';
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('accounting::filament/pages/overview.navigation.title');
     }
 
     public static function getNavigationGroup(): string
     {
-        return __('accounting::filament/pages/dashboard.navigation.group');
+        return __('accounting::filament/pages/overview.navigation.group');
     }
 
     protected function getHeaderWidgets(): array

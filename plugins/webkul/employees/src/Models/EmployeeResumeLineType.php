@@ -27,4 +27,13 @@ class EmployeeResumeLineType extends Model implements Sortable
     {
         return $this->hasMany(EmployeeResume::class);
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($employeeResumeLineType) {
+            $employeeResumeLineType->creator_id = filament()->auth()->id();
+        });
+    }
 }

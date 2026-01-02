@@ -80,8 +80,6 @@ class SkillTypeResource extends Resource
                         ->unique(ignoreRecord: true)
                         ->maxLength(255)
                         ->placeholder('Enter skill type name'),
-                    Hidden::make('creator_id')
-                        ->default(Auth::user()->id),
                     Select::make('color')
                         ->label(__('employees::filament/clusters/configurations/resources/skill-type.form.sections.fields.color'))
                         ->options(function () {

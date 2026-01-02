@@ -47,7 +47,7 @@ use Webkul\Security\Filament\Resources\CompanyResource\Pages\ListCompanies;
 use Webkul\Security\Filament\Resources\CompanyResource\Pages\ViewCompany;
 use Webkul\Security\Filament\Resources\CompanyResource\RelationManagers\BranchesRelationManager;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Security\Models\Company;
 use Webkul\Support\Models\Currency;
 
 class CompanyResource extends Resource

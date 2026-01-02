@@ -3,7 +3,7 @@
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages;
 
 use Illuminate\Contracts\Support\Htmlable;
-use Webkul\Partner\Filament\Resources\PartnerResource\Pages\EditPartner as BaseEditCustomer;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\CustomerResource\Pages\EditCustomer as BaseEditCustomer;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 

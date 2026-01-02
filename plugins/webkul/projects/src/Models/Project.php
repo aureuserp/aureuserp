@@ -185,6 +185,15 @@ class Project extends Model implements Sortable
         return $this->belongsToMany(Tag::class, 'projects_project_tag', 'project_id', 'tag_id');
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($project) {
+            $project->creator_id = filament()->auth()->id();
+        });
+    }
+
     protected static function booted()
     {
         static::addGlobalScope(new UserPermissionScope('user'));

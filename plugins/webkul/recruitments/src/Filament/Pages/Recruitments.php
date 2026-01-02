@@ -26,6 +26,11 @@ class Recruitments extends BaseDashboard
 
     protected static string $routePath = 'recruitment';
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_recruitment_recruitments';
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('recruitments::filament/pages/recruitment.navigation.title');

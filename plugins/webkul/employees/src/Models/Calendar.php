@@ -43,6 +43,15 @@ class Calendar extends Model
         return $this->hasMany(CalendarAttendance::class);
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($calendar) {
+            $calendar->creator_id = filament()->auth()->id();
+        });
+    }
+
     /**
      * Get the factory instance for the model.
      */

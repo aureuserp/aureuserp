@@ -137,4 +137,15 @@ class LeaveAllocation extends Model
     {
         return $this->belongsTo(LeaveType::class, 'holiday_status_id');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($leaveAllocation) {
+            $leaveAllocation->creator_id = filament()->auth()->id();
+
+            $leaveAllocation->employee_company_id ??= filament()->auth()->user()->default_company_id;
+        });
+    }
 }

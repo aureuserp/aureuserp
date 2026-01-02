@@ -62,4 +62,15 @@ class Record extends Model
     {
         return $this->belongsTo(Company::class);
     }
+    /**
+     * Bootstrap any application services.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($record) {
+            $record->creator_id = filament()->auth()->id();
+        });
+    }
 }

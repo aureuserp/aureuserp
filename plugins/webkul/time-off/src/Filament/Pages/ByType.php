@@ -19,6 +19,11 @@ class ByType extends BaseDashboard
 
     protected static ?string $cluster = Reporting::class;
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_time_off_by_type';
+    }
+
     public function getTitle(): string
     {
         return __('time-off::filament/pages/by-type.navigation.title');

@@ -63,11 +63,6 @@ class ManageSubTasks extends ManageRelatedRecords
                             'users'        => $this->getOwnerRecord()->users->pluck('id')->toArray(),
                         ];
                     })
-                    ->mutateDataUsing(function (array $data): array {
-                        $data['creator_id'] = Auth::id();
-
-                        return $data;
-                    })
                     ->modalWidth('6xl')
                     ->successNotification(
                         Notification::make()

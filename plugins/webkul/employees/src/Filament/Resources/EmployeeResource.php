@@ -426,8 +426,6 @@ class EmployeeResource extends Resource
                                                                                         return $livewire->record->partner?->id ?? $get('name');
                                                                                     })
                                                                                     ->required(),
-                                                                                Hidden::make('creator_id')
-                                                                                    ->default(fn () => Auth::user()->id),
                                                                                 Select::make('bank_id')
                                                                                     ->relationship('bank', 'name')
                                                                                     ->label(__('employees::filament/resources/employee.form.tabs.private-information.fields.bank'))
@@ -1772,8 +1770,6 @@ class EmployeeResource extends Resource
                         ->searchable()
                         ->preload()
                         ->required(fn (Get $get) => Country::find($get('country_id'))?->state_required),
-                    Hidden::make('creator_id')
-                        ->default(fn () => Auth::user()->id),
                 ])->columns(2),
         ];
     }

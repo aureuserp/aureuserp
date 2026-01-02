@@ -28,6 +28,11 @@ class ManageOrders extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_purchase_manage_orders';
+    }
+
     public function getBreadcrumbs(): array
     {
         return [

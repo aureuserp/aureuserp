@@ -148,8 +148,6 @@ class ManageTimesheets extends ManageRelatedRecords
                     ->label(__('projects::filament/resources/task/pages/manage-timesheets.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
                     ->mutateDataUsing(function (array $data): array {
-                        $data['creator_id'] = Auth::id();
-
                         $ownerRecord = $this->getOwnerRecord();
 
                         $data['project_id'] = $ownerRecord->project_id;

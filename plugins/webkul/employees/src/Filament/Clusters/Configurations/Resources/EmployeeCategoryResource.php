@@ -65,8 +65,6 @@ class EmployeeCategoryResource extends Resource
                 ColorPicker::make('color')
                     ->label(__('employees::filament/clusters/configurations/resources/employee-category.form.fields.color'))
                     ->hexColor(),
-                Hidden::make('creator_id')
-                    ->default(Auth::user()->id),
             ]);
     }
 

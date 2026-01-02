@@ -44,6 +44,15 @@ class Tag extends Model implements Sortable
         return $this->belongsTo(User::class);
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($tag) {
+            $tag->creator_id = filament()->auth()->id();
+        });
+    }
+
     protected static function newFactory(): TagFactory
     {
         return TagFactory::new();

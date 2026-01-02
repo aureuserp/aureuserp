@@ -50,4 +50,13 @@ class CandidateSkill extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($candidateSkill) {
+            $candidateSkill->creator_id ??= filament()->auth()->id();
+        });
+    }
 }

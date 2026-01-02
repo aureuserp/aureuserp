@@ -256,6 +256,8 @@ class Employee extends Model
         parent::boot();
 
         static::saved(function (self $employee) {
+            $employee->creator_id = filament()->auth()->id();
+
             if (! $employee->partner_id) {
                 $employee->handlePartnerCreation($employee);
             } else {

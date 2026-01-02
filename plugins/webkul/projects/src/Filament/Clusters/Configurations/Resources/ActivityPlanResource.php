@@ -31,7 +31,7 @@ use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResour
 use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\ListActivityPlans;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\ViewActivityPlan;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResource\RelationManagers\ActivityTemplateRelationManager;
-use Webkul\Support\Models\ActivityPlan;
+use Webkul\Project\Models\ActivityPlan;
 
 class ActivityPlanResource extends Resource
 {
@@ -163,10 +163,6 @@ class ActivityPlanResource extends Resource
                         $user = Auth::user();
 
                         $data['plugin'] = 'projects';
-
-                        $data['creator_id'] = $user->id;
-
-                        $data['company_id'] ??= $user->defaultCompany?->id;
 
                         return $data;
                     })

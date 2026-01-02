@@ -26,6 +26,11 @@ class ManageInvoice extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_sale_manage_invoice';
+    }
+
     public function getBreadcrumbs(): array
     {
         return [

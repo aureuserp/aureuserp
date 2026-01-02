@@ -42,8 +42,6 @@ class SkillLevelRelationManager extends RelationManager
                 TextInput::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/levels.form.name'))
                     ->required(),
-                Hidden::make('creator_id')
-                    ->default(Auth::user()->id),
                 TextInput::make('level')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/levels.form.level'))
                     ->numeric()

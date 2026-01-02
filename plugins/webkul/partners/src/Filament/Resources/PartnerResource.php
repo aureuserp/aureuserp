@@ -187,8 +187,6 @@ class PartnerResource extends Resource
                                             ->required()
                                             ->maxLength(255)
                                             ->unique('partners_titles'),
-                                        Hidden::make('creator_id')
-                                            ->default(Auth::user()->id),
                                     ]),
                                 Select::make('tags')
                                     ->label(__('partners::filament/resources/partner.form.sections.general.fields.tags'))

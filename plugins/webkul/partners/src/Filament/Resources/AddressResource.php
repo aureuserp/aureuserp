@@ -155,8 +155,6 @@ class AddressResource extends Resource
                     ->mutateDataUsing(function (array $data): array {
                         $data['account_type'] = AccountType::ADDRESS;
 
-                        $data['creator_id'] = Auth::id();
-
                         return $data;
                     })
                     ->successNotification(

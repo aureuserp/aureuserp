@@ -48,15 +48,4 @@ class EditLeaveType extends EditRecord
                 ),
         ];
     }
-
-    protected function mutateFormDataBeforeSave(array $data): array
-    {
-        $user = Auth::user();
-
-        $data['company_id'] = $user->default_company_id;
-
-        $data['creator_id'] = $user?->id;
-
-        return $data;
-    }
 }

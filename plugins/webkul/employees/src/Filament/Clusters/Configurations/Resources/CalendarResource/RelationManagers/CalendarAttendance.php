@@ -111,8 +111,6 @@ class CalendarAttendance extends RelationManager
                             ->default(1)
                             ->minValue(0)
                             ->maxValue(99999999999),
-                        Hidden::make('creator_id')
-                            ->default(Auth::user()->id),
                     ]),
             ]);
     }

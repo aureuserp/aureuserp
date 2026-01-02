@@ -56,8 +56,6 @@ class DepartureReasonResource extends Resource
                 TextInput::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/departure-reason.form.fields.name'))
                     ->required(),
-                Hidden::make('creator_id')
-                    ->default(Auth::user()->id),
             ])->columns(1);
     }
 
@@ -142,14 +140,7 @@ class DepartureReasonResource extends Resource
                             ->success()
                             ->title(__('employees::filament/clusters/configurations/resources/departure-reason.table.actions.edit.notification.title'))
                             ->body(__('employees::filament/clusters/configurations/resources/departure-reason.table.actions.edit.notification.body')),
-                    )
-                    ->mutateDataUsing(function (array $data): array {
-                        $data['reason_code'] = $data['reason_code'] ?? crc32($data['name']) % 100000;
-
-                        $data['creator_id'] = $data['creator_id'] ?? Auth::user()->id;
-
-                        return $data;
-                    }),
+                    ),
                 DeleteAction::make()
                     ->successNotification(
                         Notification::make()

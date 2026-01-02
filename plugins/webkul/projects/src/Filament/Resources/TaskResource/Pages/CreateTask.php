@@ -23,11 +23,4 @@ class CreateTask extends CreateRecord
             ->title(__('projects::filament/resources/task/pages/create-task.notification.title'))
             ->body(__('projects::filament/resources/task/pages/create-task.notification.body'));
     }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['creator_id'] = Auth::id();
-
-        return $data;
-    }
 }

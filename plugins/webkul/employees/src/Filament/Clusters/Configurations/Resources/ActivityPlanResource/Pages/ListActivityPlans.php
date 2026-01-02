@@ -28,13 +28,7 @@ class ListActivityPlans extends ListRecords
                 ->icon('heroicon-o-plus-circle')
                 ->label(__('employees::filament/clusters/configurations/resources/activity-plan/pages/list-activity-plan.header-actions.create.label'))
                 ->mutateDataUsing(function ($data) {
-                    $user = Auth::user();
-
                     $data['plugin'] = static::getPluginName();
-
-                    $data['creator_id'] = $user->id;
-
-                    $data['company_id'] ??= $user->defaultCompany?->id;
 
                     return $data;
                 })

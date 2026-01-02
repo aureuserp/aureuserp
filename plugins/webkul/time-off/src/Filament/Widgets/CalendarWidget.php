@@ -30,6 +30,11 @@ class CalendarWidget extends FullCalendarWidget
 
     public Model|string|null $model = Leave::class;
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'widget_time_off_calendar_widget';
+    }
+
     public function getHeading(): string|Htmlable|null
     {
         return __('time-off::filament/widgets/calendar-widget.heading.title');

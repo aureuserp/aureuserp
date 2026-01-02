@@ -79,8 +79,6 @@ class CalendarResource extends Resource
                             ->schema([
                                 Section::make(__('employees::filament/clusters/configurations/resources/calendar.form.sections.general.title'))
                                     ->schema([
-                                        Hidden::make('creator_id')
-                                            ->default(Auth::user()->id),
                                         TextInput::make('name')
                                             ->label(__('employees::filament/clusters/configurations/resources/calendar.form.sections.general.fields.schedule-name'))
                                             ->maxLength(255)

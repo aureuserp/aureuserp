@@ -63,7 +63,7 @@ use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\Manag
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ViewQuotation;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource;
 use Webkul\Sale\Livewire\Summary;
-use Webkul\Sale\Models\Order;
+use Webkul\Sale\Models\Quotation as Order;
 use Webkul\Sale\Models\Partner;
 use Webkul\Sale\Models\Product;
 use Webkul\Sale\Settings;

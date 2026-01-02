@@ -215,8 +215,6 @@ class TaskResource extends Resource
                                             ->required(),
                                         Hidden::make('project_id')
                                             ->default($get('project_id')),
-                                        Hidden::make('creator_id')
-                                            ->default(fn () => Auth::user()->id),
                                     ])
                                     ->hidden(function (Get $get) {
                                         $project = Project::find($get('project_id'));

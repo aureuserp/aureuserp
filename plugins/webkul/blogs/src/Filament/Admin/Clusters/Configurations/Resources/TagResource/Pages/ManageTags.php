@@ -21,11 +21,6 @@ class ManageTags extends ManageRecords
                 ->label('New Tag')
                 ->label(__('blogs::filament/admin/clusters/configurations/resources/tag/pages/manage-tags.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
-                ->mutateDataUsing(function (array $data): array {
-                    $data['creator_id'] = Auth::id();
-
-                    return $data;
-                })
                 ->successNotification(
                     Notification::make()
                         ->success()

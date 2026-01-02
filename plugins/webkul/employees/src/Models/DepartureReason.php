@@ -38,6 +38,18 @@ class DepartureReason extends Model implements Sortable
         return $this->hasMany(Employee::class);
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($calendar) {
+            $calendar->creator_id = filament()->auth()->id();
+
+            $calendar->reason_code = crc32($calendar->name) % 100000;
+
+        });
+    }
+
     /**
      * Get the factory instance for the model.
      */

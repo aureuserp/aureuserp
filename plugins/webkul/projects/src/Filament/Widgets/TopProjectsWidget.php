@@ -20,6 +20,11 @@ class TopProjectsWidget extends BaseWidget
 
     protected static ?string $pollingInterval = '15s';
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'widget_project_top_projects_widget';
+    }
+
     public function getHeading(): string|Htmlable|null
     {
         return __('projects::filament/widgets/top-projects.heading.title');

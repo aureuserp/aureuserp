@@ -68,9 +68,6 @@ class WorkLocationResource extends Resource
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.form.name'))
                     ->required()
                     ->maxLength(255),
-                Hidden::make('creator_id')
-                    ->required()
-                    ->default(Auth::user()->id),
                 ToggleButtons::make('location_type')
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.form.location-type'))
                     ->inline()

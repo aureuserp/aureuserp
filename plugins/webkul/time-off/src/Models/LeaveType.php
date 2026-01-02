@@ -62,4 +62,15 @@ class LeaveType extends Model implements Sortable
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($leaveType) {
+            $leaveType->creator_id = filament()->auth()->id();
+
+            $leaveType->company_id = filament()->auth()->user()->default_company_id;
+        });
+    }
 }

@@ -228,4 +228,15 @@ class Applicant extends Model
 
         return $employee;
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($applicant) {
+            $applicant->creator_id ??= filament()->auth()->id();
+
+            $applicant->company_id ??= filament()->auth()->user()->default_company_id;
+        });
+    }
 }

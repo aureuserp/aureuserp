@@ -69,6 +69,8 @@ class BankAccount extends Model
         parent::boot();
 
         static::creating(function ($bankAccount) {
+            $bankAccount->creator_id = filament()->auth()->id();
+
             $bankAccount->account_holder_name = $bankAccount->partner->name;
         });
 

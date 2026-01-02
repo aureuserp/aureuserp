@@ -15,7 +15,7 @@ class MilestonePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_milestone');
+        return $user->can('view_any_project_milestone');
     }
 
     /**
@@ -23,7 +23,7 @@ class MilestonePolicy
      */
     public function view(User $user, Milestone $milestone): bool
     {
-        return $user->can('view_milestone');
+        return $user->can('view_project_milestone');
     }
 
     /**
@@ -31,7 +31,7 @@ class MilestonePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_milestone');
+        return $user->can('create_project_milestone');
     }
 
     /**
@@ -39,7 +39,7 @@ class MilestonePolicy
      */
     public function update(User $user, Milestone $milestone): bool
     {
-        return $user->can('update_milestone');
+        return $user->can('update_project_milestone');
     }
 
     /**
@@ -47,7 +47,7 @@ class MilestonePolicy
      */
     public function delete(User $user, Milestone $milestone): bool
     {
-        return $user->can('delete_milestone');
+        return $user->can('delete_project_milestone');
     }
 
     /**
@@ -55,6 +55,6 @@ class MilestonePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_milestone');
+        return $user->can('delete_any_project_milestone');
     }
 }

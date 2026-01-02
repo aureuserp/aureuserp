@@ -15,7 +15,7 @@ class TeamPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_tag');
+        return $user->can('view_any_sale_team');
     }
 
     /**
@@ -23,7 +23,7 @@ class TeamPolicy
      */
     public function view(User $user, Team $team): bool
     {
-        return $user->can('view_tag');
+        return $user->can('view_sale_team');
     }
 
     /**
@@ -31,7 +31,7 @@ class TeamPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_tag');
+        return $user->can('create_sale_team');
     }
 
     /**
@@ -39,7 +39,7 @@ class TeamPolicy
      */
     public function update(User $user, Team $team): bool
     {
-        return $user->can('update_tag');
+        return $user->can('update_sale_team');
     }
 
     /**
@@ -47,7 +47,7 @@ class TeamPolicy
      */
     public function delete(User $user, Team $team): bool
     {
-        return $user->can('delete_tag');
+        return $user->can('delete_sale_team');
     }
 
     /**
@@ -55,7 +55,7 @@ class TeamPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_tag');
+        return $user->can('delete_any_sale_team');
     }
 
     /**
@@ -63,7 +63,7 @@ class TeamPolicy
      */
     public function forceDelete(User $user, Team $team): bool
     {
-        return $user->can('force_delete_tag');
+        return $user->can('force_delete_sale_team');
     }
 
     /**
@@ -71,7 +71,7 @@ class TeamPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_tag');
+        return $user->can('force_delete_any_sale_team');
     }
 
     /**
@@ -79,7 +79,7 @@ class TeamPolicy
      */
     public function restore(User $user, Team $team): bool
     {
-        return $user->can('restore_tag');
+        return $user->can('restore_sale_team');
     }
 
     /**
@@ -87,7 +87,7 @@ class TeamPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_tag');
+        return $user->can('restore_any_sale_team');
     }
 
     /**
@@ -95,6 +95,6 @@ class TeamPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_tag');
+        return $user->can('reorder_sale_team');
     }
 }

@@ -40,6 +40,17 @@ class EmploymentType extends Model implements Sortable
         return $this->belongsTo(User::class, 'creator_id');
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($employmentType) {
+            $employmentType->code ??= $employmentType->name;
+
+            $employmentType->creator_id = filament()->auth()->id();
+        });
+    }
+
     /**
      * Get the factory instance for the model.
      */

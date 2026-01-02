@@ -43,6 +43,15 @@ class SkillType extends Model
         return $this->belongsTo(User::class, 'creator_id');
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($skillType) {
+            $skillType->creator_id = filament()->auth()->id();
+        });
+    }
+
     /**
      * Get the factory instance for the model.
      */

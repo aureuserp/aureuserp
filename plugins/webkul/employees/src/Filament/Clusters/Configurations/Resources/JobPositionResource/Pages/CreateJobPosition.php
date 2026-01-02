@@ -32,11 +32,4 @@ class CreateJobPosition extends CreateRecord
             ->title(__('employees::filament/clusters/configurations/resources/job-position/pages/create-job-position.notification.title'))
             ->body(__('employees::filament/clusters/configurations/resources/job-position/pages/create-job-position.notification.body'));
     }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['creator_id'] = Auth::user()->id;
-
-        return $data;
-    }
 }

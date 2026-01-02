@@ -51,7 +51,7 @@ class MoveReversal extends Model
     {
         parent::boot();
 
-        static::saving(function ($moveReversal) {
+        static::creating(function ($moveReversal) {
             $moveReversal->creator_id = filament()->auth()->id();
 
             $moveReversal->company_id = filament()->auth()->user()->default_company_id;

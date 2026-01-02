@@ -80,6 +80,15 @@ class TaskStage extends Model implements Sortable
         return $this->belongsTo(Company::class);
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($taskStage) {
+            $taskStage->creator_id = filament()->auth()->id();
+        });
+    }
+
     protected static function newFactory(): TaskStageFactory
     {
         return TaskStageFactory::new();

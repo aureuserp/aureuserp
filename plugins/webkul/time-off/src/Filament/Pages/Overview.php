@@ -16,6 +16,11 @@ class Overview extends BaseDashboard
 
     protected static ?int $navigationSort = 2;
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_time_off_overview';
+    }
+
     public static function getNavigationIcon(): string|BackedEnum|Htmlable|null
     {
         return null;

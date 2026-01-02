@@ -9,7 +9,7 @@ class UserLeaveType extends Model
 {
     protected $table = 'time_off_user_leave_types';
 
-    protected $timestamps = false;
+    public $timestamps = false;
 
     protected $fillable = [
         'user_id',

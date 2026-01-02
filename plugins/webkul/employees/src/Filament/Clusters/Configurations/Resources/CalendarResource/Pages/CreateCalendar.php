@@ -31,9 +31,4 @@ class CreateCalendar extends CreateRecord
             ->title(__('employees::filament/clusters/configurations/resources/calendar/pages/create-calendar.notification.title'))
             ->body(__('employees::filament/clusters/configurations/resources/calendar/pages/create-calendar.notification.body'));
     }
-
-    protected function mutateFormDataBeforeSave(array $data): array
-    {
-        return $data;
-    }
 }

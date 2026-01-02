@@ -4,7 +4,6 @@ namespace Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateR
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource;
 
 class CreateCandidate extends CreateRecord
@@ -31,15 +30,5 @@ class CreateCandidate extends CreateRecord
             ->success()
             ->title(__('recruitments::filament/clusters/applications/resources/candidate/pages/create-candidate.notification.title'))
             ->body(__('recruitments::filament/clusters/applications/resources/candidate/pages/create-candidate.notification.body'));
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $user = Auth::user();
-
-        $data['creator_id'] = $user->id;
-        $data['company_id'] = $user?->default_company_id;
-
-        return $data;
     }
 }
