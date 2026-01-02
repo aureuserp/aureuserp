@@ -13,6 +13,7 @@ use Webkul\Account\Settings\TaxesSettings;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
+use Webkul\Account\Enums\TaxIncludeOverride;
 
 class Tax extends Model implements Sortable
 {
@@ -46,6 +47,7 @@ class Tax extends Model implements Sortable
     protected $casts = [
         'amount_type'    => AmountType::class,
         'type_tax_use'   => TypeTaxUse::class,
+        'price_include_override' => TaxIncludeOverride::class,
     ];
 
     public $sortable = [
@@ -97,8 +99,8 @@ class Tax extends Model implements Sortable
 
     public function getPriceIncludeAttribute()
     {
-        return $this->price_include_override == 'tax_included'
-            || (new TaxesSettings)->account_price_include == 'tax_included' && ! $this->price_include_override;
+        return $this->price_include_override == TaxIncludeOverride::TAX_INCLUDED
+            || (new TaxesSettings)->account_price_include == TaxIncludeOverride::TAX_INCLUDED && ! $this->price_include_override;
     }
 
     public function evalTaxAmountFixedAmount($batch, $rawBase, $evaluationContext)
