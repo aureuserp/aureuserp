@@ -12,6 +12,7 @@ use Webkul\Account\Settings\TaxesSettings;
 use Webkul\Partner\Models\Partner;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Account\Enums\TaxIncludeOverride;
 
 class TaxManager
 {
@@ -34,7 +35,7 @@ class TaxManager
         foreach ($taxes as $tax) {
             $amount = floatval($tax->amount);
 
-            $tax->price_include_override ??= 'tax_excluded';
+            $tax->price_include_override ??= TaxIncludeOverride::TAX_INCLUDED;
 
             $currentTaxBase = $adjustedSubTotal;
 
@@ -48,7 +49,7 @@ class TaxManager
 
             $currentTaxAmount = 0;
 
-            if ($tax->price_include_override == 'tax_included') {
+            if ($tax->price_include_override == TaxIncludeOverride::TAX_INCLUDED) {
                 if ($tax->amount_type == AmountType::PERCENT) {
                     $taxFactor = $amount / 100;
 
