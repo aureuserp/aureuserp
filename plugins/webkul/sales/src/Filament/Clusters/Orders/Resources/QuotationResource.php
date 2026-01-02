@@ -66,6 +66,7 @@ use Webkul\Sale\Livewire\Summary;
 use Webkul\Sale\Models\Quotation as Order;
 use Webkul\Sale\Models\Partner;
 use Webkul\Sale\Models\Product;
+use Webkul\Sale\Models\Quotation;
 use Webkul\Sale\Settings;
 use Webkul\Sale\Settings\PriceSettings;
 use Webkul\Sale\Settings\ProductSettings;
@@ -829,7 +830,7 @@ class QuotationResource extends Resource
                             ]),
                         Tab::make(__('Optional Products'))
                             ->icon('heroicon-o-arrow-path-rounded-square')
-                            ->hidden(fn (Order $record) => $record->optionalLines->isEmpty())
+                            ->hidden(fn ($record) => $record->optionalLines->isEmpty())
                             ->schema([
                                 RepeatableEntry::make('optionalLines')
                                     ->hiddenLabel()

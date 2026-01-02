@@ -454,12 +454,6 @@ class Move extends Model implements Sortable
             $move->date ??= now();
         });
 
-        static::created(function ($move) {
-            $move->computeName();
-
-            $move->save();
-        });
-
         static::saving(function ($move) {
             $move->computeCreatorId();
 
@@ -472,6 +466,8 @@ class Move extends Model implements Sortable
             $move->computeCommercialPartnerId();
 
             $move->computeJournalId();
+
+            $move->computeName();
 
             $move->computeInvoiceCurrencyRate();
 
@@ -492,6 +488,10 @@ class Move extends Model implements Sortable
 
     public function computeName()
     {
+        if (! $this->journal) {
+            return;
+        }
+
         $prefix = '';
 
         if (
