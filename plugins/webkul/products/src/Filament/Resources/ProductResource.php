@@ -122,7 +122,7 @@ class ProductResource extends Resource
                                             ->maxValue(99999999999),
                                     ]),
                             ])
-                            ->visible(fn (Get $get): bool => $get('type') == ProductType::GOODS->value),
+                            ->visible(fn (Get $get): bool => $get('type') == ProductType::GOODS),
                     ])
                     ->columnSpan(['lg' => 2]),
 
