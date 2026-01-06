@@ -509,7 +509,7 @@ class Move extends Model implements Sortable
             '%s%s/%s',
             $prefix,
             $this->journal->code,
-            $this->date->format('Y'),
+            $this->date?->format('Y') ?? now()->format('Y'),
         );
 
         $this->name = $this->sequence_prefix . '/' . $this->id;
