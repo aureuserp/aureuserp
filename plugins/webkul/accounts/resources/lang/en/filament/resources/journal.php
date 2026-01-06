@@ -23,29 +23,42 @@ return [
                             'bank-account'                   => 'Bank Account',
                         ],
                     ],
+
                     'bank-account-number' => [
                         'title' => 'Bank Account Number',
                     ],
                 ],
             ],
+
             'incoming-payments' => [
                 'title' => 'Incoming Payments',
+                'add-action-label' => 'Add Line',
 
                 'fields' => [
+                    'payment-method' => 'Payment Method',
+                    'display-name'   => 'Display Name',
+                    'account-number' => 'Outstanding Receipts Accounts',
                     'relation-notes'             => 'Relation Notes',
                     'relation-notes-placeholder' => 'Enter any relation details',
                 ],
             ],
+
             'outgoing-payments' => [
                 'title' => 'Outgoing Payments',
+                'add-action-label' => 'Add Line',
 
                 'fields' => [
+                    'payment-method' => 'Payment Method',
+                    'display-name'   => 'Display Name',
+                    'account-number' => 'Outstanding Payments Accounts',
                     'relation-notes'             => 'Relation Notes',
                     'relation-notes-placeholder' => 'Enter any relation details',
                 ],
             ],
+
             'advanced-settings' => [
                 'title'  => 'Advanced Settings',
+
                 'fields' => [
                     'allowed-accounts'       => 'Allowed Accounts',
                     'control-access'         => 'Control Access',
@@ -147,13 +160,21 @@ return [
 
                     'bank-account-number' => [
                         'title' => 'Bank Account Number',
+                        
+                        'entries' => [
+                            'account-number' => 'Account Number',
+                        ],
                     ],
                 ],
             ],
+
             'incoming-payments' => [
                 'title' => 'Incoming Payments',
 
                 'entries' => [
+                    'payment-method' => 'Payment Method',
+                    'display-name'   => 'Display Name',
+                    'account-number' => 'Outstanding Receipts Accounts',
                     'relation-notes'             => 'Relation Notes',
                     'relation-notes-placeholder' => 'Enter any relation details',
                 ],
@@ -163,6 +184,9 @@ return [
                 'title' => 'Outgoing Payments',
 
                 'entries' => [
+                    'payment-method' => 'Payment Method',
+                    'display-name'   => 'Display Name',
+                    'account-number' => 'Outstanding Payments Accounts',
                     'relation-notes'             => 'Relation Notes',
                     'relation-notes-placeholder' => 'Enter any relation details',
                 ],
@@ -170,13 +194,24 @@ return [
 
             'advanced-settings' => [
                 'title'   => 'Advanced Settings',
-                'entries' => [
-                    'allowed-accounts'       => 'Allowed Accounts',
-                    'control-access'         => 'Control Access',
-                    'payment-communication'  => 'Payment Communication',
-                    'auto-check-on-post'     => 'Auto Check on Post',
-                    'communication-type'     => 'Communication Type',
-                    'communication-standard' => 'Communication Standard',
+
+                'allowed-accounts' => [
+                    'title' => 'Allowed Accounts',
+
+                    'entries' => [
+                        'allowed-accounts'       => 'Allowed Accounts',
+                        'control-access'         => 'Control Access',
+                        'auto-check-on-post'     => 'Auto Check on Post',
+                    ],
+                ],
+
+                'payment-communication'  => [
+                    'title' => 'Payment Communication',
+
+                    'entries' => [
+                        'communication-type'     => 'Communication Type',
+                        'communication-standard' => 'Communication Standard',
+                    ],
                 ],
             ],
         ],
