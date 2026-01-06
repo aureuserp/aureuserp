@@ -385,8 +385,7 @@ class AccountManager
 
         $baseLinesValues = TaxFacade::addAccountingDataInBaseLinesTaxDetails(
             $baseLinesValues,
-            $move->company,
-            $move->always_tax_exigible
+            $move->company
         );
 
         $taxResults = TaxFacade::prepareTaxLines(
@@ -632,31 +631,35 @@ class AccountManager
 
     public function getRoundedBaseAndTaxLines(Move $move, $roundFromTaxLines = true)
     {
-        $baseMoveLines = $move->lines->where('display_type', DisplayType::PRODUCT);
+        $baseLines = $move->lines
+            ->where('display_type', DisplayType::PRODUCT)
+            ->map(fn($line) => $this->prepareProductBaseLineForTaxesComputation($line))
+            ->all();
 
-        $baseLines = [];
-
-        foreach ($baseMoveLines as $line) {
-            $baseLines[] = $this->prepareProductBaseLineForTaxesComputation($line);
-        }
-
-        $taxLines = [];
-
-        $cashRoundingMoveLines = $move->lines
+        $roundingLines = $move->lines
             ->where('display_type', DisplayType::ROUNDING)
-            ->whereNull('tax_repartition_line_id');
+            ->whereNull('tax_repartition_line_id')
+            ->map(fn($line) => TaxFacade::prepareBaseLineForTaxesComputation(
+                $line,
+                priceUnit: $move->direction_sign * $line->amount_currency,
+                quantity: 1.0,
+                sign: $move->direction_sign,
+                specialMode: 'total_excluded',
+                special_type: 'cash_rounding',
+                is_refund: in_array($move->move_type, [MoveType::OUT_REFUND, MoveType::IN_REFUND]),
+                rate: $move->invoice_currency_rate,
+            ))
+            ->all();
 
-        foreach ($cashRoundingMoveLines as $line) {
-            $baseLines[] = $this->prepareCashRoundingBaseLineForTaxesComputation($move, $line);
-        }
+        $baseLines = TaxFacade::addTaxDetailsInBaseLines(
+            array_merge($baseLines, $roundingLines),
+            $move->company
+        );
 
-        $baseLines = TaxFacade::addTaxDetailsInBaseLines($baseLines, $move->company);
-
-        $taxMoveLines = $move->lines->whereNotNull('tax_repartition_line_id');
-
-        foreach ($taxMoveLines as $taxLine) {
-            $taxLines[] = TaxFacade::prepareTaxLineForTaxesComputation($taxLine, sign: $move->direction_sign);
-        }
+        $taxLines = $move->lines
+            ->whereNotNull('tax_repartition_line_id')
+            ->map(fn($line) => TaxFacade::prepareTaxLineForTaxesComputation($line, sign: $move->direction_sign))
+            ->all();
 
         $baseLines = TaxFacade::roundBaseLinesTaxDetails(
             $baseLines,
@@ -686,24 +689,6 @@ class AccountManager
         );
     }
 
-    public function prepareCashRoundingBaseLineForTaxesComputation(Move $move, MoveLine $line)
-    {
-        $sign = $move->direction_sign;
-
-        $rate = $move->invoice_currency_rate;
-
-        return TaxFacade::prepareBaseLineForTaxesComputation(
-            $line,
-            priceUnit: $sign * $line->amount_currency,
-            quantity: 1.0,
-            sign: $sign,
-            specialMode: 'total_excluded',
-            special_type: 'cash_rounding',
-            is_refund: in_array($move->move_type, [MoveType::OUT_REFUND, MoveType::IN_REFUND]),
-            rate: $rate,
-        );
-    }
-
     public function prepareNeededTerms(AccountMove $move)
     {
         $neededTerms = [];
@@ -719,9 +704,9 @@ class AccountManager
 
             $untaxedAmount = $untaxedAmountCurrency;
 
-            [$baseLines, $taxLines] = $this->getRoundedBaseAndTaxLines($move, false);
+            [$baseLines] = $this->getRoundedBaseAndTaxLines($move, false);
 
-            $baseLines = TaxFacade::addAccountingDataInBaseLinesTaxDetails($baseLines, $move->company, $move->always_tax_exigible);
+            $baseLines = TaxFacade::addAccountingDataInBaseLinesTaxDetails($baseLines, $move->company);
 
             $taxResults = TaxFacade::prepareTaxLines($baseLines, $move->company);
 
@@ -1129,7 +1114,8 @@ class AccountManager
 
         $this->reconcilePlan([$lines]);
 
-        Payment::whereIn('move_id', $lines->pluck('move_id')->unique())->get()
+        Payment::whereIn('move_id', $lines->pluck('move_id')->unique())
+            ->get()
             ->each(function ($payment) {
                 $payment->computeReconciliationStatus();
 
@@ -1871,45 +1857,45 @@ class AccountManager
             ->sortBy('id')
             ->values();
 
-        $number2lines = [];
-        $line2number = [];
+        $groupIdToLineIds = [];
+        $lineIdToGroupId = [];
 
         foreach ($allPartials as $partial) {
-            $debitMinId = $line2number[$partial->debit_move_id] ?? null;
-            $creditMinId = $line2number[$partial->credit_move_id] ?? null;
+            $debitMinId = $lineIdToGroupId[$partial->debit_move_id] ?? null;
+            $creditMinId = $lineIdToGroupId[$partial->credit_move_id] ?? null;
 
             if ($debitMinId && $creditMinId) {
                 if ($debitMinId != $creditMinId) {
                     $minMinId = min($debitMinId, $creditMinId);
                     $maxMinId = max($debitMinId, $creditMinId);
 
-                    foreach ($number2lines[$maxMinId] as $lineId) {
-                        $line2number[$lineId] = $minMinId;
+                    foreach ($groupIdToLineIds[$maxMinId] as $lineId) {
+                        $lineIdToGroupId[$lineId] = $minMinId;
                     }
 
-                    $number2lines[$minMinId] = array_merge(
-                        $number2lines[$minMinId],
-                        $number2lines[$maxMinId]
+                    $groupIdToLineIds[$minMinId] = array_merge(
+                        $groupIdToLineIds[$minMinId],
+                        $groupIdToLineIds[$maxMinId]
                     );
 
-                    unset($number2lines[$maxMinId]);
+                    unset($groupIdToLineIds[$maxMinId]);
                 }
             } elseif ($debitMinId) {
-                $number2lines[$debitMinId][] = $partial->credit_move_id;
-                $line2number[$partial->credit_move_id] = $debitMinId;
+                $groupIdToLineIds[$debitMinId][] = $partial->credit_move_id;
+                $lineIdToGroupId[$partial->credit_move_id] = $debitMinId;
             } elseif ($creditMinId) {
-                $number2lines[$creditMinId][] = $partial->debit_move_id;
-                $line2number[$partial->debit_move_id] = $creditMinId;
+                $groupIdToLineIds[$creditMinId][] = $partial->debit_move_id;
+                $lineIdToGroupId[$partial->debit_move_id] = $creditMinId;
             } else {
-                $number2lines[$partial->id] = [$partial->debit_move_id, $partial->credit_move_id];
-                $line2number[$partial->debit_move_id] = $partial->id;
-                $line2number[$partial->credit_move_id] = $partial->id;
+                $groupIdToLineIds[$partial->id] = [$partial->debit_move_id, $partial->credit_move_id];
+                $lineIdToGroupId[$partial->debit_move_id] = $partial->id;
+                $lineIdToGroupId[$partial->credit_move_id] = $partial->id;
             }
         }
 
         foreach ($lines as $line) {
-            if (isset($line2number[$line->id])) {
-                $matchingNumber = $line2number[$line->id];
+            if (isset($lineIdToGroupId[$line->id])) {
+                $matchingNumber = $lineIdToGroupId[$line->id];
 
                 if ($line->full_reconcile_id) {
                     $line->matching_number = (string) $line->full_reconcile_id;

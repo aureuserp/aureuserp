@@ -516,10 +516,10 @@ class TaxManager
         );
     }
 
-    public function addAccountingDataInBaseLinesTaxDetails($baseLines, $company, $includeCabaTags = false)
+    public function addAccountingDataInBaseLinesTaxDetails($baseLines, $company)
     {
         return array_map(
-            fn ($baseLine) => $this->addAccountingDataToBaseLineTaxDetails($baseLine, $company, $includeCabaTags),
+            fn ($baseLine) => $this->addAccountingDataToBaseLineTaxDetails($baseLine, $company),
             $baseLines
         );
     }
@@ -578,7 +578,7 @@ class TaxManager
         return $baseLine;
     }
 
-    public function addAccountingDataToBaseLineTaxDetails($baseLine, $company, $includeCabaTags = false)
+    public function addAccountingDataToBaseLineTaxDetails($baseLine, $company)
     {
         $companyCurrency = $company->currency;
 
@@ -688,7 +688,15 @@ class TaxManager
                     $taxRepartitionData['taxes'] = $taxRepartitionData['taxes']->merge($subsequentTaxes);
                 }
 
-                $baseLineGroupingKey = $this->prepareBaseLineGroupingKey($baseLine);
+                $baseLineGroupingKey = [
+                    'partner_id'            => $baseLine['partner']->id,
+                    'currency_id'           => $baseLine['currency']->id,
+                    'analytic_distribution' => $baseLine['analytic_distribution'],
+                    'account_id'            => $baseLine['account']->id,
+                    'tax_ids'               => $baseLine instanceof Model
+                        ? [$baseLine->id]
+                        : $baseLine['taxes']->pluck('id')->toArray(),
+                ];
 
                 $taxRepartitionData['grouping_key'] = $this->prepareBaseLineTaxRepartitionGroupingKey(
                     $baseLine,
@@ -770,7 +778,15 @@ class TaxManager
         $processedKeys = [];
 
         foreach ($taxLines as $taxLine) {
-            $groupingKey = json_encode($this->prepareTaxLineRepartitionGroupingKey($taxLine));
+            $groupingKey = json_encode([
+                'partner_id'              => $taxLine['partner']->id,
+                'currency_id'             => $taxLine['currency']->id,
+                'analytic_distribution'   => $taxLine['analytic_distribution'],
+                'account_id'              => $taxLine['account']->id,
+                'tax_ids'                 => $taxLine['taxes']->pluck('id')->toArray(),
+                'tax_repartition_line_id' => $taxLine['taxRepartitionLine']->id,
+                'group_tax_id'            => $taxLine['groupTax']->id,
+            ]);
 
             if (isset($taxLinesMapping[$groupingKey]) && ! in_array($groupingKey, $processedKeys)) {
                 $amounts = $taxLinesMapping[$groupingKey];
@@ -803,19 +819,6 @@ class TaxManager
         ];
     }
 
-    public function prepareBaseLineGroupingKey($baseLine)
-    {
-        return [
-            'partner_id'            => $baseLine['partner']->id,
-            'currency_id'           => $baseLine['currency']->id,
-            'analytic_distribution' => $baseLine['analytic_distribution'],
-            'account_id'            => $baseLine['account']->id,
-            'tax_ids'               => $baseLine instanceof Model
-                ? [$baseLine->id]
-                : $baseLine['taxes']->pluck('id')->toArray(),
-        ];
-    }
-
     public function prepareBaseLineTaxRepartitionGroupingKey($baseLine, $baseLineGroupingKey, $taxData, $taxRepartitionData)
     {
         return array_merge($baseLineGroupingKey, [
@@ -829,19 +832,6 @@ class TaxManager
             'account_id' => $taxRepartitionData['account']?->id ?: $baseLineGroupingKey['account_id'],
             'tax_ids'    => $taxRepartitionData['taxes']->pluck('id')->toArray(),
         ]);
-    }
-
-    public function prepareTaxLineRepartitionGroupingKey($taxLine)
-    {
-        return [
-            'partner_id'              => $taxLine['partner']->id,
-            'currency_id'             => $taxLine['currency']->id,
-            'analytic_distribution'   => $taxLine['analytic_distribution'],
-            'account_id'              => $taxLine['account']->id,
-            'tax_ids'                 => $taxLine['taxes']->pluck('id')->toArray(),
-            'tax_repartition_line_id' => $taxLine['taxRepartitionLine']->id,
-            'group_tax_id'            => $taxLine['groupTax']->id,
-        ];
     }
 
     public function getTaxDetails(

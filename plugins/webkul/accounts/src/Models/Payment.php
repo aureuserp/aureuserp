@@ -534,7 +534,7 @@ class Payment extends Model
         $counterpartAmountCurrency = -$liquidityAmountCurrency - $writeOffAmountCurrency;
         $counterpartBalance = -$liquidityBalance - $writeOffBalance;
 
-        $lineName = $liquidityLineName = collect($this->getAmlDefaultDisplayNameList())->pluck('value')->implode('');
+        $lineName = $liquidityLineName = collect($this->getMoveLineDefaultDisplayNameList())->pluck('value')->implode('');
 
         $lineValsList = [
             [
@@ -547,8 +547,7 @@ class Payment extends Model
                 'balance'         => $liquidityBalance,
                 'partner_id'      => $this->partner_id,
                 'account_id'      => $this->outstanding_account_id,
-            ],
-            [
+            ], [
                 'name'            => $lineName,
                 'date_maturity'   => $this->date,
                 'amount_currency' => $counterpartAmountCurrency,
@@ -646,7 +645,7 @@ class Payment extends Model
         return $lines;
     }
 
-    public function getAmlDefaultDisplayNameList()
+    public function getMoveLineDefaultDisplayNameList()
     {
         $label = $this->paymentMethodLine
             ? $this->paymentMethodLine->name
