@@ -12,11 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('accounts_accounts_move_reversals', function (Blueprint $table) {
-            $table->unsignedBigInteger('journal_id')->after('id');
-
-            $table->foreign('journal_id')
-                ->references('id')
-                ->on('accounts_journals')
+            $table->foreignId('journal_id')
+                ->nullable()
+                ->constrained('accounts_journals')
                 ->cascadeOnDelete();
         });
     }
