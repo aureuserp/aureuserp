@@ -4,8 +4,9 @@ namespace Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actio
 
 use Filament\Actions\Action;
 use Webkul\Sale\Facades\SaleOrder;
+use Livewire\Component;
+use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Models\Order;
-use Webkul\Sale\Settings\QuotationAndOrderSettings;
 
 class LockAndUnlockAction extends Action
 {
@@ -22,9 +23,11 @@ class LockAndUnlockAction extends Action
             ->label(fn ($record) => $record->locked ? __('sales::filament/clusters/orders/resources/quotation/actions/lock-and-unlock.unlock') : __('sales::filament/clusters/orders/resources/quotation/actions/lock-and-unlock.lock'))
             ->color(fn ($record) => $record->locked ? 'primary' : 'gray')
             ->icon(fn ($record) => ! $record->locked ? 'heroicon-o-lock-closed' : 'heroicon-o-lock-open')
-            ->action(function (Order $record): void {
+            ->action(function (Order $record, Component $livewire): void {
                 SaleOrder::lockAndUnlock($record);
+
+                $livewire->updateForm();
             })
-            ->visible(fn (QuotationAndOrderSettings $quotationAndOrderSettings) => $quotationAndOrderSettings?->enable_lock_confirm_sales);
+            ->visible(fn () => $this->getRecord()->state === OrderState::SALE);
     }
 }
