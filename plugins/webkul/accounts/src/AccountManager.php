@@ -676,7 +676,7 @@ class AccountManager
 
         $rate = $isInvoice
             ? $line->move->invoice_currency_rate
-            : ($line->balance ? abs($line->amount_currency) / abs($line->balance) : 0.0);
+            : (abs($line->balance) ? abs($line->amount_currency) / abs($line->balance) : 0.0);
 
         return TaxFacade::prepareBaseLineForTaxesComputation(
             $line,
