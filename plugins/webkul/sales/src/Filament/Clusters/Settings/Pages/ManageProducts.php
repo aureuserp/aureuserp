@@ -7,7 +7,7 @@ use Filament\Forms;
 use Filament\Forms\Components\Toggle;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Schema;
-use Webkul\Sale\Settings\ProductSettings;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Clusters\Settings;
 
 class ManageProducts extends SettingsPage
