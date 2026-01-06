@@ -472,7 +472,6 @@ class TaxResource extends Resource
                                         ->label(__('accounts::filament/resources/tax.infolist.sections.field-set.advanced-options.entries.country'))
                                         ->placeholder('—'),
                                     TextEntry::make('price_include_override')
-                                        ->formatStateUsing(fn ($state) => TaxIncludeOverride::options()[$state] ?? $state)
                                         ->label(__('accounts::filament/resources/tax.infolist.sections.field-set.advanced-options.entries.include-in-price')),
                                     IconEntry::make('include_base_amount')
                                         ->boolean()
