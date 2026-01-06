@@ -367,7 +367,7 @@ class SaleManager
             return $line;
         }
 
-        $policy = $line->product?->invoice_policy ?? $line->product?->parent->invoice_policy ?? $this->invoiceSettings->invoice_policy->value;
+        $policy = $line->product?->invoice_policy ?? $line->product?->parent?->invoice_policy ?? $this->invoiceSettings->invoice_policy->value;
 
         if (
             $line->is_downpayment
