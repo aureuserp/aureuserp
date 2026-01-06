@@ -89,8 +89,8 @@ class Product extends BaseProduct
     public function getAccounts(): array
     {
         return [
-            'income'  => $this->propertyAccountIncome ?? $this->category?->propertyAccountIncome ?? app(DefaultAccountSettings::class)->income_account_id,
-            'expense' => $this->propertyAccountExpense ?? $this->category?->propertyAccountExpense ?? app(DefaultAccountSettings::class)->expense_account_id,
+            'income'  => $this->propertyAccountIncome ?? $this->category?->propertyAccountIncome ?? Account::find(app(DefaultAccountSettings::class)->income_account_id),
+            'expense' => $this->propertyAccountExpense ?? $this->category?->propertyAccountExpense ?? Account::find(app(DefaultAccountSettings::class)->expense_account_id),
         ];
     }
 
