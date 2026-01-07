@@ -755,7 +755,11 @@ class OperationResource extends Resource
                     ->disabled(fn ($record): bool => in_array($record?->state, [MoveState::DONE, MoveState::CANCELED])),
                 Select::make('product_packaging_id')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.packaging'))
-                    ->relationship('productPackaging', 'name')
+                    ->relationship(
+                        'productPackaging',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('product_id', $get('product_id')),
+                    )
                     ->searchable()
                     ->preload()
                     ->visible(static::getProductSettings()->enable_packagings)
