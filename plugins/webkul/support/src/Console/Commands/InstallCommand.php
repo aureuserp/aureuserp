@@ -329,7 +329,9 @@ class InstallCommand extends Command
         $this->info("⚙️ Running <comment>{$this->package->shortName()}</comment> database seeders...");
 
         foreach ($this->package->seederClasses as $seeder) {
-            $this->laravel->make($seeder)->run();
+            $this->call('db:seed', [
+                '--class' => $seeder,
+            ]);
         }
 
         $this->info("✅ Seeders <comment>{$this->package->shortName()}</comment> completed successfully.");
