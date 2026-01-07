@@ -40,10 +40,12 @@ return new class extends Migration
         Schema::table('products_categories', function (Blueprint $table) {
             $table->dropForeign(['property_account_income_id']);
             $table->dropForeign(['property_account_expense_id']);
+            $table->dropForeign(['property_account_down_payment_id']);
 
             $table->dropColumn([
                 'property_account_income_id',
                 'property_account_expense_id',
+                'property_account_down_payment_id',
             ]);
         });
     }
