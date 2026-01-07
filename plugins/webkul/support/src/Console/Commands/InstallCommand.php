@@ -274,7 +274,7 @@ class InstallCommand extends Command
         $settingsToRun = collect([]);
 
         foreach ($this->package->settingFileNames as $setting) {
-            if ($this->hasMigrationAlreadyRun($migration)) {
+            if ($this->hasMigrationAlreadyRun($setting)) {
                 continue;
             }
 
@@ -328,14 +328,8 @@ class InstallCommand extends Command
 
         $this->info("⚙️ Running <comment>{$this->package->shortName()}</comment> database seeders...");
 
-        $this->newLine();
-
         foreach ($this->package->seederClasses as $seeder) {
-            $this->call('db:seed', [
-                '--class' => $seeder,
-            ]);
-
-            $this->newLine();
+            $this->laravel->make($seeder)->run();
         }
 
         $this->info("✅ Seeders <comment>{$this->package->shortName()}</comment> completed successfully.");
