@@ -74,6 +74,8 @@ class UninstallCommand extends Command
     {
         $this->info("⚙️ Dropping database tables for <comment>{$this->package->shortName()}</comment>...");
 
+        $migrationsToDelete = collect([]);
+
         $migrations = array_reverse($this->package->migrationFileNames);
 
         foreach ($migrations as $migration) {
@@ -90,10 +92,10 @@ class UninstallCommand extends Command
                     $this->info("🗑️ Rolling back migration: {$migration}");
 
                     $migrationInstance->down();
+
+                    $migrationsToDelete->push($migration);
                 }
             }
-
-            DB::table('migrations')->where('migration', $migration)->delete();
         }
 
         foreach ($this->package->settingFileNames as $setting) {
@@ -110,10 +112,14 @@ class UninstallCommand extends Command
                     $this->info("🗑️ Rolling back setting migration: {$setting}");
 
                     $migrationInstance->down();
+
+                    $migrationsToDelete->push($setting);
                 }
             }
+        }
 
-            DB::table('migrations')->where('migration', $setting)->delete();
+        if ($migrationsToDelete->isNotEmpty()) {
+            DB::table('migrations')->whereIn('migration', $migrationsToDelete->toArray())->delete();
         }
 
         $this->info('✅ Database tables dropped successfully.');

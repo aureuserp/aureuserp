@@ -262,11 +262,9 @@ class InstallCommand extends Command
         if (! $migrationsToRun->isEmpty()) {
             $this->info("⚙️ Running <comment>{$this->package->shortName()}</comment> database migrations...");
 
-            foreach ($migrationsToRun as $migration) {
-                $this->call('migrate', [
-                    '--path' => $migration,
-                ]);
-            }
+            $this->call('migrate', [
+                '--path' => $migrationsToRun->toArray(),
+            ]);
 
             $this->info("✅ Migrations <comment>{$this->package->shortName()}</comment> completed successfully.");
 
@@ -290,11 +288,9 @@ class InstallCommand extends Command
         if (! $settingsToRun->isEmpty()) {
             $this->info("⚙️ Running <comment>{$this->package->shortName()}</comment> settings database migrations...");
 
-            foreach ($settingsToRun as $migration) {
-                $this->call('migrate', [
-                    '--path' => $migration,
-                ]);
-            }
+            $this->call('migrate', [
+                '--path' => $settingsToRun->toArray(),
+            ]);
 
             $this->info("✅ Settings migrations <comment>{$this->package->shortName()}</comment> completed successfully.");
 
