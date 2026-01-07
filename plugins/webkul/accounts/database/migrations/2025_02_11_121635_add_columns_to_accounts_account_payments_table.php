@@ -21,7 +21,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('accounts_moves_lines', function (Blueprint $table) {
+        Schema::table('accounts_account_move_lines', function (Blueprint $table) {
+            $table->dropForeign(['full_reconcile_id']);
+
             $table->dropColumn('full_reconcile_id');
         });
     }

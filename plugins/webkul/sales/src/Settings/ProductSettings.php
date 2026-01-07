@@ -2,9 +2,9 @@
 
 namespace Webkul\Sale\Settings;
 
-use Webkul\Product\Settings\ProductSettings as BaseProductSettings;
+use Spatie\LaravelSettings\Settings;
 
-class ProductSettings extends BaseProductSettings
+class ProductSettings extends Settings
 {
     public bool $enable_deliver_content_by_email;
 

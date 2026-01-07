@@ -27,6 +27,8 @@ return new class extends SettingsMigration
         $this->migrator->deleteIfExists('accounts_accounts.account_discount_expense_allocation_id');
         $this->migrator->deleteIfExists('accounts_accounts.account_discount_income_allocation_id');
         $this->migrator->deleteIfExists('accounts_accounts.account_journal_suspense_account_id');
+        $this->migrator->deleteIfExists('accounts_accounts.account_journal_payment_debit_account_id');
+        $this->migrator->deleteIfExists('accounts_accounts.account_journal_payment_credit_account_id');
         $this->migrator->deleteIfExists('accounts_accounts.income_account_id');
         $this->migrator->deleteIfExists('accounts_accounts.expense_account_id');
         $this->migrator->deleteIfExists('accounts_accounts.transfer_account_id');

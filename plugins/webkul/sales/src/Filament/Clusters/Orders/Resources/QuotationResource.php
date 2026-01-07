@@ -69,7 +69,7 @@ use Webkul\Sale\Models\Product;
 use Webkul\Sale\Models\Quotation;
 use Webkul\Sale\Settings;
 use Webkul\Sale\Settings\PriceSettings;
-use Webkul\Sale\Settings\ProductSettings;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Sale\Settings\QuotationAndOrderSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
@@ -1388,7 +1388,7 @@ class QuotationResource extends Resource
                     ->default(UOM::first()?->id)
                     ->selectablePlaceholder(false)
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterUOMUpdated($set, $get))
-                    ->visible(fn (Settings\ProductSettings $settings) => $settings->enable_uom)
+                    ->visible(fn (ProductSettings $settings) => $settings->enable_uom)
                     ->disableOptionWhen(fn ($value): bool => $record?->locked || in_array($record?->state, [OrderState::CANCEL])),
                 TextInput::make('customer_lead')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.lead-time'))
@@ -1417,7 +1417,7 @@ class QuotationResource extends Resource
                     ->preload()
                     ->live()
                     ->afterStateUpdated(fn (Set $set, Get $get) => static::afterProductPackagingUpdated($set, $get))
-                    ->visible(fn (Settings\ProductSettings $settings) => $settings->enable_packagings)
+                    ->visible(fn (ProductSettings $settings) => $settings->enable_packagings)
                     ->disableOptionWhen(fn ($value): bool => $record?->locked || in_array($record?->state, [OrderState::CANCEL])),
                 TextInput::make('price_unit')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.unit-price'))
