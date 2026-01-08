@@ -156,7 +156,7 @@ class Partner extends Authenticatable implements FilamentUser
 
     public function bankAccounts(): HasMany
     {
-        return $this->hasMany(BankAccount::class);
+        return $this->hasMany(BankAccount::class, 'partner_id');
     }
 
     public function tags(): BelongsToMany
