@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2b71456631007f37a677d199e78d267c",
+    "content-hash": "b59a2ab3b55a4251ff92dd90d6cb8961",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -6565,73 +6565,6 @@
                 "source": "https://github.com/bobthecow/psysh/tree/v0.12.12"
             },
             "time": "2025-09-20T13:46:31+00:00"
-        },
-        {
-            "name": "pxlrbt/filament-excel",
-            "version": "v3.3.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pxlrbt/filament-excel.git",
-                "reference": "caff9f55d58cb9c103c4f3fc3be5e092e8eebd1c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pxlrbt/filament-excel/zipball/caff9f55d58cb9c103c4f3fc3be5e092e8eebd1c",
-                "reference": "caff9f55d58cb9c103c4f3fc3be5e092e8eebd1c",
-                "shasum": ""
-            },
-            "require": {
-                "anourvalar/eloquent-serialize": "^1.2",
-                "filament/filament": "^4.0",
-                "maatwebsite/excel": "^3.1",
-                "php": "^8.1"
-            },
-            "require-dev": {
-                "laravel/pint": "^1.10"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "pxlrbt\\FilamentExcel\\FilamentExcelServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "pxlrbt\\FilamentExcel\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Dennis Koch",
-                    "email": "info@pixelarbeit.de"
-                }
-            ],
-            "description": "Supercharged Excel exports for Filament Resources",
-            "keywords": [
-                "PHPExcel",
-                "actions",
-                "filament",
-                "laravel",
-                "laravel-filament",
-                "phpspreadsheet"
-            ],
-            "support": {
-                "issues": "https://github.com/pxlrbt/filament-excel/issues",
-                "source": "https://github.com/pxlrbt/filament-excel/tree/v3.3.0"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/pxlrbt",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-12-07T19:37:21+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
