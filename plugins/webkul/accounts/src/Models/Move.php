@@ -867,7 +867,7 @@ class Move extends Model implements Sortable
         }
 
         $paymentTermLines = $this->lines->filter(function ($line) {
-            return in_array($line->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE]);
+            return in_array($line->account?->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE]);
         });
 
         $outstandingLines = MoveLine::whereIn('account_id', $paymentTermLines->pluck('account_id'))
@@ -977,7 +977,7 @@ class Move extends Model implements Sortable
     protected function getAllReconciledInvoicePartials()
     {
         $reconciledLines = $this->lines->filter(function ($line) {
-            return in_array($line->account->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE]);
+            return in_array($line->account?->account_type, [AccountType::ASSET_RECEIVABLE, AccountType::LIABILITY_PAYABLE]);
         });
 
         if ($reconciledLines->isEmpty()) {
