@@ -6,7 +6,7 @@ use Illuminate\Foundation\AliasLoader;
 use Livewire\Livewire;
 use Webkul\Purchase\Facades\PurchaseOrder as PurchaseOrderFacade;
 use Webkul\Purchase\Livewire\Customer\ListProducts;
-use Webkul\Purchase\Livewire\Summary;
+use Webkul\Purchase\Livewire\OrderSummary;
 use Webkul\Support\Console\Commands\InstallCommand;
 use Webkul\Support\Console\Commands\UninstallCommand;
 use Webkul\Support\Package;
@@ -58,7 +58,7 @@ class PurchaseServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        Livewire::component('order-summary', Summary::class);
+        Livewire::component('order-summary', OrderSummary::class);
 
         Livewire::component('list-products', ListProducts::class);
 

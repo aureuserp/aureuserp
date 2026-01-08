@@ -16,7 +16,7 @@
             display: flex;
             justify-content: space-between;
             padding: 8px 0;
-            font-size: 16px;
+            font-size: 14px;
             color: #555;
         }
 
@@ -54,42 +54,33 @@
         }
     </style>
 
-    @if (count($products))
-        <div class="flex justify-end">
-            <div class="invoice-container">
-                @php
-                    $subTotal = 0;
-                    $totalTax = 0;
-                    $grandTotal = 0;
-
-                    foreach ($products as $product) {
-                        $subTotal += $product['price_subtotal'];
-
-                        $totalTax += $product['price_tax'];
-
-                        $grandTotal += $product['price_total'];
-                    }
-                @endphp
-
-                <div class="invoice-item">
-                    <span>Untaxed Amount</span>
-                    <span>{{ money($subTotal, $currency?->name) }}</span>
-                </div>
-
-                @if ($totalTax > 0)
-                    <div class="invoice-item">
-                        <span>Tax</span>
-                        <span>{{ money($totalTax, $currency?->name) }}</span>
-                    </div>
-                @endif
-
-                <div class="divider"></div>
-
-                <div class="font-bold invoice-item">
-                    <span>Total</span>
-                    <span>{{ money($grandTotal, $currency?->name) }}</span>
-                </div>
+    <div class="flex justify-end">
+        <div class="invoice-container">
+            <div class="invoice-item">
+                <span>Untaxed Amount</span>
+                <span>{{ money($subtotal, $currency?->name) }}</span>
             </div>
+
+            @if ($totalTax > 0)
+                <div class="invoice-item">
+                    <span>Tax</span>
+                    <span>{{ money($totalTax, $currency?->name) }}</span>
+                </div>
+            @endif
+
+            <div class="divider"></div>
+
+            <div class="invoice-item font-bold">
+                <span>Total</span>
+                <span>{{ money($grandTotal, $currency?->name) }}</span>
+            </div>
+
+            @if ($enableMargin && $margin > 0)
+                <div class="invoice-item font-bold">
+                    <span>Margin</span>
+                    <span>{{ number_format($margin, 2) }} ({{ number_format($marginPercentage, 2) }} %)</span>
+                </div>
+            @endif
         </div>
-    @endif
+    </div>
 </div>

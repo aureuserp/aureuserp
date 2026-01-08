@@ -3,8 +3,8 @@
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions;
 
 use Filament\Actions\Action;
-use Webkul\Sale\Facades\SaleOrder;
 use Webkul\Sale\Enums\OrderState;
+use Webkul\Sale\Facades\SaleOrder;
 use Webkul\Sale\Models\Order;
 
 class LockAndUnlockAction extends Action
