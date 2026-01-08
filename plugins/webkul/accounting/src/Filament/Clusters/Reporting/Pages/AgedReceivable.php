@@ -2,7 +2,10 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Reporting\Pages;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Carbon\Carbon;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -10,17 +13,18 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\MoveLine;
+use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports\AgedReceivableExport;
 use Webkul\Accounting\Filament\Clusters\Reporting;
-use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Webkul\Partner\Models\Partner;
 
 class AgedReceivable extends Page implements HasForms
 {
-    use InteractsWithForms, HasPageShield;
+    use HasPageShield, InteractsWithForms;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.aged-receivable';
 
@@ -51,6 +55,50 @@ class AgedReceivable extends Page implements HasForms
             'basis'      => 'due_date',
             'period'     => 30,
         ]);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('excel')
+                ->label('Export Excel')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('success')
+                ->action(function () {
+                    $data = $this->agedReceivableData;
+                    $partners = $data['partners'];
+                    $asOfDate = $data['as_of_date']->toDateString();
+                    $period = $data['period'];
+                    $state = $this->form->getState();
+                    $basis = $state['basis'] ?? 'due_date';
+
+                    return Excel::download(
+                        new AgedReceivableExport($partners, $asOfDate, $period, $basis),
+                        'aged-receivable-'.$asOfDate.'.xlsx'
+                    );
+                }),
+
+            Action::make('pdf')
+                ->label('Export PDF')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('danger')
+                ->action(function () {
+                    $data = $this->agedReceivableData;
+                    $partners = $data['partners'];
+                    $asOfDate = $data['as_of_date']->toDateString();
+                    $period = $data['period'];
+
+                    $pdf = Pdf::loadView('accounting::filament.clusters.reporting.pages.pdfs.aged-receivable', [
+                        'partners' => $partners,
+                        'asOfDate' => $asOfDate,
+                        'period'   => $period,
+                    ])->setPaper('a4', 'landscape');
+
+                    return response()->streamDownload(function () use ($pdf) {
+                        echo $pdf->output();
+                    }, 'aged-receivable-'.$asOfDate.'.pdf');
+                }),
+        ];
     }
 
     protected function getFormSchema(): array
@@ -175,10 +223,10 @@ class AgedReceivable extends Page implements HasForms
             ->get();
 
         $partnerData = [];
-        
+
         foreach ($moveLines as $line) {
             $partnerId = $line->partner_id;
-            
+
             if (! isset($partnerData[$partnerId])) {
                 $partnerData[$partnerId] = [
                     'partner_name' => $line->partner_name,

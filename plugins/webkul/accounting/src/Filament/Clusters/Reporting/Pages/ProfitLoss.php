@@ -2,7 +2,10 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Reporting\Pages;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Carbon\Carbon;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -10,18 +13,19 @@ use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
-use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\MoveLine;
+use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports\ProfitAndLossExport;
 use Webkul\Accounting\Filament\Clusters\Reporting;
 
 class ProfitLoss extends Page implements HasForms
 {
-    use Concerns\NormalizeDateFilter, InteractsWithForms, HasPageShield;
+    use Concerns\NormalizeDateFilter, HasPageShield, InteractsWithForms;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.profit-loss';
 
@@ -48,6 +52,40 @@ class ProfitLoss extends Page implements HasForms
     public function mount(): void
     {
         $this->form->fill([]);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('excel')
+                ->label('Export to Excel')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('success')
+                ->action(function () {
+                    $data = $this->profitLossData;
+                    $dateFrom = Carbon::parse($data['date_from']);
+                    $dateTo = Carbon::parse($data['date_to']);
+                    $filename = 'profit-loss-'.$dateFrom->format('Y-m-d').'-to-'.$dateTo->format('Y-m-d').'.xlsx';
+
+                    return Excel::download(new ProfitAndLossExport($data, $dateFrom, $dateTo), $filename);
+                }),
+            Action::make('pdf')
+                ->label('Export to PDF')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('danger')
+                ->action(function () {
+                    $data = $this->profitLossData;
+                    $dateFrom = Carbon::parse($data['date_from']);
+                    $dateTo = Carbon::parse($data['date_to']);
+                    $filename = 'profit-loss-'.$dateFrom->format('Y-m-d').'-to-'.$dateTo->format('Y-m-d').'.pdf';
+
+                    $pdf = Pdf::loadView('accounting::filament.clusters.reporting.pages.pdfs.profit-loss', ['data' => $data]);
+
+                    return response()->streamDownload(function () use ($pdf) {
+                        echo $pdf->output();
+                    }, $filename);
+                }),
+        ];
     }
 
     protected function getFormSchema(): array
