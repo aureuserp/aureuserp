@@ -128,9 +128,9 @@ class ScrapResource extends Resource
                                             ->label(__('inventories::filament/clusters/operations/resources/scrap.form.sections.general.fields.quantity'))
                                             ->required()
                                             ->numeric()
-                                            ->minValue(0)
+                                            ->minValue(1)
                                             ->maxValue(99999999999)
-                                            ->default(0)
+                                            ->default(1)
                                             ->disabled(fn ($record): bool => $record?->state == ScrapState::DONE),
                                         Select::make('uom_id')
                                             ->label(__('inventories::filament/clusters/operations/resources/scrap.form.sections.general.fields.unit'))
