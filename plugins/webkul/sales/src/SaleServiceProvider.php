@@ -5,7 +5,7 @@ namespace Webkul\Sale;
 use Illuminate\Foundation\AliasLoader;
 use Livewire\Livewire;
 use Webkul\Sale\Facades\SaleOrder as SaleOrderFacade;
-use Webkul\Sale\Livewire\Summary;
+use Webkul\Sale\Livewire\QuotationSummary;
 use Webkul\Support\Console\Commands\InstallCommand;
 use Webkul\Support\Console\Commands\UninstallCommand;
 use Webkul\Support\Package;
@@ -69,7 +69,7 @@ class SaleServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        Livewire::component('summary', Summary::class);
+        Livewire::component('quotation-summary', QuotationSummary::class);
     }
 
     public function packageRegistered(): void

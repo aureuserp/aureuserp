@@ -42,7 +42,7 @@ class CancelQuotationAction extends Action
                         ->send();
                 } else {
                     SaleManagerFacade::cancelSaleOrder($record, $data ?? []);
-                    
+
                     Notification::make()
                         ->success()
                         ->title(__('sales::filament/clusters/orders/resources/quotation/actions/cancel-quotation.footer-actions.send-and-cancel.notification.cancelled.title'))

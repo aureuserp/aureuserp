@@ -52,6 +52,7 @@ use Webkul\Account\Facades\Tax;
 use Webkul\Account\Models\PaymentTerm;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Product\Models\Packaging;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Enums\QtyDeliveredMethod;
 use Webkul\Sale\Filament\Clusters\Orders;
@@ -62,14 +63,12 @@ use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\Manag
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ManageInvoices;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Pages\ViewQuotation;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource;
-use Webkul\Sale\Livewire\Summary;
-use Webkul\Sale\Models\Quotation as Order;
+use Webkul\Sale\Livewire\QuotationSummary;
 use Webkul\Sale\Models\Partner;
 use Webkul\Sale\Models\Product;
-use Webkul\Sale\Models\Quotation;
+use Webkul\Sale\Models\Quotation as Order;
 use Webkul\Sale\Settings;
 use Webkul\Sale\Settings\PriceSettings;
-use Webkul\Product\Settings\ProductSettings;
 use Webkul\Sale\Settings\QuotationAndOrderSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
@@ -194,15 +193,22 @@ class QuotationResource extends Resource
                             ->icon('heroicon-o-list-bullet')
                             ->schema([
                                 static::getProductRepeater(),
-                                Livewire::make(Summary::class, function (Get $get, PriceSettings $settings) {
+                                Livewire::make(QuotationSummary::class, function (Get $get, PriceSettings $settings, $livewire) {
+                                    $totals = self::calculateQuotationTotals($get, $livewire);
+
                                     return [
-                                        'currency'     => Currency::find($get('currency_id')),
-                                        'products'     => $get('products'),
+                                        'currency' => Currency::find($get('currency_id')),
                                         'enableMargin' => $settings->enable_margin,
+                                        'subtotal'   => $totals['subtotal'],
+                                        'totalTax'   => $totals['totalTax'],
+                                        'grandTotal' => $totals['grandTotal'],
+                                        'margin'           => $totals['margin'],
+                                        'marginPercentage' => $totals['marginPercentage'],
                                     ];
                                 })
-                                    ->live()
-                                    ->reactive(),
+                                    ->key('quotationSummary')
+                                    ->reactive()
+                                    // ->visible(fn (Get $get) => $get('currency_id') && ! empty($get('products'))),
                             ]),
                         Tab::make(__('Optional Products'))
                             ->hidden(fn ($record) => in_array($record?->state, [OrderState::CANCEL]))
@@ -320,6 +326,55 @@ class QuotationResource extends Resource
                     ->searchable()
                     ->toggleable()
                     ->sortable(),
+                TextColumn::make('created_at')
+                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.creation-date'))
+                    ->placeholder('-')
+                    ->date()
+                    ->toggleable()
+                    ->sortable(),
+                TextColumn::make('partner.name')
+                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.customer'))
+                    ->placeholder('-')
+                    ->searchable()
+                    ->toggleable()
+                    ->sortable(),
+                TextColumn::make('user.name')
+                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.sales-person'))
+                    ->placeholder('-')
+                    ->toggleable()
+                    ->sortable(),
+                TextColumn::make('amount_untaxed')
+                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.untaxed-amount'))
+                    ->placeholder('-')
+                    ->summarize(Sum::make()->label('Total'))
+                    ->money(fn ($record) => $record->currency->code)
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                TextColumn::make('amount_tax')
+                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.amount-tax'))
+                    ->placeholder('-')
+                    ->summarize(Sum::make()->label('Taxes'))
+                    ->money(fn ($record) => $record->currency->code)
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                TextColumn::make('amount_total')
+                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.amount-total'))
+                    ->placeholder('-')
+                    ->summarize(Sum::make()->label('Total Amount'))
+                    ->money(fn ($record) => $record->currency->code)
+                    ->toggleable()
+                    ->sortable(),
+                TextColumn::make('expected_date')
+                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.expected-date'))
+                    ->placeholder('-')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('team.name')
+                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.sales-team'))
+                    ->placeholder('-')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('state')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.status'))
                     ->placeholder('-')
@@ -330,59 +385,15 @@ class QuotationResource extends Resource
                     ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.invoice-status'))
                     ->placeholder('-')
                     ->badge()
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.creation-date'))
-                    ->placeholder('-')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('amount_untaxed')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.untaxed-amount'))
-                    ->placeholder('-')
-                    ->summarize(Sum::make()->label('Total'))
-                    ->money(fn ($record) => $record->currency->code)
-                    ->sortable(),
-                TextColumn::make('amount_tax')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.amount-tax'))
-                    ->placeholder('-')
-                    ->summarize(Sum::make()->label('Taxes'))
-                    ->money(fn ($record) => $record->currency->code)
-                    ->sortable(),
-                TextColumn::make('amount_total')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.amount-total'))
-                    ->placeholder('-')
-                    ->summarize(Sum::make()->label('Total Amount'))
-                    ->money(fn ($record) => $record->currency->code)
-                    ->sortable(),
-                TextColumn::make('commitment_date')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.commitment-date'))
-                    ->placeholder('-')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('expected_date')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.expected-date'))
-                    ->placeholder('-')
-                    ->date()
-                    ->sortable(),
-                TextColumn::make('partner.name')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.customer'))
-                    ->placeholder('-')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('user.name')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.sales-person'))
-                    ->placeholder('-')
-                    ->sortable(),
-                TextColumn::make('team.name')
-                    ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.sales-team'))
-                    ->placeholder('-')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 TextColumn::make('client_order_ref')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.table.columns.customer-reference'))
                     ->placeholder('-')
                     ->badge()
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filtersFormColumns(2)
             ->filters([
@@ -819,18 +830,32 @@ class QuotationResource extends Resource
                                             }),
                                     ]),
 
-                                Livewire::make(Summary::class, function ($record, PriceSettings $settings) {
+                                Livewire::make(QuotationSummary::class, function ($record, PriceSettings $settings) {
+                                    $subtotal = 0;
+                                    $totalTax = 0;
+                                    $grandTotal = 0;
+                                    $margin = 0;
+
+                                    foreach ($record->lines as $line) {
+                                        $subtotal += floatval($line->price_subtotal ?? 0);
+                                        $totalTax += floatval($line->price_tax ?? 0);
+                                        $grandTotal += floatval($line->price_total ?? 0);
+                                        $margin += floatval($line->margin ?? 0);
+                                    }
+
+                                    $marginPercentage = ($subtotal > 0) ? ($margin / $subtotal) * 100 : 0;
+
                                     return [
-                                        'currency'     => $record->currency,
-                                        'enableMargin' => $settings->enable_margin,
-                                        'products'     => $record->lines->map(function ($item) {
-                                            return [
-                                                ...$item->toArray(),
-                                                'taxes' => $item->taxes->pluck('id')->toArray() ?? [],
-                                            ];
-                                        })->toArray(),
+                                        'currency'         => $record->currency,
+                                        'enableMargin'     => $settings->enable_margin,
+                                        'subtotal'         => round($subtotal, 2),
+                                        'totalTax'         => round($totalTax, 2),
+                                        'grandTotal'       => round($grandTotal, 2),
+                                        'margin'           => round($margin, 2),
+                                        'marginPercentage' => round($marginPercentage, 2),
                                     ];
-                                }),
+                                })
+                                    ->key('quotation-summary-view'),
                             ]),
                         Tab::make(__('Optional Products'))
                             ->icon('heroicon-o-arrow-path-rounded-square')
@@ -1227,7 +1252,15 @@ class QuotationResource extends Resource
             ->defaultItems(0)
             ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
             ->deletable(fn ($record): bool => ! in_array($record?->state, [OrderState::CANCEL]) && $record?->state !== OrderState::SALE)
-            ->deleteAction(fn (Action $action) => $action->requiresConfirmation())
+            ->deleteAction(function (Action $action) {
+                $action->requiresConfirmation();
+
+                $action->after(function (Get $get, $livewire) {
+                    $totals = self::calculateQuotationTotals($get, $livewire);
+
+                    $livewire->dispatch('itemUpdated', $totals);
+                });
+            })
             ->addable(fn ($record): bool => ! in_array($record?->state, [OrderState::CANCEL]))
             ->columnManagerColumns(2)
             ->compact()
@@ -1315,7 +1348,7 @@ class QuotationResource extends Resource
                     ->getOptionLabelFromRecordUsing(function ($record): string {
                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
                     })
-                    ->disableOptionWhen(function ($label, $value, $state, $component) use($record) {
+                    ->disableOptionWhen(function ($label, $value, $state, $component) use ($record) {
                         $isDeleted = str_contains($label, ' (Deleted)');
 
                         $isOrderLocked = $record?->locked || in_array($record?->state, [OrderState::CANCEL]);
@@ -1757,6 +1790,55 @@ class QuotationResource extends Resource
         $set($prefix.'margin', round($margin, 4));
 
         $set($prefix.'margin_percent', round($marginPercentage, 4));
+    }
+
+    private static function calculateQuotationTotals(Get $get, $livewire): array
+    {
+        $defaultTotals = [
+            'subtotal'         => 0,
+            'totalTax'         => 0,
+            'grandTotal'       => 0,
+            'margin'           => 0,
+            'marginPercentage' => 0,
+        ];
+
+        $products = $get('products') ?? [];
+
+        if (empty($products)) {
+            $livewire->dispatch('itemUpdated', $defaultTotals);
+
+            return $defaultTotals;
+        }
+
+        $subtotal = 0;
+        $totalTax = 0;
+        $grandTotal = 0;
+        $margin = 0;
+
+        foreach ($products as $product) {
+            if (empty($product['product_id'])) {
+                continue;
+            }
+
+            $subtotal += floatval($product['price_subtotal'] ?? 0);
+            $totalTax += floatval($product['price_tax'] ?? 0);
+            $grandTotal += floatval($product['price_total'] ?? 0);
+            $margin += floatval($product['margin'] ?? 0);
+        }
+
+        $marginPercentage = ($subtotal > 0) ? ($margin / $subtotal) * 100 : 0;
+
+        $totals = [
+            'subtotal'         => round($subtotal, 2),
+            'totalTax'         => round($totalTax, 2),
+            'grandTotal'       => round($grandTotal, 2),
+            'margin'           => round($margin, 2),
+            'marginPercentage' => round($marginPercentage, 2),
+        ];
+
+        $livewire->dispatch('itemUpdated', $totals);
+
+        return $totals;
     }
 
     public static function calculateMargin($sellingPrice, $costPrice, $quantity, $discount = 0)
