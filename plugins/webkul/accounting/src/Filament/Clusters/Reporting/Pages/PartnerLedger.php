@@ -2,7 +2,10 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Reporting\Pages;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Carbon\Carbon;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -10,17 +13,18 @@ use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
-use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\MoveLine;
+use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports\PartnerLedgerExport;
 use Webkul\Accounting\Filament\Clusters\Reporting;
 use Webkul\Partner\Models\Partner;
 
 class PartnerLedger extends Page implements HasForms
 {
-    use Concerns\NormalizeDateFilter, InteractsWithForms, HasPageShield;
+    use Concerns\NormalizeDateFilter, HasPageShield, InteractsWithForms;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.partner-ledger';
 
@@ -47,6 +51,50 @@ class PartnerLedger extends Page implements HasForms
     public function mount(): void
     {
         $this->form->fill([]);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('excel')
+                ->label('Export Excel')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('success')
+                ->action(function () {
+                    $data = $this->partnerLedgerData;
+                    $partners = $data['partners'];
+                    $dateFrom = $data['date_from'];
+                    $dateTo = $data['date_to'];
+
+                    // Add moves to each partner
+                    foreach ($partners as &$partner) {
+                        $partner['moves'] = $this->getPartnerMoves($partner['id']);
+                    }
+
+                    return Excel::download(
+                        new PartnerLedgerExport($partners, $dateFrom, $dateTo, fn ($id) => $this->getPartnerMoves($id)),
+                        'partner-ledger-'.$dateFrom.'-to-'.$dateTo.'.xlsx'
+                    );
+                }),
+
+            Action::make('pdf')
+                ->label('Export PDF')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('danger')
+                ->action(function () {
+                    $data = $this->partnerLedgerData;
+                    $getPartnerMoves = fn ($partnerId) => $this->getPartnerMoves($partnerId);
+
+                    $pdf = Pdf::loadView('accounting::filament.clusters.reporting.pages.pdfs.partner-ledger', [
+                        'data'            => $data,
+                        'getPartnerMoves' => $getPartnerMoves,
+                    ])->setPaper('a4', 'landscape');
+
+                    return response()->streamDownload(function () use ($pdf) {
+                        echo $pdf->output();
+                    }, 'partner-ledger-'.$data['date_from'].'-to-'.$data['date_to'].'.pdf');
+                }),
+        ];
     }
 
     protected function getFormSchema(): array

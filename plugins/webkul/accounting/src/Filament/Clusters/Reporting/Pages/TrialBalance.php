@@ -2,7 +2,10 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Reporting\Pages;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Carbon\Carbon;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -10,16 +13,17 @@ use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Journal;
-use BezhanSalleh\FilamentShield\Traits\HasPageShield;
+use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports\TrialBalanceExport;
 use Webkul\Accounting\Filament\Clusters\Reporting;
 
 class TrialBalance extends Page implements HasForms
 {
-    use Concerns\NormalizeDateFilter, InteractsWithForms, HasPageShield;
+    use Concerns\NormalizeDateFilter, HasPageShield, InteractsWithForms;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.trial-balance';
 
@@ -46,6 +50,44 @@ class TrialBalance extends Page implements HasForms
     public function mount(): void
     {
         $this->form->fill([]);
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('excel')
+                ->label('Export to Excel')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('success')
+                ->action(function () {
+                    $data = $this->trialBalanceData;
+
+                    return Excel::download(
+                        new TrialBalanceExport(
+                            $data['accounts'],
+                            $data['date_from'],
+                            $data['date_to'],
+                            $data['totals']
+                        ),
+                        'trial-balance-'.$data['date_from']->format('Y-m-d').'-'.$data['date_to']->format('Y-m-d').'.xlsx'
+                    );
+                }),
+            Action::make('pdf')
+                ->label('Export to PDF')
+                ->icon('heroicon-o-document-text')
+                ->color('danger')
+                ->action(function () {
+                    $data = $this->trialBalanceData;
+
+                    $pdf = Pdf::loadView('accounting::filament.clusters.reporting.pages.pdfs.trial-balance', [
+                        'data' => $data,
+                    ])->setPaper('a4', 'landscape');
+
+                    return response()->streamDownload(function () use ($pdf) {
+                        echo $pdf->stream();
+                    }, 'trial-balance-'.$data['date_from']->format('Y-m-d').'-'.$data['date_to']->format('Y-m-d').'.pdf');
+                }),
+        ];
     }
 
     protected function getFormSchema(): array
