@@ -113,7 +113,6 @@ return [
             'status'           => 'Status',
             'billing-status'   => 'Billing Status',
             'currency'         => 'Currency',
-            'billing-status'   => 'Billing Status',
         ],
 
         'groups' => [

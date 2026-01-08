@@ -197,18 +197,18 @@ class QuotationResource extends Resource
                                     $totals = self::calculateQuotationTotals($get, $livewire);
 
                                     return [
-                                        'currency' => Currency::find($get('currency_id')),
-                                        'enableMargin' => $settings->enable_margin,
-                                        'subtotal'   => $totals['subtotal'],
-                                        'totalTax'   => $totals['totalTax'],
-                                        'grandTotal' => $totals['grandTotal'],
+                                        'currency'         => Currency::find($get('currency_id')),
+                                        'enableMargin'     => $settings->enable_margin,
+                                        'subtotal'         => $totals['subtotal'],
+                                        'totalTax'         => $totals['totalTax'],
+                                        'grandTotal'       => $totals['grandTotal'],
                                         'margin'           => $totals['margin'],
                                         'marginPercentage' => $totals['marginPercentage'],
                                     ];
                                 })
                                     ->key('quotationSummary')
                                     ->reactive()
-                                    // ->visible(fn (Get $get) => $get('currency_id') && ! empty($get('products'))),
+                                    ->visible(fn (Get $get) => $get('currency_id') && ! empty($get('products'))),
                             ]),
                         Tab::make(__('Optional Products'))
                             ->hidden(fn ($record) => in_array($record?->state, [OrderState::CANCEL]))
@@ -688,56 +688,56 @@ class QuotationResource extends Resource
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.product')),
                                         InfolistTableColumn::make('product_uom_qty')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.quantity'))
-                                            ->width(150)
+                                            ->width(100)
                                             ->toggleable(),
                                         InfolistTableColumn::make('uom')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.uom'))
-                                            ->width(150)
+                                            ->width(100)
                                             ->toggleable(),
                                         InfolistTableColumn::make('customer_lead')
-                                            ->width(150)
+                                            ->width(100)
                                             ->toggleable(isToggledHiddenByDefault: true)
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.lead-time')),
                                         InfolistTableColumn::make('product_packaging_qty')
                                             ->toggleable(isToggledHiddenByDefault: true)
-                                            ->width(180)
+                                            ->width(150)
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.packaging-qty')),
                                         InfolistTableColumn::make('productPackaging')
                                             ->toggleable(isToggledHiddenByDefault: true)
-                                            ->width(200)
+                                            ->width(150)
                                             ->visible(fn (ProductSettings $settings) => $settings->enable_packagings)
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.packaging')),
                                         InfolistTableColumn::make('price_unit')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.unit-price'))
                                             ->toggleable()
-                                            ->width(150),
+                                            ->width(100),
                                         InfolistTableColumn::make('purchase_price')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.cost'))
                                             ->toggleable()
-                                            ->width(150),
+                                            ->width(100),
                                         InfolistTableColumn::make('margin')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.margin'))
                                             ->toggleable(isToggledHiddenByDefault: true)
-                                            ->width(150)
+                                            ->width(100)
                                             ->visible(fn (PriceSettings $settings) => $settings->enable_margin),
                                         InfolistTableColumn::make('margin_percent')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.margin-percentage'))
                                             ->toggleable(isToggledHiddenByDefault: true)
-                                            ->width(150)
+                                            ->width(100)
                                             ->visible(fn (PriceSettings $settings) => $settings->enable_margin),
                                         InfolistTableColumn::make('taxes')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.taxes'))
                                             ->toggleable()
-                                            ->width(250),
+                                            ->width(150),
                                         InfolistTableColumn::make('discount')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.discount-percentage'))
                                             ->toggleable(isToggledHiddenByDefault: true)
-                                            ->width(250)
+                                            ->width(100)
                                             ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount),
                                         InfolistTableColumn::make('price_subtotal')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.sub-total'))
                                             ->toggleable()
-                                            ->width(150),
+                                            ->width(100),
                                     ])
                                     ->schema([
                                         TextEntry::make('name')
@@ -857,6 +857,7 @@ class QuotationResource extends Resource
                                 })
                                     ->key('quotation-summary-view'),
                             ]),
+
                         Tab::make(__('Optional Products'))
                             ->icon('heroicon-o-arrow-path-rounded-square')
                             ->hidden(fn ($record) => $record->optionalLines->isEmpty())
@@ -914,6 +915,7 @@ class QuotationResource extends Resource
                                             ->alignment(Alignment::Start),
                                     ])->columns(4),
                             ]),
+
                         Tab::make(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.other-information.title'))
                             ->icon('heroicon-o-information-circle')
                             ->schema([
@@ -994,6 +996,7 @@ class QuotationResource extends Resource
                                             ])->columns(2),
                                     ]),
                             ]),
+
                         Tab::make(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.term-and-conditions.title'))
                             ->icon('heroicon-o-clipboard-document-list')
                             ->schema([
@@ -1272,44 +1275,44 @@ class QuotationResource extends Resource
                     ->toggleable(),
                 TableColumn::make('product_qty')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.quantity'))
-                    ->width(150)
+                    ->width(100)
                     ->markAsRequired(),
                 TableColumn::make('qty_delivered')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.qty-delivered'))
-                    ->width(150)
+                    ->width(100)
                     ->toggleable()
                     ->markAsRequired()
                     ->visible(fn () => in_array($record?->state, [OrderState::SALE])),
                 TableColumn::make('qty_invoiced')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.qty-invoiced'))
-                    ->width(150)
+                    ->width(100)
                     ->markAsRequired()
                     ->toggleable()
                     ->visible(fn () => in_array($record?->state, [OrderState::SALE])),
                 TableColumn::make('product_uom_id')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.uom'))
-                    ->width(150)
+                    ->width(100)
                     ->toggleable()
                     ->markAsRequired()
                     ->visible(fn () => resolve(ProductSettings::class)->enable_uom),
                 TableColumn::make('customer_lead')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.lead-time'))
-                    ->width(150)
+                    ->width(100)
                     ->markAsRequired()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TableColumn::make('product_packaging_qty')
                     ->toggleable()
-                    ->width(180)
+                    ->width(150)
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.packaging-qty'))
                     ->visible(fn () => resolve(ProductSettings::class)->enable_packagings),
                 TableColumn::make('product_packaging_id')
                     ->toggleable()
-                    ->width(200)
+                    ->width(150)
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.packaging'))
                     ->visible(fn () => resolve(ProductSettings::class)->enable_packagings),
                 TableColumn::make('price_unit')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.unit-price'))
-                    ->width(150)
+                    ->width(100)
                     ->markAsRequired(),
                 TableColumn::make('margin')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.margin'))
@@ -1323,11 +1326,11 @@ class QuotationResource extends Resource
                     ->visible(fn () => resolve(PriceSettings::class)->enable_margin),
                 TableColumn::make('taxes')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.taxes'))
-                    ->width(250)
+                    ->width(150)
                     ->toggleable(),
                 TableColumn::make('discount')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.discount-percentage'))
-                    ->width(250)
+                    ->width(100)
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->visible(fn () => resolve(Settings\PriceSettings::class)->enable_discount),
                 TableColumn::make('price_subtotal')
