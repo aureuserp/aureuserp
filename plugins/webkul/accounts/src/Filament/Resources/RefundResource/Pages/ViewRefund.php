@@ -23,11 +23,13 @@ class ViewRefund extends ViewRecord
         return [
             ChatterAction::make()
                 ->resource(static::$resource),
+            BaseActions\PreviewAction::make()
+                ->setTemplate('accounts::refund/actions/preview.index'),
             BaseActions\PayAction::make(),
-            BaseActions\CancelAction::make(),
             BaseActions\ConfirmAction::make(),
-            BaseActions\ResetToDraftAction::make(),
+            BaseActions\CancelAction::make(),
             BaseActions\SetAsCheckedAction::make(),
+            BaseActions\ResetToDraftAction::make(),
             DeleteAction::make()
                 ->hidden(fn(Move $record): bool => $record->state == MoveState::POSTED)
                 ->successNotification(
