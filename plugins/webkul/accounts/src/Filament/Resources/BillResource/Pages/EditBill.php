@@ -7,6 +7,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Facades\Account as AccountFacade;
+use Webkul\Account\Filament\Resources\RefundResource;
 use Webkul\Account\Filament\Resources\BillResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
@@ -19,6 +20,16 @@ class EditBill extends EditRecord
     use HasRecordNavigationTabs, HasRepeaterColumnManager;
 
     protected static string $resource = BillResource::class;
+
+    protected static string $reverseResource = RefundResource::class;
+
+    /**
+     * @return class-string
+     */
+    public static function getReverseResource(): string
+    {
+        return static::$reverseResource;
+    }
 
     protected function getRedirectUrl(): string
     {
