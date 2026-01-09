@@ -4,8 +4,11 @@ namespace Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pa
 
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\ViewInvoice as BaseViewInvoice;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource;
 
 class ViewInvoice extends BaseViewInvoice
 {
     protected static string $resource = InvoiceResource::class;
+
+    protected static string $reverseResource = CreditNoteResource::class;
 }

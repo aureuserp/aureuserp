@@ -799,8 +799,8 @@ class JournalEntryResource extends Resource
         $mockMove->setRelation('currency', $currency);
         $mockMove->setRelation('company', $company);
 
-        $totalDebit = collect($lines)->sum(fn ($lineData) => $lineData['debit'] ?? 0);
-        $totalCredit = collect($lines)->sum(fn ($lineData) => $lineData['credit'] ?? 0);
+        $totalDebit = collect($lines)->sum(fn ($lineData) => (float) ($lineData['debit'] ?? 0));
+        $totalCredit = collect($lines)->sum(fn ($lineData) => (float) ($lineData['credit'] ?? 0));
 
         $baseLines = [];
 

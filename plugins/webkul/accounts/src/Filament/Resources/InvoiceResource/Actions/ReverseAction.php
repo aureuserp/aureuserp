@@ -21,9 +21,25 @@ class ReverseAction extends Action
 {
     use PDFHandler;
 
+    protected static string $resource = CreditNoteResource::class;
+
     public static function getDefaultName(): ?string
     {
         return 'customers.invoice.credit-note';
+    }
+
+    public function setResource(string $resource): self
+    {
+        static::$resource = $resource;
+
+        return $this;
+    }
+    /**
+     * @return class-string
+     */
+    public static function getResource(): string
+    {
+        return static::$resource;
     }
 
     protected function setUp(): void
@@ -85,7 +101,7 @@ class ReverseAction extends Action
 
             AccountFacade::computeAccountMove($record);
 
-            $redirectUrl = CreditNoteResource::getUrl('edit', ['record' => $reversedMoves->first()->id]);
+            $redirectUrl = static::getResource()::getUrl('edit', ['record' => $reversedMoves->first()->id]);
 
             $livewire->redirect($redirectUrl, navigate: FilamentView::hasSpaMode());
         });

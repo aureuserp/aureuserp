@@ -15,7 +15,7 @@ class Sum extends Summarizer
 
     protected function calculateSummary(Collection $items, string $columnName): int|float|null
     {
-        return $items->sum($columnName);
+        return $items->sum(fn ($item) => (float) $item[$columnName]);
     }
 
     public function getDefaultLabel(): ?string
