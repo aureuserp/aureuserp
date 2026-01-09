@@ -195,9 +195,9 @@ class SaleManager
 
         $line->technical_price_unit = $line->price_unit;
 
-        $line->price_reduce_taxexcl = $line->price_unit - ($line->price_unit * ($line->discount / 100));
+        $line->price_reduce_taxexcl = $line->product_uom_qty ? round($line->price_subtotal / $line->product_uom_qty, 4) : 0.0;
 
-        $line->price_reduce_taxinc = round($line->price_reduce_taxexcl + ($line->price_reduce_taxexcl * ($line->taxes->sum('amount') / 100)), 2); // TODO:: This calculation is wrong
+        $line->price_reduce_taxinc = $line->product_uom_qty ? round($line->price_total / $line->product_uom_qty, 4) : 0.0;
 
         $line->state = $line->order->state;
 

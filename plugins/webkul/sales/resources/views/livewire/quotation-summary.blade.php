@@ -78,7 +78,7 @@
             @if ($enableMargin && $margin > 0)
                 <div class="invoice-item font-bold">
                     <span>Margin</span>
-                    <span>{{ number_format($margin, 2) }} ({{ number_format($marginPercentage, 2) }} %)</span>
+                    <span>{{ money($margin, $currency?->name) }} ({{ number_format($marginPercentage, 1) }}%)</span>
                 </div>
             @endif
         </div>
