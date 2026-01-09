@@ -169,31 +169,23 @@ class RoleResource extends RolesRoleResource
             ->visible(fn (): bool => Utils::isPageTabEnabled() && $count > 0)
             ->badge($count)
             ->schema(static::getPluginPageEntitiesSchema());
+    }
 
-        return Tab::make('pages')
-            ->label(__('filament-shield::filament-shield.pages'))
-            ->visible(fn (): bool => Utils::isPageTabEnabled() && $count > 0)
+    public static function getTabFormComponentForWidget(): Component
+    {
+        $options = static::getWidgetOptions();
+        $count = count($options);
+
+        return Tab::make('widgets')
+            ->label(__('filament-shield::filament-shield.widgets'))
+            ->visible(fn (): bool => Utils::isWidgetTabEnabled() && $count > 0)
             ->badge($count)
-            ->schema([
-                static::getCheckboxListFormComponent(
-                    name: 'pages_tab',
-                    options: $options,
-                ),
-            ]);
+            ->schema(static::getPluginWidgetEntitiesSchema());
     }
 
     public static function getPluginResources(): ?array
     {
         return collect(static::getResources())
-            ->groupBy(function ($value, $key) {
-                return explode('\\', $key)[1] ?? 'Unknown';
-            })
-            ->toArray();
-    }
-
-    public static function getPluginPages(): array
-    {
-        return collect(FilamentShield::getPages())
             ->groupBy(function ($value, $key) {
                 return explode('\\', $key)[1] ?? 'Unknown';
             })
@@ -225,6 +217,24 @@ class RoleResource extends RolesRoleResource
                 ];
             })
             ->sortKeys()
+            ->toArray();
+    }
+
+    public static function getPluginPages(): array
+    {
+        return collect(FilamentShield::getPages())
+            ->groupBy(function ($value, $key) {
+                return explode('\\', $key)[1] ?? 'Unknown';
+            })
+            ->toArray();
+    }
+
+    public static function getPluginWidgets(): array
+    {
+        return collect(FilamentShield::getWidgets())
+            ->groupBy(function ($value, $key) {
+                return explode('\\', $key)[1] ?? 'Unknown';
+            })
             ->toArray();
     }
 
@@ -297,6 +307,34 @@ class RoleResource extends RolesRoleResource
                                 return [
                                     static::getCheckboxListFormComponent(
                                         name: $key . '_pages_tab',
+                                        options: $options,
+                                    ),
+                                ];
+                            }),
+                    ]);
+            })
+            ->values()
+            ->toArray();
+    }
+
+    public static function getPluginWidgetEntitiesSchema(): ?array
+    {
+        return collect(static::getPluginWidgets())
+            ->sortKeys()
+            ->map(function ($plugin, $key) {
+                return Section::make($key)
+                    ->collapsible()
+                    ->persistCollapsed()
+                    ->schema([
+                        Grid::make()
+                            ->schema(function () use ($plugin, $key) {
+                                $options = collect($plugin)
+                                    ->flatMap(fn ($page) => $page['permissions'])
+                                    ->toArray();
+
+                                return [
+                                    static::getCheckboxListFormComponent(
+                                        name: $key . '_widgets_tab',
                                         options: $options,
                                     ),
                                 ];
