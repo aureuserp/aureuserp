@@ -14,7 +14,7 @@ class Invoice extends BaseMove
 
         $resourceClass = match ($this->move_type) {
             \Webkul\Account\Enums\MoveType::OUT_INVOICE => \Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource::class,
-            \Webkul\Account\Enums\MoveType::OUT_REFUND  => \Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNotesResource::class,
+            \Webkul\Account\Enums\MoveType::OUT_REFUND  => \Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource::class,
             \Webkul\Account\Enums\MoveType::IN_INVOICE  => \Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource::class,
             \Webkul\Account\Enums\MoveType::IN_REFUND   => \Webkul\Accounting\Filament\Clusters\Vendors\Resources\RefundResource::class,
             default                                     => null,
