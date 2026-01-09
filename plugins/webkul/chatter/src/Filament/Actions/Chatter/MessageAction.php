@@ -89,6 +89,7 @@ class MessageAction extends Action
                         ->columnSpan('full')
                         ->alignRight(),
                 ]),
+
                 TextInput::make('subject')
                     ->placeholder(__('chatter::filament/resources/actions/chatter/message-action.setup.form.fields.subject'))
                     ->live()
@@ -145,6 +146,7 @@ class MessageAction extends Action
                         ->send();
                 } catch (Throwable $e) {
                     report($e);
+                    
                     Notification::make()
                         ->danger()
                         ->title(__('chatter::filament/resources/actions/chatter/message-action.setup.actions.notification.error.title'))

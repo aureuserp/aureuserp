@@ -44,6 +44,8 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\ActivityPlan;
 use Webkul\Support\Models\ActivityType;
+use Webkul\Chatter\Filament\Actions\Chatter\LogAction;
+use Webkul\Chatter\Filament\Actions\Chatter\MessageAction;
 
 class ChatterPanel extends Component implements HasActions, HasForms, HasInfolists
 {
@@ -53,11 +55,23 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
 
     public string $resourceClass = '';
 
-    public mixed $followerViewMailPath = null;
+    public Collection $activityPlans;
+
+    public mixed $messageMailViewPath = null;
+
+    public mixed $followerMailViewPath = null;
+
+    public bool $isMessageActionVisible;
+
+    public bool $isLogActionVisible;
+
+    public bool $isActivityActionVisible;
+
+    public bool $isFileActionVisible;
 
     public bool $isFollowerActionVisible;
 
-    public bool $isFileActionVisible;
+    public bool $inModal;
 
     public array $filters;
 
@@ -77,8 +91,6 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
 
     public int $refreshTick = 0;
 
-    public Collection $activityPlans;
-
     protected $listeners = [
         'chatter.refresh' => 'refreshMessages',
     ];
@@ -86,25 +98,120 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
     public function mount(
         Model $record,
         string $resourceClass,
-        string|Closure|null $followerViewMailPath = null,
-        bool $isFollowerActionVisible,
-        bool $isFileActionVisible,
         Collection $activityPlans,
         array $filters = [],
+        string|Closure|null $messageMailViewPath = null,
+        string|Closure|null $followerMailViewPath = null,
+        bool $isMessageActionVisible = true,
+        bool $isLogActionVisible = true,
+        bool $isActivityActionVisible = true,
+        bool $isFileActionVisible = true,
+        bool $isFollowerActionVisible = true,
+        bool $inModal = true,
     ): void {
         $this->record = $record;
 
-        $this->followerViewMailPath = $followerViewMailPath;
-
         $this->resourceClass = $resourceClass;
 
-        $this->isFollowerActionVisible = $isFollowerActionVisible;
-
-        $this->isFileActionVisible = $isFileActionVisible;
+        $this->activityPlans = $this->normalizeActivityPlans($activityPlans);
 
         $this->filters = $filters;
 
-        $this->activityPlans = $activityPlans;
+        $this->messageMailViewPath = $messageMailViewPath;
+
+        $this->followerMailViewPath = $followerMailViewPath;
+
+        $this->isMessageActionVisible = $isMessageActionVisible;
+
+        $this->isLogActionVisible = $isLogActionVisible;
+
+        $this->isActivityActionVisible = $isActivityActionVisible;
+
+        $this->isFileActionVisible = $isFileActionVisible;
+
+        $this->isFollowerActionVisible = $isFollowerActionVisible;
+
+        $this->inModal = $inModal;
+    }
+
+    public function messageAction(): MessageAction
+    {
+        return MessageAction::make('message')
+            ->visible($this->isMessageActionVisible)
+            ->setMessageMailView($this->messageMailViewPath)
+            ->setResource($this->resourceClass)
+            ->record($this->record)
+            ->size('sm')
+            ->slideOver(false);
+    }
+
+    public function logAction(): LogAction
+    {
+        return LogAction::make('log')
+            ->visible($this->isLogActionVisible)
+            ->record($this->record)
+            ->size('sm')
+            ->slideOver(false);
+    }
+
+    public function activityAction(): ActivityAction
+    {
+        return ActivityAction::make('activity')
+            ->visible($this->isActivityActionVisible)
+            ->setActivityPlans($this->activityPlans)
+            ->record($this->record)
+            ->size('sm')
+            ->slideOver(false);
+    }
+
+    public function fileAction(): FileAction
+    {
+        return FileAction::make('file')
+            ->visible($this->isFileActionVisible)
+            ->hiddenLabel()
+            ->record($this->record);
+    }
+
+    public function followerAction(): FollowerAction
+    {
+        return FollowerAction::make('follower')
+            ->visible($this->isFollowerActionVisible)
+            ->setFollowerMailView($this->followerMailViewPath)
+            ->setResource($this->resourceClass)
+            ->record($this->record);
+    }
+
+    public function removeFollower($partnerId)
+    {
+        $partner = Partner::findOrFail($partnerId);
+
+        $this->record->removeFollower($partner);
+
+        try {
+            $this->record->unsetRelation('followers');
+        } catch (Throwable $e) {
+        }
+
+        $this->dispatch('chatter.refresh');
+    }
+
+    public function filtersAction(): FiltersAction
+    {
+        return FiltersAction::make('filters')
+            ->visible(fn () => $this->tab === 'messages');
+    }
+
+    protected function normalizeActivityPlans(mixed $activityPlans): Collection
+    {
+        if ($activityPlans instanceof Collection) {
+            return $activityPlans;
+        }
+
+        if (is_array($activityPlans)) {
+            return collect($activityPlans);
+        }
+
+        return collect();
     }
 
     public function getTotalMessages(): int
@@ -208,12 +315,6 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
     public function canViewAllActivities(): bool
     {
         return true;
-    }
-
-    public function filtersAction(): FiltersAction
-    {
-        return FiltersAction::make('filters')
-            ->visible(fn () => $this->tab === 'messages');
     }
 
     private function getDateRangeLabel(): string
@@ -322,45 +423,6 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
         $priorityB = $priorityOrder[$b->type] ?? 0;
 
         return $priorityB <=> $priorityA;
-    }
-
-    public function fileAction(): FileAction
-    {
-        return FileAction::make('file')
-            ->visible($this->isFileActionVisible)
-            ->hiddenLabel()
-            ->record($this->record);
-    }
-
-    public function followerAction(): FollowerAction
-    {
-        return FollowerAction::make('follower')
-            ->visible($this->isFollowerActionVisible)
-            ->setFollowerMailView($this->followerViewMailPath)
-            ->setResource($this->resourceClass)
-            ->record($this->record);
-    }
-
-    public function activityAction(): ActivityAction
-    {
-        return ActivityAction::make('activity')
-            ->setActivityPlans($this->activityPlans)
-            ->record($this->record)
-            ->slideOver(false);
-    }
-
-    public function removeFollower($partnerId)
-    {
-        $partner = Partner::findOrFail($partnerId);
-
-        $this->record->removeFollower($partner);
-
-        try {
-            $this->record->unsetRelation('followers');
-        } catch (Throwable $e) {
-        }
-
-        $this->dispatch('chatter.refresh');
     }
 
     public function refreshMessages(): void
