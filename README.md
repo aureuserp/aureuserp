@@ -17,10 +17,11 @@
 ## Topics
 
 1. [Introduction](#introduction)
-2. [Requirements](#requirements)
-3. [Installation & Configuration](#installation-and-configuration)
-4. [License](#license)
-5. [Security Vulnerabilities](#security-vulnerabilities)
+2. [Package Statistics](#package-statistics)
+3. [Requirements](#requirements)
+4. [Installation & Configuration](#installation-and-configuration)
+5. [License](#license)
+6. [Security Vulnerabilities](#security-vulnerabilities)
 
 ### Introduction
 
@@ -41,6 +42,16 @@ Aureus ERP is a comprehensive, open-source Enterprise Resource Planning (ERP) so
 -   **User-Friendly Interface**: Features responsive and visually appealing designs with TailwindCSS.
 -   **Scalable & Customizable**: Adapts to the unique requirements of businesses of all sizes.
 -   **Community-Driven**: Backed by a thriving open-source community for support and innovation.
+
+### Package Statistics
+
+Aureus ERP is available as a Composer package on [Packagist](https://packagist.org/packages/aureuserp/aureuserp). You can view detailed download statistics and package information:
+
+-   **Total Downloads**: ![Total Downloads](https://poser.pugx.org/aureuserp/aureuserp/d/total.svg) - View the complete download count on our [Packagist page](https://packagist.org/packages/aureuserp/aureuserp)
+-   **Latest Stable Version**: ![Latest Stable Version](https://poser.pugx.org/aureuserp/aureuserp/v/stable.svg)
+-   **License**: ![License](https://poser.pugx.org/aureuserp/aureuserp/license.svg)
+
+For real-time statistics including monthly downloads, daily downloads, and version-specific metrics, visit our [Packagist statistics page](https://packagist.org/packages/aureuserp/aureuserp/stats).
 
 ### Requirements
 
