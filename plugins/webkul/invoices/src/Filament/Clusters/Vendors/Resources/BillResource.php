@@ -11,6 +11,7 @@ use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource\Pages\Create
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource\Pages\EditBill;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource\Pages\ListBills;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource\Pages\ViewBill;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource\Pages\ManagePayments;
 use Webkul\Invoice\Models\Bill;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 
@@ -46,6 +47,7 @@ class BillResource extends BaseBillResource
         return $page->generateNavigationItems([
             ViewBill::class,
             EditBill::class,
+            ManagePayments::class,
         ]);
     }
 
@@ -69,10 +71,11 @@ class BillResource extends BaseBillResource
     public static function getPages(): array
     {
         return [
-            'index'  => ListBills::route('/'),
-            'create' => CreateBill::route('/create'),
-            'edit'   => EditBill::route('/{record}/edit'),
-            'view'   => ViewBill::route('/{record}'),
+            'index'    => ListBills::route('/'),
+            'create'   => CreateBill::route('/create'),
+            'edit'     => EditBill::route('/{record}/edit'),
+            'view'     => ViewBill::route('/{record}'),
+            'payments' => ManagePayments::route('/{record}/payments'),
         ];
     }
 }

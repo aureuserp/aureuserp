@@ -9,6 +9,7 @@ use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pa
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\EditCreditNote;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ListCreditNotes;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ViewCreditNote;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ManagePayments;
 use Webkul\Accounting\Models\CreditNote;
 
 class CreditNoteResource extends BaseCreditNoteResource
@@ -41,16 +42,18 @@ class CreditNoteResource extends BaseCreditNoteResource
         return $page->generateNavigationItems([
             ViewCreditNote::class,
             EditCreditNote::class,
+            ManagePayments::class,
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => ListCreditNotes::route('/'),
-            'create' => CreateCreditNote::route('/create'),
-            'edit'   => EditCreditNote::route('/{record}/edit'),
-            'view'   => ViewCreditNote::route('/{record}'),
+            'index'    => ListCreditNotes::route('/'),
+            'create'   => CreateCreditNote::route('/create'),
+            'edit'     => EditCreditNote::route('/{record}/edit'),
+            'view'     => ViewCreditNote::route('/{record}'),
+            'payments' => ManagePayments::route('/{record}/payments'),
         ];
     }
 }

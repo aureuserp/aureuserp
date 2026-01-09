@@ -387,7 +387,7 @@ class Move extends Model implements Sortable
 
     public function matchedPayments()
     {
-        return $this->belongsToMany(Tax::class, 'accounts_accounts_move_payment', 'invoice_id', 'payment_id');
+        return $this->belongsToMany(Payment::class, 'accounts_accounts_move_payment', 'invoice_id', 'payment_id');
     }
 
     public function isInvoice($includeReceipts = false)
