@@ -1471,19 +1471,15 @@ class QuotationResource extends Resource
                     ->numeric()
                     ->default(0)
                     ->maxValue(99999999999)
-                    ->live(onBlur: true)
                     ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_margin)
-                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get))
-                    ->disabled(),
+                    ->readonly(),
                 TextInput::make('margin_percent')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.margin-percentage'))
                     ->numeric()
                     ->default(0)
                     ->maxValue(100)
-                    ->live(onBlur: true)
                     ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_margin)
-                    ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get))
-                    ->disabled(),
+                    ->readonly(),
                 Select::make('taxes')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.taxes'))
                     ->relationship(
