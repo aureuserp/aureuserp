@@ -13,15 +13,13 @@ use InvalidArgumentException;
 
 class ChatterAction extends Action
 {
-    protected Collection|array|null $activityPlans = null;
-
     protected string $resourceClass = '';
 
-    protected string $followerMailViewPath = '';
+    protected Collection|array|null $activityPlans = null;
 
     protected string $messageMailViewPath = '';
 
-    protected bool $isFollowerActionVisible = true;
+    protected string $followerMailViewPath = '';
 
     protected bool $isMessageActionVisible = true;
 
@@ -31,6 +29,8 @@ class ChatterAction extends Action
 
     protected bool $isFileActionVisible = true;
 
+    protected bool $isFollowerActionVisible = true;
+
     protected bool|Closure|null $hasModalCloseButton = false;
 
     public static function getDefaultName(): ?string
@@ -38,17 +38,18 @@ class ChatterAction extends Action
         return 'chatter.action';
     }
 
-    public function activityPlans(Collection|array|null $activityPlans): static
+    public function resource(string $resourceClass): static
     {
-        $this->activityPlans = $activityPlans;
+        $this->validateResource($resourceClass);
+        
+        $this->resourceClass = $resourceClass;
 
         return $this;
     }
 
-    public function resource(string $resourceClass): static
+    public function activityPlans(Collection|array|null $activityPlans): static
     {
-        $this->validateResource($resourceClass);
-        $this->resourceClass = $resourceClass;
+        $this->activityPlans = $activityPlans;
 
         return $this;
     }
@@ -63,13 +64,6 @@ class ChatterAction extends Action
     public function messageMailView(string|Closure|null $messageMailViewPath): static
     {
         $this->messageMailViewPath = $messageMailViewPath;
-
-        return $this;
-    }
-
-    public function followerActionVisible(bool|Closure $isVisible): static
-    {
-        $this->isFollowerActionVisible = $this->evaluate($isVisible);
 
         return $this;
     }
@@ -102,14 +96,11 @@ class ChatterAction extends Action
         return $this;
     }
 
-    public function isFileActionVisible(): bool
+    public function followerActionVisible(bool|Closure $isVisible): static
     {
-        return $this->isFileActionVisible;
-    }
+        $this->isFollowerActionVisible = $this->evaluate($isVisible);
 
-    public function isFollowerActionVisible(): bool
-    {
-        return $this->isFollowerActionVisible;
+        return $this;
     }
 
     public function isMessageActionVisible(): bool
@@ -125,6 +116,16 @@ class ChatterAction extends Action
     public function isActivityActionVisible(): bool
     {
         return $this->isActivityActionVisible;
+    }
+
+    public function isFileActionVisible(): bool
+    {
+        return $this->isFileActionVisible;
+    }
+
+    public function isFollowerActionVisible(): bool
+    {
+        return $this->isFollowerActionVisible;
     }
 
     public function getActivityPlans(): Collection
@@ -287,25 +288,17 @@ class ChatterAction extends Action
             view('chatter::filament.widgets.chatter', [
                 'record'                  => $this->getRecord(),
                 'resourceClass'           => $this->getResourceClass(),
+                'messageMailViewPath'     => $this->getMessageMailViewPath(),
                 'followerMailViewPath'    => $this->getFollowerMailViewPath(),
+                'isMessageActionVisible'  => $this->isMessageActionVisible(),
+                'isLogActionVisible'      => $this->isLogActionVisible(),
+                'isActivityActionVisible' => $this->isActivityActionVisible(),
                 'isFileActionVisible'     => $this->isFileActionVisible(),
                 'isFollowerActionVisible' => $this->isFollowerActionVisible(),
                 'activityPlans'           => $this->getActivityPlans(),
-                'chatterAction'           => $this,
             ]),
             fn() => $record->markAsRead()
         );
-    }
-
-    public function renderModal(): View
-    {
-        return view('chatter::filament.actions.chatter-action-modal', [
-            'record'              => $this->getRecord(),
-            'resourceClass'       => $this->getResourceClass(),
-            'messageMailViewPath' => $this->getMessageMailViewPath(),
-            'activityPlans'       => $this->getActivityPlans(),
-            'chatterAction'       => $this,
-        ]);
     }
 
     protected function validateResource(string $resourceClass): void
