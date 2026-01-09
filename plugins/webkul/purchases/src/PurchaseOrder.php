@@ -34,15 +34,26 @@ class PurchaseOrder
         return once(fn () => app(OrderSettings::class));
     }
 
-    public function sendRFQ(Order $record, array $data): Order
+    public function sendRFQ(Order $record, array $data): array
     {
         $pdfPath = $this->generateRFQPdf($record);
+
+        $sent = [];
+
+        $failed = [];
 
         foreach ($data['vendors'] as $vendorId) {
             $vendor = Partner::find($vendorId);
 
+            if (empty($vendor->email)) {
+                $failed[$vendor->name] = 'No email address';
+
+                continue;
+            }
+
             if ($vendor?->email) {
                 Mail::to($vendor->email)->send(new VendorPurchaseOrderMail($data['subject'], $data['message'], $pdfPath));
+                $sent[] = $vendor->name;
             }
         }
 
@@ -64,7 +75,10 @@ class PurchaseOrder
 
         Storage::delete($pdfPath);
 
-        return $record;
+        return [
+            'sent'   => $sent,
+            'failed' => $failed,
+        ];
     }
 
     public function confirmPurchaseOrder(Order $record): Order
@@ -83,19 +97,26 @@ class PurchaseOrder
         return $record;
     }
 
-    public function sendPurchaseOrder(Order $record, array $data): Order
+    public function sendPurchaseOrder(Order $record, array $data): array
     {
         $pdfPath = $this->generatePurchaseOrderPdf($record);
-
+        $sent = [];
+        $failed = [];
         foreach ($data['vendors'] as $vendorId) {
             $vendor = Partner::find($vendorId);
+            if (empty($vendor->email)) {
+                $failed[$vendor->name] = 'No email address';
 
+                continue;
+            }
             if ($vendor?->email) {
                 Mail::to($vendor->email)->send(new VendorPurchaseOrderMail(
                     $data['subject'],
                     $data['message'],
                     $pdfPath
                 ));
+                $sent[] = $vendor->name;
+
             }
         }
 
@@ -111,7 +132,10 @@ class PurchaseOrder
 
         Storage::delete($pdfPath);
 
-        return $record;
+        return [
+            'sent'   => $sent,
+            'failed' => $failed,
+        ];
     }
 
     public function cancelPurchaseOrder(Order $record): Order
