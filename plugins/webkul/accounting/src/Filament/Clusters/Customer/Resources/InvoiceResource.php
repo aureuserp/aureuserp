@@ -9,6 +9,7 @@ use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource\Pages
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\EditInvoice;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ListInvoices;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ViewInvoice;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ManagePayments;
 use Webkul\Accounting\Models\Invoice;
 
 class InvoiceResource extends BaseInvoiceResource
@@ -46,16 +47,18 @@ class InvoiceResource extends BaseInvoiceResource
         return $page->generateNavigationItems([
             ViewInvoice::class,
             EditInvoice::class,
+            ManagePayments::class,
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => ListInvoices::route('/'),
-            'create' => CreateInvoice::route('/create'),
-            'view'   => ViewInvoice::route('/{record}'),
-            'edit'   => EditInvoice::route('/{record}/edit'),
+            'index'    => ListInvoices::route('/'),
+            'create'   => CreateInvoice::route('/create'),
+            'view'     => ViewInvoice::route('/{record}'),
+            'edit'     => EditInvoice::route('/{record}/edit'),
+            'payments' => ManagePayments::route('/{record}/payments'),
         ];
     }
 }

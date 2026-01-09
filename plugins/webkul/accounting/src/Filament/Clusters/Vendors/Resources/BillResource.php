@@ -9,6 +9,7 @@ use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource\Pages\Cre
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource\Pages\EditBill;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource\Pages\ListBills;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource\Pages\ViewBill;
+use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource\Pages\ManagePayments;
 use Webkul\Accounting\Models\Bill;
 
 class BillResource extends BaseBillResource
@@ -43,16 +44,18 @@ class BillResource extends BaseBillResource
         return $page->generateNavigationItems([
             ViewBill::class,
             EditBill::class,
+            ManagePayments::class,
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => ListBills::route('/'),
-            'create' => CreateBill::route('/create'),
-            'edit'   => EditBill::route('/{record}/edit'),
-            'view'   => ViewBill::route('/{record}'),
+            'index'   => ListBills::route('/'),
+            'create'  => CreateBill::route('/create'),
+            'edit'    => EditBill::route('/{record}/edit'),
+            'view'    => ViewBill::route('/{record}'),
+            'payments' => ManagePayments::route('/{record}/payments'),
         ];
     }
 }

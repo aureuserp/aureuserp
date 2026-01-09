@@ -9,6 +9,7 @@ use Webkul\Invoice\Filament\Clusters\Customer\Resources\PaymentResource\Pages\Cr
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\PaymentResource\Pages\EditPayment;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\PaymentResource\Pages\ListPayments;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\PaymentResource\Pages\ViewPayment;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\PaymentResource\Pages\ManageInvoices;
 use Webkul\Invoice\Models\Payment;
 
 class PaymentResource extends BasePaymentResource
@@ -36,16 +37,18 @@ class PaymentResource extends BasePaymentResource
         return $page->generateNavigationItems([
             ViewPayment::class,
             EditPayment::class,
+            ManageInvoices::class,
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => ListPayments::route('/'),
-            'create' => CreatePayment::route('/create'),
-            'view'   => ViewPayment::route('/{record}'),
-            'edit'   => EditPayment::route('/{record}/edit'),
+            'index'    => ListPayments::route('/'),
+            'create'   => CreatePayment::route('/create'),
+            'view'     => ViewPayment::route('/{record}'),
+            'edit'     => EditPayment::route('/{record}/edit'),
+            'invoices' => ManageInvoices::route('/{record}/invoices'),
         ];
     }
 }
