@@ -221,7 +221,7 @@
 
         <!-- Agreement Title -->
         <div class="agreement-title">
-            Credit Note ID #{{ $record->name }}
+            Refund ID #{{ $record->name }}
         </div>
 
         <!-- Details Table -->
@@ -229,7 +229,7 @@
             <tr>
                 @if ($record->invoice_date)
                     <td width="33%">
-                        <strong>Credit Note Date</strong><br>
+                        <strong>Refund Date</strong><br>
                         {{ $record->invoice_date }}
                     </td>
                 @endif

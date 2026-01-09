@@ -234,6 +234,13 @@
                     </td>
                 @endif
 
+                @if ($record->ref)
+                    <td width="33%">
+                        <strong>Source</strong><br>
+                        {{ $record->ref }}
+                    </td>
+                @endif
+
                 @if ($record->invoice_date_due)
                     <td width="33%">
                         <strong>Due Date</strong><br>
