@@ -6,7 +6,7 @@
 <div {{ $attributes->merge($getExtraAttributes())->class('flex flex-col gap-2') }}>
     @if ($record->body)
         <div class="text-sm leading-6 text-gray-700 dark:text-white overflow-x-hidden max-w-full break-words [&_a]:text-primary-600 dark:[&_a]:text-primary-400 [&_a:hover]:underline [&_ul]:list-disc [&_ul]:ms-5 [&_ol]:list-decimal [&_ol]:ms-5">
-            {!! $record->body !!}
+            {!! str($record->body)->sanitizeHtml() !!}
         </div>
     @endif
 
