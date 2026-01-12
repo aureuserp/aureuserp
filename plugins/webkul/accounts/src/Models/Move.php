@@ -204,6 +204,11 @@ class Move extends Model implements Sortable
         return $this->belongsTo(Company::class, 'company_id');
     }
 
+    public function originPayment()
+    {
+        return $this->belongsTo(Payment::class, 'origin_payment_id');
+    }
+
     public function taxCashBasisOriginMove()
     {
         return $this->belongsTo(Move::class, 'tax_cash_basis_origin_move_id');
@@ -387,7 +392,7 @@ class Move extends Model implements Sortable
 
     public function matchedPayments()
     {
-        return $this->belongsToMany(Tax::class, 'accounts_accounts_move_payment', 'invoice_id', 'payment_id');
+        return $this->belongsToMany(Payment::class, 'accounts_accounts_move_payment', 'invoice_id', 'payment_id');
     }
 
     public function isInvoice($includeReceipts = false)

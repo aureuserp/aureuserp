@@ -9,6 +9,7 @@ use Webkul\Accounting\Filament\Clusters\Vendors\Resources\RefundResource\Pages\C
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\RefundResource\Pages\EditRefund;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\RefundResource\Pages\ListRefunds;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\RefundResource\Pages\ViewRefund;
+use Webkul\Accounting\Filament\Clusters\Vendors\Resources\RefundResource\Pages\ManagePayments;
 use Webkul\Accounting\Models\Refund;
 
 class RefundResource extends BaseRefundResource
@@ -41,16 +42,18 @@ class RefundResource extends BaseRefundResource
         return $page->generateNavigationItems([
             ViewRefund::class,
             EditRefund::class,
+            ManagePayments::class,
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => ListRefunds::route('/'),
-            'create' => CreateRefund::route('/create'),
-            'edit'   => EditRefund::route('/{record}/edit'),
-            'view'   => ViewRefund::route('/{record}'),
+            'index'    => ListRefunds::route('/'),
+            'create'   => CreateRefund::route('/create'),
+            'edit'     => EditRefund::route('/{record}/edit'),
+            'view'     => ViewRefund::route('/{record}'),
+            'payments' => ManagePayments::route('/{record}/payments'),
         ];
     }
 }

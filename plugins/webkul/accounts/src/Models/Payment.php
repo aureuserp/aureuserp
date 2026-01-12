@@ -283,6 +283,10 @@ class Payment extends Model
 
     public function computePartnerType()
     {
+        if ($this->partner_type) {
+            return;
+        }
+        
         $this->partner_type = $this->payment_type == PaymentType::RECEIVE ? 'customer' : 'supplier';
     }
 

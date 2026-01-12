@@ -7,6 +7,10 @@ return [
         'title' => 'Journal Entries',
     ],
 
+    'record-sub-navigation' => [
+        'payment' => 'Payment',
+    ],
+
     'global-search' => [
         'number'           => 'Number',
         'customer'         => 'Customer',

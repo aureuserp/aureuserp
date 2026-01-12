@@ -2,6 +2,7 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Vendors\Resources;
 
+use Filament\Navigation\NavigationItem;
 use Filament\Resources\Pages\Page;
 use Webkul\Account\Filament\Resources\PaymentResource as BasePaymentResource;
 use Webkul\Accounting\Filament\Clusters\Vendors;
@@ -9,6 +10,8 @@ use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\EditPayment;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\ListPayments;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\ViewPayment;
+use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\ManageBills;
+use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource\Pages\ViewJournalEntry;
 use Webkul\Accounting\Models\Payment;
 
 class PaymentResource extends BasePaymentResource
@@ -38,10 +41,19 @@ class PaymentResource extends BasePaymentResource
 
     public static function getRecordSubNavigation(Page $page): array
     {
-        return $page->generateNavigationItems([
+        $navigationItems = $page->generateNavigationItems([
             ViewPayment::class,
             EditPayment::class,
+            ManageBills::class,
         ]);
+
+        if (($record = $page->getRecord())?->move_id) {
+            $navigationItems[] = NavigationItem::make(__('accounting::filament/clusters/vendors/resources/payment.record-sub-navigation.journal-entry'))
+                ->icon('heroicon-o-receipt-percent')
+                ->url(ViewJournalEntry::getUrl(['record' => $record->move_id]));
+        }
+
+        return $navigationItems;
     }
 
     public static function getPages(): array
@@ -51,6 +63,7 @@ class PaymentResource extends BasePaymentResource
             'create' => CreatePayment::route('/create'),
             'view'   => ViewPayment::route('/{record}'),
             'edit'   => EditPayment::route('/{record}/edit'),
+            'bills'  => ManageBills::route('/{record}/bills'),
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Accounting\Resources;
 
+use Filament\Navigation\NavigationItem;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -62,6 +63,8 @@ use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResourc
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource\Pages\EditJournalEntry;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource\Pages\ListJournalEntries;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource\Pages\ViewJournalEntry;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\PaymentResource\Pages\ViewPayment as CustomerViewPayment;
+use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\ViewPayment as VendorViewPayment;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource;
 use Webkul\Accounting\Models\JournalEntry;
@@ -996,19 +999,33 @@ class JournalEntryResource extends Resource
 
     public static function getRecordSubNavigation(Page $page): array
     {
-        return $page->generateNavigationItems([
+        $navigationItems = $page->generateNavigationItems([
             ViewJournalEntry::class,
             EditJournalEntry::class,
         ]);
+
+        if ($payment = $page->getRecord()?->originPayment) {
+            $navigationItems[] = NavigationItem::make(__('accounting::filament/clusters/accounting/resources/journal-entry.record-sub-navigation.payment'))
+                ->icon('heroicon-o-banknotes')
+                ->url(function() use($payment) {
+                    if ($payment->partner_type === 'customer') {
+                        return CustomerViewPayment::getUrl(['record' => $payment->id]);
+                    } else {
+                        return VendorViewPayment::getUrl(['record' => $payment->id]);
+                    }
+                });
+        }
+
+        return $navigationItems;
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => ListJournalEntries::route('/'),
-            'create' => CreateJournalEntry::route('/create'),
-            'view'   => ViewJournalEntry::route('/{record}'),
-            'edit'   => EditJournalEntry::route('/{record}/edit'),
+            'index'    => ListJournalEntries::route('/'),
+            'create'   => CreateJournalEntry::route('/create'),
+            'view'     => ViewJournalEntry::route('/{record}'),
+            'edit'     => EditJournalEntry::route('/{record}/edit'),
         ];
     }
 }

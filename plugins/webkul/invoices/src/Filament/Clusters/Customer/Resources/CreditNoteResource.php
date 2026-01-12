@@ -11,6 +11,7 @@ use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\EditCreditNote;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ListCreditNotes;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ViewCreditNote;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ManagePayments;
 use Webkul\Invoice\Models\CreditNote;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 
@@ -44,6 +45,7 @@ class CreditNoteResource extends BaseCreditNoteResource
         return $page->generateNavigationItems([
             ViewCreditNote::class,
             EditCreditNote::class,
+            ManagePayments::class,
         ]);
     }
 
@@ -67,10 +69,11 @@ class CreditNoteResource extends BaseCreditNoteResource
     public static function getPages(): array
     {
         return [
-            'index'  => ListCreditNotes::route('/'),
-            'create' => CreateCreditNote::route('/create'),
-            'edit'   => EditCreditNote::route('/{record}/edit'),
-            'view'   => ViewCreditNote::route('/{record}'),
+            'index'    => ListCreditNotes::route('/'),
+            'create'   => CreateCreditNote::route('/create'),
+            'edit'     => EditCreditNote::route('/{record}/edit'),
+            'view'     => ViewCreditNote::route('/{record}'),
+            'payments' => ManagePayments::route('/{record}/payments'),
         ];
     }
 }

@@ -11,6 +11,7 @@ use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\Cr
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\EditInvoice;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ListInvoices;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ViewInvoice;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ManagePayments;
 use Webkul\Invoice\Models\Invoice;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 
@@ -49,6 +50,7 @@ class InvoiceResource extends BaseInvoiceResource
         return $page->generateNavigationItems([
             ViewInvoice::class,
             EditInvoice::class,
+            ManagePayments::class,
         ]);
     }
 
@@ -72,10 +74,11 @@ class InvoiceResource extends BaseInvoiceResource
     public static function getPages(): array
     {
         return [
-            'index'  => ListInvoices::route('/'),
-            'create' => CreateInvoice::route('/create'),
-            'view'   => ViewInvoice::route('/{record}'),
-            'edit'   => EditInvoice::route('/{record}/edit'),
+            'index'    => ListInvoices::route('/'),
+            'create'   => CreateInvoice::route('/create'),
+            'view'     => ViewInvoice::route('/{record}'),
+            'edit'     => EditInvoice::route('/{record}/edit'),
+            'payments' => ManagePayments::route('/{record}/payments'),
         ];
     }
 }
