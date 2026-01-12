@@ -204,6 +204,11 @@ class Move extends Model implements Sortable
         return $this->belongsTo(Company::class, 'company_id');
     }
 
+    public function originPayment()
+    {
+        return $this->belongsTo(Payment::class, 'origin_payment_id');
+    }
+
     public function taxCashBasisOriginMove()
     {
         return $this->belongsTo(Move::class, 'tax_cash_basis_origin_move_id');
