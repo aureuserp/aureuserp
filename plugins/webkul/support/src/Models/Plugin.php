@@ -78,6 +78,10 @@ class Plugin extends Model implements Sortable
 
             $serviceProvider->configureCustomPackage($package);
 
+            // Get the directory of the plugin
+            $reflection = new \ReflectionClass($serviceProviderClass);
+            $package->basePath = dirname($reflection->getFileName(), 2);
+
             $packages[$plugin->getId()] = $package;
         }
 

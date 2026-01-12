@@ -4,6 +4,7 @@ namespace Webkul\PluginManager\Filament\Resources\PluginResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Str;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Webkul\PluginManager\Filament\Resources\PluginResource;
@@ -61,7 +62,7 @@ class ListPlugins extends ListRecords
                 ->reject(fn($package, $name) => $package->isCore);
 
             $synced = $packages->filter(function ($package, $name) {
-                $composerPath = base_path("plugins/webkul/{$name}/composer.json");
+                $composerPath = $package->basePath('composer.json');
 
                 $composer = file_exists($composerPath)
                     ? json_decode(file_get_contents($composerPath), true) ?? []

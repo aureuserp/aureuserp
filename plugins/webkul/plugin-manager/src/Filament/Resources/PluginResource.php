@@ -175,7 +175,7 @@ class PluginResource extends Resource
                                 ->map(function ($migrationFile) {
                                     if (preg_match('/create_(.*?)_table/', $migrationFile, $matches)) {
                                         $table = $matches[1];
-                                        
+
                                         return DBSchema::hasTable($table) 
                                             ? ['table' => $table, 'count' => DB::table($table)->count()]
                                             : null;
@@ -305,14 +305,14 @@ class PluginResource extends Resource
 
                     collect(array_reverse($plugin->package->migrationFileNames))
                         ->each(function ($migration) use ($plugin) {
-                            $fullPath = $plugin->package->basePath("../database/migrations/{$migration}.php");
+                            $fullPath = $plugin->package->basePath("database/migrations/{$migration}.php");
 
                             static::downMigration($fullPath);
                         });
 
                     collect($plugin->package->settingFileNames)
                         ->each(function ($setting) use ($plugin) {
-                            $fullPath = $plugin->package->basePath("../database/settings/{$setting}.php");
+                            $fullPath = $plugin->package->basePath("database/settings/{$setting}.php");
 
                             static::downMigration($fullPath);
                         });
