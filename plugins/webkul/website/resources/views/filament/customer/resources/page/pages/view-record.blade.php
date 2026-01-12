@@ -18,6 +18,6 @@
     @endPush
 
     <p>
-        {!! $record->content !!}
+        {!! str($record->content)->sanitizeHtml() !!}
     </p>
 </x-filament-panels::page>

@@ -32,7 +32,7 @@
     @endif
 
     <p>
-        {!! $record->content !!}
+        {!! str($record->content)->sanitizeHtml() !!}
     </p>
 
     @if ($record->tags->count())

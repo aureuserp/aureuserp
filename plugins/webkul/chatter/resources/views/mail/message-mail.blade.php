@@ -12,7 +12,7 @@
 
     <div class="notification">
         @isset($payload['content'])
-            <p>{!! $payload['content'] !!}</p>
+            <p>{!! str($payload['content'])->sanitizeHtml() !!}</p>
         @endisset
 
         <p>{{ $payload['from']['name'] }}</p>
