@@ -58,6 +58,8 @@ class PaymentTermResource extends Resource
     protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
 
     protected static bool $shouldRegisterNavigation = false;
+    
+    protected static bool $isGloballySearchable = false;
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -198,7 +200,7 @@ class PaymentTermResource extends Resource
 
                                                         $isPercent = $sum <= 100 && $sum > 0;
 
-                                                        $html .= '<div class="p-4 rounded-md text-gray-800 bg-gray-100 dark:bg-gray-800 dark:text-white">';
+                                                        $html .= '<div class="rounded-md bg-gray-100 p-4 text-gray-800 dark:bg-gray-800 dark:text-white">';
 
                                                         $html .= '<div style="margin-bottom:0.5rem;font-weight:600;">Payment terms preview</div>';
 
@@ -445,7 +447,7 @@ class PaymentTermResource extends Resource
 
                                         $isPercent = $sum <= 100 && $sum > 0;
 
-                                        $html .= '<div class="p-4 rounded-md text-gray-800 bg-gray-100 dark:bg-gray-800 dark:text-white">';
+                                        $html .= '<div class="rounded-md bg-gray-100 p-4 text-gray-800 dark:bg-gray-800 dark:text-white">';
 
                                         $html .= '<div style="margin-bottom:0.5rem;font-weight:600;">Payment terms preview</div>';
 
