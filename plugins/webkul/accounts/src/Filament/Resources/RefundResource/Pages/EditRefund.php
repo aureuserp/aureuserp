@@ -45,7 +45,7 @@ class EditRefund extends EditRecord
             BaseActions\SetAsCheckedAction::make(),
             BaseActions\ResetToDraftAction::make(),
             DeleteAction::make()
-                ->hidden(fn(Move $record): bool => $record->state == MoveState::POSTED)
+                ->hidden(fn (Move $record): bool => $record->state == MoveState::POSTED)
                 ->successNotification(
                     Notification::make()
                         ->success()

@@ -2,8 +2,8 @@
 
 namespace Webkul\Contact\Filament\Resources;
 
-use Webkul\Partner\Filament\Resources\AddressResource as BaseAddressResource;
 use Webkul\Contact\Models\Address;
+use Webkul\Partner\Filament\Resources\AddressResource as BaseAddressResource;
 
 class AddressResource extends BaseAddressResource
 {

@@ -5,13 +5,13 @@ namespace Webkul\Accounting\Filament\Clusters\Vendors\Resources;
 use Filament\Navigation\NavigationItem;
 use Filament\Resources\Pages\Page;
 use Webkul\Account\Filament\Resources\PaymentResource as BasePaymentResource;
+use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource\Pages\ViewJournalEntry;
 use Webkul\Accounting\Filament\Clusters\Vendors;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\CreatePayment;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\EditPayment;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\ListPayments;
-use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\ViewPayment;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\ManageBills;
-use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource\Pages\ViewJournalEntry;
+use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\ViewPayment;
 use Webkul\Accounting\Models\Payment;
 
 class PaymentResource extends BasePaymentResource

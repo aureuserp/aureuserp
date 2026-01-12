@@ -306,7 +306,7 @@ class RoleResource extends RolesRoleResource
 
                                 return [
                                     static::getCheckboxListFormComponent(
-                                        name: $key . '_pages_tab',
+                                        name: $key.'_pages_tab',
                                         options: $options,
                                     ),
                                 ];
@@ -334,7 +334,7 @@ class RoleResource extends RolesRoleResource
 
                                 return [
                                     static::getCheckboxListFormComponent(
-                                        name: $key . '_widgets_tab',
+                                        name: $key.'_widgets_tab',
                                         options: $options,
                                     ),
                                 ];

@@ -3,7 +3,6 @@
 namespace Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports;
 
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -14,9 +13,13 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, WithStyles
 {
     protected $accounts;
+
     protected Carbon $dateFrom;
+
     protected Carbon $dateTo;
+
     protected $getAccountMovesCallback;
+
     protected array $rowMetadata = [];
 
     public function __construct($accounts, Carbon $dateFrom, Carbon $dateTo, callable $getAccountMovesCallback)
@@ -30,7 +33,7 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
     public function headings(): array
     {
         return [
-            ['General Ledger - From ' . $this->dateFrom->format('M d, Y') . ' to ' . $this->dateTo->format('M d, Y')],
+            ['General Ledger - From '.$this->dateFrom->format('M d, Y').' to '.$this->dateTo->format('M d, Y')],
             [],
             ['', 'Account', 'Date', 'Communication', 'Partner', 'Debit', 'Credit', 'Balance'],
         ];
@@ -42,7 +45,7 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
         $rowIndex = 4;
 
         $totals = collect(['debit', 'credit'])
-            ->mapWithKeys(fn($key) => [$key => 0])
+            ->mapWithKeys(fn ($key) => [$key => 0])
             ->all();
 
         foreach ($this->accounts as $account) {
@@ -51,7 +54,7 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
 
             $rows[] = [
                 '',
-                $account->code . ' ' . $account->name,
+                $account->code.' '.$account->name,
                 '',
                 '',
                 '',
@@ -115,14 +118,14 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
     public function columnWidths(): array
     {
         return collect(range('A', 'H'))
-            ->mapWithKeys(fn($col) => [
+            ->mapWithKeys(fn ($col) => [
                 $col => match ($col) {
                     'A' => 5,
                     'B' => 35,
                     'C' => 15,
                     'D', 'E' => 25,
                     default => 15,
-                }
+                },
             ])
             ->all();
     }

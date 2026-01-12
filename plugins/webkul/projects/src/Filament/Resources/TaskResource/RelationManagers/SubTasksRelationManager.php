@@ -15,7 +15,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Project\Enums\TaskState;
 use Webkul\Project\Filament\Resources\TaskResource;
 use Webkul\Project\Models\Task;

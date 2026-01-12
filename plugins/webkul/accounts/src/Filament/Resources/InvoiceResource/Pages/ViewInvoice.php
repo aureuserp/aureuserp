@@ -9,8 +9,8 @@ use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Filament\Resources\CreditNoteResource;
 use Webkul\Account\Filament\Resources\InvoiceResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
-use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Account\Models\Move;
+use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Support\Filament\Concerns\HasRepeatableEntryColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
@@ -47,7 +47,7 @@ class ViewInvoice extends ViewRecord
                 ->modalHeading(__('accounts::filament/resources/invoice/pages/view-invoice.header-actions.reverse.modal-heading')),
             BaseActions\ResetToDraftAction::make(),
             DeleteAction::make()
-                ->hidden(fn(Move $record): bool => $record->state == MoveState::POSTED)
+                ->hidden(fn (Move $record): bool => $record->state == MoveState::POSTED)
                 ->successNotification(
                     Notification::make()
                         ->success()

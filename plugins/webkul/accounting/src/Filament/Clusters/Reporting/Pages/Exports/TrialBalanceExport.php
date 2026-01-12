@@ -3,7 +3,6 @@
 namespace Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports;
 
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -95,11 +94,11 @@ class TrialBalanceExport implements FromArray, WithColumnWidths, WithHeadings, W
     public function columnWidths(): array
     {
         return collect(range('A', 'G'))
-            ->mapWithKeys(fn($col) => [
+            ->mapWithKeys(fn ($col) => [
                 $col => match ($col) {
-                    'A' => 35,
+                    'A'     => 35,
                     default => 15,
-                }
+                },
             ])
             ->all();
     }

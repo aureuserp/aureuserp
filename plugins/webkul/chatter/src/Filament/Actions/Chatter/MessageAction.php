@@ -146,7 +146,7 @@ class MessageAction extends Action
                         ->send();
                 } catch (Throwable $e) {
                     report($e);
-                    
+
                     Notification::make()
                         ->danger()
                         ->title(__('chatter::filament/resources/actions/chatter/message-action.setup.actions.notification.error.title'))

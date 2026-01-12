@@ -64,7 +64,7 @@ class TaxPartition extends Model implements Sortable
             ->where('tax_id', $taxId)
             ->orderBy('sort')
             ->get();
-            
+
         if ($invoices->count() !== $refunds->count()) {
             throw new Exception('Invoice and refund distributions must have the same number of lines for this tax.');
         }

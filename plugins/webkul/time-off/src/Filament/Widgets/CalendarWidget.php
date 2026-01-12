@@ -50,10 +50,10 @@ class CalendarWidget extends FullCalendarWidget
                 'right'  => 'dayGridMonth,timeGridWeek,listWeek',
             ],
             'buttonText' => [
-                'today' => __('time-off::filament/widgets/calendar-widget.config.button-text.today'),
+                'today'        => __('time-off::filament/widgets/calendar-widget.config.button-text.today'),
                 'dayGridMonth' => __('time-off::filament/widgets/calendar-widget.config.button-text.month'),
                 'timeGridWeek' => __('time-off::filament/widgets/calendar-widget.config.button-text.week'),
-                'listWeek' => __('time-off::filament/widgets/calendar-widget.config.button-text.list'),
+                'listWeek'     => __('time-off::filament/widgets/calendar-widget.config.button-text.list'),
             ],
             'height'           => 'auto',
             'aspectRatio'      => 1.8,

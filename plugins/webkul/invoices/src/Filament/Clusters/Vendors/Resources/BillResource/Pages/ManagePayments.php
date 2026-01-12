@@ -2,9 +2,9 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource\Pages;
 
-use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Table;
 use Webkul\Account\Filament\Resources\BillResource\Pages\ManagePayments as BaseManagePayments;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\PaymentResource;

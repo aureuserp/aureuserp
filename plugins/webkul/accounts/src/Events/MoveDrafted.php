@@ -12,7 +12,7 @@ class MoveDrafted
 
     /**
      * Create a new event instance.
-     */   
+     */
     public function __construct(
         public Move $move
     ) {}

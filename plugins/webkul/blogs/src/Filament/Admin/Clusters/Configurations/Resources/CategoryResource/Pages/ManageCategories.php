@@ -6,7 +6,6 @@ use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRecords;
 use Filament\Schemas\Components\Tabs\Tab;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Blog\Filament\Admin\Clusters\Configurations\Resources\CategoryResource;
 use Webkul\Blog\Models\Category;
 

@@ -2,13 +2,13 @@
 
 namespace Webkul\Account\Filament\Resources\RefundResource\Pages;
 
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Tables\Table;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
-use Webkul\Account\Filament\Resources\RefundResource;
 use Webkul\Account\Filament\Resources\PaymentResource;
+use Webkul\Account\Filament\Resources\RefundResource;
 
 class ManagePayments extends ManageRelatedRecords
 {

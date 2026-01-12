@@ -8,8 +8,8 @@ use Webkul\Invoice\Filament\Clusters\Customer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\PaymentResource\Pages\CreatePayment;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\PaymentResource\Pages\EditPayment;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\PaymentResource\Pages\ListPayments;
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\PaymentResource\Pages\ViewPayment;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\PaymentResource\Pages\ManageInvoices;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\PaymentResource\Pages\ViewPayment;
 use Webkul\Invoice\Models\Payment;
 
 class PaymentResource extends BasePaymentResource

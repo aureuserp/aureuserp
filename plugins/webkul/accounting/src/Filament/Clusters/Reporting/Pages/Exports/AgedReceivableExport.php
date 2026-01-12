@@ -3,7 +3,6 @@
 namespace Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports;
 
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -14,9 +13,13 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class AgedReceivableExport implements FromArray, WithColumnWidths, WithHeadings, WithStyles
 {
     protected array $partners;
+
     protected Carbon $asOfDate;
+
     protected int $period;
+
     protected array $rowMetadata = [];
+
     protected string $basis;
 
     public function __construct(array $partners, string $asOfDate, int $period, string $basis = 'due_date')
@@ -30,16 +33,16 @@ class AgedReceivableExport implements FromArray, WithColumnWidths, WithHeadings,
     public function headings(): array
     {
         return [
-            ['Aged Receivable - As of ' . $this->asOfDate->format('m/d/Y')],
+            ['Aged Receivable - As of '.$this->asOfDate->format('m/d/Y')],
             [],
             [
                 null,
                 'Invoice Date',
                 'At Date',
-                '1-' . $this->period,
-                ($this->period + 1) . '-' . ($this->period * 2),
-                (($this->period * 2) + 1) . '-' . ($this->period * 3),
-                (($this->period * 3) + 1) . '-' . ($this->period * 4),
+                '1-'.$this->period,
+                ($this->period + 1).'-'.($this->period * 2),
+                (($this->period * 2) + 1).'-'.($this->period * 3),
+                (($this->period * 3) + 1).'-'.($this->period * 4),
                 'Older',
                 'Total',
             ],
@@ -52,27 +55,27 @@ class AgedReceivableExport implements FromArray, WithColumnWidths, WithHeadings,
         $rowIndex = 4;
 
         $totals = collect(['at_date', 'period_1', 'period_2', 'period_3', 'period_4', 'older', 'total'])
-            ->mapWithKeys(fn($key) => [$key => 0])
+            ->mapWithKeys(fn ($key) => [$key => 0])
             ->all();
 
         foreach ($this->partners as $partner) {
             $rows[] = [
-                '        ' . $partner['partner_name'],
+                '        '.$partner['partner_name'],
                 '',
                 ...collect(['at_date', 'period_1', 'period_2', 'period_3', 'period_4', 'older'])
-                    ->map(fn($key) => $partner[$key] != 0 ? $partner[$key] : '')
+                    ->map(fn ($key) => $partner[$key] != 0 ? $partner[$key] : '')
                     ->toArray(),
                 $partner['total'],
             ];
             $this->rowMetadata[$rowIndex++] = 'partner_header';
 
-            if (!empty($partner['lines'])) {
+            if (! empty($partner['lines'])) {
                 foreach ($partner['lines'] as $line) {
                     $rows[] = [
-                        '   ' . $line['move_name'],
+                        '   '.$line['move_name'],
                         Carbon::parse($line['invoice_date'])->format('m/d/Y'),
                         ...collect(['at_date', 'period_1', 'period_2', 'period_3', 'period_4', 'older'])
-                            ->map(fn($key) => $line[$key] != 0 ? $line[$key] : '')
+                            ->map(fn ($key) => $line[$key] != 0 ? $line[$key] : '')
                             ->toArray(),
                         '',
                     ];
@@ -84,14 +87,14 @@ class AgedReceivableExport implements FromArray, WithColumnWidths, WithHeadings,
             $rowIndex++;
 
             collect(['at_date', 'period_1', 'period_2', 'period_3', 'period_4', 'older', 'total'])
-                ->each(fn($key) => $totals[$key] += $partner[$key]);
+                ->each(fn ($key) => $totals[$key] += $partner[$key]);
         }
 
         $rows[] = [
             'Total Aged Receivable',
             '',
             ...collect(['at_date', 'period_1', 'period_2', 'period_3', 'period_4', 'older'])
-                ->map(fn($key) => $totals[$key] != 0 ? $totals[$key] : '')
+                ->map(fn ($key) => $totals[$key] != 0 ? $totals[$key] : '')
                 ->toArray(),
             $totals['total'],
         ];
@@ -103,7 +106,7 @@ class AgedReceivableExport implements FromArray, WithColumnWidths, WithHeadings,
     public function columnWidths(): array
     {
         return collect(range('A', 'I'))
-            ->mapWithKeys(fn($col) => [$col => $col === 'A' ? 50 : 15])
+            ->mapWithKeys(fn ($col) => [$col => $col === 'A' ? 50 : 15])
             ->all();
     }
 

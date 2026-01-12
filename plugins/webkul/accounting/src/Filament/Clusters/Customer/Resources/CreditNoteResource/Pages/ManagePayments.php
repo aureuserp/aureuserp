@@ -2,9 +2,9 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages;
 
-use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Table;
 use Webkul\Account\Filament\Resources\CreditNoteResource\Pages\ManagePayments as BaseManagePayments;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\PaymentResource;

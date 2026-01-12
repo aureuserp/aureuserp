@@ -173,7 +173,6 @@ trait HasChatter
         return $this;
     }
 
-    
     public function chatterMessageOwner(): Model
     {
         $class = get_class($this);

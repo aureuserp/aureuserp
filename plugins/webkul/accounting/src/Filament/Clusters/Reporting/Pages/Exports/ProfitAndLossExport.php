@@ -3,7 +3,6 @@
 namespace Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports;
 
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithStyles;

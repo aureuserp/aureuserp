@@ -10,8 +10,8 @@ use Webkul\Invoice\Filament\Clusters\Customer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\CreateCreditNote;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\EditCreditNote;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ListCreditNotes;
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ViewCreditNote;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ManagePayments;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ViewCreditNote;
 use Webkul\Invoice\Models\CreditNote;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 

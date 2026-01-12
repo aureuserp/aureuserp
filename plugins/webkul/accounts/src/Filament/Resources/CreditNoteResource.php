@@ -2,8 +2,8 @@
 
 namespace Webkul\Account\Filament\Resources;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Filament\Resources\CreditNoteResource\Pages\CreateCreditNote;

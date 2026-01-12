@@ -7,8 +7,8 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Account\Filament\Resources\PaymentResource;
 use Webkul\Account\Filament\Resources\PaymentResource\Actions as BaseActions;
-use Webkul\Support\Traits\HasRecordNavigationTabs;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditPayment extends EditRecord
 {

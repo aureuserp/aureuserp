@@ -18,9 +18,9 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Webkul\Accounting\Models\JournalItem;
 use Webkul\Accounting\Filament\Clusters\Accounting;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalItemResource\Pages\ListJournalItems;
+use Webkul\Accounting\Models\JournalItem;
 
 class JournalItemResource extends Resource
 {

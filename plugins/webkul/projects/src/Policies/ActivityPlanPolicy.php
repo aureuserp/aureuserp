@@ -3,8 +3,8 @@
 namespace Webkul\Project\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Webkul\Security\Models\User;
 use Webkul\Project\Models\ActivityPlan;
+use Webkul\Security\Models\User;
 
 class ActivityPlanPolicy
 {

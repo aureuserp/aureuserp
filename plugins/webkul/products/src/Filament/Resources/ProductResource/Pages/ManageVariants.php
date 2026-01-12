@@ -3,13 +3,13 @@
 namespace Webkul\Product\Filament\Resources\ProductResource\Pages;
 
 use Barryvdh\DomPDF\Facade\Pdf;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Actions\Action;
-use Filament\Forms\Components\Radio;
-use Filament\Forms\Components\TextInput;
 use Filament\Tables\Table;
 use Illuminate\Support\Arr;
 use Webkul\Product\Filament\Resources\ProductResource;
@@ -92,7 +92,7 @@ class ManageVariants extends ManageRelatedRecords
                             return response()->streamDownload(function () use ($pdf) {
                                 echo $pdf->output();
                             }, 'Product-'.$record->name.'.pdf');
-                        })
+                        }),
                 ]);
         }
 

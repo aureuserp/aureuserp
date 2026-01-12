@@ -28,7 +28,7 @@ return [
             'month' => 'Month',
             'week'  => 'Week',
             'list'  => 'List',
-        ]
+        ],
     ],
 
     'view-action' => [

@@ -1157,7 +1157,7 @@ class BillResource extends Resource
 
         if ($get('../../currency_id')) {
             $currency = Currency::find($get('../../currency_id'));
-            
+
             $priceUnit = Auth::user()->defaultCompany->currency->convert(
                 $priceUnit,
                 $currency,

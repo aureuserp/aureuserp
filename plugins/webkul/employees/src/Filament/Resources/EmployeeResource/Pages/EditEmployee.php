@@ -5,7 +5,6 @@ namespace Webkul\Employee\Filament\Resources\EmployeeResource\Pages;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Employee\Filament\Resources\EmployeeResource;
 use Webkul\Support\Models\ActivityPlan;

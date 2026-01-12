@@ -10,9 +10,6 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Database\QueryException;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\ColorEntry;
 use Filament\Infolists\Components\IconEntry;
@@ -31,6 +28,9 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\CommunicationStandard;
@@ -377,7 +377,7 @@ class JournalResource extends Resource
                     ->action(function (Journal $record, DeleteAction $action) {
                         try {
                             $record->delete();
-                                
+
                             $action->success();
                         } catch (QueryException $e) {
                             $action->failure();
@@ -578,7 +578,7 @@ class JournalResource extends Resource
                                                             ->placeholder('-')
                                                             ->label(__('accounts::filament/resources/journal.infolist.tabs.advanced-settings.allowed-accounts.entries.auto-check-on-post')),
                                                     ]),
-                                                    
+
                                                 Fieldset::make(__('accounts::filament/resources/journal.infolist.tabs.advanced-settings.payment-communication.title'))
                                                     ->visible(fn ($record) => $record->type === JournalType::SALE)
                                                     ->schema([

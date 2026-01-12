@@ -30,6 +30,6 @@ class CancelAction extends Action
 
                 $livewire->refreshFormData(['state']);
             })
-            ->visible(fn(Payment $record) => $record->state === PaymentStatus::DRAFT);
+            ->visible(fn (Payment $record) => $record->state === PaymentStatus::DRAFT);
     }
 }
