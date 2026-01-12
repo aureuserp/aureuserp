@@ -8,12 +8,12 @@ use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Enums\AmountType;
 use Webkul\Account\Enums\DocumentType;
+use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Settings\TaxesSettings;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
-use Webkul\Account\Enums\TaxIncludeOverride;
 
 class Tax extends Model implements Sortable
 {
@@ -45,8 +45,8 @@ class Tax extends Model implements Sortable
     ];
 
     protected $casts = [
-        'amount_type'    => AmountType::class,
-        'type_tax_use'   => TypeTaxUse::class,
+        'amount_type'            => AmountType::class,
+        'type_tax_use'           => TypeTaxUse::class,
         'price_include_override' => TaxIncludeOverride::class,
     ];
 

@@ -2,6 +2,4 @@
 
 namespace Webkul\Recruitment\Models;
 
-class JobByPosition extends JobPosition
-{
-}
+class JobByPosition extends JobPosition {}

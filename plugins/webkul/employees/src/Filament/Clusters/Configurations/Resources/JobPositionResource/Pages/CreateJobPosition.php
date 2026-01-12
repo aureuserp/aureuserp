@@ -4,7 +4,6 @@ namespace Webkul\Employee\Filament\Clusters\Configurations\Resources\JobPosition
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\JobPositionResource;
 
 class CreateJobPosition extends CreateRecord

@@ -4,6 +4,7 @@ namespace Webkul\Account;
 
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Enums\AmountType;
+use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Product;
 use Webkul\Account\Models\Tax;
@@ -12,7 +13,6 @@ use Webkul\Account\Settings\TaxesSettings;
 use Webkul\Partner\Models\Partner;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
-use Webkul\Account\Enums\TaxIncludeOverride;
 
 class TaxManager
 {
@@ -38,7 +38,7 @@ class TaxManager
             if (! $tax->price_include_override) {
                 $tax->price_include_override = app(TaxesSettings::class)->account_price_include ?? TaxIncludeOverride::TAX_INCLUDED;
             }
-            
+
             $currentTaxBase = $adjustedSubTotal;
 
             if ($tax->is_base_affected) {

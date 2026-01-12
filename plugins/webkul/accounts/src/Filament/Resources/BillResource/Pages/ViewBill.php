@@ -7,10 +7,10 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Filament\Resources\BillResource;
-use Webkul\Account\Filament\Resources\RefundResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
-use Webkul\Chatter\Filament\Actions\ChatterAction;
+use Webkul\Account\Filament\Resources\RefundResource;
 use Webkul\Account\Models\Move;
+use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Support\Filament\Concerns\HasRepeatableEntryColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
@@ -46,7 +46,7 @@ class ViewBill extends ViewRecord
                 ->modalHeading(__('accounts::filament/resources/bill/pages/view-bill.header-actions.reverse.modal-heading')),
             BaseActions\ResetToDraftAction::make(),
             DeleteAction::make()
-                ->hidden(fn(Move $record): bool => $record->state == MoveState::POSTED)
+                ->hidden(fn (Move $record): bool => $record->state == MoveState::POSTED)
                 ->successNotification(
                     Notification::make()
                         ->success()

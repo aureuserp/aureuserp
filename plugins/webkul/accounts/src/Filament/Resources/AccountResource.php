@@ -2,7 +2,6 @@
 
 namespace Webkul\Account\Filament\Resources;
 
-use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -26,9 +25,9 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Webkul\Account\Enums\AccountType;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Filament\Resources\AccountResource\Pages\ManageAccounts;
 use Webkul\Account\Models\Account;
 

@@ -4,7 +4,6 @@ namespace Webkul\Employee\Filament\Resources\EmployeeResource\Pages;
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Filament\Resources\EmployeeResource;
 
 class CreateEmployee extends CreateRecord

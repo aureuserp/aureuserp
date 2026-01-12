@@ -2,11 +2,11 @@
 
 namespace Webkul\Account\Filament\Resources\InvoiceResource\Pages;
 
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Tables\Table;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Webkul\Account\Filament\Resources\InvoiceResource;
 use Webkul\Account\Filament\Resources\PaymentResource;
 

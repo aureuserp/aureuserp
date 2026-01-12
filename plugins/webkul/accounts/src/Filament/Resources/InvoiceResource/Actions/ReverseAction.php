@@ -34,6 +34,7 @@ class ReverseAction extends Action
 
         return $this;
     }
+
     /**
      * @return class-string
      */

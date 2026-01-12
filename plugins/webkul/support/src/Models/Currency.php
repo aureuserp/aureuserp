@@ -58,7 +58,7 @@ class Currency extends Model
         $date = $date ?? now()->toDateString();
 
         $toRateRecord = $toCurrency->rates()
-            //->where('company_id', $company?->id)
+            // ->where('company_id', $company?->id)
             ->whereDate('name', '<=', $date)
             ->orderByDesc('name')
             ->first();

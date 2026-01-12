@@ -3,8 +3,8 @@
 namespace Webkul\PluginManager\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Webkul\Security\Models\User;
 use Webkul\PluginManager\Models\Plugin;
+use Webkul\Security\Models\User;
 
 class PluginPolicy
 {

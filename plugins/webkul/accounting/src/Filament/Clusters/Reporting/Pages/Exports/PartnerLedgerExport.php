@@ -3,7 +3,6 @@
 namespace Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports;
 
 use Carbon\Carbon;
-use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -46,7 +45,7 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
         $rowIndex = 4;
 
         $totals = collect(['debit', 'credit'])
-            ->mapWithKeys(fn($key) => [$key => 0])
+            ->mapWithKeys(fn ($key) => [$key => 0])
             ->all();
 
         foreach ($this->partners as $partner) {
@@ -123,14 +122,14 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
     public function columnWidths(): array
     {
         return collect(range('A', 'I'))
-            ->mapWithKeys(fn($col) => [
+            ->mapWithKeys(fn ($col) => [
                 $col => match ($col) {
-                    'A' => 5,
-                    'B' => 35,
-                    'C' => 20,
-                    'D' => 30,
+                    'A'     => 5,
+                    'B'     => 35,
+                    'C'     => 20,
+                    'D'     => 30,
                     default => 15,
-                }
+                },
             ])
             ->all();
     }

@@ -2,7 +2,6 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Accounting\Resources;
 
-use Filament\Navigation\NavigationItem;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -18,6 +17,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Navigation\NavigationItem;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
@@ -63,10 +63,10 @@ use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResourc
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource\Pages\EditJournalEntry;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource\Pages\ListJournalEntries;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource\Pages\ViewJournalEntry;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\PaymentResource\Pages\ViewPayment as CustomerViewPayment;
-use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\ViewPayment as VendorViewPayment;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\PaymentResource\Pages\ViewPayment as CustomerViewPayment;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource;
+use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\ViewPayment as VendorViewPayment;
 use Webkul\Accounting\Models\JournalEntry;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Partner\Models\Partner;
@@ -1007,7 +1007,7 @@ class JournalEntryResource extends Resource
         if ($payment = $page->getRecord()?->originPayment) {
             $navigationItems[] = NavigationItem::make(__('accounting::filament/clusters/accounting/resources/journal-entry.record-sub-navigation.payment'))
                 ->icon('heroicon-o-banknotes')
-                ->url(function() use($payment) {
+                ->url(function () use ($payment) {
                     if ($payment->partner_type === 'customer') {
                         return CustomerViewPayment::getUrl(['record' => $payment->id]);
                     } else {

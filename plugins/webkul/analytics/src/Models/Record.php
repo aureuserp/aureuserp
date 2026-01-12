@@ -62,6 +62,7 @@ class Record extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
     /**
      * Bootstrap any application services.
      */

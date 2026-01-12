@@ -4,14 +4,14 @@ namespace Webkul\Accounting\Filament\Widgets;
 
 use Illuminate\Support\Carbon;
 use Livewire\Component;
+use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
-use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Models\Move;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource;
-use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\PaymentResource;
+use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource;
 
 class JournalChartWidget extends Component
 {
@@ -37,10 +37,10 @@ class JournalChartWidget extends Component
         if ($type === JournalType::SALE) {
             $data['stats'] = [
                 'to_validate' => [
-                    'label' => 'To Validate',
-                    'url'   => $this->getUrl('index', ['activeTableView' => 'draft']),
-                    'value' => (clone $baseQuery)->where('state', MoveState::DRAFT)->count(),
-                    'amount' => $amount = (clone $baseQuery)->where('state', MoveState::DRAFT)->sum('amount_total'),
+                    'label'            => 'To Validate',
+                    'url'              => $this->getUrl('index', ['activeTableView' => 'draft']),
+                    'value'            => (clone $baseQuery)->where('state', MoveState::DRAFT)->count(),
+                    'amount'           => $amount = (clone $baseQuery)->where('state', MoveState::DRAFT)->sum('amount_total'),
                     'formatted_amount' => money($amount),
                 ],
                 'unpaid' => [
@@ -90,10 +90,10 @@ class JournalChartWidget extends Component
         } elseif ($type === JournalType::PURCHASE) {
             $data['stats'] = [
                 'to_validate' => [
-                    'label' => 'To Validate',
-                    'url'   => $this->getUrl('index', ['activeTableView' => 'draft']),
-                    'value' => (clone $baseQuery)->where('state', MoveState::DRAFT)->count(),
-                    'amount' => $amount = (clone $baseQuery)->where('state', MoveState::DRAFT)->sum('amount_total'),
+                    'label'            => 'To Validate',
+                    'url'              => $this->getUrl('index', ['activeTableView' => 'draft']),
+                    'value'            => (clone $baseQuery)->where('state', MoveState::DRAFT)->count(),
+                    'amount'           => $amount = (clone $baseQuery)->where('state', MoveState::DRAFT)->sum('amount_total'),
                     'formatted_amount' => money($amount),
                 ],
                 'late' => [
@@ -135,9 +135,9 @@ class JournalChartWidget extends Component
         } else {
             $data['stats'] = [
                 'payments' => [
-                    'label' => 'Payments',
-                    'url'   => $this->getUrl('index'),
-                    'value' => null,
+                    'label'  => 'Payments',
+                    'url'    => $this->getUrl('index'),
+                    'value'  => null,
                     'amount' => $amount = (clone $baseQuery)
                         ->where('state', MoveState::POSTED)
                         ->sum('amount_total'),
@@ -147,7 +147,7 @@ class JournalChartWidget extends Component
         }
 
         $data['actions'] = $this->getActions();
-        $data['graph']   = $this->getChartData();
+        $data['graph'] = $this->getChartData();
 
         return $data;
     }
@@ -191,7 +191,7 @@ class JournalChartWidget extends Component
     private function getLiquidityChartData(): array
     {
         $start = now()->subWeeks(5)->startOfWeek();
-        $end   = now()->endOfWeek();
+        $end = now()->endOfWeek();
 
         $moves = Move::query()
             ->where('journal_id', $this->journal->id)
@@ -215,8 +215,8 @@ class JournalChartWidget extends Component
         }
 
         return [
-            'type'   => 'line',
-            'labels' => $labels,
+            'type'     => 'line',
+            'labels'   => $labels,
             'datasets' => [
                 [
                     'label'       => 'Balance',
@@ -235,22 +235,22 @@ class JournalChartWidget extends Component
 
         $thisWeekStart = $now->copy()->startOfWeek(Carbon::SUNDAY);
         $thisWeekEnd = $now->copy()->endOfWeek(Carbon::SATURDAY);
-        
+
         $prevWeekStart = $now->copy()->subWeek()->startOfWeek(Carbon::SUNDAY);
         $prevWeekEnd = $now->copy()->subWeek()->endOfWeek(Carbon::SATURDAY);
-        
+
         $nextWeekStart = $now->copy()->addWeek()->startOfWeek(Carbon::SUNDAY);
         $nextWeekEnd = $now->copy()->addWeek()->endOfWeek(Carbon::SATURDAY);
-        
+
         $futureWeekStart = $now->copy()->addWeeks(2)->startOfWeek(Carbon::SUNDAY);
         $futureWeekEnd = $now->copy()->addWeeks(2)->endOfWeek(Carbon::SATURDAY);
 
         $labels = [
             'Overdue',
-            $prevWeekStart->format('d M') . ' - ' . $prevWeekEnd->format('d M'),
+            $prevWeekStart->format('d M').' - '.$prevWeekEnd->format('d M'),
             'This Week',
-            $nextWeekStart->format('d M') . ' - ' . $nextWeekEnd->format('d M'),
-            $futureWeekStart->format('d M') . ' - ' . $futureWeekEnd->format('d M'),
+            $nextWeekStart->format('d M').' - '.$nextWeekEnd->format('d M'),
+            $futureWeekStart->format('d M').' - '.$futureWeekEnd->format('d M'),
             'Not Due',
         ];
 
@@ -285,16 +285,16 @@ class JournalChartWidget extends Component
         }
 
         return [
-            'type'   => 'bar',
-            'labels' => $labels,
+            'type'     => 'bar',
+            'labels'   => $labels,
             'datasets' => [
                 [
-                    'label' => 'Overdue',
-                    'data'  => $late,
+                    'label'           => 'Overdue',
+                    'data'            => $late,
                     'backgroundColor' => '#ef4444',
                 ], [
-                    'label' => 'On Time',
-                    'data'  => $onTime,
+                    'label'           => 'On Time',
+                    'data'            => $onTime,
                     'backgroundColor' => '#22c55e',
                 ],
             ],

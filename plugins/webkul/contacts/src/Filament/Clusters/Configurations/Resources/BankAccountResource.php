@@ -4,8 +4,8 @@ namespace Webkul\Contact\Filament\Clusters\Configurations\Resources;
 
 use Webkul\Contact\Filament\Clusters\Configurations;
 use Webkul\Contact\Filament\Clusters\Configurations\Resources\BankAccountResource\Pages\ManageBankAccounts;
-use Webkul\Partner\Filament\Resources\BankAccountResource as BaseBankAccountResource;
 use Webkul\Contact\Models\BankAccount;
+use Webkul\Partner\Filament\Resources\BankAccountResource as BaseBankAccountResource;
 
 class BankAccountResource extends BaseBankAccountResource
 {

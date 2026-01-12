@@ -15,7 +15,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Project\Filament\Resources\TaskResource;
 use Webkul\Project\Settings\TimeSettings;
 

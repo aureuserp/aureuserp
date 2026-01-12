@@ -6,12 +6,10 @@ use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Account\Enums\MoveState;
-use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Filament\Resources\InvoiceResource;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
-use Filament\Tables\Table;
 
 class ListInvoices extends ListRecords
 {
@@ -60,7 +58,7 @@ class ListInvoices extends ListRecords
                         ->where('amount_residual', '>', 0)
                         ->whereNotIn('payment_state', [
                             PaymentState::PAID,
-                            PaymentState::IN_PAYMENT
+                            PaymentState::IN_PAYMENT,
                         ]);
                 }),
             'in_payment' => PresetView::make(__('accounts::filament/resources/invoice/pages/list-invoice.tabs.in-payment'))

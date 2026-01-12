@@ -33,6 +33,8 @@ use Webkul\Chatter\Filament\Actions\Chatter\ActivityAction;
 use Webkul\Chatter\Filament\Actions\Chatter\FileAction;
 use Webkul\Chatter\Filament\Actions\Chatter\FiltersAction;
 use Webkul\Chatter\Filament\Actions\Chatter\FollowerAction;
+use Webkul\Chatter\Filament\Actions\Chatter\LogAction;
+use Webkul\Chatter\Filament\Actions\Chatter\MessageAction;
 use Webkul\Chatter\Filament\Infolists\Components\Activities\ActivitiesRepeatableEntry;
 use Webkul\Chatter\Filament\Infolists\Components\Activities\ContentTextEntry as ActivityContentTextEntry;
 use Webkul\Chatter\Filament\Infolists\Components\Activities\TitleTextEntry as ActivityTitleTextEntry;
@@ -44,8 +46,6 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\ActivityPlan;
 use Webkul\Support\Models\ActivityType;
-use Webkul\Chatter\Filament\Actions\Chatter\LogAction;
-use Webkul\Chatter\Filament\Actions\Chatter\MessageAction;
 
 class ChatterPanel extends Component implements HasActions, HasForms, HasInfolists
 {

@@ -8,8 +8,8 @@ use Webkul\Accounting\Filament\Clusters\Vendors;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource\Pages\CreateBill;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource\Pages\EditBill;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource\Pages\ListBills;
-use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource\Pages\ViewBill;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource\Pages\ManagePayments;
+use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource\Pages\ViewBill;
 use Webkul\Accounting\Models\Bill;
 
 class BillResource extends BaseBillResource
@@ -51,10 +51,10 @@ class BillResource extends BaseBillResource
     public static function getPages(): array
     {
         return [
-            'index'   => ListBills::route('/'),
-            'create'  => CreateBill::route('/create'),
-            'edit'    => EditBill::route('/{record}/edit'),
-            'view'    => ViewBill::route('/{record}'),
+            'index'    => ListBills::route('/'),
+            'create'   => CreateBill::route('/create'),
+            'edit'     => EditBill::route('/{record}/edit'),
+            'view'     => ViewBill::route('/{record}'),
             'payments' => ManagePayments::route('/{record}/payments'),
         ];
     }

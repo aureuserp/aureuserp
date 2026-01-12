@@ -272,7 +272,7 @@ class Payment extends Model
                 $prefix,
                 $this->journal->code,
                 $this->date->format('Y'),
-            ) . '/' . $this->id;
+            ).'/'.$this->id;
         }
     }
 
@@ -286,7 +286,7 @@ class Payment extends Model
         if ($this->partner_type) {
             return;
         }
-        
+
         $this->partner_type = $this->payment_type == PaymentType::RECEIVE ? 'customer' : 'supplier';
     }
 
@@ -326,7 +326,7 @@ class Payment extends Model
         if (
             $this->state === PaymentStatus::IN_PROCESS
             && $this->invoices()->exists()
-            && $this->invoices->every(fn($invoice) => $invoice->payment_state === PaymentStatus::PAID)
+            && $this->invoices->every(fn ($invoice) => $invoice->payment_state === PaymentStatus::PAID)
         ) {
             $this->state = PaymentStatus::PAID;
         }
@@ -375,7 +375,7 @@ class Payment extends Model
 
         $reconcileLines = $counterpart
             ->merge($writeoff)
-            ->filter(fn($line) => $line->account->reconcile);
+            ->filter(fn ($line) => $line->account->reconcile);
 
         $this->is_reconciled = $this->currency->isZero($reconcileLines->sum($residualField));
     }
@@ -423,9 +423,9 @@ class Payment extends Model
 
         $this->destination_account_id = $this->partner?->{$mapping['partner_property']}
             ?? Account::where('account_type', $mapping['account_type'])
-            ->where('deprecated', false)
-            ->first()
-            ?->id;
+                ->where('deprecated', false)
+                ->first()
+                ?->id;
     }
 
     public function computeAmountCompanyCurrencySigned()
@@ -496,7 +496,7 @@ class Payment extends Model
 
         $lines = $lines ?: $this->prepareMoveLineDefaultVals($writeOffLineVals, $forceBalance);
 
-        collect($lines)->each(fn($lineVals) => MoveLine::create($lineVals + ['move_id' => $move->id]));
+        collect($lines)->each(fn ($lineVals) => MoveLine::create($lineVals + ['move_id' => $move->id]));
 
         AccountFacade::computeAccountMove($move);
 
@@ -510,8 +510,8 @@ class Payment extends Model
     {
         if (! $this->outstanding_account_id) {
             throw new \Exception(
-                "You can't create a new payment without an outstanding payments/receipts account set either on the company or the " .
-                    $this->paymentMethodLine->name . ' payment method in the ' . $this->journal->display_name . ' journal.'
+                "You can't create a new payment without an outstanding payments/receipts account set either on the company or the ".
+                    $this->paymentMethodLine->name.' payment method in the '.$this->journal->display_name.' journal.'
             );
         }
 
@@ -602,7 +602,7 @@ class Payment extends Model
 
             $lineIdsCommands = array_merge(
                 $lineIdsCommands,
-                $writeoffLines->map(fn($line) => ['delete' => $line->id])->all(),
+                $writeoffLines->map(fn ($line) => ['delete' => $line->id])->all(),
                 array_slice($lineValsList, 2)
             );
 

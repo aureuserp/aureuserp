@@ -23,8 +23,8 @@ use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
-use Webkul\Timesheet\Models\Timesheet;
 use Webkul\Timesheet\Filament\Resources\TimesheetResource\Pages\ManageTimesheets;
+use Webkul\Timesheet\Models\Timesheet;
 
 class TimesheetResource extends Resource
 {

@@ -196,7 +196,7 @@ class OrderResource extends Resource
                                                 'price_unit'  => $line->price_unit,
                                                 'planned_at'  => now(),
                                                 'taxes'       => $product->productTaxes->pluck('id')->toArray(),
-                                                'discount'    => 0
+                                                'discount'    => 0,
                                             ];
                                         }
                                         $set('products', $products);
@@ -1354,7 +1354,6 @@ class OrderResource extends Resource
             $totalTax += floatval($product['price_tax'] ?? 0);
             $grandTotal += floatval($product['price_total'] ?? 0);
         }
-
 
         $totals = [
             'subtotal'         => round($subtotal, 2),

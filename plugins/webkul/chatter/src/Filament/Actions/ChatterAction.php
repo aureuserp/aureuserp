@@ -41,7 +41,7 @@ class ChatterAction extends Action
     public function resource(string $resourceClass): static
     {
         $this->validateResource($resourceClass);
-        
+
         $this->resourceClass = $resourceClass;
 
         return $this;
@@ -278,8 +278,8 @@ class ChatterAction extends Action
             ->modalCancelAction(false)
             ->closeModalByEscaping()
             ->modalHeading(__('chatter::filament/resources/actions/chatter-action.title'))
-            ->badge(fn(Model $record): int => $record->unRead()->count())
-            ->modalContent(fn(Model $record): View => $this->renderModalContent($record));
+            ->badge(fn (Model $record): int => $record->unRead()->count())
+            ->modalContent(fn (Model $record): View => $this->renderModalContent($record));
     }
 
     protected function renderModalContent(Model $record): View
@@ -297,7 +297,7 @@ class ChatterAction extends Action
                 'isFollowerActionVisible' => $this->isFollowerActionVisible(),
                 'activityPlans'           => $this->getActivityPlans(),
             ]),
-            fn() => $record->markAsRead()
+            fn () => $record->markAsRead()
         );
     }
 

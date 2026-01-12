@@ -2,9 +2,9 @@
 
 namespace Webkul\Accounting\Filament\Pages;
 
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Pages\Page;
 use Webkul\Accounting\Filament\Widgets\JournalChartsWidget;
-use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
 class Overview extends Page
 {

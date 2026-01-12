@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Enums\AccountType;
-use Webkul\Account\Enums\DelayType;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
@@ -517,7 +516,7 @@ class Move extends Model implements Sortable
             $this->date?->format('Y') ?? now()->format('Y'),
         );
 
-        $this->name = $this->sequence_prefix . '/' . $this->id;
+        $this->name = $this->sequence_prefix.'/'.$this->id;
     }
 
     public function computeCurrencyId()
@@ -998,7 +997,7 @@ class Move extends Model implements Sortable
                 part.debit_amount_currency AS amount,
                 part.credit_move_id AS counterpart_line_id
             FROM accounts_partial_reconciles part
-            WHERE part.debit_move_id IN (' . implode(',', $lineIds) . ')
+            WHERE part.debit_move_id IN ('.implode(',', $lineIds).')
 
             UNION ALL
 
@@ -1008,12 +1007,12 @@ class Move extends Model implements Sortable
                 part.credit_amount_currency AS amount,
                 part.debit_move_id AS counterpart_line_id
             FROM accounts_partial_reconciles part
-            WHERE part.credit_move_id IN (' . implode(',', $lineIds) . ')
+            WHERE part.credit_move_id IN ('.implode(',', $lineIds).')
         ';
 
         $results = DB::select($sql);
 
-        $partialValuesList = collect($results)->map(fn($values) => [
+        $partialValuesList = collect($results)->map(fn ($values) => [
             'line_id'    => $values->counterpart_line_id,
             'partial_id' => $values->id,
             'amount'     => $values->amount,
@@ -1034,8 +1033,8 @@ class Move extends Model implements Sortable
                     part.credit_move_id AS counterpart_line_id
                 FROM accounts_partial_reconciles part
                 JOIN account_move_line credit_line ON credit_line.id = part.credit_move_id
-                WHERE credit_line.move_id IN (' . $exchangeMoveIdsStr . ') 
-                    AND part.debit_move_id IN (' . $counterpartLineIdsStr . ')
+                WHERE credit_line.move_id IN ('.$exchangeMoveIdsStr.') 
+                    AND part.debit_move_id IN ('.$counterpartLineIdsStr.')
 
                 UNION ALL
 
@@ -1044,8 +1043,8 @@ class Move extends Model implements Sortable
                     part.debit_move_id AS counterpart_line_id
                 FROM accounts_partial_reconciles part
                 JOIN account_move_line debit_line ON debit_line.id = part.debit_move_id
-                WHERE debit_line.move_id IN (' . $exchangeMoveIdsStr . ') 
-                    AND part.credit_move_id IN (' . $counterpartLineIdsStr . ')
+                WHERE debit_line.move_id IN ('.$exchangeMoveIdsStr.') 
+                    AND part.credit_move_id IN ('.$counterpartLineIdsStr.')
             ';
 
             $exchangeResults = DB::select($sql);

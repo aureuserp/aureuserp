@@ -8,8 +8,8 @@ use Webkul\Accounting\Filament\Clusters\Customer;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\CreateCreditNote;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\EditCreditNote;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ListCreditNotes;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ViewCreditNote;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ManagePayments;
+use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ViewCreditNote;
 use Webkul\Accounting\Models\CreditNote;
 
 class CreditNoteResource extends BaseCreditNoteResource

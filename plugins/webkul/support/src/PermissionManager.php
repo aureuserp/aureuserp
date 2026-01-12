@@ -3,10 +3,10 @@
 namespace Webkul\Support;
 
 use BezhanSalleh\FilamentShield\Facades\FilamentShield;
-use Illuminate\Support\Str;
 use Filament\Pages\BasePage as Page;
 use Filament\Resources\Resource;
 use Filament\Widgets\Widget;
+use Illuminate\Support\Str;
 
 class PermissionManager
 {
@@ -29,7 +29,7 @@ class PermissionManager
                     ->toString();
             }
 
-            return match(true) {
+            return match (true) {
                 is_subclass_of($entity, Resource::class) => Str::of($affix)
                     ->snake()
                     ->when($pluginKey, fn ($str) => $str->append('_')->append($pluginKey))

@@ -2,15 +2,15 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Customer\Resources\PaymentResource\Pages;
 
-use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\PaymentResource;
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource;
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource;
-use Webkul\Support\Traits\HasRecordNavigationTabs;
+use Filament\Resources\Pages\ManageRelatedRecords;
+use Filament\Tables\Table;
 use Webkul\Account\Enums\MoveType;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\PaymentResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageInvoices extends ManageRelatedRecords
 {

@@ -31,26 +31,26 @@ return [
             ],
 
             'incoming-payments' => [
-                'title' => 'Incoming Payments',
+                'title'            => 'Incoming Payments',
                 'add-action-label' => 'Add Line',
 
                 'fields' => [
-                    'payment-method' => 'Payment Method',
-                    'display-name'   => 'Display Name',
-                    'account-number' => 'Outstanding Receipts Accounts',
+                    'payment-method'             => 'Payment Method',
+                    'display-name'               => 'Display Name',
+                    'account-number'             => 'Outstanding Receipts Accounts',
                     'relation-notes'             => 'Relation Notes',
                     'relation-notes-placeholder' => 'Enter any relation details',
                 ],
             ],
 
             'outgoing-payments' => [
-                'title' => 'Outgoing Payments',
+                'title'            => 'Outgoing Payments',
                 'add-action-label' => 'Add Line',
 
                 'fields' => [
-                    'payment-method' => 'Payment Method',
-                    'display-name'   => 'Display Name',
-                    'account-number' => 'Outstanding Payments Accounts',
+                    'payment-method'             => 'Payment Method',
+                    'display-name'               => 'Display Name',
+                    'account-number'             => 'Outstanding Payments Accounts',
                     'relation-notes'             => 'Relation Notes',
                     'relation-notes-placeholder' => 'Enter any relation details',
                 ],
@@ -143,7 +143,7 @@ return [
                 'field-set' => [
                     'accounting-information' => [
                         'title'   => 'Accounting Information',
-                        
+
                         'entries' => [
                             'dedicated-credit-note-sequence' => 'Dedicated Credit Note Sequence',
                             'dedicated-payment-sequence'     => 'Dedicated Payment Sequence',
@@ -160,7 +160,7 @@ return [
 
                     'bank-account-number' => [
                         'title' => 'Bank Account Number',
-                        
+
                         'entries' => [
                             'account-number' => 'Account Number',
                         ],
@@ -172,9 +172,9 @@ return [
                 'title' => 'Incoming Payments',
 
                 'entries' => [
-                    'payment-method' => 'Payment Method',
-                    'display-name'   => 'Display Name',
-                    'account-number' => 'Outstanding Receipts Accounts',
+                    'payment-method'             => 'Payment Method',
+                    'display-name'               => 'Display Name',
+                    'account-number'             => 'Outstanding Receipts Accounts',
                     'relation-notes'             => 'Relation Notes',
                     'relation-notes-placeholder' => 'Enter any relation details',
                 ],
@@ -184,9 +184,9 @@ return [
                 'title' => 'Outgoing Payments',
 
                 'entries' => [
-                    'payment-method' => 'Payment Method',
-                    'display-name'   => 'Display Name',
-                    'account-number' => 'Outstanding Payments Accounts',
+                    'payment-method'             => 'Payment Method',
+                    'display-name'               => 'Display Name',
+                    'account-number'             => 'Outstanding Payments Accounts',
                     'relation-notes'             => 'Relation Notes',
                     'relation-notes-placeholder' => 'Enter any relation details',
                 ],
