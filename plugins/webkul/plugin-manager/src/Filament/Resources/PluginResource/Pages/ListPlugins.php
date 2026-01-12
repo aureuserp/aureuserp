@@ -16,10 +16,8 @@ class ListPlugins extends ListRecords
 
     public function getTabs(): array
     {
-        $excluded = ['accounts', 'products', 'payments', 'full-calendar'];
-
         $packages = collect(Plugin::getAllPluginPackages())
-            ->reject(fn ($pkg, $name) => $pkg->isCore || in_array($name, $excluded))
+            ->reject(fn ($package, $name) => $package->isCore)
             ->keys();
 
         $query = fn ($installed = null) => Plugin::whereIn('name', $packages)

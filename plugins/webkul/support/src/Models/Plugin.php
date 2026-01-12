@@ -90,7 +90,7 @@ class Plugin extends Model implements Sortable
 
     public function getPackageAttribute(): ?Package
     {
-        $packages = self::getAllPluginPackages();
+        $packages = static::getAllPluginPackages();
 
         return $packages[$this->name] ?? null;
     }
@@ -102,7 +102,7 @@ class Plugin extends Model implements Sortable
 
     public function getDependentsFromConfig(): array
     {
-        $packages = self::getAllPluginPackages();
+        $packages = static::getAllPluginPackages();
 
         $dependents = [];
 

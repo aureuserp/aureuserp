@@ -360,10 +360,8 @@ class PluginResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $excluded = ['accounts', 'products', 'payments', 'full-calendar'];
-
         $installable = collect(Plugin::getAllPluginPackages())
-            ->reject(fn ($package, $name) => in_array($name, $excluded) || $package->isCore)
+            ->reject(fn ($package, $name) => $package->isCore)
             ->keys();
 
         return parent::getEloquentQuery()->whereIn('name', $installable);
