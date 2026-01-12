@@ -2,6 +2,7 @@
 
 namespace Webkul\Blog;
 
+use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Webkul\Support\Console\Commands\InstallCommand;
@@ -48,5 +49,16 @@ class BlogServiceProvider extends PackageServiceProvider
         FilamentAsset::register([
             Css::make('blogs', __DIR__.'/../resources/dist/blogs.css'),
         ], 'blogs');
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            if (! Package::isPluginInstalled(static::$name)) {
+                return;
+            }
+
+            $panel->plugin(BlogPlugin::make());
+        });
     }
 }

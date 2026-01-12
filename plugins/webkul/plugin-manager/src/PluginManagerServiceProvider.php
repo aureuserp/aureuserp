@@ -2,6 +2,7 @@
 
 namespace Webkul\PluginManager;
 
+use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Webkul\Support\Package;
@@ -25,6 +26,13 @@ class PluginManagerServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         $this->registerCustomCss();
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(PluginManagerPlugin::make());
+        });
     }
 
     public function registerCustomCss()

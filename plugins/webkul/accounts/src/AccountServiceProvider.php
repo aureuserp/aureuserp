@@ -2,6 +2,7 @@
 
 namespace Webkul\Account;
 
+use Filament\Panel;
 use Illuminate\Foundation\AliasLoader;
 use Livewire\Livewire;
 use Webkul\Account\Facades\Account as AccountFacade;
@@ -106,6 +107,14 @@ class AccountServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
+        Panel::configureUsing(function (Panel $panel): void {
+            if (! Package::isPluginInstalled(static::$name)) {
+                return;
+            }
+
+            $panel->plugin(AccountPlugin::make());
+        });
+
         $loader = AliasLoader::getInstance();
 
         $loader->alias('tax', TaxFacade::class);

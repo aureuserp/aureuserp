@@ -2,6 +2,7 @@
 
 namespace Webkul\Support;
 
+use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
@@ -88,6 +89,10 @@ class SupportServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(SupportPlugin::make());
+        });
+
         $this->registerHooks();
 
         $this->app->singleton(PermissionManager::class, fn () => new PermissionManager);

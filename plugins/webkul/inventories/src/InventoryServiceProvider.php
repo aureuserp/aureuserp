@@ -2,6 +2,7 @@
 
 namespace Webkul\Inventory;
 
+use Filament\Panel;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -116,6 +117,14 @@ class InventoryServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
+        Panel::configureUsing(function (Panel $panel): void {
+            if (! Package::isPluginInstalled(static::$name)) {
+                return;
+            }
+
+            $panel->plugin(InventoryPlugin::make());
+        });
+
         $loader = AliasLoader::getInstance();
 
         $loader->alias('inventory', InventoryFacade::class);

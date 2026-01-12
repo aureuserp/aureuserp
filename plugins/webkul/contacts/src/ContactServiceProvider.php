@@ -2,6 +2,7 @@
 
 namespace Webkul\Contact;
 
+use Filament\Panel;
 use Webkul\Support\Console\Commands\InstallCommand;
 use Webkul\Support\Console\Commands\UninstallCommand;
 use Webkul\Support\Package;
@@ -23,5 +24,16 @@ class ContactServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         //
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            if (! Package::isPluginInstalled(static::$name)) {
+                return;
+            }
+
+            $panel->plugin(ContactPlugin::make());
+        });
     }
 }

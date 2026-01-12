@@ -2,6 +2,7 @@
 
 namespace Webkul\Payment;
 
+use Filament\Panel;
 use Webkul\Support\Console\Commands\InstallCommand;
 use Webkul\Support\Console\Commands\UninstallCommand;
 use Webkul\Support\Package;
@@ -33,5 +34,16 @@ class PaymentServiceProvider extends PackageServiceProvider
                     ->runsSeeders();
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {});
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            if (! Package::isPluginInstalled(static::$name)) {
+                return;
+            }
+
+            $panel->plugin(PaymentPlugin::make());
+        });
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Webkul\Recruitment;
 
+use Filament\Panel;
 use Webkul\Support\Console\Commands\InstallCommand;
 use Webkul\Support\Console\Commands\UninstallCommand;
 use Webkul\Support\Package;
@@ -47,5 +48,16 @@ class RecruitmentServiceProvider extends PackageServiceProvider
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {})
             ->icon('recruitments');
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            if (! Package::isPluginInstalled(static::$name)) {
+                return;
+            }
+
+            $panel->plugin(RecruitmentPlugin::make());
+        });
     }
 }

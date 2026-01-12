@@ -2,6 +2,7 @@
 
 namespace Webkul\Security;
 
+use Filament\Panel;
 use Webkul\Support\Package;
 use Webkul\Support\PackageServiceProvider;
 
@@ -38,5 +39,12 @@ class SecurityServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         $this->app->singleton(PermissionRegistrar::class);
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(SecurityPlugin::make());
+        });
     }
 }

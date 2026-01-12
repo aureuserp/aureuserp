@@ -6,7 +6,6 @@ use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Filament\Support\Facades\FilamentView;
 use Illuminate\Support\HtmlString;
-use ReflectionClass;
 
 class SupportPlugin implements Plugin
 {
@@ -25,10 +24,22 @@ class SupportPlugin implements Plugin
         $panel
             ->when($panel->getId() == 'admin', function (Panel $panel) {
                 $panel->passwordReset()
-                    ->discoverResources(in: $this->getPluginBasePath('/Filament/Resources'), for: 'Webkul\\Support\\Filament\\Resources')
-                    ->discoverPages(in: $this->getPluginBasePath('/Filament/Pages'), for: 'Webkul\\Support\\Filament\\Pages')
-                    ->discoverClusters(in: $this->getPluginBasePath('/Filament/Clusters'), for: 'Webkul\\Support\\Filament\\Clusters')
-                    ->discoverClusters(in: $this->getPluginBasePath('/Filament/Widgets'), for: 'Webkul\\Support\\Filament\\Widgets');
+                    ->discoverResources(
+                        in: __DIR__.'/Filament/Resources',
+                        for: 'Webkul\\Support\\Filament\\Resources'
+                    )
+                    ->discoverPages(
+                        in: __DIR__.'/Filament/Pages',
+                        for: 'Webkul\\Support\\Filament\\Pages'
+                    )
+                    ->discoverClusters(
+                        in: __DIR__.'/Filament/Clusters',
+                        for: 'Webkul\\Support\\Filament\\Clusters'
+                    )
+                    ->discoverClusters(
+                        in: __DIR__.'/Filament/Widgets',
+                        for: 'Webkul\\Support\\Filament\\Widgets'
+                    );
             });
     }
 
@@ -49,12 +60,5 @@ class SupportPlugin implements Plugin
                 });
             </script>
         "));
-    }
-
-    protected function getPluginBasePath($path = null): string
-    {
-        $reflector = new ReflectionClass(get_class($this));
-
-        return dirname($reflector->getFileName()).($path ?? '');
     }
 }

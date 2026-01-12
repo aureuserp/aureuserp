@@ -20,7 +20,6 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Webkul\Support\Filament\Pages\Profile;
-use Webkul\Support\PluginManager;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -113,7 +112,6 @@ class AdminPanelProvider extends PanelProvider
                         'default' => 1,
                         'sm'      => 2,
                     ]),
-                PluginManager::make(),
             ])
             ->middleware([
                 EncryptCookies::class,

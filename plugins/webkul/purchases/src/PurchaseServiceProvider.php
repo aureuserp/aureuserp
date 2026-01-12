@@ -2,6 +2,7 @@
 
 namespace Webkul\Purchase;
 
+use Filament\Panel;
 use Illuminate\Foundation\AliasLoader;
 use Livewire\Livewire;
 use Webkul\Purchase\Facades\PurchaseOrder as PurchaseOrderFacade;
@@ -67,6 +68,14 @@ class PurchaseServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
+        Panel::configureUsing(function (Panel $panel): void {
+            if (! Package::isPluginInstalled(static::$name)) {
+                return;
+            }
+
+            $panel->plugin(PurchasePlugin::make());
+        });
+
         $loader = AliasLoader::getInstance();
 
         $loader->alias('purchase_order', PurchaseOrderFacade::class);

@@ -2,6 +2,7 @@
 
 namespace Webkul\TimeOff;
 
+use Filament\Panel;
 use Webkul\Support\Console\Commands\InstallCommand;
 use Webkul\Support\Console\Commands\UninstallCommand;
 use Webkul\Support\Package;
@@ -40,5 +41,16 @@ class TimeOffServiceProvider extends PackageServiceProvider
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {})
             ->icon('time-offs');
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            if (! Package::isPluginInstalled(static::$name)) {
+                return;
+            }
+
+            $panel->plugin(TimeOffPlugin::make());
+        });
     }
 }

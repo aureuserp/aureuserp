@@ -2,6 +2,7 @@
 
 namespace Webkul\Partner;
 
+use Filament\Panel;
 use Webkul\Support\Package;
 use Webkul\Support\PackageServiceProvider;
 
@@ -29,5 +30,16 @@ class PartnerServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         //
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            if (! Package::isPluginInstalled(static::$name)) {
+                return;
+            }
+
+            $panel->plugin(PartnerPlugin::make());
+        });
     }
 }

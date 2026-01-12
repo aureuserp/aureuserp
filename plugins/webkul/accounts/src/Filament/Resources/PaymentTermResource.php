@@ -58,7 +58,7 @@ class PaymentTermResource extends Resource
     protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
 
     protected static bool $shouldRegisterNavigation = false;
-    
+
     protected static bool $isGloballySearchable = false;
 
     protected static ?string $recordTitleAttribute = 'name';

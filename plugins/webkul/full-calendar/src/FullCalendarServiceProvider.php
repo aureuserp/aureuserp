@@ -2,6 +2,7 @@
 
 namespace Webkul\FullCalendar;
 
+use Filament\Panel;
 use Filament\Support\Assets\AlpineComponent;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
@@ -28,6 +29,13 @@ class FullCalendarServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         $this->registerCustomCss();
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(FullCalendarPlugin::make());
+        });
     }
 
     public function registerCustomCss()

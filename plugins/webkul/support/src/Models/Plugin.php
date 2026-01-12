@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Support\Package;
 
 class Plugin extends Model implements Sortable
 {
@@ -55,44 +56,35 @@ class Plugin extends Model implements Sortable
     protected static function getAllPluginPackages(): array
     {
         $pluginClasses = require base_path('bootstrap/plugins.php');
+
         $packages = [];
 
         foreach ($pluginClasses as $pluginClass) {
-            if (class_exists($pluginClass)) {
-                $pluginInstance = new $pluginClass;
-                $pluginName = $pluginInstance->getId();
-
-                $serviceProviderClass = str_replace('Plugin', 'ServiceProvider', $pluginClass);
-
-                if (class_exists($serviceProviderClass)) {
-                    $serviceProvider = new $serviceProviderClass(app());
-                    $package = new \Webkul\Support\Package;
-                    $serviceProvider->configureCustomPackage($package);
-                    $packages[$pluginName] = $package;
-                }
+            if (! class_exists($pluginClass)) {
+                continue;
             }
+
+            $serviceProviderClass = str_replace('Plugin', 'ServiceProvider', $pluginClass);
+
+            if (! class_exists($serviceProviderClass)) {
+                continue;
+            }
+
+            $plugin = new $pluginClass;
+
+            $serviceProvider = new $serviceProviderClass(app());
+
+            $package = new Package;
+
+            $serviceProvider->configureCustomPackage($package);
+
+            $packages[$plugin->getId()] = $package;
         }
 
         return $packages;
     }
 
-    public function getServiceProviderClass(): ?string
-    {
-        $pluginClasses = require base_path('bootstrap/plugins.php');
-
-        foreach ($pluginClasses as $pluginClass) {
-            if (class_exists($pluginClass)) {
-                $pluginInstance = new $pluginClass;
-                if ($pluginInstance->getId() === $this->name) {
-                    return str_replace('Plugin', 'ServiceProvider', $pluginClass);
-                }
-            }
-        }
-
-        return null;
-    }
-
-    public function getPackage(): ?\Webkul\Support\Package
+    public function getPackageAttribute(): ?Package
     {
         $packages = self::getAllPluginPackages();
 
@@ -101,20 +93,25 @@ class Plugin extends Model implements Sortable
 
     public function getDependenciesFromConfig(): array
     {
-        $package = $this->getPackage();
-
-        return $package ? $package->dependencies : [];
+        return $this->package?->dependencies ?? [];
     }
 
     public function getDependentsFromConfig(): array
     {
         $packages = self::getAllPluginPackages();
+
         $dependents = [];
 
         foreach ($packages as $pluginName => $package) {
-            if ($pluginName !== $this->name && in_array($this->name, $package->dependencies)) {
-                $dependents[] = $pluginName;
+            if ($pluginName === $this->name) {
+                continue;
             }
+                
+            if (! in_array($this->name, $package->dependencies)) {
+                continue;
+            }
+
+            $dependents[] = $pluginName;
         }
 
         return $dependents;

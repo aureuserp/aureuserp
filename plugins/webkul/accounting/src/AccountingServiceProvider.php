@@ -2,6 +2,7 @@
 
 namespace Webkul\Accounting;
 
+use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Livewire\Livewire;
@@ -35,7 +36,19 @@ class AccountingServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         $this->registerCustomCss();
+
         $this->registerLivewireComponents();
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            if (! Package::isPluginInstalled(static::$name)) {
+                return;
+            }
+
+            $panel->plugin(AccountingPlugin::make());
+        });
     }
 
     public function registerLivewireComponents()

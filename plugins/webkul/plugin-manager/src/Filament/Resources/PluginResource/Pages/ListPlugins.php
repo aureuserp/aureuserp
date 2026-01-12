@@ -57,15 +57,10 @@ class ListPlugins extends ListRecords
     protected function syncPlugins(): void
     {
         try {
-            $excluded = ['accounts', 'products', 'payments', 'full-calendar'];
-
             $packages = collect(Plugin::getAllPluginPackages())
-                ->reject(fn ($package, $name) => $package->isCore || in_array($name, $excluded));
+                ->reject(fn($package, $name) => $package->isCore);
 
-            $synced = 0;
-
-            $packages->each(function ($package, $name) use (&$synced) {
-
+            $synced = $packages->filter(function ($package, $name) {
                 $composerPath = base_path("plugins/webkul/{$name}/composer.json");
 
                 $composer = file_exists($composerPath)
@@ -84,15 +79,13 @@ class ListPlugins extends ListRecords
                 );
 
                 if ($deps = $plugin->getDependenciesFromConfig()) {
-                    $plugin->dependencies()->sync(
-                        Plugin::whereIn('name', $deps)->pluck('id')
-                    );
+                    $dependencyIds = Plugin::whereIn('name', $deps)->pluck('id');
+
+                    $plugin->dependencies()->sync($dependencyIds);
                 }
 
-                if ($plugin->wasRecentlyCreated) {
-                    $synced++;
-                }
-            });
+                return $plugin->wasRecentlyCreated;
+            })->count();
 
             Notification::make()
                 ->title(__('Plugins Synced Successfully'))

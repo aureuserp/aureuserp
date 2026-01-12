@@ -2,6 +2,7 @@
 
 namespace Webkul\Sale;
 
+use Filament\Panel;
 use Illuminate\Foundation\AliasLoader;
 use Livewire\Livewire;
 use Webkul\Sale\Facades\SaleOrder as SaleOrderFacade;
@@ -74,6 +75,14 @@ class SaleServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
+        Panel::configureUsing(function (Panel $panel): void {
+            if (! Package::isPluginInstalled(static::$name)) {
+                return;
+            }
+
+            $panel->plugin(SalePlugin::make());
+        });
+
         $loader = AliasLoader::getInstance();
 
         $loader->alias('sale', SaleOrderFacade::class);
