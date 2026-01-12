@@ -35,10 +35,17 @@ class RoleResource extends RolesRoleResource
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?int $navigationSort = 1;
+    
+    protected static bool $isGloballySearchable = false;
 
     protected static $permissionsCollection;
 
     public static $permissions = null;
+
+    public static function canGloballySearch(): bool
+    {
+        return false;
+    }
 
     public static function getNavigationIcon(): string|BackedEnum|Htmlable|null
     {

@@ -41,6 +41,8 @@ class AttributeResource extends Resource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-swatch';
 
     protected static bool $shouldRegisterNavigation = false;
+    
+    protected static bool $isGloballySearchable = false;
 
     public static function form(Schema $schema): Schema
     {
