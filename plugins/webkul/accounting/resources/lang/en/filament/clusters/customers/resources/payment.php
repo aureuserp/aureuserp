@@ -8,4 +8,8 @@ return [
         'title' => 'Payments',
         'group' => 'Invoices',
     ],
+
+    'record-sub-navigation' => [
+        'journal-entry' => 'Journal Entry',
+    ],
 ];

@@ -7,4 +7,8 @@ return [
     'navigation' => [
         'title' => 'Payments',
     ],
+
+    'record-sub-navigation' => [
+        'journal-entry' => 'Journal Entry',
+    ],
 ];
