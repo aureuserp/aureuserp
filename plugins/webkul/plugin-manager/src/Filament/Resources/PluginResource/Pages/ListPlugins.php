@@ -4,10 +4,10 @@ namespace Webkul\PluginManager\Filament\Resources\PluginResource\Pages;
 
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Contracts\Support\Htmlable;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Builder;
 use Webkul\PluginManager\Filament\Resources\PluginResource;
 use Webkul\PluginManager\Models\Plugin;
 
@@ -101,7 +101,7 @@ class ListPlugins extends ListRecords
             Notification::make()
                 ->title(__('plugin-manager::filament/resources/plugin/pages/list-plugins.header-actions.sync.notification.success.title'))
                 ->body(__('plugin-manager::filament/resources/plugin/pages/list-plugins.header-actions.sync.notification.success.body', [
-                    'count' => $synced
+                    'count' => $synced,
                 ]))
                 ->success()
                 ->send();

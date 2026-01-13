@@ -5,10 +5,8 @@ namespace Webkul\PluginManager;
 use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
-use Webkul\PluginManager\Package;
-use Webkul\PluginManager\PackageServiceProvider;
-use Webkul\PluginManager\Console\Commands\InstallERP;
 use Illuminate\Support\Facades\Event;
+use Webkul\PluginManager\Console\Commands\InstallERP;
 
 class PluginManagerServiceProvider extends PackageServiceProvider
 {

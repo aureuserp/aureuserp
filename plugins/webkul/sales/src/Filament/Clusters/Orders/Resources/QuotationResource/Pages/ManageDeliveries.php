@@ -9,8 +9,8 @@ use Filament\Tables\Table;
 use Livewire\Livewire;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
-use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\PluginManager\Package;
+use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageDeliveries extends ManageRelatedRecords

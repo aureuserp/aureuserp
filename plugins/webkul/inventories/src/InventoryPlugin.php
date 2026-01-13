@@ -6,6 +6,7 @@ use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Webkul\Inventory\Filament\Clusters\Settings\Pages\ManageOperations;
+use Webkul\PluginManager\Package;
 
 class InventoryPlugin implements Plugin
 {
@@ -21,6 +22,10 @@ class InventoryPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
+        if (! Package::isPluginInstalled($this->getId())) {
+            return;
+        }
+
         $panel
             ->when($panel->getId() == 'admin', function (Panel $panel) {
                 $panel

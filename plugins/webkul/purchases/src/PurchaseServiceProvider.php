@@ -5,13 +5,13 @@ namespace Webkul\Purchase;
 use Filament\Panel;
 use Illuminate\Foundation\AliasLoader;
 use Livewire\Livewire;
-use Webkul\Purchase\Facades\PurchaseOrder as PurchaseOrderFacade;
-use Webkul\Purchase\Livewire\Customer\ListProducts;
-use Webkul\Purchase\Livewire\OrderSummary;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Purchase\Facades\PurchaseOrder as PurchaseOrderFacade;
+use Webkul\Purchase\Livewire\Customer\ListProducts;
+use Webkul\Purchase\Livewire\OrderSummary;
 
 class PurchaseServiceProvider extends PackageServiceProvider
 {
@@ -69,10 +69,6 @@ class PurchaseServiceProvider extends PackageServiceProvider
     public function packageRegistered(): void
     {
         Panel::configureUsing(function (Panel $panel): void {
-            if (! Package::isPluginInstalled(static::$name)) {
-                return;
-            }
-
             $panel->plugin(PurchasePlugin::make());
         });
 

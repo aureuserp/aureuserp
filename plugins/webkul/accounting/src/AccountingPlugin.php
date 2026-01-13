@@ -6,6 +6,7 @@ use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Webkul\Accounting\Filament\Clusters\Settings\Pages\ManageProducts;
+use Webkul\PluginManager\Package;
 
 class AccountingPlugin implements Plugin
 {
@@ -21,6 +22,10 @@ class AccountingPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
+        if (! Package::isPluginInstalled($this->getId())) {
+            return;
+        }
+
         $panel
             ->when($panel->getId() == 'admin', function (Panel $panel) {
                 $panel->discoverResources(

@@ -6,7 +6,6 @@ use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\ViewAction;
 use Filament\Infolists\Components\IconEntry;
-use Filament\Support\Enums\IconSize;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
@@ -15,6 +14,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\IconSize;
 use Filament\Support\Enums\TextSize;
 use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\IconColumn;
@@ -65,8 +65,8 @@ class PluginResource extends Resource
 
                     ImageColumn::make('package_image')
                         ->label('')
-                        ->getStateUsing(fn ($record) => $record?->package?->icon 
-                            ? asset("svg/{$record->package->icon}.svg") 
+                        ->getStateUsing(fn ($record) => $record?->package?->icon
+                            ? asset("svg/{$record->package->icon}.svg")
                             : null)
                         ->imageSize(100)
                         ->visible(fn ($record) => $record?->package?->icon)
@@ -173,27 +173,28 @@ class PluginResource extends Resource
                         ->modalSubmitActionLabel(__('plugin-manager::filament/resources/plugin.actions.uninstall.submit'))
                         ->modalContent(function ($record) {
                             $dependents = $record->getDependentsFromConfig();
-                            
+
                             $packages = collect([$record->name => $record->package])
-                                ->merge($dependents 
-                                    ? collect($dependents)->mapWithKeys(fn($dep) => [$dep => Plugin::where('name', $dep)->first()?->package]) 
+                                ->merge($dependents
+                                    ? collect($dependents)->mapWithKeys(fn ($dep) => [$dep => Plugin::where('name', $dep)->first()?->package])
                                     : []
                                 );
 
                             $tables = $packages
-                                ->flatMap(fn($package) => collect($package?->migrationFileNames ?? []))
+                                ->flatMap(fn ($package) => collect($package?->migrationFileNames ?? []))
                                 ->map(function ($migrationFile) {
                                     if (preg_match('/create_(.*?)_table/', $migrationFile, $matches)) {
                                         $table = $matches[1];
 
-                                        return DBSchema::hasTable($table) 
+                                        return DBSchema::hasTable($table)
                                             ? ['table' => $table, 'count' => DB::table($table)->count()]
                                             : null;
                                     }
+
                                     return null;
                                 })
                                 ->filter()
-                                ->filter(fn($item) => $item['count'] > 0)
+                                ->filter(fn ($item) => $item['count'] > 0)
                                 ->unique('table')
                                 ->values();
 
@@ -308,7 +309,7 @@ class PluginResource extends Resource
                 }
 
                 try {
-                    if (!$plugin->package) {
+                    if (! $plugin->package) {
                         throw new \Exception("Package for '{$pluginName}' not found.");
                     }
 
@@ -328,7 +329,7 @@ class PluginResource extends Resource
 
                     $plugin->update(['is_installed' => false, 'is_active' => false]);
                 } catch (\Throwable $e) {
-                    $errors[] = "Failed to uninstall '{$pluginName}': " . $e->getMessage();
+                    $errors[] = "Failed to uninstall '{$pluginName}': ".$e->getMessage();
                 }
             });
 

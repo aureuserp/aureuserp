@@ -5,6 +5,7 @@ namespace Webkul\Project;
 use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
+use Webkul\PluginManager\Package;
 use Webkul\Project\Filament\Clusters\Settings\Pages\ManageTasks;
 
 class ProjectPlugin implements Plugin
@@ -21,6 +22,10 @@ class ProjectPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
+        if (! Package::isPluginInstalled($this->getId())) {
+            return;
+        }
+
         $panel
             ->when($panel->getId() == 'admin', function (Panel $panel) {
                 $panel

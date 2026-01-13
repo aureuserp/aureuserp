@@ -5,12 +5,12 @@ namespace Webkul\Sale;
 use Filament\Panel;
 use Illuminate\Foundation\AliasLoader;
 use Livewire\Livewire;
-use Webkul\Sale\Facades\SaleOrder as SaleOrderFacade;
-use Webkul\Sale\Livewire\QuotationSummary;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\Sale\Facades\SaleOrder as SaleOrderFacade;
+use Webkul\Sale\Livewire\QuotationSummary;
 
 class SaleServiceProvider extends PackageServiceProvider
 {
@@ -76,10 +76,6 @@ class SaleServiceProvider extends PackageServiceProvider
     public function packageRegistered(): void
     {
         Panel::configureUsing(function (Panel $panel): void {
-            if (! Package::isPluginInstalled(static::$name)) {
-                return;
-            }
-
             $panel->plugin(SalePlugin::make());
         });
 

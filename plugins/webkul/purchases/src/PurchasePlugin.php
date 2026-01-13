@@ -5,6 +5,7 @@ namespace Webkul\Purchase;
 use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
+use Webkul\PluginManager\Package;
 use Webkul\Purchase\Filament\Admin\Clusters\Settings\Pages\ManageProducts;
 
 class PurchasePlugin implements Plugin
@@ -21,6 +22,10 @@ class PurchasePlugin implements Plugin
 
     public function register(Panel $panel): void
     {
+        if (! Package::isPluginInstalled($this->getId())) {
+            return;
+        }
+
         $panel
             ->when($panel->getId() == 'customer', function (Panel $panel) {
                 $panel

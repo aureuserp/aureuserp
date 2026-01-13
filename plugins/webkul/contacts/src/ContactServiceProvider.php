@@ -29,10 +29,6 @@ class ContactServiceProvider extends PackageServiceProvider
     public function packageRegistered(): void
     {
         Panel::configureUsing(function (Panel $panel): void {
-            if (! Package::isPluginInstalled(static::$name)) {
-                return;
-            }
-
             $panel->plugin(ContactPlugin::make());
         });
     }

@@ -14,9 +14,9 @@ return [
 
     'header-actions' => [
         'sync' => [
-            'label' => 'Sync Available Plugins',
-            'modal-heading' => 'Sync Plugins',
-            'modal-description' => 'This will scan and register any new plugins found.',
+            'label'                     => 'Sync Available Plugins',
+            'modal-heading'             => 'Sync Plugins',
+            'modal-description'         => 'This will scan and register any new plugins found.',
             'modal-submit-action-label' => 'Sync Plugins',
 
             'notification' => [

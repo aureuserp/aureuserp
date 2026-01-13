@@ -4,6 +4,7 @@ namespace Webkul\Timesheet;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Webkul\PluginManager\Package;
 
 class TimesheetPlugin implements Plugin
 {
@@ -19,6 +20,10 @@ class TimesheetPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
+        if (! Package::isPluginInstalled($this->getId())) {
+            return;
+        }
+
         $panel
             ->when($panel->getId() == 'admin', function (Panel $panel) {
                 $panel

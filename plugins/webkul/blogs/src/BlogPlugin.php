@@ -4,6 +4,7 @@ namespace Webkul\Blog;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Webkul\PluginManager\Package;
 
 class BlogPlugin implements Plugin
 {
@@ -19,6 +20,10 @@ class BlogPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
+        if (! Package::isPluginInstalled($this->getId())) {
+            return;
+        }
+
         $panel
             ->when($panel->getId() == 'customer', function (Panel $panel) {
                 $panel

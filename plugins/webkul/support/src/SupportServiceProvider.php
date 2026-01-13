@@ -10,11 +10,11 @@ use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Security\Livewire\AcceptInvitation;
 use Webkul\Security\Models\Role;
 use Webkul\Security\Policies\RolePolicy;
-use Webkul\PluginManager\PackageServiceProvider;
-use Webkul\PluginManager\Package;
 
 class SupportServiceProvider extends PackageServiceProvider
 {

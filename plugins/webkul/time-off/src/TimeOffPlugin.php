@@ -5,6 +5,7 @@ namespace Webkul\TimeOff;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Webkul\FullCalendar\FullCalendarPlugin;
+use Webkul\PluginManager\Package;
 
 class TimeOffPlugin implements Plugin
 {
@@ -20,6 +21,10 @@ class TimeOffPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
+        if (! Package::isPluginInstalled($this->getId())) {
+            return;
+        }
+
         $panel
             ->when($panel->getId() == 'admin', function (Panel $panel) {
                 $panel

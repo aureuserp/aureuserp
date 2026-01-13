@@ -117,7 +117,7 @@ class Plugin extends Model implements Sortable
             if ($pluginName === $this->name) {
                 continue;
             }
-                
+
             if (! in_array($this->name, $package->dependencies)) {
                 continue;
             }

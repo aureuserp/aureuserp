@@ -43,10 +43,6 @@ class AccountingServiceProvider extends PackageServiceProvider
     public function packageRegistered(): void
     {
         Panel::configureUsing(function (Panel $panel): void {
-            if (! Package::isPluginInstalled(static::$name)) {
-                return;
-            }
-
             $panel->plugin(AccountingPlugin::make());
         });
     }

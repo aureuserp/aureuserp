@@ -50,6 +50,7 @@ use Webkul\Account\Filament\Resources\IncotermResource;
 use Webkul\Account\Models\Partner;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
+use Webkul\PluginManager\Package;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Models\Packaging;
 use Webkul\Purchase\Enums\OrderState;
@@ -67,7 +68,6 @@ use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
 use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
-use Webkul\PluginManager\Package;
 
 class OrderResource extends Resource
 {
