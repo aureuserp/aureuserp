@@ -6,6 +6,7 @@ use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\ViewAction;
 use Filament\Infolists\Components\IconEntry;
+use Filament\Support\Enums\IconSize;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
@@ -16,6 +17,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\TextSize;
 use Filament\Support\Enums\Width;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
@@ -52,12 +54,22 @@ class PluginResource extends Resource
         return $table
             ->columns([
                 Split::make([
-                    ImageColumn::make('id')
+                    IconColumn::make('package_icon')
                         ->label('')
-                        ->getStateUsing(fn ($record) => $record->package?->icon
-                            ? asset("svg/{$record->package->icon}.svg")
-                            : 'heroicon-o-puzzle-piece')
+                        ->state(true)
+                        ->icon('heroicon-o-puzzle-piece')
+                        ->size(IconSize::TwoExtraLarge)
+                        ->color('primary')
+                        ->visible(fn ($record) => ! $record?->package?->icon)
+                        ->grow(false),
+
+                    ImageColumn::make('package_image')
+                        ->label('')
+                        ->getStateUsing(fn ($record) => $record?->package?->icon 
+                            ? asset("svg/{$record->package->icon}.svg") 
+                            : null)
                         ->imageSize(100)
+                        ->visible(fn ($record) => $record?->package?->icon)
                         ->grow(false),
 
                     Stack::make([
@@ -193,7 +205,6 @@ class PluginResource extends Resource
             ], position: RecordActionsPosition::BeforeColumns)
             ->recordActionsAlignment('end')
             ->defaultSort('sort', 'asc')
-            ->reorderable('sort')
             ->paginated([16, 24, 32]);
     }
 
