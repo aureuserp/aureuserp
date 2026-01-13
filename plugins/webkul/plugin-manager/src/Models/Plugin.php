@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class Plugin extends Model implements Sortable
 {
@@ -55,33 +56,40 @@ class Plugin extends Model implements Sortable
 
     protected static function getAllPluginPackages(): array
     {
-        $pluginClasses = require base_path('bootstrap/plugins.php');
-
         $packages = [];
 
-        foreach ($pluginClasses as $pluginClass) {
-            if (! class_exists($pluginClass)) {
-                continue;
+        $panels = app('filament')->getPanels();
+
+        foreach ($panels as $panel) {
+            foreach ($panel->getPlugins() as $pluginId => $plugin) {
+                $pluginClass = get_class($plugin);
+
+                $serviceProviderClass = str_replace('Plugin', 'ServiceProvider', $pluginClass);
+
+                if (! class_exists($serviceProviderClass)) {
+                    continue;
+                }
+
+                $reflection = new \ReflectionClass($serviceProviderClass);
+
+                if (! $reflection->isSubclassOf(PackageServiceProvider::class)) {
+                    continue;
+                }
+
+                $serviceProvider = new $serviceProviderClass(app());
+
+                $package = new Package;
+
+                $serviceProvider->configureCustomPackage($package);
+
+                if ($package->isCore) {
+                    continue;
+                }
+
+                $package->basePath = dirname($reflection->getFileName(), 2);
+
+                $packages[$pluginId] = $package;
             }
-
-            $serviceProviderClass = str_replace('Plugin', 'ServiceProvider', $pluginClass);
-
-            if (! class_exists($serviceProviderClass)) {
-                continue;
-            }
-
-            $plugin = new $pluginClass;
-
-            $serviceProvider = new $serviceProviderClass(app());
-
-            $package = new Package;
-
-            $serviceProvider->configureCustomPackage($package);
-
-            $reflection = new \ReflectionClass($serviceProviderClass);
-            $package->basePath = dirname($reflection->getFileName(), 2);
-
-            $packages[$plugin->getId()] = $package;
         }
 
         return $packages;

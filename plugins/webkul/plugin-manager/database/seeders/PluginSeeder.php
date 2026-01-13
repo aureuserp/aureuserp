@@ -12,10 +12,6 @@ class PluginSeeder extends Seeder
         $packages = Plugin::getAllPluginPackages();
 
         foreach ($packages as $pluginName => $package) {
-            if ($package->isCore) {
-                continue;
-            }
-
             $composerPath = $package->basePath("composer.json");
             
             $composerData = [];

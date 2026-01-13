@@ -16,9 +16,7 @@ class ListPlugins extends ListRecords
 
     public function getTabs(): array
     {
-        $packages = collect(Plugin::getAllPluginPackages())
-            ->reject(fn ($package, $name) => $package->isCore)
-            ->keys();
+        $packages = collect(Plugin::getAllPluginPackages())->keys();
 
         $query = fn ($installed = null) => Plugin::whereIn('name', $packages)
             ->when(! is_null($installed), fn ($q) => $q->where('is_installed', $installed));
@@ -56,8 +54,7 @@ class ListPlugins extends ListRecords
     protected function syncPlugins(): void
     {
         try {
-            $packages = collect(Plugin::getAllPluginPackages())
-                ->reject(fn($package, $name) => $package->isCore);
+            $packages = collect(Plugin::getAllPluginPackages());
 
             $synced = $packages->filter(function ($package, $name) {
                 $composerPath = $package->basePath('composer.json');
