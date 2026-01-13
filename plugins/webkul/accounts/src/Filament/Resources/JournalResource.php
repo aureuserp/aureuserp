@@ -54,7 +54,7 @@ class JournalResource extends Resource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-book-open';
 
     protected static bool $shouldRegisterNavigation = false;
-    
+
     protected static bool $isGloballySearchable = false;
 
     protected static ?string $recordTitleAttribute = 'name';

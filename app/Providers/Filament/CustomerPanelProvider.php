@@ -14,7 +14,6 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Webkul\Support\PluginManager;
 
 class CustomerPanelProvider extends PanelProvider
 {
@@ -37,9 +36,6 @@ class CustomerPanelProvider extends PanelProvider
                 'primary' => Color::Blue,
             ])
             ->topNavigation()
-            ->plugins([
-                PluginManager::make(),
-            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

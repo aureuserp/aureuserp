@@ -51,6 +51,7 @@ use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Tax;
 use Webkul\Account\Models\PaymentTerm;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
+use Webkul\PluginManager\Package;
 use Webkul\Product\Models\Packaging;
 use Webkul\Product\Settings\ProductSettings;
 use Webkul\Sale\Enums\OrderState;
@@ -77,7 +78,6 @@ use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as Infolis
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
-use Webkul\Support\Package;
 
 class QuotationResource extends Resource
 {

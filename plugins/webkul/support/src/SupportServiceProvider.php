@@ -2,18 +2,19 @@
 
 namespace Webkul\Support;
 
+use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Security\Livewire\AcceptInvitation;
 use Webkul\Security\Models\Role;
 use Webkul\Security\Policies\RolePolicy;
-use Webkul\Support\Console\Commands\InstallERP;
 
 class SupportServiceProvider extends PackageServiceProvider
 {
@@ -55,10 +56,7 @@ class SupportServiceProvider extends PackageServiceProvider
                 '2025_10_10_080114_create_currency_rates_table',
                 '2025_11_14_102615_alter_currency_rates_table',
             ])
-            ->runsMigrations()
-            ->hasCommands([
-                InstallERP::class,
-            ]);
+            ->runsMigrations();
     }
 
     public function packageBooted(): void
@@ -68,8 +66,6 @@ class SupportServiceProvider extends PackageServiceProvider
         Livewire::component('accept-invitation', AcceptInvitation::class);
 
         Gate::policy(Role::class, RolePolicy::class);
-
-        Event::listen('aureus.installed', 'Webkul\Support\Listeners\Installer@installed');
 
         /**
          * Route to access template applied image file
@@ -82,20 +78,20 @@ class SupportServiceProvider extends PackageServiceProvider
         FilamentAsset::register([
             Css::make('support', __DIR__.'/../resources/dist/support.css'),
         ], 'support');
-
-        $this->app->make(PermissionManager::class)->managePermissions();
     }
 
     public function packageRegistered(): void
     {
-        $this->registerHooks();
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(SupportPlugin::make());
+        });
 
-        $this->app->singleton(PermissionManager::class, fn () => new PermissionManager);
+        $this->registerHooks();
     }
 
     protected function registerHooks(): void
     {
-        $version = '1.2.0';
+        $version = '1.3.0-BETA-1';
 
         FilamentView::registerRenderHook(
             PanelsRenderHook::USER_MENU_PROFILE_BEFORE,

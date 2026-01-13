@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\Support;
+namespace Webkul\PluginManager;
 
 use BezhanSalleh\FilamentShield\Facades\FilamentShield;
 use Filament\Pages\BasePage as Page;
@@ -23,7 +23,7 @@ class PermissionManager
                 strict: true
             )) {
                 $pluginKey = Str::of($entity)
-                    ->after('Webkul\\')
+                    ->after('\\')
                     ->before('\\')
                     ->snake()
                     ->toString();

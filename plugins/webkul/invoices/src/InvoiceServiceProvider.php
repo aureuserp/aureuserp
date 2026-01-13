@@ -2,10 +2,11 @@
 
 namespace Webkul\Invoice;
 
-use Webkul\Support\Console\Commands\InstallCommand;
-use Webkul\Support\Console\Commands\UninstallCommand;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Filament\Panel;
+use Webkul\PluginManager\Console\Commands\InstallCommand;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class InvoiceServiceProvider extends PackageServiceProvider
 {
@@ -25,5 +26,12 @@ class InvoiceServiceProvider extends PackageServiceProvider
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {})
             ->icon('invoices');
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(InvoicePlugin::make());
+        });
     }
 }

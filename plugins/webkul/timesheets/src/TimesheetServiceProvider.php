@@ -2,10 +2,11 @@
 
 namespace Webkul\Timesheet;
 
-use Webkul\Support\Console\Commands\InstallCommand;
-use Webkul\Support\Console\Commands\UninstallCommand;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Filament\Panel;
+use Webkul\PluginManager\Console\Commands\InstallCommand;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class TimesheetServiceProvider extends PackageServiceProvider
 {
@@ -29,5 +30,12 @@ class TimesheetServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         //
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(TimesheetPlugin::make());
+        });
     }
 }

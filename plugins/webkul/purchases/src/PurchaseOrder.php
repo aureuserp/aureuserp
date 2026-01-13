@@ -16,6 +16,7 @@ use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\Receipt;
+use Webkul\PluginManager\Package;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Purchase\Enums as PurchaseEnums;
 use Webkul\Purchase\Enums\QtyReceivedMethod;
@@ -25,7 +26,6 @@ use Webkul\Purchase\Models\AccountMove;
 use Webkul\Purchase\Models\Order;
 use Webkul\Purchase\Models\OrderLine;
 use Webkul\Purchase\Settings\OrderSettings;
-use Webkul\Support\Package;
 
 class PurchaseOrder
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\Support\Listeners;
+namespace Webkul\PluginManager\Listeners;
 
 use Exception;
 use GuzzleHttp\Client;

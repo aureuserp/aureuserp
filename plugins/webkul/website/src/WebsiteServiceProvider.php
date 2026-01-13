@@ -2,13 +2,14 @@
 
 namespace Webkul\Website;
 
+use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Route;
-use Webkul\Support\Console\Commands\InstallCommand;
-use Webkul\Support\Console\Commands\UninstallCommand;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Webkul\PluginManager\Console\Commands\InstallCommand;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Website\Http\Responses\LogoutResponse;
 
 class WebsiteServiceProvider extends PackageServiceProvider
@@ -55,6 +56,10 @@ class WebsiteServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(WebsitePlugin::make());
+        });
+
         $this->app->bind(\Filament\Auth\Http\Responses\Contracts\LogoutResponse::class, LogoutResponse::class);
     }
 

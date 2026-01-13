@@ -2,12 +2,13 @@
 
 namespace Webkul\Chatter;
 
+use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Livewire\Livewire;
 use Webkul\Chatter\Livewire\ChatterPanel;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class ChatterServiceProvider extends PackageServiceProvider
 {
@@ -35,6 +36,13 @@ class ChatterServiceProvider extends PackageServiceProvider
         $this->registerCustomCss();
 
         Livewire::component('chatter-panel', ChatterPanel::class);
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(ChatterPlugin::make());
+        });
     }
 
     public function registerCustomCss()
