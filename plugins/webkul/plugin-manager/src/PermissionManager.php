@@ -23,7 +23,7 @@ class PermissionManager
                 strict: true
             )) {
                 $pluginKey = Str::of($entity)
-                    ->after('Webkul\\')
+                    ->after('\\')
                     ->before('\\')
                     ->snake()
                     ->toString();
