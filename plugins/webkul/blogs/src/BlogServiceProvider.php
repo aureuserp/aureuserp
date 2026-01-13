@@ -5,10 +5,10 @@ namespace Webkul\Blog;
 use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
-use Webkul\Support\Console\Commands\InstallCommand;
-use Webkul\Support\Console\Commands\UninstallCommand;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Webkul\PluginManager\Console\Commands\InstallCommand;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class BlogServiceProvider extends PackageServiceProvider
 {

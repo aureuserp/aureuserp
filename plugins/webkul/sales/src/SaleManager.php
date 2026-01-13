@@ -30,7 +30,7 @@ use Webkul\Sale\Models\Order;
 use Webkul\Sale\Models\OrderLine;
 use Webkul\Sale\Settings\InvoiceSettings;
 use Webkul\Sale\Settings\QuotationAndOrderSettings;
-use Webkul\Support\Package;
+use Webkul\PluginManager\Package;
 use Webkul\Support\Services\EmailService;
 
 class SaleManager

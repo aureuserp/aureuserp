@@ -67,7 +67,7 @@ use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
 use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
-use Webkul\Support\Package;
+use Webkul\PluginManager\Package;
 
 class OrderResource extends Resource
 {

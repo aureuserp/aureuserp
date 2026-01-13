@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\Support\Console\Commands;
+namespace Webkul\PluginManager\Console\Commands;
 
 use BezhanSalleh\FilamentShield\Support\Utils;
 use Exception;

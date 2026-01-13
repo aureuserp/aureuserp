@@ -7,8 +7,8 @@ use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Livewire\Livewire;
 use Webkul\Chatter\Livewire\ChatterPanel;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class ChatterServiceProvider extends PackageServiceProvider
 {

@@ -3,10 +3,10 @@
 namespace Webkul\Product;
 
 use Filament\Panel;
-use Webkul\Support\Console\Commands\InstallCommand;
-use Webkul\Support\Console\Commands\UninstallCommand;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Webkul\PluginManager\Console\Commands\InstallCommand;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class ProductServiceProvider extends PackageServiceProvider
 {

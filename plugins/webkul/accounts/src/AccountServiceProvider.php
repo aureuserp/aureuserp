@@ -8,10 +8,10 @@ use Livewire\Livewire;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Livewire\InvoiceSummary;
-use Webkul\Support\Console\Commands\InstallCommand;
-use Webkul\Support\Console\Commands\UninstallCommand;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Webkul\PluginManager\Console\Commands\InstallCommand;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class AccountServiceProvider extends PackageServiceProvider
 {

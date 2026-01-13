@@ -77,7 +77,7 @@ use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as Infolis
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
-use Webkul\Support\Package;
+use Webkul\PluginManager\Package;
 
 class QuotationResource extends Resource
 {

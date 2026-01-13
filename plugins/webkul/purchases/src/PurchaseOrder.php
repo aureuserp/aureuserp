@@ -25,7 +25,7 @@ use Webkul\Purchase\Models\AccountMove;
 use Webkul\Purchase\Models\Order;
 use Webkul\Purchase\Models\OrderLine;
 use Webkul\Purchase\Settings\OrderSettings;
-use Webkul\Support\Package;
+use Webkul\PluginManager\Package;
 
 class PurchaseOrder
 {

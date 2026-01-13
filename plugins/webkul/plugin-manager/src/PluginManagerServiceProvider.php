@@ -5,8 +5,10 @@ namespace Webkul\PluginManager;
 use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\PluginManager\Console\Commands\InstallERP;
+use Illuminate\Support\Facades\Event;
 
 class PluginManagerServiceProvider extends PackageServiceProvider
 {
@@ -20,12 +22,24 @@ class PluginManagerServiceProvider extends PackageServiceProvider
             ->isCore()
             ->hasViews()
             ->hasTranslations()
-            ->hasSeeder('Webkul\\PluginManager\\Database\\Seeders\\PluginSeeder');
+            ->hasMigrations([
+                '2024_11_05_105102_create_plugins_table',
+            ])
+            ->hasSeeder('Webkul\\PluginManager\\Database\\Seeders\\PluginSeeder')
+            ->runsMigrations()
+            ->runsSeeders()
+            ->hasCommands([
+                InstallERP::class,
+            ]);
     }
 
     public function packageBooted(): void
     {
         $this->registerCustomCss();
+
+        $this->app->make(PermissionManager::class)->managePermissions();
+
+        Event::listen('aureus.installed', 'Webkul\PluginManager\Listeners\Installer@installed');
     }
 
     public function packageRegistered(): void
@@ -33,6 +47,8 @@ class PluginManagerServiceProvider extends PackageServiceProvider
         Panel::configureUsing(function (Panel $panel): void {
             $panel->plugin(PluginManagerPlugin::make());
         });
+
+        $this->app->singleton(PermissionManager::class, fn () => new PermissionManager);
     }
 
     public function registerCustomCss()

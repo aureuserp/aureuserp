@@ -20,7 +20,7 @@ use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Models\Rule;
 use Webkul\Purchase\Facades\PurchaseOrder as PurchaseOrderFacade;
 use Webkul\Sale\Facades\SaleOrder as SaleFacade;
-use Webkul\Support\Package;
+use Webkul\PluginManager\Package;
 
 class InventoryManager
 {

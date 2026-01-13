@@ -8,13 +8,13 @@ use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Livewire;
 use Webkul\Security\Livewire\AcceptInvitation;
 use Webkul\Security\Models\Role;
 use Webkul\Security\Policies\RolePolicy;
-use Webkul\Support\Console\Commands\InstallERP;
+use Webkul\PluginManager\PackageServiceProvider;
+use Webkul\PluginManager\Package;
 
 class SupportServiceProvider extends PackageServiceProvider
 {
@@ -56,10 +56,7 @@ class SupportServiceProvider extends PackageServiceProvider
                 '2025_10_10_080114_create_currency_rates_table',
                 '2025_11_14_102615_alter_currency_rates_table',
             ])
-            ->runsMigrations()
-            ->hasCommands([
-                InstallERP::class,
-            ]);
+            ->runsMigrations();
     }
 
     public function packageBooted(): void
@@ -69,8 +66,6 @@ class SupportServiceProvider extends PackageServiceProvider
         Livewire::component('accept-invitation', AcceptInvitation::class);
 
         Gate::policy(Role::class, RolePolicy::class);
-
-        Event::listen('aureus.installed', 'Webkul\Support\Listeners\Installer@installed');
 
         /**
          * Route to access template applied image file
@@ -83,8 +78,6 @@ class SupportServiceProvider extends PackageServiceProvider
         FilamentAsset::register([
             Css::make('support', __DIR__.'/../resources/dist/support.css'),
         ], 'support');
-
-        $this->app->make(PermissionManager::class)->managePermissions();
     }
 
     public function packageRegistered(): void
@@ -94,8 +87,6 @@ class SupportServiceProvider extends PackageServiceProvider
         });
 
         $this->registerHooks();
-
-        $this->app->singleton(PermissionManager::class, fn () => new PermissionManager);
     }
 
     protected function registerHooks(): void

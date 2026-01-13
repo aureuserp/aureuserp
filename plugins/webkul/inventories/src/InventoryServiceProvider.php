@@ -7,10 +7,10 @@ use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Webkul\Inventory\Facades\Inventory as InventoryFacade;
-use Webkul\Support\Console\Commands\InstallCommand;
-use Webkul\Support\Console\Commands\UninstallCommand;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Webkul\PluginManager\Console\Commands\InstallCommand;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class InventoryServiceProvider extends PackageServiceProvider
 {

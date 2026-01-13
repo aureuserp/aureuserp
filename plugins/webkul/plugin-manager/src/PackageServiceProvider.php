@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\Support;
+namespace Webkul\PluginManager;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\View;

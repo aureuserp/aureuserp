@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Webkul\PluginManager\Filament\Resources\PluginResource;
-use Webkul\Support\Models\Plugin;
+use Webkul\PluginManager\Models\Plugin;
 
 class ListPlugins extends ListRecords
 {

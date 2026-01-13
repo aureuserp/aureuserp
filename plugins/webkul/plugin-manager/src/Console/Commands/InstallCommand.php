@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\Support\Console\Commands;
+namespace Webkul\PluginManager\Console\Commands;
 
 use Closure;
 use Illuminate\Console\Command;
@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use Webkul\Support\Models\Plugin;
-use Webkul\Support\Package;
+use Webkul\PluginManager\Models\Plugin;
+use Webkul\PluginManager\Package;
 
 class InstallCommand extends Command
 {

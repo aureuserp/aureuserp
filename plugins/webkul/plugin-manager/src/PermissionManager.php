@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\Support;
+namespace Webkul\PluginManager;
 
 use BezhanSalleh\FilamentShield\Facades\FilamentShield;
 use Filament\Pages\BasePage as Page;

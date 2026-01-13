@@ -3,7 +3,7 @@
 namespace Webkul\PluginManager\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Webkul\Support\Models\Plugin;
+use Webkul\PluginManager\Models\Plugin;
 
 class PluginSeeder extends Seeder
 {

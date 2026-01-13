@@ -2,7 +2,6 @@
 
 namespace Webkul\PluginManager\Filament\Resources;
 
-use Illuminate\Support\Str;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\ViewAction;
@@ -23,12 +22,11 @@ use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema as DBSchema;
 use Webkul\PluginManager\Filament\Resources\PluginResource\Pages;
 use Webkul\PluginManager\Models\Plugin;
-use Webkul\Support\Package;
+use Webkul\PluginManager\Package;
 
 class PluginResource extends Resource
 {
@@ -307,14 +305,14 @@ class PluginResource extends Resource
                         ->each(function ($migration) use ($plugin) {
                             $fullPath = $plugin->package->basePath("database/migrations/{$migration}.php");
 
-                            static::downMigration($fullPath);
+                            static::downMigration($fullPath, $migration);
                         });
 
                     collect($plugin->package->settingFileNames)
                         ->each(function ($setting) use ($plugin) {
                             $fullPath = $plugin->package->basePath("database/settings/{$setting}.php");
 
-                            static::downMigration($fullPath);
+                            static::downMigration($fullPath, $setting);
                         });
 
                     $plugin->update(['is_installed' => false, 'is_active' => false]);
@@ -339,32 +337,21 @@ class PluginResource extends Resource
         }
     }
 
-    protected static function downMigration(string $fullPath): void
+    protected static function downMigration(string $fullPath, string $migration): void
     {
-        $migrationPath = Str::after($fullPath, base_path().DIRECTORY_SEPARATOR);
-
-        if (! file_exists($migrationPath)) {
+        if (! file_exists($fullPath)) {
             return;
         }
 
-        require_once $migrationPath;
+        require_once $fullPath;
 
-        $migrationInstance = require $migrationPath;
+        $migrationInstance = require $fullPath;
 
         if (is_object($migrationInstance) && method_exists($migrationInstance, 'down')) {
             $migrationInstance->down();
 
             DB::table('migrations')->where('migration', $migration)->delete();
         }
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        $installable = collect(Plugin::getAllPluginPackages())
-            ->reject(fn ($package, $name) => $package->isCore)
-            ->keys();
-
-        return parent::getEloquentQuery()->whereIn('name', $installable);
     }
 
     public static function getPages(): array

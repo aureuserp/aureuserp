@@ -32,7 +32,7 @@
                             {{ ucfirst($dependent) }}
                         </span>
 
-                        @if(\Webkul\Support\Package::isPluginInstalled($dependent))
+                        @if(\Webkul\PluginManager\Package::isPluginInstalled($dependent))
                             <span
                                 class="inline-flex items-center rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
                                 {{ __('plugin-manager::views/uninstall-modal.dependents.installed') }}
