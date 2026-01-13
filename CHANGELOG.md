@@ -1,3 +1,81 @@
+# 🚀 CHANGELOG — v1.3.0-BETA-1
+
+### 🧩 Features
+* Accounting plugin has been added
+
+### ✨ Improvements
+
+* Plugin system refactored to support multi-vendor architecture - removed hardcoded vendor paths and implemented dynamic plugin discovery using PHP reflection.
+* Enhanced plugin manager to automatically detect plugin directories regardless of vendor name, improving extensibility.
+* Improved plugin uninstallation - fixed migration rollback process and ensured proper cleanup of plugin data.
+* Fixed file path resolution issues in plugin operations for both web and CLI contexts.
+* Added robust third-party plugin filtering to prevent errors from non-PackageServiceProvider plugins.
+* Improved plugin icon display with proper fallback handling for custom and default icons.
+* Chatter functionality refactored with improved ownership tracking and fixed redundant logs.
+* Enhanced permission system and access control across multiple resources.
+* Added validation for scrap resource quantity (minimum of 1 required).
+* Improved inventory tracking validation and notifications in product editing.
+* Added payments functionality to invoices and bills.
+* Refactored bank account management and enhanced payment methods display.
+* Updated dashboard to be dynamic and core-plugin-driven.
+* Improved global search functionality.
+
+### 🐛 Fixes
+
+* #930 [fixed] - Internal Server Error when customer views their order.
+* #923 [fixed] - Error while adding customer bank account: Unknown column `partners_bank_accounts.customer_id`.
+* #918 [fixed] - Sales Plugin: Quotation/Sales Order - Total Not Updated When Line Items Deleted.
+* #917 [fixed] - Sales Plugin: Quotation/Sales Order - Margin Data Not Persisted After Saving.
+* #916 [fixed] - Missing Archive/Unarchive Bulk Actions in Configuration Resources.
+* #915 [fixed] - Inventories Plugin: Scrap - Allows Zero Quantity Operations.
+* #914 [fixed] - Inventories Plugin: Non-Storable Products - Stock Movements Not Prevented.
+* #894 [fixed] - Accounting Plugin: Journal Resource: Inbound & Outbound Payment Method Schema Order Mismatch.
+* #893 [fixed] - Invoices & Accounting Plugin: Null Date On Invoice Creation: Move::class.
+* #892 [fixed] - Sales Plugin: Cannot Delete Order Line & Table Display Issues.
+* #891 [fixed] - Accounting Plugin: Cannot Create Tax - Invalid Enum Access.
+* #890 [fixed] - Product Plugin: Cannot Print Labels For Product Variants.
+* #888 [fixed] - Missing Inventory Section In Sales & Invoices Plugin Product Edit/Create.
+* #886 [fixed] - Invoices Plugin: Division By Zero On Payment Confirmation.
+* #882 [fixed] - Invoices Plugin: Hardcoded Currency Dropdown In Invoice Creation.
+* #881 [fixed] - Sales Plugin: Null Journal On Invoice Creation Action.
+* #880 [fixed] - Sales Plugin: Missing Inventory Table On Sales Operations.
+* #879 [fixed] - Fresh installation not successful: CustomerResource Class Not Found.
+* #878 [fixed] - Type mismatch error in `TaxesSettings` class when attempting to assign a `TaxIncludeOverride` enum.
+* #868 [fixed] - Vendor Bill incorrectly uses Customer Invoice email template (Vendor shown as Customer).
+* #854 [fixed] - Customer ID displayed when editing an invoice linked to a soft-deleted customer.
+* #850 [fixed] - Prefilled data not loading automatically in form fields.
+* #848 [fixed] - Exception error when applying country filter on Company data grid.
+* #834 [fixed] - Getting server error when adding a rule in the filter of any data grid.
+* #833 [fixed] - Force deleting a single applicant deletes the entire data grid.
+* #832 [fixed] - "Favourite" label missing from column reordering settings.
+* #831 [fixed] - Translation appearing on the recruitment dashboard graph.
+* #827 [fixed] - Role permission automatically removed after creating a user from employee creation.
+* #824 [fixed] - Plugins hide quickly when browse by phone screen.
+* #823 [fixed] - Plugins not visible in the admin panel when APP_DEBUG=false.
+* #821 [fixed] - Internal server error when creating a quotation with optional products.
+* #818 [fixed] - Company dropdown in customer creation form shows all users, customers, employees, and companies.
+* #811 [fixed] - Sales invoices, credit notes, and payments.
+* #698 [fixed] - Make Dashboard Dynamic & Core-Plugin-Driven.
+* #541 [fixed] - Parent Products Should Not Be Displayed in Product Dropdown.
+* #536 [fixed] - Accounts plugin menu.
+* #520 [fixed] - Access Control Failure: Users Can View Restricted Sections Without Proper Permissions.
+* #510 [fixed] - Image Name and Size Displayed on Frontend in Website Content Page.
+* #458 [fixed] - Preceding Subtotal Field Accepts Invalid String Input in Tax Group Creation.
+* #454 [fixed] - First word must be capital.
+* #247 [fixed] - After the Fresh Installation of Aureus ERP, we can see the Dashboard is appearing. It should open up with Roles Section.
+* #171 [fixed] - Quantity Delivered and Quantity Invoiced Should Be Non-Editable After Quotation Confirmation.
+* Fixed plugin discovery to show both installed and uninstalled plugins correctly.
+* Fixed undefined variable error in plugin migration rollback process.
+* Fixed absolute vs relative path issues in file_exists() checks for plugin operations.
+* Fixed chatter scroll issues.
+* Fixed reverse redirect issues.
+* Fixed settings loading issues.
+* Fixed migration handling in install/uninstall commands.
+* Fixed global search issues.
+* Fixed typo errors.
+* Removed unused dependencies and policy classes.
+
+
 # 🚀 CHANGELOG — v1.2.0
 
 ### Upgrade
