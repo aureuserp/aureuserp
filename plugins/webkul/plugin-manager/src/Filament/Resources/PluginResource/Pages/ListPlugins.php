@@ -22,11 +22,9 @@ class ListPlugins extends ListRecords
 
     public function getTabs(): array
     {
-        $packages = Plugin::getAllPluginPackages();
-
         $extra = [];
 
-        foreach ($packages as $key => $package) {
+        foreach (Plugin::getAllPluginPackages() as $key => $package) {
             if ($package->icon) {
                 continue;
             }

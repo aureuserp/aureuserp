@@ -9,9 +9,7 @@ class PluginSeeder extends Seeder
 {
     public function run(): void
     {
-        $packages = Plugin::getAllPluginPackages();
-
-        foreach ($packages as $pluginName => $package) {
+        foreach (Plugin::getAllPluginPackages() as $pluginName => $package) {
             $composerPath = $package->basePath("composer.json");
             
             $composerData = [];
