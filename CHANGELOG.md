@@ -1,4 +1,4 @@
-# 🚀 CHANGELOG — v1.3.0-BETA-1
+# 🚀 CHANGELOG — v1.3.0-BETA1
 
 ### 🧩 Features
 * Accounting plugin has been added
