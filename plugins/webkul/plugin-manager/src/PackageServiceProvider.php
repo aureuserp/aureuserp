@@ -33,9 +33,43 @@ abstract class PackageServiceProvider extends BasePackageServiceProvider
             $this->mergeConfigFrom($this->package->basePath("/../config/{$configFileName}.php"), $configFileName);
         }
 
+        $this->mergeShieldConfig();
+
         $this->packageRegistered();
 
         return $this;
+    }
+
+    protected function mergeShieldConfig(): void
+    {
+        $shieldConfigPath = $this->package->basePath('/../config/filament-shield.php');
+
+        if (! file_exists($shieldConfigPath)) {
+            return;
+        }
+
+        $shieldConfig = include $shieldConfigPath;
+        $config = $this->app->make('config');
+
+        if (isset($shieldConfig['resources']['manage'])) {
+            $existingManage = $config->get('filament-shield.resources.manage', []);
+            $config->set('filament-shield.resources.manage', array_merge($existingManage, $shieldConfig['resources']['manage']));
+        }
+
+        if (isset($shieldConfig['resources']['exclude'])) {
+            $existingExclude = $config->get('filament-shield.resources.exclude', []);
+            $config->set('filament-shield.resources.exclude', array_merge($existingExclude, $shieldConfig['resources']['exclude']));
+        }
+
+        if (isset($shieldConfig['pages']['exclude'])) {
+            $existingPagesExclude = $config->get('filament-shield.pages.exclude', []);
+            $config->set('filament-shield.pages.exclude', array_merge($existingPagesExclude, $shieldConfig['pages']['exclude']));
+        }
+
+        if (isset($shieldConfig['widgets']['exclude'])) {
+            $existingWidgetsExclude = $config->get('filament-shield.widgets.exclude', []);
+            $config->set('filament-shield.widgets.exclude', array_merge($existingWidgetsExclude, $shieldConfig['widgets']['exclude']));
+        }
     }
 
     public function newPackage(): Package
