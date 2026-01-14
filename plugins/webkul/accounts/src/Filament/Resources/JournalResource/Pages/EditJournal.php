@@ -22,7 +22,13 @@ class EditJournal extends EditRecord
     {
         return [
             ViewAction::make(),
-            DeleteAction::make(),
+            DeleteAction::make()
+                ->successNotification(
+                    Notification::make()
+                        ->success()
+                        ->title(__('accounts::filament/resources/journal/pages/edit-journal.header-actions.delete.notification.title'))
+                        ->body(__('accounts::filament/resources/journal/pages/edit-journal.header-actions.delete.notification.body'))
+                ),
         ];
     }
 

@@ -48,6 +48,8 @@ use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
 use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 class PaymentTermResource extends Resource
 {
@@ -303,11 +305,28 @@ class PaymentTermResource extends Resource
                             ->body(__('accounts::filament/resources/payment-term.table.actions.delete.notification.body'))
                     ),
                 ForceDeleteAction::make()
+                    ->action(function (PaymentTerm $record, ForceDeleteAction $action) {
+                        if ($record->moves()->count() > 0) {
+                            $action->failure();
+
+                            return;
+                        }
+
+                        $record->forceDelete();
+
+                        $action->success();
+                    })
+                    ->failureNotification(
+                        Notification::make()
+                            ->danger()
+                            ->title(__('accounts::filament/resources/payment-term.table.actions.force-delete.notification.error.title'))
+                            ->body(__('accounts::filament/resources/payment-term.table.actions.force-delete.notification.error.body'))
+                    )
                     ->successNotification(
                         Notification::make()
                             ->success()
-                            ->title(__('accounts::filament/resources/payment-term.table.actions.force-delete.notification.title'))
-                            ->body(__('accounts::filament/resources/payment-term.table.actions.force-delete.notification.body'))
+                            ->title(__('accounts::filament/resources/payment-term.table.actions.force-delete.notification.success.title'))
+                            ->body(__('accounts::filament/resources/payment-term.table.actions.force-delete.notification.success.body'))
                     ),
             ])
             ->toolbarActions([
@@ -320,11 +339,32 @@ class PaymentTermResource extends Resource
                                 ->body(__('accounts::filament/resources/payment-term.table.bulk-actions.delete.notification.body'))
                         ),
                     ForceDeleteBulkAction::make()
+                        ->action(function (Collection $records, ForceDeleteBulkAction $action) {
+                            $hasMoves = $records->contains(function ($record) {
+                                return $record->moves()->exists();
+                            });
+
+                            if ($hasMoves) {
+                                $action->failure();
+
+                                return;
+                            }
+
+                            $records->each(fn (Model $record) => $record->forceDelete());
+
+                            $action->success();
+                        })
+                        ->failureNotification(
+                            Notification::make()
+                                ->danger()
+                                ->title(__('accounts::filament/resources/payment-term.table.bulk-actions.force-delete.notification.error.title'))
+                                ->body(__('accounts::filament/resources/payment-term.table.bulk-actions.force-delete.notification.error.body'))
+                        )
                         ->successNotification(
                             Notification::make()
                                 ->success()
-                                ->title(__('accounts::filament/resources/payment-term.table.bulk-actions.force-delete.notification.title'))
-                                ->body(__('accounts::filament/resources/payment-term.table.bulk-actions.force-delete.notification.body'))
+                                ->title(__('accounts::filament/resources/payment-term.table.bulk-actions.force-delete.notification.success.title'))
+                                ->body(__('accounts::filament/resources/payment-term.table.bulk-actions.force-delete.notification.success.body'))
                         ),
                     RestoreBulkAction::make()
                         ->successNotification(
