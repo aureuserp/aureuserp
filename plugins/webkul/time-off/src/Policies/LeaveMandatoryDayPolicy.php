@@ -15,7 +15,7 @@ class LeaveMandatoryDayPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_mandatory::day');
+        return $user->can('view_any_time_off_mandatory::day');
     }
 
     /**
@@ -23,7 +23,7 @@ class LeaveMandatoryDayPolicy
      */
     public function view(User $user, LeaveMandatoryDay $leaveMandatoryDay): bool
     {
-        return $user->can('view_mandatory::day');
+        return $user->can('view_time_off_mandatory::day');
     }
 
     /**
@@ -31,7 +31,7 @@ class LeaveMandatoryDayPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_mandatory::day');
+        return $user->can('create_time_off_mandatory::day');
     }
 
     /**
@@ -39,7 +39,7 @@ class LeaveMandatoryDayPolicy
      */
     public function update(User $user, LeaveMandatoryDay $leaveMandatoryDay): bool
     {
-        return $user->can('update_mandatory::day');
+        return $user->can('update_time_off_mandatory::day');
     }
 
     /**
@@ -47,7 +47,7 @@ class LeaveMandatoryDayPolicy
      */
     public function delete(User $user, LeaveMandatoryDay $leaveMandatoryDay): bool
     {
-        return $user->can('delete_mandatory::day');
+        return $user->can('delete_time_off_mandatory::day');
     }
 
     /**
@@ -55,54 +55,6 @@ class LeaveMandatoryDayPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_mandatory::day');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, LeaveMandatoryDay $leaveMandatoryDay): bool
-    {
-        return $user->can('force_delete_mandatory::day');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_mandatory::day');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, LeaveMandatoryDay $leaveMandatoryDay): bool
-    {
-        return $user->can('restore_mandatory::day');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_mandatory::day');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, LeaveMandatoryDay $leaveMandatoryDay): bool
-    {
-        return $user->can('replicate_mandatory::day');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_mandatory::day');
+        return $user->can('delete_any_time_off_mandatory::day');
     }
 }

@@ -7,11 +7,21 @@ use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource;
 use Webkul\Inventory\Models\OperationType;
 
 class CreateDropship extends CreateRecord
 {
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
+
     protected static string $resource = DropshipResource::class;
 
     public function getTitle(): string|Htmlable
@@ -57,7 +67,7 @@ class CreateDropship extends CreateRecord
 
         $data['destination_location_id'] ??= $operationType->destination_location_id;
 
-        $data['state'] ??= Enums\OperationState::DRAFT;
+        $data['state'] ??= OperationState::DRAFT;
 
         $data['creator_id'] = Auth::id();
 

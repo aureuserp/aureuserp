@@ -8,4 +8,15 @@ use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\ActivityTypeResour
 class CreateActivityType extends BaseCreateActivityType
 {
     protected static string $resource = ActivityTypeResource::class;
+
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
+
+    protected static ?string $pluginName = 'time-off';
 }

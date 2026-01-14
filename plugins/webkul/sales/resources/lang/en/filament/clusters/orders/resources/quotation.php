@@ -29,6 +29,27 @@ return [
                     'products' => [
                         'title'       => 'Products',
                         'add-product' => 'Add Product',
+
+                        'columns'     => [
+                            'product'             => 'Product',
+                            'product-variants'    => 'Product Variants',
+                            'product-simple'      => 'Product Simple',
+                            'quantity'            => 'Quantity',
+                            'uom'                 => 'UOM',
+                            'lead-time'           => 'Lead Time',
+                            'qty-delivered'       => 'Delivered',
+                            'qty-invoiced'        => 'Invoiced',
+                            'packaging-qty'       => 'Packaging Quantity',
+                            'packaging'           => 'Packaging',
+                            'unit-price'          => 'Unit Price',
+                            'cost'                => 'Cost',
+                            'margin'              => 'Margin',
+                            'taxes'               => 'Taxes',
+                            'amount'              => 'Amount',
+                            'margin-percentage'   => 'Margin (%)',
+                            'discount-percentage' => 'Discount (%)',
+                        ],
+
                         'fields'      => [
                             'product'             => 'Product',
                             'product-variants'    => 'Product Variants',
@@ -53,6 +74,16 @@ return [
                     'product-optional' => [
                         'title'       => 'Optional Products',
                         'add-product' => 'Add Product',
+
+                        'columns' => [
+                            'product'             => 'Product',
+                            'description'         => 'Description',
+                            'quantity'            => 'Quantity',
+                            'uom'                 => 'Unit Of Measure',
+                            'unit-price'          => 'Unit Price',
+                            'discount-percentage' => 'Discount (%)',
+                        ],
+
                         'fields'      => [
                             'product'             => 'Product',
                             'description'         => 'Description',
@@ -70,6 +101,20 @@ return [
                                     'product-added' => [
                                         'title' => 'Product added',
                                         'body'  => 'The product has been added successfully.',
+                                    ],
+
+                                    'product-not-found' => [
+                                        'title' => 'Product Not Found',
+                                    ],
+
+                                    'product-already-exists' => [
+                                        'title' => 'Product Already Exists',
+                                        'body'  => 'This product is already in the order lines. Please update the existing line instead.',
+                                    ],
+
+                                    'missing-product-data' => [
+                                        'title' => 'Missing Product Data',
+                                        'body'  => 'Unable to process the selected product.',
                                     ],
                                 ],
                             ],
@@ -230,6 +275,7 @@ return [
             'general' => [
                 'title'   => 'General',
                 'entries' => [
+                    'sale-order'     => 'Sales Order',
                     'customer'       => 'Customer',
                     'expiration'     => 'Expiration',
                     'quotation-date' => 'Quotation Date',

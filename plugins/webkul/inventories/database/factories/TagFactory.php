@@ -7,7 +7,7 @@ use Webkul\Inventory\Models\Tag;
 use Webkul\Security\Models\User;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Inventory\Models\Tag>
+ * @extends Factory<Tag>
  */
 class TagFactory extends Factory
 {

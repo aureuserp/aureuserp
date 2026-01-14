@@ -2,15 +2,19 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyAllocationResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Chatter\Filament\Actions as ChatterActions;
+use Webkul\Chatter\Filament\Actions\ChatterAction;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyAllocationResource;
 
 class EditMyAllocation extends EditRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = MyAllocationResource::class;
 
     protected function getRedirectUrl(): string
@@ -29,10 +33,10 @@ class EditMyAllocation extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            ChatterActions\ChatterAction::make()
-                ->setResource(static::$resource),
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make()
+            ChatterAction::make()
+                ->resource(static::$resource),
+            ViewAction::make(),
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()

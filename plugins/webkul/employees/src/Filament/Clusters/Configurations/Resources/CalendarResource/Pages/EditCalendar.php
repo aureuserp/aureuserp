@@ -2,7 +2,8 @@
 
 namespace Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource;
@@ -10,6 +11,15 @@ use Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource;
 class EditCalendar extends EditRecord
 {
     protected static string $resource = CalendarResource::class;
+
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
 
     protected function getRedirectUrl(): string
     {
@@ -27,8 +37,8 @@ class EditCalendar extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make()
+            ViewAction::make(),
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()
@@ -36,10 +46,5 @@ class EditCalendar extends EditRecord
                         ->body(__('employees::filament/clusters/configurations/resources/calendar/pages/edit-calendar.header-actions.delete.notification.body')),
                 ),
         ];
-    }
-
-    protected function mutateFormDataBeforeSave(array $data): array
-    {
-        return $data;
     }
 }

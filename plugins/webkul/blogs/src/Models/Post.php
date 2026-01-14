@@ -104,6 +104,17 @@ class Post extends Model
         return $this->belongsTo(User::class);
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($post) {
+            $post->author_id = filament()->auth()->id();
+
+            $post->creator_id = filament()->auth()->id();
+        });
+    }
+
     protected static function newFactory(): PostFactory
     {
         return PostFactory::new();

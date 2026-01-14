@@ -87,8 +87,15 @@ return [
         'actions' => [
             'delete' => [
                 'notification' => [
-                    'title' => 'Stage deleted',
-                    'body'  => 'The Stage has been deleted successfully.',
+                    'success' => [
+                        'title' => 'Stages deleted',
+                        'body'  => 'The Stages has been deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Stages could not be deleted',
+                        'body'  => 'The Stages cannot be deleted because it is currently in use.',
+                    ],
                 ],
             ],
         ],

@@ -2,17 +2,33 @@
 
 namespace Webkul\Account\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Enums\AccountType;
-use Webkul\Account\Filament\Resources\AccountResource\Pages;
+use Webkul\Account\Filament\Resources\AccountResource\Pages\ManageAccounts;
 use Webkul\Account\Models\Account;
 
 class AccountResource extends Resource
@@ -21,188 +37,265 @@ class AccountResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-circle';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-circle';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make()
+        return $schema
+            ->components([
+                Section::make()
                     ->schema([
-                        Forms\Components\TextInput::make('code')
+                        TextInput::make('code')
                             ->required()
                             ->label(__('accounts::filament/resources/account.form.sections.fields.code'))
                             ->maxLength(255)
-                            ->columnSpan(1),
-                        Forms\Components\TextInput::make('name')
+                            ->columnSpan(1)
+                            ->unique(ignoreRecord: true),
+                        TextInput::make('name')
                             ->required()
                             ->label(__('accounts::filament/resources/account.form.sections.fields.account-name'))
                             ->maxLength(255)
                             ->columnSpan(1),
-                        Forms\Components\Fieldset::make(__('accounts::filament/resources/account.form.sections.fields.accounting'))
+
+                        Fieldset::make(__('accounts::filament/resources/account.form.sections.fields.accounting'))
                             ->schema([
-                                Forms\Components\Select::make('account_type')
-                                    ->options(AccountType::options())
+                                Select::make('account_type')
+                                    ->options(AccountType::groupedOptions())
                                     ->preload()
                                     ->required()
                                     ->label(__('accounts::filament/resources/account.form.sections.fields.account-type'))
                                     ->live()
                                     ->searchable(),
-                                Forms\Components\Select::make('invoices_account_tax')
+                                Select::make('invoices_account_tax')
                                     ->relationship('taxes', 'name')
                                     ->label(__('accounts::filament/resources/account.form.sections.fields.default-taxes'))
                                     ->hidden(fn (Get $get) => $get('account_type') === AccountType::OFF_BALANCE->value)
                                     ->multiple()
                                     ->preload()
                                     ->searchable(),
-                                Forms\Components\Select::make('invoices_account_account_tags')
+                                Select::make('invoices_account_account_tags')
                                     ->relationship('tags', 'name')
                                     ->multiple()
                                     ->preload()
                                     ->label(__('accounts::filament/resources/account.form.sections.fields.tags'))
                                     ->searchable(),
-                                Forms\Components\Select::make('invoices_account_journals')
+                                Select::make('invoices_account_journals')
                                     ->relationship('journals', 'name')
                                     ->multiple()
                                     ->label(__('accounts::filament/resources/account.form.sections.fields.journals'))
                                     ->preload()
                                     ->searchable(),
-                                Forms\Components\Select::make('currency_id')
-                                    ->relationship('currency', 'name')
+                                Select::make('currency_id')
+                                    ->relationship(
+                                        'currency',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                    )
                                     ->preload()
                                     ->label(__('accounts::filament/resources/account.form.sections.fields.currency'))
                                     ->searchable(),
-                                Forms\Components\Toggle::make('deprecated')
+                                Select::make('companies')
+                                    ->label(__('accounts::filament/resources/account.form.sections.fields.companies'))
+                                    ->relationship('companies', 'name')
+                                    ->multiple()
+                                    ->preload()
+                                    ->searchable()
+                                    ->required(),
+                                Toggle::make('deprecated')
                                     ->inline(false)
                                     ->label(__('accounts::filament/resources/account.form.sections.fields.deprecated')),
-                                Forms\Components\Toggle::make('reconcile')
+                                Toggle::make('reconcile')
                                     ->inline(false)
                                     ->label(__('accounts::filament/resources/account.form.sections.fields.reconcile')),
-                                Forms\Components\Toggle::make('non_trade')
+                                Toggle::make('non_trade')
                                     ->inline(false)
                                     ->label(__('accounts::filament/resources/account.form.sections.fields.non-trade')),
                             ]),
-                    ])->columns(2),
-            ]);
+                    ]),
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('code')
+                TextColumn::make('code')
+                    ->label(__('accounts::filament/resources/account.table.columns.code'))
                     ->searchable()
-                    ->label(__('accounts::filament/resources/account.table.columns.code')),
-                Tables\Columns\TextColumn::make('name')
+                    ->sortable(),
+                TextColumn::make('name')
+                    ->label(__('accounts::filament/resources/account.table.columns.account-name'))
                     ->searchable()
-                    ->label(__('accounts::filament/resources/account.table.columns.account-name')),
-                Tables\Columns\TextColumn::make('account_type')
+                    ->sortable(),
+                TextColumn::make('account_type')
+                    ->label(__('accounts::filament/resources/account.table.columns.account-type'))
                     ->searchable()
-                    ->label(__('accounts::filament/resources/account.table.columns.account-type')),
-                Tables\Columns\TextColumn::make('currency.name')
-                    ->searchable()
-                    ->label(__('accounts::filament/resources/account.table.columns.currency')),
-                Tables\Columns\IconColumn::make('deprecated')
+                    ->sortable(),
+                IconColumn::make('reconcile')
+                    ->label(__('accounts::filament/resources/account.table.columns.reconcile'))
                     ->boolean()
-                    ->label(__('accounts::filament/resources/account.table.columns.deprecated')),
-                Tables\Columns\IconColumn::make('reconcile')
-                    ->boolean()
-                    ->label(__('accounts::filament/resources/account.table.columns.reconcile')),
-                Tables\Columns\IconColumn::make('non_trade')
-                    ->boolean()
-                    ->label(__('accounts::filament/resources/account.table.columns.non-trade')),
+                    ->sortable(),
+                TextColumn::make('currency.name')
+                    ->label(__('accounts::filament/resources/account.table.columns.currency'))
+                    ->sortable(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+            ->groups([
+                'account_type',
+            ])
+            ->filters([
+                SelectFilter::make('account_type')
+                    ->options(AccountType::groupedOptions())
+                    ->label(__('accounts::filament/resources/account.table.filters.account-type')),
+                SelectFilter::make('journals')
+                    ->relationship('journals', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->label(__('accounts::filament/resources/account.table.filters.account-journals')),
+                SelectFilter::make('currency')
+                    ->relationship('currency', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->label(__('accounts::filament/resources/account.table.filters.currency')),
+                TernaryFilter::make('reconcile')
+                    ->label(__('accounts::filament/resources/account.table.filters.allow-reconcile')),
+                TernaryFilter::make('non_trade')
+                    ->label(__('accounts::filament/resources/account.table.filters.non-trade')),
+            ])
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
-                            ->title(__('accounts::filament/resources/account.table.actions.delete.notification.title'))
-                            ->body(__('accounts::filament/resources/account.table.actions.delete.notification.body'))
+                            ->title(__('accounts::filament/resources/account.table.actions.edit.notification.title'))
+                            ->body(__('accounts::filament/resources/account.table.actions.edit.notification.body'))
+                    ),
+                DeleteAction::make()
+                    ->action(function (Account $record, DeleteAction $action) {
+                        if ($record->moveLines()->count() > 0) {
+                            $action->failure();
+
+                            return;
+                        }
+
+                        $record->delete();
+
+                        $action->success();
+                    })
+                    ->failureNotification(
+                        Notification::make()
+                            ->danger()
+                            ->title(__('accounts::filament/resources/account.table.actions.delete.notification.error.title'))
+                            ->body(__('accounts::filament/resources/account.table.actions.delete.notification.error.body'))
+                    )
+                    ->successNotification(
+                        Notification::make()
+                            ->success()
+                            ->title(__('accounts::filament/resources/account.table.actions.delete.notification.success.title'))
+                            ->body(__('accounts::filament/resources/account.table.actions.delete.notification.success.body'))
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->action(function (Collection $records, DeleteBulkAction $action) {
+                            $hasMoveLines = $records->contains(function ($record) {
+                                return $record->moveLines()->exists();
+                            });
+
+                            if ($hasMoveLines) {
+                                $action->failure();
+
+                                return;
+                            }
+
+                            $records->each(fn (Model $record) => $record->delete());
+
+                            $action->success();
+                        })
+                        ->failureNotification(
+                            Notification::make()
+                                ->danger()
+                                ->title(__('accounts::filament/resources/account.table.bulk-actions.delete.notification.error.title'))
+                                ->body(__('accounts::filament/resources/account.table.bulk-actions.delete.notification.error.body'))
+                        )
                         ->successNotification(
                             Notification::make()
                                 ->success()
-                                ->title(__('accounts::filament/resources/account.table.bulk-options.delete.notification.title'))
-                                ->body(__('accounts::filament/resources/account.table.bulk-options.delete.notification.body'))
+                                ->title(__('accounts::filament/resources/account.table.bulk-actions.delete.notification.success.title'))
+                                ->body(__('accounts::filament/resources/account.table.bulk-actions.delete.notification.success.body'))
                         ),
                 ]),
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Section::make()
+        return $schema
+            ->components([
+                Section::make()
                     ->schema([
-                        Infolists\Components\TextEntry::make('code')
+                        TextEntry::make('code')
                             ->label(__('accounts::filament/resources/account.infolist.sections.entries.code'))
                             ->icon('heroicon-o-identification')
                             ->placeholder('-')
                             ->columnSpan(1),
-                        Infolists\Components\TextEntry::make('name')
+                        TextEntry::make('name')
                             ->label(__('accounts::filament/resources/account.infolist.sections.entries.account-name'))
                             ->icon('heroicon-o-document-text')
                             ->placeholder('-')
                             ->columnSpan(1),
-                        Infolists\Components\Section::make(__('accounts::filament/resources/account.infolist.sections.entries.accounting'))
+
+                        Section::make(__('accounts::filament/resources/account.infolist.sections.entries.accounting'))
                             ->schema([
-                                Infolists\Components\TextEntry::make('account_type')
+                                TextEntry::make('account_type')
                                     ->label(__('accounts::filament/resources/account.infolist.sections.entries.account-type'))
                                     ->placeholder('-')
                                     ->icon('heroicon-o-tag'),
-                                Infolists\Components\TextEntry::make('taxes.name')
+                                TextEntry::make('taxes.name')
                                     ->label(__('accounts::filament/resources/account.infolist.sections.entries.default-taxes'))
                                     ->visible(fn ($record) => $record->account_type !== AccountType::OFF_BALANCE->value)
                                     ->listWithLineBreaks()
                                     ->placeholder('-')
                                     ->icon('heroicon-o-calculator'),
-                                Infolists\Components\TextEntry::make('tags.name')
+                                TextEntry::make('tags.name')
                                     ->label(__('accounts::filament/resources/account.infolist.sections.entries.tags'))
                                     ->listWithLineBreaks()
                                     ->placeholder('-')
                                     ->icon('heroicon-o-tag'),
-                                Infolists\Components\TextEntry::make('journals.name')
+                                TextEntry::make('journals.name')
                                     ->label(__('accounts::filament/resources/account.infolist.sections.entries.journals'))
                                     ->listWithLineBreaks()
                                     ->placeholder('-')
                                     ->icon('heroicon-o-book-open'),
-                                Infolists\Components\TextEntry::make('currency.name')
+                                TextEntry::make('currency.name')
                                     ->label(__('accounts::filament/resources/account.infolist.sections.entries.currency'))
                                     ->placeholder('-')
                                     ->icon('heroicon-o-currency-dollar'),
-                                Infolists\Components\Grid::make(['default' => 3])
+                                Grid::make(['default' => 3])
                                     ->schema([
-                                        Infolists\Components\IconEntry::make('deprecated')
+                                        IconEntry::make('deprecated')
                                             ->label(__('accounts::filament/resources/account.infolist.sections.entries.deprecated'))
                                             ->placeholder('-'),
-                                        Infolists\Components\IconEntry::make('reconcile')
+                                        IconEntry::make('reconcile')
                                             ->label(__('accounts::filament/resources/account.infolist.sections.entries.reconcile'))
                                             ->placeholder('-'),
-                                        Infolists\Components\IconEntry::make('non_trade')
+                                        IconEntry::make('non_trade')
                                             ->label(__('accounts::filament/resources/account.infolist.sections.entries.non-trade'))
                                             ->placeholder('-'),
                                     ]),
                             ])
                             ->columns(2),
-                    ])->columns(2),
-            ]);
+                    ]),
+            ])
+            ->columns(1);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListAccounts::route('/'),
-            'create' => Pages\CreateAccount::route('/create'),
-            'view'   => Pages\ViewAccount::route('/{record}'),
-            'edit'   => Pages\EditAccount::route('/{record}/edit'),
+            'index' => ManageAccounts::route('/'),
         ];
     }
 }

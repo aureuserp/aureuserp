@@ -37,4 +37,15 @@ class CalendarLeaves extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($calendarLeave) {
+            $calendarLeave->creator_id = filament()->auth()->id();
+
+            $calendarLeave->company_id ??= filament()->auth()->user()->default_company_id;
+        });
+    }
 }

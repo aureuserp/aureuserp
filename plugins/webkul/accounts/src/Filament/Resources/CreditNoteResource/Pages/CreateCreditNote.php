@@ -3,8 +3,8 @@
 namespace Webkul\Account\Filament\Resources\CreditNoteResource\Pages;
 
 use Filament\Notifications\Notification;
-use Webkul\Account\Enums;
-use Webkul\Account\Facades\Account;
+use Webkul\Account\Enums\MoveType;
+use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\CreditNoteResource;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\CreateInvoice as CreateRecord;
 
@@ -25,17 +25,24 @@ class CreateCreditNote extends CreateRecord
             ->body(__('accounts::filament/resources/credit-note/pages/create-credit-note.notification.body'));
     }
 
+    public function mount(): void
+    {
+        parent::mount();
+
+        $this->data['move_type'] ??= MoveType::OUT_REFUND->value;
+
+        $this->form->fill($this->data);
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['move_type'] ??= Enums\MoveType::OUT_REFUND;
-
-        $data['date'] = now();
+        $data['move_type'] ??= MoveType::OUT_REFUND;
 
         return $data;
     }
 
     protected function afterCreate(): void
     {
-        Account::computeAccountMove($this->getRecord());
+        AccountFacade::computeAccountMove($this->getRecord());
     }
 }

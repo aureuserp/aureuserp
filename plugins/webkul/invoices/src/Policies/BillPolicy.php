@@ -15,7 +15,7 @@ class BillPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_bill');
+        return $user->can('view_any_invoice_bill');
     }
 
     /**
@@ -23,7 +23,7 @@ class BillPolicy
      */
     public function view(User $user, Bill $bill): bool
     {
-        return $user->can('view_bill');
+        return $user->can('view_invoice_bill');
     }
 
     /**
@@ -31,7 +31,7 @@ class BillPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_bill');
+        return $user->can('create_invoice_bill');
     }
 
     /**
@@ -39,7 +39,7 @@ class BillPolicy
      */
     public function update(User $user, Bill $bill): bool
     {
-        return $user->can('update_bill');
+        return $user->can('update_invoice_bill');
     }
 
     /**
@@ -47,7 +47,7 @@ class BillPolicy
      */
     public function delete(User $user, Bill $bill): bool
     {
-        return $user->can('delete_bill');
+        return $user->can('delete_invoice_bill');
     }
 
     /**
@@ -55,54 +55,6 @@ class BillPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_bill');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, Bill $bill): bool
-    {
-        return $user->can('force_delete_bill');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_bill');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, Bill $bill): bool
-    {
-        return $user->can('restore_bill');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_bill');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Bill $bill): bool
-    {
-        return $user->can('replicate_bill');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_bill');
+        return $user->can('delete_any_invoice_bill');
     }
 }

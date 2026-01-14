@@ -2,11 +2,25 @@
 
 namespace Webkul\Partner\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Partner\Models\BankAccount;
@@ -17,7 +31,7 @@ class BankAccountResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
-    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 
     public static function getNavigationGroup(): string
     {
@@ -29,19 +43,19 @@ class BankAccountResource extends Resource
         return __('partners::filament/resources/bank-account.navigation.title');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('account_number')
+        return $schema
+            ->components([
+                TextInput::make('account_number')
                     ->label(__('partners::filament/resources/bank-account.form.account-number'))
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
-                Forms\Components\Toggle::make('can_send_money')
+                Toggle::make('can_send_money')
                     ->label(__('partners::filament/resources/bank-account.form.can-send-money'))
                     ->inline(false),
-                Forms\Components\Select::make('bank_id')
+                Select::make('bank_id')
                     ->label(__('partners::filament/resources/bank-account.form.bank'))
                     ->relationship(
                         'bank',
@@ -57,10 +71,13 @@ class BankAccountResource extends Resource
                     ->required()
                     ->searchable()
                     ->preload()
-                    ->createOptionForm(fn (Form $form) => BankResource::form($form)),
-                Forms\Components\Select::make('partner_id')
+                    ->createOptionForm(fn (Schema $schema) => BankResource::form($schema)),
+                Select::make('partner_id')
                     ->label(__('partners::filament/resources/bank-account.form.account-holder'))
                     ->relationship('partner', 'name')
+                    ->default(fn ($livewire) => method_exists($livewire, 'getRecord') && $livewire->getRecord()
+                        ? $livewire->getRecord()->id
+                        : null)
                     ->required()
                     ->searchable()
                     ->preload(),
@@ -70,70 +87,71 @@ class BankAccountResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
             ->columns([
-                Tables\Columns\TextColumn::make('account_number')
+                TextColumn::make('account_number')
                     ->label(__('partners::filament/resources/bank-account.table.columns.account-number'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('bank.name')
+                TextColumn::make('bank.name')
                     ->label(__('partners::filament/resources/bank-account.table.columns.bank'))
                     ->numeric()
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('partner.name')
+                TextColumn::make('partner.name')
                     ->label(__('partners::filament/resources/bank-account.table.columns.account-holder'))
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('can_send_money')
+                IconColumn::make('can_send_money')
                     ->label(__('partners::filament/resources/bank-account.table.columns.send-money'))
                     ->boolean()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('deleted_at')
+                TextColumn::make('deleted_at')
                     ->label(__('partners::filament/resources/bank-account.table.columns.deleted-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label(__('partners::filament/resources/bank-account.table.columns.created-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('partners::filament/resources/bank-account.table.columns.updated-at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->groups([
-                Tables\Grouping\Group::make('bank.name')
+                Group::make('bank.name')
                     ->label(__('partners::filament/resources/bank-account.table.groups.bank')),
-                Tables\Grouping\Group::make('can_send_money')
+                Group::make('can_send_money')
                     ->label(__('partners::filament/resources/bank-account.table.groups.can-send-money')),
-                Tables\Grouping\Group::make('created_at')
+                Group::make('created_at')
                     ->label(__('partners::filament/resources/bank-account.table.groups.created-at'))
                     ->date(),
             ])
             ->filters([
-                Tables\Filters\TernaryFilter::make('can_send_money')
+                TernaryFilter::make('can_send_money')
                     ->label(__('partners::filament/resources/bank-account.table.filters.can-send-money')),
-                Tables\Filters\SelectFilter::make('bank_id')
+                SelectFilter::make('bank_id')
                     ->label(__('partners::filament/resources/bank-account.table.filters.bank'))
                     ->relationship('bank', 'name')
                     ->searchable()
                     ->preload(),
-                Tables\Filters\SelectFilter::make('partner_id')
+                SelectFilter::make('partner_id')
                     ->label(__('partners::filament/resources/bank-account.table.filters.account-holder'))
                     ->relationship('partner', 'name')
                     ->searchable()
                     ->preload(),
-                Tables\Filters\SelectFilter::make('creator_id')
+                SelectFilter::make('creator_id')
                     ->label(__('partners::filament/resources/bank-account.table.filters.creator'))
                     ->relationship('creator', 'name')
                     ->searchable()
                     ->preload(),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                EditAction::make()
                     ->hidden(fn ($record) => $record->trashed())
                     ->successNotification(
                         Notification::make()
@@ -141,21 +159,21 @@ class BankAccountResource extends Resource
                             ->title(__('partners::filament/resources/bank-account.table.actions.edit.notification.title'))
                             ->body(__('partners::filament/resources/bank-account.table.actions.edit.notification.body')),
                     ),
-                Tables\Actions\RestoreAction::make()
+                RestoreAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('partners::filament/resources/bank-account.table.actions.restore.notification.title'))
                             ->body(__('partners::filament/resources/bank-account.table.actions.restore.notification.body')),
                     ),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('partners::filament/resources/bank-account.table.actions.delete.notification.title'))
                             ->body(__('partners::filament/resources/bank-account.table.actions.delete.notification.body')),
                     ),
-                Tables\Actions\ForceDeleteAction::make()
+                ForceDeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
@@ -163,23 +181,23 @@ class BankAccountResource extends Resource
                             ->body(__('partners::filament/resources/bank-account.table.actions.force-delete.notification.body')),
                     ),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\RestoreBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('partners::filament/resources/bank-account.table.bulk-actions.restore.notification.title'))
                                 ->body(__('partners::filament/resources/bank-account.table.bulk-actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteBulkAction::make()
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('partners::filament/resources/bank-account.table.bulk-actions.delete.notification.title'))
                                 ->body(__('partners::filament/resources/bank-account.table.bulk-actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteBulkAction::make()
+                    ForceDeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()

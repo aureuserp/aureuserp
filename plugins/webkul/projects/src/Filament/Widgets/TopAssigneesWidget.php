@@ -4,10 +4,11 @@ namespace Webkul\Project\Filament\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Tables;
+use Filament\Tables\Table;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Webkul\Project\Models\Timesheet;
 
@@ -15,38 +16,50 @@ class TopAssigneesWidget extends BaseWidget
 {
     use HasWidgetShield, InteractsWithPageFilters;
 
-    public function getHeading(): string|Htmlable|null
-    {
-        return __('projects::filament/widgets/top-assignees.heading');
-    }
-
     protected static ?string $pollingInterval = '15s';
 
-    protected function getTableQuery(): Builder
+    protected static bool $isLazy = false;
+
+    protected static function getPagePermission(): ?string
+    {
+        return 'widget_project_top_assignees_widget';
+    }
+
+    public function getHeading(): string|Htmlable|null
+    {
+        return __('projects::filament/widgets/top-assignees.heading.title');
+    }
+
+    public function getTableRecordKey(Model|array $record): string
+    {
+        return 'id';
+    }
+
+    public function table(Table $table): Table
     {
         $query = Timesheet::query();
 
-        if (! empty($this->filters['selectedProjects'])) {
-            $query->whereIn('project_id', $this->filters['selectedProjects']);
+        if (! empty($this->pageFilters['selectedProjects'])) {
+            $query->whereIn('project_id', $this->pageFilters['selectedProjects']);
         }
 
-        if (! empty($this->filters['selectedAssignees'])) {
-            $query->whereIn('user_id', $this->filters['selectedAssignees']);
+        if (! empty($this->pageFilters['selectedAssignees'])) {
+            $query->whereIn('user_id', $this->pageFilters['selectedAssignees']);
         }
 
-        if (! empty($this->filters['selectedPartners'])) {
-            $query->whereIn('analytic_records.partner_id', $this->filters['selectedPartners']);
+        if (! empty($this->pageFilters['selectedPartners'])) {
+            $query->whereIn('analytic_records.partner_id', $this->pageFilters['selectedPartners']);
         }
 
-        $startDate = ! is_null($this->filters['startDate'] ?? null) ?
-            Carbon::parse($this->filters['startDate']) :
+        $startDate = ! is_null($this->pageFilters['startDate'] ?? null) ?
+            Carbon::parse($this->pageFilters['startDate']) :
             null;
 
-        $endDate = ! is_null($this->filters['endDate'] ?? null) ?
-            Carbon::parse($this->filters['endDate']) :
+        $endDate = ! is_null($this->pageFilters['endDate'] ?? null) ?
+            Carbon::parse($this->pageFilters['endDate']) :
             now();
 
-        return $query
+        $query = $query
             ->join('users', 'users.id', '=', 'analytic_records.user_id')
             ->selectRaw('
                 user_id,
@@ -56,27 +69,22 @@ class TopAssigneesWidget extends BaseWidget
             ')
             ->whereBetween('analytic_records.created_at', [$startDate, $endDate])
             ->groupBy('user_id')
-            ->orderByDesc('total_hours')
+            ->orderByRaw('SUM(unit_amount) DESC')
             ->limit(10);
-    }
 
-    protected function getTableColumns(): array
-    {
-        return [
-            Tables\Columns\TextColumn::make('user_name')
-                ->label(__('projects::filament/widgets/top-assignees.table-columns.user'))
-                ->sortable(),
-            Tables\Columns\TextColumn::make('total_hours')
-                ->label(__('projects::filament/widgets/top-assignees.table-columns.hours-spent'))
-                ->sortable(),
-            Tables\Columns\TextColumn::make('total_tasks')
-                ->label(__('projects::filament/widgets/top-assignees.table-columns.tasks'))
-                ->sortable(),
-        ];
-    }
-
-    public function getTableRecordKey($record): string
-    {
-        return (string) $record->project_id;
+        return $table
+            ->query($query)
+            ->defaultPaginationPageOption(5)
+            ->columns([
+                Tables\Columns\TextColumn::make('user_name')
+                    ->label(__('projects::filament/widgets/top-assignees.table-columns.user'))
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('total_hours')
+                    ->label(__('projects::filament/widgets/top-assignees.table-columns.hours-spent'))
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('total_tasks')
+                    ->label(__('projects::filament/widgets/top-assignees.table-columns.tasks'))
+                    ->sortable(),
+            ]);
     }
 }

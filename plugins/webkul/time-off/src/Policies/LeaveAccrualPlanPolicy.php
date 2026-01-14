@@ -15,7 +15,7 @@ class LeaveAccrualPlanPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_accrual::plan');
+        return $user->can('view_any_time_off_accrual::plan');
     }
 
     /**
@@ -23,7 +23,7 @@ class LeaveAccrualPlanPolicy
      */
     public function view(User $user, LeaveAccrualPlan $leaveAccrualPlan): bool
     {
-        return $user->can('view_accrual::plan');
+        return $user->can('view_time_off_accrual::plan');
     }
 
     /**
@@ -31,7 +31,7 @@ class LeaveAccrualPlanPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_accrual::plan');
+        return $user->can('create_time_off_accrual::plan');
     }
 
     /**
@@ -39,7 +39,7 @@ class LeaveAccrualPlanPolicy
      */
     public function update(User $user, LeaveAccrualPlan $leaveAccrualPlan): bool
     {
-        return $user->can('update_accrual::plan');
+        return $user->can('update_time_off_accrual::plan');
     }
 
     /**
@@ -47,7 +47,7 @@ class LeaveAccrualPlanPolicy
      */
     public function delete(User $user, LeaveAccrualPlan $leaveAccrualPlan): bool
     {
-        return $user->can('delete_accrual::plan');
+        return $user->can('delete_time_off_accrual::plan');
     }
 
     /**
@@ -55,54 +55,6 @@ class LeaveAccrualPlanPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_accrual::plan');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, LeaveAccrualPlan $leaveAccrualPlan): bool
-    {
-        return $user->can('force_delete_accrual::plan');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_accrual::plan');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, LeaveAccrualPlan $leaveAccrualPlan): bool
-    {
-        return $user->can('restore_accrual::plan');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_accrual::plan');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, LeaveAccrualPlan $leaveAccrualPlan): bool
-    {
-        return $user->can('replicate_accrual::plan');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_accrual::plan');
+        return $user->can('delete_any_time_off_accrual::plan');
     }
 }

@@ -3,25 +3,30 @@
 namespace Webkul\Invoice\Filament\Clusters\Settings\Pages;
 
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Forms\Components\Toggle;
 use Filament\Pages\SettingsPage;
-use Webkul\Invoice\Settings\ProductSettings;
+use Filament\Schemas\Schema;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Clusters\Settings;
 
 class Products extends SettingsPage
 {
     use HasPageShield;
 
-    protected static ?string $navigationIcon = 'heroicon-o-cube';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cube';
 
-    protected static ?string $navigationGroup = 'Invoices';
+    protected static string|\UnitEnum|null $navigationGroup = 'Invoices';
 
     protected static ?int $navigationSort = 1;
 
     protected static string $settings = ProductSettings::class;
 
     protected static ?string $cluster = Settings::class;
+
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_invoice_products';
+    }
 
     public function getBreadcrumbs(): array
     {
@@ -40,11 +45,11 @@ class Products extends SettingsPage
         return __('Manage Products');
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Toggle::make('enable_uom')
+        return $schema
+            ->components([
+                Toggle::make('enable_uom')
                     ->label(__('Unit of Measure'))
                     ->helperText(__('Sell and purchase products in different units of measure')),
             ]);

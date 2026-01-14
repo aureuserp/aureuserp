@@ -230,7 +230,7 @@ return [
             'show_copy'         => true,    // Show copy button next to the query,
             'slow_threshold'    => false,   // Only track queries that last longer than this time in ms
             'memory_usage'      => false,   // Show queries memory usage
-            'soft_limit'        => 100,      // After the soft limit, no parameters/backtrace are captured
+            'soft_limit'        => 500,      // After the soft limit, no parameters/backtrace are captured
             'hard_limit'        => 500,      // After the hard limit, queries are ignored
         ],
         'mail' => [

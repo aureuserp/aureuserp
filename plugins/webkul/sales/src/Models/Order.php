@@ -33,6 +33,11 @@ class Order extends Model
 
     protected $table = 'sales_orders';
 
+    public function getModelTitle(): string
+    {
+        return __('sales::models/order.title');
+    }
+
     protected $fillable = [
         'utm_source_id',
         'medium_id',
@@ -73,49 +78,55 @@ class Order extends Model
         'warehouse_id',
     ];
 
-    protected array $logAttributes = [
-        'medium.name'          => 'Medium',
-        'utmSource.name'       => 'UTM Source',
-        'partner.name'         => 'Customer',
-        'partnerInvoice.name'  => 'Invoice Address',
-        'partnerShipping.name' => 'Shipping Address',
-        'fiscalPosition.name'  => 'Fiscal Position',
-        'paymentTerm.name'     => 'Payment Term',
-        'currency.name'        => 'Currency',
-        'user.name'            => 'Salesperson',
-        'team.name'            => 'Sales Team',
-        'creator.name'         => 'Created By',
-        'company.name'         => 'Company',
-        'name'                 => 'Order Reference',
-        'state'                => 'Order Status',
-        'client_order_ref'     => 'Customer Reference',
-        'origin'               => 'Source Document',
-        'reference'            => 'Reference',
-        'signed_by'            => 'Signed By',
-        'invoice_status'       => 'Invoice Status',
-        'validity_date'        => 'Validity Date',
-        'note'                 => 'Terms and Conditions',
-        'currency_rate'        => 'Currency Rate',
-        'amount_untaxed'       => 'Subtotal',
-        'amount_tax'           => 'Tax',
-        'amount_total'         => 'Total',
-        'locked'               => 'Locked',
-        'require_signature'    => 'Require Signature',
-        'require_payment'      => 'Require Payment',
-        'commitment_date'      => 'Commitment Date',
-        'date_order'           => 'Order Date',
-        'signed_on'            => 'Signed On',
-        'prepayment_percent'   => 'Prepayment Percentage',
-    ];
+    public function getLogAttributeLabels(): array
+    {
+        return [
+            'medium.name'          => __('sales::models/order.log-attributes.medium'),
+            'utmSource.name'       => __('sales::models/order.log-attributes.utm_source'),
+            'partner.name'         => __('sales::models/order.log-attributes.customer'),
+            'partnerInvoice.name'  => __('sales::models/order.log-attributes.invoice_address'),
+            'partnerShipping.name' => __('sales::models/order.log-attributes.shipping_address'),
+            'fiscalPosition.name'  => __('sales::models/order.log-attributes.fiscal_position'),
+            'paymentTerm.name'     => __('sales::models/order.log-attributes.payment_term'),
+            'currency.name'        => __('sales::models/order.log-attributes.currency'),
+            'user.name'            => __('sales::models/order.log-attributes.salesperson'),
+            'team.name'            => __('sales::models/order.log-attributes.sales_team'),
+            'creator.name'         => __('sales::models/order.log-attributes.creator'),
+            'company.name'         => __('sales::models/order.log-attributes.company'),
+            'name'                 => __('sales::models/order.log-attributes.order_reference'),
+            'state'                => __('sales::models/order.log-attributes.order_status'),
+            'client_order_ref'     => __('sales::models/order.log-attributes.customer_reference'),
+            'origin'               => __('sales::models/order.log-attributes.source_document'),
+            'reference'            => __('sales::models/order.log-attributes.reference'),
+            'signed_by'            => __('sales::models/order.log-attributes.signed_by'),
+            'invoice_status'       => __('sales::models/order.log-attributes.invoice_status'),
+            'validity_date'        => __('sales::models/order.log-attributes.validity_date'),
+            'note'                 => __('sales::models/order.log-attributes.note'),
+            'currency_rate'        => __('sales::models/order.log-attributes.currency_rate'),
+            'amount_untaxed'       => __('sales::models/order.log-attributes.subtotal'),
+            'amount_tax'           => __('sales::models/order.log-attributes.tax'),
+            'amount_total'         => __('sales::models/order.log-attributes.total'),
+            'locked'               => __('sales::models/order.log-attributes.locked'),
+            'require_signature'    => __('sales::models/order.log-attributes.require_signature'),
+            'require_payment'      => __('sales::models/order.log-attributes.require_payment'),
+            'commitment_date'      => __('sales::models/order.log-attributes.commitment_date'),
+            'date_order'           => __('sales::models/order.log-attributes.order_date'),
+            'signed_on'            => __('sales::models/order.log-attributes.signed_on'),
+            'prepayment_percent'   => __('sales::models/order.log-attributes.prepayment_percent'),
+        ];
+    }
 
     protected $casts = [
+        'amount_tax'     => 'decimal:4',
+        'amount_total'   => 'decimal:4',
+        'amount_untaxed' => 'decimal:4',
         'state'          => OrderState::class,
         'invoice_status' => InvoiceStatus::class,
     ];
 
     public function company()
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class)->withTrashed();
     }
 
     public function partner()
@@ -200,12 +211,12 @@ class Order extends Model
 
     public function lines()
     {
-        return $this->hasMany(OrderLine::class);
+        return $this->hasMany(OrderLine::class, 'order_id');
     }
 
     public function optionalLines()
     {
-        return $this->hasMany(OrderOption::class);
+        return $this->hasMany(OrderOption::class, 'order_id');
     }
 
     public function quotationTemplate()

@@ -2,23 +2,33 @@
 
 namespace Webkul\Account\Filament\Resources\JournalResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\CommunicationStandard;
 use Webkul\Account\Enums\CommunicationType;
 use Webkul\Account\Filament\Resources\JournalResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditJournal extends EditRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = JournalResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
+            ViewAction::make(),
+            DeleteAction::make()
+                ->successNotification(
+                    Notification::make()
+                        ->success()
+                        ->title(__('accounts::filament/resources/journal/pages/edit-journal.header-actions.delete.notification.title'))
+                        ->body(__('accounts::filament/resources/journal/pages/edit-journal.header-actions.delete.notification.body'))
+                ),
         ];
     }
 

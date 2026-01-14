@@ -16,7 +16,7 @@ class DropshipPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_dropship');
+        return $user->can('view_any_inventory_dropship');
     }
 
     /**
@@ -24,7 +24,7 @@ class DropshipPolicy
      */
     public function view(User $user, Dropship $dropship): bool
     {
-        return $user->can('view_dropship');
+        return $user->can('view_inventory_dropship');
     }
 
     /**
@@ -32,7 +32,7 @@ class DropshipPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_dropship');
+        return $user->can('create_inventory_dropship');
     }
 
     /**
@@ -40,7 +40,7 @@ class DropshipPolicy
      */
     public function update(User $user, Dropship $dropship): bool
     {
-        if (! $user->can('update_dropship')) {
+        if (! $user->can('update_inventory_dropship')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class DropshipPolicy
      */
     public function delete(User $user, Dropship $dropship): bool
     {
-        if (! $user->can('delete_dropship')) {
+        if (! $user->can('delete_inventory_dropship')) {
             return false;
         }
 
@@ -64,66 +64,6 @@ class DropshipPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_dropship');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, Dropship $dropship): bool
-    {
-        if (! $user->can('force_delete_dropship')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $dropship);
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_dropship');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, Dropship $dropship): bool
-    {
-        if (! $user->can('restore_dropship')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $dropship);
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_dropship');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Dropship $dropship): bool
-    {
-        if (! $user->can('replicate_dropship')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $dropship);
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_dropship');
+        return $user->can('delete_any_inventory_dropship');
     }
 }

@@ -12,7 +12,8 @@ use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\Partner;
 use Webkul\Purchase\Database\Factories\RequisitionFactory;
-use Webkul\Purchase\Enums;
+use Webkul\Purchase\Enums\RequisitionState;
+use Webkul\Purchase\Enums\RequisitionType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
@@ -27,6 +28,11 @@ class Requisition extends Model
      * @var string
      */
     protected $table = 'purchases_requisitions';
+
+    public function getModelTitle(): string
+    {
+        return __('purchases::models/requisition.title');
+    }
 
     /**
      * Fillable.
@@ -54,24 +60,27 @@ class Requisition extends Model
      * @var string
      */
     protected $casts = [
-        'state' => Enums\RequisitionState::class,
-        'type'  => Enums\RequisitionType::class,
+        'state' => RequisitionState::class,
+        'type'  => RequisitionType::class,
     ];
 
-    protected array $logAttributes = [
-        'name',
-        'type',
-        'state',
-        'reference',
-        'starts_at',
-        'ends_at',
-        'description',
-        'currency.name' => 'Currency',
-        'partner.name'  => 'Partner',
-        'user.name'     => 'Buyer',
-        'company.name'  => 'Company',
-        'creator.name'  => 'Creator',
-    ];
+    public function getLogAttributeLabels(): array
+    {
+        return [
+            'name'          => trans('purchases::models/requisition.log-attributes.name'),
+            'type'          => trans('purchases::models/requisition.log-attributes.type'),
+            'state'         => trans('purchases::models/requisition.log-attributes.state'),
+            'reference'     => trans('purchases::models/requisition.log-attributes.reference'),
+            'starts_at'     => trans('purchases::models/requisition.log-attributes.starts_at'),
+            'ends_at'       => trans('purchases::models/requisition.log-attributes.ends_at'),
+            'description'   => trans('purchases::models/requisition.log-attributes.description'),
+            'currency.name' => trans('purchases::models/requisition.log-attributes.currency'),
+            'partner.name'  => trans('purchases::models/requisition.log-attributes.partner'),
+            'user.name'     => trans('purchases::models/requisition.log-attributes.buyer'),
+            'company.name'  => trans('purchases::models/requisition.log-attributes.company'),
+            'creator.name'  => trans('purchases::models/requisition.log-attributes.creator'),
+        ];
+    }
 
     public function partner(): BelongsTo
     {
@@ -124,7 +133,7 @@ class Requisition extends Model
      */
     public function updateName()
     {
-        if ($this->type == Enums\RequisitionType::BLANKET_ORDER) {
+        if ($this->type == RequisitionType::BLANKET_ORDER) {
             $this->name = 'BO/'.$this->id;
         } else {
             $this->name = 'PT/'.$this->id;

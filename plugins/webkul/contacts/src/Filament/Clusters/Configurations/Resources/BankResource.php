@@ -3,12 +3,15 @@
 namespace Webkul\Contact\Filament\Clusters\Configurations\Resources;
 
 use Webkul\Contact\Filament\Clusters\Configurations;
-use Webkul\Contact\Filament\Clusters\Configurations\Resources\BankResource\Pages;
+use Webkul\Contact\Filament\Clusters\Configurations\Resources\BankResource\Pages\ManageBanks;
+use Webkul\Contact\Models\Bank;
 use Webkul\Partner\Filament\Resources\BankResource as BaseBankResource;
 
 class BankResource extends BaseBankResource
 {
-    protected static ?string $navigationIcon = 'heroicon-o-building-library';
+    protected static ?string $model = Bank::class;
+
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-library';
 
     protected static bool $shouldRegisterNavigation = true;
 
@@ -29,7 +32,7 @@ class BankResource extends BaseBankResource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ManageBanks::route('/'),
+            'index' => ManageBanks::route('/'),
         ];
     }
 }

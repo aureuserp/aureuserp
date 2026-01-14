@@ -2,7 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources\FiscalPositionResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Webkul\Account\Filament\Resources\FiscalPositionResource;
 
@@ -13,7 +13,7 @@ class ListFiscalPositions extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->icon('heroicon-o-plus-circle'),
         ];
     }

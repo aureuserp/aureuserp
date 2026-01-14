@@ -5,37 +5,43 @@
     <div
         {{
             $attributes
-                ->merge([
-                    'id' => $getId(),
-                ], escape: false)
+                ->merge(['id' => $getId()], escape: false)
                 ->merge($getExtraAttributes(), escape: false)
         }}
     >
-        @if (count($childComponentContainers = $getChildComponentContainers()))
-            <x-filament::grid
-                :default="$getGridColumns('default')"
-                :sm="$getGridColumns('sm')"
-                :md="$getGridColumns('md')"
-                :lg="$getGridColumns('lg')"
-                :xl="$getGridColumns('xl')"
-                :two-xl="$getGridColumns('2xl')"
-                class="gap-2"
+        @php
+            $childComponentContainers = $getChildComponentContainers();
+        @endphp
+
+        @if (count($childComponentContainers))
+            <div
+                {{
+                    \Filament\Support\prepare_inherited_attributes($attributes)
+                        ->merge($getExtraAttributes(), escape: false)
+                        ->class('flex flex-col gap-4')
+                }}
             >
                 @foreach ($childComponentContainers as $container)
+                    @php
+                        $recordType = data_get($container->getRecord(), 'type');
+                        $isNote = $recordType === 'note';
+                    @endphp
+
                     <article
-                        class="mb-3 rounded-lg border border-gray-200 bg-white p-6 text-base dark:border-gray-700 dark:bg-gray-900"
-                        @style([
-                            'background-color: rgba(var(--primary-200), 0.1);' => $container->record->type == 'note',
+                        @class([
+                            'container rounded-xl px-4 text-base space-y-1',
+                            'bg-gray-50 dark:bg-gray-800/50' => $isNote,
+                            'bg-white/70 dark:bg-gray-900/60' => ! $isNote,
                         ])
                     >
                         {{ $container }}
                     </article>
                 @endforeach
-            </x-filament::grid>
-        @elseif (($placeholder = $getPlaceholder()) !== null)
-            <x-filament-infolists::entries.placeholder>
+            </div>
+        @elseif ($placeholder = $getPlaceholder())
+            <div class="text-sm leading-6 text-gray-400 dark:text-gray-500">
                 {{ $placeholder }}
-            </x-filament-infolists::entries.placeholder>
+            </div>
         @endif
     </div>
 </x-dynamic-component>

@@ -3,9 +3,10 @@
 namespace Webkul\Sale\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Webkul\Sale\Models\Team;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\Webkul\Sale\Models\Team>
+ * @extends Factory<Team>
  */
 class TeamFactory extends Factory
 {

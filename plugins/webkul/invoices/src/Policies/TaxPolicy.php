@@ -15,7 +15,7 @@ class TaxPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_tax');
+        return $user->can('view_any_invoice_tax');
     }
 
     /**
@@ -23,7 +23,7 @@ class TaxPolicy
      */
     public function view(User $user, Tax $tax): bool
     {
-        return $user->can('view_tax');
+        return $user->can('view_invoice_tax');
     }
 
     /**
@@ -31,7 +31,7 @@ class TaxPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_tax');
+        return $user->can('create_invoice_tax');
     }
 
     /**
@@ -39,7 +39,7 @@ class TaxPolicy
      */
     public function update(User $user, Tax $tax): bool
     {
-        return $user->can('update_tax');
+        return $user->can('update_invoice_tax');
     }
 
     /**
@@ -47,7 +47,7 @@ class TaxPolicy
      */
     public function delete(User $user, Tax $tax): bool
     {
-        return $user->can('delete_tax');
+        return $user->can('delete_invoice_tax');
     }
 
     /**
@@ -55,47 +55,7 @@ class TaxPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_tax');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, Tax $tax): bool
-    {
-        return $user->can('force_delete_tax');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_tax');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, Tax $tax): bool
-    {
-        return $user->can('restore_tax');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_tax');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Tax $tax): bool
-    {
-        return $user->can('replicate_tax');
+        return $user->can('delete_any_invoice_tax');
     }
 
     /**
@@ -103,6 +63,6 @@ class TaxPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_tax');
+        return $user->can('reorder_invoice_tax');
     }
 }

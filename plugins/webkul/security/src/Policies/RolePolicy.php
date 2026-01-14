@@ -3,7 +3,7 @@
 namespace Webkul\Security\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Spatie\Permission\Models\Role;
+use Webkul\Security\Models\Role;
 use Webkul\Security\Models\User;
 
 class RolePolicy
@@ -88,14 +88,6 @@ class RolePolicy
     public function restoreAny(User $user): bool
     {
         return $user->can('restore_any_field');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Role $role): bool
-    {
-        return $user->can('replicate_field');
     }
 
     /**

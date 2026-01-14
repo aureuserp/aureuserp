@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Chatter\Traits\HasChatter;
@@ -31,6 +32,11 @@ class Project extends Model implements Sortable
      */
     protected $table = 'projects_projects';
 
+    public function getModelTitle(): string
+    {
+        return __('projects::models/project.title');
+    }
+
     /**
      * Fillable.
      *
@@ -42,7 +48,6 @@ class Project extends Model implements Sortable
         'description',
         'visibility',
         'color',
-        'tags',
         'sort',
         'start_date',
         'end_date',
@@ -71,34 +76,35 @@ class Project extends Model implements Sortable
         'allow_milestones'        => 'boolean',
         'start_date'              => 'date',
         'end_date'                => 'date',
-        'tags'                    => 'array',
         'is_active'               => 'boolean',
         'allow_timesheets'        => 'boolean',
         'allow_milestones'        => 'boolean',
         'allow_task_dependencies' => 'boolean',
     ];
 
-    protected array $logAttributes = [
-        'name',
-        'tasks_label',
-        'description',
-        'visibility',
-        'color',
-        'tags',
-        'sort',
-        'start_date',
-        'end_date',
-        'allocated_hours',
-        'allow_timesheets',
-        'allow_milestones',
-        'allow_task_dependencies',
-        'is_active',
-        'stage.name'   => 'Stage',
-        'partner.name' => 'Customer',
-        'company.name' => 'Company',
-        'user.name'    => 'Project Manager',
-        'creator.name' => 'Creator',
-    ];
+    protected function getLogAttributeLabels(): array
+    {
+        return [
+            'name'                    => __('projects::models/project.log-attributes.name'),
+            'tasks_label'             => __('projects::models/project.log-attributes.tasks_label'),
+            'description'             => __('projects::models/project.log-attributes.description'),
+            'visibility'              => __('projects::models/project.log-attributes.visibility'),
+            'color'                   => __('projects::models/project.log-attributes.color'),
+            'sort'                    => __('projects::models/project.log-attributes.sort'),
+            'start_date'              => __('projects::models/project.log-attributes.start_date'),
+            'end_date'                => __('projects::models/project.log-attributes.end_date'),
+            'allocated_hours'         => __('projects::models/project.log-attributes.allocated_hours'),
+            'allow_timesheets'        => __('projects::models/project.log-attributes.allow_timesheets'),
+            'allow_milestones'        => __('projects::models/project.log-attributes.allow_milestones'),
+            'allow_task_dependencies' => __('projects::models/project.log-attributes.allow_task_dependencies'),
+            'is_active'               => __('projects::models/project.log-attributes.is_active'),
+            'stage.name'              => __('projects::models/project.log-attributes.stage'),
+            'partner.name'            => __('projects::models/project.log-attributes.partner'),
+            'company.name'            => __('projects::models/project.log-attributes.company'),
+            'user.name'               => __('projects::models/project.log-attributes.user'),
+            'creator.name'            => __('projects::models/project.log-attributes.creator'),
+        ];
+    }
 
     public $sortable = [
         'order_column_name'  => 'sort',
@@ -147,7 +153,11 @@ class Project extends Model implements Sortable
 
     public function getIsFavoriteByUserAttribute(): bool
     {
-        return $this->favoriteUsers()->where('user_id', auth()->id())->exists();
+        if ($this->relationLoaded('favoriteUsers')) {
+            return $this->favoriteUsers->contains('id', Auth::id());
+        }
+
+        return $this->favoriteUsers()->where('user_id', Auth::id())->exists();
     }
 
     public function getRemainingHoursAttribute(): float
@@ -173,6 +183,15 @@ class Project extends Model implements Sortable
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, 'projects_project_tag', 'project_id', 'tag_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($project) {
+            $project->creator_id = filament()->auth()->id();
+        });
     }
 
     protected static function booted()

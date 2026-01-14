@@ -14,7 +14,6 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Webkul\Support\PluginManager;
 
 class CustomerPanelProvider extends PanelProvider
 {
@@ -24,22 +23,16 @@ class CustomerPanelProvider extends PanelProvider
             ->id('customer')
             ->path('/')
             ->homeUrl(url('/'))
-            ->login()
             ->authPasswordBroker('customers')
-            ->passwordReset()
-            ->registration()
             ->profile(isSimple: false)
             ->favicon(asset('images/favicon.ico'))
-            ->brandLogo(asset('images/logo-light.svg'))
+            ->brandLogo(asset('images/logo.svg'))
             ->darkMode(false)
             ->brandLogoHeight('2rem')
             ->colors([
                 'primary' => Color::Blue,
             ])
             ->topNavigation()
-            ->plugins([
-                PluginManager::make(),
-            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

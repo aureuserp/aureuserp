@@ -2,40 +2,65 @@
 
 namespace Webkul\Project\Filament\Pages;
 
+use BackedEnum;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Pages\Dashboard as BaseDashboard;
-use Filament\View\LegacyComponents\Widget;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
+use Illuminate\Contracts\Support\Htmlable;
 use Webkul\Partner\Models\Partner;
-use Webkul\Project\Filament\Widgets;
+use Webkul\Project\Filament\Widgets\StatsOverviewWidget;
+use Webkul\Project\Filament\Widgets\TaskByStageChart;
+use Webkul\Project\Filament\Widgets\TaskByStateChart;
+use Webkul\Project\Filament\Widgets\TopAssigneesWidget;
+use Webkul\Project\Filament\Widgets\TopProjectsWidget;
 use Webkul\Project\Models\Project;
 use Webkul\Project\Models\Tag;
 use Webkul\Security\Models\User;
-use Webkul\Support\Filament\Clusters\Dashboard as DashboardCluster;
 
 class Dashboard extends BaseDashboard
 {
     use BaseDashboard\Concerns\HasFiltersForm;
+    use HasPageShield;
 
     protected static string $routePath = 'project';
 
-    protected static ?string $navigationIcon = 'heroicon-o-folder';
-
-    protected static ?string $cluster = DashboardCluster::class;
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_project_dashboard';
+    }
 
     public static function getNavigationLabel(): string
     {
         return __('projects::filament/pages/dashboard.navigation.title');
     }
 
-    public function filtersForm(Form $form): Form
+    public static function getNavigationGroup(): string
     {
-        return $form
-            ->schema([
+        return __('projects::filament/pages/dashboard.navigation.group');
+    }
+
+    public static function getNavigationIcon(): string|BackedEnum|Htmlable|null
+    {
+        return null;
+    }
+
+    public function filtersForm(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+
                 Section::make()
+                    ->columns([
+                        'default' => 1,
+                        'sm'      => 2,
+                        'md'      => 3,
+                        'xl'      => 6,
+                    ])
+
                     ->schema([
                         Select::make('selectedProjects')
                             ->label(__('projects::filament/pages/dashboard.filters-form.project'))
@@ -76,22 +101,19 @@ class Dashboard extends BaseDashboard
                             ->maxDate(now())
                             ->default(now())
                             ->native(false),
-                    ])
-                    ->columns(3),
+                    ])->columnSpanFull(),
+
             ]);
     }
 
-    /**
-     * @return array<class-string<Widget> | WidgetConfiguration>
-     */
     public function getWidgets(): array
     {
         return [
-            Widgets\StatsOverviewWidget::class,
-            Widgets\TaskByStageChart::class,
-            Widgets\TaskByStateChart::class,
-            Widgets\TopAssigneesWidget::class,
-            Widgets\TopProjectsWidget::class,
+            StatsOverviewWidget::class,
+            TaskByStageChart::class,
+            TaskByStateChart::class,
+            TopAssigneesWidget::class,
+            TopProjectsWidget::class,
         ];
     }
 }

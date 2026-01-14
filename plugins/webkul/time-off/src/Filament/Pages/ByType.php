@@ -2,19 +2,27 @@
 
 namespace Webkul\TimeOff\Filament\Pages;
 
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Webkul\TimeOff\Filament\Clusters\Reporting;
 use Webkul\TimeOff\Filament\Widgets\LeaveTypeWidget;
 
 class ByType extends BaseDashboard
 {
+    use HasPageShield;
+
     protected static string $routePath = 'reporting/by-type';
 
-    protected static ?string $navigationIcon = 'heroicon-o-folder';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-folder';
 
     protected static ?int $navigationSort = 2;
 
     protected static ?string $cluster = Reporting::class;
+
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_time_off_by_type';
+    }
 
     public function getTitle(): string
     {

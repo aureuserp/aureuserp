@@ -5,8 +5,8 @@ namespace Webkul\Sale;
 use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
+use Webkul\PluginManager\Package;
 use Webkul\Sale\Filament\Clusters\Settings\Pages\ManageProducts;
-use Webkul\Support\Package;
 
 class SalePlugin implements Plugin
 {
@@ -28,17 +28,30 @@ class SalePlugin implements Plugin
 
         $panel
             ->when($panel->getId() == 'admin', function (Panel $panel) {
-                $panel->discoverResources(in: $this->getPluginBasePath('/Filament/Resources'), for: 'Webkul\\Sale\\Filament\\Resources')
-                    ->discoverPages(in: $this->getPluginBasePath('/Filament/Pages'), for: 'Webkul\\Sale\\Filament\\Pages')
-                    ->discoverClusters(in: $this->getPluginBasePath('/Filament/Clusters'), for: 'Webkul\\Sale\\Filament\\Clusters')
-                    ->discoverWidgets(in: $this->getPluginBasePath('/Filament/Widgets'), for: 'Webkul\\Sale\\Filament\\Widgets')
+                $panel
+                    ->discoverResources(
+                        in: __DIR__.'/Filament/Resources',
+                        for: 'Webkul\\Sale\\Filament\\Resources'
+                    )
+                    ->discoverPages(
+                        in: __DIR__.'/Filament/Pages',
+                        for: 'Webkul\\Sale\\Filament\\Pages'
+                    )
+                    ->discoverClusters(
+                        in: __DIR__.'/Filament/Clusters',
+                        for: 'Webkul\\Sale\\Filament\\Clusters'
+                    )
+                    ->discoverWidgets(
+                        in: __DIR__.'/Filament/Widgets',
+                        for: 'Webkul\\Sale\\Filament\\Widgets'
+                    )
                     ->navigationItems([
                         NavigationItem::make('settings')
-                            ->label('Settings')
+                            ->label(fn () => __('sales::app.navigation.settings.label'))
                             ->url(fn () => ManageProducts::getUrl())
-                            ->icon('heroicon-o-wrench')
                             ->group('Sales')
-                            ->sort(4),
+                            ->sort(4)
+                            ->visible(fn () => ManageProducts::canAccess()),
                     ]);
             });
     }
@@ -46,12 +59,5 @@ class SalePlugin implements Plugin
     public function boot(Panel $panel): void
     {
         //
-    }
-
-    protected function getPluginBasePath($path = null): string
-    {
-        $reflector = new \ReflectionClass(get_class($this));
-
-        return dirname($reflector->getFileName()).($path ?? '');
     }
 }

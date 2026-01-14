@@ -16,7 +16,7 @@ class PurchaseOrderPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_purchase::order');
+        return $user->can('view_any_purchase_purchase::order');
     }
 
     /**
@@ -24,7 +24,7 @@ class PurchaseOrderPolicy
      */
     public function view(User $user, PurchaseOrder $purchaseOrder): bool
     {
-        return $user->can('view_purchase::order');
+        return $user->can('view_purchase_purchase::order');
     }
 
     /**
@@ -32,7 +32,7 @@ class PurchaseOrderPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_purchase::order');
+        return $user->can('create_purchase_purchase::order');
     }
 
     /**
@@ -40,7 +40,7 @@ class PurchaseOrderPolicy
      */
     public function update(User $user, PurchaseOrder $purchaseOrder): bool
     {
-        if (! $user->can('update_purchase::order')) {
+        if (! $user->can('update_purchase_purchase::order')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class PurchaseOrderPolicy
      */
     public function delete(User $user, PurchaseOrder $purchaseOrder): bool
     {
-        if (! $user->can('delete_purchase::order')) {
+        if (! $user->can('delete_purchase_purchase::order')) {
             return false;
         }
 
@@ -64,66 +64,6 @@ class PurchaseOrderPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_purchase::order');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, PurchaseOrder $purchaseOrder): bool
-    {
-        if (! $user->can('force_delete_purchase::order')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $purchaseOrder);
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_purchase::order');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, PurchaseOrder $purchaseOrder): bool
-    {
-        if (! $user->can('restore_purchase::order')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $purchaseOrder);
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_purchase::order');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, PurchaseOrder $purchaseOrder): bool
-    {
-        if (! $user->can('replicate_purchase::order')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $purchaseOrder);
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_purchase::order');
+        return $user->can('delete_any_purchase_purchase::order');
     }
 }

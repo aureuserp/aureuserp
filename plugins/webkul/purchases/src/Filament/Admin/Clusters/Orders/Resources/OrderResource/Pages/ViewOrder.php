@@ -2,18 +2,22 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Pages;
 
-use Filament\Actions;
 use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\QueryException;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
-use Webkul\Purchase\Enums;
+use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
 use Webkul\Purchase\Models\Order;
+use Webkul\Support\Filament\Concerns\HasRepeatableEntryColumnManager;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewOrder extends ViewRecord
 {
+    use HasRecordNavigationTabs, HasRepeatableEntryColumnManager;
+
     protected static string $resource = OrderResource::class;
 
     protected function configureAction(Action $action): void
@@ -35,10 +39,11 @@ class ViewOrder extends ViewRecord
     {
         return [
             ChatterAction::make()
-                ->setResource(static::$resource),
-            Actions\DeleteAction::make()
-                ->hidden(fn () => $this->getRecord()->state == Enums\OrderState::DONE)
-                ->action(function (Actions\DeleteAction $action, Order $record) {
+                ->record(\Webkul\Purchase\Models\Order::find($this->getRecord()->id))
+                ->resource(static::$resource),
+            DeleteAction::make()
+                ->hidden(fn () => $this->getRecord()->state == OrderState::DONE)
+                ->action(function (DeleteAction $action, Order $record) {
                     try {
                         $record->delete();
 

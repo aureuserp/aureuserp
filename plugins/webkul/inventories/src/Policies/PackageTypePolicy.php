@@ -15,7 +15,7 @@ class PackageTypePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_package::type');
+        return $user->can('view_any_inventory_package::type');
     }
 
     /**
@@ -23,7 +23,7 @@ class PackageTypePolicy
      */
     public function view(User $user, PackageType $packageType): bool
     {
-        return $user->can('view_package::type');
+        return $user->can('view_inventory_package::type');
     }
 
     /**
@@ -31,7 +31,7 @@ class PackageTypePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_package::type');
+        return $user->can('create_inventory_package::type');
     }
 
     /**
@@ -39,7 +39,7 @@ class PackageTypePolicy
      */
     public function update(User $user, PackageType $packageType): bool
     {
-        return $user->can('update_package::type');
+        return $user->can('update_inventory_package::type');
     }
 
     /**
@@ -47,7 +47,7 @@ class PackageTypePolicy
      */
     public function delete(User $user, PackageType $packageType): bool
     {
-        return $user->can('delete_package::type');
+        return $user->can('delete_inventory_package::type');
     }
 
     /**
@@ -55,54 +55,6 @@ class PackageTypePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_package::type');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, PackageType $packageType): bool
-    {
-        return $user->can('force_delete_package::type');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_package::type');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, PackageType $packageType): bool
-    {
-        return $user->can('restore_package::type');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_package::type');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, PackageType $packageType): bool
-    {
-        return $user->can('replicate_package::type');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_package::type');
+        return $user->can('delete_any_inventory_package::type');
     }
 }

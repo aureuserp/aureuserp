@@ -91,14 +91,6 @@ class ActivityTypePolicy
     }
 
     /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, ActivityType $activityType): bool
-    {
-        return $user->can('replicate_activity::type');
-    }
-
-    /**
      * Determine whether the user can reorder.
      */
     public function reorder(User $user): bool

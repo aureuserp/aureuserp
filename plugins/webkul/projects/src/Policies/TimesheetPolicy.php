@@ -16,15 +16,7 @@ class TimesheetPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_timesheet');
-    }
-
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, Timesheet $timesheet): bool
-    {
-        return $user->can('view_timesheet');
+        return $user->can('view_any_project_timesheet');
     }
 
     /**
@@ -32,7 +24,7 @@ class TimesheetPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_timesheet');
+        return $user->can('create_project_timesheet');
     }
 
     /**
@@ -40,7 +32,7 @@ class TimesheetPolicy
      */
     public function update(User $user, Timesheet $timesheet): bool
     {
-        if (! $user->can('update_timesheet')) {
+        if (! $user->can('update_project_timesheet')) {
             return false;
         }
 
@@ -52,7 +44,7 @@ class TimesheetPolicy
      */
     public function delete(User $user, Timesheet $timesheet): bool
     {
-        if (! $user->can('delete_timesheet')) {
+        if (! $user->can('delete_project_timesheet')) {
             return false;
         }
 
@@ -64,66 +56,6 @@ class TimesheetPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_timesheet');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, Timesheet $timesheet): bool
-    {
-        if (! $user->can('force_delete_timesheet')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $timesheet, 'users');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_timesheet');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, Timesheet $timesheet): bool
-    {
-        if (! $user->can('restore_timesheet')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $timesheet, 'users');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_timesheet');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Timesheet $timesheet): bool
-    {
-        if (! $user->can('replicate_timesheet')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $timesheet, 'users');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_timesheet');
+        return $user->can('delete_any_project_timesheet');
     }
 }

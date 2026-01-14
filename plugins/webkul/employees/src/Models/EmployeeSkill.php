@@ -42,9 +42,18 @@ class EmployeeSkill extends Model
         return $this->belongsTo(SkillType::class);
     }
 
-    public function creator()
+    public function createdBy()
     {
         return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($employeeSkill) {
+            $employeeSkill->creator_id = filament()->auth()->id();
+        });
     }
 
     /**

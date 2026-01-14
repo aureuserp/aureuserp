@@ -2,18 +2,22 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\QueryException;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DropshipResource;
 use Webkul\Inventory\Models\Dropship;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditDropship extends EditRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = DropshipResource::class;
 
     protected function getRedirectUrl(): string
@@ -33,12 +37,12 @@ class EditDropship extends EditRecord
     {
         return [
             ChatterAction::make()
-                ->setResource(static::$resource),
+                ->resource(static::$resource),
             OperationActions\TodoAction::make(),
             OperationActions\ValidateAction::make(),
             OperationActions\CancelAction::make(),
             OperationActions\ReturnAction::make(),
-            Actions\ActionGroup::make([
+            ActionGroup::make([
                 OperationActions\Print\PickingOperationAction::make(),
                 OperationActions\Print\DeliverySlipAction::make(),
                 OperationActions\Print\PackageAction::make(),
@@ -48,9 +52,9 @@ class EditDropship extends EditRecord
                 ->icon('heroicon-o-printer')
                 ->color('gray')
                 ->button(),
-            Actions\DeleteAction::make()
-                ->hidden(fn () => $this->getRecord()->state == Enums\OperationState::DONE)
-                ->action(function (Actions\DeleteAction $action, Dropship $record) {
+            DeleteAction::make()
+                ->hidden(fn () => $this->getRecord()->state == OperationState::DONE)
+                ->action(function (DeleteAction $action, Dropship $record) {
                     try {
                         $record->delete();
 

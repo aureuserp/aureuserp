@@ -2,30 +2,66 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
+use Filament\Tables\Filters\QueryBuilder\Constraints\SelectConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Arr;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Models\Product;
-use Webkul\Purchase\Enums;
+use Webkul\Purchase\Enums\RequisitionState;
+use Webkul\Purchase\Enums\RequisitionType;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders;
-use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource\Pages;
+use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource\Pages\CreatePurchaseAgreement;
+use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource\Pages\EditPurchaseAgreement;
+use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource\Pages\ListPurchaseAgreements;
+use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource\Pages\ViewPurchaseAgreement;
 use Webkul\Purchase\Models\Requisition;
-use Webkul\Purchase\Settings;
 use Webkul\Purchase\Settings\OrderSettings;
+use Webkul\Purchase\Settings\ProductSettings;
+use Webkul\Support\Filament\Forms\Components\Repeater;
+use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
+use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
+use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
 
 class PurchaseAgreementResource extends Resource
 {
@@ -33,7 +69,7 @@ class PurchaseAgreementResource extends Resource
 
     protected static ?string $model = Requisition::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-check';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-check';
 
     protected static bool $shouldRegisterNavigation = true;
 
@@ -41,11 +77,14 @@ class PurchaseAgreementResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
-
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function getNavigationLabel(): string
+    {
+        return __('purchases::filament/admin/clusters/orders/resources/purchase-agreement.navigation.title');
+    }
+
+    public static function getModelLabel(): string
     {
         return __('purchases::filament/admin/clusters/orders/resources/purchase-agreement.navigation.title');
     }
@@ -56,102 +95,130 @@ class PurchaseAgreementResource extends Resource
             return true;
         }
 
-        return app(OrderSettings::class)->enable_purchase_agreements;
+        return static::getOrderSettings()->enable_purchase_agreements;
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 ProgressStepper::make('state')
                     ->hiddenLabel()
                     ->inline()
-                    ->options(Enums\RequisitionState::options())
-                    ->default(Enums\RequisitionState::DRAFT)
+                    ->options(RequisitionState::options())
+                    ->default(RequisitionState::DRAFT)
                     ->disabled(),
-                Forms\Components\Section::make(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.sections.general.title'))
+                Section::make(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.sections.general.title'))
                     ->schema([
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Select::make('partner_id')
+                                Select::make('partner_id')
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.sections.general.fields.vendor'))
                                     ->relationship(
                                         'partner',
                                         'name',
-                                        fn ($query) => $query->where('sub_type', 'supplier')
+                                        fn (Builder $query) => $query->withTrashed()->where('sub_type', 'supplier')
                                     )
+                                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                    })
+                                    ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
                                     ->searchable()
                                     ->required()
                                     ->preload()
-                                    ->disabled(fn ($record): bool => $record && $record?->state != Enums\RequisitionState::DRAFT),
-                                Forms\Components\Select::make('user_id')
+                                    ->disabled(fn ($record): bool => $record && $record?->state != RequisitionState::DRAFT),
+                                Select::make('user_id')
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.sections.general.fields.buyer'))
                                     ->relationship('user', 'name')
                                     ->searchable()
                                     ->preload()
-                                    ->disabled(fn ($record): bool => $record && $record?->state != Enums\RequisitionState::DRAFT),
-                                Forms\Components\Select::make('type')
+                                    ->disabled(fn ($record): bool => $record && $record?->state != RequisitionState::DRAFT),
+                                Select::make('type')
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.sections.general.fields.agreement-type'))
-                                    ->options(Enums\RequisitionType::class)
+                                    ->options(RequisitionType::class)
                                     ->required()
-                                    ->default(Enums\RequisitionType::BLANKET_ORDER)
-                                    ->disabled(fn ($record): bool => $record && $record?->state != Enums\RequisitionState::DRAFT)
+                                    ->default(RequisitionType::BLANKET_ORDER)
+                                    ->disabled(fn ($record): bool => $record && $record?->state != RequisitionState::DRAFT)
                                     ->live(),
-                                Forms\Components\Select::make('currency_id')
+                                Select::make('currency_id')
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.sections.general.fields.currency'))
-                                    ->relationship('currency', 'name')
+                                    ->relationship(
+                                        'currency',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                    )
                                     ->required()
                                     ->searchable()
                                     ->preload(),
                             ]),
 
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Group::make()
+                                Group::make()
                                     ->schema([
-                                        Forms\Components\DatePicker::make('starts_at')
+                                        DatePicker::make('starts_at')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.sections.general.fields.valid-from'))
                                             ->native(false)
-                                            ->suffixIcon('heroicon-o-calendar'),
-                                        Forms\Components\DatePicker::make('ends_at')
+                                            ->suffixIcon('heroicon-o-calendar')
+                                            ->minDate(now()->toDateString())
+                                            ->live()
+                                            ->afterStateUpdated(fn (Set $set) => $set('ends_at', null))
+                                            ->rules([
+                                                'date',
+                                                'after_or_equal:today',
+                                            ]),
+                                        DatePicker::make('ends_at')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.sections.general.fields.valid-to'))
                                             ->native(false)
-                                            ->suffixIcon('heroicon-o-calendar'),
+                                            ->suffixIcon('heroicon-o-calendar')
+                                            ->native(false)
+                                            ->minDate(fn (Get $get) => $get('starts_at') ?: now()->toDateString())
+                                            ->live()
+                                            ->rules([
+                                                'date',
+                                                'after_or_equal:date_from',
+                                            ]),
                                     ])
                                     ->columns(2)
-                                    ->hidden(function (Forms\Get $get): bool {
-                                        return $get('type') != Enums\RequisitionType::BLANKET_ORDER;
+                                    ->hidden(function (Get $get): bool {
+                                        return $get('type') != RequisitionType::BLANKET_ORDER;
                                     }),
-                                Forms\Components\TextInput::make('reference')
+                                TextInput::make('reference')
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.sections.general.fields.reference'))
                                     ->maxLength(255)
                                     ->placeholder(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.sections.general.fields.reference-placeholder')),
-                                Forms\Components\Select::make('company_id')
+                                Select::make('company_id')
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.sections.general.fields.company'))
-                                    ->relationship('company', 'name')
+                                    ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query) => $query->withTrashed())
+                                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                    })
+                                    ->disableOptionWhen(function ($label) {
+                                        return str_contains($label, ' (Deleted)');
+                                    })
                                     ->searchable()
                                     ->required()
                                     ->preload()
-                                    ->default(auth()->user()->default_company_id)
-                                    ->disabled(fn ($record): bool => $record && $record?->state != Enums\RequisitionState::DRAFT),
+                                    ->default(filament()->auth()?->user()?->default_company_id)
+                                    ->disabled(fn ($record): bool => $record && $record?->state != RequisitionState::DRAFT),
                             ]),
                     ])
                     ->columns(2),
 
-                Forms\Components\Tabs::make()
+                Tabs::make()
                     ->schema([
-                        Forms\Components\Tabs\Tab::make(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.title'))
+                        Tab::make(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.title'))
                             ->schema([
                                 static::getProductsRepeater(),
                             ]),
 
-                        Forms\Components\Tabs\Tab::make(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.additional.title'))
+                        Tab::make(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.additional.title'))
                             ->visible(! empty($customFormFields = static::getCustomFormFields()))
                             ->schema($customFormFields),
 
-                        Forms\Components\Tabs\Tab::make(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.terms.title'))
+                        Tab::make(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.terms.title'))
                             ->schema([
-                                Forms\Components\RichEditor::make('description')
+                                RichEditor::make('description')
                                     ->hiddenLabel(),
                             ]),
                     ]),
@@ -159,47 +226,90 @@ class PurchaseAgreementResource extends Resource
             ->columns(1);
     }
 
-    public static function getProductsRepeater(): Forms\Components\Repeater
+    public static function getProductsRepeater(): Repeater
     {
         $columns = 3;
 
-        if (app(Settings\ProductSettings::class)->enable_uom) {
+        if (static::getProductSettings()->enable_uom) {
             $columns++;
         }
 
-        return Forms\Components\Repeater::make('lines')
+        return Repeater::make('lines')
             ->hiddenLabel()
             ->relationship()
+            ->compact()
+            ->table([
+                TableColumn::make('product_id')
+                    ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.columns.product'))
+                    ->width(250)
+                    ->markAsRequired(),
+                TableColumn::make('qty')
+                    ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.columns.quantity'))
+                    ->width(250)
+                    ->markAsRequired(),
+                TableColumn::make('uom_id')
+                    ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.columns.uom'))
+                    ->width(250)
+                    ->visible(static::getProductSettings()->enable_uom)
+                    ->markAsRequired(),
+                TableColumn::make('price_unit')
+                    ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.columns.unit-price'))
+                    ->width(250)
+                    ->markAsRequired(),
+            ])
             ->schema([
-                Forms\Components\Select::make('product_id')
+                Select::make('product_id')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.fields.product'))
                     ->relationship('product', 'name')
                     ->relationship(
                         'product',
                         'name',
-                        fn ($query) => $query->where('type', ProductType::GOODS),
+                        fn ($query) => $query->where('type', ProductType::GOODS)->withTrashed()->whereNull('is_configurable'),
                     )
                     ->required()
                     ->searchable()
                     ->preload()
                     ->distinct()
-                    ->disableOptionsWhenSelectedInSiblingRepeaterItems()
+                    ->getOptionLabelFromRecordUsing(function ($record): string {
+                        return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                    })
+                    ->disableOptionWhen(function ($value, $state, $component, $label) {
+                        if (str_contains($label, ' (Deleted)')) {
+                            return true;
+                        }
+
+                        $repeater = $component->getParentRepeater();
+                        if (! $repeater) {
+                            return false;
+                        }
+
+                        return collect($repeater->getState())
+                            ->pluck(
+                                (string) str($component->getStatePath())
+                                    ->after("{$repeater->getStatePath()}.")
+                                    ->after('.'),
+                            )
+                            ->flatten()
+                            ->diff(Arr::wrap($state))
+                            ->filter(fn (mixed $siblingItemState): bool => filled($siblingItemState))
+                            ->contains($value);
+                    })
                     ->live()
-                    ->afterStateUpdated(function (Forms\Set $set, Forms\Get $get) {
+                    ->afterStateUpdated(function (Set $set, Get $get) {
                         if ($product = Product::find($get('product_id'))) {
                             $set('uom_id', $product->uom_id);
                         }
                     })
-                    ->disabled(fn ($record): bool => in_array($record?->requisition->state, [Enums\RequisitionState::CLOSED, Enums\RequisitionState::CANCELED])),
-                Forms\Components\TextInput::make('qty')
+                    ->disabled(fn ($record): bool => in_array($record?->requisition->state, [RequisitionState::CLOSED, RequisitionState::CANCELED])),
+                TextInput::make('qty')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.fields.quantity'))
                     ->numeric()
                     ->minValue(0)
                     ->maxValue(99999999999)
                     ->default(0)
                     ->required()
-                    ->disabled(fn ($record): bool => in_array($record?->requisition->state, [Enums\RequisitionState::CLOSED, Enums\RequisitionState::CANCELED])),
-                Forms\Components\Select::make('uom_id')
+                    ->disabled(fn ($record): bool => in_array($record?->requisition->state, [RequisitionState::CLOSED, RequisitionState::CANCELED])),
+                Select::make('uom_id')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.unit'))
                     ->relationship(
                         'uom',
@@ -209,16 +319,16 @@ class PurchaseAgreementResource extends Resource
                     ->searchable()
                     ->preload()
                     ->required()
-                    ->visible(fn (Settings\ProductSettings $settings) => $settings->enable_uom)
-                    ->disabled(fn ($record): bool => in_array($record?->requisition->state, [Enums\RequisitionState::CLOSED, Enums\RequisitionState::CANCELED])),
-                Forms\Components\TextInput::make('price_unit')
+                    ->visible(static::getProductSettings()->enable_uom)
+                    ->disabled(fn ($record): bool => in_array($record?->requisition->state, [RequisitionState::CLOSED, RequisitionState::CANCELED])),
+                TextInput::make('price_unit')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.tabs.products.fields.unit-price'))
                     ->numeric()
                     ->minValue(0)
                     ->maxValue(99999999999)
                     ->default(0)
                     ->required()
-                    ->disabled(fn ($record): bool => in_array($record?->requisition->state, [Enums\RequisitionState::CLOSED, Enums\RequisitionState::CANCELED])),
+                    ->disabled(fn ($record): bool => in_array($record?->requisition->state, [RequisitionState::CLOSED, RequisitionState::CANCELED])),
             ])
             ->columns($columns);
     }
@@ -227,45 +337,45 @@ class PurchaseAgreementResource extends Resource
     {
         return $table
             ->columns(static::mergeCustomTableColumns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.columns.agreement'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('partner.name')
+                TextColumn::make('partner.name')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.columns.vendor'))
                     ->searchable()
                     ->sortable()
                     ->toggleable(),
-                Tables\Columns\TextColumn::make('type')
+                TextColumn::make('type')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.columns.agreement-type'))
                     ->sortable()
                     ->toggleable(),
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.columns.buyer'))
                     ->sortable()
                     ->placeholder('—')
                     ->toggleable(),
-                Tables\Columns\TextColumn::make('company.name')
+                TextColumn::make('company.name')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.columns.company'))
                     ->sortable()
                     ->placeholder('—')
                     ->toggleable(),
-                Tables\Columns\TextColumn::make('starts_at')
+                TextColumn::make('starts_at')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.columns.valid-from'))
                     ->sortable()
                     ->placeholder('—')
                     ->toggleable(),
-                Tables\Columns\TextColumn::make('ends_at')
+                TextColumn::make('ends_at')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.columns.valid-to'))
                     ->sortable()
                     ->placeholder('—')
                     ->toggleable(),
-                Tables\Columns\TextColumn::make('reference')
+                TextColumn::make('reference')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.columns.reference'))
                     ->sortable()
                     ->placeholder('—')
                     ->toggleable(),
-                Tables\Columns\TextColumn::make('state')
+                TextColumn::make('state')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.columns.status'))
                     ->sortable()
                     ->badge()
@@ -287,16 +397,16 @@ class PurchaseAgreementResource extends Resource
                     ->collapsible(),
             ])
             ->filters([
-                Tables\Filters\QueryBuilder::make()
+                QueryBuilder::make()
                     ->constraints(collect(static::mergeCustomTableQueryBuilderConstraints([
-                        Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('name')
+                        TextConstraint::make('name')
                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.filters.agreement')),
-                        Tables\Filters\QueryBuilder\Constraints\SelectConstraint::make('state')
+                        SelectConstraint::make('state')
                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.filters.status'))
                             ->multiple()
-                            ->options(Enums\RequisitionState::class)
+                            ->options(RequisitionState::class)
                             ->icon('heroicon-o-bars-2'),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('partner')
+                        RelationshipConstraint::make('partner')
                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.filters.vendor'))
                             ->multiple()
                             ->selectable(
@@ -307,7 +417,7 @@ class PurchaseAgreementResource extends Resource
                                     ->preload(),
                             )
                             ->icon('heroicon-o-user'),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('user')
+                        RelationshipConstraint::make('user')
                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.filters.buyer'))
                             ->multiple()
                             ->selectable(
@@ -318,7 +428,7 @@ class PurchaseAgreementResource extends Resource
                                     ->preload(),
                             )
                             ->icon('heroicon-o-user'),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('company')
+                        RelationshipConstraint::make('company')
                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.filters.company'))
                             ->multiple()
                             ->selectable(
@@ -329,46 +439,46 @@ class PurchaseAgreementResource extends Resource
                                     ->preload(),
                             )
                             ->icon('heroicon-o-building-office'),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('starts_at')
+                        DateConstraint::make('starts_at')
                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.filters.valid-from')),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('ends_at')
+                        DateConstraint::make('ends_at')
                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.filters.valid-to')),
-                        Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('reference')
+                        TextConstraint::make('reference')
                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.filters.reference'))
                             ->icon('heroicon-o-identification'),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('created_at')
+                        DateConstraint::make('created_at')
                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.filters.created-at')),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('updated_at')
+                        DateConstraint::make('updated_at')
                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.filters.updated-at')),
                     ]))->filter()->values()->all()),
-            ], layout: \Filament\Tables\Enums\FiltersLayout::Modal)
+            ], layout: FiltersLayout::Modal)
             ->filtersTriggerAction(
-                fn (Tables\Actions\Action $action) => $action
+                fn (Action $action) => $action
                     ->slideOver(),
             )
             ->filtersFormColumns(2)
-            ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ActionGroup::make([
+                    ViewAction::make()
                         ->hidden(fn ($record) => $record->trashed()),
-                    Tables\Actions\EditAction::make()
+                    EditAction::make()
                         ->hidden(fn ($record) => $record->trashed()),
-                    Tables\Actions\RestoreAction::make()
+                    RestoreAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.actions.restore.notification.title'))
                                 ->body(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteAction::make()
-                        ->hidden(fn (Model $record) => $record->state == Enums\RequisitionState::CLOSED)
+                    DeleteAction::make()
+                        ->hidden(fn (Model $record) => $record->state == RequisitionState::CLOSED)
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.actions.delete.notification.title'))
                                 ->body(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteAction::make()
+                    ForceDeleteAction::make()
                         ->action(function (Requisition $record) {
                             try {
                                 $record->forceDelete();
@@ -388,23 +498,23 @@ class PurchaseAgreementResource extends Resource
                         ),
                 ]),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\RestoreBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.bulk-actions.restore.notification.title'))
                                 ->body(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.bulk-actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteBulkAction::make()
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.bulk-actions.delete.notification.title'))
                                 ->body(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.table.bulk-actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteBulkAction::make()
+                    ForceDeleteBulkAction::make()
                         ->action(function (Collection $records) {
                             try {
                                 $records->each(fn (Model $record) => $record->forceDelete());
@@ -425,90 +535,93 @@ class PurchaseAgreementResource extends Resource
                 ]),
             ])
             ->checkIfRecordIsSelectableUsing(
-                fn (Model $record): bool => static::can('delete', $record) && $record->state !== Enums\RequisitionState::CLOSED,
+                fn (Model $record): bool => static::can('delete', $record) && $record->state !== RequisitionState::CLOSED,
             );
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Section::make()
+        return $schema
+            ->components([
+                Section::make()
                     ->schema([
-                        Infolists\Components\TextEntry::make('state')
+                        TextEntry::make('state')
                             ->badge(),
                     ])
                     ->compact(),
 
-                Infolists\Components\Section::make(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.sections.general.title'))
+                Section::make(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.sections.general.title'))
                     ->icon('heroicon-o-document-text')
                     ->schema([
-                        Infolists\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Infolists\Components\Group::make([
-                                    Infolists\Components\TextEntry::make('partner.name')
+                                Group::make([
+                                    TextEntry::make('partner.name')
                                         ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.sections.general.entries.vendor'))
                                         ->icon('heroicon-o-building-storefront'),
 
-                                    Infolists\Components\TextEntry::make('user.name')
+                                    TextEntry::make('user.name')
                                         ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.sections.general.entries.buyer'))
                                         ->icon('heroicon-o-user'),
 
-                                    Infolists\Components\TextEntry::make('type')
+                                    TextEntry::make('type')
                                         ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.sections.general.entries.agreement-type'))
                                         ->icon('heroicon-o-document')
                                         ->badge(),
 
-                                    Infolists\Components\TextEntry::make('currency.name')
+                                    TextEntry::make('currency.name')
                                         ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.sections.general.entries.currency'))
                                         ->icon('heroicon-o-currency-dollar'),
                                 ]),
 
-                                Infolists\Components\Group::make([
-                                    Infolists\Components\Grid::make(2)
+                                Group::make([
+                                    Grid::make(2)
                                         ->schema([
-                                            Infolists\Components\TextEntry::make('starts_at')
+                                            TextEntry::make('starts_at')
                                                 ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.sections.general.entries.valid-from'))
                                                 ->icon('heroicon-o-calendar')
                                                 ->date(),
 
-                                            Infolists\Components\TextEntry::make('ends_at')
+                                            TextEntry::make('ends_at')
                                                 ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.sections.general.entries.valid-to'))
                                                 ->icon('heroicon-o-calendar')
                                                 ->date(),
                                         ])
-                                        ->visible(fn ($record) => $record->type === Enums\RequisitionType::BLANKET_ORDER),
+                                        ->visible(fn ($record) => $record->type === RequisitionType::BLANKET_ORDER),
 
-                                    Infolists\Components\TextEntry::make('reference')
+                                    TextEntry::make('reference')
                                         ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.sections.general.entries.reference'))
                                         ->icon('heroicon-o-identification'),
 
-                                    Infolists\Components\TextEntry::make('company.name')
+                                    TextEntry::make('company.name')
                                         ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.sections.general.entries.company'))
                                         ->icon('heroicon-o-building-office'),
                                 ]),
                             ]),
                     ]),
 
-                Infolists\Components\Tabs::make('Tabs')
+                Tabs::make('Tabs')
                     ->tabs([
-                        Infolists\Components\Tabs\Tab::make(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.products.title'))
+                        Tab::make(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.products.title'))
                             ->icon('heroicon-o-cube')
                             ->schema([
-                                Infolists\Components\RepeatableEntry::make('lines')
-                                    ->schema([
-                                        Infolists\Components\TextEntry::make('product.name')
+                                RepeatableEntry::make('lines')
+                                    ->table([
+                                        InfolistTableColumn::make('product.name')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.products.entries.product')),
-
-                                        Infolists\Components\TextEntry::make('qty')
+                                        InfolistTableColumn::make('qty')
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.products.entries.quantity')),
-
-                                        Infolists\Components\TextEntry::make('uom.name')
-                                            ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.entries.unit'))
-                                            ->visible(fn (Settings\ProductSettings $settings) => $settings->enable_uom),
-
-                                        Infolists\Components\TextEntry::make('price_unit')
-                                            ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.products.entries.unit-price'))
+                                        InfolistTableColumn::make('uom.name')
+                                            ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.products.entries.uom')),
+                                        InfolistTableColumn::make('price_unit')
+                                            ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.products.entries.unit-price')),
+                                    ])
+                                    ->schema([
+                                        TextEntry::make('product.name'),
+                                        TextEntry::make('qty'),
+                                        TextEntry::make('uom.name')
+                                            ->visible(static::getProductSettings()->enable_uom),
+                                        TextEntry::make('price_unit')
                                             ->money(fn ($record) => $record->requisition->currency->code ?? 'USD'),
                                     ])
                                     ->columns([
@@ -517,35 +630,35 @@ class PurchaseAgreementResource extends Resource
                                     ]),
                             ]),
 
-                        Infolists\Components\Section::make(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.additional.title'))
+                        Section::make(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.additional.title'))
                             ->visible(! empty($customInfolistEntries = static::getCustomInfolistEntries()))
                             ->schema($customInfolistEntries),
 
-                        Infolists\Components\Tabs\Tab::make(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.terms.title'))
+                        Tab::make(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.tabs.terms.title'))
                             ->icon('heroicon-o-document-text')
                             ->schema([
-                                Infolists\Components\TextEntry::make('description')
+                                TextEntry::make('description')
                                     ->hiddenLabel()
                                     ->markdown()
                                     ->prose(),
                             ]),
                     ]),
 
-                Infolists\Components\Section::make(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.sections.metadata.title'))
+                Section::make(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.sections.metadata.title'))
                     ->icon('heroicon-o-information-circle')
                     ->schema([
-                        Infolists\Components\Grid::make(3)
+                        Grid::make(3)
                             ->schema([
-                                Infolists\Components\TextEntry::make('created_at')
+                                TextEntry::make('created_at')
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.sections.metadata.entries.created-at'))
                                     ->dateTime()
                                     ->icon('heroicon-o-clock'),
 
-                                Infolists\Components\TextEntry::make('creator.name')
+                                TextEntry::make('creator.name')
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.sections.metadata.entries.created-by'))
                                     ->icon('heroicon-o-user'),
 
-                                Infolists\Components\TextEntry::make('updated_at')
+                                TextEntry::make('updated_at')
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.sections.metadata.entries.updated-at'))
                                     ->dateTime()
                                     ->icon('heroicon-o-arrow-path'),
@@ -555,21 +668,37 @@ class PurchaseAgreementResource extends Resource
             ->columns(1);
     }
 
+    public static function getOrderSettings(): OrderSettings
+    {
+        return once(fn () => app(OrderSettings::class));
+    }
+
+    public static function getProductSettings(): ProductSettings
+    {
+        return once(fn () => app(ProductSettings::class));
+    }
+
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewPurchaseAgreement::class,
-            Pages\EditPurchaseAgreement::class,
+            ViewPurchaseAgreement::class,
+            EditPurchaseAgreement::class,
         ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListPurchaseAgreements::route('/'),
-            'create' => Pages\CreatePurchaseAgreement::route('/create'),
-            'edit'   => Pages\EditPurchaseAgreement::route('/{record}/edit'),
-            'view'   => Pages\ViewPurchaseAgreement::route('/{record}/view'),
+            'index'  => ListPurchaseAgreements::route('/'),
+            'create' => CreatePurchaseAgreement::route('/create'),
+            'edit'   => EditPurchaseAgreement::route('/{record}/edit'),
+            'view'   => ViewPurchaseAgreement::route('/{record}/view'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderByDesc('id');
     }
 }

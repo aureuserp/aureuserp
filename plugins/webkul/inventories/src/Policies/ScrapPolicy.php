@@ -15,7 +15,7 @@ class ScrapPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_scrap');
+        return $user->can('view_any_inventory_scrap');
     }
 
     /**
@@ -23,7 +23,7 @@ class ScrapPolicy
      */
     public function view(User $user, Scrap $scrap): bool
     {
-        return $user->can('view_scrap');
+        return $user->can('view_inventory_scrap');
     }
 
     /**
@@ -31,7 +31,7 @@ class ScrapPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_scrap');
+        return $user->can('create_inventory_scrap');
     }
 
     /**
@@ -39,7 +39,7 @@ class ScrapPolicy
      */
     public function update(User $user, Scrap $scrap): bool
     {
-        return $user->can('update_scrap');
+        return $user->can('update_inventory_scrap');
     }
 
     /**
@@ -47,7 +47,7 @@ class ScrapPolicy
      */
     public function delete(User $user, Scrap $scrap): bool
     {
-        return $user->can('delete_scrap');
+        return $user->can('delete_inventory_scrap');
     }
 
     /**
@@ -55,54 +55,6 @@ class ScrapPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_scrap');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, Scrap $scrap): bool
-    {
-        return $user->can('force_delete_scrap');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_scrap');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, Scrap $scrap): bool
-    {
-        return $user->can('restore_scrap');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_scrap');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Scrap $scrap): bool
-    {
-        return $user->can('replicate_scrap');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_scrap');
+        return $user->can('delete_any_inventory_scrap');
     }
 }

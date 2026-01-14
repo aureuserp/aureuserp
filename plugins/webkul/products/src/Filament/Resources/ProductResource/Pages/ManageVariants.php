@@ -2,37 +2,37 @@
 
 namespace Webkul\Product\Filament\Resources\ProductResource\Pages;
 
-use Filament\Forms\Form;
-use Filament\Infolists\Infolist;
-use Filament\Pages\SubNavigationPosition;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Filament\Support\Enums\MaxWidth;
-use Filament\Tables;
+use Filament\Schemas\Schema;
+use Filament\Support\Enums\Width;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Arr;
 use Webkul\Product\Filament\Resources\ProductResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageVariants extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = ProductResource::class;
 
     protected static string $relationship = 'variants';
 
-    public function getSubNavigationPosition(): SubNavigationPosition
-    {
-        return SubNavigationPosition::Top;
-    }
-
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     public static function getNavigationLabel(): string
     {
         return __('products::filament/resources/product/pages/manage-variants.title');
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return ProductResource::form($form);
+        return ProductResource::form($schema);
     }
 
     public function table(Table $table): Table
@@ -45,18 +45,61 @@ class ManageVariants extends ManageRelatedRecords
 
         if (isset($flatActions['edit'])) {
             $flatActions['edit']
-                ->modalWidth(MaxWidth::SevenExtraLarge);
+                ->modalWidth(Width::SevenExtraLarge);
         }
 
         if (isset($flatActions['view'])) {
             $flatActions['view']
-                ->modalWidth(MaxWidth::SevenExtraLarge);
+                ->modalWidth(Width::SevenExtraLarge)
+                ->extraModalFooterActions(fn (Action $action) => [
+                    Action::make('print')
+                        ->label(__('products::filament/resources/product/pages/manage-variants.table.actions.view.extra-footer-actions.print.label'))
+                        ->color('gray')
+                        ->icon('heroicon-o-printer')
+                        ->schema([
+                            TextInput::make('quantity')
+                                ->label(__('products::filament/resources/product/pages/manage-variants.table.actions.view.extra-footer-actions.print.form.fields.quantity'))
+                                ->required()
+                                ->numeric()
+                                ->minValue(1)
+                                ->maxValue(100),
+                            Radio::make('format')
+                                ->label(__('products::filament/resources/product/pages/manage-variants.table.actions.view.extra-footer-actions.print.form.fields.format'))
+                                ->options([
+                                    'dymo'       => __('products::filament/resources/product/pages/manage-variants.table.actions.view.extra-footer-actions.print.form.fields.format-options.dymo'),
+                                    '2x7_price'  => __('products::filament/resources/product/pages/manage-variants.table.actions.view.extra-footer-actions.print.form.fields.format-options.2x7_price'),
+                                    '4x7_price'  => __('products::filament/resources/product/pages/manage-variants.table.actions.view.extra-footer-actions.print.form.fields.format-options.4x7_price'),
+                                    '4x12'       => __('products::filament/resources/product/pages/manage-variants.table.actions.view.extra-footer-actions.print.form.fields.format-options.4x12'),
+                                    '4x12_price' => __('products::filament/resources/product/pages/manage-variants.table.actions.view.extra-footer-actions.print.form.fields.format-options.4x12_price'),
+                                ])
+                                ->default('2x7_price')
+                                ->required(),
+                        ])
+                        ->action(function (array $data, $record) {
+                            $pdf = PDF::loadView('products::filament.resources.products.actions.print', [
+                                'records'  => collect([$record]),
+                                'quantity' => $data['quantity'],
+                                'format'   => $data['format'],
+                            ]);
+
+                            $paperSize = match ($data['format']) {
+                                'dymo'  => [0, 0, 252.2, 144],
+                                default => 'a4',
+                            };
+
+                            $pdf->setPaper($paperSize, 'portrait');
+
+                            return response()->streamDownload(function () use ($pdf) {
+                                echo $pdf->output();
+                            }, 'Product-'.$record->name.'.pdf');
+                        }),
+                ]);
         }
 
         $table->columns(Arr::except($table->getColumns(), ['variants_count']));
 
         $table->columns([
-            Tables\Columns\TextColumn::make('combinations')
+            TextColumn::make('combinations')
                 ->label(__('products::filament/resources/product/pages/manage-variants.table.columns.variant-values'))
                 ->state(function ($record) {
                     return $record->combinations->map(function ($combination) {
@@ -76,8 +119,8 @@ class ManageVariants extends ManageRelatedRecords
         return $table;
     }
 
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $schema): Schema
     {
-        return ProductResource::infolist($infolist);
+        return ProductResource::infolist($schema);
     }
 }

@@ -9,47 +9,52 @@ use Webkul\Recruitment\Models\Applicant;
 
 class ApplicantChartWidget extends ChartWidget
 {
-    public function getHeading(): string|Htmlable|null
-    {
-        return __('recruitments::filament/widgets/applicant.overview.label');
-    }
-
     protected static ?int $sort = 2;
 
     protected int|string|array $columnSpan = 'full';
 
-    protected static ?string $maxHeight = '400px';
+    protected ?string $maxHeight = '400px';
+
+    protected static function getPagePermission(): ?string
+    {
+        return 'widget_recruitment_applicant_chart_widget';
+    }
+
+    public function getHeading(): string|Htmlable|null
+    {
+        return __('recruitments::filament/widgets/applicant.heading.title');
+    }
 
     protected function getData(): array
     {
         $query = Applicant::query();
 
-        if ($this->filters['selectedJobs'] ?? null) {
-            $query->whereIn('job_id', $this->filters['selectedJobs']);
+        if ($this->pageFilters['selectedJobs'] ?? null) {
+            $query->whereIn('job_id', $this->pageFilters['selectedJobs']);
         }
 
-        if ($this->filters['selectedDepartments'] ?? null) {
-            $query->whereIn('department_id', $this->filters['selectedDepartments']);
+        if ($this->pageFilters['selectedDepartments'] ?? null) {
+            $query->whereIn('department_id', $this->pageFilters['selectedDepartments']);
         }
 
-        if ($this->filters['selectedCompanies'] ?? null) {
-            $query->whereIn('company_id', $this->filters['selectedCompanies']);
+        if ($this->pageFilters['selectedCompanies'] ?? null) {
+            $query->whereIn('company_id', $this->pageFilters['selectedCompanies']);
         }
 
-        if ($this->filters['selectedStages'] ?? null) {
-            $query->whereIn('stage_id', $this->filters['selectedStages']);
+        if ($this->pageFilters['selectedStages'] ?? null) {
+            $query->whereIn('stage_id', $this->pageFilters['selectedStages']);
         }
 
-        if ($this->filters['selectedRecruiters'] ?? null) {
-            $query->whereIn('recruiter_id', $this->filters['selectedRecruiters']);
+        if ($this->pageFilters['selectedRecruiters'] ?? null) {
+            $query->whereIn('recruiter_id', $this->pageFilters['selectedRecruiters']);
         }
 
-        if ($this->filters['startDate'] ?? null) {
-            $query->where('created_at', '>=', Carbon::parse($this->filters['startDate'])->startOfDay());
+        if ($this->pageFilters['startDate'] ?? null) {
+            $query->where('created_at', '>=', Carbon::parse($this->pageFilters['startDate'])->startOfDay());
         }
 
-        if ($this->filters['endDate'] ?? null) {
-            $query->where('created_at', '<=', Carbon::parse($this->filters['endDate'])->endOfDay());
+        if ($this->pageFilters['endDate'] ?? null) {
+            $query->where('created_at', '<=', Carbon::parse($this->pageFilters['endDate'])->endOfDay());
         }
 
         $stats = $query->selectRaw('
@@ -66,7 +71,7 @@ class ApplicantChartWidget extends ChartWidget
             END) as ongoing
         ')->first();
 
-        $data = match ($this->filters['status'] ?? 'all') {
+        $data = match ($this->pageFilters['status'] ?? 'all') {
             'ongoing'  => ['Ongoing' => $stats->ongoing ?? 0],
             'hired'    => ['Hired' => $stats->hired ?? 0],
             'refused'  => ['Refused' => $stats->refused ?? 0],
@@ -82,7 +87,7 @@ class ApplicantChartWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label'           => __('recruitments::filament/widgets/applicant.overview.label'),
+                    'label'           => __('recruitments::filament/widgets/applicant.heading.title'),
                     'data'            => array_values($data),
                     'backgroundColor' => array_map(fn ($key) => match ($key) {
                         __('recruitments::filament/widgets/applicant.ongoing')  => '#3b82f6',

@@ -2,22 +2,50 @@
 
 namespace Webkul\Employee\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\ColorEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
+use Filament\Pages\Enums\SubNavigationPosition;
+use Filament\Panel;
+use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\Layout\Stack;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Filters\QueryBuilder\Constraints\DateConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
+use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
-use Webkul\Employee\Filament\Resources\DepartmentResource\Pages;
+use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\CreateDepartment;
+use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\EditDepartment;
+use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\ListDepartments;
+use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\ManageEmployee;
+use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\ViewDepartment;
 use Webkul\Employee\Models\Department;
 use Webkul\Field\Filament\Traits\HasCustomFields;
-use Webkul\Support\Models\Company;
 
 class DepartmentResource extends Resource
 {
@@ -25,7 +53,7 @@ class DepartmentResource extends Resource
 
     protected static ?string $model = Department::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getNavigationLabel(): string
     {
@@ -53,84 +81,97 @@ class DepartmentResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Section::make(__('employees::filament/resources/department.form.sections.general.title'))
+                                Section::make(__('employees::filament/resources/department.form.sections.general.title'))
                                     ->schema([
-                                        Forms\Components\Hidden::make('creator_id')
-                                            ->default(Auth::id())
-                                            ->required(),
-                                        Forms\Components\TextInput::make('name')
+                                        TextInput::make('name')
                                             ->label(__('employees::filament/resources/department.form.sections.general.fields.name'))
                                             ->required()
                                             ->maxLength(255)
                                             ->live(onBlur: true),
-                                        Forms\Components\Select::make('parent_id')
+                                        Select::make('parent_id')
                                             ->label(__('employees::filament/resources/department.form.sections.general.fields.parent-department'))
-                                            ->relationship('parent', 'complete_name')
+                                            ->relationship(
+                                                name: 'parent',
+                                                titleAttribute: 'complete_name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                            )
+                                            ->getOptionLabelFromRecordUsing(
+                                                fn (Model $record): string => $record->complete_name.($record->trashed() ? ' (Deleted)' : ''),
+                                            )
+                                            ->disableOptionWhen(
+                                                fn (string $label): bool => str_contains($label, ' (Deleted)'),
+                                            )
                                             ->searchable()
                                             ->preload()
-                                            ->live(onBlur: true),
-                                        Forms\Components\Select::make('manager_id')
+                                            ->live(),
+                                        Select::make('manager_id')
                                             ->label(__('employees::filament/resources/department.form.sections.general.fields.manager'))
                                             ->relationship('manager', 'name')
                                             ->searchable()
                                             ->preload()
                                             ->placeholder(__('employees::filament/resources/department.form.sections.general.fields.manager-placeholder'))
                                             ->nullable(),
-                                        Forms\Components\Select::make('company_id')
+                                        Select::make('company_id')
                                             ->label(__('employees::filament/resources/department.form.sections.general.fields.company'))
-                                            ->relationship('company', 'name')
-                                            ->options(fn () => Company::pluck('name', 'id'))
+                                            ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query) => $query->withTrashed())
+                                            ->getOptionLabelFromRecordUsing(function (Model $record): string {
+                                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                            })
+                                            ->disableOptionWhen(function ($label) {
+                                                return str_contains($label, ' (Deleted)');
+                                            })
+                                            ->preload()
                                             ->searchable()
                                             ->placeholder(__('employees::filament/resources/department.form.sections.general.fields.company-placeholder'))
                                             ->nullable(),
-                                        Forms\Components\ColorPicker::make('color')
+                                        ColorPicker::make('color')
                                             ->label(__('employees::filament/resources/department.form.sections.general.fields.color'))
                                             ->hexColor(),
                                     ])
-                                    ->columns(2),
-                                Forms\Components\Section::make(__('employees::filament/resources/department.form.sections.additional.title'))
+                                    ->columns(2)->columnSpanFull(),
+                                Section::make(__('employees::filament/resources/department.form.sections.additional.title'))
                                     ->visible(! empty($customFormFields = static::getCustomFormFields()))
                                     ->description(__('employees::filament/resources/department.form.sections.additional.description'))
                                     ->schema($customFormFields),
                             ]),
                     ]),
             ])
-            ->columns('full');
+            ->columns(1);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\Layout\Stack::make([
-                    Tables\Columns\ImageColumn::make('manager.partner.avatar')
+                Stack::make([
+                    ImageColumn::make('manager.partner.avatar')
                         ->height(35)
                         ->circular()
                         ->width(35),
-                    Tables\Columns\Layout\Stack::make([
-                        Tables\Columns\TextColumn::make('name')
+                    Stack::make([
+                        TextColumn::make('name')
                             ->weight(FontWeight::Bold)
                             ->label(__('employees::filament/resources/department.table.columns.name'))
                             ->searchable()
                             ->sortable(),
-                        Tables\Columns\Layout\Stack::make([
-                            Tables\Columns\TextColumn::make('manager.name')
+                        Stack::make([
+                            TextColumn::make('manager.name')
                                 ->icon('heroicon-m-briefcase')
                                 ->label(__('employees::filament/resources/department.table.columns.manager-name'))
                                 ->sortable()
                                 ->searchable(),
                         ])
                             ->visible(fn ($record) => filled($record?->manager?->name)),
-                        Tables\Columns\Layout\Stack::make([
-                            Tables\Columns\TextColumn::make('company.name')
+                        Stack::make([
+                            TextColumn::make('company.name')
                                 ->searchable()
                                 ->label(__('employees::filament/resources/department.table.columns.company-name'))
                                 ->icon('heroicon-m-building-office-2')
@@ -164,13 +205,13 @@ class DepartmentResource extends Resource
             ])
             ->filtersFormColumns(2)
             ->filters(static::mergeCustomTableFilters([
-                Tables\Filters\QueryBuilder::make()
+                QueryBuilder::make()
                     ->constraintPickerColumns(2)
                     ->constraints([
-                        Tables\Filters\QueryBuilder\Constraints\TextConstraint::make('name')
+                        TextConstraint::make('name')
                             ->label(__('employees::filament/resources/department.table.filters.name'))
                             ->icon('heroicon-o-building-office-2'),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('manager')
+                        RelationshipConstraint::make('manager')
                             ->label(__('employees::filament/resources/department.table.filters.manager-name'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -182,7 +223,7 @@ class DepartmentResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint::make('company')
+                        RelationshipConstraint::make('company')
                             ->label(__('employees::filament/resources/department.table.filters.company-name'))
                             ->icon('heroicon-o-building-office-2')
                             ->multiple()
@@ -194,31 +235,31 @@ class DepartmentResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('created_at')
+                        DateConstraint::make('created_at')
                             ->label(__('employees::filament/resources/department.table.filters.created-at')),
-                        Tables\Filters\QueryBuilder\Constraints\DateConstraint::make('updated_at')
+                        DateConstraint::make('updated_at')
                             ->label(__('employees::filament/resources/department.table.filters.updated-at')),
                     ]),
             ]))
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make()
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title(__('employees::filament/resources/department.table.actions.delete.notification.title'))
                             ->body(__('employees::filament/resources/department.table.actions.delete.notification.body')),
                     ),
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\RestoreAction::make()
+                ActionGroup::make([
+                    RestoreAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('employees::filament/resources/department.table.actions.restore.notification.title'))
                                 ->body(__('employees::filament/resources/department.table.actions.restore.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteAction::make()
+                    ForceDeleteAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -227,23 +268,23 @@ class DepartmentResource extends Resource
                         ),
                 ]),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\RestoreBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    RestoreBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('employees::filament/resources/department.table.bulk-actions.restore.notification.title'))
                                 ->body(__('employees::filament/resources/department.table.bulk-actions.restore.notification.body')),
                         ),
-                    Tables\Actions\DeleteBulkAction::make()
+                    DeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
                                 ->title(__('employees::filament/resources/department.table.bulk-actions.delete.notification.title'))
                                 ->body(__('employees::filament/resources/department.table.bulk-actions.delete.notification.body')),
                         ),
-                    Tables\Actions\ForceDeleteBulkAction::make()
+                    ForceDeleteBulkAction::make()
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -254,40 +295,41 @@ class DepartmentResource extends Resource
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Group::make()
+        return $schema
+            ->components([
+                Group::make()
                     ->schema([
-                        Infolists\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Infolists\Components\Section::make(__('employees::filament/resources/department.infolist.sections.general.title'))
+                                Section::make(__('employees::filament/resources/department.infolist.sections.general.title'))
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('name')
+                                        TextEntry::make('name')
                                             ->placeholder('—')
                                             ->icon('heroicon-o-building-office-2')
                                             ->label(__('employees::filament/resources/department.infolist.sections.general.entries.name')),
-                                        Infolists\Components\TextEntry::make('manager.name')
+                                        TextEntry::make('manager.name')
                                             ->placeholder('—')
                                             ->icon('heroicon-o-user')
                                             ->label(__('employees::filament/resources/department.infolist.sections.general.entries.manager')),
-                                        Infolists\Components\TextEntry::make('company.name')
+                                        TextEntry::make('company.name')
                                             ->placeholder('—')
                                             ->icon('heroicon-o-building-office')
                                             ->label(__('employees::filament/resources/department.infolist.sections.general.entries.company')),
-                                        Infolists\Components\ColorEntry::make('color')
+                                        ColorEntry::make('color')
                                             ->placeholder('—')
                                             ->label(__('employees::filament/resources/department.infolist.sections.general.entries.color')),
-                                        Infolists\Components\Fieldset::make(__('employees::filament/resources/department.infolist.sections.general.entries.hierarchy-title'))
+                                        Fieldset::make(__('employees::filament/resources/department.infolist.sections.general.entries.hierarchy-title'))
+                                            ->hidden(fn (Department $record): bool => $record->parent === null)
                                             ->schema([
-                                                Infolists\Components\TextEntry::make('hierarchy')
+                                                TextEntry::make('hierarchy')
                                                     ->label('')
                                                     ->html()
                                                     ->state(fn (Department $record): string => static::buildHierarchyTree($record)),
                                             ])->columnSpan('full'),
                                     ])
-                                    ->columns(2),
+                                    ->columns(2)->columnSpanFull(),
                             ]),
                     ])
                     ->columnSpan('full'),
@@ -304,6 +346,7 @@ class DepartmentResource extends Resource
     protected static function findRootDepartment(Department $department): Department
     {
         $current = $department;
+
         while ($current->parent_id) {
             $current = $current->parent;
         }
@@ -389,18 +432,29 @@ class DepartmentResource extends Resource
         );
     }
 
-    public static function getSlug(): string
+    public static function getSlug(?Panel $panel = null): string
     {
         return 'employees/departments';
+    }
+
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            ViewDepartment::class,
+            EditDepartment::class,
+            ManageEmployee::class,
+        ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListDepartments::route('/'),
-            'create' => Pages\CreateDepartment::route('/create'),
-            'view'   => Pages\ViewDepartment::route('/{record}'),
-            'edit'   => Pages\EditDepartment::route('/{record}/edit'),
+            'index'      => ListDepartments::route('/'),
+            'create'     => CreateDepartment::route('/create'),
+            'view'       => ViewDepartment::route('/{record}'),
+            'edit'       => EditDepartment::route('/{record}/edit'),
+            'employees'  => ManageEmployee::route('/{record}/employees'),
+
         ];
     }
 }

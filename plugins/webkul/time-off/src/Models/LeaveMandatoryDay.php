@@ -36,4 +36,15 @@ class LeaveMandatoryDay extends Model
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($leaveMandatoryDay) {
+            $leaveMandatoryDay->creator_id = filament()->auth()->id();
+
+            $leaveMandatoryDay->company_id = filament()->auth()->user()->default_company_id;
+        });
+    }
 }

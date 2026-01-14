@@ -15,7 +15,7 @@ class PartnerPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_vendor');
+        return $user->can('view_any_purchase_vendor');
     }
 
     /**
@@ -23,7 +23,7 @@ class PartnerPolicy
      */
     public function view(User $user, Partner $partner): bool
     {
-        return $user->can('view_vendor');
+        return $user->can('view_purchase_vendor');
     }
 
     /**
@@ -31,7 +31,7 @@ class PartnerPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_vendor');
+        return $user->can('create_purchase_vendor');
     }
 
     /**
@@ -39,7 +39,7 @@ class PartnerPolicy
      */
     public function update(User $user, Partner $partner): bool
     {
-        return $user->can('update_vendor');
+        return $user->can('update_purchase_vendor');
     }
 
     /**
@@ -47,7 +47,7 @@ class PartnerPolicy
      */
     public function delete(User $user, Partner $partner): bool
     {
-        return $user->can('delete_vendor');
+        return $user->can('delete_purchase_vendor');
     }
 
     /**
@@ -55,7 +55,7 @@ class PartnerPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_vendor');
+        return $user->can('delete_any_purchase_vendor');
     }
 
     /**
@@ -63,7 +63,7 @@ class PartnerPolicy
      */
     public function forceDelete(User $user, Partner $partner): bool
     {
-        return $user->can('force_delete_vendor');
+        return $user->can('force_delete_purchase_vendor');
     }
 
     /**
@@ -71,7 +71,7 @@ class PartnerPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_vendor');
+        return $user->can('force_delete_any_purchase_vendor');
     }
 
     /**
@@ -79,7 +79,7 @@ class PartnerPolicy
      */
     public function restore(User $user, Partner $partner): bool
     {
-        return $user->can('restore_vendor');
+        return $user->can('restore_purchase_vendor');
     }
 
     /**
@@ -87,22 +87,6 @@ class PartnerPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_vendor');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Partner $partner): bool
-    {
-        return $user->can('replicate_vendor');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_vendor');
+        return $user->can('restore_any_purchase_vendor');
     }
 }

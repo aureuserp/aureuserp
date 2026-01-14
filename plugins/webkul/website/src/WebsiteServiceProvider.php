@@ -2,14 +2,14 @@
 
 namespace Webkul\Website;
 
-use Filament\Http\Responses\Auth\Contracts\LogoutResponse as LogoutResponseContract;
+use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Route;
-use Webkul\Support\Console\Commands\InstallCommand;
-use Webkul\Support\Console\Commands\UninstallCommand;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Webkul\PluginManager\Console\Commands\InstallCommand;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Website\Http\Responses\LogoutResponse;
 
 class WebsiteServiceProvider extends PackageServiceProvider
@@ -39,24 +39,34 @@ class WebsiteServiceProvider extends PackageServiceProvider
                 '2025_03_10_094021_create_website_contact_settings',
             ])
             ->runsSettings()
-            ->hasUninstallCommand(function (UninstallCommand $command) {});
+            ->hasUninstallCommand(function (UninstallCommand $command) {})
+            ->icon('website');
     }
 
     public function packageBooted(): void
     {
-        FilamentAsset::register([
-            Css::make('website', __DIR__.'/../resources/dist/website.css'),
-        ], 'website');
+        $this->registerCustomCss();
 
         if (! Package::isPluginInstalled(self::$name)) {
             Route::get('/', function () {
-                return redirect()->route('filament.admin..');
+                return redirect()->route('filament.admin.auth.login');
             });
         }
     }
 
     public function packageRegistered(): void
     {
-        $this->app->bind(LogoutResponseContract::class, LogoutResponse::class);
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(WebsitePlugin::make());
+        });
+
+        $this->app->bind(\Filament\Auth\Http\Responses\Contracts\LogoutResponse::class, LogoutResponse::class);
+    }
+
+    public function registerCustomCss()
+    {
+        FilamentAsset::register([
+            Css::make('website', __DIR__.'/../resources/dist/website.css'),
+        ], 'website');
     }
 }

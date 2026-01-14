@@ -4,6 +4,7 @@ namespace Webkul\Chatter\Traits;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Storage;
 use Webkul\Chatter\Models\Attachment;
@@ -18,7 +19,9 @@ trait HasChatter
      */
     public function messages(): MorphMany
     {
-        return $this->morphMany(Message::class, 'messageable')
+        $owner = $this->resolveChatterMessageOwner();
+
+        return $owner->morphMany(Message::class, 'messageable')
             ->whereNot('type', 'activity')
             ->orderBy('created_at', 'desc');
     }
@@ -78,6 +81,7 @@ trait HasChatter
 
         if (! empty($filters['search'])) {
             $searchTerm = '%'.$filters['search'].'%';
+
             $query->where(function ($query) use ($searchTerm) {
                 $query->where('subject', 'like', $searchTerm)
                     ->orWhere('body', 'like', $searchTerm)
@@ -110,7 +114,9 @@ trait HasChatter
      */
     public function activities(): MorphMany
     {
-        return $this->morphMany(Message::class, 'messageable')
+        $owner = $this->resolveChatterMessageOwner();
+
+        return $owner->morphMany(Message::class, 'messageable')
             ->where('type', 'activity')
             ->orderBy('created_at', 'desc');
     }
@@ -152,6 +158,57 @@ trait HasChatter
     }
 
     /**
+     * Resolve the owner model for chatter operations.
+     * Models can override chatterMessageOwner() to specify a different owner.
+     */
+    protected function resolveChatterMessageOwner(): Model
+    {
+        if (method_exists($this, 'chatterMessageOwner')) {
+            $owner = $this->chatterMessageOwner();
+            if ($owner instanceof Model) {
+                return $owner;
+            }
+        }
+
+        return $this;
+    }
+
+    public function chatterMessageOwner(): Model
+    {
+        $class = get_class($this);
+        $parentWebkulClass = null;
+
+        // Walk up the inheritance chain
+        while (($parent = get_parent_class($class)) !== false) {
+            // Check if parent is a Webkul class
+            if (str_starts_with($parent, 'Webkul\\')) {
+                $parentWebkulClass = $parent;
+                $class = $parent;
+
+                continue;
+            }
+            // Stop if we've left the Webkul namespace
+            break;
+        }
+
+        // If we found a parent Webkul class, return an instance of it
+        // Otherwise return current model
+        if ($parentWebkulClass && $parentWebkulClass !== get_class($this)) {
+            try {
+                // Create a new instance of the parent class and query with it
+                $parentModel = new $parentWebkulClass;
+                $parentInstance = $parentModel->newQuery()->find($this->getKey());
+
+                return $parentInstance ?? $this;
+            } catch (\Exception $e) {
+                return $this;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Add a reply to an existing message
      */
     public function replyToMessage(Message $parentMessage, array $data): Message
@@ -170,9 +227,11 @@ trait HasChatter
     {
         $message = $this->{$type}()->find($messageId);
 
+        $owner = $this->resolveChatterMessageOwner();
+
         if (
-            $message->messageable_id !== $this->id
-            || $message->messageable_type !== get_class($this)
+            $message->messageable_id !== $owner->id
+            || $message->messageable_type !== get_class($owner)
         ) {
             return false;
         }
@@ -185,9 +244,11 @@ trait HasChatter
      */
     public function pinMessage(Message $message): bool
     {
+        $owner = $this->resolveChatterMessageOwner();
+
         if (
-            $message->messageable_id !== $this->id
-            || $message->messageable_type !== get_class($this)
+            $message->messageable_id !== $owner->id
+            || $message->messageable_type !== get_class($owner)
         ) {
             return false;
         }
@@ -202,9 +263,11 @@ trait HasChatter
      */
     public function unpinMessage(Message $message): bool
     {
+        $owner = $this->resolveChatterMessageOwner();
+
         if (
-            $message->messageable_id !== $this->id
-            || $message->messageable_type !== get_class($this)
+            $message->messageable_id !== $owner->id
+            || $message->messageable_type !== get_class($owner)
         ) {
             return false;
         }
@@ -263,7 +326,9 @@ trait HasChatter
      */
     public function attachments(): MorphMany
     {
-        return $this->morphMany(Attachment::class, 'messageable')->orderBy('created_at', 'desc');
+        $owner = $this->resolveChatterMessageOwner();
+
+        return $owner->morphMany(Attachment::class, 'messageable')->orderBy('created_at', 'desc');
     }
 
     /**
@@ -362,11 +427,13 @@ trait HasChatter
     }
 
     /*
-    * Get all followers for this model
-    */
+     * Get all followers for this model
+     */
     public function followers(): MorphMany
     {
-        return $this->morphMany(Follower::class, 'followable');
+        $owner = $this->resolveChatterMessageOwner();
+
+        return $owner->morphMany(Follower::class, 'followable');
     }
 
     /**
@@ -374,16 +441,14 @@ trait HasChatter
      */
     public function addFollower(Partner $partner): Follower
     {
-        $follower = $this->followers()->firstOrNew([
-            'partner_id' => $partner->id,
-        ]);
-
-        if (! $follower->exists) {
-            $follower->followed_at = now();
-            $follower->save();
-        }
-
-        return $follower;
+        return $this->followers()->firstOrCreate(
+            [
+                'partner_id' => $partner->id,
+            ],
+            [
+                'followed_at' => now(),
+            ],
+        );
     }
 
     /**

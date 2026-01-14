@@ -1,0 +1,27 @@
+@import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
+
+.scrollbar-thin-transparent::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollbar-thin-transparent::-webkit-scrollbar-track {
+    background: transparent; 
+}
+
+.scrollbar-thin-transparent::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 100, 100, 0.3); 
+    border-radius: 3px;
+}
+
+.scrollbar-thin-transparent::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(100, 100, 100, 0.5); 
+}
+
+.scrollbar-thin-transparent {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(100,100,100,0.3) transparent;
+}
+
+@source '../../resources/views';
+@source '../../src';

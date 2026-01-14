@@ -1,0 +1,21 @@
+{
+  "private": true,
+  "scripts": {
+    "dev:styles": "tailwindcss -i resources/css/index.css -o resources/dist/plugin.css --watch",
+    "build:styles": "tailwindcss -i resources/css/index.css -o resources/dist/plugin.css --minify",
+    "dev": "npm-run-all --parallel dev:*",
+    "build": "npm-run-all build:*"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.12",
+    "@tailwindcss/forms": "^0.5.4",
+    "@tailwindcss/postcss": "^4.1.12",
+    "@tailwindcss/typography": "^0.5.9",
+    "esbuild": "^0.19.2",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.4.26",
+    "prettier": "^3.0.0",
+    "prettier-plugin-tailwindcss": "^0.6.14",
+    "tailwindcss": "^4.1.12"
+  }
+}

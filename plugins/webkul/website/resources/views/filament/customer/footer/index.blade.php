@@ -75,9 +75,7 @@
 									class="p-2 text-white bg-gray-800 rounded-full hover:bg-primary-600"
 									target="_blank"
 								>
-									<x-filament::icon>
-										{!! $item->getIcon() !!}
-									</x-filament::icon>
+                                    {!! $item->getIcon() !!}
 								</a>
 							@endforeach
 						</div>

@@ -8,8 +8,6 @@ class Orders extends Cluster
 {
     protected static ?string $slug = 'purchase/orders';
 
-    protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
-
     protected static ?int $navigationSort = 2;
 
     public static function getNavigationLabel(): string

@@ -15,7 +15,7 @@ class PackagingPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_packaging');
+        return $user->can('view_any_inventory_packaging');
     }
 
     /**
@@ -23,7 +23,7 @@ class PackagingPolicy
      */
     public function view(User $user, Packaging $packaging): bool
     {
-        return $user->can('view_packaging');
+        return $user->can('view_inventory_packaging');
     }
 
     /**
@@ -31,7 +31,7 @@ class PackagingPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_packaging');
+        return $user->can('create_inventory_packaging');
     }
 
     /**
@@ -39,7 +39,7 @@ class PackagingPolicy
      */
     public function update(User $user, Packaging $packaging): bool
     {
-        return $user->can('update_packaging');
+        return $user->can('update_inventory_packaging');
     }
 
     /**
@@ -47,7 +47,7 @@ class PackagingPolicy
      */
     public function delete(User $user, Packaging $packaging): bool
     {
-        return $user->can('delete_packaging');
+        return $user->can('delete_inventory_packaging');
     }
 
     /**
@@ -55,54 +55,6 @@ class PackagingPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_packaging');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, Packaging $packaging): bool
-    {
-        return $user->can('force_delete_packaging');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_packaging');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, Packaging $packaging): bool
-    {
-        return $user->can('restore_packaging');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_packaging');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Packaging $packaging): bool
-    {
-        return $user->can('replicate_packaging');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_packaging');
+        return $user->can('delete_any_inventory_packaging');
     }
 }

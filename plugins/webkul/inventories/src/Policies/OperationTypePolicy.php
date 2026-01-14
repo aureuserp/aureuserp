@@ -15,7 +15,7 @@ class OperationTypePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_operation::type');
+        return $user->can('view_any_inventory_operation::type');
     }
 
     /**
@@ -23,7 +23,7 @@ class OperationTypePolicy
      */
     public function view(User $user, OperationType $operationType): bool
     {
-        return $user->can('view_operation::type');
+        return $user->can('view_inventory_operation::type');
     }
 
     /**
@@ -31,7 +31,7 @@ class OperationTypePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_operation::type');
+        return $user->can('create_inventory_operation::type');
     }
 
     /**
@@ -39,7 +39,7 @@ class OperationTypePolicy
      */
     public function update(User $user, OperationType $operationType): bool
     {
-        return $user->can('update_operation::type');
+        return $user->can('update_inventory_operation::type');
     }
 
     /**
@@ -47,7 +47,7 @@ class OperationTypePolicy
      */
     public function delete(User $user, OperationType $operationType): bool
     {
-        return $user->can('delete_operation::type');
+        return $user->can('delete_inventory_operation::type');
     }
 
     /**
@@ -55,7 +55,7 @@ class OperationTypePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_operation::type');
+        return $user->can('delete_any_inventory_operation::type');
     }
 
     /**
@@ -63,7 +63,7 @@ class OperationTypePolicy
      */
     public function forceDelete(User $user, OperationType $operationType): bool
     {
-        return $user->can('force_delete_operation::type');
+        return $user->can('force_delete_inventory_operation::type');
     }
 
     /**
@@ -71,7 +71,7 @@ class OperationTypePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_operation::type');
+        return $user->can('force_delete_any_inventory_operation::type');
     }
 
     /**
@@ -79,7 +79,7 @@ class OperationTypePolicy
      */
     public function restore(User $user, OperationType $operationType): bool
     {
-        return $user->can('restore_operation::type');
+        return $user->can('restore_inventory_operation::type');
     }
 
     /**
@@ -87,22 +87,6 @@ class OperationTypePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_operation::type');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, OperationType $operationType): bool
-    {
-        return $user->can('replicate_operation::type');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_operation::type');
+        return $user->can('restore_any_inventory_operation::type');
     }
 }

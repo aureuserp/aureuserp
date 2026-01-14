@@ -26,4 +26,18 @@ class FullReconcile extends Model
     {
         return $this->belongsTo(User::class, 'created_id');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($fullReconcile) {
+            $fullReconcile->computeCreatedId();
+        });
+    }
+
+    public function computeCreatedId()
+    {
+        $this->created_id = filament()->auth()->user()->id ?? null;
+    }
 }

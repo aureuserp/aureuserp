@@ -6,7 +6,7 @@ use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Support\Concerns\EvaluatesClosures;
-use Filament\Support\Enums\MaxWidth;
+use Filament\Support\Enums\Width;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Attributes\Url;
 use Webkul\TableViews\Filament\Actions\CreateViewAction;
@@ -35,7 +35,7 @@ trait HasTableViews
 
     protected string|Closure|null $tableViewsFormMaxHeight = '500px';
 
-    protected MaxWidth|string|Closure|null $tableViewsFormWidth = null;
+    protected Width|string|Closure|null $tableViewsFormWidth = null;
 
     public function bootedInteractsWithTable(): void
     {
@@ -76,16 +76,12 @@ trait HasTableViews
 
         $this->resetTableGrouping();
 
-        $this->resetToggledTableColumns();
-
         $this->activeTableView = $this->getDefaultActiveTableView();
     }
 
     public function resetTableSort(): void
     {
-        $this->tableSortColumn = null;
-
-        $this->tableSortDirection = null;
+        $this->tableSort = null;
     }
 
     public function resetTableGrouping(): void
@@ -93,11 +89,6 @@ trait HasTableViews
         $this->tableGrouping = null;
 
         $this->tableGroupingDirection = null;
-    }
-
-    public function resetToggledTableColumns(): void
-    {
-        $this->toggledTableColumns = $this->getDefaultTableColumnToggleState();
     }
 
     public function applyTableViewFilters(): void
@@ -112,7 +103,7 @@ trait HasTableViews
             return;
         }
 
-        foreach ($tableViews[$this->activeTableView]->getModel()->filters as $key => $filter) {
+        foreach ($tableViews[$this->activeTableView]->getRecord()->filters as $key => $filter) {
             if (! $filter) {
                 continue;
             }
@@ -122,7 +113,7 @@ trait HasTableViews
     }
 
     /**
-     * @return array<string | int, Tab>
+     * @return array<string>
      */
     public function getPresetTableViews(): array
     {
@@ -136,7 +127,7 @@ trait HasTableViews
     {
         return TableViewModel::where('filterable_type', static::class)
             ->where(function ($query) {
-                $query->where('user_id', auth()->id())
+                $query->where('user_id', filament()->auth()->id())
                     ->orWhere('is_public', true);
             })
             ->get()
@@ -225,11 +216,9 @@ trait HasTableViews
             'tableGrouping'       => $this->tableGrouping,
             'tableSearch'         => $this->tableSearch,
             'tableColumnSearches' => $this->tableColumnSearches,
-            'tableSortColumn'     => $this->tableSortColumn,
-            'tableSortDirection'  => $this->tableSortDirection,
+            'tableSort'           => $this->tableSort,
             'tableRecordsPerPage' => $this->tableRecordsPerPage,
-            'toggledTableColumns' => $this->toggledTableColumns,
-        ] != $tableViews[$this->activeTableView]->getModel()->filters;
+        ] != $tableViews[$this->activeTableView]->getRecord()->filters;
     }
 
     protected function modifyQueryWithActiveTab(Builder $query): Builder
@@ -254,7 +243,7 @@ trait HasTableViews
         return $this;
     }
 
-    public function setTableViewsFormWidth(MaxWidth|string|Closure|null $width): static
+    public function setTableViewsFormWidth(Width|string|Closure|null $width): static
     {
         $this->tableViewsFormWidth = $width;
 
@@ -266,9 +255,9 @@ trait HasTableViews
         return $this->evaluate($this->tableViewsFormMaxHeight);
     }
 
-    public function getPresetTableViewsFormWidth(): MaxWidth|string|null
+    public function getPresetTableViewsFormWidth(): Width|string|null
     {
-        return $this->evaluate($this->tableViewsFormWidth) ?? MaxWidth::ExtraSmall;
+        return $this->evaluate($this->tableViewsFormWidth) ?? Width::ExtraSmall;
     }
 
     public function getActiveTableView()
@@ -289,8 +278,8 @@ trait HasTableViews
     public function createTableViewAction(): Action
     {
         return CreateViewAction::make('createTableView')
-            ->mutateFormDataUsing(function (array $data): array {
-                $data['user_id'] = auth()->id();
+            ->mutateDataUsing(function (array $data): array {
+                $data['user_id'] = filament()->auth()->id();
 
                 $data['filterable_type'] = static::class;
 
@@ -299,10 +288,8 @@ trait HasTableViews
                     'tableGrouping'       => $this->tableGrouping,
                     'tableSearch'         => $this->tableSearch,
                     'tableColumnSearches' => $this->tableColumnSearches,
-                    'tableSortColumn'     => $this->tableSortColumn,
-                    'tableSortDirection'  => $this->tableSortDirection,
+                    'tableSort'           => $this->tableSort,
                     'tableRecordsPerPage' => $this->tableRecordsPerPage,
-                    'toggledTableColumns' => $this->toggledTableColumns,
                 ];
 
                 return $data;
@@ -357,8 +344,9 @@ trait HasTableViews
                         'view_type'       => $arguments['view_type'],
                         'view_key'        => $arguments['view_key'],
                         'filterable_type' => static::class,
-                        'user_id'         => auth()->id(),
-                    ], [
+                        'user_id'         => filament()->auth()->id(),
+                    ],
+                    [
                         'is_favorite' => true,
                     ]
                 );
@@ -379,8 +367,9 @@ trait HasTableViews
                         'view_type'       => $arguments['view_type'],
                         'view_key'        => $arguments['view_key'],
                         'filterable_type' => static::class,
-                        'user_id'         => auth()->id(),
-                    ], [
+                        'user_id'         => filament()->auth()->id(),
+                    ],
+                    [
                         'is_favorite' => false,
                     ]
                 );
@@ -435,10 +424,8 @@ trait HasTableViews
                         'tableGrouping'       => $this->tableGrouping,
                         'tableSearch'         => $this->tableSearch,
                         'tableColumnSearches' => $this->tableColumnSearches,
-                        'tableSortColumn'     => $this->tableSortColumn,
-                        'tableSortDirection'  => $this->tableSortDirection,
+                        'tableSort'           => $this->tableSort,
                         'tableRecordsPerPage' => $this->tableRecordsPerPage,
-                        'toggledTableColumns' => $this->toggledTableColumns,
                     ],
                 ]);
 

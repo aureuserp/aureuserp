@@ -15,7 +15,7 @@ class PartnerPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_partner');
+        return $user->can('view_any_website_partner');
     }
 
     /**
@@ -23,7 +23,7 @@ class PartnerPolicy
      */
     public function view(User $user, Partner $partner): bool
     {
-        return $user->can('view_partner');
+        return $user->can('view_website_partner');
     }
 
     /**
@@ -31,7 +31,7 @@ class PartnerPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_partner');
+        return $user->can('create_website_partner');
     }
 
     /**
@@ -39,7 +39,7 @@ class PartnerPolicy
      */
     public function update(User $user, Partner $partner): bool
     {
-        return $user->can('update_partner');
+        return $user->can('update_website_partner');
     }
 
     /**
@@ -47,7 +47,7 @@ class PartnerPolicy
      */
     public function delete(User $user, Partner $partner): bool
     {
-        return $user->can('delete_partner');
+        return $user->can('delete_website_partner');
     }
 
     /**
@@ -55,7 +55,7 @@ class PartnerPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_partner');
+        return $user->can('delete_any_website_partner');
     }
 
     /**
@@ -63,7 +63,7 @@ class PartnerPolicy
      */
     public function forceDelete(User $user, Partner $partner): bool
     {
-        return $user->can('force_delete_partner');
+        return $user->can('force_delete_website_partner');
     }
 
     /**
@@ -71,7 +71,7 @@ class PartnerPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_partner');
+        return $user->can('force_delete_any_website_partner');
     }
 
     /**
@@ -79,7 +79,7 @@ class PartnerPolicy
      */
     public function restore(User $user, Partner $partner): bool
     {
-        return $user->can('restore_partner');
+        return $user->can('restore_website_partner');
     }
 
     /**
@@ -87,22 +87,6 @@ class PartnerPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_partner');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Partner $partner): bool
-    {
-        return $user->can('replicate_partner');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_partner');
+        return $user->can('restore_any_website_partner');
     }
 }

@@ -2,14 +2,13 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\WarehouseResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
-use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\WarehouseResource;
 use Webkul\Inventory\Models\Warehouse;
-use Webkul\Inventory\Settings\WarehouseSettings;
 
 class ListWarehouses extends ListRecords
 {
@@ -18,11 +17,11 @@ class ListWarehouses extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label(__('inventories::filament/clusters/configurations/resources/warehouse/pages/list-warehouses.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
-                ->visible(fn (WarehouseSettings $settings) => $settings->enable_locations)
-                ->mutateFormDataUsing(function ($data) {
+                ->visible(WarehouseResource::getWarehouseSettings()->enable_locations)
+                ->mutateDataUsing(function ($data) {
                     $user = Auth::user();
 
                     $data['creator_id'] = $user->id;

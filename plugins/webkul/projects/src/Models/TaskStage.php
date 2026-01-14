@@ -5,6 +5,7 @@ namespace Webkul\Project\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
@@ -59,6 +60,11 @@ class TaskStage extends Model implements Sortable
         return $this->belongsTo(Project::class);
     }
 
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class, 'stage_id');
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -72,6 +78,15 @@ class TaskStage extends Model implements Sortable
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($taskStage) {
+            $taskStage->creator_id = filament()->auth()->id();
+        });
     }
 
     protected static function newFactory(): TaskStageFactory

@@ -16,8 +16,8 @@
 
         <meta property="og:url" content="{{ self::getResource()::getUrl('view', ['record' => $record->slug]) }}" />
     @endPush
-    
+
     <p>
-        {!! $record->content !!}
+        {!! str($record->content)->sanitizeHtml() !!}
     </p>
 </x-filament-panels::page>

@@ -2,8 +2,18 @@
 
 namespace Webkul\Field\Filament\Forms\Components;
 
-use Filament\Forms;
-use Filament\Forms\Components\Component;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Component;
 use Illuminate\Support\Collection;
 use Webkul\Field\Models\Field;
 
@@ -73,21 +83,21 @@ class CustomFields extends Component
         return $query->orderBy('sort')->get();
     }
 
-    protected function createField(Field $field): Forms\Components\Component
+    protected function createField(Field $field): Component
     {
         $componentClass = match ($field->type) {
-            'text'          => Forms\Components\TextInput::class,
-            'textarea'      => Forms\Components\Textarea::class,
-            'select'        => Forms\Components\Select::class,
-            'checkbox'      => Forms\Components\Checkbox::class,
-            'radio'         => Forms\Components\Radio::class,
-            'toggle'        => Forms\Components\Toggle::class,
-            'checkbox_list' => Forms\Components\CheckboxList::class,
-            'datetime'      => Forms\Components\DateTimePicker::class,
-            'editor'        => Forms\Components\RichEditor::class,
-            'markdown'      => Forms\Components\MarkdownEditor::class,
-            'color'         => Forms\Components\ColorPicker::class,
-            default         => Forms\Components\TextInput::class,
+            'text'          => TextInput::class,
+            'textarea'      => Textarea::class,
+            'select'        => Select::class,
+            'checkbox'      => Checkbox::class,
+            'radio'         => Radio::class,
+            'toggle'        => Toggle::class,
+            'checkbox_list' => CheckboxList::class,
+            'datetime'      => DateTimePicker::class,
+            'editor'        => RichEditor::class,
+            'markdown'      => MarkdownEditor::class,
+            'color'         => ColorPicker::class,
+            default         => TextInput::class,
         };
 
         $component = $componentClass::make($field->code)
@@ -128,7 +138,7 @@ class CustomFields extends Component
         return $component;
     }
 
-    protected function applyValidation(Forms\Components\Component $component, array $validation): void
+    protected function applyValidation(Component $component, array $validation): void
     {
         $rule = $validation['validation'];
 
@@ -149,7 +159,7 @@ class CustomFields extends Component
         }
     }
 
-    protected function applySetting(Forms\Components\Component $component, array $setting): void
+    protected function applySetting(Component $component, array $setting): void
     {
         $name = $setting['setting'];
         $value = $setting['value'] ?? null;

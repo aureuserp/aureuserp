@@ -16,7 +16,7 @@ class ApplicantPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_applicant');
+        return $user->can('view_any_recruitment_applicant');
     }
 
     /**
@@ -24,7 +24,7 @@ class ApplicantPolicy
      */
     public function view(User $user, Applicant $applicant): bool
     {
-        return $user->can('view_applicant');
+        return $user->can('view_recruitment_applicant');
     }
 
     /**
@@ -32,7 +32,7 @@ class ApplicantPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_applicant');
+        return $user->can('create_recruitment_applicant');
     }
 
     /**
@@ -40,7 +40,7 @@ class ApplicantPolicy
      */
     public function update(User $user, Applicant $applicant): bool
     {
-        if (! $user->can('update_applicant')) {
+        if (! $user->can('update_recruitment_applicant')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class ApplicantPolicy
      */
     public function delete(User $user, Applicant $applicant): bool
     {
-        if (! $user->can('delete_applicant')) {
+        if (! $user->can('delete_recruitment_applicant')) {
             return false;
         }
 
@@ -64,7 +64,7 @@ class ApplicantPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_applicant');
+        return $user->can('delete_any_recruitment_applicant');
     }
 
     /**
@@ -72,7 +72,7 @@ class ApplicantPolicy
      */
     public function forceDelete(User $user, Applicant $applicant): bool
     {
-        if (! $user->can('force_delete_applicant')) {
+        if (! $user->can('force_delete_recruitment_applicant')) {
             return false;
         }
 
@@ -84,7 +84,7 @@ class ApplicantPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_applicant');
+        return $user->can('force_delete_any_recruitment_applicant');
     }
 
     /**
@@ -92,7 +92,7 @@ class ApplicantPolicy
      */
     public function restore(User $user, Applicant $applicant): bool
     {
-        if (! $user->can('restore_applicant')) {
+        if (! $user->can('restore_recruitment_applicant')) {
             return false;
         }
 
@@ -104,26 +104,6 @@ class ApplicantPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_applicant');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Applicant $applicant): bool
-    {
-        if (! $user->can('replicate_applicant')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $applicant, 'recruiter');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_applicant');
+        return $user->can('restore_any_recruitment_applicant');
     }
 }

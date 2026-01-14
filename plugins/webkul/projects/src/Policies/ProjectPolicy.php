@@ -16,7 +16,7 @@ class ProjectPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_project');
+        return $user->can('view_any_project_project');
     }
 
     /**
@@ -24,7 +24,7 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project): bool
     {
-        return $user->can('view_project');
+        return $user->can('view_project_project');
     }
 
     /**
@@ -32,7 +32,7 @@ class ProjectPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_project');
+        return $user->can('create_project_project');
     }
 
     /**
@@ -40,7 +40,7 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project): bool
     {
-        if (! $user->can('update_project')) {
+        if (! $user->can('update_project_project')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class ProjectPolicy
      */
     public function delete(User $user, Project $project): bool
     {
-        if (! $user->can('delete_project')) {
+        if (! $user->can('delete_project_project')) {
             return false;
         }
 
@@ -64,7 +64,7 @@ class ProjectPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_project');
+        return $user->can('delete_any_project_project');
     }
 
     /**
@@ -72,7 +72,7 @@ class ProjectPolicy
      */
     public function forceDelete(User $user, Project $project): bool
     {
-        if (! $user->can('force_delete_project')) {
+        if (! $user->can('force_delete_project_project')) {
             return false;
         }
 
@@ -84,7 +84,7 @@ class ProjectPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_project');
+        return $user->can('force_delete_any_project_project');
     }
 
     /**
@@ -92,7 +92,7 @@ class ProjectPolicy
      */
     public function restore(User $user, Project $project): bool
     {
-        if (! $user->can('restore_project')) {
+        if (! $user->can('restore_project_project')) {
             return false;
         }
 
@@ -104,19 +104,7 @@ class ProjectPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_project');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Project $project): bool
-    {
-        if (! $user->can('replicate_project')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $project);
+        return $user->can('restore_any_project_project');
     }
 
     /**
@@ -124,6 +112,6 @@ class ProjectPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_project');
+        return $user->can('reorder_project_project');
     }
 }

@@ -15,7 +15,7 @@ class LeaveTypePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_leave::type');
+        return $user->can('view_any_time_off_leave::type');
     }
 
     /**
@@ -23,7 +23,7 @@ class LeaveTypePolicy
      */
     public function view(User $user, LeaveType $leaveType): bool
     {
-        return $user->can('view_leave::type');
+        return $user->can('view_time_off_leave::type');
     }
 
     /**
@@ -31,7 +31,7 @@ class LeaveTypePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_leave::type');
+        return $user->can('create_time_off_leave::type');
     }
 
     /**
@@ -39,7 +39,7 @@ class LeaveTypePolicy
      */
     public function update(User $user, LeaveType $leaveType): bool
     {
-        return $user->can('update_leave::type');
+        return $user->can('update_time_off_leave::type');
     }
 
     /**
@@ -47,7 +47,7 @@ class LeaveTypePolicy
      */
     public function delete(User $user, LeaveType $leaveType): bool
     {
-        return $user->can('delete_leave::type');
+        return $user->can('delete_time_off_leave::type');
     }
 
     /**
@@ -55,7 +55,7 @@ class LeaveTypePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_leave::type');
+        return $user->can('delete_any_time_off_leave::type');
     }
 
     /**
@@ -63,7 +63,7 @@ class LeaveTypePolicy
      */
     public function forceDelete(User $user, LeaveType $leaveType): bool
     {
-        return $user->can('force_delete_leave::type');
+        return $user->can('force_delete_time_off_leave::type');
     }
 
     /**
@@ -71,7 +71,7 @@ class LeaveTypePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_leave::type');
+        return $user->can('force_delete_any_time_off_leave::type');
     }
 
     /**
@@ -79,7 +79,7 @@ class LeaveTypePolicy
      */
     public function restore(User $user, LeaveType $leaveType): bool
     {
-        return $user->can('restore_leave::type');
+        return $user->can('restore_time_off_leave::type');
     }
 
     /**
@@ -87,22 +87,6 @@ class LeaveTypePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_leave::type');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, LeaveType $leaveType): bool
-    {
-        return $user->can('replicate_leave::type');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_leave::type');
+        return $user->can('restore_any_time_off_leave::type');
     }
 }

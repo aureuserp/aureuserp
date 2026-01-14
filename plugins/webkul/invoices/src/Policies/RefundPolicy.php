@@ -15,7 +15,7 @@ class RefundPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_refund');
+        return $user->can('view_any_invoice_refund');
     }
 
     /**
@@ -23,7 +23,7 @@ class RefundPolicy
      */
     public function view(User $user, Refund $refund): bool
     {
-        return $user->can('view_refund');
+        return $user->can('view_invoice_refund');
     }
 
     /**
@@ -31,7 +31,7 @@ class RefundPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_refund');
+        return $user->can('create_invoice_refund');
     }
 
     /**
@@ -39,7 +39,7 @@ class RefundPolicy
      */
     public function update(User $user, Refund $refund): bool
     {
-        return $user->can('update_refund');
+        return $user->can('update_invoice_refund');
     }
 
     /**
@@ -47,7 +47,7 @@ class RefundPolicy
      */
     public function delete(User $user, Refund $refund): bool
     {
-        return $user->can('delete_refund');
+        return $user->can('delete_invoice_refund');
     }
 
     /**
@@ -55,54 +55,6 @@ class RefundPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_refund');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, Refund $refund): bool
-    {
-        return $user->can('force_delete_refund');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_refund');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, Refund $refund): bool
-    {
-        return $user->can('restore_refund');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_refund');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Refund $refund): bool
-    {
-        return $user->can('replicate_refund');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_refund');
+        return $user->can('delete_any_invoice_refund');
     }
 }

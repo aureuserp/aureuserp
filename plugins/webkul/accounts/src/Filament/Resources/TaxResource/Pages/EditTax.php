@@ -2,22 +2,20 @@
 
 namespace Webkul\Account\Filament\Resources\TaxResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\QueryException;
 use Webkul\Account\Filament\Resources\TaxResource;
 use Webkul\Account\Models\Tax;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditTax extends EditRecord
 {
-    protected static string $resource = TaxResource::class;
+    use HasRecordNavigationTabs;
 
-    public function getSubNavigationPosition(): SubNavigationPosition
-    {
-        return SubNavigationPosition::Top;
-    }
+    protected static string $resource = TaxResource::class;
 
     protected function getSavedNotification(): ?Notification
     {
@@ -35,8 +33,8 @@ class EditTax extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make()
+            ViewAction::make(),
+            DeleteAction::make()
                 ->action(function (Tax $record) {
                     try {
                         $record->delete();
@@ -55,5 +53,25 @@ class EditTax extends EditRecord
                         ->body(__('accounts::filament/resources/tax/pages/edit-tax.header-actions.delete.notification.success.body'))
                 ),
         ];
+    }
+
+    protected function beforeSave(): void
+    {
+        $data = $this->data;
+
+        try {
+            TaxResource::validateRepartitionData(
+                $data['invoiceRepartitionLines'] ?? [],
+                $data['refundRepartitionLines'] ?? []
+            );
+        } catch (\Exception $e) {
+            Notification::make()
+                ->danger()
+                ->title(__('accounts::filament/resources/tax/pages/edit-tax.header-actions.delete.notification.invalid-repartition-lines.title'))
+                ->body($e->getMessage())
+                ->send();
+
+            $this->halt();
+        }
     }
 }

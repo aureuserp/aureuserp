@@ -15,7 +15,7 @@ class OrderPointPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_replenishment');
+        return $user->can('view_any_inventory_replenishment');
     }
 
     /**
@@ -23,7 +23,7 @@ class OrderPointPolicy
      */
     public function view(User $user, OrderPoint $orderPoint): bool
     {
-        return $user->can('view_replenishment');
+        return $user->can('view_inventory_replenishment');
     }
 
     /**
@@ -31,7 +31,7 @@ class OrderPointPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_replenishment');
+        return $user->can('create_inventory_replenishment');
     }
 
     /**
@@ -39,7 +39,7 @@ class OrderPointPolicy
      */
     public function update(User $user, OrderPoint $orderPoint): bool
     {
-        return $user->can('update_replenishment');
+        return $user->can('update_inventory_replenishment');
     }
 
     /**
@@ -47,7 +47,7 @@ class OrderPointPolicy
      */
     public function delete(User $user, OrderPoint $orderPoint): bool
     {
-        return $user->can('delete_replenishment');
+        return $user->can('delete_inventory_replenishment');
     }
 
     /**
@@ -55,7 +55,7 @@ class OrderPointPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_replenishment');
+        return $user->can('delete_any_inventory_replenishment');
     }
 
     /**
@@ -63,7 +63,7 @@ class OrderPointPolicy
      */
     public function forceDelete(User $user, OrderPoint $orderPoint): bool
     {
-        return $user->can('force_delete_replenishment');
+        return $user->can('force_delete_inventory_replenishment');
     }
 
     /**
@@ -71,7 +71,7 @@ class OrderPointPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_replenishment');
+        return $user->can('force_delete_any_inventory_replenishment');
     }
 
     /**
@@ -79,7 +79,7 @@ class OrderPointPolicy
      */
     public function restore(User $user, OrderPoint $orderPoint): bool
     {
-        return $user->can('restore_replenishment');
+        return $user->can('restore_inventory_replenishment');
     }
 
     /**
@@ -87,15 +87,7 @@ class OrderPointPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_replenishment');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, OrderPoint $orderPoint): bool
-    {
-        return $user->can('replicate_replenishment');
+        return $user->can('restore_any_inventory_replenishment');
     }
 
     /**
@@ -103,6 +95,6 @@ class OrderPointPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_replenishment');
+        return $user->can('reorder_inventory_replenishment');
     }
 }

@@ -15,7 +15,7 @@ class LeaveAllocationPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_my::allocation');
+        return $user->can('view_any_time_off_my::allocation');
     }
 
     /**
@@ -23,7 +23,7 @@ class LeaveAllocationPolicy
      */
     public function view(User $user, LeaveAllocation $leaveAllocation): bool
     {
-        return $user->can('view_my::allocation');
+        return $user->can('view_time_off_my::allocation');
     }
 
     /**
@@ -31,7 +31,7 @@ class LeaveAllocationPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_my::allocation');
+        return $user->can('create_time_off_my::allocation');
     }
 
     /**
@@ -39,7 +39,7 @@ class LeaveAllocationPolicy
      */
     public function update(User $user, LeaveAllocation $leaveAllocation): bool
     {
-        return $user->can('update_my::allocation');
+        return $user->can('update_time_off_my::allocation');
     }
 
     /**
@@ -47,7 +47,7 @@ class LeaveAllocationPolicy
      */
     public function delete(User $user, LeaveAllocation $leaveAllocation): bool
     {
-        return $user->can('delete_my::allocation');
+        return $user->can('delete_time_off_my::allocation');
     }
 
     /**
@@ -55,54 +55,6 @@ class LeaveAllocationPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_my::allocation');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, LeaveAllocation $leaveAllocation): bool
-    {
-        return $user->can('force_delete_my::allocation');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_my::allocation');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, LeaveAllocation $leaveAllocation): bool
-    {
-        return $user->can('restore_my::allocation');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_my::allocation');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, LeaveAllocation $leaveAllocation): bool
-    {
-        return $user->can('replicate_my::allocation');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_my::allocation');
+        return $user->can('delete_any_time_off_my::allocation');
     }
 }

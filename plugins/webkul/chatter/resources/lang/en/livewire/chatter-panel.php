@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'heading' => 'Chatter',
+
     'placeholders' => [
         'no-record-found' => 'No record found.',
         'loading'         => 'Loading Chatter...',

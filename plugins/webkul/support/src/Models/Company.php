@@ -127,6 +127,26 @@ class Company extends Model implements Sortable
         return $this->belongsTo(Partner::class, 'partner_id');
     }
 
+    public function parents()
+    {
+        $parents = collect();
+
+        $current = $this->parent;
+
+        while ($current) {
+            $parents->push($current);
+
+            $current = $current->parent;
+        }
+
+        return $parents;
+    }
+
+    public function getParentsAttribute()
+    {
+        return $this->parents();
+    }
+
     /**
      * Scope a query to only include active companies.
      */

@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -23,11 +21,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'partner_id',
-        'language',
-        'is_active',
-        'default_company_id',
-        'resource_permission',
     ];
 
     /**

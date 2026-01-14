@@ -2,20 +2,19 @@
 
 namespace Webkul\Account\Filament\Resources\PaymentTermResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Pages\EditRecord;
+use Webkul\Account\Enums\DueTermValue;
 use Webkul\Account\Filament\Resources\PaymentTermResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditPaymentTerm extends EditRecord
 {
-    protected static string $resource = PaymentTermResource::class;
+    use HasRecordNavigationTabs;
 
-    public function getSubNavigationPosition(): SubNavigationPosition
-    {
-        return SubNavigationPosition::Top;
-    }
+    protected static string $resource = PaymentTermResource::class;
 
     protected function getRedirectUrl(): string
     {
@@ -25,8 +24,8 @@ class EditPaymentTerm extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make()
+            ViewAction::make(),
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()
@@ -40,12 +39,34 @@ class EditPaymentTerm extends EditRecord
     {
         return Notification::make()
             ->success()
-            ->title(__('accounts::filament/resources/payment-term/pages/edit-payment-term.notification.title'))
-            ->body(__('accounts::filament/resources/payment-term/pages/edit-payment-term.notification.body'));
+            ->title(__('accounts::filament/resources/payment-term/pages/edit-payment-term.notification.success.title'))
+            ->body(__('accounts::filament/resources/payment-term/pages/edit-payment-term.notification.success.body'));
     }
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
         return $data;
+    }
+
+    protected function beforeSave(): void
+    {
+        $this->validateDueTerms($this->data['dueTerms'] ?? []);
+    }
+
+    protected function validateDueTerms(array $dueTerms): void
+    {
+        $totalPercent = collect($dueTerms)
+            ->where('value', DueTermValue::PERCENT)
+            ->sum('value_amount');
+
+        if ($totalPercent != 100) {
+            Notification::make()
+                ->danger()
+                ->title(__('accounts::filament/resources/payment-term/pages/edit-payment-term.notification.validation-error.title'))
+                ->body(__('accounts::filament/resources/payment-term/pages/edit-payment-term.notification.validation-error.body'))
+                ->send();
+
+            $this->halt();
+        }
     }
 }

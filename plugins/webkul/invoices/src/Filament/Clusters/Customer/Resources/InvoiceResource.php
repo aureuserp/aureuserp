@@ -2,12 +2,18 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Customer\Resources;
 
-use Filament\Pages\SubNavigationPosition;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\Page;
+use Filament\Schemas\Components\Utilities\Get;
 use Webkul\Account\Filament\Resources\InvoiceResource as BaseInvoiceResource;
 use Webkul\Invoice\Filament\Clusters\Customer;
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\CreateInvoice;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\EditInvoice;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ListInvoices;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ManagePayments;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ViewInvoice;
 use Webkul\Invoice\Models\Invoice;
+use Webkul\Support\Filament\Forms\Components\Repeater;
 
 class InvoiceResource extends BaseInvoiceResource
 {
@@ -18,8 +24,6 @@ class InvoiceResource extends BaseInvoiceResource
     protected static ?string $cluster = Customer::class;
 
     protected static ?int $navigationSort = 1;
-
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getModelLabel(): string
     {
@@ -44,18 +48,37 @@ class InvoiceResource extends BaseInvoiceResource
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
-            Pages\ViewInvoice::class,
-            Pages\EditInvoice::class,
+            ViewInvoice::class,
+            EditInvoice::class,
+            ManagePayments::class,
         ]);
+    }
+
+    public static function getProductRepeater(): Repeater
+    {
+        return parent::getProductRepeater()
+            ->extraItemActions([
+                Action::make('openProduct')
+                    ->tooltip('Open product')
+                    ->icon('heroicon-m-arrow-top-right-on-square')
+                    ->url(fn (array $arguments, Get $get): ?string => ProductResource::getUrl('edit', [
+                        'record' => $get("products.{$arguments['item']}.product_id"),
+                    ])
+                    )
+                    ->openUrlInNewTab()
+                    ->visible(fn (array $arguments, Get $get): bool => filled($get("products.{$arguments['item']}.product_id"))
+                    ),
+            ]);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListInvoices::route('/'),
-            'create' => Pages\CreateInvoice::route('/create'),
-            'view'   => Pages\ViewInvoice::route('/{record}'),
-            'edit'   => Pages\EditInvoice::route('/{record}/edit'),
+            'index'    => ListInvoices::route('/'),
+            'create'   => CreateInvoice::route('/create'),
+            'view'     => ViewInvoice::route('/{record}'),
+            'edit'     => EditInvoice::route('/{record}/edit'),
+            'payments' => ManagePayments::route('/{record}/payments'),
         ];
     }
 }

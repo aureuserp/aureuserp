@@ -2,59 +2,90 @@
 
 namespace Webkul\Account\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Schema;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Webkul\Account\Enums;
+use Webkul\Account\Enums\AmountType;
+use Webkul\Account\Enums\RepartitionType;
 use Webkul\Account\Enums\TaxIncludeOverride;
-use Webkul\Account\Filament\Resources\TaxResource\Pages;
+use Webkul\Account\Enums\TaxScope;
+use Webkul\Account\Enums\TypeTaxUse;
+use Webkul\Account\Filament\Resources\TaxResource\Pages\CreateTax;
+use Webkul\Account\Filament\Resources\TaxResource\Pages\EditTax;
+use Webkul\Account\Filament\Resources\TaxResource\Pages\ListTaxes;
+use Webkul\Account\Filament\Resources\TaxResource\Pages\ViewTax;
 use Webkul\Account\Models\Tax;
+use Webkul\Support\Filament\Forms\Components\Repeater;
+use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 
 class TaxResource extends Resource
 {
     protected static ?string $model = Tax::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-receipt-percent';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
 
     protected static bool $shouldRegisterNavigation = false;
 
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
+    protected static ?string $recordTitleAttribute = 'name';
 
-    public static function form(Form $form): Form
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
+
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make()
+        return $schema
+            ->components([
+                Section::make()
                     ->schema([
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\TextInput::make('name')
+                                TextInput::make('name')
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.name'))
                                     ->required(),
-                                Forms\Components\Select::make('type_tax_use')
-                                    ->options(Enums\TypeTaxUse::options())
+                                Select::make('type_tax_use')
+                                    ->options(TypeTaxUse::class)
+                                    ->native(false)
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.tax-type'))
                                     ->required(),
-                                Forms\Components\Select::make('amount_type')
-                                    ->options(Enums\AmountType::options())
+                                Select::make('amount_type')
+                                    ->native(false)
+                                    ->options(AmountType::class)
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.tax-computation'))
                                     ->required(),
-                                Forms\Components\Select::make('tax_scope')
-                                    ->options(Enums\TaxScope::options())
+                                Select::make('tax_scope')
+                                    ->native(false)
+                                    ->options(TaxScope::class)
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.tax-scope')),
-                                Forms\Components\Toggle::make('is_active')
+                                Toggle::make('is_active')
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.status'))
                                     ->inline(false),
-                                Forms\Components\TextInput::make('amount')
+                                TextInput::make('amount')
                                     ->label(__('accounts::filament/resources/tax.form.sections.fields.amount'))
                                     ->suffix('%')
                                     ->numeric()
@@ -62,99 +93,243 @@ class TaxResource extends Resource
                                     ->maxValue(99999999999)
                                     ->required(),
                             ])->columns(2),
-                        Forms\Components\Fieldset::make(__('accounts::filament/resources/tax.form.sections.field-set.advanced-options.title'))
+                        Fieldset::make(__('accounts::filament/resources/tax.form.sections.field-set.advanced-options.title'))
                             ->schema([
-                                Forms\Components\TextInput::make('invoice_label')
+                                TextInput::make('invoice_label')
                                     ->label(__('accounts::filament/resources/tax.form.sections.field-set.advanced-options.fields.invoice-label')),
-                                Forms\Components\Select::make('tax_group_id')
+                                Select::make('tax_group_id')
                                     ->relationship('taxGroup', 'name')
                                     ->required()
-                                    ->createOptionForm(fn (Form $form): Form => TaxGroupResource::form($form))
+                                    ->native(false)
+                                    ->createOptionForm(fn (Schema $schema): Schema => TaxGroupResource::form($schema))
                                     ->label(__('accounts::filament/resources/tax.form.sections.field-set.advanced-options.fields.tax-group')),
-                                Forms\Components\Select::make('country_id')
+                                Select::make('country_id')
+                                    ->searchable()
+                                    ->preload()
                                     ->relationship('country', 'name')
                                     ->label(__('accounts::filament/resources/tax.form.sections.field-set.advanced-options.fields.country')),
-                                Forms\Components\Select::make('price_include_override')
+                                Select::make('price_include_override')
                                     ->options(TaxIncludeOverride::class)
+                                    ->native(false)
                                     ->default(TaxIncludeOverride::DEFAULT->value)
                                     ->label(__('accounts::filament/resources/tax.form.sections.field-set.advanced-options.fields.include-in-price'))
                                     ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('Overrides the Company\'s default on whether the price you use on the product and invoices includes this tax.')),
-                                Forms\Components\Toggle::make('include_base_amount')
+                                Toggle::make('include_base_amount')
                                     ->inline(false)
                                     ->label(__('accounts::filament/resources/tax.form.sections.field-set.advanced-options.fields.include-base-amount'))
                                     ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('If set, taxes with a higher sequence than this one will be affected by it, provided they accept it.')),
-                                Forms\Components\Toggle::make('is_base_affected')
+                                Toggle::make('is_base_affected')
                                     ->inline(false)
                                     ->label(__('accounts::filament/resources/tax.form.sections.field-set.advanced-options.fields.is-base-affected'))
                                     ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('If set, taxes with a lower sequence might affect this one, provided they try to do it.')),
                             ]),
-                        Forms\Components\RichEditor::make('description')
-                            ->label(__('accounts::filament/resources/tax.form.sections.field-set.fields.description')),
-                        Forms\Components\RichEditor::make('invoice_legal_notes')
-                            ->label(__('accounts::filament/resources/tax.form.sections.field-set.fields.legal-notes')),
                     ]),
-            ]);
+
+                Tabs::make('Tax Configuration')
+                    ->tabs([
+                        Tab::make('Repartition Lines')
+                            ->icon('heroicon-o-banknotes')
+                            ->schema([
+                                Section::make('Invoice & Refund Distribution')
+                                    ->description('Define how this tax affects accounts for invoices and refunds.')
+                                    ->schema([
+                                        Group::make()
+                                            ->schema([
+                                                Repeater::make('invoiceRepartitionLines')
+                                                    ->label(__('accounts::filament/resources/tax.form.sections.repeater.invoice-repartition-lines.label'))
+                                                    ->relationship('invoiceRepartitionLines')
+                                                    ->minItems(1)
+                                                    ->compact()
+                                                    ->default([
+                                                        ['repartition_type' => 'base', 'factor_percent' => null, 'account_id' => null],
+                                                        ['repartition_type' => 'tax', 'factor_percent' => 100],
+                                                    ])
+                                                    ->schema([
+                                                        Hidden::make('document_type')
+                                                            ->default('invoice'),
+                                                        Select::make('repartition_type')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.type'))
+                                                            ->options(RepartitionType::options())
+                                                            ->required()
+                                                            ->native(false)
+                                                            ->reactive()
+                                                            ->afterStateUpdated(function ($state, callable $set) {
+                                                                if ($state === 'base') {
+                                                                    $set('account_id', null);
+                                                                    $set('factor_percent', null);
+                                                                }
+                                                            }),
+
+                                                        TextInput::make('factor_percent')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.factor-percent'))
+                                                            ->numeric()
+                                                            ->minValue(0)
+                                                            ->maxValue(100)
+                                                            ->required(fn (callable $get) => $get('repartition_type') !== 'base')
+                                                            ->disabled(fn (callable $get) => $get('repartition_type') === 'base'),
+
+                                                        Select::make('account_id')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.account'))
+                                                            ->relationship('account', 'name')
+                                                            ->required(fn (callable $get) => $get('repartition_type') !== 'base')
+                                                            ->preload()
+                                                            ->searchable()
+                                                            ->disabled(fn (callable $get) => $get('repartition_type') === 'base'),
+                                                    ])
+                                                    ->columns(3)
+                                                    ->reorderable('sort')
+                                                    ->table([
+                                                        TableColumn::make('repartition_type')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.type'))
+                                                            ->width('30%'),
+                                                        TableColumn::make('factor_percent')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.factor-percent'))
+                                                            ->width(100),
+                                                        TableColumn::make('account_id')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.account'))
+                                                            ->width('clamp(200px, 14rem, 30rem)'),
+                                                    ]),
+                                            ])
+                                            ->columnSpan(1),
+
+                                        Group::make()
+                                            ->schema([
+                                                Repeater::make('refundRepartitionLines')
+                                                    ->label(__('accounts::filament/resources/tax.form.sections.repeater.refund-repartition-lines.label'))
+                                                    ->relationship('refundRepartitionLines')
+                                                    ->minItems(1)
+                                                    ->compact()
+                                                    ->default([
+                                                        ['repartition_type' => 'base', 'factor_percent' => null, 'account_id' => null],
+                                                        ['repartition_type' => 'tax', 'factor_percent' => 100],
+                                                    ])
+                                                    ->schema([
+                                                        Hidden::make('document_type')
+                                                            ->default('refund'),
+                                                        Select::make('repartition_type')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.type'))
+                                                            ->options(RepartitionType::options())
+                                                            ->required()
+                                                            ->native(false)
+                                                            ->reactive()
+                                                            ->afterStateUpdated(function ($state, callable $set) {
+                                                                if ($state === 'base') {
+                                                                    $set('account_id', null);
+                                                                    $set('factor_percent', null);
+                                                                }
+                                                            }),
+
+                                                        TextInput::make('factor_percent')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.factor-percent'))
+                                                            ->numeric()
+                                                            ->minValue(0)
+                                                            ->maxValue(100)
+                                                            ->required(fn (callable $get) => $get('repartition_type') !== 'base')
+                                                            ->disabled(fn (callable $get) => $get('repartition_type') === 'base'),
+
+                                                        Select::make('account_id')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.account'))
+                                                            ->relationship('account', 'name')
+                                                            ->required(fn (callable $get) => $get('repartition_type') !== 'base')
+                                                            ->preload()
+                                                            ->searchable()
+                                                            ->disabled(fn (callable $get) => $get('repartition_type') === 'base'),
+                                                    ])
+                                                    ->columns(3)
+                                                    ->reorderable('sort')
+                                                    ->table([
+                                                        TableColumn::make('repartition_type')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.type'))
+                                                            ->width('30%'),
+                                                        TableColumn::make('factor_percent')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.factor-percent'))
+                                                            ->width(100),
+                                                        TableColumn::make('account_id')
+                                                            ->label(__('accounts::filament/resources/tax.form.sections.repeater.fields.account'))
+                                                            ->width('clamp(200px, 14rem, 30rem)'),
+                                                    ]),
+                                            ])
+                                            ->columnSpan(1),
+                                    ])
+                                    ->columns([
+                                        'default' => 1,
+                                        '2xl'     => 2,
+                                    ]),
+
+                            ]),
+
+                        Tab::make('Descriptions')
+                            ->icon('heroicon-o-document-text')
+                            ->schema([
+                                RichEditor::make('description')
+                                    ->label(__('accounts::filament/resources/tax.form.sections.field-set.fields.description')),
+                                RichEditor::make('invoice_legal_notes')
+                                    ->label(__('accounts::filament/resources/tax.form.sections.field-set.fields.legal-notes')),
+                            ]),
+                    ]),
+            ])
+            ->columns(1);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label(__('accounts::filament/resources/tax.table.columns.name'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('company.name')
+                TextColumn::make('company.name')
                     ->label(__('accounts::filament/resources/tax.table.columns.company'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('taxGroup.name')
+                TextColumn::make('taxGroup.name')
                     ->label(__('Tax Group'))
                     ->label(__('accounts::filament/resources/tax.table.columns.tax-group'))
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('country.name')
+                TextColumn::make('country.name')
                     ->label(__('accounts::filament/resources/tax.table.columns.country'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('type_tax_use')
+                TextColumn::make('type_tax_use')
                     ->label(__('accounts::filament/resources/tax.table.columns.tax-type'))
-                    ->formatStateUsing(fn ($state) => Enums\TypeTaxUse::options()[$state])
                     ->sortable(),
-                Tables\Columns\TextColumn::make('tax_scope')
+                TextColumn::make('tax_scope')
                     ->label(__('accounts::filament/resources/tax.table.columns.tax-scope'))
-                    ->formatStateUsing(fn ($state) => Enums\TaxScope::options()[$state])
+                    ->formatStateUsing(fn ($state) => TaxScope::options()[$state])
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('amount_type')
+                TextColumn::make('amount_type')
                     ->label(__('accounts::filament/resources/tax.table.columns.amount-type'))
-                    ->formatStateUsing(fn ($state) => Enums\AmountType::options()[$state])
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('invoice_label')
+                TextColumn::make('invoice_label')
                     ->label(__('accounts::filament/resources/tax.table.columns.invoice-label'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('tax_exigibility')
+                TextColumn::make('tax_exigibility')
                     ->label(__('accounts::filament/resources/tax.table.columns.tax-exigibility'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('price_include_override')
+                TextColumn::make('price_include_override')
                     ->label(__('accounts::filament/resources/tax.table.columns.price-include-override'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('amount')
+                TextColumn::make('amount')
                     ->label(__('accounts::filament/resources/tax.table.columns.amount'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->boolean()
                     ->label(__('accounts::filament/resources/tax.table.columns.status'))
                     ->sortable(),
-                Tables\Columns\IconColumn::make('include_base_amount')
+                IconColumn::make('include_base_amount')
                     ->boolean()
                     ->label(__('accounts::filament/resources/tax.table.columns.include-base-amount'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\IconColumn::make('is_base_affected')
+                IconColumn::make('is_base_affected')
                     ->boolean()
                     ->label(__('accounts::filament/resources/tax.table.columns.is-base-affected'))
                     ->sortable()
@@ -186,11 +361,11 @@ class TaxResource extends Resource
                     ->label(__('accounts::filament/resources/tax.table.groups.amount-type'))
                     ->collapsible(),
             ])
-            ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\ViewAction::make(),
-                    Tables\Actions\DeleteAction::make()
+            ->recordActions([
+                ActionGroup::make([
+                    EditAction::make(),
+                    ViewAction::make(),
+                    DeleteAction::make()
                         ->action(function (Tax $record) {
                             try {
                                 $record->delete();
@@ -210,9 +385,9 @@ class TaxResource extends Resource
                         ),
                 ]),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->action(function (Collection $records) {
                             try {
                                 $records->each(fn (Model $record) => $record->delete());
@@ -235,85 +410,145 @@ class TaxResource extends Resource
             ->reorderable('sort', 'desc');
     }
 
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Grid::make(['default' => 3])
+        return $schema
+            ->components([
+                Grid::make(['default' => 3])
                     ->schema([
-                        Infolists\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Infolists\Components\Section::make()
+                                Section::make()
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('name')
+                                        TextEntry::make('name')
                                             ->icon('heroicon-o-document-text')
                                             ->label(__('accounts::filament/resources/tax.infolist.sections.entries.name'))
                                             ->placeholder('—'),
-                                        Infolists\Components\TextEntry::make('type_tax_use')
+                                        TextEntry::make('type_tax_use')
                                             ->icon('heroicon-o-calculator')
                                             ->label(__('accounts::filament/resources/tax.infolist.sections.entries.tax-type'))
                                             ->placeholder('—'),
-                                        Infolists\Components\TextEntry::make('amount_type')
+                                        TextEntry::make('amount_type')
                                             ->icon('heroicon-o-calculator')
                                             ->label(__('accounts::filament/resources/tax.infolist.sections.entries.tax-computation'))
                                             ->placeholder('—'),
-                                        Infolists\Components\TextEntry::make('tax_scope')
+                                        TextEntry::make('tax_scope')
                                             ->icon('heroicon-o-globe-alt')
                                             ->label(__('accounts::filament/resources/tax.infolist.sections.entries.tax-scope'))
                                             ->placeholder('—'),
-                                        Infolists\Components\TextEntry::make('amount')
+                                        TextEntry::make('amount')
                                             ->icon('heroicon-o-currency-dollar')
                                             ->label(__('accounts::filament/resources/tax.infolist.sections.entries.amount'))
                                             ->suffix('%')
                                             ->placeholder('—'),
-                                        Infolists\Components\IconEntry::make('is_active')
+                                        IconEntry::make('is_active')
+                                            ->boolean()
                                             ->label(__('accounts::filament/resources/tax.infolist.sections.entries.status')),
                                     ])->columns(2),
-                                Infolists\Components\Section::make()
+                                Section::make()
                                     ->schema([
-                                        Infolists\Components\TextEntry::make('description')
+                                        TextEntry::make('description')
                                             ->label(__('accounts::filament/resources/tax.infolist.sections.field-set.description-and-legal-notes.entries.description'))
                                             ->markdown()
                                             ->placeholder('—')
                                             ->columnSpanFull(),
-                                        Infolists\Components\TextEntry::make('invoice_legal_notes')
+                                        TextEntry::make('invoice_legal_notes')
                                             ->label(__('accounts::filament/resources/tax.infolist.sections.field-set.description-and-legal-notes.entries.legal-notes'))
                                             ->markdown()
                                             ->placeholder('—')
                                             ->columnSpanFull(),
                                     ]),
                             ])->columnSpan(2),
-                        Infolists\Components\Group::make([
-                            Infolists\Components\Section::make()
+                        Group::make([
+                            Section::make()
                                 ->schema([
-                                    Infolists\Components\TextEntry::make('invoice_label')
+                                    TextEntry::make('invoice_label')
                                         ->label(__('accounts::filament/resources/tax.infolist.sections.field-set.advanced-options.entries.invoice-label'))
                                         ->placeholder('—'),
-                                    Infolists\Components\TextEntry::make('taxGroup.name')
+                                    TextEntry::make('taxGroup.name')
                                         ->label(__('accounts::filament/resources/tax.infolist.sections.field-set.advanced-options.entries.tax-group'))
                                         ->placeholder('—'),
-                                    Infolists\Components\TextEntry::make('country.name')
+                                    TextEntry::make('country.name')
                                         ->label(__('accounts::filament/resources/tax.infolist.sections.field-set.advanced-options.entries.country'))
                                         ->placeholder('—'),
-                                    Infolists\Components\IconEntry::make('price_include_override')
+                                    TextEntry::make('price_include_override')
                                         ->label(__('accounts::filament/resources/tax.infolist.sections.field-set.advanced-options.entries.include-in-price')),
-                                    Infolists\Components\IconEntry::make('include_base_amount')
+                                    IconEntry::make('include_base_amount')
+                                        ->boolean()
                                         ->label(__('accounts::filament/resources/tax.infolist.sections.field-set.advanced-options.entries.include-base-amount')),
-                                    Infolists\Components\IconEntry::make('is_base_affected')
+                                    IconEntry::make('is_base_affected')
+                                        ->boolean()
                                         ->label(__('accounts::filament/resources/tax.infolist.sections.field-set.advanced-options.entries.is-base-affected')),
                                 ]),
                         ])->columnSpan(1),
                     ]),
-            ]);
+            ])->columns(1);
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListTaxes::route('/'),
-            'create' => Pages\CreateTax::route('/create'),
-            'view'   => Pages\ViewTax::route('/{record}'),
-            'edit'   => Pages\EditTax::route('/{record}/edit'),
+            'index'  => ListTaxes::route('/'),
+            'create' => CreateTax::route('/create'),
+            'view'   => ViewTax::route('/{record}'),
+            'edit'   => EditTax::route('/{record}/edit'),
         ];
+    }
+
+    public static function validateRepartitionData(array $invoiceLines, array $refundLines): void
+    {
+        $invoice = collect($invoiceLines)->values();
+        $refund = collect($refundLines)->values();
+
+        if (
+            $invoice->where('repartition_type', 'base')->count() !== 1 ||
+            $refund->where('repartition_type', 'base')->count() !== 1
+        ) {
+            throw new \Exception('Each must contain exactly one BASE repartition line.');
+        }
+
+        if (
+            $invoice->where('repartition_type', 'tax')->isEmpty() ||
+            $refund->where('repartition_type', 'tax')->isEmpty()
+        ) {
+            throw new \Exception('Each must contain at least one TAX repartition line.');
+        }
+
+        if ($invoice->count() !== $refund->count()) {
+            throw new \Exception('Invoice and refund must have the same number of repartition lines.');
+        }
+
+        foreach ($invoice as $index => $invLine) {
+
+            $refLine = $refund[$index] ?? null;
+
+            $invPercent = (float) ($invLine['factor_percent'] ?? 0);
+            $refPercent = (float) ($refLine['factor_percent'] ?? 0);
+
+            if (
+                ! $refLine ||
+                $invLine['repartition_type'] !== $refLine['repartition_type'] ||
+                $invPercent !== $refPercent
+
+            ) {
+                throw new \Exception('Line #'.($index + 1).' does not match between Invoice and Refund.');
+            }
+        }
+
+        $positive = $invoice
+            ->filter(fn ($l) => $l['repartition_type'] === 'tax' && is_numeric($l['factor_percent'] ?? null) && $l['factor_percent'] > 0)
+            ->sum(fn ($l) => (float) $l['factor_percent']);
+
+        $negative = $invoice
+            ->filter(fn ($l) => $l['repartition_type'] === 'tax' && is_numeric($l['factor_percent'] ?? null) && $l['factor_percent'] < 0)
+            ->sum(fn ($l) => (float) $l['factor_percent']);
+
+        if (bccomp(number_format($positive, 2, '.', ''), '100', 2) !== 0) {
+            throw new \Exception("Invoice total positive TAX percentages must equal 100% (got {$positive}%).");
+        }
+
+        if ($negative && bccomp(number_format($negative, 2, '.', ''), '-100', 2) !== 0) {
+            throw new \Exception("Invoice total negative TAX percentages must equal -100% (got {$negative}%).");
+        }
     }
 }

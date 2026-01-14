@@ -2,10 +2,10 @@
 
 namespace Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers;
 
-use Filament\Forms\Form;
+use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Partner\Filament\Resources\PartnerResource;
@@ -14,9 +14,9 @@ class ContactsRelationManager extends RelationManager
 {
     protected static string $relationship = 'contacts';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return PartnerResource::form($form);
+        return PartnerResource::form($schema);
     }
 
     public function table(Table $table): Table
@@ -25,10 +25,10 @@ class ContactsRelationManager extends RelationManager
             ->filters([])
             ->groups([])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label(__('partners::filament/resources/partner/relation-managers/contacts.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
                         $data['creator_id'] = Auth::id();
 
                         return $data;

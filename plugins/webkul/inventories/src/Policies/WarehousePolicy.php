@@ -15,7 +15,7 @@ class WarehousePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_warehouse');
+        return $user->can('view_any_inventory_warehouse');
     }
 
     /**
@@ -23,7 +23,7 @@ class WarehousePolicy
      */
     public function view(User $user, Warehouse $warehouse): bool
     {
-        return $user->can('view_warehouse');
+        return $user->can('view_inventory_warehouse');
     }
 
     /**
@@ -31,7 +31,7 @@ class WarehousePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_warehouse');
+        return $user->can('create_inventory_warehouse');
     }
 
     /**
@@ -39,7 +39,7 @@ class WarehousePolicy
      */
     public function update(User $user, Warehouse $warehouse): bool
     {
-        return $user->can('update_warehouse');
+        return $user->can('update_inventory_warehouse');
     }
 
     /**
@@ -47,7 +47,7 @@ class WarehousePolicy
      */
     public function delete(User $user, Warehouse $warehouse): bool
     {
-        return $user->can('delete_warehouse');
+        return $user->can('delete_inventory_warehouse');
     }
 
     /**
@@ -55,7 +55,7 @@ class WarehousePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_warehouse');
+        return $user->can('delete_any_inventory_warehouse');
     }
 
     /**
@@ -63,7 +63,7 @@ class WarehousePolicy
      */
     public function forceDelete(User $user, Warehouse $warehouse): bool
     {
-        return $user->can('force_delete_warehouse');
+        return $user->can('force_delete_inventory_warehouse');
     }
 
     /**
@@ -71,7 +71,7 @@ class WarehousePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_warehouse');
+        return $user->can('force_delete_any_inventory_warehouse');
     }
 
     /**
@@ -79,7 +79,7 @@ class WarehousePolicy
      */
     public function restore(User $user, Warehouse $warehouse): bool
     {
-        return $user->can('restore_warehouse');
+        return $user->can('restore_inventory_warehouse');
     }
 
     /**
@@ -87,22 +87,6 @@ class WarehousePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_warehouse');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Warehouse $warehouse): bool
-    {
-        return $user->can('replicate_warehouse');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_warehouse');
+        return $user->can('restore_any_inventory_warehouse');
     }
 }

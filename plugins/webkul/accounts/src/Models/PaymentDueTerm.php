@@ -31,4 +31,29 @@ class PaymentDueTerm extends Model
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
+
+    public function getDueDate($dateRef)
+    {
+        $dueDate = $dateRef ? \Carbon\Carbon::parse($dateRef) : \Carbon\Carbon::today();
+
+        if ($this->delay_type === 'days_after_end_of_month') {
+            return $dueDate->copy()->endOfMonth()->addDays($this->nb_days);
+        } elseif ($this->delay_type === 'days_after_end_of_next_month') {
+            return $dueDate->copy()->addMonthNoOverflow(1)->endOfMonth()->addDays($this->nb_days);
+        } elseif ($this->delay_type === 'days_end_of_month_on_the') {
+            $daysNextMonth = 1;
+
+            if (is_numeric($this->days_next_month)) {
+                $daysNextMonth = (int) $this->days_next_month;
+            }
+
+            if (! $daysNextMonth) {
+                return $dueDate->copy()->addDays($this->nb_days)->endOfMonth();
+            }
+
+            return $dueDate->copy()->addDays($this->nb_days)->addMonthsNoOverflow(1)->day($daysNextMonth);
+        }
+
+        return $dueDate->copy()->addDays($this->nb_days);
+    }
 }

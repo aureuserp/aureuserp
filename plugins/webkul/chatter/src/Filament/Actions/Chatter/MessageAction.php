@@ -3,11 +3,17 @@
 namespace Webkul\Chatter\Filament\Actions\Chatter;
 
 use Filament\Actions\Action;
-use Filament\Forms;
-use Filament\Forms\Get;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Actions;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Throwable;
 use Webkul\Chatter\Mail\MessageMail;
 use Webkul\Support\Services\EmailService;
 
@@ -60,10 +66,10 @@ class MessageAction extends Action
             ->color('gray')
             ->outlined()
             ->visible(false)
-            ->form([
-                Forms\Components\Group::make([
-                    Forms\Components\Actions::make([
-                        Forms\Components\Actions\Action::make('add_subject')
+            ->schema([
+                Group::make([
+                    Actions::make([
+                        Action::make('add_subject')
                             ->label(function ($get) {
                                 return $get('showSubject') ? __('chatter::filament/resources/actions/chatter/message-action.setup.form.fields.hide-subject') : __('chatter::filament/resources/actions/chatter/message-action.setup.form.fields.add-subject');
                             })
@@ -83,21 +89,23 @@ class MessageAction extends Action
                         ->columnSpan('full')
                         ->alignRight(),
                 ]),
-                Forms\Components\TextInput::make('subject')
+
+                TextInput::make('subject')
                     ->placeholder(__('chatter::filament/resources/actions/chatter/message-action.setup.form.fields.subject'))
                     ->live()
                     ->visible(fn ($get) => $get('showSubject')),
-                Forms\Components\RichEditor::make('body')
+                RichEditor::make('body')
                     ->hiddenLabel()
                     ->placeholder(__('chatter::filament/resources/actions/chatter/message-action.setup.form.fields.write-message-here'))
                     ->fileAttachmentsDirectory('log-attachments')
-                    ->disableGrammarly()
                     ->required(),
-                Forms\Components\FileUpload::make('attachments')
+                FileUpload::make('attachments')
                     ->hiddenLabel()
                     ->multiple()
                     ->directory('messages-attachments')
-                    ->disableGrammarly()
+                    ->disk('public')
+                    ->visibility('public')
+                    ->preserveFilenames()
                     ->previewable(true)
                     ->panelLayout('grid')
                     ->imagePreviewHeight('100')
@@ -113,7 +121,7 @@ class MessageAction extends Action
                     ->maxSize(10240)
                     ->helperText(__('chatter::filament/resources/actions/chatter/message-action.setup.form.fields.attachments-helper-text'))
                     ->columnSpanFull(),
-                Forms\Components\Hidden::make('type')
+                Hidden::make('type')
                     ->default('comment'),
             ])
             ->action(function (array $data, ?Model $record = null) {
@@ -136,13 +144,19 @@ class MessageAction extends Action
                         ->title(__('chatter::filament/resources/actions/chatter/message-action.setup.actions.notification.success.title'))
                         ->body(__('chatter::filament/resources/actions/chatter/message-action.setup.actions.notification.success.body'))
                         ->send();
-                } catch (\Exception $e) {
+                } catch (Throwable $e) {
                     report($e);
+
                     Notification::make()
                         ->danger()
                         ->title(__('chatter::filament/resources/actions/chatter/message-action.setup.actions.notification.error.title'))
                         ->body(__('chatter::filament/resources/actions/chatter/message-action.setup.actions.notification.error.body'))
                         ->send();
+                }
+            })
+            ->after(function ($livewire) {
+                if (method_exists($livewire, 'dispatch')) {
+                    $livewire->dispatch('chatter.refresh');
                 }
             })
             ->label(__('chatter::filament/resources/actions/chatter/message-action.setup.title'))
@@ -158,7 +172,7 @@ class MessageAction extends Action
     private function notifyFollower(mixed $record, mixed $message): void
     {
         foreach ($record->followers as $follower) {
-            if ($follower?->partner) {
+            if ($follower?->partner?->email) {
                 app(EmailService::class)->send(
                     mailClass: MessageMail::class,
                     view: $this->getMessageMailView(),

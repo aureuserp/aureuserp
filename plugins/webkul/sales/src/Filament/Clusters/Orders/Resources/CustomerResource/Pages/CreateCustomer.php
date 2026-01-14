@@ -2,18 +2,21 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages;
 
-use Filament\Pages\SubNavigationPosition;
 use Illuminate\Contracts\Support\Htmlable;
-use Webkul\Partner\Filament\Resources\PartnerResource\Pages\CreatePartner as BaseCreateCustomer;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\CustomerResource\Pages\CreateCustomer as BaseCreateCustomer;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource;
 
 class CreateCustomer extends BaseCreateCustomer
 {
     protected static string $resource = CustomerResource::class;
 
-    public function getSubNavigationPosition(): SubNavigationPosition
+    public function getSubNavigation(): array
     {
-        return SubNavigationPosition::Top;
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
     }
 
     public function getTitle(): string|Htmlable

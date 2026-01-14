@@ -32,6 +32,11 @@ class Partner extends Authenticatable implements FilamentUser
      */
     protected $table = 'partners_partners';
 
+    public function getModelTitle(): string
+    {
+        return 'Partner';
+    }
+
     /**
      * Fillable.
      *
@@ -151,12 +156,21 @@ class Partner extends Authenticatable implements FilamentUser
 
     public function bankAccounts(): HasMany
     {
-        return $this->hasMany(BankAccount::class);
+        return $this->hasMany(BankAccount::class, 'partner_id');
     }
 
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, 'partners_partner_tag', 'partner_id', 'tag_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($partner) {
+            $partner->creator_id = filament()->auth()->id();
+        });
     }
 
     protected static function newFactory(): PartnerFactory

@@ -3,8 +3,8 @@
 namespace Webkul\Invoice\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Webkul\Account\Models\Category as BaseCategory;
 use Webkul\Chatter\Traits\HasChatter;
-use Webkul\Product\Models\Category as BaseCategory;
 use Webkul\Security\Models\User;
 
 class Category extends BaseCategory

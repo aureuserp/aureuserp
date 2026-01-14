@@ -15,7 +15,7 @@ class InvoicePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_invoice');
+        return $user->can('view_any_invoice_invoice');
     }
 
     /**
@@ -23,7 +23,7 @@ class InvoicePolicy
      */
     public function view(User $user, Invoice $invoice): bool
     {
-        return $user->can('view_invoice');
+        return $user->can('view_invoice_invoice');
     }
 
     /**
@@ -31,7 +31,7 @@ class InvoicePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_invoice');
+        return $user->can('create_invoice_invoice');
     }
 
     /**
@@ -39,7 +39,7 @@ class InvoicePolicy
      */
     public function update(User $user, Invoice $invoice): bool
     {
-        return $user->can('update_invoice');
+        return $user->can('update_invoice_invoice');
     }
 
     /**
@@ -47,7 +47,7 @@ class InvoicePolicy
      */
     public function delete(User $user, Invoice $invoice): bool
     {
-        return $user->can('delete_invoice');
+        return $user->can('delete_invoice_invoice');
     }
 
     /**
@@ -55,54 +55,6 @@ class InvoicePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_invoice');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, Invoice $invoice): bool
-    {
-        return $user->can('force_delete_invoice');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_invoice');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, Invoice $invoice): bool
-    {
-        return $user->can('restore_invoice');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_invoice');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Invoice $invoice): bool
-    {
-        return $user->can('replicate_invoice');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_invoice');
+        return $user->can('delete_any_invoice_invoice');
     }
 }

@@ -15,7 +15,7 @@ class ApplicantCategoryPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_applicant::category');
+        return $user->can('view_any_recruitment_applicant::category');
     }
 
     /**
@@ -23,7 +23,7 @@ class ApplicantCategoryPolicy
      */
     public function view(User $user, ApplicantCategory $applicantCategory): bool
     {
-        return $user->can('view_applicant::category');
+        return $user->can('view_recruitment_applicant::category');
     }
 
     /**
@@ -31,7 +31,7 @@ class ApplicantCategoryPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_applicant::category');
+        return $user->can('create_recruitment_applicant::category');
     }
 
     /**
@@ -39,7 +39,7 @@ class ApplicantCategoryPolicy
      */
     public function update(User $user, ApplicantCategory $applicantCategory): bool
     {
-        return $user->can('update_applicant::category');
+        return $user->can('update_recruitment_applicant::category');
     }
 
     /**
@@ -47,7 +47,7 @@ class ApplicantCategoryPolicy
      */
     public function delete(User $user, ApplicantCategory $applicantCategory): bool
     {
-        return $user->can('delete_applicant::category');
+        return $user->can('delete_recruitment_applicant::category');
     }
 
     /**
@@ -55,47 +55,7 @@ class ApplicantCategoryPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_applicant::category');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, ApplicantCategory $applicantCategory): bool
-    {
-        return $user->can('force_delete_applicant::category');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_applicant::category');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, ApplicantCategory $applicantCategory): bool
-    {
-        return $user->can('restore_applicant::category');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_applicant::category');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, ApplicantCategory $applicantCategory): bool
-    {
-        return $user->can('replicate_applicant::category');
+        return $user->can('delete_any_recruitment_applicant::category');
     }
 
     /**
@@ -103,6 +63,6 @@ class ApplicantCategoryPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_applicant::category');
+        return $user->can('reorder_recruitment_applicant::category');
     }
 }

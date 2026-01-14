@@ -2,7 +2,8 @@
 
 namespace Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityPlanResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityPlanResource;
@@ -14,8 +15,8 @@ class ViewActivityPlan extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
-            Actions\DeleteAction::make()
+            EditAction::make(),
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()
@@ -23,5 +24,14 @@ class ViewActivityPlan extends ViewRecord
                         ->body(__('sales::filament/clusters/configurations/resources/activity-plan/pages/view-activity-plan.header-actions.delete.notification.body')),
                 ),
         ];
+    }
+
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
     }
 }

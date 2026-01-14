@@ -15,7 +15,7 @@ class EmployeeCategoryPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_employee::category');
+        return $user->can('view_any_employee_employee::category');
     }
 
     /**
@@ -23,7 +23,7 @@ class EmployeeCategoryPolicy
      */
     public function view(User $user, EmployeeCategory $employeeCategory): bool
     {
-        return $user->can('view_employee::category');
+        return $user->can('view_employee_employee::category');
     }
 
     /**
@@ -31,7 +31,7 @@ class EmployeeCategoryPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_employee::category');
+        return $user->can('create_employee_employee::category');
     }
 
     /**
@@ -39,7 +39,7 @@ class EmployeeCategoryPolicy
      */
     public function update(User $user, EmployeeCategory $employeeCategory): bool
     {
-        return $user->can('update_employee::category');
+        return $user->can('update_employee_employee::category');
     }
 
     /**
@@ -47,7 +47,7 @@ class EmployeeCategoryPolicy
      */
     public function delete(User $user, EmployeeCategory $employeeCategory): bool
     {
-        return $user->can('delete_employee::category');
+        return $user->can('delete_employee_employee::category');
     }
 
     /**
@@ -55,54 +55,6 @@ class EmployeeCategoryPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_employee::category');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, EmployeeCategory $employeeCategory): bool
-    {
-        return $user->can('force_delete_employee::category');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_employee::category');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, EmployeeCategory $employeeCategory): bool
-    {
-        return $user->can('restore_employee::category');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_employee::category');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, EmployeeCategory $employeeCategory): bool
-    {
-        return $user->can('replicate_employee::category');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_employee::category');
+        return $user->can('delete_any_employee_employee::category');
     }
 }

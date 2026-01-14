@@ -2,15 +2,18 @@
 
 namespace Webkul\Account\Filament\Resources\FiscalPositionResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Filament\Resources\FiscalPositionResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditFiscalPosition extends EditRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = FiscalPositionResource::class;
 
     protected function getRedirectUrl(): string
@@ -26,16 +29,11 @@ class EditFiscalPosition extends EditRecord
             ->body(__('accounts::filament/resources/fiscal-position/pages/edit-fiscal-position.notification.body'));
     }
 
-    public function getSubNavigationPosition(): SubNavigationPosition
-    {
-        return SubNavigationPosition::Top;
-    }
-
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make()
+            ViewAction::make(),
+            DeleteAction::make()
                 ->successNotification(
                     Notification::make()
                         ->success()

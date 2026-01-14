@@ -2,9 +2,9 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Illuminate\Contracts\Support\Htmlable;
-use Webkul\Partner\Filament\Resources\PartnerResource\Pages\ListPartners as BaseListCustomers;
+use Webkul\Invoice\Filament\Clusters\Customer\Resources\CustomerResource\Pages\ListCustomers as BaseListCustomers;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource;
 
 class ListCustomers extends BaseListCustomers
@@ -19,7 +19,7 @@ class ListCustomers extends BaseListCustomers
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label(__('sales::filament/clusters/orders/resources/customer/pages/list-customers.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle'),
         ];

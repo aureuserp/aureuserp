@@ -15,7 +15,7 @@ class CreditNotePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_credit::notes');
+        return $user->can('view_any_invoice_credit::note');
     }
 
     /**
@@ -23,7 +23,7 @@ class CreditNotePolicy
      */
     public function view(User $user, CreditNote $creditNote): bool
     {
-        return $user->can('view_credit::notes');
+        return $user->can('view_invoice_credit::note');
     }
 
     /**
@@ -31,7 +31,7 @@ class CreditNotePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_credit::notes');
+        return $user->can('create_invoice_credit::note');
     }
 
     /**
@@ -39,7 +39,7 @@ class CreditNotePolicy
      */
     public function update(User $user, CreditNote $creditNote): bool
     {
-        return $user->can('update_credit::notes');
+        return $user->can('update_invoice_credit::note');
     }
 
     /**
@@ -47,7 +47,7 @@ class CreditNotePolicy
      */
     public function delete(User $user, CreditNote $creditNote): bool
     {
-        return $user->can('delete_credit::notes');
+        return $user->can('delete_invoice_credit::note');
     }
 
     /**
@@ -55,54 +55,6 @@ class CreditNotePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_credit::notes');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, CreditNote $creditNote): bool
-    {
-        return $user->can('force_delete_credit::notes');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_credit::notes');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, CreditNote $creditNote): bool
-    {
-        return $user->can('restore_credit::notes');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_credit::notes');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, CreditNote $creditNote): bool
-    {
-        return $user->can('replicate_credit::notes');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_credit::notes');
+        return $user->can('delete_any_invoice_credit::note');
     }
 }

@@ -15,7 +15,7 @@ class ListCategories extends ListRecords
 {
     protected static string $resource = CategoryResource::class;
 
-    protected static string $view = 'blogs::filament.customer.resources.category.pages.list-records';
+    protected string $view = 'blogs::filament.customer.resources.category.pages.list-records';
 
     public function getTitle(): string|Htmlable
     {
@@ -34,7 +34,8 @@ class ListCategories extends ListRecords
 
     protected function getPosts(): Paginator
     {
-        $query = Post::query()->where('is_published', 1);
+        $query = Post::with(['category', 'creator', 'tags'])
+            ->where('is_published', 1);
 
         if (request()->has('search') && $search = request()->input('search')) {
             $query->where(function (Builder $query) use ($search) {

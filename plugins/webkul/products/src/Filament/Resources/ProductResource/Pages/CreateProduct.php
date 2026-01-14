@@ -16,6 +16,15 @@ class CreateProduct extends CreateRecord
         return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
+
     protected function getCreatedNotification(): Notification
     {
         return Notification::make()

@@ -49,7 +49,7 @@ class EmployeeJobPosition extends Model implements Sortable
         'sort_when_creating' => true,
     ];
 
-    public function creator(): BelongsTo
+    public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -72,6 +72,15 @@ class EmployeeJobPosition extends Model implements Sortable
     public function employmentType()
     {
         return $this->belongsTo(EmploymentType::class, 'employment_type_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($employeeJobPosition) {
+            $employeeJobPosition->creator_id = filament()->auth()->id();
+        });
     }
 
     protected static function newFactory(): EmployeeJobPositionFactory

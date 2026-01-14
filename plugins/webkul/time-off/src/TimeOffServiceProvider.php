@@ -2,10 +2,11 @@
 
 namespace Webkul\TimeOff;
 
-use Webkul\Support\Console\Commands\InstallCommand;
-use Webkul\Support\Console\Commands\UninstallCommand;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Filament\Panel;
+use Webkul\PluginManager\Console\Commands\InstallCommand;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class TimeOffServiceProvider extends PackageServiceProvider
 {
@@ -25,17 +26,27 @@ class TimeOffServiceProvider extends PackageServiceProvider
                 '2025_01_21_073921_create_time_off_leave_accrual_plans_table',
                 '2025_01_21_085833_create_time_off_leave_accrual_levels_table',
                 '2025_01_22_101656_create_time_off_leave_allocations_table',
+                '2025_08_13_120000_alter_private_name_column_in_time_off_leaves_table',
             ])
             ->hasDependencies([
                 'employees',
             ])
             ->runsMigrations()
+            ->hasSeeder('Webkul\\TimeOff\\Database\\Seeders\\DatabaseSeeder')
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->installDependencies()
                     ->runsMigrations()
                     ->runsSeeders();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {});
+            ->hasUninstallCommand(function (UninstallCommand $command) {})
+            ->icon('time-offs');
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(TimeOffPlugin::make());
+        });
     }
 }

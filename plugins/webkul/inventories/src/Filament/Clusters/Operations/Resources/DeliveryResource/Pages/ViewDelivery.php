@@ -2,26 +2,31 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\QueryException;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
-use Webkul\Inventory\Enums;
+use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource;
 use Webkul\Inventory\Models\Delivery;
+use Webkul\Support\Filament\Concerns\HasRepeatableEntryColumnManager;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewDelivery extends ViewRecord
 {
+    use HasRecordNavigationTabs, HasRepeatableEntryColumnManager;
+
     protected static string $resource = DeliveryResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
             ChatterAction::make()
-                ->setResource(static::$resource),
-            Actions\ActionGroup::make([
+                ->resource(static::$resource),
+            ActionGroup::make([
                 OperationActions\Print\PickingOperationAction::make(),
                 OperationActions\Print\DeliverySlipAction::make(),
                 OperationActions\Print\PackageAction::make(),
@@ -31,9 +36,9 @@ class ViewDelivery extends ViewRecord
                 ->icon('heroicon-o-printer')
                 ->color('gray')
                 ->button(),
-            Actions\DeleteAction::make()
-                ->hidden(fn () => $this->getRecord()->state == Enums\OperationState::DONE)
-                ->action(function (Actions\DeleteAction $action, Delivery $record) {
+            DeleteAction::make()
+                ->hidden(fn () => $this->getRecord()->state == OperationState::DONE)
+                ->action(function (DeleteAction $action, Delivery $record) {
                     try {
                         $record->delete();
 

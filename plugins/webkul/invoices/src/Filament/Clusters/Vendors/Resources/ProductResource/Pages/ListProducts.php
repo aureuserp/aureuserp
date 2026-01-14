@@ -3,9 +3,9 @@
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource\Pages;
 
 use Illuminate\Database\Eloquent\Builder;
+use Webkul\Account\Filament\Resources\ProductResource\Pages\ListProducts as BaseListProducts;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource;
 use Webkul\Product\Enums\ProductType;
-use Webkul\Product\Filament\Resources\ProductResource\Pages\ListProducts as BaseListProducts;
 use Webkul\TableViews\Filament\Components\PresetView;
 
 class ListProducts extends BaseListProducts
@@ -18,7 +18,7 @@ class ListProducts extends BaseListProducts
             'goods_products' => PresetView::make(__('invoices::filament/clusters/vendors/resources/product/pages/list-products.tabs.goods'))
                 ->icon('heroicon-s-squares-plus')
                 ->favorite()
-                ->default()
+                ->setAsDefault()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('type', ProductType::GOODS)),
             'services_products' => PresetView::make(__('invoices::filament/clusters/vendors/resources/product/pages/list-products.tabs.services'))
                 ->icon('heroicon-s-sparkles')

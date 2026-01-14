@@ -5,7 +5,7 @@ namespace Webkul\Payment\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PaymentToken>
+ * @extends Factory<\App\Models\PaymentToken>
  */
 class PaymentTokenFactory extends Factory
 {

@@ -25,6 +25,7 @@ return [
                     'action-information' => [
                         'pull' => 'When products are required in <b>:sourceLocation</b>, :operation is generated from <b>:destinationLocation</b> to meet the demand.',
                         'push' => 'When products reach <b>:sourceLocation</b>,</br><b>:operation</b> is generated to transfer them to <b>:destinationLocation</b>.',
+                        'buy'  => 'When products are needed in <b>:destinationLocation</b>, a request for quotation is created to fulfill the need.',
                     ],
                 ],
             ],

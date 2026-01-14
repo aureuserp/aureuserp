@@ -2,16 +2,29 @@
 
 namespace Webkul\TimeOff\Filament\Pages;
 
+use BackedEnum;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Pages\Dashboard as BaseDashboard;
+use Illuminate\Contracts\Support\Htmlable;
 use Webkul\TimeOff\Filament\Widgets\OverviewCalendarWidget;
 
 class Overview extends BaseDashboard
 {
+    use HasPageShield;
+
     protected static string $routePath = 'time-off';
 
-    protected static ?string $navigationIcon = 'heroicon-o-calendar';
-
     protected static ?int $navigationSort = 2;
+
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_time_off_overview';
+    }
+
+    public static function getNavigationIcon(): string|BackedEnum|Htmlable|null
+    {
+        return null;
+    }
 
     public function getTitle(): string
     {

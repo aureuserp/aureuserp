@@ -2,14 +2,16 @@
 
 namespace Webkul\Purchase;
 
+use Filament\Panel;
 use Illuminate\Foundation\AliasLoader;
 use Livewire\Livewire;
+use Webkul\PluginManager\Console\Commands\InstallCommand;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 use Webkul\Purchase\Facades\PurchaseOrder as PurchaseOrderFacade;
-use Webkul\Purchase\Livewire\Summary;
-use Webkul\Support\Console\Commands\InstallCommand;
-use Webkul\Support\Console\Commands\UninstallCommand;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Webkul\Purchase\Livewire\Customer\ListProducts;
+use Webkul\Purchase\Livewire\OrderSummary;
 
 class PurchaseServiceProvider extends PackageServiceProvider
 {
@@ -51,20 +53,25 @@ class PurchaseServiceProvider extends PackageServiceProvider
                     ->installDependencies()
                     ->runsMigrations();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {});
+            ->hasUninstallCommand(function (UninstallCommand $command) {})
+            ->icon('purchases');
     }
 
     public function packageBooted(): void
     {
-        Livewire::component('order-summary', Summary::class);
+        Livewire::component('order-summary', OrderSummary::class);
 
-        Livewire::component('list-products', \Webkul\Purchase\Livewire\Customer\ListProducts::class);
+        Livewire::component('list-products', ListProducts::class);
 
         // \Webkul\Account\Models\Move::observe(\Webkul\Purchase\Observers\AccountMoveObserver::class);
     }
 
     public function packageRegistered(): void
     {
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(PurchasePlugin::make());
+        });
+
         $loader = AliasLoader::getInstance();
 
         $loader->alias('purchase_order', PurchaseOrderFacade::class);

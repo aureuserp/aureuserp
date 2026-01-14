@@ -15,7 +15,7 @@ class PaymentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_payments');
+        return $user->can('view_any_invoice_payment');
     }
 
     /**
@@ -23,7 +23,7 @@ class PaymentPolicy
      */
     public function view(User $user, Payment $payment): bool
     {
-        return $user->can('view_payments');
+        return $user->can('view_invoice_payment');
     }
 
     /**
@@ -31,7 +31,7 @@ class PaymentPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_payments');
+        return $user->can('create_invoice_payment');
     }
 
     /**
@@ -39,7 +39,7 @@ class PaymentPolicy
      */
     public function update(User $user, Payment $payment): bool
     {
-        return $user->can('update_payments');
+        return $user->can('update_invoice_payment');
     }
 
     /**
@@ -47,7 +47,7 @@ class PaymentPolicy
      */
     public function delete(User $user, Payment $payment): bool
     {
-        return $user->can('delete_payments');
+        return $user->can('delete_invoice_payment');
     }
 
     /**
@@ -55,54 +55,6 @@ class PaymentPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_payments');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, Payment $payment): bool
-    {
-        return $user->can('force_delete_payments');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_payments');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, Payment $payment): bool
-    {
-        return $user->can('restore_payments');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_payments');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Payment $payment): bool
-    {
-        return $user->can('replicate_payments');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_payments');
+        return $user->can('delete_any_invoice_payment');
     }
 }

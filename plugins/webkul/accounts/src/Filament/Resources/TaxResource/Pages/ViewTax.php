@@ -2,28 +2,26 @@
 
 namespace Webkul\Account\Filament\Resources\TaxResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
-use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\QueryException;
 use Webkul\Account\Filament\Resources\TaxResource;
 use Webkul\Account\Models\Tax;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewTax extends ViewRecord
 {
-    protected static string $resource = TaxResource::class;
+    use HasRecordNavigationTabs;
 
-    public function getSubNavigationPosition(): SubNavigationPosition
-    {
-        return SubNavigationPosition::Top;
-    }
+    protected static string $resource = TaxResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
-            Actions\DeleteAction::make()
+            EditAction::make(),
+            DeleteAction::make()
                 ->action(function (Tax $record) {
                     try {
                         $record->delete();

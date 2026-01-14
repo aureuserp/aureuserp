@@ -16,7 +16,7 @@ class DeliveryPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_delivery');
+        return $user->can('view_any_inventory_delivery');
     }
 
     /**
@@ -24,7 +24,7 @@ class DeliveryPolicy
      */
     public function view(User $user, Delivery $delivery): bool
     {
-        return $user->can('view_delivery');
+        return $user->can('view_inventory_delivery');
     }
 
     /**
@@ -32,7 +32,7 @@ class DeliveryPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_delivery');
+        return $user->can('create_inventory_delivery');
     }
 
     /**
@@ -40,7 +40,7 @@ class DeliveryPolicy
      */
     public function update(User $user, Delivery $delivery): bool
     {
-        if (! $user->can('update_delivery')) {
+        if (! $user->can('update_inventory_delivery')) {
             return false;
         }
 
@@ -52,11 +52,10 @@ class DeliveryPolicy
      */
     public function delete(User $user, Delivery $delivery): bool
     {
-        if (! $user->can('delete_delivery')) {
+        if (! $user->can('delete_inventory_delivery')) {
             return false;
         }
-        // dd($this->hasAccess($user, $delivery));
-
+        
         return $this->hasAccess($user, $delivery);
     }
 
@@ -65,66 +64,6 @@ class DeliveryPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_delivery');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, Delivery $delivery): bool
-    {
-        if (! $user->can('force_delete_delivery')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $delivery);
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_delivery');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, Delivery $delivery): bool
-    {
-        if (! $user->can('restore_delivery')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $delivery);
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_delivery');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Delivery $delivery): bool
-    {
-        if (! $user->can('replicate_delivery')) {
-            return false;
-        }
-
-        return $this->hasAccess($user, $delivery);
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_delivery');
+        return $user->can('delete_any_inventory_delivery');
     }
 }

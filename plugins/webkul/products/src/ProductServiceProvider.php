@@ -2,10 +2,11 @@
 
 namespace Webkul\Product;
 
-use Webkul\Support\Console\Commands\InstallCommand;
-use Webkul\Support\Console\Commands\UninstallCommand;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Filament\Panel;
+use Webkul\PluginManager\Console\Commands\InstallCommand;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class ProductServiceProvider extends PackageServiceProvider
 {
@@ -33,9 +34,14 @@ class ProductServiceProvider extends PackageServiceProvider
                 '2025_01_05_123412_create_products_product_suppliers_table',
                 '2025_02_18_112837_create_products_product_price_lists_table',
                 '2025_02_21_053249 _create_products_product_combinations_table',
+                '2025_07_28_080116_alter_products_products_table',
             ])
             ->hasSeeder('Webkul\\Product\\Database\Seeders\\DatabaseSeeder')
             ->runsMigrations()
+            ->hasSettings([
+                '2025_01_17_094022_create_products_product_settings',
+            ])
+            ->runsSettings()
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->runsMigrations()
@@ -47,5 +53,12 @@ class ProductServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         //
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(ProductPlugin::make());
+        });
     }
 }

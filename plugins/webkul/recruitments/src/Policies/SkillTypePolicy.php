@@ -15,7 +15,7 @@ class SkillTypePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_skill::type');
+        return $user->can('view_any_recruitment_skill::type');
     }
 
     /**
@@ -23,7 +23,7 @@ class SkillTypePolicy
      */
     public function view(User $user, SkillType $skillType): bool
     {
-        return $user->can('view_skill::type');
+        return $user->can('view_recruitment_skill::type');
     }
 
     /**
@@ -31,7 +31,7 @@ class SkillTypePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_skill::type');
+        return $user->can('create_recruitment_skill::type');
     }
 
     /**
@@ -39,7 +39,7 @@ class SkillTypePolicy
      */
     public function update(User $user, SkillType $skillType): bool
     {
-        return $user->can('update_skill::type');
+        return $user->can('update_recruitment_skill::type');
     }
 
     /**
@@ -47,7 +47,7 @@ class SkillTypePolicy
      */
     public function delete(User $user, SkillType $skillType): bool
     {
-        return $user->can('delete_skill::type');
+        return $user->can('delete_recruitment_skill::type');
     }
 
     /**
@@ -55,7 +55,7 @@ class SkillTypePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_skill::type');
+        return $user->can('delete_any_recruitment_skill::type');
     }
 
     /**
@@ -63,7 +63,7 @@ class SkillTypePolicy
      */
     public function forceDelete(User $user, SkillType $skillType): bool
     {
-        return $user->can('force_delete_skill::type');
+        return $user->can('force_delete_recruitment_skill::type');
     }
 
     /**
@@ -71,7 +71,7 @@ class SkillTypePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_skill::type');
+        return $user->can('force_delete_any_recruitment_skill::type');
     }
 
     /**
@@ -79,7 +79,7 @@ class SkillTypePolicy
      */
     public function restore(User $user, SkillType $skillType): bool
     {
-        return $user->can('restore_skill::type');
+        return $user->can('restore_recruitment_skill::type');
     }
 
     /**
@@ -87,22 +87,6 @@ class SkillTypePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_skill::type');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, SkillType $skillType): bool
-    {
-        return $user->can('replicate_skill::type');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_skill::type');
+        return $user->can('restore_any_recruitment_skill::type');
     }
 }

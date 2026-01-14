@@ -3,6 +3,7 @@
 namespace Webkul\Employee\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Webkul\Security\Models\User;
 
 class EmployeeResume extends Model
 {
@@ -20,6 +21,11 @@ class EmployeeResume extends Model
         'description',
     ];
 
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'creator_id');
+    }
+
     public function employee()
     {
         return $this->belongsTo(Employee::class);
@@ -28,5 +34,14 @@ class EmployeeResume extends Model
     public function resumeType()
     {
         return $this->belongsTo(EmployeeResumeLineType::class, 'employee_resume_line_type_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($employeeResume) {
+            $employeeResume->creator_id = filament()->auth()->id();
+        });
     }
 }

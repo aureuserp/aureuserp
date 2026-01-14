@@ -4,7 +4,12 @@ namespace Webkul\Invoice\Filament\Clusters\Configuration\Resources;
 
 use Webkul\Account\Filament\Resources\TaxResource as BaseTaxResource;
 use Webkul\Invoice\Filament\Clusters\Configuration;
-use Webkul\Invoice\Filament\Clusters\Configuration\Resources\TaxResource\Pages;
+use Webkul\Invoice\Filament\Clusters\Configuration\Resources\TaxResource\Pages\CreateTax;
+use Webkul\Invoice\Filament\Clusters\Configuration\Resources\TaxResource\Pages\EditTax;
+use Webkul\Invoice\Filament\Clusters\Configuration\Resources\TaxResource\Pages\ListTaxes;
+use Webkul\Invoice\Filament\Clusters\Configuration\Resources\TaxResource\Pages\ManageDistributionForInvoice;
+use Webkul\Invoice\Filament\Clusters\Configuration\Resources\TaxResource\Pages\ManageDistributionForRefund;
+use Webkul\Invoice\Filament\Clusters\Configuration\Resources\TaxResource\Pages\ViewTax;
 use Webkul\Invoice\Models\Tax;
 
 class TaxResource extends BaseTaxResource
@@ -17,7 +22,7 @@ class TaxResource extends BaseTaxResource
 
     public static function getModelLabel(): string
     {
-        return __('invoices::filament/clusters/configurations/resources/tax.title');
+        return __('invoices::filament/clusters/configurations/resources/tax.model-label');
     }
 
     public static function getNavigationLabel(): string
@@ -33,12 +38,12 @@ class TaxResource extends BaseTaxResource
     public static function getPages(): array
     {
         return [
-            'index'                           => Pages\ListTaxes::route('/'),
-            'create'                          => Pages\CreateTax::route('/create'),
-            'view'                            => Pages\ViewTax::route('/{record}'),
-            'edit'                            => Pages\EditTax::route('/{record}/edit'),
-            'manage-distribution-for-invoice' => Pages\ManageDistributionForInvoice::route('/{record}/manage-distribution-for-invoice'),
-            'manage-distribution-for-refunds' => Pages\ManageDistributionForRefund::route('/{record}/manage-distribution-for-refunds'),
+            'index'                           => ListTaxes::route('/'),
+            'create'                          => CreateTax::route('/create'),
+            'view'                            => ViewTax::route('/{record}'),
+            'edit'                            => EditTax::route('/{record}/edit'),
+            'manage-distribution-for-invoice' => ManageDistributionForInvoice::route('/{record}/manage-distribution-for-invoice'),
+            'manage-distribution-for-refunds' => ManageDistributionForRefund::route('/{record}/manage-distribution-for-refunds'),
         ];
     }
 }

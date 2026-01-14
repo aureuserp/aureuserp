@@ -23,6 +23,11 @@ class Applicant extends Model
 
     protected $table = 'recruitments_applicants';
 
+    public function getModelTitle(): string
+    {
+        return __('recruitments::models/applicant.title');
+    }
+
     protected $fillable = [
         'source_id',
         'medium_id',
@@ -222,5 +227,16 @@ class Applicant extends Model
         ]);
 
         return $employee;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($applicant) {
+            $applicant->creator_id ??= filament()->auth()->id();
+
+            $applicant->company_id ??= filament()->auth()->user()->default_company_id;
+        });
     }
 }

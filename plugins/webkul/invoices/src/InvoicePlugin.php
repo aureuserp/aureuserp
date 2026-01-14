@@ -6,7 +6,7 @@ use Filament\Contracts\Plugin;
 use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Webkul\Invoice\Filament\Clusters\Settings\Pages\Products;
-use Webkul\Support\Package;
+use Webkul\PluginManager\Package;
 
 class InvoicePlugin implements Plugin
 {
@@ -28,17 +28,30 @@ class InvoicePlugin implements Plugin
 
         $panel
             ->when($panel->getId() == 'admin', function (Panel $panel) {
-                $panel->discoverResources(in: $this->getPluginBasePath('/Filament/Resources'), for: 'Webkul\\Invoice\\Filament\\Resources')
-                    ->discoverPages(in: $this->getPluginBasePath('/Filament/Pages'), for: 'Webkul\\Invoice\\Filament\\Pages')
-                    ->discoverClusters(in: $this->getPluginBasePath('/Filament/Clusters'), for: 'Webkul\\Invoice\\Filament\\Clusters')
-                    ->discoverWidgets(in: $this->getPluginBasePath('/Filament/Widgets'), for: 'Webkul\\Invoice\\Filament\\Widgets')
+                $panel
+                    ->discoverResources(
+                        in: __DIR__.'/Filament/Resources',
+                        for: 'Webkul\\Invoice\\Filament\\Resources'
+                    )
+                    ->discoverPages(
+                        in: __DIR__.'/Filament/Pages',
+                        for: 'Webkul\\Invoice\\Filament\\Pages'
+                    )
+                    ->discoverClusters(
+                        in: __DIR__.'/Filament/Clusters',
+                        for: 'Webkul\\Invoice\\Filament\\Clusters'
+                    )
+                    ->discoverWidgets(
+                        in: __DIR__.'/Filament/Widgets',
+                        for: 'Webkul\\Invoice\\Filament\\Widgets'
+                    )
                     ->navigationItems([
                         NavigationItem::make('settings')
-                            ->label('Settings')
+                            ->label(fn () => __('invoices::app.navigation.settings.label'))
                             ->url(fn () => Products::getUrl())
-                            ->icon('heroicon-o-wrench')
                             ->group('Invoices')
-                            ->sort(4),
+                            ->sort(4)
+                            ->visible(fn () => Products::canAccess()),
                     ]);
             });
     }
@@ -46,12 +59,5 @@ class InvoicePlugin implements Plugin
     public function boot(Panel $panel): void
     {
         //
-    }
-
-    protected function getPluginBasePath($path = null): string
-    {
-        $reflector = new \ReflectionClass(get_class($this));
-
-        return dirname($reflector->getFileName()).($path ?? '');
     }
 }

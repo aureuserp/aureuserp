@@ -15,7 +15,7 @@ class DegreePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_degree');
+        return $user->can('view_any_recruitment_degree');
     }
 
     /**
@@ -23,7 +23,7 @@ class DegreePolicy
      */
     public function view(User $user, Degree $degree): bool
     {
-        return $user->can('view_degree');
+        return $user->can('view_recruitment_degree');
     }
 
     /**
@@ -31,7 +31,7 @@ class DegreePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_degree');
+        return $user->can('create_recruitment_degree');
     }
 
     /**
@@ -39,7 +39,7 @@ class DegreePolicy
      */
     public function update(User $user, Degree $degree): bool
     {
-        return $user->can('update_degree');
+        return $user->can('update_recruitment_degree');
     }
 
     /**
@@ -47,7 +47,7 @@ class DegreePolicy
      */
     public function delete(User $user, Degree $degree): bool
     {
-        return $user->can('delete_degree');
+        return $user->can('delete_recruitment_degree');
     }
 
     /**
@@ -55,47 +55,7 @@ class DegreePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_degree');
-    }
-
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, Degree $degree): bool
-    {
-        return $user->can('force_delete_degree');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('force_delete_any_degree');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, Degree $degree): bool
-    {
-        return $user->can('restore_degree');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('restore_any_degree');
-    }
-
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Degree $degree): bool
-    {
-        return $user->can('replicate_degree');
+        return $user->can('delete_any_recruitment_degree');
     }
 
     /**
@@ -103,6 +63,6 @@ class DegreePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_degree');
+        return $user->can('reorder_recruitment_degree');
     }
 }

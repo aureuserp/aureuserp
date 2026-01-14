@@ -4,6 +4,7 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Webkul\Account\Enums\PaymentType;
 use Webkul\Security\Models\User;
 
 class PaymentMethod extends Model
@@ -12,7 +13,16 @@ class PaymentMethod extends Model
 
     protected $table = 'accounts_payment_methods';
 
-    protected $fillable = ['code', 'payment_type', 'name', 'created_by'];
+    protected $fillable = [
+        'code',
+        'payment_type',
+        'name',
+        'created_by',
+    ];
+
+    protected $casts = [
+        'payment_type' => PaymentType::class,
+    ];
 
     public function createdBy()
     {
