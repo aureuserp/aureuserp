@@ -147,11 +147,9 @@ class Journal extends Model implements Sortable
 
     public function getAvailablePaymentMethodLines($paymentType)
     {
-        if ($paymentType == PaymentType::RECEIVE) {
-            return $this->inboundPaymentMethodLines;
-        } else {
-            return $this->outboundPaymentMethodLines;
-        }
+        return $paymentType == PaymentType::RECEIVE
+            ? $this->inboundPaymentMethodLines
+            : $this->outboundPaymentMethodLines;
     }
 
     protected static function boot()
