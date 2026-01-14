@@ -4,10 +4,12 @@ namespace Webkul\Accounting\Filament\Clusters\Configuration\Resources;
 
 use Webkul\Account\Filament\Resources\JournalResource as BaseJournalResource;
 use Webkul\Accounting\Filament\Clusters\Configuration;
+use Filament\Resources\Pages\Page;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource\Pages\CreateJournal;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource\Pages\EditJournal;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource\Pages\ListJournals;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource\Pages\ViewJournal;
+use Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource\Pages\ManageJournalEntries;
 use Webkul\Accounting\Models\Journal;
 
 class JournalResource extends BaseJournalResource
@@ -35,6 +37,15 @@ class JournalResource extends BaseJournalResource
         return __('accounting::filament/clusters/configurations/resources/journal.navigation.group');
     }
 
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            ViewJournal::class,
+            EditJournal::class,
+            ManageJournalEntries::class,
+        ]);
+    }
+
     public static function getPages(): array
     {
         return [
@@ -42,6 +53,7 @@ class JournalResource extends BaseJournalResource
             'create' => CreateJournal::route('/create'),
             'edit'   => EditJournal::route('/{record}/edit'),
             'view'   => ViewJournal::route('/{record}'),
+            'journal-entries' => ManageJournalEntries::route('/{record}/journal-entries'),
         ];
     }
 }
