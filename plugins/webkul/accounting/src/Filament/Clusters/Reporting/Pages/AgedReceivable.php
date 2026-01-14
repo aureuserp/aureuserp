@@ -38,6 +38,10 @@ class AgedReceivable extends Page implements HasForms
 
     public ?array $data = [];
 
+    public array $expandedPartners = [];
+
+    public array $partnerLines = [];
+
     protected static function getPagePermission(): ?string
     {
         return 'page_accounting_aged_receivable';
@@ -73,7 +77,7 @@ class AgedReceivable extends Page implements HasForms
                     $basis = $state['basis'] ?? 'due_date';
 
                     return Excel::download(
-                        new AgedReceivableExport($partners, $asOfDate, $period, $basis),
+                        new AgedReceivableExport($partners, $asOfDate, $period, $basis, $this->expandedPartners),
                         'aged-receivable-'.$asOfDate.'.xlsx'
                     );
                 }),
@@ -88,10 +92,20 @@ class AgedReceivable extends Page implements HasForms
                     $asOfDate = $data['as_of_date']->toDateString();
                     $period = $data['period'];
 
+                    $partnerLines = [];
+                    
+                    foreach ($this->expandedPartners as $partnerId) {
+                        if (isset($partners[$partnerId])) {
+                            $partnerLines[$partnerId] = $this->getPartnerLines($partnerId);
+                        }
+                    }
+
                     $pdf = Pdf::loadView('accounting::filament.clusters.reporting.pages.pdfs.aged-receivable', [
-                        'partners' => $partners,
-                        'asOfDate' => $asOfDate,
-                        'period'   => $period,
+                        'partners'         => $partners,
+                        'asOfDate'         => $asOfDate,
+                        'period'           => $period,
+                        'expandedPartners' => $this->expandedPartners,
+                        'partnerLines'     => $partnerLines,
                     ])->setPaper('a4', 'landscape');
 
                     return response()->streamDownload(function () use ($pdf) {
@@ -174,6 +188,109 @@ class AgedReceivable extends Page implements HasForms
         return 'data';
     }
 
+    public function togglePartnerLines($partnerId): void
+    {
+        if (in_array($partnerId, $this->expandedPartners)) {
+            $this->expandedPartners = array_values(array_diff($this->expandedPartners, [$partnerId]));
+        } else {
+            $this->expandedPartners[] = $partnerId;
+
+            if (! isset($this->partnerLines[$partnerId])) {
+                $this->partnerLines[$partnerId] = $this->fetchPartnerLines($partnerId);
+            }
+        }
+    }
+
+    public function isPartnerExpanded($partnerId): bool
+    {
+        return in_array($partnerId, $this->expandedPartners);
+    }
+
+    public function getPartnerLines($partnerId): array
+    {
+        if (! isset($this->partnerLines[$partnerId])) {
+            $this->partnerLines[$partnerId] = $this->fetchPartnerLines($partnerId);
+        }
+
+        return $this->partnerLines[$partnerId];
+    }
+
+    protected function fetchPartnerLines($partnerId): array
+    {
+        $state = $this->form->getState();
+        $asOfDate = Carbon::parse($state['as_of_date'] ?? now());
+        $basis = $state['basis'] ?? 'due_date';
+        $period = $state['period'] ?? 30;
+        $companyId = Auth::user()->default_company_id;
+        $postedOnly = ($state['posted_entries'] ?? 'posted') === 'posted';
+
+        $query = MoveLine::select(
+            'accounts_account_moves.name as move_name',
+            'accounts_account_moves.invoice_date',
+            'accounts_account_moves.invoice_date_due',
+            'accounts_account_moves.reference',
+            'accounts_journals.name as journal_name',
+            'accounts_account_move_lines.amount_residual'
+        )
+            ->join('accounts_account_moves', 'accounts_account_move_lines.move_id', '=', 'accounts_account_moves.id')
+            ->join('accounts_accounts', 'accounts_account_move_lines.account_id', '=', 'accounts_accounts.id')
+            ->leftJoin('accounts_journals', 'accounts_account_moves.journal_id', '=', 'accounts_journals.id')
+            ->where('accounts_accounts.account_type', AccountType::ASSET_RECEIVABLE)
+            ->where('accounts_account_moves.company_id', $companyId)
+            ->where('accounts_account_move_lines.amount_residual', '!=', 0)
+            ->where('accounts_account_move_lines.partner_id', $partnerId)
+            ->orderBy('accounts_account_moves.invoice_date');
+
+        if ($postedOnly) {
+            $query->where('accounts_account_moves.state', MoveState::POSTED);
+        }
+
+        $moveLines = $query->get();
+        $lines = [];
+
+        foreach ($moveLines as $line) {
+            $referenceDate = $basis === 'due_date'
+                ? Carbon::parse($line->invoice_date_due)
+                : Carbon::parse($line->invoice_date);
+
+            $daysOverdue = $referenceDate->diffInDays($asOfDate, false);
+            $amount = (float) $line->amount_residual;
+
+            $lineData = [
+                'move_name'        => $line->move_name,
+                'invoice_date'     => $line->invoice_date,
+                'invoice_date_due' => $line->invoice_date_due,
+                'reference'        => $line->reference,
+                'journal_name'     => $line->journal_name,
+                'days_overdue'     => $daysOverdue,
+                'at_date'          => 0,
+                'period_1'         => 0,
+                'period_2'         => 0,
+                'period_3'         => 0,
+                'period_4'         => 0,
+                'older'            => 0,
+            ];
+
+            if ($daysOverdue < 0) {
+                $lineData['at_date'] = $amount;
+            } elseif ($daysOverdue <= $period) {
+                $lineData['period_1'] = $amount;
+            } elseif ($daysOverdue <= $period * 2) {
+                $lineData['period_2'] = $amount;
+            } elseif ($daysOverdue <= $period * 3) {
+                $lineData['period_3'] = $amount;
+            } elseif ($daysOverdue <= $period * 4) {
+                $lineData['period_4'] = $amount;
+            } else {
+                $lineData['older'] = $amount;
+            }
+
+            $lines[] = $lineData;
+        }
+
+        return $lines;
+    }
+
     #[\Livewire\Attributes\Computed]
     public function agedReceivableData(): array
     {
@@ -229,6 +346,7 @@ class AgedReceivable extends Page implements HasForms
 
             if (! isset($partnerData[$partnerId])) {
                 $partnerData[$partnerId] = [
+                    'id'           => $partnerId,
                     'partner_name' => $line->partner_name,
                     'at_date'      => 0,
                     'period_1'     => 0,
@@ -237,7 +355,6 @@ class AgedReceivable extends Page implements HasForms
                     'period_4'     => 0,
                     'older'        => 0,
                     'total'        => 0,
-                    'lines'        => [],
                 ];
             }
 
@@ -248,43 +365,21 @@ class AgedReceivable extends Page implements HasForms
             $daysOverdue = $referenceDate->diffInDays($asOfDate, false);
             $amount = (float) $line->amount_residual;
 
-            $lineData = [
-                'move_name'        => $line->move_name,
-                'invoice_date'     => $line->invoice_date,
-                'invoice_date_due' => $line->invoice_date_due,
-                'reference'        => $line->reference,
-                'journal_name'     => $line->journal_name,
-                'days_overdue'     => $daysOverdue,
-                'at_date'          => 0,
-                'period_1'         => 0,
-                'period_2'         => 0,
-                'period_3'         => 0,
-                'period_4'         => 0,
-                'older'            => 0,
-            ];
-
             if ($daysOverdue < 0) {
-                $lineData['at_date'] = $amount;
                 $partnerData[$partnerId]['at_date'] += $amount;
             } elseif ($daysOverdue <= $period) {
-                $lineData['period_1'] = $amount;
                 $partnerData[$partnerId]['period_1'] += $amount;
             } elseif ($daysOverdue <= $period * 2) {
-                $lineData['period_2'] = $amount;
                 $partnerData[$partnerId]['period_2'] += $amount;
             } elseif ($daysOverdue <= $period * 3) {
-                $lineData['period_3'] = $amount;
                 $partnerData[$partnerId]['period_3'] += $amount;
             } elseif ($daysOverdue <= $period * 4) {
-                $lineData['period_4'] = $amount;
                 $partnerData[$partnerId]['period_4'] += $amount;
             } else {
-                $lineData['older'] = $amount;
                 $partnerData[$partnerId]['older'] += $amount;
             }
 
             $partnerData[$partnerId]['total'] += $amount;
-            $partnerData[$partnerId]['lines'][] = $lineData;
         }
 
         $partnerData = array_filter($partnerData, fn ($partner) => abs($partner['total']) > 0.01);

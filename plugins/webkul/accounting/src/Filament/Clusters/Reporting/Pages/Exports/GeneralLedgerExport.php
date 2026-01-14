@@ -20,14 +20,17 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
 
     protected $getAccountMovesCallback;
 
+    protected array $expandedAccounts;
+
     protected array $rowMetadata = [];
 
-    public function __construct($accounts, Carbon $dateFrom, Carbon $dateTo, callable $getAccountMovesCallback)
+    public function __construct($accounts, Carbon $dateFrom, Carbon $dateTo, callable $getAccountMovesCallback, array $expandedAccounts = [])
     {
         $this->accounts = $accounts;
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateTo;
         $this->getAccountMovesCallback = $getAccountMovesCallback;
+        $this->expandedAccounts = $expandedAccounts;
     }
 
     public function headings(): array
@@ -64,37 +67,39 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
             ];
             $this->rowMetadata[$rowIndex++] = 'account_header';
 
-            if ($account->opening_balance != 0) {
-                $rows[] = [
-                    '',
-                    '        Opening Balance',
-                    $this->dateFrom->format('M d, Y'),
-                    '',
-                    '',
-                    $account->opening_balance > 0 ? $account->opening_balance : '',
-                    $account->opening_balance < 0 ? abs($account->opening_balance) : '',
-                    $account->opening_balance,
-                ];
-                $this->rowMetadata[$rowIndex++] = 'opening_balance';
+            if (in_array($account->id, $this->expandedAccounts)) {
+                if ($account->opening_balance != 0) {
+                    $rows[] = [
+                        '',
+                        '        Opening Balance',
+                        $this->dateFrom->format('M d, Y'),
+                        '',
+                        '',
+                        $account->opening_balance > 0 ? $account->opening_balance : '',
+                        $account->opening_balance < 0 ? abs($account->opening_balance) : '',
+                        $account->opening_balance,
+                    ];
+                    $this->rowMetadata[$rowIndex++] = 'opening_balance';
+                }
+
+                $moves = ($this->getAccountMovesCallback)($account->id);
+                $runningBalance = $account->opening_balance;
+
+                collect($moves)->each(function ($move) use (&$rows, &$rowIndex, &$runningBalance) {
+                    $runningBalance += $move['debit'] - $move['credit'];
+                    $rows[] = [
+                        '',
+                        '        '.$move['move_name'],
+                        Carbon::parse($move['date'])->format('M d, Y'),
+                        ($move['move_type'] ?? null) == 'entry' ? ($move['name'] ?? '') : '',
+                        $move['partner_name'] ?? '',
+                        $move['debit'] > 0 ? $move['debit'] : '',
+                        $move['credit'] > 0 ? $move['credit'] : '',
+                        $runningBalance,
+                    ];
+                    $this->rowMetadata[$rowIndex++] = 'move_line';
+                });
             }
-
-            $moves = ($this->getAccountMovesCallback)($account->id);
-            $runningBalance = $account->opening_balance;
-
-            collect($moves)->each(function ($move) use (&$rows, &$rowIndex, &$runningBalance) {
-                $runningBalance += $move['debit'] - $move['credit'];
-                $rows[] = [
-                    '',
-                    '        '.$move['move_name'],
-                    Carbon::parse($move['date'])->format('M d, Y'),
-                    ($move['move_type'] ?? null) == 'entry' ? ($move['name'] ?? '') : '',
-                    $move['partner_name'] ?? '',
-                    $move['debit'] > 0 ? $move['debit'] : '',
-                    $move['credit'] > 0 ? $move['credit'] : '',
-                    $runningBalance,
-                ];
-                $this->rowMetadata[$rowIndex++] = 'move_line';
-            });
 
             $rows[] = array_fill(0, 8, '');
             $rowIndex++;

@@ -10,8 +10,8 @@
         }
         
         body {
-            font-family: 'DejaVu Sans', sans-serif;
-            font-size: 10pt;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11pt;
             color: #1f2937;
             line-height: 1.4;
         }
@@ -25,14 +25,14 @@
         
         .header h1 {
             margin: 0;
-            font-size: 18pt;
+            font-size: 20pt;
             font-weight: bold;
             color: #111827;
         }
         
         .header p {
             margin: 5px 0 0 0;
-            font-size: 11pt;
+            font-size: 12pt;
             color: #6b7280;
         }
         
@@ -47,7 +47,7 @@
             padding: 10px;
             text-align: left;
             font-weight: bold;
-            font-size: 9pt;
+            font-size: 10pt;
             text-transform: uppercase;
             color: #6b7280;
             border-bottom: 2px solid #d1d5db;
@@ -65,7 +65,7 @@
         .section-header {
             background-color: #f9fafb;
             font-weight: bold;
-            font-size: 11pt;
+            font-size: 12pt;
             color: #111827;
         }
         
@@ -73,7 +73,7 @@
             background-color: #f3f4f6;
             padding-left: 30px !important;
             font-weight: 600;
-            font-size: 10pt;
+            font-size: 11pt;
             color: #374151;
         }
         
@@ -94,7 +94,7 @@
             background-color: #f3f4f6;
             border-top: 2px solid #9ca3af;
             color: #111827;
-            font-size: 10.5pt;
+            font-size: 11.5pt;
         }
         
         .grand-total {
@@ -102,7 +102,7 @@
             background-color: #e5e7eb;
             border-top: 3px solid #6b7280;
             color: #111827;
-            font-size: 11pt;
+            font-size: 12pt;
         }
         
         .text-right {
@@ -114,7 +114,7 @@
             bottom: 0;
             width: 100%;
             text-align: center;
-            font-size: 8pt;
+            font-size: 11pt;
             color: #9ca3af;
             border-top: 1px solid #e5e7eb;
             padding-top: 10px;

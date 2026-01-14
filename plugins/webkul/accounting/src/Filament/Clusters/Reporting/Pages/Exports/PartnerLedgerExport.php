@@ -20,14 +20,17 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
 
     protected $getPartnerMovesCallback;
 
+    protected array $expandedPartners;
+
     protected array $rowMetadata = [];
 
-    public function __construct($partners, string $dateFrom, string $dateTo, callable $getPartnerMovesCallback)
+    public function __construct($partners, string $dateFrom, string $dateTo, callable $getPartnerMovesCallback, array $expandedPartners = [])
     {
         $this->partners = is_array($partners) ? $partners : $partners->toArray();
         $this->dateFrom = Carbon::parse($dateFrom);
         $this->dateTo = Carbon::parse($dateTo);
         $this->getPartnerMovesCallback = $getPartnerMovesCallback;
+        $this->expandedPartners = $expandedPartners;
     }
 
     public function headings(): array
@@ -65,39 +68,41 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
             ];
             $this->rowMetadata[$rowIndex++] = 'partner_header';
 
-            if ($partner['opening_balance'] != 0) {
-                $rows[] = [
-                    '',
-                    '        Opening Balance',
-                    $this->dateFrom->format('M d, Y'),
-                    '',
-                    '',
-                    '',
-                    $partner['opening_balance'] > 0 ? $partner['opening_balance'] : '',
-                    $partner['opening_balance'] < 0 ? abs($partner['opening_balance']) : '',
-                    $partner['opening_balance'],
-                ];
-                $this->rowMetadata[$rowIndex++] = 'opening_balance';
+            if (in_array($partner['id'], $this->expandedPartners)) {
+                if ($partner['opening_balance'] != 0) {
+                    $rows[] = [
+                        '',
+                        '        Opening Balance',
+                        $this->dateFrom->format('M d, Y'),
+                        '',
+                        '',
+                        '',
+                        $partner['opening_balance'] > 0 ? $partner['opening_balance'] : '',
+                        $partner['opening_balance'] < 0 ? abs($partner['opening_balance']) : '',
+                        $partner['opening_balance'],
+                    ];
+                    $this->rowMetadata[$rowIndex++] = 'opening_balance';
+                }
+
+                $moves = ($this->getPartnerMovesCallback)($partner['id']);
+                $runningBalance = $partner['opening_balance'];
+
+                collect($moves)->each(function ($move) use (&$rows, &$rowIndex, &$runningBalance) {
+                    $runningBalance += $move['debit'] - $move['credit'];
+                    $rows[] = [
+                        '',
+                        '        '.$move['move_name'].($move['ref'] ? ' ('.$move['ref'].')' : ''),
+                        $move['journal_name'] ?? '',
+                        ($move['account_code'] ? $move['account_code'].' ' : '').$move['account_name'],
+                        Carbon::parse($move['invoice_date'])->format('M d, Y'),
+                        Carbon::parse($move['invoice_date_due'])->format('M d, Y'),
+                        $move['debit'] > 0 ? $move['debit'] : '',
+                        $move['credit'] > 0 ? $move['credit'] : '',
+                        $runningBalance,
+                    ];
+                    $this->rowMetadata[$rowIndex++] = 'move_line';
+                });
             }
-
-            $moves = ($this->getPartnerMovesCallback)($partner['id']);
-            $runningBalance = $partner['opening_balance'];
-
-            collect($moves)->each(function ($move) use (&$rows, &$rowIndex, &$runningBalance) {
-                $runningBalance += $move['debit'] - $move['credit'];
-                $rows[] = [
-                    '',
-                    '        '.$move['move_name'].($move['ref'] ? ' ('.$move['ref'].')' : ''),
-                    $move['journal_name'] ?? '',
-                    ($move['account_code'] ? $move['account_code'].' ' : '').$move['account_name'],
-                    Carbon::parse($move['invoice_date'])->format('M d, Y'),
-                    Carbon::parse($move['invoice_date_due'])->format('M d, Y'),
-                    $move['debit'] > 0 ? $move['debit'] : '',
-                    $move['credit'] > 0 ? $move['credit'] : '',
-                    $runningBalance,
-                ];
-                $this->rowMetadata[$rowIndex++] = 'move_line';
-            });
 
             $rows[] = array_fill(0, 9, '');
             $rowIndex++;

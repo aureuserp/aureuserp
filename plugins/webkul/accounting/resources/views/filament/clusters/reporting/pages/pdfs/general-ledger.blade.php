@@ -10,8 +10,8 @@
         }
         
         body {
-            font-family: 'DejaVu Sans', sans-serif;
-            font-size: 8pt;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11pt;
             color: #1f2937;
             line-height: 1.3;
         }
@@ -25,14 +25,14 @@
         
         .header h1 {
             margin: 0;
-            font-size: 14pt;
+            font-size: 16pt;
             font-weight: bold;
             color: #111827;
         }
         
         .header p {
             margin: 5px 0 0 0;
-            font-size: 9pt;
+            font-size: 10pt;
             color: #6b7280;
         }
         
@@ -47,7 +47,7 @@
             padding: 6px 4px;
             text-align: left;
             font-weight: bold;
-            font-size: 7pt;
+            font-size: 10pt;
             text-transform: uppercase;
             color: #6b7280;
             border-bottom: 2px solid #d1d5db;
@@ -60,7 +60,7 @@
         table td {
             padding: 4px;
             border-bottom: 1px solid #e5e7eb;
-            font-size: 7.5pt;
+            font-size: 9pt;
         }
         
         .account-header {
@@ -96,7 +96,7 @@
             bottom: 0;
             width: 100%;
             text-align: center;
-            font-size: 7pt;
+            font-size: 10pt;
             color: #9ca3af;
             border-top: 1px solid #e5e7eb;
             padding-top: 5px;
@@ -135,7 +135,8 @@
                 @php
                     $totalDebit += $account->period_debit;
                     $totalCredit += $account->period_credit;
-                    $moves = $getAccountMoves($account->id);
+                    $isExpanded = in_array($account->id, $expandedAccounts ?? []);
+                    $moves = $isExpanded ? $getAccountMoves($account->id) : [];
                     $runningBalance = $account->opening_balance;
                 @endphp
 
@@ -151,7 +152,7 @@
                 </tr>
 
                 {{-- Opening Balance --}}
-                @if($account->opening_balance != 0)
+                @if($account->opening_balance != 0 && $isExpanded)
                     <tr class="opening-balance">
                         <td class="move-row">Opening Balance</td>
                         <td>{{ \Carbon\Carbon::parse($data['date_from'])->format('m/d/Y') }}</td>
@@ -164,7 +165,8 @@
                 @endif
 
                 {{-- Move Lines --}}
-                @foreach($moves as $move)
+                @if($isExpanded)
+                    @foreach($moves as $move)
                     @php
                         $runningBalance += $move['debit'] - $move['credit'];
                     @endphp
@@ -178,6 +180,7 @@
                         <td class="text-right">{{ number_format($runningBalance, 2) }}</td>
                     </tr>
                 @endforeach
+                @endif
             @endforeach
 
             {{-- Totals --}}

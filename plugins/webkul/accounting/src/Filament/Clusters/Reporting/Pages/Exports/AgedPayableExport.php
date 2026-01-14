@@ -22,12 +22,15 @@ class AgedPayableExport implements FromArray, WithColumnWidths, WithHeadings, Wi
 
     protected string $basis;
 
-    public function __construct(array $partners, string $asOfDate, int $period, string $basis = 'due_date')
+    protected array $expandedPartners;
+
+    public function __construct(array $partners, string $asOfDate, int $period, string $basis = 'due_date', array $expandedPartners = [])
     {
         $this->partners = $partners;
         $this->asOfDate = Carbon::parse($asOfDate);
         $this->period = $period;
         $this->basis = $basis;
+        $this->expandedPartners = $expandedPartners;
     }
 
     public function headings(): array
@@ -58,7 +61,7 @@ class AgedPayableExport implements FromArray, WithColumnWidths, WithHeadings, Wi
             ->mapWithKeys(fn ($key) => [$key => 0])
             ->all();
 
-        foreach ($this->partners as $partner) {
+        foreach ($this->partners as $partnerId => $partner) {
             $rows[] = [
                 '        '.$partner['partner_name'],
                 '',
@@ -69,7 +72,7 @@ class AgedPayableExport implements FromArray, WithColumnWidths, WithHeadings, Wi
             ];
             $this->rowMetadata[$rowIndex++] = 'partner_header';
 
-            if (! empty($partner['lines'])) {
+            if (in_array($partnerId, $this->expandedPartners) && ! empty($partner['lines'])) {
                 foreach ($partner['lines'] as $line) {
                     $rows[] = [
                         '                '.$line['move_name'],

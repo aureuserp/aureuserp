@@ -90,13 +90,13 @@
                             @endphp
 
                             @foreach($partners as $partnerId => $partner)
-                                <tbody x-data="{ expanded: false }" class="divide-y divide-gray-200 dark:divide-white/5!">
+                                <tbody wire:key="partner-{{ $partner['id'] }}" class="divide-y divide-gray-200 dark:divide-white/5!">
                                     {{-- Partner Header --}}
                                     <tr class="bg-gray-50/50 dark:bg-white/5 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/5!"
-                                        @click="expanded = !expanded">
+                                        wire:click="togglePartnerLines({{ $partner['id'] }})">
                                         <td class="px-4 py-3 whitespace-nowrap">
                                             <div class="flex items-center">
-                                                <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-90': expanded }" fill="currentColor" viewBox="0 0 20 20">
+                                                <svg class="w-4 h-4 transition-transform @if($this->isPartnerExpanded($partner['id'])) rotate-90 @endif" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                                                 </svg>
                                             </div>
@@ -145,8 +145,9 @@
                                     </tr>
 
                                     {{-- Partner Lines --}}
-                                    @foreach($partner['lines'] as $line)
-                                        <tr x-show="expanded" x-cloak class="hover:bg-gray-50 dark:hover:bg-white/5!">
+                                    @if($this->isPartnerExpanded($partner['id']))
+                                        @foreach($this->getPartnerLines($partner['id']) as $line)
+                                            <tr class="hover:bg-gray-50 dark:hover:bg-white/5!">
                                             <td class="px-4 py-2"></td>
                                             <td class="px-4 py-2 pl-12 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                                                 {{ $line['move_name'] }}
@@ -187,6 +188,7 @@
                                             <td class="px-4 py-2"></td>
                                         </tr>
                                     @endforeach
+                                    @endif
 
                                     @php
                                         $totals['at_date'] += $partner['at_date'];

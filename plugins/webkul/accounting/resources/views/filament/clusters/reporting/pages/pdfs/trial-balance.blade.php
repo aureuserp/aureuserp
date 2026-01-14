@@ -4,68 +4,104 @@
     <meta charset="utf-8">
     <title>Trial Balance</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 11px;
-            margin: 20px;
+        @page {
+            margin: 1.5cm 1.5cm;
+            size: A4 landscape;
         }
+        
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11pt;
+            color: #1f2937;
+            line-height: 1.4;
+        }
+        
         .header {
             text-align: center;
             margin-bottom: 20px;
+            border-bottom: 2px solid #1f2937;
+            padding-bottom: 10px;
         }
+        
         .header h2 {
-            margin: 5px 0;
-            font-size: 16px;
+            margin: 0;
+            font-size: 16pt;
+            font-weight: bold;
+            color: #111827;
         }
+        
         .header p {
-            margin: 5px 0;
-            font-size: 12px;
-            color: #666;
+            margin: 5px 0 0 0;
+            font-size: 10pt;
+            color: #6b7280;
         }
+        
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
         }
+        
         th {
-            background-color: #f5f5f5;
-            border: 1px solid #ddd;
-            padding: 6px 8px;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 8px;
             text-align: left;
             font-weight: bold;
-            font-size: 10px;
+            font-size: 11pt;
+            color: #374151;
         }
+        
         th.text-center {
             text-align: center;
         }
+        
         th.text-right {
             text-align: right;
         }
+        
         td {
-            border: 1px solid #ddd;
+            border: 1px solid #e5e7eb;
             padding: 5px 8px;
-            font-size: 11px;
-            color: #666;
+            font-size: 11pt;
+            color: #4b5563;
         }
+        
         .text-right {
             text-align: right;
         }
+        
         .text-left {
             text-align: left;
         }
+        
         .no-data {
             text-align: center;
             padding: 20px;
-            color: #999;
+            color: #9ca3af;
         }
+        
         .total-row {
-            background-color: #f0f0f0;
+            background-color: #f3f4f6;
             font-weight: bold;
-            border-top: 2px solid #333 !important;
+            border-top: 2px solid #9ca3af !important;
+            color: #111827;
         }
+        
         .group-header {
-            border-bottom: 1px solid #ccc;
-            background-color: #f9f9f9;
+            border-bottom: 2px solid #d1d5db;
+            background-color: #f9fafb;
+        }
+        
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 10pt;
+            color: #9ca3af;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 5px;
         }
     </style>
 </head>
@@ -120,5 +156,9 @@
             </tbody>
         </table>
     @endif
+
+    <div class="footer">
+        <div>Generated on {{ now()->format('F j, Y \\a\\t g:i A') }}</div>
+    </div>
 </body>
 </html>
