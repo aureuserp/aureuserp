@@ -52,6 +52,7 @@ class PaymentResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->disabled(fn ($record) => $record && $record->state !== PaymentStatus::DRAFT)
             ->components([
                 ProgressStepper::make('state')
                     ->hiddenLabel()
