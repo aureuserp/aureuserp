@@ -135,7 +135,8 @@
                 @php
                     $totalDebit += $account->period_debit;
                     $totalCredit += $account->period_credit;
-                    $moves = $getAccountMoves($account->id);
+                    $isExpanded = in_array($account->id, $expandedAccounts ?? []);
+                    $moves = $isExpanded ? $getAccountMoves($account->id) : [];
                     $runningBalance = $account->opening_balance;
                 @endphp
 
@@ -151,7 +152,7 @@
                 </tr>
 
                 {{-- Opening Balance --}}
-                @if($account->opening_balance != 0)
+                @if($account->opening_balance != 0 && $isExpanded)
                     <tr class="opening-balance">
                         <td class="move-row">Opening Balance</td>
                         <td>{{ \Carbon\Carbon::parse($data['date_from'])->format('m/d/Y') }}</td>
@@ -164,7 +165,8 @@
                 @endif
 
                 {{-- Move Lines --}}
-                @foreach($moves as $move)
+                @if($isExpanded)
+                    @foreach($moves as $move)
                     @php
                         $runningBalance += $move['debit'] - $move['credit'];
                     @endphp
@@ -178,6 +180,7 @@
                         <td class="text-right">{{ number_format($runningBalance, 2) }}</td>
                     </tr>
                 @endforeach
+                @endif
             @endforeach
 
             {{-- Totals --}}

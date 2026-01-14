@@ -55,15 +55,15 @@
                                     $totalCredit += $partner->period_credit;
                                 @endphp
                                 
-                                <tbody x-data="{ expanded: false }">
+                                <tbody>
                                     {{-- Partner Header Row --}}
                                     <tr 
                                         class="bg-gray-50/50 dark:bg-white/5 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/5!"
-                                        @click="expanded = !expanded"
+                                        wire:click="togglePartnerLines({{ $partner->id }})"
                                     >
                                         <td class="px-4 py-3 whitespace-nowrap">
                                             <div class="flex items-center">
-                                                <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-90': expanded }" fill="currentColor" viewBox="0 0 20 20">
+                                                <svg class="w-4 h-4 transition-transform @if($this->isPartnerExpanded($partner->id)) rotate-90 @endif" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                                                 </svg>
                                             </div>
@@ -95,8 +95,8 @@
                                     </tr>
 
                                     {{-- Opening Balance Row --}}
-                                    @if($partner->opening_balance != 0)
-                                        <tr x-show="expanded" x-cloak class="bg-white dark:bg-gray-900">
+                                    @if($partner->opening_balance != 0 && $this->isPartnerExpanded($partner->id))
+                                        <tr class="bg-white dark:bg-gray-900">
                                             <td class="px-4 py-2"></td>
                                             <td class="px-4 py-2 pl-8 whitespace-nowrap text-sm">
                                                 <span class="italic text-gray-600 dark:text-gray-400">
@@ -129,12 +129,13 @@
                                         $runningBalance = $partner->opening_balance;
                                     @endphp
 
-                                    @foreach($this->getPartnerMoves($partner->id) as $move)
-                                        @php
-                                            $runningBalance += ($move['debit'] - $move['credit']);
-                                        @endphp
-                                        
-                                        <tr x-show="expanded" x-cloak class="bg-white dark:bg-gray-900">
+                                    @if($this->isPartnerExpanded($partner->id))
+                                        @foreach($this->getPartnerMoves($partner->id) as $move)
+                                            @php
+                                                $runningBalance += ($move['debit'] - $move['credit']);
+                                            @endphp
+                                            
+                                            <tr class="bg-white dark:bg-gray-900">
                                             <td class="px-4 py-2"></td>
                                             <td class="px-4 py-2 pl-8 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                                                 {{ $move['move_name'] }}
@@ -176,6 +177,7 @@
                                             </td>
                                         </tr>
                                     @endforeach
+                                    @endif
                                 </tbody>
                             @endforeach
 

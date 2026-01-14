@@ -105,6 +105,8 @@
                     @php
                         $totalDebit += $partner->period_debit;
                         $totalCredit += $partner->period_credit;
+                        $isExpanded = in_array($partner->id, $expandedPartners ?? []);
+                        $runningBalance = $partner->opening_balance;
                     @endphp
 
                     <tr class="partner-header">
@@ -118,24 +120,21 @@
                         <td class="text-right">{{ number_format($partner->ending_balance, 2) }}</td>
                     </tr>
 
-                    @if($partner->opening_balance != 0)
-                        <tr class="opening-balance">
-                            <td style="padding-left: 20px;">Opening Balance</td>
-                            <td>{{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }}</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td class="text-right">{{ $partner->opening_balance > 0 ? number_format($partner->opening_balance, 2) : '' }}</td>
-                            <td class="text-right">{{ $partner->opening_balance < 0 ? number_format(abs($partner->opening_balance), 2) : '' }}</td>
-                            <td class="text-right">{{ number_format($partner->opening_balance, 2) }}</td>
-                        </tr>
-                    @endif
+                    @if($isExpanded)
+                        @if($partner->opening_balance != 0)
+                            <tr class="opening-balance">
+                                <td style="padding-left: 20px;">Opening Balance</td>
+                                <td>{{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="text-right">{{ $partner->opening_balance > 0 ? number_format($partner->opening_balance, 2) : '' }}</td>
+                                <td class="text-right">{{ $partner->opening_balance < 0 ? number_format(abs($partner->opening_balance), 2) : '' }}</td>
+                                <td class="text-right">{{ number_format($partner->opening_balance, 2) }}</td>
+                            </tr>
+                        @endif
 
-                    @php
-                        $runningBalance = $partner->opening_balance;
-                    @endphp
-
-                    @foreach($getPartnerMoves($partner->id) as $move)
+                        @foreach($getPartnerMoves($partner->id) as $move)
                         @php
                             $runningBalance += ($move['debit'] - $move['credit']);
                         @endphp
@@ -151,6 +150,7 @@
                             <td class="text-right">{{ number_format($runningBalance, 2) }}</td>
                         </tr>
                     @endforeach
+                    @endif
 
                     <tr style="height: 8px;">
                         <td colspan="8" style="border: none; background: none;"></td>

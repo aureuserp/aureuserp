@@ -39,6 +39,10 @@ class GeneralLedger extends Page implements HasForms
 
     public ?array $data = [];
 
+    public array $expandedAccounts = [];
+
+    public array $loadedMoveLines = [];
+
     protected static function getPagePermission(): ?string
     {
         return 'page_accounting_general_ledger';
@@ -69,7 +73,8 @@ class GeneralLedger extends Page implements HasForms
                             $data['accounts'],
                             $data['date_from'],
                             $data['date_to'],
-                            fn ($accountId) => $this->getAccountMoves($accountId)
+                            fn ($accountId) => $this->getAccountMoves($accountId),
+                            $this->expandedAccounts
                         ),
                         'general-ledger-'.$data['date_from']->format('Y-m-d').'-'.$data['date_to']->format('Y-m-d').'.xlsx'
                     );
@@ -83,8 +88,9 @@ class GeneralLedger extends Page implements HasForms
                     $getAccountMoves = fn ($accountId) => $this->getAccountMoves($accountId);
 
                     $pdf = Pdf::loadView('accounting::filament.clusters.reporting.pages.pdfs.general-ledger', [
-                        'data'            => $data,
-                        'getAccountMoves' => $getAccountMoves,
+                        'data'             => $data,
+                        'getAccountMoves'  => $getAccountMoves,
+                        'expandedAccounts' => $this->expandedAccounts,
                     ])->setPaper('a4', 'landscape');
 
                     return response()->streamDownload(function () use ($pdf) {
@@ -180,7 +186,34 @@ class GeneralLedger extends Page implements HasForms
         ];
     }
 
+    public function toggleAccountLines($accountId): void
+    {
+        if (in_array($accountId, $this->expandedAccounts)) {
+            $this->expandedAccounts = array_values(array_diff($this->expandedAccounts, [$accountId]));
+        } else {
+            $this->expandedAccounts[] = $accountId;
+
+            if (! isset($this->loadedMoveLines[$accountId])) {
+                $this->loadedMoveLines[$accountId] = $this->fetchAccountMoves($accountId);
+            }
+        }
+    }
+
+    public function isAccountExpanded($accountId): bool
+    {
+        return in_array($accountId, $this->expandedAccounts);
+    }
+
     public function getAccountMoves($accountId): array
+    {
+        if (! isset($this->loadedMoveLines[$accountId])) {
+            $this->loadedMoveLines[$accountId] = $this->fetchAccountMoves($accountId);
+        }
+
+        return $this->loadedMoveLines[$accountId];
+    }
+
+    protected function fetchAccountMoves($accountId): array
     {
         $dateRange = $this->parseDateRange();
         $dateFrom = $dateRange ? Carbon::parse($dateRange[0]) : now()->startOfYear();

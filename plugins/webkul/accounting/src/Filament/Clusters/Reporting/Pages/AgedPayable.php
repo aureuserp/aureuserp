@@ -38,6 +38,10 @@ class AgedPayable extends Page implements HasForms
 
     public ?array $data = [];
 
+    public array $expandedPartners = [];
+
+    public array $partnerLines = [];
+
     protected static function getPagePermission(): ?string
     {
         return 'page_accounting_aged_payable';
@@ -73,7 +77,7 @@ class AgedPayable extends Page implements HasForms
                     $basis = $state['basis'] ?? 'due_date';
 
                     return Excel::download(
-                        new AgedPayableExport($partners, $asOfDate, $period, $basis),
+                        new AgedPayableExport($partners, $asOfDate, $period, $basis, $this->expandedPartners),
                         'aged-payable-'.$asOfDate.'.xlsx'
                     );
                 }),
@@ -89,9 +93,10 @@ class AgedPayable extends Page implements HasForms
                     $period = $data['period'];
 
                     $pdf = Pdf::loadView('accounting::filament.clusters.reporting.pages.pdfs.aged-payable', [
-                        'partners' => $partners,
-                        'asOfDate' => $asOfDate,
-                        'period'   => $period,
+                        'partners'         => $partners,
+                        'asOfDate'         => $asOfDate,
+                        'period'           => $period,
+                        'expandedPartners' => $this->expandedPartners,
                     ])->setPaper('a4', 'landscape');
 
                     return response()->streamDownload(function () use ($pdf) {
@@ -174,6 +179,35 @@ class AgedPayable extends Page implements HasForms
         return 'data';
     }
 
+    public function togglePartnerLines($partnerId): void
+    {
+        if (in_array($partnerId, $this->expandedPartners)) {
+            $this->expandedPartners = array_values(array_diff($this->expandedPartners, [$partnerId]));
+        } else {
+            $this->expandedPartners[] = $partnerId;
+
+            if (! isset($this->partnerLines[$partnerId])) {
+                $data = $this->agedPayableData;
+                $this->partnerLines[$partnerId] = $data['partners'][$partnerId]['lines'] ?? [];
+            }
+        }
+    }
+
+    public function isPartnerExpanded($partnerId): bool
+    {
+        return in_array($partnerId, $this->expandedPartners);
+    }
+
+    public function getPartnerLines($partnerId): array
+    {
+        if (! isset($this->partnerLines[$partnerId])) {
+            $data = $this->agedPayableData;
+            $this->partnerLines[$partnerId] = $data['partners'][$partnerId]['lines'] ?? [];
+        }
+
+        return $this->partnerLines[$partnerId];
+    }
+
     #[\Livewire\Attributes\Computed]
     public function agedPayableData(): array
     {
@@ -229,6 +263,7 @@ class AgedPayable extends Page implements HasForms
 
             if (! isset($partnerData[$partnerId])) {
                 $partnerData[$partnerId] = [
+                    'id'           => $partnerId,
                     'partner_name' => $line->partner_name,
                     'at_date'      => 0,
                     'period_1'     => 0,

@@ -38,6 +38,10 @@ class PartnerLedger extends Page implements HasForms
 
     public ?array $data = [];
 
+    public array $expandedPartners = [];
+
+    public array $loadedMoveLines = [];
+
     protected static function getPagePermission(): ?string
     {
         return 'page_accounting_partner_ledger';
@@ -72,7 +76,7 @@ class PartnerLedger extends Page implements HasForms
                     }
 
                     return Excel::download(
-                        new PartnerLedgerExport($partners, $dateFrom, $dateTo, fn ($id) => $this->getPartnerMoves($id)),
+                        new PartnerLedgerExport($partners, $dateFrom, $dateTo, fn ($id) => $this->getPartnerMoves($id), $this->expandedPartners),
                         'partner-ledger-'.$dateFrom.'-to-'.$dateTo.'.xlsx'
                     );
                 }),
@@ -86,8 +90,9 @@ class PartnerLedger extends Page implements HasForms
                     $getPartnerMoves = fn ($partnerId) => $this->getPartnerMoves($partnerId);
 
                     $pdf = Pdf::loadView('accounting::filament.clusters.reporting.pages.pdfs.partner-ledger', [
-                        'data'            => $data,
-                        'getPartnerMoves' => $getPartnerMoves,
+                        'data'             => $data,
+                        'getPartnerMoves'  => $getPartnerMoves,
+                        'expandedPartners' => $this->expandedPartners,
                     ])->setPaper('a4', 'landscape');
 
                     return response()->streamDownload(function () use ($pdf) {
@@ -195,7 +200,34 @@ class PartnerLedger extends Page implements HasForms
         ];
     }
 
+    public function togglePartnerLines($partnerId): void
+    {
+        if (in_array($partnerId, $this->expandedPartners)) {
+            $this->expandedPartners = array_values(array_diff($this->expandedPartners, [$partnerId]));
+        } else {
+            $this->expandedPartners[] = $partnerId;
+
+            if (! isset($this->loadedMoveLines[$partnerId])) {
+                $this->loadedMoveLines[$partnerId] = $this->fetchPartnerMoves($partnerId);
+            }
+        }
+    }
+
+    public function isPartnerExpanded($partnerId): bool
+    {
+        return in_array($partnerId, $this->expandedPartners);
+    }
+
     public function getPartnerMoves($partnerId): array
+    {
+        if (! isset($this->loadedMoveLines[$partnerId])) {
+            $this->loadedMoveLines[$partnerId] = $this->fetchPartnerMoves($partnerId);
+        }
+
+        return $this->loadedMoveLines[$partnerId];
+    }
+
+    protected function fetchPartnerMoves($partnerId): array
     {
         $dateRange = $this->parseDateRange();
         $dateFrom = $dateRange ? Carbon::parse($dateRange[0]) : now()->startOfYear();
