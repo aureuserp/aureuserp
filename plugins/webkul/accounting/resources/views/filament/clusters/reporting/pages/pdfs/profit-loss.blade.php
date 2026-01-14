@@ -10,8 +10,8 @@
         }
         
         body {
-            font-family: 'DejaVu Sans', sans-serif;
-            font-size: 8pt;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11pt;
             color: #1f2937;
             line-height: 1.4;
         }
@@ -25,14 +25,14 @@
         
         .header h1 {
             margin: 0;
-            font-size: 14pt;
+            font-size: 16pt;
             font-weight: bold;
             color: #111827;
         }
         
         .header p {
             margin: 5px 0 0 0;
-            font-size: 9pt;
+            font-size: 10pt;
             color: #6b7280;
         }
         
@@ -45,7 +45,7 @@
         .section-header {
             background-color: #f9fafb;
             font-weight: bold;
-            font-size: 9pt;
+            font-size: 10pt;
             padding: 8px 10px;
             border-bottom: 2px solid #d1d5db;
             color: #111827;
@@ -68,7 +68,7 @@
         .net-income {
             padding: 10px;
             font-weight: bold;
-            font-size: 9pt;
+            font-size: 10pt;
             border-top: 2px solid #111827;
             border-bottom: 2px solid #111827;
             margin-top: 10px;
@@ -92,7 +92,7 @@
             bottom: 0;
             width: 100%;
             text-align: center;
-            font-size: 7pt;
+            font-size: 10pt;
             color: #9ca3af;
             border-top: 1px solid #e5e7eb;
             padding-top: 5px;

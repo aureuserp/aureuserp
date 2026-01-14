@@ -10,8 +10,8 @@
         }
         
         body {
-            font-family: 'DejaVu Sans', sans-serif;
-            font-size: 8pt;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11pt;
             color: #1f2937;
             line-height: 1.4;
         }
@@ -25,14 +25,14 @@
         
         .header h2 {
             margin: 0;
-            font-size: 14pt;
+            font-size: 16pt;
             font-weight: bold;
             color: #111827;
         }
         
         .header p {
             margin: 5px 0 0 0;
-            font-size: 9pt;
+            font-size: 10pt;
             color: #6b7280;
         }
         
@@ -48,7 +48,7 @@
             padding: 8px;
             text-align: left;
             font-weight: bold;
-            font-size: 8pt;
+            font-size: 11pt;
             color: #374151;
         }
         
@@ -63,7 +63,7 @@
         td {
             border: 1px solid #e5e7eb;
             padding: 5px 8px;
-            font-size: 8pt;
+            font-size: 11pt;
             color: #4b5563;
         }
         
@@ -98,7 +98,7 @@
             bottom: 0;
             width: 100%;
             text-align: center;
-            font-size: 7pt;
+            font-size: 10pt;
             color: #9ca3af;
             border-top: 1px solid #e5e7eb;
             padding-top: 5px;

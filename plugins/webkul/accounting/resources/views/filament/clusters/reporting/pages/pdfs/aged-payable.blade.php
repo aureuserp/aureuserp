@@ -10,8 +10,8 @@
         }
         
         body {
-            font-family: 'DejaVu Sans', sans-serif;
-            font-size: 8pt;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11pt;
             color: #1f2937;
             line-height: 1.3;
         }
@@ -25,14 +25,14 @@
         
         .header h1 {
             margin: 0;
-            font-size: 14pt;
+            font-size: 16pt;
             font-weight: bold;
             color: #111827;
         }
         
         .header p {
             margin: 5px 0 0 0;
-            font-size: 9pt;
+            font-size: 10pt;
             color: #6b7280;
         }
         
@@ -47,7 +47,7 @@
             padding: 6px 4px;
             text-align: right;
             font-weight: bold;
-            font-size: 7pt;
+            font-size: 10pt;
             text-transform: uppercase;
             color: #6b7280;
             border-bottom: 2px solid #d1d5db;
@@ -60,12 +60,13 @@
         table td {
             padding: 4px;
             border-bottom: 1px solid #e5e7eb;
-            font-size: 7.5pt;
+            font-size: 9pt;
             text-align: right;
         }
         
         table td:first-child {
             text-align: left;
+            font-weight: 500;
             color: #111827;
         }
         
@@ -81,7 +82,7 @@
             bottom: 0;
             width: 100%;
             text-align: center;
-            font-size: 7pt;
+            font-size: 10pt;
             color: #9ca3af;
             border-top: 1px solid #e5e7eb;
             padding-top: 5px;
@@ -149,7 +150,7 @@
                     @if(in_array($partner['id'], $expandedPartners ?? []) && isset($partnerLines[$partner['id']]))
                         @foreach($partnerLines[$partner['id']] as $line)
                             <tr class="line-row">
-                                <td style="padding-left: 20px;">{{ $line['move_name'] }}</td>
+                                <td style="padding-left: 20px; font-weight: 400;">{{ $line['move_name'] }}</td>
                                 <td>{{ $line['at_date'] != 0 ? number_format($line['at_date'], 2) : '' }}</td>
                                 <td>{{ $line['period_1'] != 0 ? number_format($line['period_1'], 2) : '' }}</td>
                                 <td>{{ $line['period_2'] != 0 ? number_format($line['period_2'], 2) : '' }}</td>
