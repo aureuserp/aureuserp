@@ -1,66 +1,108 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
     <title>Profit & Loss Report</title>
     <style>
+        @page {
+            margin: 1.5cm 1.5cm;
+            size: A4 portrait;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            font-size: 11px;
-            color: #000;
-            margin: 20px;
+            font-family: 'DejaVu Sans', sans-serif;
+            font-size: 8pt;
+            color: #1f2937;
+            line-height: 1.4;
         }
-        h1 {
-            font-size: 16px;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .date-range {
-            font-size: 12px;
+        
+        .header {
+            text-align: center;
             margin-bottom: 20px;
-            color: #666;
+            border-bottom: 2px solid #1f2937;
+            padding-bottom: 10px;
         }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 14pt;
+            font-weight: bold;
+            color: #111827;
+        }
+        
+        .header p {
+            margin: 5px 0 0 0;
+            font-size: 9pt;
+            color: #6b7280;
+        }
+        
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 15px;
         }
+        
         .section-header {
+            background-color: #f9fafb;
             font-weight: bold;
-            font-size: 12px;
-            padding: 8px 0;
-            border-bottom: 2px solid #000;
-            margin-top: 15px;
+            font-size: 9pt;
+            padding: 8px 10px;
+            border-bottom: 2px solid #d1d5db;
+            color: #111827;
         }
+        
         .account-line {
-            padding: 4px 0 4px 40px;
-            color: #666;
+            padding: 5px 10px 5px 40px;
+            color: #4b5563;
+            border-bottom: 1px solid #e5e7eb;
         }
+        
         .total-line {
-            padding: 8px 0 8px 0;
+            padding: 8px 10px;
             font-weight: bold;
-            border-bottom: 1px solid #000;
+            border-bottom: 1px solid #9ca3af;
+            background-color: #f3f4f6;
+            color: #1f2937;
         }
+        
         .net-income {
-            padding: 10px 0;
+            padding: 10px;
             font-weight: bold;
-            font-size: 13px;
-            border-bottom: 2px double #000;
-            margin-top: 15px;
+            font-size: 9pt;
+            border-top: 2px solid #111827;
+            border-bottom: 2px solid #111827;
+            margin-top: 10px;
+            background-color: #f9fafb;
+            color: #111827;
         }
+        
         .amount {
             text-align: right;
             white-space: nowrap;
         }
+        
         .empty-message {
-            padding: 4px 0 4px 20px;
+            padding: 5px 10px 5px 30px;
             font-style: italic;
-            color: #999;
+            color: #9ca3af;
+        }
+        
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 7pt;
+            color: #9ca3af;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 5px;
         }
     </style>
 </head>
 <body>
-    <h1>Profit & Loss Report</h1>
-    <div class="date-range">
-        From {{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }} to {{ \Carbon\Carbon::parse($data['date_to'])->format('M d, Y') }}
+    <div class="header">
+        <h1>Profit & Loss Report</h1>
+        <p>From {{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }} to {{ \Carbon\Carbon::parse($data['date_to'])->format('M d, Y') }}</p>
     </div>
 
     <table>
@@ -75,7 +117,7 @@
                         <td class="account-line">
                             {{ $account['code'] ? $account['code'] . ' - ' : '' }}{{ $account['name'] }}
                         </td>
-                        <td class="amount">{{ number_format($account['balance'], 2) }}</td>
+                        <td class="account-line amount">{{ number_format($account['balance'], 2) }}</td>
                     </tr>
                 @endforeach
 
@@ -89,7 +131,7 @@
                 </tr>
             @endif
 
-            <tr><td colspan="2" style="padding: 8px 0;"></td></tr>
+            <tr><td colspan="2" style="padding: 5px 0;"></td></tr>
         @endforeach
 
         <tr>
@@ -97,5 +139,9 @@
             <td class="net-income amount">{{ number_format(abs($data['net_income']), 2) }}</td>
         </tr>
     </table>
+
+    <div class="footer">
+        <div>Generated on {{ now()->format('F j, Y \\a\\t g:i A') }}</div>
+    </div>
 </body>
 </html>

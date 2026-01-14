@@ -2,173 +2,207 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Partner Ledger</title>
+    <title>Partner Ledger - {{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }} to {{ \Carbon\Carbon::parse($data['date_to'])->format('M d, Y') }}</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 11px;
-            margin: 20px;
+        @page {
+            margin: 1cm 1cm;
+            size: A4 landscape;
         }
+        
+        body {
+            font-family: 'DejaVu Sans', sans-serif;
+            font-size: 8pt;
+            color: #1f2937;
+            line-height: 1.3;
+        }
+        
         .header {
             text-align: center;
             margin-bottom: 20px;
+            border-bottom: 2px solid #1f2937;
+            padding-bottom: 10px;
         }
-        .header h2 {
-            margin: 5px 0;
-            font-size: 16px;
+        
+        .header h1 {
+            margin: 0;
+            font-size: 14pt;
+            font-weight: bold;
+            color: #111827;
         }
+        
         .header p {
-            margin: 5px 0;
-            font-size: 12px;
-            color: #666;
+            margin: 5px 0 0 0;
+            font-size: 9pt;
+            color: #6b7280;
         }
+        
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-bottom: 15px;
         }
-        th {
-            background-color: #f5f5f5;
-            border: 1px solid #ddd;
-            padding: 6px 8px;
+        
+        table th {
+            background-color: #f3f4f6;
+            padding: 6px 4px;
             text-align: left;
             font-weight: bold;
-            font-size: 10px;
+            font-size: 7pt;
+            text-transform: uppercase;
+            color: #6b7280;
+            border-bottom: 2px solid #d1d5db;
         }
-        td {
-            border: 1px solid #ddd;
-            padding: 5px 8px;
-            font-size: 11px;
+        
+        table th.text-right {
+            text-align: right;
         }
+        
+        table td {
+            padding: 4px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 7.5pt;
+        }
+        
         .partner-header {
-            background-color: #f9f9f9;
+            background-color: #f9fafb;
             font-weight: bold;
-            font-size: 12px;
-            border-bottom: 1px solid #000 !important;
+            color: #111827;
         }
+        
+        .move-row {
+            padding-left: 15px !important;
+            color: #4b5563;
+        }
+        
         .opening-balance {
-            background-color: #fff;
+            background-color: #fef3c7;
             font-style: italic;
-            color: #666;
+            padding-left: 15px !important;
         }
-        .move-line {
-            background-color: #fff;
-            color: #666;
+        
+        .total-row {
+            font-weight: bold;
+            background-color: #e5e7eb;
+            border-top: 2px solid #6b7280;
+            color: #111827;
         }
+        
         .text-right {
             text-align: right;
         }
-        .text-left {
-            text-align: left;
-        }
-        .no-data {
+        
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
             text-align: center;
-            padding: 20px;
-            color: #999;
+            font-size: 7pt;
+            color: #9ca3af;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 5px;
         }
-        .grand-total {
-            background-color: #f0f0f0;
-            font-weight: bold;
-            border-top: 1px solid #000 !important;
+        
+        .page-number:after {
+            content: "Page " counter(page);
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h2>Partner Ledger</h2>
-        <p>From {{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }} to {{ \Carbon\Carbon::parse($data['date_to'])->format('M d, Y') }}</p>
+        <h1>Partner Ledger</h1>
+        <p>From {{ \Carbon\Carbon::parse($data['date_from'])->format('F j, Y') }} to {{ \Carbon\Carbon::parse($data['date_to'])->format('F j, Y') }}</p>
     </div>
 
-    @if($data['partners']->isEmpty())
-        <div class="no-data">No data available</div>
-    @else
-        <table>
-            <thead>
-                <tr>
-                    <th class="text-left">Partner</th>
-                    <th class="text-left">Journal</th>
-                    <th class="text-left">Account</th>
-                    <th class="text-left">Invoice Date</th>
-                    <th class="text-left">Due Date</th>
-                    <th class="text-right">Debit</th>
-                    <th class="text-right">Credit</th>
-                    <th class="text-right">Balance</th>
-                </tr>
-            </thead>
-            <tbody>
+    <table>
+        <thead>
+            <tr>
+                <th>Partner</th>
+                <th>Journal</th>
+                <th>Account</th>
+                <th>Invoice Date</th>
+                <th>Due Date</th>
+                <th class="text-right">Debit</th>
+                <th class="text-right">Credit</th>
+                <th class="text-right">Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php
+                $totalDebit = 0;
+                $totalCredit = 0;
+            @endphp
+
+            @foreach($data['partners'] as $partner)
                 @php
-                    $totalDebit = 0;
-                    $totalCredit = 0;
+                    $totalDebit += $partner->period_debit;
+                    $totalCredit += $partner->period_credit;
+                    $isExpanded = in_array($partner->id, $expandedPartners ?? []);
+                    $runningBalance = $partner->opening_balance;
                 @endphp
 
-                @foreach($data['partners'] as $partner)
-                    @php
-                        $totalDebit += $partner->period_debit;
-                        $totalCredit += $partner->period_credit;
-                        $isExpanded = in_array($partner->id, $expandedPartners ?? []);
-                        $runningBalance = $partner->opening_balance;
-                    @endphp
+                {{-- Partner Header --}}
+                <tr class="partner-header">
+                    <td>{{ $partner->name }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right">{{ number_format($partner->period_debit, 2) }}</td>
+                    <td class="text-right">{{ number_format($partner->period_credit, 2) }}</td>
+                    <td class="text-right">{{ number_format($partner->ending_balance, 2) }}</td>
+                </tr>
 
-                    <tr class="partner-header">
-                        <td>{{ $partner->name }}</td>
+                {{-- Opening Balance --}}
+                @if($partner->opening_balance != 0 && $isExpanded)
+                    <tr class="opening-balance">
+                        <td class="move-row">Opening Balance</td>
+                        <td>{{ \Carbon\Carbon::parse($data['date_from'])->format('m/d/Y') }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td class="text-right">{{ number_format($partner->period_debit, 2) }}</td>
-                        <td class="text-right">{{ number_format($partner->period_credit, 2) }}</td>
-                        <td class="text-right">{{ number_format($partner->ending_balance, 2) }}</td>
+                        <td></td>
+                        <td class="text-right">{{ number_format($partner->opening_balance, 2) }}</td>
                     </tr>
+                @endif
 
-                    @if($isExpanded)
-                        @if($partner->opening_balance != 0)
-                            <tr class="opening-balance">
-                                <td style="padding-left: 20px;">Opening Balance</td>
-                                <td>{{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }}</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td class="text-right">{{ $partner->opening_balance > 0 ? number_format($partner->opening_balance, 2) : '' }}</td>
-                                <td class="text-right">{{ $partner->opening_balance < 0 ? number_format(abs($partner->opening_balance), 2) : '' }}</td>
-                                <td class="text-right">{{ number_format($partner->opening_balance, 2) }}</td>
-                            </tr>
-                        @endif
-
-                        @foreach($getPartnerMoves($partner->id) as $move)
+                {{-- Move Lines --}}
+                @if($isExpanded)
+                    @foreach($getPartnerMoves($partner->id) as $move)
                         @php
                             $runningBalance += ($move['debit'] - $move['credit']);
                         @endphp
-
-                        <tr class="move-line">
-                            <td style="padding-left: 20px;">{{ $move['move_name'] }}@if($move['ref']) ({{ $move['ref'] }})@endif</td>
-                            <td>{{ $move['journal_name'] }}</td>
-                            <td>@if($move['account_code']){{ $move['account_code'] }} {{ $move['account_name'] }}@endif</td>
-                            <td>{{ \Carbon\Carbon::parse($move['invoice_date'])->format('M d, Y') }}</td>
-                            <td>{{ \Carbon\Carbon::parse($move['invoice_date_due'])->format('M d, Y') }}</td>
+                        <tr>
+                            <td class="move-row">{{ $move['move_name'] }}@if($move['ref']) ({{ $move['ref'] }})@endif</td>
+                            <td>{{ $move['journal_name'] ?? '' }}</td>
+                            <td>@if($move['account_code']){{ $move['account_code'] }} @endif{{ $move['account_name'] ?? '' }}</td>
+                            <td>{{ \Carbon\Carbon::parse($move['invoice_date'])->format('m/d/Y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($move['invoice_date_due'])->format('m/d/Y') }}</td>
                             <td class="text-right">{{ $move['debit'] > 0 ? number_format($move['debit'], 2) : '' }}</td>
                             <td class="text-right">{{ $move['credit'] > 0 ? number_format($move['credit'], 2) : '' }}</td>
                             <td class="text-right">{{ number_format($runningBalance, 2) }}</td>
                         </tr>
                     @endforeach
-                    @endif
+                @endif
+            @endforeach
 
-                    <tr style="height: 8px;">
-                        <td colspan="8" style="border: none; background: none;"></td>
-                    </tr>
-                @endforeach
+            {{-- Totals --}}
+            <tr class="total-row">
+                <td>Total</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="text-right">{{ number_format($totalDebit, 2) }}</td>
+                <td class="text-right">{{ number_format($totalCredit, 2) }}</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
 
-                <tr class="grand-total">
-                    <td>Total Partner Ledger</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td class="text-right">{{ number_format($totalDebit, 2) }}</td>
-                    <td class="text-right">{{ number_format($totalCredit, 2) }}</td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
-    @endif
+    <div class="footer">
+        <div class="page-number"></div>
+        <div>Generated on {{ now()->format('F j, Y \a\t g:i A') }}</div>
+    </div>
 </body>
 </html>

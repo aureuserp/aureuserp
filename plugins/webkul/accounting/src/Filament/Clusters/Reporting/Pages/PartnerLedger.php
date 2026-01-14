@@ -70,7 +70,6 @@ class PartnerLedger extends Page implements HasForms
                     $dateFrom = $data['date_from'];
                     $dateTo = $data['date_to'];
 
-                    // Add moves to each partner
                     foreach ($partners as &$partner) {
                         $partner['moves'] = $this->getPartnerMoves($partner['id']);
                     }
