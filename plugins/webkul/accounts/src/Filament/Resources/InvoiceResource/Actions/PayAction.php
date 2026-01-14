@@ -43,7 +43,7 @@ class PayAction extends Action
                 $paymentRegister->company = $this->getRecord()->company;
                 $paymentRegister->currency = $this->getRecord()->currency;
                 $paymentRegister->currency_id = $this->getRecord()->currency_id;
-                $paymentRegister->payment_type = $this->getRecord()->isSaleDocument(true)
+                $paymentRegister->payment_type = $this->getRecord()->isInbound(true)
                     ? PaymentType::RECEIVE
                     : PaymentType::SEND;
                 $paymentRegister->computeBatches();
@@ -99,7 +99,7 @@ class PayAction extends Action
                                         }
 
                                         $paymentMethodLineIds = $journal->getAvailablePaymentMethodLines(
-                                            $this->getRecord()->isSaleDocument(true)
+                                            $this->getRecord()->isInbound(true)
                                                 ? PaymentType::RECEIVE
                                                 : PaymentType::SEND
                                         )->pluck('id');

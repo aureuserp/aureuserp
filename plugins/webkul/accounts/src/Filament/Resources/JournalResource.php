@@ -209,7 +209,7 @@ class JournalResource extends Resource
                                                             ->relationship(
                                                                 name: 'paymentMethod',
                                                                 titleAttribute: 'name',
-                                                                modifyQueryUsing: fn ($query) => $query->where('payment_type', PaymentType::SEND)
+                                                                modifyQueryUsing: fn ($query) => $query->where('payment_type', PaymentType::RECEIVE)
                                                             )
                                                             ->searchable()
                                                             ->preload()
@@ -228,6 +228,7 @@ class JournalResource extends Resource
                                                     ])
                                                     ->columns(2),
                                             ]),
+
                                         Tab::make(__('accounts::filament/resources/journal.form.tabs.outgoing-payments.title'))
                                             ->visible(fn (Get $get) => in_array($get('type'), [
                                                 JournalType::BANK,
@@ -279,6 +280,7 @@ class JournalResource extends Resource
                                                     ])
                                                     ->columns(2),
                                             ]),
+
                                         Tab::make(__('accounts::filament/resources/journal.form.tabs.advanced-settings.title'))
                                             ->schema([
                                                 Fieldset::make(__('accounts::filament/resources/journal.form.tabs.advanced-settings.fields.control-access'))
@@ -308,6 +310,7 @@ class JournalResource extends Resource
                                     ]),
                             ])
                             ->columnSpan(['lg' => 2]),
+
                         Group::make()
                             ->schema([
                                 Section::make(__('accounts::filament/resources/journal.form.general.title'))
