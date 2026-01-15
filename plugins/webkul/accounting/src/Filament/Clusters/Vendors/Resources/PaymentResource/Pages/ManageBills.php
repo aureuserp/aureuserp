@@ -50,7 +50,6 @@ class ManageBills extends ManageRelatedRecords
                         }
                     })
                     ->openUrlInNewTab(false),
-            ])
-            ->toolbarActions([]);
+            ]);
     }
 }

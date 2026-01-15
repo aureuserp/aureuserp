@@ -178,6 +178,12 @@ return [
                 ],
             ],
         ],
+
+        'toolbar-actions' => [
+            'export' => [
+                'label' => 'Export',
+            ],
+        ],
     ],
 
     'infolist' => [

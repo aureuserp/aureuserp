@@ -2,6 +2,7 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Accounting\Resources;
 
+use Filament\Actions\ExportAction;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
@@ -20,6 +21,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Accounting\Filament\Clusters\Accounting;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalItemResource\Pages\ListJournalItems;
+use Webkul\Accounting\Filament\Exports\JournalItemExporter;
 use Webkul\Accounting\Models\JournalItem;
 
 class JournalItemResource extends Resource
@@ -286,7 +288,12 @@ class JournalItemResource extends Resource
                     ]),
             ])
             ->recordActions([])
-            ->toolbarActions([])
+            ->toolbarActions([
+                ExportAction::make()
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-item.table.toolbar-actions.export.label'))
+                    ->icon('heroicon-o-arrow-up-tray')
+                    ->exporter(JournalItemExporter::class),
+            ])
             ->modifyQueryUsing(function (Builder $query) {
                 $query->with(['currency', 'account', 'partner', 'journal', 'company', 'move']);
             })

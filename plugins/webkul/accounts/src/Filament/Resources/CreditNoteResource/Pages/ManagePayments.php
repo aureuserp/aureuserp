@@ -39,7 +39,6 @@ class ManagePayments extends ManageRelatedRecords
                 EditAction::make()
                     ->url(fn ($record) => PaymentResource::getUrl('edit', ['record' => $record]))
                     ->openUrlInNewTab(false),
-            ])
-            ->toolbarActions([]);
+            ]);
     }
 }

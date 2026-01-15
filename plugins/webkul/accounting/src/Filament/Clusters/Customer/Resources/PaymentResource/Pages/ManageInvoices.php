@@ -50,7 +50,6 @@ class ManageInvoices extends ManageRelatedRecords
                         }
                     })
                     ->openUrlInNewTab(false),
-            ])
-            ->toolbarActions([]);
+            ]);
     }
 }
