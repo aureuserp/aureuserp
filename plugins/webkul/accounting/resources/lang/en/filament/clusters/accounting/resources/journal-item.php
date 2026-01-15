@@ -87,5 +87,11 @@ return [
             'receivable'    => 'Receivable',
             'pl-accounts'   => 'P&L Accounts',
         ],
+
+        'toolbar-actions' => [
+            'export' => [
+                'label' => 'Export',
+            ],
+        ],
     ],
 ];

@@ -27,7 +27,6 @@ class ManagePayments extends BaseManagePayments
                 EditAction::make()
                     ->url(fn ($record) => PaymentResource::getUrl('edit', ['record' => $record]))
                     ->openUrlInNewTab(false),
-            ])
-            ->toolbarActions([]);
+            ]);
     }
 }

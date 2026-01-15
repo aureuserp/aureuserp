@@ -26,7 +26,6 @@ class ManageJournalEntries extends ManageRelatedRecords
     public function table(Table $table): Table
     {
         return JournalItemResource::table($table)
-            ->defaultGroup('move.name')
-            ->toolbarActions([]);
+            ->defaultGroup('move.name');
     }
 }

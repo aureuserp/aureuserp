@@ -8,6 +8,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -67,6 +68,7 @@ use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\PaymentResource\Pages\ViewPayment as CustomerViewPayment;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\ViewPayment as VendorViewPayment;
+use Webkul\Accounting\Filament\Exports\JournalEntryExporter;
 use Webkul\Accounting\Models\JournalEntry;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\Partner\Models\Partner;
@@ -396,6 +398,10 @@ class JournalEntryResource extends Resource
                                 ->body(__('accounting::filament/clusters/accounting/resources/journal-entry.table.bulk-actions.delete.notification.body'))
                         ),
                 ]),
+                ExportAction::make()
+                    ->label(__('accounting::filament/clusters/accounting/resources/journal-entry.table.toolbar-actions.export.label'))
+                    ->icon('heroicon-o-arrow-up-tray')
+                    ->exporter(JournalEntryExporter::class),
             ])
             ->modifyQueryUsing(function (Builder $query) {
                 $query->with('currency');
