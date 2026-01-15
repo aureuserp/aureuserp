@@ -104,6 +104,28 @@ class AccountManager
             $line->update(['parent_state' => MoveState::POSTED]);
         }
 
+        if ($record->isSaleDocument()) {
+            $record->partner?->increment('customer_rank');
+        } elseif ($record->isPurchaseDocument()) {
+            $record->partner?->increment('supplier_rank');
+        } elseif ($record->move_type == MoveType::ENTRY) {
+            $record->lines
+                ->filter(fn($line) => $line->partner_id && $line->account->account_type == AccountType::ASSET_RECEIVABLE)
+                ->pluck('partner')
+                ->unique()
+                ->each(function ($partner) {
+                    $partner?->increment('customer_rank');
+                });
+
+            $record->lines
+                ->filter(fn($line) => $line->partner_id && $line->account->account_type == AccountType::LIABILITY_PAYABLE)
+                ->pluck('partner')
+                ->unique()
+                ->each(function ($partner) {
+                    $partner?->increment('supplier_rank');
+                });
+        }
+
         MoveConfirmed::dispatch($record);
 
         return $record;

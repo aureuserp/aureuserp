@@ -12,7 +12,7 @@ class CreateCustomer extends BaseCreateCustomer
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['sub_type'] = 'customer';
+        $data['customer_rank'] = 1;
 
         return $data;
     }

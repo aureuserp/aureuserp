@@ -75,8 +75,6 @@ class VendorResource extends BaseVendorResource
         $firstTabFirstChildComponent->childComponents([
             Group::make()
                 ->schema([
-                    Hidden::make('sub_type')
-                        ->default('supplier'),
                     Select::make('user_id')
                         ->relationship('user', 'name')
                         ->preload()
@@ -203,7 +201,7 @@ class VendorResource extends BaseVendorResource
             '2xl' => 3,
         ]);
 
-        $table->modifyQueryUsing(fn ($query) => $query->where('sub_type', 'supplier'));
+        $table->modifyQueryUsing(fn ($query) => $query->where('supplier_rank', '>', 0));
 
         return $table;
     }

@@ -151,7 +151,7 @@ class InvoiceResource extends Resource
                                             ->relationship(
                                                 'partner',
                                                 'name',
-                                                fn (Builder $query) => $query->where('sub_type', 'customer')->orderBy('id')->withTrashed(),
+                                                fn (Builder $query) => $query->orderBy('id')->withTrashed(),
                                             )
                                             ->required()
                                             ->searchable()
