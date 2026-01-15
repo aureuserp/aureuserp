@@ -117,7 +117,7 @@ class PurchaseAgreementResource extends Resource
                                     ->relationship(
                                         'partner',
                                         'name',
-                                        fn (Builder $query) => $query->withTrashed()->where('sub_type', 'supplier')
+                                        fn (Builder $query) => $query->withTrashed()
                                     )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
                                         return $record->name.($record->trashed() ? ' (Deleted)' : '');

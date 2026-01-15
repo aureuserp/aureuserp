@@ -140,10 +140,7 @@ class QuotationResource extends Resource
                                             ->relationship(
                                                 'partner',
                                                 'name',
-                                                modifyQueryUsing: fn (Builder $query) => $query
-                                                    ->withTrashed()
-                                                    ->where('sub_type', 'customer')
-                                                    ->orderBy('id')
+                                                modifyQueryUsing: fn (Builder $query) => $query->orderBy('id')->withTrashed()
                                             )
                                             ->searchable()
                                             ->preload()

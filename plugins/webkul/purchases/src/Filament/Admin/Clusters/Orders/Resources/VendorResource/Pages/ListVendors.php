@@ -14,7 +14,7 @@ class ListVendors extends BaseListVendors
     public function table(Table $table): Table
     {
         $table = parent::table($table)
-            ->modifyQueryUsing(fn (Builder $query) => $query->where('sub_type', 'supplier'));
+            ->modifyQueryUsing(fn (Builder $query) => $query->where('supplier_rank', '>', 0));
 
         return $table;
     }

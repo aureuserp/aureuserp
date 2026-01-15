@@ -150,7 +150,7 @@ class BillResource extends Resource
                                             ->relationship(
                                                 'partner',
                                                 'name',
-                                                fn ($query) => $query->where('sub_type', 'supplier')->orderBy('id'),
+                                                fn (Builder $query) => $query->orderBy('id')->withTrashed(),
                                             )
                                             ->required()
                                             ->searchable()

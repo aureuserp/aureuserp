@@ -110,10 +110,7 @@ class OrderResource extends Resource
                                     ->relationship(
                                         'partner',
                                         'name',
-                                        modifyQueryUsing: fn (Builder $query) => $query
-                                            ->withTrashed()
-                                            ->where('sub_type', 'supplier')
-                                            ->orderBy('id')
+                                        modifyQueryUsing: fn (Builder $query) => $query->orderBy('id')->withTrashed()
                                     )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
                                         return $record->name.($record->trashed() ? ' (Deleted)' : '');

@@ -49,7 +49,7 @@ class CustomerResource extends BasePartnerResource
             '2xl' => 3,
         ]);
 
-        $table->modifyQueryUsing(fn ($query) => $query->where('sub_type', 'customer'));
+        $table->modifyQueryUsing(fn ($query) => $query->where('customer_rank', '>', 0));
 
         return $table;
     }
