@@ -322,9 +322,6 @@ class PaymentResource extends Resource
                 Tables\Grouping\Group::make('partnerBank.account_holder_name')
                     ->label(__('accounts::filament/resources/payment.table.groups.partner-bank-account'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('pairedInternalTransferPayment.name')
-                    ->label(__('accounts::filament/resources/payment.table.groups.paired-internal-transfer-payment'))
-                    ->collapsible(),
                 Tables\Grouping\Group::make('created_at')
                     ->label(__('accounts::filament/resources/payment.table.groups.created-at'))
                     ->collapsible(),
@@ -370,18 +367,6 @@ class PaymentResource extends Resource
                                 IsRelatedToOperator::make()
                                     ->titleAttribute('account_number')
                                     ->label(__('accounts::filament/resources/payment.table.filters.customer-bank-account'))
-                                    ->searchable()
-                                    ->multiple()
-                                    ->preload(),
-                            ),
-                        RelationshipConstraint::make('pairedInternalTransferPayment')
-                            ->label(__('accounts::filament/resources/payment.table.filters.paired-internal-transfer-payment'))
-                            ->icon('heroicon-o-user')
-                            ->multiple()
-                            ->selectable(
-                                IsRelatedToOperator::make()
-                                    ->titleAttribute('name')
-                                    ->label(__('accounts::filament/resources/payment.table.filters.paired-internal-transfer-payment'))
                                     ->searchable()
                                     ->multiple()
                                     ->preload(),
