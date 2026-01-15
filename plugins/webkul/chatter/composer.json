@@ -10,7 +10,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Webkul\\Chatter\\Providers\\ChatterServiceProvider"
+                "Webkul\\Chatter\\ChatterServiceProvider"
             ],
             "aliases": {}
         }
