@@ -67,18 +67,12 @@ class Requisition extends Model
     public function getLogAttributeLabels(): array
     {
         return [
-            'name'          => trans('purchases::models/requisition.log-attributes.name'),
-            'type'          => trans('purchases::models/requisition.log-attributes.type'),
-            'state'         => trans('purchases::models/requisition.log-attributes.state'),
-            'reference'     => trans('purchases::models/requisition.log-attributes.reference'),
-            'starts_at'     => trans('purchases::models/requisition.log-attributes.starts_at'),
-            'ends_at'       => trans('purchases::models/requisition.log-attributes.ends_at'),
-            'description'   => trans('purchases::models/requisition.log-attributes.description'),
-            'currency.name' => trans('purchases::models/requisition.log-attributes.currency'),
-            'partner.name'  => trans('purchases::models/requisition.log-attributes.partner'),
-            'user.name'     => trans('purchases::models/requisition.log-attributes.buyer'),
-            'company.name'  => trans('purchases::models/requisition.log-attributes.company'),
-            'creator.name'  => trans('purchases::models/requisition.log-attributes.creator'),
+            'state'        => trans('purchases::models/requisition.log-attributes.state'),
+            'reference'    => trans('purchases::models/requisition.log-attributes.reference'),
+            'starts_at'    => trans('purchases::models/requisition.log-attributes.starts-at'),
+            'ends_at'      => trans('purchases::models/requisition.log-attributes.ends-at'),
+            'partner.name' => trans('purchases::models/requisition.log-attributes.partner'),
+            'user.name'    => trans('purchases::models/requisition.log-attributes.buyer'),
         ];
     }
 
