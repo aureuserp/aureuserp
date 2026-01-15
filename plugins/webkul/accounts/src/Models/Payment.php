@@ -79,20 +79,16 @@ class Payment extends Model
     protected function getLogAttributeLabels(): array
     {
         return [
-            'name'                    => __('accounts::models/payment.log-attributes.name'),
-            'move.name'               => __('accounts::models/payment.log-attributes.move'),
-            'company.name'            => __('accounts::models/payment.log-attributes.company'),
-            'partner.name'            => __('accounts::models/payment.log-attributes.partner'),
-            'partner_type'            => __('accounts::models/payment.log-attributes.partner_type'),
-            'paymentMethod.name'      => __('accounts::models/payment.log-attributes.payment_method'),
-            'currency.name'           => __('accounts::models/payment.log-attributes.currency'),
-            'paymentToken'            => __('accounts::models/payment.log-attributes.payment_token'),
-            'sourcePayment.name'      => __('accounts::models/payment.log-attributes.source_payment'),
-            'paymentTransaction.name' => __('accounts::models/payment.log-attributes.payment_transaction'),
-            'destinationAccount.name' => __('accounts::models/payment.log-attributes.destination_account'),
-            'outstandingAccount.name' => __('accounts::models/payment.log-attributes.outstanding_account'),
-            'is_sent'                 => __('accounts::models/payment.log-attributes.is_sent'),
-            'state'                   => __('accounts::models/payment.log-attributes.state'),
+            'date'               => __('accounts::models/payment.log-attributes.date'),
+            'payment_type'       => __('accounts::models/payment.log-attributes.payment-type'),
+            'partner_type'       => __('accounts::models/payment.log-attributes.partner-type'),
+            'memo'               => __('accounts::models/payment.log-attributes.memo'),
+            'payment_reference'  => __('accounts::models/payment.log-attributes.payment-reference'),
+            'amount'             => __('accounts::models/payment.log-attributes.amount'),
+            'partner.name'       => __('accounts::models/payment.log-attributes.partner'),
+            'partnerBank.name'   => __('accounts::models/payment.log-attributes.partner-bank'),
+            'paymentMethod.name' => __('accounts::models/payment.log-attributes.payment-method'),
+            'currency.name'      => __('accounts::models/payment.log-attributes.currency'),
         ];
     }
 
