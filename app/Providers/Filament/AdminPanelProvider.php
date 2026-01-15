@@ -44,6 +44,7 @@ class AdminPanelProvider extends PanelProvider
             ->unsavedChangesAlerts()
             ->topNavigation()
             ->maxContentWidth(Width::Full)
+            ->databaseNotifications()
             ->userMenuItems([
                 'profile' => Action::make('profile')
                     ->label(fn () => filament()->auth()->user()?->name)

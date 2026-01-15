@@ -8,6 +8,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -58,6 +59,7 @@ use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Facades\Tax as TaxFacade;
+use Webkul\Account\Filament\Exports\InvoiceExporter;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\CreateInvoice;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\EditInvoice;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\ListInvoices;
@@ -685,6 +687,10 @@ class InvoiceResource extends Resource
                                 ->body(__('accounts::filament/resources/invoice.table.bulk-actions.delete.notification.body'))
                         ),
                 ]),
+                ExportAction::make()
+                    ->label(__('accounts::filament/resources/invoice.table.toolbar-actions.export.label'))
+                    ->icon('heroicon-o-arrow-up-tray')
+                    ->exporter(InvoiceExporter::class),
             ])
             ->checkIfRecordIsSelectableUsing(
                 fn (Model $record): bool => static::can('delete', $record) && $record->state !== MoveState::POSTED,

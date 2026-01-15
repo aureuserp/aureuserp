@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -31,6 +32,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\PaymentStatus;
 use Webkul\Account\Enums\PaymentType;
+use Webkul\Account\Filament\Exports\PaymentExporter;
 use Webkul\Account\Filament\Resources\PaymentResource\Pages\CreatePayment;
 use Webkul\Account\Filament\Resources\PaymentResource\Pages\EditPayment;
 use Webkul\Account\Filament\Resources\PaymentResource\Pages\ListPayments;
@@ -446,6 +448,10 @@ class PaymentResource extends Resource
                                 ->body(__('accounts::filament/resources/payment.table.bulk-actions.delete.notification.body'))
                         ),
                 ]),
+                ExportAction::make()
+                    ->label(__('accounts::filament/resources/payment.table.toolbar-actions.export.label'))
+                    ->icon('heroicon-o-arrow-up-tray')
+                    ->exporter(PaymentExporter::class),
             ]);
     }
 
