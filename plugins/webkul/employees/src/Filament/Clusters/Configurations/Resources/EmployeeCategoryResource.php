@@ -146,7 +146,7 @@ class EmployeeCategoryResource extends Resource
                 ViewAction::make(),
                 EditAction::make()
                     ->mutateDataUsing(function (array $data): array {
-                        $data['color'] = $data['color'] ?? fake()->hexColor();
+                        $data['color'] = $data['color'] ?? random_color();
 
                         return $data;
                     })

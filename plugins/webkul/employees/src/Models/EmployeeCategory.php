@@ -28,7 +28,7 @@ class EmployeeCategory extends Model
         static::creating(function ($employeeCategory) {
             $employeeCategory->creator_id = filament()->auth()->id();
 
-            $employeeCategory->color ??= fake()->hexColor();
+            $employeeCategory->color ??= random_color();
 
         });
     }
