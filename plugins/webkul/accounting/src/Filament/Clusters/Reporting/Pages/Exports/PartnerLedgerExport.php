@@ -103,9 +103,6 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
                     $this->rowMetadata[$rowIndex++] = 'move_line';
                 });
             }
-
-            $rows[] = array_fill(0, 9, '');
-            $rowIndex++;
         }
 
         $rows[] = [

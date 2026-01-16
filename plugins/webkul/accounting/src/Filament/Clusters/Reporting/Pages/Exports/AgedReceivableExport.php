@@ -86,9 +86,6 @@ class AgedReceivableExport implements FromArray, WithColumnWidths, WithHeadings,
                 }
             }
 
-            $rows[] = array_fill(0, 9, '');
-            $rowIndex++;
-
             collect(['at_date', 'period_1', 'period_2', 'period_3', 'period_4', 'older', 'total'])
                 ->each(fn ($key) => $totals[$key] += $partner[$key]);
         }
