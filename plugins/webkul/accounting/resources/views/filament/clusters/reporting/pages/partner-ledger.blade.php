@@ -42,21 +42,20 @@
                         </tr>
                     </thead>
                     
-                    <tbody class="divide-y divide-gray-200 dark:divide-white/5!">
-                        @php
-                            $totalDebit = 0;
-                            $totalCredit = 0;
-                        @endphp
+                    @php
+                        $totalDebit = 0;
+                        $totalCredit = 0;
+                    @endphp
 
-                        @if($data['partners']->isNotEmpty())
-                            @foreach($data['partners'] as $partner)
-                                @php
-                                    $totalDebit += $partner->period_debit;
-                                    $totalCredit += $partner->period_credit;
-                                @endphp
-                                
-                                <tbody>
-                                    {{-- Partner Header Row --}}
+                    @if($data['partners']->isNotEmpty())
+                        @foreach($data['partners'] as $partner)
+                            @php
+                                $totalDebit += $partner->period_debit;
+                                $totalCredit += $partner->period_credit;
+                            @endphp
+                            
+                            <tbody wire:key="partner-{{ $partner->id }}" class="divide-y divide-gray-200 dark:divide-white/5!">
+                                {{-- Partner Header Row --}}
                                     <tr 
                                         class="bg-gray-50/50 dark:bg-white/5 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/5!"
                                         x-data="{ loading: false }"

@@ -40,21 +40,20 @@
                         </tr>
                     </thead>
                     
-                    <tbody class="divide-y divide-gray-200 dark:divide-white/5!">
-                        @php
-                            $totalDebit = 0;
-                            $totalCredit = 0;
-                        @endphp
+                    @php
+                        $totalDebit = 0;
+                        $totalCredit = 0;
+                    @endphp
 
-                        @if($data['accounts']->isNotEmpty())
-                            @foreach($data['accounts'] as $account)
-                                @php
-                                    $totalDebit += $account->period_debit;
-                                    $totalCredit += $account->period_credit;
-                                @endphp
+                    @if($data['accounts']->isNotEmpty())
+                        @foreach($data['accounts'] as $account)
+                            @php
+                                $totalDebit += $account->period_debit;
+                                $totalCredit += $account->period_credit;
+                            @endphp
 
-                                <tbody>
-                                    {{-- Account Header Row --}}
+                            <tbody wire:key="account-{{ $account->id }}" class="divide-y divide-gray-200 dark:divide-white/5!">
+                                {{-- Account Header Row --}}
                                     <tr 
                                         class="bg-gray-50/50 dark:bg-white/5 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/5!"
                                         x-data="{ loading: false }"
