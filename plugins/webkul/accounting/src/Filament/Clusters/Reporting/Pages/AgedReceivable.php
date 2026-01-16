@@ -76,6 +76,12 @@ class AgedReceivable extends Page implements HasForms
                     $state = $this->form->getState();
                     $basis = $state['basis'] ?? 'due_date';
 
+                    foreach ($this->expandedPartners as $partnerId) {
+                        if (isset($partners[$partnerId])) {
+                            $partners[$partnerId]['lines'] = $this->getPartnerLines($partnerId);
+                        }
+                    }
+
                     return Excel::download(
                         new AgedReceivableExport($partners, $asOfDate, $period, $basis, $this->expandedPartners),
                         'aged-receivable-'.$asOfDate.'.xlsx'
