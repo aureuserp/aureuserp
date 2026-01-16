@@ -63,7 +63,7 @@ class AgedReceivableExport implements FromArray, WithColumnWidths, WithHeadings,
 
         foreach ($this->partners as $partnerId => $partner) {
             $rows[] = [
-                '        '.$partner['partner_name'],
+                $partner['partner_name'],
                 '',
                 ...collect(['at_date', 'period_1', 'period_2', 'period_3', 'period_4', 'older'])
                     ->map(fn ($key) => $partner[$key] != 0 ? $partner[$key] : '')
@@ -75,7 +75,7 @@ class AgedReceivableExport implements FromArray, WithColumnWidths, WithHeadings,
             if (in_array($partnerId, $this->expandedPartners) && ! empty($partner['lines'])) {
                 foreach ($partner['lines'] as $line) {
                     $rows[] = [
-                        '   '.$line['move_name'],
+                        '        '.$line['move_name'],
                         Carbon::parse($line['invoice_date'])->format('m/d/Y'),
                         ...collect(['at_date', 'period_1', 'period_2', 'period_3', 'period_4', 'older'])
                             ->map(fn ($key) => $line[$key] != 0 ? $line[$key] : '')

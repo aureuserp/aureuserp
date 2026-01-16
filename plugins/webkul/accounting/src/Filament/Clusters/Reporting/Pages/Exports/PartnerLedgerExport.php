@@ -38,7 +38,7 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
         return [
             ['Partner Ledger - From '.$this->dateFrom->format('M d, Y').' to '.$this->dateTo->format('M d, Y')],
             [],
-            ['', 'Partner', 'Journal', 'Account', 'Invoice Date', 'Due Date', 'Debit', 'Credit', 'Balance'],
+            ['Partner', 'Journal', 'Account', 'Invoice Date', 'Due Date', 'Debit', 'Credit', 'Balance'],
         ];
     }
 
@@ -56,7 +56,6 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
             $totals['credit'] += $partner['period_credit'];
 
             $rows[] = [
-                '',
                 $partner['name'],
                 '',
                 '',
@@ -71,7 +70,6 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
             if (in_array($partner['id'], $this->expandedPartners)) {
                 if ($partner['opening_balance'] != 0) {
                     $rows[] = [
-                        '',
                         '        Opening Balance',
                         $this->dateFrom->format('M d, Y'),
                         '',
@@ -90,7 +88,6 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
                 collect($moves)->each(function ($move) use (&$rows, &$rowIndex, &$runningBalance) {
                     $runningBalance += $move['debit'] - $move['credit'];
                     $rows[] = [
-                        '',
                         '        '.$move['move_name'].($move['ref'] ? ' ('.$move['ref'].')' : ''),
                         $move['journal_name'] ?? '',
                         ($move['account_code'] ? $move['account_code'].' ' : '').$move['account_name'],
@@ -106,7 +103,6 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
         }
 
         $rows[] = [
-            '',
             'Total Partner Ledger',
             '',
             '',
@@ -123,13 +119,12 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
 
     public function columnWidths(): array
     {
-        return collect(range('A', 'I'))
+        return collect(range('A', 'H'))
             ->mapWithKeys(fn ($col) => [
                 $col => match ($col) {
-                    'A'     => 5,
-                    'B'     => 35,
-                    'C'     => 20,
-                    'D'     => 30,
+                    'A'     => 35,
+                    'B'     => 20,
+                    'C'     => 30,
                     default => 15,
                 },
             ])
@@ -138,13 +133,13 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
 
     public function styles(Worksheet $sheet)
     {
-        $sheet->getStyle('A1:I1')->applyFromArray([
+        $sheet->getStyle('A1:H1')->applyFromArray([
             'font'      => ['bold' => true, 'size' => 14],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
         ]);
-        $sheet->mergeCells('A1:I1');
+        $sheet->mergeCells('A1:H1');
 
-        $sheet->getStyle('A3:I3')->applyFromArray([
+        $sheet->getStyle('A3:H3')->applyFromArray([
             'font'      => ['bold' => true, 'size' => 12, 'color' => ['rgb' => '000000']],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
             'borders'   => [
@@ -187,12 +182,12 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
 
         foreach ($this->rowMetadata as $rowNum => $type) {
             if (isset($styleMap[$type])) {
-                $sheet->getStyle("A{$rowNum}:I{$rowNum}")->applyFromArray($styleMap[$type]);
+                $sheet->getStyle("A{$rowNum}:H{$rowNum}")->applyFromArray($styleMap[$type]);
             }
         }
 
         $lastRow = count($this->rowMetadata) + 4;
-        $sheet->getStyle("G4:I{$lastRow}")->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet->getStyle("F4:H{$lastRow}")->getNumberFormat()->setFormatCode('#,##0.00');
 
         return [];
     }
