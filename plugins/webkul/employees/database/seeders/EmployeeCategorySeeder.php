@@ -18,10 +18,10 @@ class EmployeeCategorySeeder extends Seeder
         $user = User::first();
 
         $employeesCategories = [
-            ['creator_id' => $user?->id, 'name' => 'Sales', 'color' => fake()->hexColor(), 'created_at' => now(), 'updated_at' => now()],
-            ['creator_id' => $user?->id, 'name' => 'Trainer', 'color' => fake()->hexColor(), 'created_at' => now(), 'updated_at' => now()],
-            ['creator_id' => $user?->id, 'name' => 'Employee', 'color' => fake()->hexColor(), 'created_at' => now(), 'updated_at' => now()],
-            ['creator_id' => $user?->id, 'name' => 'Consultant', 'color' => fake()->hexColor(), 'created_at' => now(), 'updated_at' => now()],
+            ['creator_id' => $user?->id, 'name' => 'Sales', 'color' => random_color(), 'created_at' => now(), 'updated_at' => now()],
+            ['creator_id' => $user?->id, 'name' => 'Trainer', 'color' => random_color(), 'created_at' => now(), 'updated_at' => now()],
+            ['creator_id' => $user?->id, 'name' => 'Employee', 'color' => random_color(), 'created_at' => now(), 'updated_at' => now()],
+            ['creator_id' => $user?->id, 'name' => 'Consultant', 'color' => random_color(), 'created_at' => now(), 'updated_at' => now()],
         ];
 
         DB::table('employees_categories')->insert($employeesCategories);

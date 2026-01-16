@@ -25,7 +25,7 @@ class LeaveTypeSeeder extends Seeder
         $timeOffLeaveTypes = [
             [
                 'sort'                                => 1,
-                'color'                               => fake()->hexColor(),
+                'color'                               => random_color(),
                 'company_id'                          => $company?->id,
                 'max_allowed_negative'                => 20,
                 'creator_id'                          => $user?->id,
@@ -46,7 +46,7 @@ class LeaveTypeSeeder extends Seeder
             ],
             [
                 'sort'                                => 1,
-                'color'                               => fake()->hexColor(),
+                'color'                               => random_color(),
                 'company_id'                          => $company?->id,
                 'max_allowed_negative'                => null,
                 'creator_id'                          => $user?->id,
@@ -67,7 +67,7 @@ class LeaveTypeSeeder extends Seeder
             ],
             [
                 'sort'                                => 3,
-                'color'                               => fake()->hexColor(),
+                'color'                               => random_color(),
                 'company_id'                          => $company?->id,
                 'max_allowed_negative'                => null,
                 'creator_id'                          => $user?->id,
@@ -88,7 +88,7 @@ class LeaveTypeSeeder extends Seeder
             ],
             [
                 'sort'                                => 4,
-                'color'                               => fake()->hexColor(),
+                'color'                               => random_color(),
                 'company_id'                          => $company?->id,
                 'max_allowed_negative'                => null,
                 'creator_id'                          => $user?->id,
@@ -109,7 +109,7 @@ class LeaveTypeSeeder extends Seeder
             ],
             [
                 'sort'                                => 5,
-                'color'                               => fake()->hexColor(),
+                'color'                               => random_color(),
                 'company_id'                          => $company?->id,
                 'max_allowed_negative'                => null,
                 'creator_id'                          => $user?->id,
@@ -130,7 +130,7 @@ class LeaveTypeSeeder extends Seeder
             ],
             [
                 'sort'                                => 6,
-                'color'                               => fake()->hexColor(),
+                'color'                               => random_color(),
                 'company_id'                          => $company?->id,
                 'max_allowed_negative'                => null,
                 'creator_id'                          => $user?->id,
