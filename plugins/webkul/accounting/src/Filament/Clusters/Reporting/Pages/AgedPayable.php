@@ -42,6 +42,8 @@ class AgedPayable extends Page implements HasForms
 
     public array $partnerLines = [];
 
+    public ?int $loadingPartnerId = null;
+
     protected static function getPagePermission(): ?string
     {
         return 'page_accounting_aged_payable';
