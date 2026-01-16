@@ -8,6 +8,12 @@ use Filament\Actions\Contracts\HasActions;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
 use Livewire\Component;
+use Webkul\Account\Enums\MoveType;
+use Webkul\Account\Filament\Resources\InvoiceResource;
+use Webkul\Account\Filament\Resources\CreditNoteResource;
+use Webkul\Account\Filament\Resources\BillResource;
+use Webkul\Account\Filament\Resources\RefundResource;
+use Webkul\Account\Filament\Resources\PaymentResource;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\PartialReconcile;
@@ -79,6 +85,17 @@ class InvoiceSummary extends Component implements HasActions, HasSchemas
                 AccountFacade::unReconcile($partialReconcile);
             })
             ->after(fn () => $this->js('window.location.reload()'));
+    }
+
+    public function getResourceUrl($record): ?string
+    {
+        return match ($record['move_type']) {
+            MoveType::OUT_INVOICE => InvoiceResource::getUrl('view', ['record' => $record['move_id']]),
+            MoveType::IN_INVOICE  => BillResource::getUrl('view', ['record' => $record['move_id']]),
+            MoveType::OUT_REFUND  => CreditNoteResource::getUrl('view', ['record' => $record['move_id']]),
+            MoveType::IN_REFUND   => RefundResource::getUrl('view', ['record' => $record['move_id']]),
+            MoveType::ENTRY       => PaymentResource::getUrl('view', ['record' => $record['account_payment_id']]),
+        };
     }
 
     public function render()

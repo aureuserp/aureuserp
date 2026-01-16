@@ -14,6 +14,7 @@ use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\Mana
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\ViewRefund;
 use Webkul\Invoice\Models\Refund;
 use Webkul\Support\Filament\Forms\Components\Repeater;
+use Webkul\Invoice\Livewire\InvoiceSummary;
 
 class RefundResource extends BaseRefundResource
 {
@@ -38,6 +39,11 @@ class RefundResource extends BaseRefundResource
     public static function getNavigationLabel(): string
     {
         return __('invoices::filament/clusters/vendors/resources/refund.navigation.title');
+    }
+
+    public static function getSummaryComponent()
+    {
+        return InvoiceSummary::class;
     }
 
     public static function getRecordSubNavigation(Page $page): array

@@ -11,6 +11,7 @@ use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource\Pages\Lis
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource\Pages\ManagePayments;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource\Pages\ViewBill;
 use Webkul\Accounting\Models\Bill;
+use Webkul\Accounting\Livewire\InvoiceSummary;
 
 class BillResource extends BaseBillResource
 {
@@ -37,6 +38,11 @@ class BillResource extends BaseBillResource
     public static function getNavigationLabel(): string
     {
         return __('accounting::filament/clusters/vendors/resources/bill.navigation.title');
+    }
+
+    public static function getSummaryComponent()
+    {
+        return InvoiceSummary::class;
     }
 
     public static function getRecordSubNavigation(Page $page): array

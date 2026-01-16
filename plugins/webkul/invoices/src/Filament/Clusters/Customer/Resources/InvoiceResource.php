@@ -14,6 +14,7 @@ use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\Ma
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ViewInvoice;
 use Webkul\Invoice\Models\Invoice;
 use Webkul\Support\Filament\Forms\Components\Repeater;
+use Webkul\Invoice\Livewire\InvoiceSummary;
 
 class InvoiceResource extends BaseInvoiceResource
 {
@@ -45,6 +46,11 @@ class InvoiceResource extends BaseInvoiceResource
         ];
     }
 
+    public static function getSummaryComponent()
+    {
+        return InvoiceSummary::class;
+    }
+
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
@@ -63,11 +69,9 @@ class InvoiceResource extends BaseInvoiceResource
                     ->icon('heroicon-m-arrow-top-right-on-square')
                     ->url(fn (array $arguments, Get $get): ?string => ProductResource::getUrl('edit', [
                         'record' => $get("products.{$arguments['item']}.product_id"),
-                    ])
-                    )
+                    ]))
                     ->openUrlInNewTab()
-                    ->visible(fn (array $arguments, Get $get): bool => filled($get("products.{$arguments['item']}.product_id"))
-                    ),
+                    ->visible(fn (array $arguments, Get $get): bool => filled($get("products.{$arguments['item']}.product_id"))),
             ]);
     }
 
