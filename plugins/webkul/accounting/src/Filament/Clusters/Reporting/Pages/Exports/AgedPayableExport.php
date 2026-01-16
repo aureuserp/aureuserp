@@ -39,7 +39,7 @@ class AgedPayableExport implements FromArray, WithColumnWidths, WithHeadings, Wi
             ['Aged Payable - As of '.$this->asOfDate->format('m/d/Y')],
             [],
             [
-                null,
+                'Partner',
                 'Invoice Date',
                 'At Date',
                 '1-'.$this->period,
@@ -163,6 +163,7 @@ class AgedPayableExport implements FromArray, WithColumnWidths, WithHeadings, Wi
 
         $lastRow = count($this->rowMetadata) + 4;
         $sheet->getStyle("C4:I{$lastRow}")->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet->getStyle("C4:I{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
         return [];
     }

@@ -188,6 +188,7 @@ class PartnerLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
 
         $lastRow = count($this->rowMetadata) + 4;
         $sheet->getStyle("F4:H{$lastRow}")->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet->getStyle("F4:H{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
         return [];
     }

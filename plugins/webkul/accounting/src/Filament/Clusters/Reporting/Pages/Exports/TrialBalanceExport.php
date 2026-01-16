@@ -182,6 +182,7 @@ class TrialBalanceExport implements FromArray, WithColumnWidths, WithHeadings, W
 
         $lastRow = count($this->rowMetadata) + 5;
         $sheet->getStyle("B5:G{$lastRow}")->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet->getStyle("B5:G{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
         return [];
     }
