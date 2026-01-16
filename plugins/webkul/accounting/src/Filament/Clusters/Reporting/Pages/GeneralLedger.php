@@ -43,6 +43,8 @@ class GeneralLedger extends Page implements HasForms
 
     public array $loadedMoveLines = [];
 
+    public ?int $loadingAccountId = null;
+
     protected static function getPagePermission(): ?string
     {
         return 'page_accounting_general_ledger';

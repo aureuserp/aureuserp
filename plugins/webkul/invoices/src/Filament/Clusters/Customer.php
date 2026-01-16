@@ -6,6 +6,8 @@ use Filament\Clusters\Cluster;
 
 class Customer extends Cluster
 {
+    protected static ?string $slug = 'invoices/customers';
+
     public static function getNavigationLabel(): string
     {
         return __('invoices::filament/clusters/customers.navigation.title');

@@ -40,30 +40,31 @@
                         </tr>
                     </thead>
                     
-                    <tbody class="divide-y divide-gray-200 dark:divide-white/5!">
-                        @php
-                            $totalDebit = 0;
-                            $totalCredit = 0;
-                        @endphp
+                    @php
+                        $totalDebit = 0;
+                        $totalCredit = 0;
+                    @endphp
 
-                        @if($data['accounts']->isNotEmpty())
-                            @foreach($data['accounts'] as $account)
-                                @php
-                                    $totalDebit += $account->period_debit;
-                                    $totalCredit += $account->period_credit;
-                                @endphp
+                    @if($data['accounts']->isNotEmpty())
+                        @foreach($data['accounts'] as $account)
+                            @php
+                                $totalDebit += $account->period_debit;
+                                $totalCredit += $account->period_credit;
+                            @endphp
 
-                                <tbody>
-                                    {{-- Account Header Row --}}
+                            <tbody wire:key="account-{{ $account->id }}" class="divide-y divide-gray-200 dark:divide-white/5!">
+                                {{-- Account Header Row --}}
                                     <tr 
                                         class="bg-gray-50/50 dark:bg-white/5 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/5!"
-                                        wire:click="toggleAccountLines({{ $account->id }})"
+                                        x-data="{ loading: false }"
+                                        @click="loading = true; $wire.toggleAccountLines({{ $account->id }}).then(() => loading = false)"
                                     >
                                         <td class="px-4 py-3 whitespace-nowrap">
                                             <div class="flex items-center">
-                                                <svg class="w-4 h-4 transition-transform @if($this->isAccountExpanded($account->id)) rotate-90 @endif" fill="currentColor" viewBox="0 0 20 20">
+                                                <svg x-show="!loading" class="w-4 h-4 transition-transform @if($this->isAccountExpanded($account->id)) rotate-90 @endif" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
                                                 </svg>
+                                                <x-filament::loading-indicator x-show="loading" x-cloak class="h-4 w-4" />
                                             </div>
                                         </td>
                                         <td class="px-4 py-3 whitespace-nowrap">

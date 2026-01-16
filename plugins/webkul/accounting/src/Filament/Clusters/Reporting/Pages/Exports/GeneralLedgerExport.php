@@ -38,7 +38,7 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
         return [
             ['General Ledger - From '.$this->dateFrom->format('M d, Y').' to '.$this->dateTo->format('M d, Y')],
             [],
-            ['', 'Account', 'Date', 'Communication', 'Partner', 'Debit', 'Credit', 'Balance'],
+            ['Account', 'Date', 'Communication', 'Partner', 'Debit', 'Credit', 'Balance'],
         ];
     }
 
@@ -56,7 +56,6 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
             $totals['credit'] += $account->period_credit;
 
             $rows[] = [
-                '',
                 $account->code.' '.$account->name,
                 '',
                 '',
@@ -70,7 +69,6 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
             if (in_array($account->id, $this->expandedAccounts)) {
                 if ($account->opening_balance != 0) {
                     $rows[] = [
-                        '',
                         '        Opening Balance',
                         $this->dateFrom->format('M d, Y'),
                         '',
@@ -88,7 +86,6 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
                 collect($moves)->each(function ($move) use (&$rows, &$rowIndex, &$runningBalance) {
                     $runningBalance += $move['debit'] - $move['credit'];
                     $rows[] = [
-                        '',
                         '        '.$move['move_name'],
                         Carbon::parse($move['date'])->format('M d, Y'),
                         ($move['move_type'] ?? null) == 'entry' ? ($move['name'] ?? '') : '',
@@ -100,13 +97,9 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
                     $this->rowMetadata[$rowIndex++] = 'move_line';
                 });
             }
-
-            $rows[] = array_fill(0, 8, '');
-            $rowIndex++;
         }
 
         $rows[] = [
-            '',
             'Total General Ledger',
             '',
             '',
@@ -122,13 +115,12 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
 
     public function columnWidths(): array
     {
-        return collect(range('A', 'H'))
+        return collect(range('A', 'G'))
             ->mapWithKeys(fn ($col) => [
                 $col => match ($col) {
-                    'A' => 5,
-                    'B' => 35,
-                    'C' => 15,
-                    'D', 'E' => 25,
+                    'A' => 35,
+                    'B' => 15,
+                    'C', 'D' => 25,
                     default => 15,
                 },
             ])
@@ -137,13 +129,13 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
 
     public function styles(Worksheet $sheet)
     {
-        $sheet->getStyle('A1:H1')->applyFromArray([
+        $sheet->getStyle('A1:G1')->applyFromArray([
             'font'      => ['bold' => true, 'size' => 14],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
         ]);
-        $sheet->mergeCells('A1:H1');
+        $sheet->mergeCells('A1:G1');
 
-        $sheet->getStyle('A3:H3')->applyFromArray([
+        $sheet->getStyle('A3:G3')->applyFromArray([
             'font'      => ['bold' => true, 'size' => 12, 'color' => ['rgb' => '000000']],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
             'borders'   => [
@@ -195,12 +187,13 @@ class GeneralLedgerExport implements FromArray, WithColumnWidths, WithHeadings, 
 
         foreach ($this->rowMetadata as $rowNum => $type) {
             if (isset($styleMap[$type])) {
-                $sheet->getStyle("A{$rowNum}:H{$rowNum}")->applyFromArray($styleMap[$type]);
+                $sheet->getStyle("A{$rowNum}:G{$rowNum}")->applyFromArray($styleMap[$type]);
             }
         }
 
         $lastRow = count($this->rowMetadata) + 4;
-        $sheet->getStyle("F4:H{$lastRow}")->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet->getStyle("E4:G{$lastRow}")->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet->getStyle("E4:G{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
         return [];
     }

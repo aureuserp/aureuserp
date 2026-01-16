@@ -106,7 +106,9 @@
                             {{ ($this->unReconcileAction())(['partial_id' => $line['partial_id']]) }}
 
                             <div class="flex-1">
-                                <div class="font-medium">{{ $line['ref'] }}</div>
+                                <x-filament::link :href="$this->getResourceUrl($line)">
+                                    {{ $line['ref'] }}
+                                </x-filament::link>
                                 
                                 @if (isset($line['date']))
                                     <div class="text-xs text-gray-500 dark:text-gray-400">
@@ -137,7 +139,9 @@
                             {{ ($this->reconcileAction())(['lineId' => $line['id']]) }}
 
                             <div class="flex-1">
-                                <div class="font-medium">{{ $line['journal_name'] }}</div>
+                                <x-filament::link :href="$this->getResourceUrl($line)">
+                                    {{ $line['journal_name'] }}
+                                </x-filament::link>
                                 
                                 @if (isset($line['date']))
                                     <div class="text-xs text-gray-500 dark:text-gray-400">{{ $line['date'] }}</div>

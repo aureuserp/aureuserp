@@ -11,6 +11,7 @@ use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource\Pages
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ManagePayments;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ViewInvoice;
 use Webkul\Accounting\Models\Invoice;
+use Webkul\Accounting\Livewire\InvoiceSummary;
 
 class InvoiceResource extends BaseInvoiceResource
 {
@@ -30,6 +31,11 @@ class InvoiceResource extends BaseInvoiceResource
     public static function getNavigationLabel(): string
     {
         return __('accounting::filament/clusters/customers/resources/invoice.navigation.title');
+    }
+
+    public static function getSummaryComponent()
+    {
+        return InvoiceSummary::class;
     }
 
     public static function getGloballySearchableAttributes(): array

@@ -43,6 +43,7 @@ class ViewInvoice extends ViewRecord
             BaseActions\CancelAction::make(),
             BaseActions\SetAsCheckedAction::make(),
             BaseActions\ReverseAction::make()
+                ->setResource(static::getReverseResource())
                 ->label(__('accounts::filament/resources/invoice/pages/view-invoice.header-actions.reverse.label'))
                 ->modalHeading(__('accounts::filament/resources/invoice/pages/view-invoice.header-actions.reverse.modal-heading')),
             BaseActions\ResetToDraftAction::make(),

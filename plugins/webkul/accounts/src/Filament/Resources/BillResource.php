@@ -271,7 +271,7 @@ class BillResource extends Resource
                             ->schema([
                                 static::getProductRepeater(),
 
-                                Livewire::make(InvoiceSummary::class, function (Get $get, $record, $livewire) {
+                                Livewire::make(static::getSummaryComponent(), function (Get $get, $record, $livewire) {
                                     $totals = self::calculateMoveTotals($get, $livewire);
 
                                     $currency = Currency::find($get('currency_id'));
@@ -832,7 +832,7 @@ class BillResource extends Resource
                                             ->money(fn ($record) => $record->currency->name),
                                     ]),
 
-                                Livewire::make(InvoiceSummary::class, function ($record) {
+                                Livewire::make(static::getSummaryComponent(), function ($record) {
                                     $rounding = $record->roundingLines->sum('balance');
 
                                     return [
@@ -1140,6 +1140,11 @@ class BillResource extends Resource
             ])
             ->mutateRelationshipDataBeforeCreateUsing(fn (array $data, $record) => static::mutateProductRelationship($data, $record))
             ->mutateRelationshipDataBeforeSaveUsing(fn (array $data, $record) => static::mutateProductRelationship($data, $record));
+    }
+
+    public static function getSummaryComponent()
+    {
+        return InvoiceSummary::class;
     }
 
     public static function mutateProductRelationship(array $data, $record): array

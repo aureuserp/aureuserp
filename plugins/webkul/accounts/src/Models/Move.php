@@ -269,25 +269,6 @@ class Move extends Model implements Sortable
         return $this->belongsTo(PaymentMethodLine::class, 'preferred_payment_method_line_id');
     }
 
-    public function getResourceUrl(?string $page = 'edit'): ?string
-    {
-        if (! $this->id || ! $this->move_type) {
-            return null;
-        }
-
-        $resourceClass = match ($this->move_type) {
-            \Webkul\Account\Enums\MoveType::OUT_INVOICE => \Webkul\Account\Filament\Resources\InvoiceResource::class,
-            \Webkul\Account\Enums\MoveType::OUT_REFUND  => \Webkul\Account\Filament\Resources\CreditNoteResource::class,
-            \Webkul\Account\Enums\MoveType::IN_INVOICE  => \Webkul\Account\Filament\Resources\BillResource::class,
-            \Webkul\Account\Enums\MoveType::IN_REFUND   => \Webkul\Account\Filament\Resources\RefundResource::class,
-            default                                     => null,
-        };
-
-        return $resourceClass
-            ? $resourceClass::getUrl($page, ['record' => $this->id])
-            : null;
-    }
-
     public function getTotalDiscountAttribute()
     {
         return $this->lines()
@@ -889,6 +870,7 @@ class Move extends Model implements Sortable
                 'currency'           => $this->currency,
                 'id'                 => $line->id,
                 'move_id'            => $line->move_id,
+                'move_type'          => $line->move->move_type,
                 'date'               => $line->date->toDateString(),
                 'account_payment_id' => $line->payment_id,
             ];
@@ -942,6 +924,7 @@ class Move extends Model implements Sortable
                 'account_payment_id'      => $counterpartLine->payment_id,
                 'payment_method_name'     => $counterpartLine->payment?->paymentMethodLine->name,
                 'move_id'                 => $counterpartLine->move_id,
+                'move_type'               => $counterpartLine->move->move_type,
                 'ref'                     => $reconciliationRef,
                 'is_exchange'             => $reconciledPartial['is_exchange'],
                 'amount_company_currency' => money(abs($counterpartLine->balance), $counterpartLine->company->currency->name),

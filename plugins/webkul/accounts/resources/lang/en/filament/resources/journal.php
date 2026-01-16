@@ -91,17 +91,6 @@ return [
             'status'     => 'Status',
         ],
 
-        'relation-managers' => [
-            'moves-relation-manager' => [
-                'columns' => [
-                    'journal-entry' => 'Journal Entry',
-                    'account'       => 'Account',
-                    'partner'       => 'Partner',
-                    'label'         => 'Label',
-                ],
-            ],
-        ],
-
         'actions' => [
             'delete' => [
                 'notification' => [

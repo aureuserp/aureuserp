@@ -42,6 +42,8 @@ class PartnerLedger extends Page implements HasForms
 
     public array $loadedMoveLines = [];
 
+    public ?int $loadingPartnerId = null;
+
     protected static function getPagePermission(): ?string
     {
         return 'page_accounting_partner_ledger';

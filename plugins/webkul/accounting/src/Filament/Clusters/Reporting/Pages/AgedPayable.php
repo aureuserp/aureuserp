@@ -42,6 +42,8 @@ class AgedPayable extends Page implements HasForms
 
     public array $partnerLines = [];
 
+    public ?int $loadingPartnerId = null;
+
     protected static function getPagePermission(): ?string
     {
         return 'page_accounting_aged_payable';
@@ -75,6 +77,12 @@ class AgedPayable extends Page implements HasForms
                     $period = $data['period'];
                     $state = $this->form->getState();
                     $basis = $state['basis'] ?? 'due_date';
+
+                    foreach ($this->expandedPartners as $partnerId) {
+                        if (isset($partners[$partnerId])) {
+                            $partners[$partnerId]['lines'] = $this->getPartnerLines($partnerId);
+                        }
+                    }
 
                     return Excel::download(
                         new AgedPayableExport($partners, $asOfDate, $period, $basis, $this->expandedPartners),

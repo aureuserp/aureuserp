@@ -39,7 +39,7 @@ class AgedReceivableExport implements FromArray, WithColumnWidths, WithHeadings,
             ['Aged Receivable - As of '.$this->asOfDate->format('m/d/Y')],
             [],
             [
-                null,
+                'Partner',
                 'Invoice Date',
                 'At Date',
                 '1-'.$this->period,
@@ -63,7 +63,7 @@ class AgedReceivableExport implements FromArray, WithColumnWidths, WithHeadings,
 
         foreach ($this->partners as $partnerId => $partner) {
             $rows[] = [
-                '        '.$partner['partner_name'],
+                $partner['partner_name'],
                 '',
                 ...collect(['at_date', 'period_1', 'period_2', 'period_3', 'period_4', 'older'])
                     ->map(fn ($key) => $partner[$key] != 0 ? $partner[$key] : '')
@@ -75,7 +75,7 @@ class AgedReceivableExport implements FromArray, WithColumnWidths, WithHeadings,
             if (in_array($partnerId, $this->expandedPartners) && ! empty($partner['lines'])) {
                 foreach ($partner['lines'] as $line) {
                     $rows[] = [
-                        '   '.$line['move_name'],
+                        '        '.$line['move_name'],
                         Carbon::parse($line['invoice_date'])->format('m/d/Y'),
                         ...collect(['at_date', 'period_1', 'period_2', 'period_3', 'period_4', 'older'])
                             ->map(fn ($key) => $line[$key] != 0 ? $line[$key] : '')
@@ -85,9 +85,6 @@ class AgedReceivableExport implements FromArray, WithColumnWidths, WithHeadings,
                     $this->rowMetadata[$rowIndex++] = 'line';
                 }
             }
-
-            $rows[] = array_fill(0, 9, '');
-            $rowIndex++;
 
             collect(['at_date', 'period_1', 'period_2', 'period_3', 'period_4', 'older', 'total'])
                 ->each(fn ($key) => $totals[$key] += $partner[$key]);
@@ -166,6 +163,7 @@ class AgedReceivableExport implements FromArray, WithColumnWidths, WithHeadings,
 
         $lastRow = count($this->rowMetadata) + 4;
         $sheet->getStyle("C4:I{$lastRow}")->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet->getStyle("C4:I{$lastRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
         return [];
     }

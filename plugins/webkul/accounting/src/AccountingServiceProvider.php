@@ -7,6 +7,7 @@ use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Livewire\Livewire;
 use Webkul\Accounting\Filament\Widgets\JournalChartWidget;
+use Webkul\Accounting\Livewire\InvoiceSummary;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
@@ -50,6 +51,8 @@ class AccountingServiceProvider extends PackageServiceProvider
     public function registerLivewireComponents()
     {
         Livewire::component('accounting::journal-chart', JournalChartWidget::class);
+        
+        Livewire::component('accounting-invoice-summary', InvoiceSummary::class);
     }
 
     public function registerCustomCss()
