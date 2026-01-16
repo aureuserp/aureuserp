@@ -30,9 +30,4 @@ class InvoiceSummary extends BaseInvoiceSummary
             },
         };
     }
-
-    public function render()
-    {
-        return parent::render();
-    }
 }

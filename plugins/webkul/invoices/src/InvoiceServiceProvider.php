@@ -3,6 +3,8 @@
 namespace Webkul\Invoice;
 
 use Filament\Panel;
+use Webkul\Invoice\Livewire\InvoiceSummary;
+use Livewire\Livewire;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;
@@ -26,6 +28,11 @@ class InvoiceServiceProvider extends PackageServiceProvider
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {})
             ->icon('invoices');
+    }
+
+    public function packageBooted(): void
+    {
+        Livewire::component('invoice-invoice-summary', InvoiceSummary::class);
     }
 
     public function packageRegistered(): void
