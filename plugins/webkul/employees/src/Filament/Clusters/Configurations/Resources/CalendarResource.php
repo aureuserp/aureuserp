@@ -374,13 +374,13 @@ class CalendarResource extends Resource
                                         TextEntry::make('hours_per_day')
                                             ->placeholder('—')
                                             ->label(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.configuration.entries.hours-per-day'))
-                                            ->icon('heroicon-o-clock')
-                                            ->date(),
+                                            ->suffix(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.configuration.entries.hours-per-day-suffix'))
+                                            ->icon('heroicon-o-clock'),
                                         TextEntry::make('full_time_required_hours')
                                             ->placeholder('—')
                                             ->label(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.configuration.entries.full-time-required-hours'))
-                                            ->icon('heroicon-o-clock')
-                                            ->date(),
+                                            ->suffix(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.configuration.entries.full-time-required-hours-suffix'))
+                                            ->icon('heroicon-o-clock'),
                                     ])->columns(2),
                             ])->columnSpan(2),
                         Group::make([
