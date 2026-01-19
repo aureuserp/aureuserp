@@ -59,6 +59,7 @@ class EditOrder extends EditRecord
             OrderActions\SendEmailAction::make(),
             OrderActions\SendPOEmailAction::make(),
             OrderActions\PrintRFQAction::make(),
+            OrderActions\PrintPOAction::make(),
             OrderActions\DraftAction::make(),
             OrderActions\ConfirmAction::make(),
             OrderActions\ConfirmReceiptDateAction::make(),

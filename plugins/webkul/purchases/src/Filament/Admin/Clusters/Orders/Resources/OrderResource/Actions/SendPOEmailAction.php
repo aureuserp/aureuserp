@@ -100,9 +100,7 @@ MD;
                     ->success()
                     ->send();
             })
-            ->color(fn (Order $record): string => $record->state === OrderState::DRAFT ? 'primary' : 'gray'
-            )
-            ->visible(fn (Order $record) => $record->state == OrderState::PURCHASE
-            );
+            ->color(fn (Order $record): string => $record->state === OrderState::DRAFT ? 'primary' : 'gray')
+            ->visible(fn (Order $record) => $record->state == OrderState::PURCHASE);
     }
 }
