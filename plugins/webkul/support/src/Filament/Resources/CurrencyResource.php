@@ -10,6 +10,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\IconEntry;
@@ -135,27 +136,49 @@ class CurrencyResource extends Resource
                                 TableColumn::make('name')
                                     ->label(__('support::filament/resources/currency.form.sections.rates.fields.name')),
                                 TableColumn::make('rate')
-                                    ->label(__('support::filament/resources/currency.form.sections.rates.fields.rate')),
-                                TableColumn::make('created_at')
-                                    ->label(__('support::filament/resources/currency.form.sections.rates.fields.date')),
+                                    ->label(__('support::filament/resources/currency.form.sections.rates.fields.unit-per-currency', [
+                                        'currency' => config('app.currency'),
+                                    ])),
+                                TableColumn::make('rate_temp')
+                                    ->label(__('support::filament/resources/currency.form.sections.rates.fields.currency-per-unit', [
+                                        'currency' => config('app.currency'),
+                                    ])),
                             ])
                             ->schema([
-                                TextInput::make('name')
+                                DatePicker::make('name')
                                     ->label(__('support::filament/resources/currency.form.sections.rates.fields.name'))
                                     ->required()
-                                    ->maxLength(255)
-                                    ->placeholder(__('support::filament/resources/currency.form.sections.rates.fields.name-placeholder')),
+                                    ->native(false)
+                                    ->default(today())
+                                    ->format('Y-m-d')
+                                    ->displayFormat('Y-m-d'),
                                 TextInput::make('rate')
-                                    ->label(__('support::filament/resources/currency.form.sections.rates.fields.rate'))
+                                    ->label(__('support::filament/resources/currency.form.sections.rates.fields.unit-per-currency', [
+                                        'currency' => config('app.currency'),
+                                    ]))
                                     ->required()
                                     ->numeric()
                                     ->step(0.000001)
-                                    ->minValue(0)
+                                    ->minValue(1)
+                                    ->default(1.000000)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function ($state, callable $set) {
+                                        if ($state && $state > 0) {
+                                            $set('rate_temp', round(1 / $state, 6));
+                                        }
+                                    })
+                                    ->afterStateHydrated(function ($state, callable $set) {
+                                        if ($state && $state > 0) {
+                                            $set('rate_temp', round(1 / $state, 6));
+                                        }
+                                    }),
+                                TextInput::make('rate_temp')
+                                    ->label(__('support::filament/resources/currency.form.sections.rates.fields.currency-per-unit', [
+                                        'currency' => config('app.currency'),
+                                    ]))
+                                    ->readOnly()
+                                    ->dehydrated(false)
                                     ->default(1.000000),
-                                DateTimePicker::make('created_at')
-                                    ->label(__('support::filament/resources/currency.form.sections.rates.fields.date'))
-                                    ->default(now())
-                                    ->required(),
                             ]),
                     ]),
             ])
@@ -320,18 +343,28 @@ class CurrencyResource extends Resource
                                 InfolistTableColumn::make('name')
                                     ->label(__('support::filament/resources/currency.infolist.sections.rates.entries.name')),
                                 InfolistTableColumn::make('rate')
-                                    ->label(__('support::filament/resources/currency.infolist.sections.rates.entries.rate')),
-                                InfolistTableColumn::make('created_at')
-                                    ->label(__('support::filament/resources/currency.infolist.sections.rates.entries.date')),
+                                    ->label(__('support::filament/resources/currency.infolist.sections.rates.entries.unit-per-currency', [
+                                        'currency' => config('app.currency'),
+                                    ])),
+                                InfolistTableColumn::make('rate_temp')
+                                    ->label(__('support::filament/resources/currency.infolist.sections.rates.entries.currency-per-unit', [
+                                        'currency' => config('app.currency'),
+                                    ])),
                             ])
                             ->schema([
                                 TextEntry::make('name')
-                                    ->placeholder('-'),
+                                    ->placeholder('-')
+                                    ->date('Y-m-d'),
                                 TextEntry::make('rate')
                                     ->placeholder('-'),
-                                TextEntry::make('created_at')
+                                TextEntry::make('rate_temp')
                                     ->placeholder('-')
-                                    ->dateTime(),
+                                    ->getStateUsing(function ($record) {
+                                        if ($record && $record->rate && $record->rate > 0) {
+                                            return round(1 / $record->rate, 6);
+                                        }
+                                        return null;
+                                    }),
                             ]),
                     ]),
             ])
