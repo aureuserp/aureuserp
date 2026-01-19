@@ -16,6 +16,8 @@ class PackagingResource extends BasePackagingResource
 
     protected static bool $shouldRegisterNavigation = true;
 
+    protected static ?int $navigationSort = 5;
+
     protected static ?string $cluster = Configuration::class;
 
     public static function isDiscovered(): bool
