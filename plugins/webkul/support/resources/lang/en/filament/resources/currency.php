@@ -45,10 +45,9 @@ return [
                 'description' => 'Manage historic exchange rates for this currency relative to the base currency (USD).',
 
                 'fields' => [
-                    'name'             => 'Rate Name',
-                    'name-placeholder' => 'e.g., EUR Rate - 2025-01-01',
-                    'rate'             => 'Exchange Rate',
-                    'date'             => 'Effective Date',
+                    'name'              => 'Date',
+                    'unit-per-currency' => 'Unit Per :currency',
+                    'currency-per-unit' => ':currency Per Unit',
                 ],
 
                 'add-rate'   => 'Add Rate',
@@ -87,10 +86,12 @@ return [
                 'notification' => [
                     'title'   => 'Currency deleted',
                     'body'    => 'The currency has been deleted successfully.',
+                    
                     'success' => [
                         'title' => 'Currency deleted',
                         'body'  => 'The currency has been deleted successfully.',
                     ],
+
                     'error' => [
                         'title' => 'Currency could not be deleted',
                         'body'  => 'The currency cannot be deleted because it is currently in use.',
@@ -143,9 +144,9 @@ return [
                 'title'       => 'Currency Rates',
 
                 'entries' => [
-                    'name'             => 'Rate Name',
-                    'rate'             => 'Exchange Rate',
-                    'date'             => 'Effective Date',
+                    'name'              => 'Date',
+                    'unit-per-currency' => 'Unit Per :currency',
+                    'currency-per-unit' => ':currency Per Unit',
                 ],
             ],
         ],
