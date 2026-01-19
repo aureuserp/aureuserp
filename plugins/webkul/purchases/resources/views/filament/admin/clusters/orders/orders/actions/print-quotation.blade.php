@@ -50,6 +50,17 @@
             border-bottom: 2px solid #1a4587;
         }
 
+        .details-table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+
+        .details-table td {
+            padding: 10px;
+            vertical-align: top;
+        }
+
         .items-table {
             width: 100%;
             border-collapse: collapse;
@@ -70,6 +81,24 @@
 
         .items-table tr:nth-child(even) {
             background: #f8f9fa;
+        }
+
+        .summary-table {
+            width: 300px;
+            float: right;
+            margin-top: 20px;
+            background: #f8f9fa;
+            border-collapse: collapse;
+        }
+
+        .summary-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .total-row {
+            font-weight: bold;
+            border-top: 2px solid #1a4587;
         }
 
         .terms {
@@ -186,14 +215,50 @@
                 Request for Quotation #{{ $record->name }}
             </div>
 
+            <!-- Details Table -->
+            <table class="details-table">
+                <tr>
+                    @if ($record->user_id)
+                        <td width="25%">
+                            <strong>Buyer</strong><br>
+                            {{ $record->user->name }}
+                        </td>
+                    @endif
+                    
+                    @if ($record->partner_reference)
+                        <td width="25%">
+                            <strong>Order Reference</strong><br>
+                            {{ $record->partner_reference }}
+                        </td>
+                    @endif
+
+                    @if ($record->ordered_at)
+                        <td width="25%">
+                            <strong>Order Deadline</strong><br>
+                            {{ $record->ordered_at }}
+                        </td>
+                    @endif
+
+                    @if ($record->planned_at)
+                        <td width="25%">
+                            <strong>Expected Arrival</strong><br>
+                            {{ $record->planned_at }}
+                        </td>
+                    @endif
+                </tr>
+            </table>
+
             <!-- Items Table -->
             @if (! $record->lines->isEmpty())
                 <table class="items-table">
                     <thead>
                         <tr>
                             <th>Description</th>
-                            <th>Expected Date</th>
                             <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Discount</th>
+                            <th>Taxes</th>
+                            <th>Amount</th>
                         </tr>
                     </thead>
 
@@ -201,12 +266,35 @@
                         @foreach ($record->lines as $item)
                             <tr>
                                 <td>{{ $item->name }}</td>
-                                <td>{{ $item->planned_at }}</td>
                                 <td>{{ $item->product_qty.' '.$item->uom->name }}</td>
+                                <td>{{ money($item->price_unit, $record->currency->name) }}</td>
+                                <td>{{ round($item->discount, 2) }}%</td>
+                                <td>{{ $item->taxes->pluck('name')->implode(', ') }}</td>
+                                <td>{{ money($item->price_subtotal, $record->currency->name) }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
+
+                <!-- Summary Table -->
+                <table class="summary-table">
+                    <tr>
+                        <td>Untaxed Amount</td>
+                        <td style="text-align: right;">{{ money($record->untaxed_amount, $record->currency->name) }}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Tax</td>
+                        <td style="text-align: right;">{{ money($record->tax_amount, $record->currency->name) }}</td>
+                    </tr>
+
+                    <tr class="total-row">
+                        <td>Total</td>
+                        <td style="text-align: right;">{{ money($record->total_amount, $record->currency->name) }}</td>
+                    </tr>
+                </table>
+                
+                <div class="clearfix"></div>
             @endif
 
             <!-- Additional Information -->
