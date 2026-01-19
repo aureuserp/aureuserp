@@ -88,12 +88,8 @@ trait EmployeeSkillRelation
                         }
                     })
                     ->label(__('employees::filament/resources/employee/relation-manager/skill.table.columns.level-percent')),
-                TextColumn::make('creator.name')
+                TextColumn::make('createdBy.name')
                     ->label(__('employees::filament/resources/employee/relation-manager/skill.table.columns.created-by'))
-                    ->sortable(),
-                TextColumn::make('user.name')
-                    ->label(__('employees::filament/resources/employee/relation-manager/skill.table.columns.user'))
-                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label(__('employees::filament/resources/employee/relation-manager/skill.table.columns.created-at'))
