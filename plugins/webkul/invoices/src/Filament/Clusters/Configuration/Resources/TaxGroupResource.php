@@ -16,6 +16,8 @@ class TaxGroupResource extends BaseTaxGroupResource
 
     protected static bool $shouldRegisterNavigation = true;
 
+    protected static ?int $navigationSort = 7;
+
     protected static ?string $cluster = Configuration::class;
 
     public static function getModelLabel(): string

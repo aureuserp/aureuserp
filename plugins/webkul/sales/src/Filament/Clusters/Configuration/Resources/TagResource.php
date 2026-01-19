@@ -27,6 +27,8 @@ class TagResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tag';
 
+    protected static ?int $navigationSort = 6;
+
     protected static ?string $cluster = Configuration::class;
 
     public static function getModelLabel(): string
