@@ -136,14 +136,22 @@ class PluginResource extends Resource
                         ->modalSubmitActionLabel(__('plugin-manager::filament/resources/plugin.actions.install.submit'))
                         ->action(function ($record) {
                             try {
-                                $cmd = sprintf(
-                                    '%s %s %s:install',
-                                    escapeshellarg(PHP_BINARY),
-                                    escapeshellarg(base_path('artisan')),
-                                    $record->name
-                                );
+                                $php = escapeshellarg(PHP_BINARY);
+                                $artisan = escapeshellarg(base_path('artisan'));
+                                $commandName = "{$record->name}:install";
 
-                                exec($cmd);
+                                $cmd = "$php $artisan $commandName 2>&1";
+
+                                $output = [];
+                                $exitCode = 0;
+                                exec($cmd, $output, $exitCode);
+
+                                if ($exitCode !== 0) {
+                                    throw new \RuntimeException(
+                                        "Installation command failed with exit code {$exitCode}. ".
+                                        'Output: '.implode(PHP_EOL, $output)
+                                    );
+                                }
 
                                 $record->update(['is_installed' => true, 'is_active' => true]);
 
