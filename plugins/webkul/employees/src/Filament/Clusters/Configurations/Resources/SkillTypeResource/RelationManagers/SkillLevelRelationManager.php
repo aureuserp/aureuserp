@@ -62,10 +62,10 @@ class SkillLevelRelationManager extends RelationManager
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/levels.table.columns.level'))
                     ->getStateUsing(fn ($record) => $record->level)
                     ->color(fn ($record): string => match (true) {
-                        $record->level === 100                      => 'success',
-                        $record->level >= 50 && $record->level < 80 => 'warning',
-                        $record->level < 20                         => 'danger',
-                        default                                     => 'info',
+                        $record->level >= 80 => 'success',
+                        $record->level >= 50 => 'warning',
+                        $record->level >= 20 => 'info',
+                        default              => 'danger',
                     }),
                 IconColumn::make('default_level')
                     ->sortable()
@@ -181,10 +181,10 @@ class SkillLevelRelationManager extends RelationManager
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/levels.infolist.entries.level'))
                     ->getStateUsing(fn ($record) => $record->level)
                     ->color(fn ($record): string => match (true) {
-                        $record->level === 100                      => 'success',
-                        $record->level >= 50 && $record->level < 80 => 'warning',
-                        $record->level < 20                         => 'danger',
-                        default                                     => 'info',
+                        $record->level >= 80 => 'success',
+                        $record->level >= 50 => 'warning',
+                        $record->level >= 20 => 'info',
+                        default              => 'danger',
                     }),
                 IconEntry::make('default_level')
                     ->boolean()
