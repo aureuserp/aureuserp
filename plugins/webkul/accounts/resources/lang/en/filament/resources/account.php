@@ -1,6 +1,11 @@
 <?php
 
 return [
+    'global-search' => [
+        'code' => 'Code',
+        'type' => 'Type',
+    ],
+
     'form' => [
         'sections' => [
             'fields' => [

@@ -77,7 +77,22 @@ class OrderResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
+    protected static bool $isGloballySearchable = false;
+
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'partner.name'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('purchases::filament/admin/clusters/orders/resources/order.global-search.vendor') => $record->partner?->name ?? '—',
+            __('purchases::filament/admin/clusters/orders/resources/order.global-search.amount') => money($record->total_amount, $record->currency?->name) ?? '—',
+        ];
+    }
 
     public static function form(Schema $schema): Schema
     {

@@ -57,6 +57,21 @@ class PartnerResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
+    protected static bool $isGloballySearchable = false;
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'email', 'phone'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('partners::filament/resources/partner.global-search.email') => $record->email ?? '—',
+            __('partners::filament/resources/partner.global-search.phone') => $record->phone ?? '—',
+        ];
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema

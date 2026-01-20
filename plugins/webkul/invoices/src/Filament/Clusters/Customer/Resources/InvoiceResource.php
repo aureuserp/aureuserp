@@ -5,6 +5,7 @@ namespace Webkul\Invoice\Filament\Clusters\Customer\Resources;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\Page;
 use Filament\Schemas\Components\Utilities\Get;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\InvoiceResource as BaseInvoiceResource;
 use Webkul\Invoice\Filament\Clusters\Customer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\CreateInvoice;
@@ -12,15 +13,17 @@ use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\Ed
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ListInvoices;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ManagePayments;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ViewInvoice;
+use Webkul\Invoice\Livewire\InvoiceSummary;
 use Webkul\Invoice\Models\Invoice;
 use Webkul\Support\Filament\Forms\Components\Repeater;
-use Webkul\Invoice\Livewire\InvoiceSummary;
 
 class InvoiceResource extends BaseInvoiceResource
 {
     protected static ?string $model = Invoice::class;
 
     protected static bool $shouldRegisterNavigation = true;
+
+    protected static bool $isGloballySearchable = false;
 
     protected static ?string $cluster = Customer::class;
 
@@ -34,16 +37,6 @@ class InvoiceResource extends BaseInvoiceResource
     public static function getNavigationLabel(): string
     {
         return __('invoices::filament/clusters/customers/resources/invoice.navigation.title');
-    }
-
-    public static function getGloballySearchableAttributes(): array
-    {
-        return [
-            'name',
-            'invoice_partner_display_name',
-            'invoice_date',
-            'invoice_date_due',
-        ];
     }
 
     public static function getSummaryComponent()

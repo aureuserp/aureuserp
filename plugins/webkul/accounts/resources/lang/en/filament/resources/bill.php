@@ -9,10 +9,9 @@ return [
     ],
 
     'global-search' => [
-        'number'           => 'Number',
-        'customer'         => 'Customer',
-        'invoice-date'     => 'Invoice Date',
-        'invoice-due-date' => 'Invoice Due Date',
+        'vendor'   => 'Vendor',
+        'date'     => 'Date',
+        'due-date' => 'Due Date',
     ],
 
     'form' => [

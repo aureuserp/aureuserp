@@ -7,6 +7,12 @@ return [
         'title' => 'Quotations',
     ],
 
+    'global-search' => [
+        'customer'  => 'Customer',
+        'reference' => 'Reference',
+        'amount'    => 'Amount',
+    ],
+
     'form' => [
         'section' => [
             'general' => [

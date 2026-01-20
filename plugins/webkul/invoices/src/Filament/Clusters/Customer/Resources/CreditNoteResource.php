@@ -5,6 +5,7 @@ namespace Webkul\Invoice\Filament\Clusters\Customer\Resources;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\Page;
 use Filament\Schemas\Components\Utilities\Get;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\CreditNoteResource as BaseCreditNoteResource;
 use Webkul\Invoice\Filament\Clusters\Customer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\CreateCreditNote;
@@ -12,15 +13,17 @@ use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ListCreditNotes;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ManagePayments;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ViewCreditNote;
+use Webkul\Invoice\Livewire\InvoiceSummary;
 use Webkul\Invoice\Models\CreditNote;
 use Webkul\Support\Filament\Forms\Components\Repeater;
-use Webkul\Invoice\Livewire\InvoiceSummary;
 
 class CreditNoteResource extends BaseCreditNoteResource
 {
     protected static ?string $model = CreditNote::class;
 
     protected static bool $shouldRegisterNavigation = true;
+
+    protected static bool $isGloballySearchable = false;
 
     protected static ?string $cluster = Customer::class;
 

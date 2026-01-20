@@ -6,6 +6,7 @@ use Filament\Resources\Pages\Page;
 use Filament\Schemas\Schema;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Purchase\Filament\Admin\Clusters\Products;
@@ -27,6 +28,8 @@ class ProductResource extends BaseProductResource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
     protected static bool $shouldRegisterNavigation = true;
+
+    protected static bool $isGloballySearchable = true;
 
     protected static ?string $cluster = Products::class;
 

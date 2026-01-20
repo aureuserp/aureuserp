@@ -79,6 +79,19 @@ class PurchaseAgreementResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'partner.name'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('purchases::filament/admin/clusters/orders/resources/purchase-agreement.global-search.vendor') => $record->partner?->name ?? '—',
+            __('purchases::filament/admin/clusters/orders/resources/purchase-agreement.global-search.type')   => $record->type?->getLabel() ?? '—',
+        ];
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('purchases::filament/admin/clusters/orders/resources/purchase-agreement.navigation.title');

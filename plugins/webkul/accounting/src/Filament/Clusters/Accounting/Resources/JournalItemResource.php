@@ -36,6 +36,8 @@ class JournalItemResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static bool $isGloballySearchable = false;
+
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-queue-list';
 
     public static function getModelLabel(): string

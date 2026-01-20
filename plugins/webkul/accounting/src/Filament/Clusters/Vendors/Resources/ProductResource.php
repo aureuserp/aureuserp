@@ -3,6 +3,7 @@
 namespace Webkul\Accounting\Filament\Clusters\Vendors\Resources;
 
 use Filament\Resources\Pages\Page;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Accounting\Filament\Clusters\Vendors;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\ProductResource\Pages\CreateProduct;
@@ -24,14 +25,11 @@ class ProductResource extends BaseProductResource
 
     protected static bool $shouldRegisterNavigation = true;
 
+    protected static bool $isGloballySearchable = true;
+
     protected static ?int $navigationSort = 5;
 
     protected static ?string $cluster = Vendors::class;
-
-    public static function getNavigationLabel(): string
-    {
-        return __('accounting::filament/clusters/vendors/resources/product.navigation.title');
-    }
 
     public static function getRecordSubNavigation(Page $page): array
     {

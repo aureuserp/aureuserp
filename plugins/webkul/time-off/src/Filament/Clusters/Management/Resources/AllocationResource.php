@@ -25,6 +25,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper;
 use Webkul\TimeOff\Enums\AllocationType;
 use Webkul\TimeOff\Enums\State;
@@ -53,6 +54,19 @@ class AllocationResource extends Resource
     public static function getNavigationLabel(): string
     {
         return __('time-off::filament/clusters/management/resources/allocation.navigation.title');
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['employee.name', 'holidayStatus.name'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('time-off::filament/clusters/management/resources/allocation.global-search.employee')      => $record->employee?->name ?? '—',
+            __('time-off::filament/clusters/management/resources/allocation.global-search.time-off-type') => $record->holidayStatus?->name ?? '—',
+        ];
     }
 
     public static function form(Schema $schema): Schema

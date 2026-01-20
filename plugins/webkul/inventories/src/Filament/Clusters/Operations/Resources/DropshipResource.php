@@ -63,6 +63,26 @@ class DropshipResource extends Resource
         return __('inventories::filament/clusters/operations/resources/dropship.navigation.group');
     }
 
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'partner.name', 'origin'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('inventories::filament/clusters/operations/resources/dropship.global-search.partner') => $record->partner?->name ?? '—',
+            __('inventories::filament/clusters/operations/resources/dropship.global-search.origin')  => $record->origin ?? '—',
+        ];
+    }
+
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return parent::getGlobalSearchEloquentQuery()->whereHas('operationType', function (Builder $query) {
+            $query->where('type', OperationType::DROPSHIP);
+        });
+    }
+
     public static function form(Schema $schema): Schema
     {
         return OperationResource::form($schema);

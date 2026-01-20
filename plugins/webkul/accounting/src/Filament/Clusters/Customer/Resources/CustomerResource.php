@@ -22,6 +22,8 @@ class CustomerResource extends BasePartnerResource
 
     protected static bool $shouldRegisterNavigation = true;
 
+    protected static bool $isGloballySearchable = true;
+
     protected static ?int $navigationSort = 5;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';

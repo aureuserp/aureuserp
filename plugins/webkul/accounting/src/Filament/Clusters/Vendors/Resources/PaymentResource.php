@@ -20,6 +20,8 @@ class PaymentResource extends BasePaymentResource
 
     protected static bool $shouldRegisterNavigation = true;
 
+    protected static bool $isGloballySearchable = true;
+
     protected static ?int $navigationSort = 3;
 
     protected static ?string $cluster = Vendors::class;

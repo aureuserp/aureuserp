@@ -20,6 +20,8 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Webkul\Support\Filament\Pages\Profile;
+use Webkul\Support\GlobalSearchProvider;
+use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -114,6 +116,7 @@ class AdminPanelProvider extends PanelProvider
                         'sm'      => 2,
                     ]),
             ])
+            ->globalSearch(provider: GlobalSearchProvider::class)
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

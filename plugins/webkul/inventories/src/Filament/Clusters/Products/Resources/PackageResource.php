@@ -68,6 +68,19 @@ class PackageResource extends Resource
         return __('inventories::filament/clusters/products/resources/package.navigation.title');
     }
 
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('inventories::filament/clusters/products/resources/package.global-search.package-type') => $record->packageType?->name ?? '—',
+            __('inventories::filament/clusters/products/resources/package.global-search.location')     => $record->location?->full_name ?? '—',
+        ];
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema

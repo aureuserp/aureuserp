@@ -22,6 +22,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Webkul\Timesheet\Filament\Resources\TimesheetResource\Pages\ManageTimesheets;
 use Webkul\Timesheet\Models\Timesheet;
@@ -38,6 +39,21 @@ class TimesheetResource extends Resource
     public static function getNavigationGroup(): string
     {
         return __('timesheets::filament/resources/timesheet.navigation.group');
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['user.name', 'project.name', 'task.title', 'date'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('timesheets::filament/resources/timesheet.global-search.employee') => $record->user?->name ?? '—',
+            __('timesheets::filament/resources/timesheet.global-search.project')  => $record->project?->name ?? '—',
+            __('timesheets::filament/resources/timesheet.global-search.task')     => $record->task?->title ?? '—',
+            __('timesheets::filament/resources/timesheet.global-search.date')     => $record->date ?? '—',
+        ];
     }
 
     public static function form(Schema $schema): Schema

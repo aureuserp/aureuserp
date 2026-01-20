@@ -8,6 +8,13 @@ return [
         'group' => 'Project',
     ],
 
+    'global-search' => [
+        'employee' => 'Employee',
+        'project'  => 'Project',
+        'task'     => 'Task',
+        'date'     => 'Date',
+    ],
+
     'form' => [
         'date'                   => 'Date',
         'employee'               => 'Employee',

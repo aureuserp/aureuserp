@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'global-search' => [
+        'vendor'    => 'Vendor',
+        'reference' => 'Reference',
+        'amount'    => 'Amount',
+    ],
+
     'form' => [
         'sections' => [
             'general' => [

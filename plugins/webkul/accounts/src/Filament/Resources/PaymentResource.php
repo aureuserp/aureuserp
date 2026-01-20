@@ -18,6 +18,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -50,6 +51,22 @@ class PaymentResource extends Resource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 
     protected static bool $shouldRegisterNavigation = false;
+
+    protected static bool $isGloballySearchable = false;
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'partner.name', 'amount'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('accounts::filament/resources/payment.global-search.partner') => $record->partner?->name ?? '—',
+            __('accounts::filament/resources/payment.global-search.amount')  => $record->amount ?? '—',
+            __('accounts::filament/resources/payment.global-search.date')    => $record->date ?? '—',
+        ];
+    }
 
     public static function form(Schema $schema): Schema
     {

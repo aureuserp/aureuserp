@@ -2,6 +2,7 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Configuration\Resources;
 
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\AccountResource as BaseAccountResource;
 use Webkul\Accounting\Filament\Clusters\Configuration;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\AccountResource\Pages\ManageAccounts;
@@ -12,6 +13,8 @@ class AccountResource extends BaseAccountResource
     protected static ?string $model = Account::class;
 
     protected static bool $shouldRegisterNavigation = true;
+
+    protected static bool $isGloballySearchable = true;
 
     protected static ?int $navigationSort = 3;
 

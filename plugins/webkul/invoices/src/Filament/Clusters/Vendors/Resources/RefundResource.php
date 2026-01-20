@@ -5,6 +5,7 @@ namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\Page;
 use Filament\Schemas\Components\Utilities\Get;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\RefundResource as BaseRefundResource;
 use Webkul\Invoice\Filament\Clusters\Vendors;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\CreateRefund;
@@ -12,9 +13,9 @@ use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\Edit
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\ListRefunds;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\ManagePayments;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\ViewRefund;
+use Webkul\Invoice\Livewire\InvoiceSummary;
 use Webkul\Invoice\Models\Refund;
 use Webkul\Support\Filament\Forms\Components\Repeater;
-use Webkul\Invoice\Livewire\InvoiceSummary;
 
 class RefundResource extends BaseRefundResource
 {
@@ -39,6 +40,18 @@ class RefundResource extends BaseRefundResource
     public static function getNavigationLabel(): string
     {
         return __('invoices::filament/clusters/vendors/resources/refund.navigation.title');
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'partner.name'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('invoices::filament/clusters/vendors/resources/refund.global-search.vendor') => $record->partner?->name ?? '—',
+        ];
     }
 
     public static function getSummaryComponent()
