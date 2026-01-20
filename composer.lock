@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b59a2ab3b55a4251ff92dd90d6cb8961",
+    "content-hash": "83eee5103559f242959d5fc1639df7a6",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -71,79 +71,6 @@
                 "source": "https://github.com/AnourValar/eloquent-serialize/tree/1.3.4"
             },
             "time": "2025-07-30T15:45:57+00:00"
-        },
-        {
-            "name": "awcodes/filament-badgeable-column",
-            "version": "v3.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/awcodes/filament-badgeable-column.git",
-                "reference": "95a511246a746d375c58bc9290eb853b5211519a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/awcodes/filament-badgeable-column/zipball/95a511246a746d375c58bc9290eb853b5211519a",
-                "reference": "95a511246a746d375c58bc9290eb853b5211519a",
-                "shasum": ""
-            },
-            "require": {
-                "filament/filament": "^4.0",
-                "php": "^8.2",
-                "spatie/laravel-package-tools": "^1.15"
-            },
-            "require-dev": {
-                "laravel/pint": "^1.0",
-                "orchestra/testbench": "^9.0|^10.0",
-                "pestphp/pest": "^3.7",
-                "pestphp/pest-plugin-laravel": "^3.0",
-                "pestphp/pest-plugin-livewire": "^3.0",
-                "rector/rector": "^2.0",
-                "spatie/laravel-ray": "^1.26"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Awcodes\\BadgeableColumn\\BadgeableColumnServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Awcodes\\BadgeableColumn\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "awcodes",
-                    "email": "awcodes1@gmail.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Filament Tables column to append and prepend badges.",
-            "homepage": "https://github.com/awcodes/filament-badgeable-column",
-            "keywords": [
-                "awcodes",
-                "badgeable-column",
-                "filament",
-                "laravel",
-                "plugin"
-            ],
-            "support": {
-                "issues": "https://github.com/awcodes/filament-badgeable-column/issues",
-                "source": "https://github.com/awcodes/filament-badgeable-column/tree/v3.0.0"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/awcodes",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-08-12T14:34:30+00:00"
         },
         {
             "name": "barryvdh/laravel-debugbar",
@@ -2996,79 +2923,6 @@
                 }
             ],
             "time": "2025-08-22T14:27:06+00:00"
-        },
-        {
-            "name": "hugomyb/filament-media-action",
-            "version": "v4.0.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/hugomyb/filament-media-action.git",
-                "reference": "f9ce1d77876f4355d39fda09147600cc85fc361f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/hugomyb/filament-media-action/zipball/f9ce1d77876f4355d39fda09147600cc85fc361f",
-                "reference": "f9ce1d77876f4355d39fda09147600cc85fc361f",
-                "shasum": ""
-            },
-            "require": {
-                "filament/filament": "^4.0",
-                "php": "^8.2",
-                "spatie/laravel-package-tools": "^1.92.4"
-            },
-            "require-dev": {
-                "nunomaduro/collision": "^8.0",
-                "orchestra/testbench": "^10.0",
-                "pestphp/pest": "^3.0",
-                "pestphp/pest-plugin-arch": "^3.0",
-                "pestphp/pest-plugin-laravel": "^3.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "aliases": {
-                        "FilamentMediaAction": "Hugomyb\\FilamentMediaAction\\Facades\\FilamentMediaAction"
-                    },
-                    "providers": [
-                        "Hugomyb\\FilamentMediaAction\\FilamentMediaActionServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Hugomyb\\FilamentMediaAction\\": "src/",
-                    "Hugomyb\\FilamentMediaAction\\Database\\Factories\\": "database/factories/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Mayonobe Hugo",
-                    "email": "hugomayonobe@gmail.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Automatically display your media (video, audio, document, image, ...) with an action",
-            "homepage": "https://github.com/hugomyb/filament-media-action",
-            "keywords": [
-                "filament-media-action",
-                "hugomyb",
-                "laravel"
-            ],
-            "support": {
-                "issues": "https://github.com/hugomyb/filament-media-action/issues",
-                "source": "https://github.com/hugomyb/filament-media-action"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/hugomyb",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-07-28T14:58:05+00:00"
         },
         {
             "name": "kirschbaum-development/eloquent-power-joins",
@@ -10326,53 +10180,6 @@
             "time": "2024-11-21T13:46:39+00:00"
         },
         {
-            "name": "filament/upgrade",
-            "version": "v4.1.8",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/filamentphp/upgrade.git",
-                "reference": "72f47ecdf4972f84085f300f19da04b9c835f60c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/upgrade/zipball/72f47ecdf4972f84085f300f19da04b9c835f60c",
-                "reference": "72f47ecdf4972f84085f300f19da04b9c835f60c",
-                "shasum": ""
-            },
-            "require": {
-                "nunomaduro/termwind": "^2.0",
-                "php": "^8.2",
-                "rector/rector": "^2.0"
-            },
-            "bin": [
-                "bin/filament-v4"
-            ],
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Filament\\Upgrade\\UpgradeServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Filament\\Upgrade\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Upgrade Filament v3 code to Filament v4.",
-            "homepage": "https://github.com/filamentphp/filament",
-            "support": {
-                "issues": "https://github.com/filamentphp/filament/issues",
-                "source": "https://github.com/filamentphp/filament"
-            },
-            "time": "2025-09-11T14:01:25+00:00"
-        },
-        {
             "name": "filp/whoops",
             "version": "2.18.4",
             "source": {
@@ -11309,59 +11116,6 @@
             "time": "2022-02-21T01:04:05+00:00"
         },
         {
-            "name": "phpstan/phpstan",
-            "version": "2.1.31",
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/ead89849d879fe203ce9292c6ef5e7e76f867b96",
-                "reference": "ead89849d879fe203ce9292c6ef5e7e76f867b96",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.4|^8.0"
-            },
-            "conflict": {
-                "phpstan/phpstan-shim": "*"
-            },
-            "bin": [
-                "phpstan",
-                "phpstan.phar"
-            ],
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "PHPStan - PHP Static Analysis Tool",
-            "keywords": [
-                "dev",
-                "static analysis"
-            ],
-            "support": {
-                "docs": "https://phpstan.org/user-guide/getting-started",
-                "forum": "https://github.com/phpstan/phpstan/discussions",
-                "issues": "https://github.com/phpstan/phpstan/issues",
-                "security": "https://github.com/phpstan/phpstan/security/policy",
-                "source": "https://github.com/phpstan/phpstan-src"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/ondrejmirtes",
-                    "type": "github"
-                },
-                {
-                    "url": "https://github.com/phpstan",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-10-10T14:14:11+00:00"
-        },
-        {
             "name": "phpunit/php-code-coverage",
             "version": "11.0.11",
             "source": {
@@ -11804,66 +11558,6 @@
                 }
             ],
             "time": "2025-09-28T12:09:13+00:00"
-        },
-        {
-            "name": "rector/rector",
-            "version": "2.2.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/rectorphp/rector.git",
-                "reference": "d27f976a332a87b5d03553c2e6f04adbe5da034f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/d27f976a332a87b5d03553c2e6f04adbe5da034f",
-                "reference": "d27f976a332a87b5d03553c2e6f04adbe5da034f",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.4|^8.0",
-                "phpstan/phpstan": "^2.1.26"
-            },
-            "conflict": {
-                "rector/rector-doctrine": "*",
-                "rector/rector-downgrade-php": "*",
-                "rector/rector-phpunit": "*",
-                "rector/rector-symfony": "*"
-            },
-            "suggest": {
-                "ext-dom": "To manipulate phpunit.xml via the custom-rule command"
-            },
-            "bin": [
-                "bin/rector"
-            ],
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Instant Upgrade and Automated Refactoring of any PHP code",
-            "homepage": "https://getrector.com/",
-            "keywords": [
-                "automation",
-                "dev",
-                "migration",
-                "refactoring"
-            ],
-            "support": {
-                "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/2.2.3"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/tomasvotruba",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-10-11T21:50:23+00:00"
         },
         {
             "name": "sebastian/cli-parser",
