@@ -6,6 +6,12 @@ return [
         'group' => 'Inventory',
     ],
 
+    'global-search' => [
+        'name' => 'Name',
+        'package-type' => 'Package Type',
+        'location'     => 'Location',
+    ],
+
     'form' => [
         'sections' => [
             'general' => [

@@ -101,6 +101,20 @@ class QuotationResource extends Resource
         return __('sales::filament/clusters/orders/resources/quotation.navigation.title');
     }
 
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'partner.name', 'client_order_ref'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('sales::filament/clusters/orders/resources/quotation.global-search.customer')  => $record->partner?->name ?? '—',
+            __('sales::filament/clusters/orders/resources/quotation.global-search.reference') => $record->client_order_ref ?? '—',
+            __('sales::filament/clusters/orders/resources/quotation.global-search.amount')    => $record->amount_total ?? '—',
+        ];
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema

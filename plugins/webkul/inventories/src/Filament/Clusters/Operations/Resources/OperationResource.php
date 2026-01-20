@@ -74,6 +74,20 @@ class OperationResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
+    protected static bool $isGloballySearchable = false;
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'partner.name'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('inventories::filament/clusters/operations/resources/operation.global-search.partner') => $record->partner?->name ?? '—',
+        ];
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema

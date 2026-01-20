@@ -3,6 +3,7 @@
 namespace Webkul\Accounting\Filament\Clusters\Vendors\Resources;
 
 use Filament\Resources\Pages\Page;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\RefundResource as BaseRefundResource;
 use Webkul\Accounting\Filament\Clusters\Vendors;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\RefundResource\Pages\CreateRefund;
@@ -10,8 +11,8 @@ use Webkul\Accounting\Filament\Clusters\Vendors\Resources\RefundResource\Pages\E
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\RefundResource\Pages\ListRefunds;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\RefundResource\Pages\ManagePayments;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\RefundResource\Pages\ViewRefund;
-use Webkul\Accounting\Models\Refund;
 use Webkul\Accounting\Livewire\InvoiceSummary;
+use Webkul\Accounting\Models\Refund;
 
 class RefundResource extends BaseRefundResource
 {
@@ -20,6 +21,8 @@ class RefundResource extends BaseRefundResource
     protected static ?int $navigationSort = 2;
 
     protected static bool $shouldRegisterNavigation = true;
+
+    protected static bool $isGloballySearchable = true;
 
     protected static ?string $cluster = Vendors::class;
 

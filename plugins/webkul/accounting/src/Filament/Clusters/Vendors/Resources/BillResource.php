@@ -3,6 +3,7 @@
 namespace Webkul\Accounting\Filament\Clusters\Vendors\Resources;
 
 use Filament\Resources\Pages\Page;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\BillResource as BaseBillResource;
 use Webkul\Accounting\Filament\Clusters\Vendors;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource\Pages\CreateBill;
@@ -10,8 +11,8 @@ use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource\Pages\Edi
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource\Pages\ListBills;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource\Pages\ManagePayments;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource\Pages\ViewBill;
-use Webkul\Accounting\Models\Bill;
 use Webkul\Accounting\Livewire\InvoiceSummary;
+use Webkul\Accounting\Models\Bill;
 
 class BillResource extends BaseBillResource
 {
@@ -20,6 +21,8 @@ class BillResource extends BaseBillResource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-credit-card';
 
     protected static bool $shouldRegisterNavigation = true;
+
+    protected static bool $isGloballySearchable = true;
 
     protected static ?int $navigationSort = 1;
 

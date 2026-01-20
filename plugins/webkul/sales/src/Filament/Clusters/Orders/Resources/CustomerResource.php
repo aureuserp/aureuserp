@@ -4,6 +4,7 @@ namespace Webkul\Sale\Filament\Clusters\Orders\Resources;
 
 use Filament\Resources\Pages\Page;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\CustomerResource as BaseCustomerResource;
 use Webkul\Sale\Filament\Clusters\Orders;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages\CreateCustomer;
@@ -22,6 +23,8 @@ class CustomerResource extends BaseCustomerResource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
     protected static bool $shouldRegisterNavigation = true;
+
+    protected static bool $isGloballySearchable = true;
 
     protected static ?string $cluster = Orders::class;
 

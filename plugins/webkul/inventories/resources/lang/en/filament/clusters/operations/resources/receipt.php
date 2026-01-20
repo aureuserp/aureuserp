@@ -6,6 +6,11 @@ return [
         'group' => 'Transfers',
     ],
 
+    'global-search' => [
+        'partner' => 'Partner',
+        'origin'  => 'Origin',
+    ],
+
     'table' => [
         'actions' => [
             'delete' => [

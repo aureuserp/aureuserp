@@ -106,10 +106,9 @@ class JournalEntryResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            __('accounting::filament/clusters/accounting/resources/journal-entry.global-search.number')           => $record?->name ?? '—',
-            __('accounting::filament/clusters/accounting/resources/journal-entry.global-search.customer')         => $record?->invoice_partner_display_name ?? '—',
-            __('accounting::filament/clusters/accounting/resources/journal-entry.global-search.invoice-date')     => $record?->invoice_date ?? '—',
-            __('accounting::filament/clusters/accounting/resources/journal-entry.global-search.invoice-date-due') => $record?->invoice_date_due ?? '—',
+            __('accounting::filament/clusters/accounting/resources/journal-entry.global-search.partner')  => $record?->partner?->name ?? '—',
+            __('accounting::filament/clusters/accounting/resources/journal-entry.global-search.date')     => $record?->invoice_date ?? '—',
+            __('accounting::filament/clusters/accounting/resources/journal-entry.global-search.due-date') => $record?->invoice_date_due ?? '—',
         ];
     }
 

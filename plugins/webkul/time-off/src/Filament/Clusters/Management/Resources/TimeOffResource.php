@@ -19,6 +19,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Webkul\TimeOff\Enums\State;
 use Webkul\TimeOff\Filament\Clusters\Management;
@@ -49,6 +50,21 @@ class TimeOffResource extends Resource
     public static function getNavigationLabel(): string
     {
         return __('time-off::filament/clusters/management/resources/time-off.navigation.title');
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['employee.name', 'holidayStatus.name', 'date_from', 'date_to'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('time-off::filament/clusters/management/resources/time-off.global-search.employee')      => $record->employee?->name ?? '—',
+            __('time-off::filament/clusters/management/resources/time-off.global-search.time-off-type') => $record->holidayStatus?->name ?? '—',
+            __('time-off::filament/clusters/management/resources/time-off.global-search.date-from')     => $record->date_from ?? '—',
+            __('time-off::filament/clusters/management/resources/time-off.global-search.date-to')       => $record->date_to ?? '—',
+        ];
     }
 
     public static function form(Schema $schema): Schema

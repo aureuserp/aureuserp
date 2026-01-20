@@ -5,6 +5,7 @@ namespace Webkul\Invoice\Filament\Clusters\Customer\Resources;
 use Filament\Resources\Pages\Page;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Invoice\Filament\Clusters\Customer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource\Pages\CreateProduct;
@@ -22,6 +23,8 @@ class ProductResource extends BaseProductResource
     protected static ?string $cluster = Customer::class;
 
     protected static bool $shouldRegisterNavigation = true;
+
+    protected static bool $isGloballySearchable = true;
 
     protected static ?int $navigationSort = 5;
 

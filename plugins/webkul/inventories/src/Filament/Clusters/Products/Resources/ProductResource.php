@@ -16,6 +16,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Field\Filament\Traits\HasCustomFields;
@@ -48,6 +49,8 @@ class ProductResource extends BaseProductResource
     protected static ?string $cluster = Products::class;
 
     protected static ?int $navigationSort = 1;
+
+    protected static bool $isGloballySearchable = true;
 
     protected static ?string $recordTitleAttribute = 'name';
 

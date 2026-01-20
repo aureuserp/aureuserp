@@ -37,7 +37,24 @@ class AccountResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
+    protected static bool $isGloballySearchable = false;
+
+    protected static ?string $recordTitleAttribute = 'name';
+
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-circle';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['code', 'name'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('accounts::filament/resources/account.global-search.code') => $record->code ?? '—',
+            __('accounts::filament/resources/account.global-search.type') => $record->account_type ?? '—',
+        ];
+    }
 
     public static function form(Schema $schema): Schema
     {

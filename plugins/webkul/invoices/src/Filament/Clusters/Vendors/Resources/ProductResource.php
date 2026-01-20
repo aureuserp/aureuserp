@@ -5,6 +5,7 @@ namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources;
 use Filament\Resources\Pages\Page;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Invoice\Filament\Clusters\Vendors;
@@ -25,6 +26,8 @@ class ProductResource extends BaseProductResource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
     protected static bool $shouldRegisterNavigation = true;
+
+    protected static bool $isGloballySearchable = true;
 
     protected static ?int $navigationSort = 5;
 

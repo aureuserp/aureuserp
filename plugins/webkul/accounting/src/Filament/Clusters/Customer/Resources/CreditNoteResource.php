@@ -3,6 +3,7 @@
 namespace Webkul\Accounting\Filament\Clusters\Customer\Resources;
 
 use Filament\Resources\Pages\Page;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\CreditNoteResource as BaseCreditNoteResource;
 use Webkul\Accounting\Filament\Clusters\Customer;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\CreateCreditNote;
@@ -10,8 +11,8 @@ use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pa
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ListCreditNotes;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ManagePayments;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\ViewCreditNote;
-use Webkul\Accounting\Models\CreditNote;
 use Webkul\Accounting\Livewire\InvoiceSummary;
+use Webkul\Accounting\Models\CreditNote;
 
 class CreditNoteResource extends BaseCreditNoteResource
 {

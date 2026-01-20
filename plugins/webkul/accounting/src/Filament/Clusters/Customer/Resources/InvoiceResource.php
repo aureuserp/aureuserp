@@ -19,6 +19,8 @@ class InvoiceResource extends BaseInvoiceResource
 
     protected static bool $shouldRegisterNavigation = true;
 
+    protected static bool $isGloballySearchable = true;
+
     protected static ?string $cluster = Customer::class;
 
     protected static ?int $navigationSort = 1;

@@ -7,6 +7,11 @@ return [
         'title' => 'Refunds',
     ],
 
+    'global-search' => [
+        'vendor' => 'Vendor',
+        'amount' => 'Amount',
+    ],
+
     'form' => [
         'biller'            => 'Biller',
         'name'              => 'Vendor Credit Note',

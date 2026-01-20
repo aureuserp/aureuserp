@@ -74,6 +74,18 @@ class LotResource extends Resource
         return __('inventories::filament/clusters/products/resources/lot.navigation.title');
     }
 
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'product.name'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('inventories::filament/clusters/products/resources/lot.global-search.product') => $record->product?->name ?? '—',
+        ];
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema

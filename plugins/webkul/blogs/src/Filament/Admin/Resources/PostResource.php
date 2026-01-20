@@ -37,6 +37,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Webkul\Blog\Filament\Admin\Resources\PostResource\Pages\CreatePost;
 use Webkul\Blog\Filament\Admin\Resources\PostResource\Pages\EditPost;
@@ -62,6 +63,18 @@ class PostResource extends Resource
     public static function getNavigationGroup(): string
     {
         return __('blogs::filament/admin/resources/post.navigation.group');
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['title', 'author.name'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('blogs::filament/admin/resources/post.global-search.author') => $record->author?->name ?? '—',
+        ];
     }
 
     public static function form(Schema $schema): Schema

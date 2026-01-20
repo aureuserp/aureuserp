@@ -8,6 +8,12 @@ return [
         'group' => 'Invoices',
     ],
 
+    'global-search' => [
+        'partner' => 'Partner',
+        'amount'  => 'Amount',
+        'date'    => 'Date',
+    ],
+
     'form' => [
         'sections' => [
             'fields' => [

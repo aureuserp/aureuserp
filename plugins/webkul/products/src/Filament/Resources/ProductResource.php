@@ -63,7 +63,24 @@ class ProductResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
+    protected static bool $isGloballySearchable = false;
+
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'reference', 'barcode'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('products::filament/resources/product.global-search.reference') => $record->reference,
+            __('products::filament/resources/product.global-search.barcode')   => $record->barcode,
+        ];
+    }
 
     public static function form(Schema $schema): Schema
     {

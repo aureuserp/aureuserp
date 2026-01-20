@@ -7,6 +7,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Filament\Clusters\Orders;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\CreateOrder;
@@ -37,6 +38,16 @@ class OrderResource extends Resource
     public static function getNavigationLabel(): string
     {
         return __('sales::filament/clusters/orders/resources/order.navigation.title');
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return QuotationResource::getGloballySearchableAttributes();
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return QuotationResource::getGlobalSearchResultDetails($record);
     }
 
     public static function form(Schema $schema): Schema

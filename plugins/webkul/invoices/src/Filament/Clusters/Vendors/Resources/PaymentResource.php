@@ -3,6 +3,7 @@
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources;
 
 use Filament\Resources\Pages\Page;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\PaymentResource as BasePaymentResource;
 use Webkul\Invoice\Filament\Clusters\Vendors;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\CreatePayment;
@@ -17,6 +18,8 @@ class PaymentResource extends BasePaymentResource
     protected static ?string $model = Payment::class;
 
     protected static bool $shouldRegisterNavigation = true;
+
+    protected static bool $isGloballySearchable = true;
 
     protected static ?int $navigationSort = 3;
 
