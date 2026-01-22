@@ -21,12 +21,12 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Webkul\Timesheet\Filament\Resources\TimesheetResource\Pages\ManageTimesheets;
 use Webkul\Timesheet\Models\Timesheet;
-use Illuminate\Contracts\Support\Htmlable;
 
 class TimesheetResource extends Resource
 {
@@ -42,7 +42,7 @@ class TimesheetResource extends Resource
         return __('timesheets::filament/resources/timesheet.navigation.group');
     }
 
-    public static function getGlobalSearchResultTitle(Model $record): string | Htmlable
+    public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
     {
         return $record->user->name;
     }

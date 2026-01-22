@@ -3,7 +3,6 @@
 namespace Webkul\Account\Filament\Resources\JournalResource\Pages;
 
 use Filament\Actions\DeleteAction;
-use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +20,6 @@ class EditJournal extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make(),
             DeleteAction::make()
                 ->successNotification(
                     Notification::make()

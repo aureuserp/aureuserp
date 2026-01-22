@@ -3,7 +3,6 @@
 namespace Webkul\Account\Filament\Resources\PaymentTermResource\Pages;
 
 use Filament\Actions\DeleteAction;
-use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Account\Enums\DueTermValue;
@@ -24,7 +23,6 @@ class EditPaymentTerm extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make(),
             DeleteAction::make()
                 ->successNotification(
                     Notification::make()
