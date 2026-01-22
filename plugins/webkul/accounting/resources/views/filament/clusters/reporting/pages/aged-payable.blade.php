@@ -17,6 +17,30 @@
                 Aged Payable - As of {{ $asOfDate->format('m/d/Y') }}
             </x-slot>
 
+            <x-slot name="afterHeader">
+                <div class="flex gap-2">
+                    <x-filament::link
+                        wire:click="expandAll"
+                        tag="button"
+                        size="sm"
+                        color="primary"
+                    >
+                        Expand All
+                    </x-filament::link>
+
+                    <span class="text-gray-500 dark:text-gray-400 flex items-center">/</span>
+                    
+                    <x-filament::link
+                        wire:click="collapseAll"
+                        tag="button"
+                        size="sm"
+                        color="primary"
+                    >
+                        Collapse All
+                    </x-filament::link>
+                </div>
+            </x-slot>
+
             @if($hasUnposted)
                 <x-filament::badge color="warning" size="xl" class="mb-4 px-4 py-2 w-full justify-start text-sm!">
                     There are unposted Journal Entries prior or included in this period.

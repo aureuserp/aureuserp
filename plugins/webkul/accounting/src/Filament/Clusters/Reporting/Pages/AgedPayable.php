@@ -138,7 +138,7 @@ class AgedPayable extends Page implements HasForms
                         ->native(false)
                         ->suffixIcon('heroicon-o-calendar')
                         ->live()
-                        ->afterStateUpdated(fn () => null),
+                        ->afterStateUpdated(fn () => $this->resetExpandedState()),
 
                     Select::make('basis')
                         ->label('Based on')
@@ -148,7 +148,7 @@ class AgedPayable extends Page implements HasForms
                         ])
                         ->default('due_date')
                         ->live()
-                        ->afterStateUpdated(fn () => null),
+                        ->afterStateUpdated(fn () => $this->resetExpandedState()),
 
                     Select::make('period')
                         ->label('Period Length (days)')
@@ -159,7 +159,7 @@ class AgedPayable extends Page implements HasForms
                         ])
                         ->default(30)
                         ->live()
-                        ->afterStateUpdated(fn () => null),
+                        ->afterStateUpdated(fn () => $this->resetExpandedState()),
 
                     Select::make('journals')
                         ->label('Journals')
@@ -167,7 +167,7 @@ class AgedPayable extends Page implements HasForms
                         ->options(Journal::pluck('name', 'id'))
                         ->searchable()
                         ->live()
-                        ->afterStateUpdated(fn () => null),
+                        ->afterStateUpdated(fn () => $this->resetExpandedState()),
 
                     Select::make('partners')
                         ->label('Partners')
@@ -175,7 +175,7 @@ class AgedPayable extends Page implements HasForms
                         ->options(Partner::pluck('name', 'id'))
                         ->searchable()
                         ->live()
-                        ->afterStateUpdated(fn () => null),
+                        ->afterStateUpdated(fn () => $this->resetExpandedState()),
 
                     Select::make('posted_entries')
                         ->label('Entries')
@@ -185,7 +185,7 @@ class AgedPayable extends Page implements HasForms
                         ])
                         ->default('posted')
                         ->live()
-                        ->afterStateUpdated(fn () => null),
+                        ->afterStateUpdated(fn () => $this->resetExpandedState()),
                 ])
                 ->columnSpanFull(),
         ];
@@ -212,6 +212,29 @@ class AgedPayable extends Page implements HasForms
     public function isPartnerExpanded($partnerId): bool
     {
         return in_array($partnerId, $this->expandedPartners);
+    }
+
+    public function expandAll(): void
+    {
+        $data = $this->agedPayableData;
+        $this->expandedPartners = array_keys($data['partners']);
+
+        foreach ($this->expandedPartners as $partnerId) {
+            if (! isset($this->partnerLines[$partnerId])) {
+                $this->partnerLines[$partnerId] = $this->fetchPartnerLines($partnerId);
+            }
+        }
+    }
+
+    public function collapseAll(): void
+    {
+        $this->expandedPartners = [];
+    }
+
+    public function resetExpandedState(): void
+    {
+        $this->expandedPartners = [];
+        $this->partnerLines = [];
     }
 
     public function getPartnerLines($partnerId): array

@@ -12,6 +12,30 @@
             <x-slot name="heading">
                 Partner Ledger - From {{ \Carbon\Carbon::parse($data['date_from'])->format('M d, Y') }} to {{ \Carbon\Carbon::parse($data['date_to'])->format('M d, Y') }}
             </x-slot>
+
+            <x-slot name="afterHeader">
+                <div class="flex gap-2">
+                    <x-filament::link
+                        wire:click="expandAll"
+                        tag="button"
+                        size="sm"
+                        color="primary"
+                    >
+                        Expand All
+                    </x-filament::link>
+
+                    <span class="text-gray-500 dark:text-gray-400 flex items-center">/</span>
+                    
+                    <x-filament::link
+                        wire:click="collapseAll"
+                        tag="button"
+                        size="sm"
+                        color="primary"
+                    >
+                        Collapse All
+                    </x-filament::link>
+                </div>
+            </x-slot>
             
             {{-- Partner Ledger Table --}}
             <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-white/5!">

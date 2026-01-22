@@ -128,7 +128,7 @@ class PartnerLedger extends Page implements HasForms
                         ])
                         ->alwaysShowCalendar()
                         ->live()
-                        ->afterStateUpdated(fn () => null),
+                        ->afterStateUpdated(fn () => $this->resetExpandedState()),
 
                     Select::make('partners')
                         ->label('Partners')
@@ -136,7 +136,7 @@ class PartnerLedger extends Page implements HasForms
                         ->options(Partner::pluck('name', 'id'))
                         ->searchable()
                         ->live()
-                        ->afterStateUpdated(fn () => null),
+                        ->afterStateUpdated(fn () => $this->resetExpandedState()),
 
                     Select::make('journals')
                         ->label('Journals')
@@ -144,7 +144,7 @@ class PartnerLedger extends Page implements HasForms
                         ->options(Journal::pluck('name', 'id'))
                         ->searchable()
                         ->live()
-                        ->afterStateUpdated(fn () => null),
+                        ->afterStateUpdated(fn () => $this->resetExpandedState()),
                 ])
                 ->columnSpanFull(),
         ];
@@ -217,6 +217,29 @@ class PartnerLedger extends Page implements HasForms
     public function isPartnerExpanded($partnerId): bool
     {
         return in_array($partnerId, $this->expandedPartners);
+    }
+
+    public function expandAll(): void
+    {
+        $data = $this->partnerLedgerData;
+        $this->expandedPartners = $data['partners']->pluck('id')->toArray();
+
+        foreach ($this->expandedPartners as $partnerId) {
+            if (! isset($this->loadedMoveLines[$partnerId])) {
+                $this->loadedMoveLines[$partnerId] = $this->fetchPartnerMoves($partnerId);
+            }
+        }
+    }
+
+    public function collapseAll(): void
+    {
+        $this->expandedPartners = [];
+    }
+
+    public function resetExpandedState(): void
+    {
+        $this->expandedPartners = [];
+        $this->loadedMoveLines = [];
     }
 
     public function getPartnerMoves($partnerId): array
