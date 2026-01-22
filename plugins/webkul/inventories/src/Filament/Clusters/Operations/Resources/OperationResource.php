@@ -34,7 +34,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Field\Filament\Forms\Components\ProgressStepper;
+use Symfony\Polyfill\Intl\Idn\Info;
+use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Enums;
 use Webkul\Inventory\Enums\LocationType;
@@ -92,7 +94,7 @@ class OperationResource extends Resource
     {
         return $schema
             ->components([
-                ProgressStepper::make('state')
+                FormProgressStepper::make('state')
                     ->hiddenLabel()
                     ->inline()
                     ->options(OperationState::options())
@@ -465,12 +467,20 @@ class OperationResource extends Resource
     {
         return $schema
             ->components([
-                Section::make()
-                    ->schema([
-                        TextEntry::make('state')
-                            ->badge(),
-                    ])
-                    ->compact(),
+                InfolistProgressStepper::make('state')
+                    ->hiddenLabel()
+                    ->inline()
+                    ->options(OperationState::options())
+                    ->options(function ($record) {
+                        $options = OperationState::options();
+
+                        if ($record->state !== OperationState::CANCELED) {
+                            unset($options[OperationState::CANCELED->value]);
+                        }
+
+                        return $options;
+                    })
+                    ->default(OperationState::DRAFT),
 
                 Section::make(__('inventories::filament/clusters/operations/resources/operation.infolist.sections.general.title'))
                     ->schema([

@@ -51,6 +51,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\In;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
@@ -72,7 +73,8 @@ use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Product;
 use Webkul\Account\Models\Tax;
 use Webkul\Account\Settings\CustomerInvoiceSettings;
-use Webkul\Field\Filament\Forms\Components\ProgressStepper;
+use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
@@ -107,7 +109,7 @@ class BillResource extends Resource
     {
         return $schema
             ->components([
-                ProgressStepper::make('state')
+                FormProgressStepper::make('state')
                     ->hiddenLabel()
                     ->inline()
                     ->options(function ($record) {
@@ -681,6 +683,25 @@ class BillResource extends Resource
     {
         return $schema
             ->components([
+                InfolistProgressStepper::make('state')
+                    ->hiddenLabel()
+                    ->inline()
+                    ->options(function ($record) {
+                        $options = MoveState::options();
+
+                        if ($record->state != MoveState::CANCEL->value) {
+                            unset($options[MoveState::CANCEL->value]);
+                        }
+
+                        if ($record == null) {
+                            unset($options[MoveState::CANCEL->value]);
+                        }
+
+                        return $options;
+                    })
+                    ->default(MoveState::DRAFT->value)
+                    ->columnSpan('full'),
+
                 Section::make()
                     ->schema([
                         TextEntry::make('payment_state')

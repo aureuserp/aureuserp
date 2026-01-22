@@ -43,7 +43,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HtmlString;
-use Webkul\Field\Filament\Forms\Components\ProgressStepper;
+use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Recruitment\Enums\ApplicationStatus;
 use Webkul\Recruitment\Enums\RecruitmentState as RecruitmentStateEnum;
 use Webkul\Recruitment\Filament\Clusters\Applications;
@@ -91,7 +92,7 @@ class ApplicantResource extends Resource
             ->components([
                 Grid::make()
                     ->schema([
-                        ProgressStepper::make('stage_id')
+                        FormProgressStepper::make('stage_id')
                             ->hiddenLabel()
                             ->inline()
                             ->options(fn () => RecruitmentStage::orderBy('sort')->get()->mapWithKeys(fn ($stage) => [$stage->id => $stage->name]))
@@ -708,6 +709,19 @@ class ApplicantResource extends Resource
                     ->schema([
                         Group::make()
                             ->schema([
+                                InfolistProgressStepper::make('stage_id')
+                                    ->hiddenLabel()
+                                    ->inline()
+                                    ->options(fn () => RecruitmentStage::orderBy('sort')->get()->mapWithKeys(fn ($stage) => [$stage->id => $stage->name])->toArray())
+                                    ->columnSpan('full')
+                                    ->hidden(function ($record, Set $set) {
+                                        if ($record->refuse_reason_id) {
+                                            $set('stage_id', null);
+
+                                            return true;
+                                        }
+                                    }),
+
                                 Section::make(__('recruitments::filament/clusters/applications/resources/applicant.infolist.sections.general-information.title'))
                                     ->schema([
                                         Group::make()
@@ -729,9 +743,6 @@ class ApplicantResource extends Resource
                                                         return new HtmlString($html);
                                                     })
                                                     ->placeholder('—'),
-                                                TextEntry::make('stage.name')
-                                                    ->hiddenLabel()
-                                                    ->badge(),
                                                 TextEntry::make('application_status')
                                                     ->hiddenLabel()
                                                     ->icon(null)

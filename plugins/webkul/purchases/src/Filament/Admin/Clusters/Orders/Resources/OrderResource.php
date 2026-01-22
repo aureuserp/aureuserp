@@ -48,7 +48,8 @@ use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Filament\Resources\IncotermResource;
 use Webkul\Account\Models\Partner;
-use Webkul\Field\Filament\Forms\Components\ProgressStepper;
+use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\PluginManager\Package;
 use Webkul\Product\Enums\ProductType;
@@ -98,7 +99,7 @@ class OrderResource extends Resource
     {
         return $schema
             ->components([
-                ProgressStepper::make('state')
+                FormProgressStepper::make('state')
                     ->hiddenLabel()
                     ->inline()
                     ->options(function ($record) {
@@ -577,12 +578,23 @@ class OrderResource extends Resource
     {
         return $schema
             ->components([
-                Section::make()
-                    ->schema([
-                        TextEntry::make('state')
-                            ->badge(),
-                    ])
-                    ->compact(),
+                InfolistProgressStepper::make('state')
+                    ->hiddenLabel()
+                    ->inline()
+                    ->options(function ($record) {
+                        $options = OrderState::options();
+
+                        if ($record->state !== OrderState::CANCELED) {
+                            unset($options[OrderState::CANCELED->value]);
+                        }
+
+                        if ($record->state !== OrderState::DONE) {
+                            unset($options[OrderState::DONE->value]);
+                        }
+
+                        return $options;
+                    })
+                    ->default(OrderState::DRAFT),
 
                 Section::make(__('purchases::filament/admin/clusters/orders/resources/order.infolist.sections.general.title'))
                     ->schema([
