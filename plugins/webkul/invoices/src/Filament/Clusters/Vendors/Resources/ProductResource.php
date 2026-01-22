@@ -29,7 +29,7 @@ class ProductResource extends BaseProductResource
 
     protected static bool $isGloballySearchable = true;
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 4;
 
     protected static ?string $cluster = Vendors::class;
 
