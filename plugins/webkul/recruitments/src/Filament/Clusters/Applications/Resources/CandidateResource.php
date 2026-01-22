@@ -32,6 +32,7 @@ use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\HtmlString;
 use Webkul\Recruitment\Filament\Clusters\Applications;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource\Pages\CreateCandidate;
@@ -41,7 +42,6 @@ use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResourc
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource\Pages\ViewCandidate;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource\RelationManagers\SkillsRelationManager;
 use Webkul\Recruitment\Models\Candidate;
-use Illuminate\Database\Eloquent\Model;
 
 class CandidateResource extends Resource
 {
@@ -80,9 +80,9 @@ class CandidateResource extends Resource
     {
         return [
             __('recruitments::filament/clusters/applications/resources/candidate.global-search.email-from') => $record?->email_from ?? '—',
-            __('recruitments::filament/clusters/applications/resources/candidate.global-search.phone') => $record?->phone ?? '—',
-            __('recruitments::filament/clusters/applications/resources/candidate.global-search.company') => $record?->company->name ?? '—',
-            __('recruitments::filament/clusters/applications/resources/candidate.global-search.degree') => $record?->degree->name ?? '—',
+            __('recruitments::filament/clusters/applications/resources/candidate.global-search.phone')      => $record?->phone ?? '—',
+            __('recruitments::filament/clusters/applications/resources/candidate.global-search.company')    => $record?->company->name ?? '—',
+            __('recruitments::filament/clusters/applications/resources/candidate.global-search.degree')     => $record?->degree->name ?? '—',
         ];
     }
 

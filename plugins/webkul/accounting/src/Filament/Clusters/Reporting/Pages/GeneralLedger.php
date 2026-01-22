@@ -226,7 +226,7 @@ class GeneralLedger extends Page implements HasForms
     public function resetExpandedState(): void
     {
         $this->expandedAccounts = [];
-        
+
         $this->loadedMoveLines = [];
     }
 
