@@ -46,6 +46,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Polyfill\Intl\Idn\Info;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
@@ -70,7 +71,8 @@ use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\ViewPayment as VendorViewPayment;
 use Webkul\Accounting\Filament\Exports\JournalEntryExporter;
 use Webkul\Accounting\Models\JournalEntry;
-use Webkul\Field\Filament\Forms\Components\ProgressStepper;
+use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Partner\Models\Partner;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
@@ -116,7 +118,7 @@ class JournalEntryResource extends Resource
     {
         return $schema
             ->components([
-                ProgressStepper::make('state')
+                FormProgressStepper::make('state')
                     ->hiddenLabel()
                     ->inline()
                     ->options(function ($record) {
@@ -412,6 +414,24 @@ class JournalEntryResource extends Resource
         return $schema
             ->columns(1)
             ->components([
+                InfolistProgressStepper::make('state')
+                    ->hiddenLabel()
+                    ->inline()
+                    ->options(function ($record) {
+                        $options = MoveState::options();
+
+                        if ($record->state != MoveState::CANCEL->value) {
+                            unset($options[MoveState::CANCEL->value]);
+                        }
+
+                        if ($record == null) {
+                            unset($options[MoveState::CANCEL->value]);
+                        }
+
+                        return $options;
+                    })
+                    ->default(MoveState::DRAFT->value)
+                    ->columnSpan('full'),
                 Section::make()
                     ->schema([
                         TextEntry::make('payment_state')

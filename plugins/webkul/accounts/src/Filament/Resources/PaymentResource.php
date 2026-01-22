@@ -42,7 +42,8 @@ use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Payment;
 use Webkul\Account\Models\PaymentMethodLine;
-use Webkul\Field\Filament\Forms\Components\ProgressStepper;
+use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 
 class PaymentResource extends Resource
 {
@@ -73,7 +74,7 @@ class PaymentResource extends Resource
         return $schema
             ->disabled(fn ($record) => $record && $record->state !== PaymentStatus::DRAFT)
             ->components([
-                ProgressStepper::make('state')
+                FormProgressStepper::make('state')
                     ->hiddenLabel()
                     ->inline()
                     ->options(function ($record) {
@@ -479,7 +480,7 @@ class PaymentResource extends Resource
             ->components([
                 Grid::make()
                     ->schema([
-                        ProgressStepper::make('state')
+                        InfolistProgressStepper::make('state')
                             ->hiddenLabel()
                             ->inline()
                             ->options(function ($record) {
@@ -512,8 +513,7 @@ class PaymentResource extends Resource
 
                                 return $options;
                             })
-                            ->columnSpan('full')
-                            ->disabled(),
+                            ->columnSpan('full'),
                     ])->columns(2),
 
                 Section::make()
