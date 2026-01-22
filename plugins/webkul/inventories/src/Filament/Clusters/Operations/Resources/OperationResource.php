@@ -524,22 +524,22 @@ class OperationResource extends Resource
                                         InfolistTableColumn::make('finalLocation.full_name')
                                             ->alignStart()
                                             ->width(150)
-                                            ->toggleable()
+                                            ->toggleable(isToggledHiddenByDefault: true)
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.final-location')),
                                         InfolistTableColumn::make('description_picking')
                                             ->alignStart()
                                             ->width(150)
-                                            ->toggleable()
+                                            ->toggleable(isToggledHiddenByDefault: true)
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.description')),
                                         InfolistTableColumn::make('scheduled_at')
                                             ->alignStart()
                                             ->width(150)
-                                            ->toggleable()
+                                            ->toggleable(isToggledHiddenByDefault: true)
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.scheduled-at')),
                                         InfolistTableColumn::make('deadline')
                                             ->alignStart()
                                             ->width(150)
-                                            ->toggleable()
+                                            ->toggleable(isToggledHiddenByDefault: true)
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.deadline')),
                                         InfolistTableColumn::make('productPackaging.name')
                                             ->alignStart()
