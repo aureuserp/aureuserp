@@ -100,7 +100,7 @@ class BillResource extends Resource
         return [
             __('accounts::filament/resources/bill.global-search.vendor')   => $record->partner?->name ?? '—',
             __('accounts::filament/resources/bill.global-search.date')     => $record?->invoice_date ?? '—',
-            __('accounts::filament/resources/bill.global-search.date-due') => $record?->invoice_date_due ?? '—',
+            __('accounts::filament/resources/bill.global-search.due-date') => $record?->invoice_date_due ?? '—',
         ];
     }
 

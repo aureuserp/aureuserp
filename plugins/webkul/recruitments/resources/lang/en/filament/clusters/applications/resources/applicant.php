@@ -7,6 +7,12 @@ return [
         'title' => 'Applicants',
     ],
 
+    'global-search' => [
+        'department' => 'Department',
+        'work-email' => 'Work Email',
+        'work-phone' => 'Work Phone',
+    ],
+
     'form' => [
         'sections' => [
             'general-information' => [

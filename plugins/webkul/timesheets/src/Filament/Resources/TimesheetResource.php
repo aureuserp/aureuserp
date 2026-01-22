@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Webkul\Timesheet\Filament\Resources\TimesheetResource\Pages\ManageTimesheets;
 use Webkul\Timesheet\Models\Timesheet;
+use Illuminate\Contracts\Support\Htmlable;
 
 class TimesheetResource extends Resource
 {
@@ -41,6 +42,11 @@ class TimesheetResource extends Resource
         return __('timesheets::filament/resources/timesheet.navigation.group');
     }
 
+    public static function getGlobalSearchResultTitle(Model $record): string | Htmlable
+    {
+        return $record->user->name;
+    }
+
     public static function getGloballySearchableAttributes(): array
     {
         return ['user.name', 'project.name', 'task.title', 'date'];
@@ -49,7 +55,6 @@ class TimesheetResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            __('timesheets::filament/resources/timesheet.global-search.employee') => $record->user?->name ?? '—',
             __('timesheets::filament/resources/timesheet.global-search.project')  => $record->project?->name ?? '—',
             __('timesheets::filament/resources/timesheet.global-search.task')     => $record->task?->title ?? '—',
             __('timesheets::filament/resources/timesheet.global-search.date')     => $record->date ?? '—',

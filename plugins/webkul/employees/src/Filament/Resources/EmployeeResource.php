@@ -88,6 +88,8 @@ class EmployeeResource extends Resource
 
     protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     protected static ?int $navigationSort = 1;
 
     public static function getModelLabel(): string
@@ -118,7 +120,6 @@ class EmployeeResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            __('employees::filament/resources/employee.global-search.name')       => $record?->name ?? '—',
             __('employees::filament/resources/employee.global-search.department') => $record?->department?->name ?? '—',
             __('employees::filament/resources/employee.global-search.work-email') => $record?->work_email ?? '—',
             __('employees::filament/resources/employee.global-search.work-phone') => $record?->work_phone ?? '—',

@@ -55,6 +55,8 @@ class PaymentResource extends Resource
 
     protected static bool $isGloballySearchable = false;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     public static function getGloballySearchableAttributes(): array
     {
         return ['name', 'partner.name', 'amount'];
@@ -64,7 +66,7 @@ class PaymentResource extends Resource
     {
         return [
             __('accounts::filament/resources/payment.global-search.partner') => $record->partner?->name ?? '—',
-            __('accounts::filament/resources/payment.global-search.amount')  => $record->amount ?? '—',
+            __('accounts::filament/resources/payment.global-search.amount')  => $record->amount ? money($record->amount) : '—',
             __('accounts::filament/resources/payment.global-search.date')    => $record->date ?? '—',
         ];
     }

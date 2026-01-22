@@ -55,6 +55,8 @@ class DepartmentResource extends Resource
 
     protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     public static function getNavigationLabel(): string
     {
         return __('employees::filament/resources/department.navigation.title');
@@ -73,7 +75,6 @@ class DepartmentResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            __('employees::filament/resources/department.global-search.name')               => $record->name ?? '—',
             __('employees::filament/resources/department.global-search.department-manager') => $record->manager?->name ?? '—',
             __('employees::filament/resources/department.global-search.company')            => $record->company?->name ?? '—',
         ];

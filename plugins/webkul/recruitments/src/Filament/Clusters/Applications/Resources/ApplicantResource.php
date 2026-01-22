@@ -58,6 +58,8 @@ use Webkul\Recruitment\Models\Candidate;
 use Webkul\Recruitment\Models\JobPosition;
 use Webkul\Recruitment\Models\Stage as RecruitmentStage;
 use Webkul\Security\Filament\Resources\UserResource;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Support\Htmlable;
 
 class ApplicantResource extends Resource
 {
@@ -77,6 +79,11 @@ class ApplicantResource extends Resource
     public static function getNavigationLabel(): string
     {
         return __('recruitments::filament/clusters/applications/resources/applicant.navigation.title');
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string | Htmlable
+    {
+        return $record->candidate->name;
     }
 
     public static function getGloballySearchableAttributes(): array
