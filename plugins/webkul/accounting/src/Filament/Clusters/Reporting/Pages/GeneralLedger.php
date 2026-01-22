@@ -127,7 +127,7 @@ class GeneralLedger extends Page implements HasForms
                         ])
                         ->alwaysShowCalendar()
                         ->live()
-                        ->afterStateUpdated(fn () => null),
+                        ->afterStateUpdated(fn () => $this->resetExpandedState()),
 
                     Select::make('journals')
                         ->label('Journals')
@@ -135,7 +135,7 @@ class GeneralLedger extends Page implements HasForms
                         ->options(Journal::pluck('name', 'id'))
                         ->searchable()
                         ->live()
-                        ->afterStateUpdated(fn () => null),
+                        ->afterStateUpdated(fn () => $this->resetExpandedState()),
                 ])
                 ->columnSpanFull(),
         ];
@@ -204,6 +204,30 @@ class GeneralLedger extends Page implements HasForms
     public function isAccountExpanded($accountId): bool
     {
         return in_array($accountId, $this->expandedAccounts);
+    }
+
+    public function expandAll(): void
+    {
+        $data = $this->generalLedgerData;
+        $this->expandedAccounts = $data['accounts']->pluck('id')->toArray();
+
+        foreach ($this->expandedAccounts as $accountId) {
+            if (! isset($this->loadedMoveLines[$accountId])) {
+                $this->loadedMoveLines[$accountId] = $this->fetchAccountMoves($accountId);
+            }
+        }
+    }
+
+    public function collapseAll(): void
+    {
+        $this->expandedAccounts = [];
+    }
+
+    public function resetExpandedState(): void
+    {
+        $this->expandedAccounts = [];
+        
+        $this->loadedMoveLines = [];
     }
 
     public function getAccountMoves($accountId): array
