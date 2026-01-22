@@ -59,6 +59,8 @@ class PartnerResource extends Resource
 
     protected static bool $isGloballySearchable = false;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     public static function getGloballySearchableAttributes(): array
     {
         return ['name', 'email', 'phone'];
