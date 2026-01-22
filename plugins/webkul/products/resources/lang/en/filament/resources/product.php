@@ -3,7 +3,7 @@
 return [
     'global-search' => [
         'reference' => 'Reference',
-        'barcode' => 'Barcode',
+        'barcode'   => 'Barcode',
     ],
 
     'form' => [

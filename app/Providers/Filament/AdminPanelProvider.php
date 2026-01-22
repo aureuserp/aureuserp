@@ -21,7 +21,6 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Webkul\Support\Filament\Pages\Profile;
 use Webkul\Support\GlobalSearchProvider;
-use CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {

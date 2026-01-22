@@ -9,7 +9,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -363,6 +362,7 @@ class CurrencyResource extends Resource
                                         if ($record && $record->rate && $record->rate > 0) {
                                             return round(1 / $record->rate, 6);
                                         }
+
                                         return null;
                                     }),
                             ]),

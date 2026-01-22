@@ -57,7 +57,7 @@ class PreviewAction extends Action
                         ->color('primary')
                         ->action(function (Move $record) {
                             $pdfPath = $this->prepareInvoice($record);
-                            
+
                             if ($pdfPath) {
                                 return response()->download(storage_path('app/public/'.$pdfPath));
                             }

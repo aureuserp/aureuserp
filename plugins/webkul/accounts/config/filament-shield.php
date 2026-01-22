@@ -2,7 +2,7 @@
 
 return [
     'resources' => [
-        'manage' => [],
+        'manage'  => [],
         'exclude' => [
             \Webkul\Account\Filament\Resources\AccountResource::class,
             \Webkul\Account\Filament\Resources\PaymentResource::class,

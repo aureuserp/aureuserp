@@ -5,7 +5,6 @@ namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\Page;
 use Filament\Schemas\Components\Utilities\Get;
-use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\BillResource as BaseBillResource;
 use Webkul\Invoice\Filament\Clusters\Vendors;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource\Pages\CreateBill;

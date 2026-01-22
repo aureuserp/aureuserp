@@ -6,7 +6,6 @@ use Filament\Resources\Pages\Page;
 use Filament\Schemas\Schema;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Purchase\Filament\Admin\Clusters\Products;

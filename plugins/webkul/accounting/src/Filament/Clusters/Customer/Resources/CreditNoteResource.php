@@ -3,7 +3,6 @@
 namespace Webkul\Accounting\Filament\Clusters\Customer\Resources;
 
 use Filament\Resources\Pages\Page;
-use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\CreditNoteResource as BaseCreditNoteResource;
 use Webkul\Accounting\Filament\Clusters\Customer;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\CreditNoteResource\Pages\CreateCreditNote;

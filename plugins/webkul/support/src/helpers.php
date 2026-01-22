@@ -17,7 +17,7 @@ if (! function_exists('money')) {
 
         return Number::currency($amount, $currency, $locale);
     }
-    
+
     if (! function_exists('random_color')) {
         function random_color(string $type = 'hex'): string
         {
@@ -50,9 +50,9 @@ if (! function_exists('money')) {
                     random_int(0, 255),
                     random_int(0, 255)
                 ),
-                
+
                 default => throw new InvalidArgumentException(
-                    "Invalid color type. Use: hex, rgb, rgba, or hsl"
+                    'Invalid color type. Use: hex, rgb, rgba, or hsl'
                 ),
             };
         }

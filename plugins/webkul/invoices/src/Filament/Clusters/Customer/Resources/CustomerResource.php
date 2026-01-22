@@ -4,7 +4,6 @@ namespace Webkul\Invoice\Filament\Clusters\Customer\Resources;
 
 use Filament\Resources\Pages\Page;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
 use Webkul\Invoice\Filament\Clusters\Customer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\CustomerResource\Pages\CreateCustomer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\CustomerResource\Pages\EditCustomer;

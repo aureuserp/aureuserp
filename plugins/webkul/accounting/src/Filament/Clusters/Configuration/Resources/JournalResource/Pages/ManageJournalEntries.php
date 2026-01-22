@@ -2,10 +2,10 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource\Pages;
 
-use Filament\Tables\Table;
 use Filament\Resources\Pages\ManageRelatedRecords;
-use Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource;
+use Filament\Tables\Table;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalItemResource;
+use Webkul\Accounting\Filament\Clusters\Configuration\Resources\JournalResource;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageJournalEntries extends ManageRelatedRecords

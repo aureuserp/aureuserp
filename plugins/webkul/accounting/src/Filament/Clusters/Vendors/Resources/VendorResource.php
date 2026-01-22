@@ -2,7 +2,6 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Vendors\Resources;
 
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;

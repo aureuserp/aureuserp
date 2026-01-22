@@ -1,3 +1,3 @@
 <x-filament-panels::page class="fi-home-page">
-    {!! $this->getContent() !!}
+    {!! str($this->getContent())->sanitizeHtml() !!}
 </x-filament-panels::page>

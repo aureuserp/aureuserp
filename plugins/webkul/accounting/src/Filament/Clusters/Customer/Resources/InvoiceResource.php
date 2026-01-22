@@ -10,8 +10,8 @@ use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource\Pages
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ListInvoices;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ManagePayments;
 use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource\Pages\ViewInvoice;
-use Webkul\Accounting\Models\Invoice;
 use Webkul\Accounting\Livewire\InvoiceSummary;
+use Webkul\Accounting\Models\Invoice;
 
 class InvoiceResource extends BaseInvoiceResource
 {

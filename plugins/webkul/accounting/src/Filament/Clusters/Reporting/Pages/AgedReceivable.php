@@ -101,7 +101,7 @@ class AgedReceivable extends Page implements HasForms
                     $period = $data['period'];
 
                     $partnerLines = [];
-                    
+
                     foreach ($this->expandedPartners as $partnerId) {
                         if (isset($partners[$partnerId])) {
                             $partnerLines[$partnerId] = $this->getPartnerLines($partnerId);

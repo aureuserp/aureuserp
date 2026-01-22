@@ -44,10 +44,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("
+        DB::statement('
             UPDATE partners_partners
             SET customer_rank = NULL,
                 supplier_rank = NULL
-        ");
+        ');
     }
 };

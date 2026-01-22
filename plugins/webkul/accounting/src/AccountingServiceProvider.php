@@ -51,7 +51,7 @@ class AccountingServiceProvider extends PackageServiceProvider
     public function registerLivewireComponents()
     {
         Livewire::component('accounting::journal-chart', JournalChartWidget::class);
-        
+
         Livewire::component('accounting-invoice-summary', InvoiceSummary::class);
     }
 

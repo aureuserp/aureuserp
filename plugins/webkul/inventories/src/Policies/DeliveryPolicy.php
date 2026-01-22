@@ -55,7 +55,7 @@ class DeliveryPolicy
         if (! $user->can('delete_inventory_delivery')) {
             return false;
         }
-        
+
         return $this->hasAccess($user, $delivery);
     }
 
