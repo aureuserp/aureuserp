@@ -1,3 +1,34 @@
+# 🚀 CHANGELOG — v1.3.0-BETA2
+
+### 🧩 Features
+
+* Export feature added to the invoice/accounting tables
+
+### ✨ Improvements
+
+* Added progress stepper for infolist
+* Remove unused dependencies from composer.json and composer.lock
+* Refactor log attribute labels for move, payment, order, and requisition models to improve consistency and clarity
+* Optimized: accounting reporting optimized by lazy move lines loading
+* Added prices in RFQ template
+
+### 🐛 Fixes
+
+* [fixed] - Fixed customer login page issue
+* [fixed] - Fixed global search issues
+* #966 [fixed] - Accounting Plugin: Feature Request: Print Vendor Bill
+* #965 [fixed] - Invoices Plugin: Vendor Bill Purchase Tax Not Saved
+* #964 [fixed] - Purchases Plugin: RFQ Print Missing Info & No PO Print Action
+* #963 [fixed] - Support Plugin: CurrencyRate - Conflicting Date Field & Design Issue
+* #962 [fixed] - Employee Plugin: EmployeeSkill - Duplicate and Missing User Relationships Use
+* #961 [fixed] - Employees Plugin: SkillLevelRelationManager - Color Logic Gap
+* #960 [fixed] - Employees Plugin: SkillTypeResource - Color Select CSS Variable Not Rendering
+* #959 [fixed] - Employees Plugin: CalendarResource - Incorrect date() Formatting on Numeric Fields
+* #957 [fixed] - Employees Plugin: EmployeeCategory - Undefined fake() Function
+* #936 [fixed] - Cannot create quotations and invoices for resgistered Customer or created Contact
+* #889 [fixed] - Currency Management Resource
+
+
 # 🚀 CHANGELOG — v1.3.0-BETA1
 
 ### 🧩 Features
