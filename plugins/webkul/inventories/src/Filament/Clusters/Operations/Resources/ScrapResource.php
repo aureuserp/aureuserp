@@ -526,7 +526,7 @@ class ScrapResource extends Resource
                     ->inline()
                     ->options(ScrapState::options())
                     ->default(ScrapState::DRAFT),
-                    
+
                 Group::make()
                     ->schema([
                         Group::make()
@@ -615,7 +615,7 @@ class ScrapResource extends Resource
                             ])
                             ->columnSpan(['lg' => 1]),
                     ])
-                    ->columns(3)
+                    ->columns(3),
             ])
             ->columns(1);
     }

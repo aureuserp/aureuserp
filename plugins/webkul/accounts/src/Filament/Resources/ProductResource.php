@@ -9,7 +9,6 @@ use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
-use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Enums\InvoicePolicy;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Filament\Resources\ProductResource\Pages\CreateProduct;

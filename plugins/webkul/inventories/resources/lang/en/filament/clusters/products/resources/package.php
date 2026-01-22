@@ -7,7 +7,7 @@ return [
     ],
 
     'global-search' => [
-        'name' => 'Name',
+        'name'         => 'Name',
         'package-type' => 'Package Type',
         'location'     => 'Location',
     ],

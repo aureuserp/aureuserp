@@ -4,8 +4,8 @@ namespace Webkul\Support;
 
 use Filament\Facades\Filament;
 use Filament\GlobalSearch\GlobalSearchResults;
-use Illuminate\Support\Str;
 use Filament\GlobalSearch\Providers\DefaultGlobalSearchProvider;
+use Illuminate\Support\Str;
 
 class GlobalSearchProvider extends DefaultGlobalSearchProvider
 {
@@ -30,7 +30,6 @@ class GlobalSearchProvider extends DefaultGlobalSearchProvider
             if (! $resourceResults->count()) {
                 continue;
             }
-
 
             $pluginKey = Str::of($resource)
                 ->after('\\')

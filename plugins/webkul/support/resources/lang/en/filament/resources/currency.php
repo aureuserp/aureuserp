@@ -86,7 +86,7 @@ return [
                 'notification' => [
                     'title'   => 'Currency deleted',
                     'body'    => 'The currency has been deleted successfully.',
-                    
+
                     'success' => [
                         'title' => 'Currency deleted',
                         'body'  => 'The currency has been deleted successfully.',

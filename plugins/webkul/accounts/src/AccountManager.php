@@ -110,7 +110,7 @@ class AccountManager
             $record->partner?->increment('supplier_rank');
         } elseif ($record->move_type == MoveType::ENTRY) {
             $record->lines
-                ->filter(fn($line) => $line->partner_id && $line->account->account_type == AccountType::ASSET_RECEIVABLE)
+                ->filter(fn ($line) => $line->partner_id && $line->account->account_type == AccountType::ASSET_RECEIVABLE)
                 ->pluck('partner')
                 ->unique()
                 ->each(function ($partner) {
@@ -118,7 +118,7 @@ class AccountManager
                 });
 
             $record->lines
-                ->filter(fn($line) => $line->partner_id && $line->account->account_type == AccountType::LIABILITY_PAYABLE)
+                ->filter(fn ($line) => $line->partner_id && $line->account->account_type == AccountType::LIABILITY_PAYABLE)
                 ->pluck('partner')
                 ->unique()
                 ->each(function ($partner) {

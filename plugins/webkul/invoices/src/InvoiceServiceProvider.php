@@ -3,8 +3,8 @@
 namespace Webkul\Invoice;
 
 use Filament\Panel;
-use Webkul\Invoice\Livewire\InvoiceSummary;
 use Livewire\Livewire;
+use Webkul\Invoice\Livewire\InvoiceSummary;
 use Webkul\PluginManager\Console\Commands\InstallCommand;
 use Webkul\PluginManager\Console\Commands\UninstallCommand;
 use Webkul\PluginManager\Package;

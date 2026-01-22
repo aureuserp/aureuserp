@@ -3,7 +3,6 @@
 namespace Webkul\Accounting\Filament\Clusters\Vendors\Resources;
 
 use Filament\Resources\Pages\Page;
-use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\RefundResource as BaseRefundResource;
 use Webkul\Accounting\Filament\Clusters\Vendors;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\RefundResource\Pages\CreateRefund;

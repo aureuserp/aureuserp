@@ -2,7 +2,6 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Configuration\Resources;
 
-use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\AccountResource as BaseAccountResource;
 use Webkul\Accounting\Filament\Clusters\Configuration;
 use Webkul\Accounting\Filament\Clusters\Configuration\Resources\AccountResource\Pages\ManageAccounts;

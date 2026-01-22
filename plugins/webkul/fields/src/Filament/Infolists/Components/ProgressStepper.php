@@ -12,7 +12,7 @@ class ProgressStepper extends Entry
 
     protected mixed $isInline = false;
 
-    public function options(array | \Closure $options): static
+    public function options(array|\Closure $options): static
     {
         $this->options = $options;
 
@@ -24,7 +24,7 @@ class ProgressStepper extends Entry
         return $this->evaluate($this->options) ?? [];
     }
 
-    public function inline(bool | \Closure $inline = true): static
+    public function inline(bool|\Closure $inline = true): static
     {
         $this->isInline = $inline;
 
@@ -39,7 +39,7 @@ class ProgressStepper extends Entry
     public function getColor(string $value): string
     {
         $state = $this->getState();
-        
+
         if ($state instanceof \BackedEnum) {
             $state = $state->value;
         }
