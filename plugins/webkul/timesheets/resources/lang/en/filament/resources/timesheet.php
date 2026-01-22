@@ -9,10 +9,9 @@ return [
     ],
 
     'global-search' => [
-        'employee' => 'Employee',
-        'project'  => 'Project',
-        'task'     => 'Task',
-        'date'     => 'Date',
+        'project' => 'Project',
+        'task'    => 'Task',
+        'date'    => 'Date',
     ],
 
     'form' => [

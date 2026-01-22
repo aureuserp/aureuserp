@@ -47,6 +47,8 @@ class AllocationResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     public static function getModelLabel(): string
     {
         return __('time-off::filament/clusters/management/resources/allocation.model-label');

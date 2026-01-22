@@ -50,6 +50,8 @@ class UserResource extends Resource
 
     protected static ?int $navigationSort = 4;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     public static function getNavigationLabel(): string
     {
         return __('security::filament/resources/user.navigation.title');
@@ -68,7 +70,6 @@ class UserResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            __('security::filament/resources/user.global-search.name')  => $record->name ?? '—',
             __('security::filament/resources/user.global-search.email') => $record->email ?? '—',
         ];
     }

@@ -41,6 +41,7 @@ use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResourc
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource\Pages\ViewCandidate;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource\RelationManagers\SkillsRelationManager;
 use Webkul\Recruitment\Models\Candidate;
+use Illuminate\Database\Eloquent\Model;
 
 class CandidateResource extends Resource
 {
@@ -51,6 +52,8 @@ class CandidateResource extends Resource
     protected static ?string $cluster = Applications::class;
 
     protected static ?int $navigationSort = 3;
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function getModelLabel(): string
     {
@@ -70,6 +73,16 @@ class CandidateResource extends Resource
             'phone',
             'company.name',
             'degree.name',
+        ];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('recruitments::filament/clusters/applications/resources/candidate.global-search.email-from') => $record?->email_from ?? '—',
+            __('recruitments::filament/clusters/applications/resources/candidate.global-search.phone') => $record?->phone ?? '—',
+            __('recruitments::filament/clusters/applications/resources/candidate.global-search.company') => $record?->company->name ?? '—',
+            __('recruitments::filament/clusters/applications/resources/candidate.global-search.degree') => $record?->degree->name ?? '—',
         ];
     }
 

@@ -58,6 +58,8 @@ class CompanyResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     public static function getNavigationLabel(): string
     {
         return __('security::filament/resources/company.navigation.title');
@@ -76,7 +78,6 @@ class CompanyResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            __('security::filament/resources/company.global-search.name')  => $record->name ?? '—',
             __('security::filament/resources/company.global-search.email') => $record->email ?? '—',
         ];
     }
