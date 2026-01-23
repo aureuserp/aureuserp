@@ -4,6 +4,7 @@ namespace Webkul\Support\Filament\Pages;
 
 use Exception;
 use Filament\Actions\Action;
+use Filament\Auth\MultiFactor\Contracts\MultiFactorAuthenticationProvider;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
@@ -11,7 +12,9 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -47,6 +50,17 @@ class Profile extends Page implements HasForms
             'editProfileForm',
             'editPasswordForm',
         ];
+    }
+
+    protected function getSchemas(): array
+    {
+        $schemas = [];
+
+        if (Filament::hasMultiFactorAuthentication()) {
+            $schemas[] = 'multiFactorAuthenticationSchema';
+        }
+
+        return $schemas;
     }
 
     public function editProfileForm(Schema $schema): Schema
@@ -336,5 +350,24 @@ class Profile extends Page implements HasForms
         return [
             'user' => $this->getUser(),
         ];
+    }
+
+    public function multiFactorAuthenticationSchema(Schema $schema): Schema
+    {
+        $user = Filament::auth()->user();
+
+        return $schema
+            ->components([
+                Section::make()
+                    ->label(__('filament-panels::auth/pages/edit-profile.multi_factor_authentication.label'))
+                    ->compact()
+                    ->divided()
+                    ->secondary()
+                    ->schema(collect(Filament::getMultiFactorAuthenticationProviders())
+                        ->sort(fn (MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): int => $multiFactorAuthenticationProvider->isEnabled($user) ? 0 : 1)
+                        ->map(fn (MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): Component => Group::make($multiFactorAuthenticationProvider->getManagementSchemaComponents())
+                            ->statePath($multiFactorAuthenticationProvider->getId()))
+                        ->all()),
+            ]);
     }
 }
