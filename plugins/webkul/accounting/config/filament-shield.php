@@ -1,26 +1,34 @@
 <?php
 
+use Webkul\Accounting\Filament\Clusters\Accounting;
+use Webkul\Accounting\Filament\Clusters\Configuration;
+use Webkul\Accounting\Filament\Clusters\Customer;
+use Webkul\Accounting\Filament\Clusters\Vendors;
+use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource;
+use Webkul\Accounting\Filament\Clusters\Vendors\Resources\ProductResource;
+use Webkul\Accounting\Filament\Widgets\JournalChartsWidget;
+
 return [
     'resources' => [
         'manage'  => [],
         'exclude' => [
-            \Webkul\Accounting\Filament\Clusters\Vendors\Resources\ProductResource::class,
-            \Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource::class,
+            ProductResource::class,
+            PaymentResource::class,
         ],
     ],
 
     'pages' => [
         'exclude' => [
-            \Webkul\Accounting\Filament\Clusters\Vendors::class,
-            \Webkul\Accounting\Filament\Clusters\Customer::class,
-            \Webkul\Accounting\Filament\Clusters\Accounting::class,
-            \Webkul\Accounting\Filament\Clusters\Configuration::class,
+            Vendors::class,
+            Customer::class,
+            Accounting::class,
+            Configuration::class,
         ],
     ],
 
     'widgets' => [
         'exclude' => [
-            \Webkul\Accounting\Filament\Widgets\JournalChartsWidget::class,
+            JournalChartsWidget::class,
         ],
     ],
 

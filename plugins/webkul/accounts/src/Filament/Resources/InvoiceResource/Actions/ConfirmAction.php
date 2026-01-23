@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources\InvoiceResource\Actions;
 
+use Exception;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Livewire\Component;
@@ -31,7 +32,7 @@ class ConfirmAction extends Action
                     $record = AccountFacade::confirmMove($record);
 
                     $livewire->refreshFormData(['state', 'parent_state']);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     Notification::make()
                         ->warning()
                         ->title('Confirmation Error')

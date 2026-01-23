@@ -47,7 +47,7 @@ class ManageDeliveries extends ManageRelatedRecords
     public function table(Table $table): Table
     {
         return OperationResource::table($table)
-            ->actions([
+            ->recordActions([
                 ViewAction::make()
                     ->url(fn ($record) => DeliveryResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(false),

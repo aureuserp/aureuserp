@@ -2,7 +2,6 @@
 
 namespace Webkul\Security\Filament\Clusters\Settings\Pages;
 
-use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\Select;
 use Filament\Pages\SettingsPage;
@@ -17,7 +16,7 @@ class ManageCurrency extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     protected static string $settings = CurrencySettings::class;
 
@@ -51,7 +50,7 @@ class ManageCurrency extends SettingsPage
     public function form(Schema $schema): Schema
     {
         return $schema
-            ->schema([
+            ->components([
                 Select::make('default_currency_id')
                     ->label(__('security::filament/clusters/manage-currency.form.default-currency.label'))
                     ->helperText(__('security::filament/clusters/manage-currency.form.default-currency.helper-text'))

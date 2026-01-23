@@ -300,7 +300,7 @@ class InvoiceResource extends Resource
                                             })
                                             ->searchable()
                                             ->preload()
-                                            ->createOptionForm(fn (Schema $form, Get $get) => BankAccountResource::form($form)->fill([
+                                            ->createOptionForm(fn (Schema $schema, Get $get) => BankAccountResource::form($schema)->fill([
                                                 'partner_id' => $get('partner_id'),
                                             ]))
                                             ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),

@@ -2,6 +2,7 @@
 
 namespace Webkul\Account;
 
+use Exception;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +22,6 @@ use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Mail\Invoice\Actions\InvoiceEmail;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\FullReconcile;
-use Webkul\Account\Models\Move;
 use Webkul\Account\Models\Move as AccountMove;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\PartialReconcile;
@@ -145,7 +145,7 @@ class AccountManager
     public function resetToDraftMove(AccountMove $record): AccountMove
     {
         if (! in_array($record->state, [MoveState::CANCEL, MoveState::POSTED])) {
-            throw new \Exception('Only posted/cancelled journal entries can be reset to draft.');
+            throw new Exception('Only posted/cancelled journal entries can be reset to draft.');
         }
 
         $partialReconcileExchangeMoveIds = PartialReconcile::where('exchange_move_id', $record->id)->pluck('id')->unique();
@@ -153,7 +153,7 @@ class AccountManager
         $fullReconcileExchangeMoveIds = FullReconcile::where('exchange_move_id', $record->id)->pluck('id')->unique();
 
         if ($partialReconcileExchangeMoveIds->merge($fullReconcileExchangeMoveIds)->isNotEmpty()) {
-            throw new \Exception('You cannot reset to draft an exchange difference journal entry.');
+            throw new Exception('You cannot reset to draft an exchange difference journal entry.');
         }
 
         $record->lines->each(function ($line) {
@@ -265,7 +265,7 @@ class AccountManager
         return $record;
     }
 
-    public function computeMoveTotals(Move $move): Move
+    public function computeMoveTotals(AccountMove $move): AccountMove
     {
         $totalUntaxed = $totalUntaxedCurrency = 0.0;
 
@@ -382,7 +382,7 @@ class AccountManager
         return $line;
     }
 
-    public function syncDynamicLines(Move $move)
+    public function syncDynamicLines(AccountMove $move)
     {
         $this->syncTaxLines($move);
 
@@ -391,7 +391,7 @@ class AccountManager
         $this->syncPaymentTermLines($move);
     }
 
-    public function syncTaxLines(Move $move)
+    public function syncTaxLines(AccountMove $move)
     {
         if (! $move->isInvoice(true)) {
             return;
@@ -451,7 +451,7 @@ class AccountManager
         }
     }
 
-    public function syncRoundingLines(Move $move)
+    public function syncRoundingLines(AccountMove $move)
     {
         if ($move->state === MoveState::POSTED) {
             return;
@@ -586,7 +586,7 @@ class AccountManager
         $applyCashRounding($move, $diffBalance, $diffAmountCurrency, $existingCashRoundingLine);
     }
 
-    public function syncPaymentTermLines(Move $move)
+    public function syncPaymentTermLines(AccountMove $move)
     {
         if (! $move->isInvoice(true)) {
             return;
@@ -651,7 +651,7 @@ class AccountManager
         }
     }
 
-    public function getRoundedBaseAndTaxLines(Move $move, $roundFromTaxLines = true)
+    public function getRoundedBaseAndTaxLines(AccountMove $move, $roundFromTaxLines = true)
     {
         $baseLines = $move->lines
             ->where('display_type', DisplayType::PRODUCT)
@@ -816,7 +816,7 @@ class AccountManager
             ->all();
 
         if (empty($batches)) {
-            throw new \Exception(
+            throw new Exception(
                 'To record payments with '.$paymentRegister->paymentMethodLine->name.', the recipient bank account must be manually validated. You should go on the partner bank account in order to validate it.'
             );
         }
@@ -966,7 +966,7 @@ class AccountManager
 
     public function initiatePayments($paymentRegister, &$paymentsToProcess, $editMode = false)
     {
-        $accountingInstalled = (new Move)->getInvoiceInPaymentState() == PaymentState::IN_PAYMENT;
+        $accountingInstalled = (new AccountMove)->getInvoiceInPaymentState() == PaymentState::IN_PAYMENT;
 
         foreach ($paymentsToProcess as $index => $processItem) {
             $vals = $processItem['create_vals'];
@@ -1067,7 +1067,7 @@ class AccountManager
     public function postPayment(Payment $payment)
     {
         if ($payment->require_partner_bank_account && ! $payment->partnerBank->can_send_money) {
-            throw new \Exception(__(
+            throw new Exception(__(
                 'To record payments with :method_name, the recipient bank account must be manually validated. '.
                     'You should go on the partner bank account of :partner in order to validate it.',
                 [
@@ -1670,7 +1670,7 @@ class AccountManager
                 || ! $expenseAccountId = $defaultAccountsSettings->expense_currency_exchange_account_id
                     || ! $incomeAccountId = $defaultAccountsSettings->income_currency_exchange_account_id
         ) {
-            throw new \Exception('Exchange difference journal and accounts must be configured');
+            throw new Exception('Exchange difference journal and accounts must be configured');
         }
 
         $moveValues = [
@@ -2000,50 +2000,50 @@ class AccountManager
         return $reverseMoves;
     }
 
-    public function isConfirmAllowedForMove(Move &$record)
+    public function isConfirmAllowedForMove(AccountMove &$record)
     {
         if (! $record->partner_id) {
             if ($record->isSaleDocument(true)) {
-                throw new \Exception(__('accounts::account-manager.post-action-validate.customer-required'));
+                throw new Exception(__('accounts::account-manager.post-action-validate.customer-required'));
             } elseif ($record->isPurchaseDocument(true)) {
-                throw new \Exception(__('accounts::account-manager.post-action-validate.vendor-required'));
+                throw new Exception(__('accounts::account-manager.post-action-validate.vendor-required'));
             }
         }
 
         if ($record->partnerBank?->trashed()) {
-            throw new \Exception(__('accounts::account-manager.post-action-validate.bank-archived'));
+            throw new Exception(__('accounts::account-manager.post-action-validate.bank-archived'));
         }
 
         if (float_compare($record->amount_total, 0, precisionRounding: $record->currency->rounding) < 0) {
-            throw new \Exception(__('accounts::account-manager.post-action-validate.negative-amount'));
+            throw new Exception(__('accounts::account-manager.post-action-validate.negative-amount'));
         }
 
         if (! $record->invoice_date) {
             if ($record->isSaleDocument(true)) {
                 $record->invoice_date = now();
             } elseif ($record->isPurchaseDocument(true)) {
-                throw new \Exception(__('accounts::account-manager.post-action-validate.date-required'));
+                throw new Exception(__('accounts::account-manager.post-action-validate.date-required'));
             }
         }
 
         if (in_array($record->state, [MoveState::POSTED, MoveState::CANCEL])) {
-            throw new \Exception(__('accounts::account-manager.post-action-validate.draft-state-required'));
+            throw new Exception(__('accounts::account-manager.post-action-validate.draft-state-required'));
         }
 
         if ($record->lines->isEmpty()) {
-            throw new \Exception(__('accounts::account-manager.post-action-validate.lines-required'));
+            throw new Exception(__('accounts::account-manager.post-action-validate.lines-required'));
         }
 
         if ($record->lines->some(fn ($line) => $line->account->deprecated)) {
-            throw new \Exception(__('accounts::account-manager.post-action-validate.account-deprecated'));
+            throw new Exception(__('accounts::account-manager.post-action-validate.account-deprecated'));
         }
 
         if (! $record->journal) {
-            throw new \Exception(__('accounts::account-manager.post-action-validate.journal-archived'));
+            throw new Exception(__('accounts::account-manager.post-action-validate.journal-archived'));
         }
 
         if (! $record->currency) {
-            throw new \Exception(__('accounts::account-manager.post-action-validate.currency-archived'));
+            throw new Exception(__('accounts::account-manager.post-action-validate.currency-archived'));
         }
     }
 
@@ -2054,28 +2054,28 @@ class AccountManager
         }
 
         if ($lines->contains(fn ($line) => $line->reconciled)) {
-            throw new \Exception(__('You are trying to reconcile some entries that are already reconciled.'));
+            throw new Exception(__('You are trying to reconcile some entries that are already reconciled.'));
         }
 
         if ($lines->contains(fn ($line) => $line->parent_state != MoveState::POSTED)) {
-            throw new \Exception(__('You can only reconcile posted entries.'));
+            throw new Exception(__('You can only reconcile posted entries.'));
         }
 
         $accounts = $lines->pluck('account')->unique();
 
         if ($accounts->count() > 1) {
-            throw new \Exception(__(
+            throw new Exception(__(
                 'Entries are not from the same account: :accounts',
                 ['accounts' => $accounts->pluck('display_name')->implode(', ')]
             ));
         }
 
         if ($lines->pluck('partner_id')->unique()->count() > 1) {
-            throw new \Exception('All lines must have the same partner');
+            throw new Exception('All lines must have the same partner');
         }
 
         if ($lines->pluck('company')->unique()->count() > 1) {
-            throw new \Exception(__(
+            throw new Exception(__(
                 "Entries don't belong to the same company: :companies",
                 ['companies' => $lines->pluck('company')->pluck('display_name')->implode(', ')]
             ));
@@ -2087,7 +2087,7 @@ class AccountManager
             ! $account->reconcile
             && ! in_array($account->account_type, [AccountType::ASSET_CASH, AccountType::LIABILITY_CREDIT_CARD])
         ) {
-            throw new \Exception(__(
+            throw new Exception(__(
                 'Account :account does not allow reconciliation. First change the configuration of this account to allow it.',
                 ['account' => $account->display_name]
             ));

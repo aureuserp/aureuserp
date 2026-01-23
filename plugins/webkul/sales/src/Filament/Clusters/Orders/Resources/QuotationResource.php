@@ -69,7 +69,6 @@ use Webkul\Sale\Livewire\QuotationSummary;
 use Webkul\Sale\Models\Partner;
 use Webkul\Sale\Models\Product;
 use Webkul\Sale\Models\Quotation as Order;
-use Webkul\Sale\Settings;
 use Webkul\Sale\Settings\PriceSettings;
 use Webkul\Sale\Settings\QuotationAndOrderSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
@@ -292,7 +291,7 @@ class QuotationResource extends Resource
                                             ->preload()
                                             ->live()
                                             ->afterStateUpdated(function (Set $set, Get $get) {
-                                                $company = $get('company_id') ? \Webkul\Support\Models\Company::find($get('company_id')) : null;
+                                                $company = $get('company_id') ? Company::find($get('company_id')) : null;
 
                                                 if ($company) {
                                                     $set('currency_id', $company->currency_id);
@@ -753,7 +752,7 @@ class QuotationResource extends Resource
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.discount-percentage'))
                                             ->toggleable(isToggledHiddenByDefault: true)
                                             ->width(100)
-                                            ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount),
+                                            ->visible(fn (PriceSettings $settings) => $settings->enable_discount),
                                         InfolistTableColumn::make('price_subtotal')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.products.entries.sub-total'))
                                             ->toggleable()
@@ -820,10 +819,10 @@ class QuotationResource extends Resource
                                             ->placeholder('-'),
 
                                         TextEntry::make('discount')
-                                            ->formatStateUsing(function ($state, Settings\PriceSettings $settings) {
+                                            ->formatStateUsing(function ($state, PriceSettings $settings) {
                                                 return $settings->enable_discount && $state ? $state : '-';
                                             })
-                                            ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount)
+                                            ->visible(fn (PriceSettings $settings) => $settings->enable_discount)
                                             ->numeric()
                                             ->suffix('%'),
 
@@ -902,7 +901,7 @@ class QuotationResource extends Resource
                                             ->toggleable()
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.discount-percentage'))
                                             ->alignment(Alignment::Start)
-                                            ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount),
+                                            ->visible(fn (PriceSettings $settings) => $settings->enable_discount),
                                         InfolistTableColumn::make('price_unit')
                                             ->toggleable()
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.unit-price'))
@@ -926,7 +925,7 @@ class QuotationResource extends Resource
                                         TextEntry::make('discount')
                                             ->placeholder('-')
                                             ->label(__('sales::filament/clusters/orders/resources/quotation.infolist.tabs.order-line.repeater.product-optional.entries.discount-percentage'))
-                                            ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount)
+                                            ->visible(fn (PriceSettings $settings) => $settings->enable_discount)
                                             ->suffix('%')
                                             ->alignment(Alignment::Start),
                                         TextEntry::make('price_unit')
@@ -1161,7 +1160,7 @@ class QuotationResource extends Resource
                     ->minValue(0)
                     ->maxValue(100)
                     ->live(onBlur: true)
-                    ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount)
+                    ->visible(fn (PriceSettings $settings) => $settings->enable_discount)
                     ->dehydrated(),
             ])
             ->extraItemActions([
@@ -1352,7 +1351,7 @@ class QuotationResource extends Resource
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.discount-percentage'))
                     ->width(100)
                     ->toggleable(isToggledHiddenByDefault: true)
-                    ->visible(fn () => resolve(Settings\PriceSettings::class)->enable_discount),
+                    ->visible(fn () => resolve(PriceSettings::class)->enable_discount),
                 TableColumn::make('price_subtotal')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.columns.amount'))
                     ->width(100)
@@ -1491,14 +1490,14 @@ class QuotationResource extends Resource
                     ->numeric()
                     ->default(0)
                     ->maxValue(99999999999)
-                    ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_margin)
+                    ->visible(fn (PriceSettings $settings) => $settings->enable_margin)
                     ->readonly(),
                 TextInput::make('margin_percent')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.margin-percentage'))
                     ->numeric()
                     ->default(0)
                     ->maxValue(100)
-                    ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_margin)
+                    ->visible(fn (PriceSettings $settings) => $settings->enable_margin)
                     ->readonly(),
                 Select::make('taxes')
                     ->label(__('sales::filament/clusters/orders/resources/quotation.form.tabs.order-line.repeater.products.fields.taxes'))
@@ -1520,7 +1519,7 @@ class QuotationResource extends Resource
                     ->minValue(0)
                     ->maxValue(100)
                     ->live(onBlur: true)
-                    ->visible(fn (Settings\PriceSettings $settings) => $settings->enable_discount)
+                    ->visible(fn (PriceSettings $settings) => $settings->enable_discount)
                     ->afterStateUpdated(fn (Set $set, Get $get) => self::calculateLineTotals($set, $get))
                     ->disabled(fn (): bool => $record?->locked || in_array($record?->state, [OrderState::CANCEL])),
                 TextInput::make('price_subtotal')

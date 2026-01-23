@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
@@ -162,7 +163,7 @@ class Tax extends Model implements Sortable
                 if ($tax->invoiceRepartitionLines()->exists() && $tax->refundRepartitionLines()->exists()) {
                     TaxPartition::validateRepartitionLines($tax->id);
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 throw $e;
             }
         });

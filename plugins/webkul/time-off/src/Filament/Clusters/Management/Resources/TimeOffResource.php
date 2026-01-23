@@ -69,7 +69,7 @@ class TimeOffResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema->schema((new self)->getFormSchema(true));
+        return $schema->components((new self)->getFormSchema(true));
     }
 
     public static function table(Table $table): Table

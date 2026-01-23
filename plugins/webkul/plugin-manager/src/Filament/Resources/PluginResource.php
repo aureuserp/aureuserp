@@ -2,6 +2,7 @@
 
 namespace Webkul\PluginManager\Filament\Resources;
 
+use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\ViewAction;
@@ -26,7 +27,9 @@ use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema as DBSchema;
-use Webkul\PluginManager\Filament\Resources\PluginResource\Pages;
+use RuntimeException;
+use Throwable;
+use Webkul\PluginManager\Filament\Resources\PluginResource\Pages\ListPlugins;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 
@@ -147,7 +150,7 @@ class PluginResource extends Resource
                                 exec($cmd, $output, $exitCode);
 
                                 if ($exitCode !== 0) {
-                                    throw new \RuntimeException(
+                                    throw new RuntimeException(
                                         "Installation command failed with exit code {$exitCode}. ".
                                         'Output: '.implode(PHP_EOL, $output)
                                     );
@@ -160,7 +163,7 @@ class PluginResource extends Resource
                                     ->body(__('plugin-manager::filament/resources/plugin.notifications.installed.body', ['name' => $record->name]))
                                     ->success()
                                     ->send();
-                            } catch (\Throwable $e) {
+                            } catch (Throwable $e) {
                                 Notification::make()
                                     ->title(__('plugin-manager::filament/resources/plugin.notifications.installed-failed.title'))
                                     ->body($e->getMessage())
@@ -318,7 +321,7 @@ class PluginResource extends Resource
 
                 try {
                     if (! $plugin->package) {
-                        throw new \Exception("Package for '{$pluginName}' not found.");
+                        throw new Exception("Package for '{$pluginName}' not found.");
                     }
 
                     collect(array_reverse($plugin->package->migrationFileNames))
@@ -336,7 +339,7 @@ class PluginResource extends Resource
                         });
 
                     $plugin->update(['is_installed' => false, 'is_active' => false]);
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     $errors[] = "Failed to uninstall '{$pluginName}': ".$e->getMessage();
                 }
             });
@@ -377,7 +380,7 @@ class PluginResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPlugins::route('/'),
+            'index' => ListPlugins::route('/'),
         ];
     }
 }

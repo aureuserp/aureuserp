@@ -57,7 +57,7 @@ class PaymentTermResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-currency-dollar';
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
+    protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
 
     protected static bool $shouldRegisterNavigation = false;
 

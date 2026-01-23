@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Enums\AccountType;
@@ -505,7 +506,7 @@ class Payment extends Model
     public function prepareMoveLineDefaultVals($writeOffLineVals = null, $forceBalance = null)
     {
         if (! $this->outstanding_account_id) {
-            throw new \Exception(
+            throw new Exception(
                 "You can't create a new payment without an outstanding payments/receipts account set either on the company or the ".
                     $this->paymentMethodLine->name.' payment method in the '.$this->journal->display_name.' journal.'
             );

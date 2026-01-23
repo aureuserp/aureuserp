@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Enums\AccountType;
@@ -335,11 +336,11 @@ class PaymentRegister extends Model
         $lines = $this->lines;
 
         if ($lines->pluck('company_id')->unique()->count() > 1) {
-            throw new \Exception("You can't create payments for entries belonging to different companies.");
+            throw new Exception("You can't create payments for entries belonging to different companies.");
         }
 
         if ($lines->isEmpty()) {
-            throw new \Exception("You can't open the register payment wizard without at least one receivable/payable line.");
+            throw new Exception("You can't open the register payment wizard without at least one receivable/payable line.");
         }
 
         $batches = [];

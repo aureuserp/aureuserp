@@ -7,6 +7,7 @@ use Filament\Pages\BasePage as Page;
 use Filament\Resources\Resource;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Str;
+use Webkul\Security\Filament\Resources\RoleResource;
 
 class PermissionManager
 {
@@ -18,7 +19,7 @@ class PermissionManager
             if (! in_array(
                 needle: $entity,
                 haystack: [
-                    \Webkul\Security\Filament\Resources\RoleResource::class,
+                    RoleResource::class,
                 ],
                 strict: true
             )) {

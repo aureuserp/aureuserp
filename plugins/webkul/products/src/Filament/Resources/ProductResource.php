@@ -2,7 +2,6 @@
 
 namespace Webkul\Product\Filament\Resources;
 
-use BackedEnum;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -67,7 +66,7 @@ class ProductResource extends Resource
 
     protected static bool $isGloballySearchable = false;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
     public static function getGloballySearchableAttributes(): array
     {

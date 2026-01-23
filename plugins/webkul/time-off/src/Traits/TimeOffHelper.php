@@ -3,6 +3,7 @@
 namespace Webkul\TimeOff\Traits;
 
 use Carbon\Carbon;
+use Exception;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -220,7 +221,7 @@ trait TimeOffHelper
     /**
      * Overlap check
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function handleLeaveOverlap(array &$data, ?int $excludeRecordId = null, ?Action $action = null): void
     {
@@ -266,7 +267,7 @@ trait TimeOffHelper
     /**
      * Leave allocation check
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function handleLeaveAllocation(array &$data, ?Action $action = null): void
     {

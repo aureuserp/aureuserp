@@ -3,7 +3,7 @@
 namespace Webkul\Project\Filament\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
-use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -76,13 +76,13 @@ class TopAssigneesWidget extends BaseWidget
             ->query($query)
             ->defaultPaginationPageOption(5)
             ->columns([
-                Tables\Columns\TextColumn::make('user_name')
+                TextColumn::make('user_name')
                     ->label(__('projects::filament/widgets/top-assignees.table-columns.user'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('total_hours')
+                TextColumn::make('total_hours')
                     ->label(__('projects::filament/widgets/top-assignees.table-columns.hours-spent'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('total_tasks')
+                TextColumn::make('total_tasks')
                     ->label(__('projects::filament/widgets/top-assignees.table-columns.tasks'))
                     ->sortable(),
             ]);

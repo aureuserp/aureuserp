@@ -4,6 +4,7 @@ namespace Webkul\Support\Services;
 
 use Closure;
 use Filament\Schemas\Schema;
+use InvalidArgumentException;
 
 class SchemaRegistry
 {
@@ -46,7 +47,7 @@ class SchemaRegistry
             return $modifier;
         }
 
-        throw new \InvalidArgumentException(
+        throw new InvalidArgumentException(
             'Modifier must be a Closure, callable, array [Class::class, \'method\'], or string \'Class@method\''
         );
     }

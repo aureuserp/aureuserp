@@ -2,6 +2,9 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns;
 
+use Carbon\Carbon;
+use Exception;
+
 trait NormalizeDateFilter
 {
     protected function parseDateRange(): ?array
@@ -43,8 +46,8 @@ trait NormalizeDateFilter
                 $convertedDates[] = $date;
             } else {
                 try {
-                    $convertedDates[] = \Carbon\Carbon::parse($date)->format('Y-m-d');
-                } catch (\Exception $e) {
+                    $convertedDates[] = Carbon::parse($date)->format('Y-m-d');
+                } catch (Exception $e) {
                     $convertedDates[] = $date;
                 }
             }

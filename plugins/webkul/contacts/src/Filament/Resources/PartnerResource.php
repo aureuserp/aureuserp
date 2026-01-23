@@ -24,7 +24,7 @@ class PartnerResource extends BasePartnerResource
 
     protected static bool $shouldRegisterNavigation = true;
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getNavigationLabel(): string
     {

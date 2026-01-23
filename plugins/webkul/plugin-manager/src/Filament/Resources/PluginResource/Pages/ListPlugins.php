@@ -8,6 +8,7 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
+use Throwable;
 use Webkul\PluginManager\Filament\Resources\PluginResource;
 use Webkul\PluginManager\Models\Plugin;
 
@@ -105,7 +106,7 @@ class ListPlugins extends ListRecords
                 ]))
                 ->success()
                 ->send();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             report($e);
 
             Notification::make()

@@ -4,6 +4,7 @@ namespace Webkul\PluginManager\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use ReflectionClass;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\PluginManager\Package;
@@ -70,7 +71,7 @@ class Plugin extends Model implements Sortable
                     continue;
                 }
 
-                $reflection = new \ReflectionClass($serviceProviderClass);
+                $reflection = new ReflectionClass($serviceProviderClass);
 
                 if (! $reflection->isSubclassOf(PackageServiceProvider::class)) {
                     continue;

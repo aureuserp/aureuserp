@@ -2,6 +2,7 @@
 
 namespace Webkul\Security;
 
+use DateInterval;
 use Illuminate\Cache\CacheManager;
 use Illuminate\Contracts\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Access\Gate;
@@ -31,7 +32,7 @@ class PermissionRegistrar
 
     public string $pivotPermission;
 
-    /** @var \DateInterval|int */
+    /** @var DateInterval|int */
     public $cacheExpirationTime;
 
     public bool $teams;
@@ -65,7 +66,7 @@ class PermissionRegistrar
 
     public function initializeCache(): void
     {
-        $this->cacheExpirationTime = config('permission.cache.expiration_time') ?: \DateInterval::createFromDateString('24 hours');
+        $this->cacheExpirationTime = config('permission.cache.expiration_time') ?: DateInterval::createFromDateString('24 hours');
 
         $this->teams = config('permission.teams', false);
         $this->teamsKey = config('permission.column_names.team_foreign_key', 'team_id');
@@ -100,7 +101,7 @@ class PermissionRegistrar
     /**
      * Set the team id for teams/groups support, this id is used when querying permissions/roles
      *
-     * @param  int|string|\Illuminate\Database\Eloquent\Model|null  $id
+     * @param  int|string|Model|null  $id
      */
     public function setPermissionsTeamId($id): void
     {

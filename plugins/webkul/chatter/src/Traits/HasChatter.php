@@ -3,6 +3,7 @@
 namespace Webkul\Chatter\Traits;
 
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -200,7 +201,7 @@ trait HasChatter
                 $parentInstance = $parentModel->newQuery()->find($this->getKey());
 
                 return $parentInstance ?? $this;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 return $this;
             }
         }

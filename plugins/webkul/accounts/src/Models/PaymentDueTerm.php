@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Security\Models\User;
@@ -34,7 +35,7 @@ class PaymentDueTerm extends Model
 
     public function getDueDate($dateRef)
     {
-        $dueDate = $dateRef ? \Carbon\Carbon::parse($dateRef) : \Carbon\Carbon::today();
+        $dueDate = $dateRef ? Carbon::parse($dateRef) : Carbon::today();
 
         if ($this->delay_type === 'days_after_end_of_month') {
             return $dueDate->copy()->endOfMonth()->addDays($this->nb_days);

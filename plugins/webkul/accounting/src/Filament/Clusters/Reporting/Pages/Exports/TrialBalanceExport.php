@@ -8,6 +8,7 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class TrialBalanceExport implements FromArray, WithColumnWidths, WithHeadings, WithStyles
@@ -116,7 +117,7 @@ class TrialBalanceExport implements FromArray, WithColumnWidths, WithHeadings, W
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
             'borders'   => [
                 'bottom' => [
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'borderStyle' => Border::BORDER_THIN,
                     'color'       => ['rgb' => 'CCCCCC'],
                 ],
             ],
@@ -128,7 +129,7 @@ class TrialBalanceExport implements FromArray, WithColumnWidths, WithHeadings, W
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
             'borders'   => [
                 'bottom' => [
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'borderStyle' => Border::BORDER_THIN,
                     'color'       => ['rgb' => 'CCCCCC'],
                 ],
             ],
@@ -140,7 +141,7 @@ class TrialBalanceExport implements FromArray, WithColumnWidths, WithHeadings, W
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
             'borders'   => [
                 'bottom' => [
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'borderStyle' => Border::BORDER_THIN,
                     'color'       => ['rgb' => 'CCCCCC'],
                 ],
             ],
@@ -152,7 +153,7 @@ class TrialBalanceExport implements FromArray, WithColumnWidths, WithHeadings, W
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
             'borders'   => [
                 'bottom' => [
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+                    'borderStyle' => Border::BORDER_THICK,
                     'color'       => ['rgb' => '666666'],
                 ],
             ],
@@ -167,7 +168,7 @@ class TrialBalanceExport implements FromArray, WithColumnWidths, WithHeadings, W
                 'font'    => ['bold' => true, 'size' => 11],
                 'borders' => [
                     'top' => [
-                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        'borderStyle' => Border::BORDER_THIN,
                         'color'       => ['rgb' => '000000'],
                     ],
                 ],

@@ -7,6 +7,7 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class BalanceSheetExport implements FromCollection, WithColumnWidths, WithStyles
@@ -106,7 +107,7 @@ class BalanceSheetExport implements FromCollection, WithColumnWidths, WithStyles
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
             'borders'   => [
                 'bottom' => [
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+                    'borderStyle' => Border::BORDER_THICK,
                     'color'       => ['rgb' => '000000'],
                 ],
             ],
@@ -118,7 +119,7 @@ class BalanceSheetExport implements FromCollection, WithColumnWidths, WithStyles
                 'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
                 'borders'   => [
                     'bottom' => [
-                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOUBLE,
+                        'borderStyle' => Border::BORDER_DOUBLE,
                         'color'       => ['rgb' => '000000'],
                     ],
                 ],
@@ -140,7 +141,7 @@ class BalanceSheetExport implements FromCollection, WithColumnWidths, WithStyles
                 'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
                 'borders'   => [
                     'bottom' => [
-                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        'borderStyle' => Border::BORDER_THIN,
                         'color'       => ['rgb' => '000000'],
                     ],
                 ],
@@ -160,7 +161,7 @@ class BalanceSheetExport implements FromCollection, WithColumnWidths, WithStyles
                 $sheet->getStyle("A{$rowNum}:B{$rowNum}")->applyFromArray([
                     'borders' => [
                         'bottom' => [
-                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_DOUBLE,
+                            'borderStyle' => Border::BORDER_DOUBLE,
                             'color'       => ['rgb' => '000000'],
                         ],
                     ],
