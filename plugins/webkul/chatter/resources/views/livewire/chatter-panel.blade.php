@@ -3,11 +3,14 @@
         <style>
             .fi-modal-content:has(.chatter-panel) {
                 padding: 0;
+                z-index: 11;
             }
 
             .chatter-panel > .fi-modal-header {
                 display: flex;
+                padding: 20px 24px !important;
                 margin-top: -73px;
+                background-color: var(--color-white);
                 position: absolute;
                 width: 100%;
                 padding-bottom: calc(var(--spacing)*6);
