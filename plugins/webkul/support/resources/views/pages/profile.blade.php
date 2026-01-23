@@ -38,5 +38,11 @@
                 />
             </div>
         </form>
+
+        @if (method_exists($this, 'multiFactorAuthenticationSchema'))
+            <div>
+                {{ $this->multiFactorAuthenticationSchema }}
+            </div>
+        @endif
     </div>
 </x-filament-panels::page>
