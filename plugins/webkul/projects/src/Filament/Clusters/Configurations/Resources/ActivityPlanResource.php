@@ -2,7 +2,6 @@
 
 namespace Webkul\Project\Filament\Clusters\Configurations\Resources;
 
-use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -37,7 +36,7 @@ class ActivityPlanResource extends Resource
 {
     protected static ?string $model = ActivityPlan::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
 
     protected static ?int $navigationSort = 5;
 

@@ -5,7 +5,6 @@ namespace Webkul\Accounting\Filament\Clusters\Accounting\Resources;
 use Filament\Actions\ExportAction;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
-use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
@@ -16,6 +15,7 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\NumberConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -160,33 +160,33 @@ class JournalItemResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->groups([
-                Tables\Grouping\Group::make('move.name')
+                Group::make('move.name')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-item.table.groups.journal-entry'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('account.name')
+                Group::make('account.name')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-item.table.groups.account'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('partner.name')
+                Group::make('partner.name')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-item.table.groups.partner'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('journal.name')
+                Group::make('journal.name')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-item.table.groups.journal'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('date')
+                Group::make('date')
                     ->date()
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-item.table.groups.date'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('invoice_date')
+                Group::make('invoice_date')
                     ->date()
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-item.table.groups.invoice-date'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('matching_number')
+                Group::make('matching_number')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-item.table.groups.matching'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('parent_state')
+                Group::make('parent_state')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-item.table.groups.status'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('company.name')
+                Group::make('company.name')
                     ->label(__('accounting::filament/clusters/accounting/resources/journal-item.table.groups.company'))
                     ->collapsible(),
             ])

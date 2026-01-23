@@ -54,7 +54,7 @@ class EditOrder extends EditRecord
     {
         return [
             ChatterAction::make()
-                ->record(\Webkul\Purchase\Models\Order::find($this->getRecord()->id))
+                ->record(Order::find($this->getRecord()->id))
                 ->setResource(self::$resource),
             OrderActions\SendEmailAction::make(),
             OrderActions\SendPOEmailAction::make(),

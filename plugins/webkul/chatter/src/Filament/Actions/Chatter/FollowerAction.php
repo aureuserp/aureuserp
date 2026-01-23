@@ -145,7 +145,7 @@ class FollowerAction extends Action
                         // Refresh relation
                         try {
                             $record->unsetRelation('followers');
-                        } catch (\Throwable $e) {
+                        } catch (Throwable $e) {
                         }
                     });
 

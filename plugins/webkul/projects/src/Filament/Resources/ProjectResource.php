@@ -75,7 +75,7 @@ class ProjectResource extends Resource
 
     protected static ?string $slug = 'project/projects';
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     protected static ?string $recordTitleAttribute = 'name';
 

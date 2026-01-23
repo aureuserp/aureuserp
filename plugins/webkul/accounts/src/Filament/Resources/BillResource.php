@@ -205,7 +205,7 @@ class BillResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->label(__('accounts::filament/resources/bill.form.section.general.fields.recipient-bank'))
-                                            ->createOptionForm(fn (Schema $form, Get $get) => BankAccountResource::form($form)->fill([
+                                            ->createOptionForm(fn (Schema $schema, Get $get) => BankAccountResource::form($schema)->fill([
                                                 'partner_id' => $get('partner_id'),
                                             ]))
                                             ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
@@ -305,7 +305,7 @@ class BillResource extends Resource
                                             ->preload()
                                             ->live()
                                             ->afterStateUpdated(function (Set $set, Get $get) {
-                                                $company = $get('company_id') ? \Webkul\Support\Models\Company::find($get('company_id')) : null;
+                                                $company = $get('company_id') ? Company::find($get('company_id')) : null;
 
                                                 if ($company) {
                                                     $set('currency_id', $company->currency_id);

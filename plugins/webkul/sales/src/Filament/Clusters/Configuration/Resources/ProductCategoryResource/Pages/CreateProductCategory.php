@@ -10,7 +10,7 @@ class CreateProductCategory extends BaseCreateProductCategory
 {
     protected static string $resource = ProductCategoryResource::class;
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
+    protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
 
     public function getSubNavigation(): array
     {

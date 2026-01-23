@@ -9,6 +9,7 @@ use Filament\Support\Components\Component;
 use Filament\Support\Concerns\CanWrapHeader;
 use Filament\Support\Concerns\HasAlignment;
 use Filament\Support\Concerns\HasWidth;
+use Filament\Tables\Columns\Concerns\BelongsToGroup;
 use Filament\Tables\Columns\Concerns\CanBeToggled;
 use Illuminate\Contracts\Support\Htmlable;
 use LogicException;
@@ -17,6 +18,7 @@ use Webkul\Support\Filament\Concerns\CanBeSummarized;
 
 class TableColumn extends Component
 {
+    use BelongsToGroup;
     use CanBeHidden;
     use CanBeSummarized;
     use CanBeToggled;

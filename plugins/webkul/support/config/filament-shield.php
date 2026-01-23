@@ -1,11 +1,14 @@
 <?php
 
+use Webkul\Support\Filament\Resources\ActivityTypeResource;
+use Webkul\Support\Filament\Resources\CurrencyResource;
+
 return [
     'resources' => [
         'manage'  => [],
         'exclude' => [
-            \Webkul\Support\Filament\Resources\CurrencyResource::class,
-            \Webkul\Support\Filament\Resources\ActivityTypeResource::class,
+            CurrencyResource::class,
+            ActivityTypeResource::class,
         ],
     ],
 

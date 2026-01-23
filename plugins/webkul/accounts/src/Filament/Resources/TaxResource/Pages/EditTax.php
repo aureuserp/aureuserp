@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources\TaxResource\Pages;
 
+use Exception;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
@@ -64,7 +65,7 @@ class EditTax extends EditRecord
                 $data['invoiceRepartitionLines'] ?? [],
                 $data['refundRepartitionLines'] ?? []
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Notification::make()
                 ->danger()
                 ->title(__('accounts::filament/resources/tax/pages/edit-tax.header-actions.delete.notification.invalid-repartition-lines.title'))

@@ -491,7 +491,7 @@ class SaleManager
 
                 $sent[] = $partner->name;
 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $failed[$partner->name] = 'Email service error: '.$e->getMessage();
             }
         }

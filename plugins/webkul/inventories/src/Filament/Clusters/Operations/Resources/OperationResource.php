@@ -34,6 +34,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use InvalidArgumentException;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
@@ -889,7 +890,7 @@ class OperationResource extends Resource
         $move = $record instanceof Move ? $record : $record->move;
 
         if (! $move instanceof Move) {
-            throw new \InvalidArgumentException('Expected Move model or model with move relationship, got '.get_class($record));
+            throw new InvalidArgumentException('Expected Move model or model with move relationship, got '.get_class($record));
         }
 
         $columns = 2;
@@ -1051,7 +1052,7 @@ class OperationResource extends Resource
                             ->afterStateUpdated(function (Set $set) {
                                 $set('result_package_id', null);
                             })
-                            ->disabled(fn (): bool => in_array($move->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED])),
+                            ->disabled(fn (): bool => in_array($move->state, [MoveState::DONE, MoveState::CANCELED])),
                         Select::make('result_package_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.package'))
                             ->relationship(

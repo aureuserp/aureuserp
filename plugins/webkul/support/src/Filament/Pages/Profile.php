@@ -52,7 +52,7 @@ class Profile extends Page implements HasForms
     public function editProfileForm(Schema $schema): Schema
     {
         return $schema
-            ->schema([
+            ->components([
                 Section::make(__('support::filament/pages/profile.information_section'))
                     ->description(__('support::filament/pages/profile.information_description'))
                     ->icon('heroicon-o-user')
@@ -113,7 +113,7 @@ class Profile extends Page implements HasForms
     public function editPasswordForm(Schema $schema): Schema
     {
         return $schema
-            ->schema([
+            ->components([
                 Section::make(__('support::filament/pages/profile.password.section'))
                     ->description(__('support::filament/pages/profile.password.description'))
                     ->icon('heroicon-o-lock-closed')
@@ -244,7 +244,7 @@ class Profile extends Page implements HasForms
                 request()->session()->regenerateToken();
             }
 
-            return redirect()->to(filament()->getCurrentPanel()->getLoginUrl());
+            return redirect()->to(filament()->getCurrentOrDefaultPanel()->getLoginUrl());
         } catch (ValidationException $e) {
             throw $e;
         } catch (Exception $e) {

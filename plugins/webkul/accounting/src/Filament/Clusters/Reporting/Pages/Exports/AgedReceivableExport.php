@@ -8,6 +8,7 @@ use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class AgedReceivableExport implements FromArray, WithColumnWidths, WithHeadings, WithStyles
@@ -123,7 +124,7 @@ class AgedReceivableExport implements FromArray, WithColumnWidths, WithHeadings,
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
             'borders'   => [
                 'bottom' => [
-                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+                    'borderStyle' => Border::BORDER_THICK,
                     'color'       => ['rgb' => '666666'],
                 ],
             ],
@@ -135,7 +136,7 @@ class AgedReceivableExport implements FromArray, WithColumnWidths, WithHeadings,
                 'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
                 'borders'   => [
                     'bottom' => [
-                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        'borderStyle' => Border::BORDER_THIN,
                         'color'       => ['rgb' => '000000'],
                     ],
                 ],
@@ -148,7 +149,7 @@ class AgedReceivableExport implements FromArray, WithColumnWidths, WithHeadings,
                 'font'    => ['bold' => true, 'size' => 13, 'color' => ['rgb' => '666666']],
                 'borders' => [
                     'top' => [
-                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        'borderStyle' => Border::BORDER_THIN,
                         'color'       => ['rgb' => '000000'],
                     ],
                 ],

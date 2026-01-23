@@ -3,6 +3,7 @@
 namespace Webkul\Support\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
 
 class Currency extends Model
 {
@@ -98,22 +99,22 @@ class Currency extends Model
     {
         if ($precisionRounding !== null && $precisionDigits === null) {
             if ($precisionRounding <= 0) {
-                throw new \InvalidArgumentException("precision_rounding must be positive, got {$precisionRounding}");
+                throw new InvalidArgumentException("precision_rounding must be positive, got {$precisionRounding}");
             }
 
             return $precisionRounding;
         } elseif ($precisionDigits !== null && $precisionRounding === null) {
             if (! is_int($precisionDigits) && ! $this->isInteger($precisionDigits)) {
-                throw new \InvalidArgumentException("precision_digits must be a non-negative integer, got {$precisionDigits}");
+                throw new InvalidArgumentException("precision_digits must be a non-negative integer, got {$precisionDigits}");
             }
 
             if ($precisionDigits < 0) {
-                throw new \InvalidArgumentException("precision_digits must be a non-negative integer, got {$precisionDigits}");
+                throw new InvalidArgumentException("precision_digits must be a non-negative integer, got {$precisionDigits}");
             }
 
             return pow(10, -$precisionDigits);
         } else {
-            throw new \InvalidArgumentException('exactly one of precision_digits and precision_rounding must be specified');
+            throw new InvalidArgumentException('exactly one of precision_digits and precision_rounding must be specified');
         }
     }
 

@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources\TaxResource\Pages;
 
+use Exception;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
@@ -51,7 +52,7 @@ class CreateTax extends CreateRecord
                 $data['invoiceRepartitionLines'] ?? [],
                 $data['refundRepartitionLines'] ?? []
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Notification::make()
                 ->danger()
                 ->title('Invalid Repartition Lines')

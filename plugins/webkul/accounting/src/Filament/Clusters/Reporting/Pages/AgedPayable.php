@@ -13,6 +13,7 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Computed;
 use Maatwebsite\Excel\Facades\Excel;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\MoveState;
@@ -322,7 +323,7 @@ class AgedPayable extends Page implements HasForms
         return $lines;
     }
 
-    #[\Livewire\Attributes\Computed]
+    #[Computed]
     public function agedPayableData(): array
     {
         $state = $this->form->getState();

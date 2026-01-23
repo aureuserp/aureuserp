@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources;
 
+use Exception;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -55,7 +56,7 @@ class TaxResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
+    protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
 
     public static function form(Schema $schema): Schema
     {
@@ -504,18 +505,18 @@ class TaxResource extends Resource
             $invoice->where('repartition_type', 'base')->count() !== 1 ||
             $refund->where('repartition_type', 'base')->count() !== 1
         ) {
-            throw new \Exception('Each must contain exactly one BASE repartition line.');
+            throw new Exception('Each must contain exactly one BASE repartition line.');
         }
 
         if (
             $invoice->where('repartition_type', 'tax')->isEmpty() ||
             $refund->where('repartition_type', 'tax')->isEmpty()
         ) {
-            throw new \Exception('Each must contain at least one TAX repartition line.');
+            throw new Exception('Each must contain at least one TAX repartition line.');
         }
 
         if ($invoice->count() !== $refund->count()) {
-            throw new \Exception('Invoice and refund must have the same number of repartition lines.');
+            throw new Exception('Invoice and refund must have the same number of repartition lines.');
         }
 
         foreach ($invoice as $index => $invLine) {
@@ -531,7 +532,7 @@ class TaxResource extends Resource
                 $invPercent !== $refPercent
 
             ) {
-                throw new \Exception('Line #'.($index + 1).' does not match between Invoice and Refund.');
+                throw new Exception('Line #'.($index + 1).' does not match between Invoice and Refund.');
             }
         }
 
@@ -544,11 +545,11 @@ class TaxResource extends Resource
             ->sum(fn ($l) => (float) $l['factor_percent']);
 
         if (bccomp(number_format($positive, 2, '.', ''), '100', 2) !== 0) {
-            throw new \Exception("Invoice total positive TAX percentages must equal 100% (got {$positive}%).");
+            throw new Exception("Invoice total positive TAX percentages must equal 100% (got {$positive}%).");
         }
 
         if ($negative && bccomp(number_format($negative, 2, '.', ''), '-100', 2) !== 0) {
-            throw new \Exception("Invoice total negative TAX percentages must equal -100% (got {$negative}%).");
+            throw new Exception("Invoice total negative TAX percentages must equal -100% (got {$negative}%).");
         }
     }
 }

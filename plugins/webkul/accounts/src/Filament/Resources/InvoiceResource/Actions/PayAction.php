@@ -12,6 +12,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\PaymentType;
@@ -214,7 +215,7 @@ class PayAction extends Action
                                                 return null;
                                             }
 
-                                            return new \Illuminate\Support\HtmlString($switchValues['installments_switch_html']);
+                                            return new HtmlString($switchValues['installments_switch_html']);
                                         })
                                         ->hintAction(
                                             Action::make('toggleInstallments')

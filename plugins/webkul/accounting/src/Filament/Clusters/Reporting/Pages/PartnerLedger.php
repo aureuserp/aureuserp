@@ -13,18 +13,20 @@ use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Computed;
 use Maatwebsite\Excel\Facades\Excel;
 use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Accounting\Filament\Clusters\Reporting;
+use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Concerns\NormalizeDateFilter;
 use Webkul\Accounting\Filament\Clusters\Reporting\Pages\Exports\PartnerLedgerExport;
 use Webkul\Partner\Models\Partner;
 
 class PartnerLedger extends Page implements HasForms
 {
-    use Concerns\NormalizeDateFilter, HasPageShield, InteractsWithForms;
+    use HasPageShield, InteractsWithForms, NormalizeDateFilter;
 
     protected string $view = 'accounting::filament.clusters.reporting.pages.partner-ledger';
 
@@ -155,7 +157,7 @@ class PartnerLedger extends Page implements HasForms
         return 'data';
     }
 
-    #[\Livewire\Attributes\Computed]
+    #[Computed]
     public function partnerLedgerData(): array
     {
         $dateRange = $this->parseDateRange();

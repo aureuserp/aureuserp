@@ -362,7 +362,7 @@ class CompanyResource extends Resource
                     ->collapsible(),
             ])
             ->filters(static::mergeCustomTableFilters([
-                Tables\Filters\SelectFilter::make('is_active')
+                SelectFilter::make('is_active')
                     ->label(__('security::filament/resources/company.table.filters.status'))
                     ->options(CompanyStatus::options()),
                 SelectFilter::make('country_id')

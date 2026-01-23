@@ -47,7 +47,7 @@ class PageResource extends Resource
 
     protected static ?string $slug = 'website/pages';
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     protected static ?string $recordTitleAttribute = 'title';
 
