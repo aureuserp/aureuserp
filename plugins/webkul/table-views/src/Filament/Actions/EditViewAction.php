@@ -32,7 +32,7 @@ class EditViewAction extends Action
                 $tableViewFavorite = TableViewFavorite::query()
                     ->where('user_id', filament()->auth()->id())
                     ->where('view_type', 'saved')
-                    ->where('view_key', $tableView->view_key)
+                    ->where('view_key', $tableView->id)
                     ->where('filterable_type', $tableView->filterable_type)
                     ->first();
 
