@@ -707,6 +707,7 @@ class BillResource extends Resource
                             ->badge(),
                     ])
                     ->compact(),
+                    
                 Section::make(__('accounts::filament/resources/bill.infolist.section.general.title'))
                     ->icon('heroicon-o-document-text')
                     ->schema([
@@ -719,9 +720,10 @@ class BillResource extends Resource
                                     ->weight('bold')
                                     ->size(TextSize::Large),
                             ])->columns(2),
+
                         Grid::make()
                             ->schema([
-                                Grid::make()
+                                Group::make()
                                     ->schema([
                                         TextEntry::make('partner.name')
                                             ->placeholder('-')
@@ -733,7 +735,7 @@ class BillResource extends Resource
                                             ->label(__('accounts::filament/resources/bill.infolist.section.general.entries.bill-reference')),
                                     ])
                                     ->columns(1),
-                                Grid::make()
+                                Group::make()
                                     ->schema([
                                         TextEntry::make('invoice_partner_display_name')
                                             ->placeholder('-')

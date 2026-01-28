@@ -36,7 +36,6 @@ class PayAction extends Action
         $this
             ->label(__('accounts::filament/resources/invoice/actions/pay-action.title'))
             ->color('success')
-            ->modal(fn () => new PaymentRegister)
             ->schema(function (Schema $schema) {
                 $paymentRegister = (new PaymentRegister);
 

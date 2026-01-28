@@ -749,7 +749,7 @@ class InvoiceResource extends Resource
 
                         Grid::make()
                             ->schema([
-                                Grid::make()
+                                Group::make()
                                     ->schema([
                                         TextEntry::make('partner.name')
                                             ->placeholder('-')
@@ -763,7 +763,7 @@ class InvoiceResource extends Resource
                                             ->icon('heroicon-o-user'),
                                     ]),
 
-                                Grid::make()
+                                Group::make()
                                     ->schema([
                                         TextEntry::make('invoice_date')
                                             ->placeholder('-')
