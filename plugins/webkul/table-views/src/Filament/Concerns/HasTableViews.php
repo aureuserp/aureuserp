@@ -407,6 +407,8 @@ trait HasTableViews
 
                 unset($this->cachedTableViews);
                 unset($this->cachedFavoriteTableViews);
+
+                $this->activeTableView = $this->getDefaultActiveTableView();
             });
     }
 
