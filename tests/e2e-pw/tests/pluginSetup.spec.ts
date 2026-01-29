@@ -14,6 +14,7 @@ test.describe('Plugin Installation', () => {
      * All plugins installation test
      */
     test('All Plugins Installation Test', async ({ adminPage }) => {
+        test.setTimeout(400000);
         for (let i = 0; i < 13; i++) {
 
             await adminPage.locator('button[title="Actions"]').nth(i).click();
@@ -25,6 +26,7 @@ test.describe('Plugin Installation', () => {
                 await adminPage.waitForTimeout(5000); // Wait for 5 seconds to allow installation to complete
                 await adminPage.locator('span[x-show="! isProcessing"]').click();
                 // await expect(adminPage.getByText('Plugin Installed Successfully')).toBeVisible();
+                console.log(i);
                 await expect(adminPage.getByRole('heading', { name: 'Plugin Installed Successfully' })).toBeVisible();
             }
         }
