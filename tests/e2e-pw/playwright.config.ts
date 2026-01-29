@@ -1,43 +1,54 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from "@playwright/test";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export const TESTS_ROOT_PATH = __dirname;
+export const STATE_DIR_PATH = `${TESTS_ROOT_PATH}/.state/`;
+export const ADMIN_AUTH_STATE_PATH = `${STATE_DIR_PATH}/admin-auth.json`;
+
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 export default defineConfig({
-  testDir: "./tests",
+    testDir: "./tests",
 
-  timeout: 120 * 1000,
+    timeout: 400 * 1000,
+    expect: { timeout: 50 * 1000 },
 
-  expect: { timeout: 20 * 1000 },
+    outputDir: "./test-results",
 
-  outputDir: "./test-results",
+    fullyParallel: false,
+    workers: 1,
 
-  fullyParallel: false,
+    forbidOnly: !!process.env.CI,
+    retries: 0,
 
-  workers: 1,
+    reportSlowTests: null,
 
-  forbidOnly: !!process.env.CI,
-
-  retries: 0,
-
-  reportSlowTests: null,
-
-  reporter: [
-    [
-      "html",
-      {
-        outputFolder: "./playwright-report",
-      },
+    reporter: [
+        ["list"],
+        [
+            "html",
+            {
+                outputFolder: "./playwright-report",
+            },
+        ],
     ],
-  ],
-  use: {
-    baseURL: `http://127.0.0.1:8000`, //process.env.APP_URL,
-    screenshot: { mode: "only-on-failure", fullPage: true },
-    video: "retain-on-failure",
-    trace: "retain-on-failure",
-  },
 
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+    use: {
+        baseURL: `http://127.0.0.1:8000`, //process.env.APP_URL,
+        screenshot: { mode: "only-on-failure", fullPage: true },
+        video: "retain-on-failure",
+        trace: "retain-on-failure",
     },
-  ],
+
+    projects: [
+        {
+            name: "chromium",
+            use: { ...devices["Desktop Chrome"] },
+        },
+    ],
 });
