@@ -139,7 +139,34 @@ class PluginResource extends Resource
                         ->modalSubmitActionLabel(__('plugin-manager::filament/resources/plugin.actions.install.submit'))
                         ->action(function ($record) {
                             try {
-                                $php = escapeshellarg(PHP_BINARY);
+                                // Find PHP CLI path dynamically
+                                $phpPath = trim(shell_exec('which php 2>/dev/null'));
+                                if (! $phpPath) {
+                                    $phpPath = PHP_BINARY;
+                                    // If PHP_BINARY contains fpm, try to find cli
+                                    if (strpos($phpPath, 'fpm') !== false) {
+                                        $phpPath = str_replace('fpm', '', $phpPath);
+                                        if (! file_exists($phpPath)) {
+                                            // Try common paths
+                                            $commonPaths = [
+                                                '/usr/local/bin/php',
+                                                '/usr/bin/php',
+                                                '/opt/homebrew/bin/php',
+                                                '/Users/'.get_current_user().'/Library/Application Support/Herd/bin/php',
+                                            ];
+                                            foreach ($commonPaths as $path) {
+                                                if (file_exists($path)) {
+                                                    $phpPath = $path;
+                                                    break;
+                                                }
+                                            }
+                                            if (! $phpPath) {
+                                                $phpPath = 'php'; // last resort, hope PATH works
+                                            }
+                                        }
+                                    }
+                                }
+                                $php = escapeshellarg($phpPath);
                                 $artisan = escapeshellarg(base_path('artisan'));
                                 $commandName = "{$record->name}:install";
 
