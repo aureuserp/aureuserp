@@ -24,7 +24,8 @@ test.describe('Plugin Installation', () => {
                 await adminPage.locator('button.fi-color.fi-color-success.fi-text-color-700').nth(j).click();
                 await adminPage.waitForTimeout(5000); // Wait for 5 seconds to allow installation to complete
                 await adminPage.locator('span[x-show="! isProcessing"]').click();
-                await expect(adminPage.getByText('Plugin Installed Successfully')).toBeVisible();
+                // await expect(adminPage.getByText('Plugin Installed Successfully')).toBeVisible();
+                await expect(adminPage.getByRole('heading', { name: 'Plugin Installed Successfully' })).toBeVisible();
             }
         }
     });
@@ -44,7 +45,8 @@ test.describe('Plugin Installation', () => {
                 await adminPage.locator('button.fi-color.fi-color-danger.fi-dropdown-list-item').nth(j).click();
                 await adminPage.waitForTimeout(5000);
                 await adminPage.locator('span[x-show="! isProcessing"]').click();
-                await expect(adminPage.getByText('Plugin Uninstalled Successfully')).toBeVisible();
+                // await expect(adminPage.getByText('Plugin Uninstalled Successfully')).toBeVisible();
+                await expect(adminPage.getByRole('heading', { name: 'Plugin Uninstalled Successfully' })).toBeVisible();
             }
         }
     });
@@ -63,7 +65,8 @@ test.describe('Plugin Installation', () => {
                 await adminPage.locator('button.fi-color.fi-color-success.fi-text-color-700').nth(j).click();
                 await adminPage.waitForTimeout(5000); // Wait for 5 seconds to allow installation to complete
                 await adminPage.locator('span[x-show="! isProcessing"]').click();
-                await expect(adminPage.getByText('Plugin Installed Successfully')).toBeVisible();
+                // await expect(adminPage.getByText('Plugin Installed Successfully')).toBeVisible();
+                await expect(adminPage.getByRole('heading', { name: 'Plugin Installed Successfully' })).toBeVisible();
             }
         }
     });
