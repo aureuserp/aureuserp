@@ -2,6 +2,7 @@
 
 namespace Webkul\Sale\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -15,6 +16,8 @@ use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Partner\Models\Partner;
 use Webkul\Product\Models\Packaging;
+use Webkul\Product\Models\Product;
+use Webkul\Sale\Database\Factories\OrderLineFactory;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Enums\QtyDeliveredMethod;
 use Webkul\Security\Models\User;
@@ -24,7 +27,7 @@ use Webkul\Support\Models\UOM;
 
 class OrderLine extends Model implements Sortable
 {
-    use SortableTrait;
+    use HasFactory, SortableTrait;
 
     protected $table = 'sales_order_lines';
 
@@ -158,5 +161,13 @@ class OrderLine extends Model implements Sortable
     public function route(): BelongsTo
     {
         return $this->belongsTo(Route::class, 'route_id');
+    }
+
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory(): OrderLineFactory
+    {
+        return OrderLineFactory::new();
     }
 }

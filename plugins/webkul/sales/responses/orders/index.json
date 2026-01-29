@@ -1,0 +1,120 @@
+{
+    "data": [
+        {
+            "id": 1,
+            "name": "SO/1",
+            "state": "sale",
+            "invoice_status": "invoiced",
+            "partner": {
+                "id": 33,
+                "name": "Lyle Holman"
+            },
+            "partner_invoice": {
+                "id": 33,
+                "name": "Lyle Holman"
+            },
+            "partner_shipping": {
+                "id": 33,
+                "name": "Lyle Holman"
+            },
+            "client_order_ref": null,
+            "origin": null,
+            "reference": null,
+            "date_order": "2026-01-07",
+            "validity_date": "2026-02-06",
+            "commitment_date": null,
+            "user": {
+                "id": 1,
+                "name": "Admin"
+            },
+            "team": {
+                "id": null,
+                "name": null
+            },
+            "company": {
+                "id": 1,
+                "name": "TechNova Solutions Pvt. Ltd."
+            },
+            "currency": {
+                "id": 1,
+                "code": "USD",
+                "symbol": "$"
+            },
+            "currency_rate": 0,
+            "amount_untaxed": 2440,
+            "amount_tax": 366,
+            "amount_total": 2806,
+            "payment_term": {
+                "id": 2,
+                "name": "15 Days"
+            },
+            "fiscal_position": {
+                "id": null,
+                "name": null
+            },
+            "journal": {
+                "id": null,
+                "name": null
+            },
+            "locked": true,
+            "require_signature": false,
+            "require_payment": false,
+            "signed_by": null,
+            "signed_on": null,
+            "prepayment_percent": 0,
+            "campaign": {
+                "id": null,
+                "name": null
+            },
+            "utm_source": {
+                "id": null,
+                "name": null
+            },
+            "medium": {
+                "id": null,
+                "name": null
+            },
+            "warehouse": {
+                "id": 5,
+                "name": "Central Open Warehouse"
+            },
+            "note": "<p></p>",
+            "access_token": null,
+            "created_at": "2026-01-07T11:12:56+00:00",
+            "updated_at": "2026-01-08T12:59:31+00:00",
+            "deleted_at": null
+        }
+    ],
+    "links": {
+        "first": "http://127.0.0.1:8000/api/v1/admin/sales/orders?page=1",
+        "last": "http://127.0.0.1:8000/api/v1/admin/sales/orders?page=1",
+        "prev": null,
+        "next": null
+    },
+    "meta": {
+        "current_page": 1,
+        "from": 1,
+        "last_page": 1,
+        "links": [
+            {
+                "url": null,
+                "label": "&laquo; Previous",
+                "active": false
+            },
+            {
+                "url": "http://127.0.0.1:8000/api/v1/admin/sales/orders?page=1",
+                "label": "1",
+                "active": true
+            },
+            {
+                "url": null,
+                "label": "Next &raquo;",
+                "active": false
+            }
+        ],
+        "path": "http://127.0.0.1:8000/api/v1/admin/sales/orders",
+        "per_page": 15,
+        "to": 1,
+        "total": 1
+    }
+}

@@ -1,0 +1,570 @@
+name: 'Sales API management'
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/admin/sales/orders
+    metadata:
+      custom: []
+      groupName: 'Sales API management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Do stuff with orders'
+      title: 'List orders'
+      description: 'Retrieve a paginated list of orders with filtering and sorting'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include in the response.'
+        required: false
+        example: 'partner,lines'
+        type: string
+        enumValues:
+          - partner
+          - lines
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[state]':
+        custom: []
+        name: 'filter[state]'
+        description: 'Filter by state'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - draft
+          - sent
+          - sale
+          - cancel
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[partner_id]':
+        custom: []
+        name: 'filter[partner_id]'
+        description: 'Comma-separated list of partner IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: '-created_at'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'partner,lines'
+      sort: '-created_at'
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+              "data": [
+                  {
+                      "id": 1,
+                      "name": "SO/1",
+                      "state": "sale",
+                      "invoice_status": "invoiced",
+                      "partner": {
+                          "id": 33,
+                          "name": "Lyle Holman"
+                      },
+                      "partner_invoice": {
+                          "id": 33,
+                          "name": "Lyle Holman"
+                      },
+                      "partner_shipping": {
+                          "id": 33,
+                          "name": "Lyle Holman"
+                      },
+                      "client_order_ref": null,
+                      "origin": null,
+                      "reference": null,
+                      "date_order": "2026-01-07",
+                      "validity_date": "2026-02-06",
+                      "commitment_date": null,
+                      "user": {
+                          "id": 1,
+                          "name": "Admin"
+                      },
+                      "team": {
+                          "id": null,
+                          "name": null
+                      },
+                      "company": {
+                          "id": 1,
+                          "name": "TechNova Solutions Pvt. Ltd."
+                      },
+                      "currency": {
+                          "id": 1,
+                          "code": "USD",
+                          "symbol": "$"
+                      },
+                      "currency_rate": 0,
+                      "amount_untaxed": 2440,
+                      "amount_tax": 366,
+                      "amount_total": 2806,
+                      "payment_term": {
+                          "id": 2,
+                          "name": "15 Days"
+                      },
+                      "fiscal_position": {
+                          "id": null,
+                          "name": null
+                      },
+                      "journal": {
+                          "id": null,
+                          "name": null
+                      },
+                      "locked": true,
+                      "require_signature": false,
+                      "require_payment": false,
+                      "signed_by": null,
+                      "signed_on": null,
+                      "prepayment_percent": 0,
+                      "campaign": {
+                          "id": null,
+                          "name": null
+                      },
+                      "utm_source": {
+                          "id": null,
+                          "name": null
+                      },
+                      "medium": {
+                          "id": null,
+                          "name": null
+                      },
+                      "warehouse": {
+                          "id": 5,
+                          "name": "Central Open Warehouse"
+                      },
+                      "note": "<p></p>",
+                      "access_token": null,
+                      "created_at": "2026-01-07T11:12:56+00:00",
+                      "updated_at": "2026-01-08T12:59:31+00:00",
+                      "deleted_at": null
+                  }
+              ],
+              "links": {
+                  "first": "http://127.0.0.1:8000/api/v1/admin/sales/orders?page=1",
+                  "last": "http://127.0.0.1:8000/api/v1/admin/sales/orders?page=1",
+                  "prev": null,
+                  "next": null
+              },
+              "meta": {
+                  "current_page": 1,
+                  "from": 1,
+                  "last_page": 1,
+                  "links": [
+                      {
+                          "url": null,
+                          "label": "&laquo; Previous",
+                          "active": false
+                      },
+                      {
+                          "url": "http://127.0.0.1:8000/api/v1/admin/sales/orders?page=1",
+                          "label": "1",
+                          "active": true
+                      },
+                      {
+                          "url": null,
+                          "label": "Next &raquo;",
+                          "active": false
+                      }
+                  ],
+                  "path": "http://127.0.0.1:8000/api/v1/admin/sales/orders",
+                  "per_page": 15,
+                  "to": 1,
+                  "total": 1
+              }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/admin/sales/orders
+    metadata:
+      custom: []
+      groupName: 'Sales API management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Do stuff with orders'
+      title: 'Store a newly created resource in storage.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Name of the car.'
+        required: false
+        example: Honda
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      model:
+        custom: []
+        name: model
+        description: 'Model of the car.'
+        required: false
+        example: '2020'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      cars:
+        custom: []
+        name: cars
+        description: 'List of car details.'
+        required: false
+        example:
+          -
+            name: Carpenter
+            year: 2019
+          -
+            name: Electric
+            year: 2020
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      'cars[].name':
+        custom: []
+        name: 'cars[].name'
+        description: 'Name of the car.'
+        required: false
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'cars[].year':
+        custom: []
+        name: 'cars[].year'
+        description: ''
+        required: false
+        example: 1997
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      name: Honda
+      model: '2020'
+      cars:
+        -
+          name: Carpenter
+          year: 2019
+        -
+          name: Electric
+          year: 2020
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/admin/sales/orders/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Do stuff with orders'
+      title: 'Show order'
+      description: 'Retrieve a specific order by its ID'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include in the response.'
+        required: false
+        example: 'partner,lines'
+        type: string
+        enumValues:
+          - partner
+          - lines
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'partner,lines'
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+              "id": 1,
+              "name": "SO/1",
+              "state": "sale",
+              "invoice_status": "invoiced",
+              "partner": {
+                  "id": 33,
+                  "name": "Lyle Holman"
+              },
+              "partner_invoice": {
+                  "id": 33,
+                  "name": "Lyle Holman"
+              },
+              "partner_shipping": {
+                  "id": 33,
+                  "name": "Lyle Holman"
+              },
+              "client_order_ref": null,
+              "origin": null,
+              "reference": null,
+              "date_order": "2026-01-07",
+              "validity_date": "2026-02-06",
+              "commitment_date": null,
+              "user": {
+                  "id": 1,
+                  "name": "Admin"
+              },
+              "team": {
+                  "id": null,
+                  "name": null
+              },
+              "company": {
+                  "id": 1,
+                  "name": "TechNova Solutions Pvt. Ltd."
+              },
+              "currency": {
+                  "id": 1,
+                  "code": "USD",
+                  "symbol": "$"
+              },
+              "currency_rate": 0,
+              "amount_untaxed": 2440,
+              "amount_tax": 366,
+              "amount_total": 2806,
+              "payment_term": {
+                  "id": 2,
+                  "name": "15 Days"
+              },
+              "fiscal_position": {
+                  "id": null,
+                  "name": null
+              },
+              "journal": {
+                  "id": null,
+                  "name": null
+              },
+              "locked": true,
+              "require_signature": false,
+              "require_payment": false,
+              "signed_by": null,
+              "signed_on": null,
+              "prepayment_percent": 0,
+              "campaign": {
+                  "id": null,
+                  "name": null
+              },
+              "utm_source": {
+                  "id": null,
+                  "name": null
+              },
+              "medium": {
+                  "id": null,
+                  "name": null
+              },
+              "warehouse": {
+                  "id": 5,
+                  "name": "Central Open Warehouse"
+              },
+              "note": "<p></p>",
+              "access_token": null,
+              "created_at": "2026-01-07T11:12:56+00:00",
+              "updated_at": "2026-01-08T12:59:31+00:00",
+              "deleted_at": null
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'api/v1/admin/sales/orders/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Do stuff with orders'
+      title: 'Update the specified resource in storage.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the order.'
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: consequatur
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/v1/admin/sales/orders/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Do stuff with orders'
+      title: 'Remove the specified resource from storage.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the order.'
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: consequatur
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
