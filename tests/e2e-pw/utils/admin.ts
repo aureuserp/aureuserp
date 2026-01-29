@@ -1,4 +1,4 @@
-export async function loginAsAdmin(page) {
+export async function loginAsAdmin(page:any) {
     /**
      * Admin credentials.
      */
@@ -10,15 +10,10 @@ export async function loginAsAdmin(page) {
     /**
      * Authenticate the admin user.
      */
-    await page.goto("admin/login");
+    await page.goto("/admin/login");
     await page.fill('input[type="email"]', adminCredentials.email);
     await page.fill('input[type="password"]', adminCredentials.password);
     await page.press('input[type="password"]', "Enter");
-
-    /**
-     * Wait for the dashboard to load.
-     */
-    console.log("dashboard loading...")
     await page.waitForNavigation();
     return adminCredentials;
 }

@@ -1,0 +1,51 @@
+{
+  "cookies": [
+    {
+      "name": "XSRF-TOKEN",
+      "value": "eyJpdiI6ImJDMWpaQXJXQXo5U3dPUmliVDVWc3c9PSIsInZhbHVlIjoiOVcxdXh4K1JkVlkrbEp2cFVudHdLNFQ1UVAyL1FvUytDdG82S1ZGTlJjUUlINU01VjlaTEJkSjlXZ1psTjRDYXg0TUs3OFVYanZhU0pTaERPZ3Bqd2x6MEtUVzVHT2pmOEhmT3paYjVGdmk1Q1pqd2VGMy84MUcxOWJHSElsMW4iLCJtYWMiOiIxZDY2OTQxNjcwM2Q5YTA3OGRkODNlYmVkZTdhM2IwMmFkNzQ1ZjFiZTgxYWYyZmYyMjQ5ZDgyYzYxNjkxNmE0IiwidGFnIjoiIn0%3D",
+      "domain": "127.0.0.1",
+      "path": "/",
+      "expires": 1769690343.258857,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "yourerp_session",
+      "value": "eyJpdiI6ImFSaldlRHc2bzhOa1k3UEo3MFNMcVE9PSIsInZhbHVlIjoic1lhWEN4Z2RCSHk2cU1ZaEhrRm9IUVVJQmpOTlA3WUhLTmN1VWlpWmRJeGFETE56ZEtlc2hOMWVNa0lHUzB6L1BnenJNV2JPZzAxSUJ5VDhaWk5mVXZCcTFIN25QcnZWK0ttUENGQ3BMZGRDU0hLZ0hRT1NZakI1OHhlSnJOU1YiLCJtYWMiOiIwMWIzOTRmOWUyNWZkN2I3YTc0NTM4MDM4NDQxYmUzMDhmYWJhNjE1YzM1YjQ4OTQ0ZTEwMGE5YzY4OTcxZDhhIiwidGFnIjoiIn0%3D",
+      "domain": "127.0.0.1",
+      "path": "/",
+      "expires": 1769690343.258979,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://127.0.0.1:8000",
+      "localStorage": [
+        {
+          "name": "theme",
+          "value": "system"
+        },
+        {
+          "name": "isOpenDesktop",
+          "value": "true"
+        },
+        {
+          "name": "phpdebugbar-height",
+          "value": "300"
+        },
+        {
+          "name": "isOpen",
+          "value": "true"
+        },
+        {
+          "name": "collapsedGroups",
+          "value": "[]"
+        }
+      ]
+    }
+  ]
+}
