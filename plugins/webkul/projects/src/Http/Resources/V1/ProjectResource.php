@@ -40,6 +40,7 @@ class ProjectResource extends JsonResource
             'user'                    => new UserResource($this->whenLoaded('user')),
             'creator'                 => new UserResource($this->whenLoaded('creator')),
             'tasks'                   => TaskResource::collection($this->whenLoaded('tasks')),
+            'taskStages'              => TaskStageResource::collection($this->whenLoaded('taskStages')),
             'milestones'              => MilestoneResource::collection($this->whenLoaded('milestones')),
         ];
     }
