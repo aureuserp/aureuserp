@@ -3,12 +3,15 @@
 namespace Webkul\Product\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Webkul\Product\Models\PriceList;
 
 /**
  * @extends Factory<\App\Models\PriceList>
  */
 class PriceListFactory extends Factory
 {
+    protected $model = PriceList::class;
+
     /**
      * Define the model's default state.
      *
