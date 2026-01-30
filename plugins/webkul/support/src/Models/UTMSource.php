@@ -9,7 +9,10 @@ class UTMSource extends Model
 {
     protected $table = 'utm_sources';
 
-    protected $fillable = ['name', 'creator_id'];
+    protected $fillable = [
+        'name',
+        'creator_id'
+    ];
 
     public function createdBy()
     {
