@@ -4,6 +4,7 @@ namespace Webkul\Partner\Http\Resources\V1;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Webkul\Support\Http\Resources\V1\BankResource;
 
 class BankAccountResource extends JsonResource
 {
@@ -20,10 +21,7 @@ class BankAccountResource extends JsonResource
             'account_holder_name' => $this->account_holder_name,
             'is_active'           => $this->is_active,
             'can_send_money'      => $this->can_send_money,
-            'bank'                => $this->whenLoaded('bank', fn () => [
-                'id'   => $this->bank->id,
-                'name' => $this->bank->name,
-            ]),
+            'bank'                => new BankResource($this->whenLoaded('bank')),
             'created_at'          => $this->created_at,
             'updated_at'          => $this->updated_at,
         ];

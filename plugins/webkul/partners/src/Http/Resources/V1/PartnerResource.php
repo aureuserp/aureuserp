@@ -39,8 +39,6 @@ class PartnerResource extends JsonResource
             'city'             => $this->city,
             'zip'              => $this->zip,
             'is_active'        => $this->is_active,
-
-            // Relationships
             'parent'           => PartnerResource::make($this->whenLoaded('parent')),
             'country'          => CountryResource::make($this->whenLoaded('country')),
             'state'            => StateResource::make($this->whenLoaded('state')),
@@ -49,14 +47,10 @@ class PartnerResource extends JsonResource
             'industry'         => IndustryResource::make($this->whenLoaded('industry')),
             'user'             => UserResource::make($this->whenLoaded('user')),
             'creator'          => UserResource::make($this->whenLoaded('creator')),
-
-            // Collections
             'addresses'        => PartnerResource::collection($this->whenLoaded('addresses')),
             'contacts'         => PartnerResource::collection($this->whenLoaded('contacts')),
             'bank_accounts'    => BankAccountResource::collection($this->whenLoaded('bankAccounts')),
             'tags'             => TagResource::collection($this->whenLoaded('tags')),
-
-            // Timestamps
             'created_at'       => $this->created_at,
             'updated_at'       => $this->updated_at,
             'deleted_at'       => $this->deleted_at,

@@ -15,7 +15,7 @@ use Webkul\Sale\Enums\OrderState;
 class OrderController extends Controller
 {
     #[Endpoint('List orders', 'Retrieve a paginated list of orders with filtering and sorting')]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include in the response.', enum: ['partner', 'lines'], required: false, example: "partner,lines")]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. Available options: partner, lines', required: false, example: 'partner,lines')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: "No-example")]
     #[QueryParam('filter[state]', 'string', 'Filter by state', enum: OrderState::class, required: false, example: "No-example")]
     #[QueryParam('filter[partner_id]', 'string', 'Comma-separated list of partner IDs to filter by', required: false, example: "No-example")]

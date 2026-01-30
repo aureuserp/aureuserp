@@ -25,13 +25,11 @@ endpoints:
       include:
         custom: []
         name: include
-        description: 'Comma-separated list of relationships to include in the response.'
+        description: 'Comma-separated list of relationships to include. Available options: partner, lines'
         required: false
         example: 'partner,lines'
         type: string
-        enumValues:
-          - partner
-          - lines
+        enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false

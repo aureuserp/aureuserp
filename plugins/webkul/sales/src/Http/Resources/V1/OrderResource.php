@@ -9,6 +9,7 @@ use Webkul\Account\Http\Resources\V1\JournalResource;
 use Webkul\Account\Http\Resources\V1\PaymentTermResource;
 use Webkul\Partner\Http\Resources\V1\PartnerResource;
 use Webkul\Security\Http\Resources\V1\UserResource;
+use Webkul\Security\Http\Resources\V1\TeamResource;
 use Webkul\Support\Http\Resources\V1\CompanyResource;
 use Webkul\Support\Http\Resources\V1\CurrencyResource;
 
@@ -48,10 +49,7 @@ class OrderResource extends JsonResource
             'partner_invoice'  => PartnerResource::make($this->whenLoaded('partnerInvoice')),
             'partner_shipping' => PartnerResource::make($this->whenLoaded('partnerShipping')),
             'user'             => UserResource::make($this->whenLoaded('user')),
-            'team'             => $this->whenLoaded('team', fn () => [
-                'id'   => $this->team->id,
-                'name' => $this->team->name,
-            ]),
+            'team'             => TeamResource::make($this->whenLoaded('team')),
             'company'         => CompanyResource::make($this->whenLoaded('company')),
             'currency'        => CurrencyResource::make($this->whenLoaded('currency')),
             'payment_term'    => PaymentTermResource::make($this->whenLoaded('paymentTerm')),
