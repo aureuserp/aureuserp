@@ -15,7 +15,7 @@ use Webkul\Sale\Enums\OrderState;
 class OrderController extends Controller
 {
     #[Endpoint('List orders', 'Retrieve a paginated list of orders with filtering and sorting')]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. Available options: partner, lines', required: false, example: 'partner,lines')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, partnerInvoice, partnerShipping, user, team, company, currency, paymentTerm, fiscalPosition, journal, campaign, utmSource, medium, warehouse, lines, lines.product, lines.linkedSaleOrderSale, lines.uom, lines.productPackaging, lines.currency, lines.orderPartner, lines.salesman, lines.warehouse, lines.route, lines.company', required: false, example: 'partner,lines')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: "No-example")]
     #[QueryParam('filter[state]', 'string', 'Filter by state', enum: OrderState::class, required: false, example: "No-example")]
     #[QueryParam('filter[partner_id]', 'string', 'Comma-separated list of partner IDs to filter by', required: false, example: "No-example")]
@@ -31,7 +31,33 @@ class OrderController extends Controller
                 AllowedFilter::exact('partner_id'),
             ])
             ->allowedSorts(['id', 'state', 'created_at'])
-            ->allowedIncludes(['partner', 'lines'])
+            ->allowedIncludes([
+                'partner',
+                'partnerInvoice',
+                'partnerShipping',
+                'user',
+                'team',
+                'company',
+                'currency',
+                'paymentTerm',
+                'fiscalPosition',
+                'journal',
+                'campaign',
+                'utmSource',
+                'medium',
+                'warehouse',
+                'lines',
+                'lines.product',
+                'lines.linkedSaleOrderSale',
+                'lines.uom',
+                'lines.productPackaging',
+                'lines.currency',
+                'lines.orderPartner',
+                'lines.salesman',
+                'lines.warehouse',
+                'lines.route',
+                'lines.company',
+            ])
             ->paginate();
 
         return OrderResource::collection($orders);
@@ -53,12 +79,38 @@ class OrderController extends Controller
     
     #[Endpoint('Show order', 'Retrieve a specific order by its ID')]
     #[UrlParam('id', 'integer', 'The order ID', required: true, example: 1)]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include in the response.', enum: ['partner', 'lines'], required: false, example: "partner,lines")]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, partnerInvoice, partnerShipping, user, team, company, currency, paymentTerm, fiscalPosition, journal, campaign, utmSource, medium, warehouse, lines, lines.product, lines.linkedSaleOrderSale, lines.uom, lines.productPackaging, lines.currency, lines.orderPartner, lines.salesman, lines.warehouse, lines.route, lines.company', required: false, example: 'partner,lines')]
     #[ResponseFromFile(__DIR__ . '/../../../../../responses/orders/show.json')]
     public function show(string $id)
     {
         $order = QueryBuilder::for(Order::where('id', $id))
-            ->allowedIncludes(['partner', 'lines'])
+            ->allowedIncludes([
+                'partner',
+                'partnerInvoice',
+                'partnerShipping',
+                'user',
+                'team',
+                'company',
+                'currency',
+                'paymentTerm',
+                'fiscalPosition',
+                'journal',
+                'campaign',
+                'utmSource',
+                'medium',
+                'warehouse',
+                'lines',
+                'lines.product',
+                'lines.linkedSaleOrderSale',
+                'lines.uom',
+                'lines.productPackaging',
+                'lines.currency',
+                'lines.orderPartner',
+                'lines.salesman',
+                'lines.warehouse',
+                'lines.route',
+                'lines.company',
+            ])
             ->firstOrFail();
 
         return new OrderResource($order);

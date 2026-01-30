@@ -25,7 +25,7 @@ endpoints:
       include:
         custom: []
         name: include
-        description: 'Comma-separated list of relationships to include. Available options: partner, lines'
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, partnerInvoice, partnerShipping, user, team, company, currency, paymentTerm, fiscalPosition, journal, campaign, utmSource, medium, warehouse, lines, lines.product, lines.linkedSaleOrderSale, lines.uom, lines.productPackaging, lines.currency, lines.orderPartner, lines.salesman, lines.warehouse, lines.route, lines.company'
         required: false
         example: 'partner,lines'
         type: string
@@ -368,13 +368,11 @@ endpoints:
       include:
         custom: []
         name: include
-        description: 'Comma-separated list of relationships to include in the response.'
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, partnerInvoice, partnerShipping, user, team, company, currency, paymentTerm, fiscalPosition, journal, campaign, utmSource, medium, warehouse, lines, lines.product, lines.linkedSaleOrderSale, lines.uom, lines.productPackaging, lines.currency, lines.orderPartner, lines.salesman, lines.warehouse, lines.route, lines.company'
         required: false
         example: 'partner,lines'
         type: string
-        enumValues:
-          - partner
-          - lines
+        enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false

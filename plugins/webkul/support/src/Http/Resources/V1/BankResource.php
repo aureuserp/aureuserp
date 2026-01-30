@@ -4,6 +4,7 @@ namespace Webkul\Support\Http\Resources\V1;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Webkul\Security\Http\Resources\V1\UserResource;
 
 class BankResource extends JsonResource
 {
@@ -24,10 +25,12 @@ class BankResource extends JsonResource
             'street2'    => $this->street2,
             'city'       => $this->city,
             'zip'        => $this->zip,
-            'state'      => new StateResource($this->state),
-            'country'    => new CountryResource($this->country),
+            'state'      => StateResource::make($this->whenLoaded('state')),
+            'country'    => CountryResource::make($this->whenLoaded('country')),
+            'creator'    => UserResource::make($this->whenLoaded('creator')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'deleted_at' => $this->deleted_at,
         ];
     }
 }
