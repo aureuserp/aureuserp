@@ -17,7 +17,7 @@
 <script
     id="api-reference"
     
-    data-configuration="{&quot;theme&quot;:&quot;kepler&quot;,&quot;defaultHttpClient&quot;:{&quot;targetKey&quot;:&quot;js&quot;,&quot;clientKey&quot;:&quot;fetch&quot;}}"
+    data-configuration="{&quot;theme&quot;:&quot;kepler&quot;,&quot;defaultHttpClient&quot;:{&quot;targetKey&quot;:&quot;js&quot;,&quot;clientKey&quot;:&quot;fetch&quot;},&quot;hiddenClients&quot;:[],&quot;customCss&quot;:&quot;&quot;,&quot;hideModels&quot;:false,&quot;hideDownloadButton&quot;:false,&quot;defaultOpenAllTags&quot;:false}"
     data-url="{{ route("scribe.openapi") }}">
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>

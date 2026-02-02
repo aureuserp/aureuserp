@@ -19,6 +19,7 @@ class SecurityServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasTranslations()
             ->hasRoute('web')
+            ->hasRoute('api')
             ->runsMigrations()
             ->hasMigrations([
                 '2024_11_11_112529_create_user_invitations_table',
