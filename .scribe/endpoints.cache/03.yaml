@@ -7,7 +7,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/v1/login
+    uri: admin/api/v1/login
     metadata:
       custom: []
       groupName: 'Security API Management'
@@ -80,7 +80,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/v1/logout
+    uri: admin/api/v1/logout
     metadata:
       custom: []
       groupName: 'Security API Management'

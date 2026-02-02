@@ -190,6 +190,15 @@ class Product extends Model implements Sortable
         }
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($product) {
+            $product->creator_id = filament()->auth()->id();
+        });
+    }
+
     protected static function newFactory(): ProductFactory
     {
         return ProductFactory::new();

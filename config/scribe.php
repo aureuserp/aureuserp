@@ -31,7 +31,7 @@ return [
         [
             'match' => [
                 // Match only routes whose paths match this pattern (use * as a wildcard to match any characters). Example: 'users/*'.
-                'prefixes' => ['api/*'],
+                'prefixes' => ['admin/api/*'],
 
                 // Match only routes whose domains match this pattern (use * as a wildcard to match any characters). Example: 'api.*'.
                 'domains' => ['*'],
@@ -124,7 +124,7 @@ return [
         'placeholder' => 'Bearer {YOUR_AUTH_TOKEN}',
 
         // Any extra authentication-related info for your users. Markdown and HTML are supported.
-        'extra_info' => 'You can retrieve your token by calling the <code>POST /api/v1/login</code> endpoint with your email and password.',
+        'extra_info' => 'You can retrieve your token by calling the <code>POST /admin/api/v1/login</code> endpoint with your email and password.',
     ],
 
     // Example requests for each endpoint will be shown in each of these languages.

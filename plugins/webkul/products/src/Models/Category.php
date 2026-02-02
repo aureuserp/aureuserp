@@ -81,38 +81,42 @@ class Category extends Model
     {
         parent::boot();
 
-        static::creating(function ($productCategory) {
-            if (! static::validateNoRecursion($productCategory)) {
+        static::creating(function ($category) {
+            $category->creator_id = filament()->auth()->id();
+
+            $category->company_id = filament()->auth()->user()->default_company_id;
+
+            if (! static::validateNoRecursion($category)) {
                 throw new InvalidArgumentException('Circular reference detected in product category hierarchy');
             }
 
-            static::handleProductCategoryData($productCategory);
+            static::handleProductCategoryData($category);
         });
 
-        static::updating(function ($productCategory) {
-            if (! static::validateNoRecursion($productCategory)) {
+        static::updating(function ($category) {
+            if (! static::validateNoRecursion($category)) {
                 throw new InvalidArgumentException('Circular reference detected in product category hierarchy');
             }
 
-            static::handleProductCategoryData($productCategory);
+            static::handleProductCategoryData($category);
         });
     }
 
-    protected static function validateNoRecursion($productCategory)
+    protected static function validateNoRecursion($category)
     {
-        if (! $productCategory->parent_id) {
+        if (! $category->parent_id) {
             return true;
         }
 
         if (
-            $productCategory->exists
-            && $productCategory->id == $productCategory->parent_id
+            $category->exists
+            && $category->id == $category->parent_id
         ) {
             return false;
         }
 
-        $visitedIds = [$productCategory->exists ? $productCategory->id : -1];
-        $currentParentId = $productCategory->parent_id;
+        $visitedIds = [$category->exists ? $category->id : -1];
+        $currentParentId = $category->parent_id;
 
         while ($currentParentId) {
             if (in_array($currentParentId, $visitedIds)) {
@@ -132,36 +136,36 @@ class Category extends Model
         return true;
     }
 
-    protected static function handleProductCategoryData($productCategory)
+    protected static function handleProductCategoryData($category)
     {
-        if ($productCategory->parent_id) {
-            $parent = static::find($productCategory->parent_id);
+        if ($category->parent_id) {
+            $parent = static::find($category->parent_id);
 
             if ($parent) {
-                $productCategory->parent_path = $parent->parent_path.$parent->id.'/';
+                $category->parent_path = $parent->parent_path.$parent->id.'/';
             } else {
-                $productCategory->parent_path = '/';
-                $productCategory->parent_id = null;
+                $category->parent_path = '/';
+                $category->parent_id = null;
             }
         } else {
-            $productCategory->parent_path = '/';
+            $category->parent_path = '/';
         }
 
-        $productCategory->full_name = static::getCompleteName($productCategory);
+        $category->full_name = static::getCompleteName($category);
     }
 
-    protected static function getCompleteName($productCategory)
+    protected static function getCompleteName($category)
     {
         $names = [];
-        $names[] = $productCategory->name;
+        $names[] = $category->name;
 
-        $currentProductCategory = $productCategory;
+        $currentCategory = $category;
 
-        while ($currentProductCategory->parent_id) {
-            $currentProductCategory = static::find($currentProductCategory->parent_id);
+        while ($currentCategory->parent_id) {
+            $currentCategory = static::find($currentCategory->parent_id);
 
-            if ($currentProductCategory) {
-                array_unshift($names, $currentProductCategory->name);
+            if ($currentCategory) {
+                array_unshift($names, $currentCategory->name);
             } else {
                 break;
             }

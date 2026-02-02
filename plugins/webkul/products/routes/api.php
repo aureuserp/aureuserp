@@ -8,7 +8,7 @@ use Webkul\Product\Http\Controllers\API\V1\ProductController;
 use Webkul\Product\Http\Controllers\API\V1\TagController;
 
 // Protected routes (require authentication)
-Route::name('api.v1.admin.products.')->prefix('api/v1/admin/products')->middleware(['auth:sanctum'])->group(function () {
+Route::name('admin.api.v1.products.')->prefix('admin/api/v1/products')->middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('categories', CategoryController::class);
 
     Route::apiResource('tags', TagController::class);

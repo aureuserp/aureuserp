@@ -7,7 +7,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/v1/admin/sales/orders
+    uri: admin/api/v1/sales/orders
     metadata:
       custom: []
       groupName: 'Sales API Management'
@@ -127,7 +127,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/v1/admin/sales/orders
+    uri: admin/api/v1/sales/orders
     metadata:
       custom: []
       groupName: 'Sales API Management'
@@ -216,7 +216,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v1/admin/sales/orders/{id}'
+    uri: 'admin/api/v1/sales/orders/{id}'
     metadata:
       custom: []
       groupName: 'Sales API Management'
@@ -288,7 +288,7 @@ endpoints:
     httpMethods:
       - PUT
       - PATCH
-    uri: 'api/v1/admin/sales/orders/{id}'
+    uri: 'admin/api/v1/sales/orders/{id}'
     metadata:
       custom: []
       groupName: 'Sales API Management'
@@ -407,7 +407,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/v1/admin/sales/orders/{id}'
+    uri: 'admin/api/v1/sales/orders/{id}'
     metadata:
       custom: []
       groupName: 'Sales API Management'
@@ -472,7 +472,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v1/admin/sales/orders/{order_id}/lines'
+    uri: 'admin/api/v1/sales/orders/{order_id}/lines'
     metadata:
       custom: []
       groupName: 'Sales API Management'
@@ -578,7 +578,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v1/admin/sales/orders/{order_id}/lines/{id}'
+    uri: 'admin/api/v1/sales/orders/{order_id}/lines/{id}'
     metadata:
       custom: []
       groupName: 'Sales API Management'
@@ -667,7 +667,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/v1/admin/sales/products
+    uri: admin/api/v1/sales/products
     metadata:
       custom: []
       groupName: 'Sales API Management'
@@ -823,7 +823,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/v1/admin/sales/products
+    uri: admin/api/v1/sales/products
     metadata:
       custom: []
       groupName: 'Sales API Management'
@@ -1256,7 +1256,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v1/admin/sales/products/{id}'
+    uri: 'admin/api/v1/sales/products/{id}'
     metadata:
       custom: []
       groupName: 'Sales API Management'
@@ -1334,7 +1334,7 @@ endpoints:
     httpMethods:
       - PUT
       - PATCH
-    uri: 'api/v1/admin/sales/products/{id}'
+    uri: 'admin/api/v1/sales/products/{id}'
     metadata:
       custom: []
       groupName: 'Sales API Management'
@@ -1785,7 +1785,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/v1/admin/sales/products/{id}'
+    uri: 'admin/api/v1/sales/products/{id}'
     metadata:
       custom: []
       groupName: 'Sales API Management'
@@ -1850,7 +1850,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: 'api/v1/admin/sales/products/{id}/restore'
+    uri: 'admin/api/v1/sales/products/{id}/restore'
     metadata:
       custom: []
       groupName: 'Sales API Management'

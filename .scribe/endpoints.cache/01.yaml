@@ -7,7 +7,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/v1/admin/products/categories
+    uri: admin/api/v1/products/categories
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -123,7 +123,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/v1/admin/products/categories
+    uri: admin/api/v1/products/categories
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -200,7 +200,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v1/admin/products/categories/{id}'
+    uri: 'admin/api/v1/products/categories/{id}'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -250,7 +250,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"All","full_name":"All","parent_path":"\/","parent_id":null,"creator_id":1,"created_at":"2025-01-28T10:49:51.000000Z","updated_at":"2025-01-28T10:49:51.000000Z","parent":null,"children":[{"id":2,"name":"Consumable","full_name":"All \/ Consumable","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-01-28T10:50:15.000000Z","updated_at":"2025-01-28T10:50:15.000000Z"},{"id":3,"name":"Expenses","full_name":"All \/ Expenses","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-01-28T10:55:42.000000Z","updated_at":"2025-01-28T10:55:42.000000Z"},{"id":4,"name":"Home Construction","full_name":"All \/ Home Construction","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-01-28T10:55:56.000000Z","updated_at":"2025-01-28T10:56:43.000000Z"},{"id":5,"name":"Internal","full_name":"All \/ Internal","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-01-28T10:56:07.000000Z","updated_at":"2025-01-28T10:56:27.000000Z"},{"id":6,"name":"Saleable","full_name":"All \/ Saleable","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-01-28T10:56:55.000000Z","updated_at":"2025-01-28T10:56:55.000000Z"},{"id":11,"name":"Electronic''s Devices","full_name":"All \/ Electronic''s Devices","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-04-08T03:34:44.000000Z","updated_at":"2025-04-08T03:34:44.000000Z"}]}}'
+        content: '{"data":{"id":1,"name":"All","full_name":"All","parent_path":"\/","parent_id":null,"creator_id":1,"created_at":"2025-01-28T10:49:51.000000Z","updated_at":"2025-01-28T10:49:51.000000Z","parent":null,"children":[{"id":2,"name":"Consumable","full_name":"All \/ Consumable","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-01-28T10:50:15.000000Z","updated_at":"2025-01-28T10:50:15.000000Z"},{"id":3,"name":"Expenses","full_name":"All \/ Expenses","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-01-28T10:55:42.000000Z","updated_at":"2025-01-28T10:55:42.000000Z"},{"id":4,"name":"Home Construction","full_name":"All \/ Home Construction","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-01-28T10:55:56.000000Z","updated_at":"2025-01-28T10:56:43.000000Z"},{"id":5,"name":"Internal","full_name":"All \/ Internal","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-01-28T10:56:07.000000Z","updated_at":"2025-01-28T10:56:27.000000Z"},{"id":6,"name":"Saleable","full_name":"All \/ Saleable","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-01-28T10:56:55.000000Z","updated_at":"2025-01-28T10:56:55.000000Z"},{"id":11,"name":"Electronic''s Devices","full_name":"All \/ Electronic''s Devices","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-04-08T03:34:44.000000Z","updated_at":"2025-04-08T03:34:44.000000Z"},{"id":14,"name":"Electronics","full_name":"All \/ Electronics","parent_path":"\/1\/","parent_id":1,"creator_id":null,"created_at":"2026-02-02T14:56:01.000000Z","updated_at":"2026-02-02T14:56:01.000000Z"}]}}'
         headers: []
         description: ''
       -
@@ -278,7 +278,7 @@ endpoints:
     httpMethods:
       - PUT
       - PATCH
-    uri: 'api/v1/admin/products/categories/{id}'
+    uri: 'admin/api/v1/products/categories/{id}'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -373,7 +373,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/v1/admin/products/categories/{id}'
+    uri: 'admin/api/v1/products/categories/{id}'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -438,7 +438,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/v1/admin/products/tags
+    uri: admin/api/v1/products/tags
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -557,7 +557,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/v1/admin/products/tags
+    uri: admin/api/v1/products/tags
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -634,7 +634,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v1/admin/products/tags/{id}'
+    uri: 'admin/api/v1/products/tags/{id}'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -712,7 +712,7 @@ endpoints:
     httpMethods:
       - PUT
       - PATCH
-    uri: 'api/v1/admin/products/tags/{id}'
+    uri: 'admin/api/v1/products/tags/{id}'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -807,7 +807,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/v1/admin/products/tags/{id}'
+    uri: 'admin/api/v1/products/tags/{id}'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -872,7 +872,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: 'api/v1/admin/products/tags/{id}/restore'
+    uri: 'admin/api/v1/products/tags/{id}/restore'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -937,7 +937,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/v1/admin/products/tags/{id}/force'
+    uri: 'admin/api/v1/products/tags/{id}/force'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -1002,7 +1002,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/v1/admin/products/attributes
+    uri: admin/api/v1/products/attributes
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -1133,7 +1133,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/v1/admin/products/attributes
+    uri: admin/api/v1/products/attributes
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -1225,7 +1225,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v1/admin/products/attributes/{id}'
+    uri: 'admin/api/v1/products/attributes/{id}'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -1303,7 +1303,7 @@ endpoints:
     httpMethods:
       - PUT
       - PATCH
-    uri: 'api/v1/admin/products/attributes/{id}'
+    uri: 'admin/api/v1/products/attributes/{id}'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -1413,7 +1413,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/v1/admin/products/attributes/{id}'
+    uri: 'admin/api/v1/products/attributes/{id}'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -1478,7 +1478,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: 'api/v1/admin/products/attributes/{id}/restore'
+    uri: 'admin/api/v1/products/attributes/{id}/restore'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -1543,7 +1543,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/v1/admin/products/attributes/{id}/force'
+    uri: 'admin/api/v1/products/attributes/{id}/force'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -1608,7 +1608,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v1/admin/products/attributes/{attribute_id}/options'
+    uri: 'admin/api/v1/products/attributes/{attribute_id}/options'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -1725,7 +1725,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: 'api/v1/admin/products/attributes/{attribute_id}/options'
+    uri: 'admin/api/v1/products/attributes/{attribute_id}/options'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -1838,7 +1838,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v1/admin/products/attributes/{attribute_id}/options/{id}'
+    uri: 'admin/api/v1/products/attributes/{attribute_id}/options/{id}'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -1928,7 +1928,7 @@ endpoints:
     httpMethods:
       - PUT
       - PATCH
-    uri: 'api/v1/admin/products/attributes/{attribute_id}/options/{id}'
+    uri: 'admin/api/v1/products/attributes/{attribute_id}/options/{id}'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -2059,7 +2059,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/v1/admin/products/attributes/{attribute_id}/options/{id}'
+    uri: 'admin/api/v1/products/attributes/{attribute_id}/options/{id}'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -2136,7 +2136,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/v1/admin/products/products
+    uri: admin/api/v1/products/products
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -2292,7 +2292,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/v1/admin/products/products
+    uri: admin/api/v1/products/products
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -2603,7 +2603,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v1/admin/products/products/{id}'
+    uri: 'admin/api/v1/products/products/{id}'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -2681,7 +2681,7 @@ endpoints:
     httpMethods:
       - PUT
       - PATCH
-    uri: 'api/v1/admin/products/products/{id}'
+    uri: 'admin/api/v1/products/products/{id}'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -3010,7 +3010,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/v1/admin/products/products/{id}'
+    uri: 'admin/api/v1/products/products/{id}'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -3075,7 +3075,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: 'api/v1/admin/products/products/{id}/restore'
+    uri: 'admin/api/v1/products/products/{id}/restore'
     metadata:
       custom: []
       groupName: 'Product API Management'
@@ -3140,7 +3140,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/v1/admin/products/products/{id}/force'
+    uri: 'admin/api/v1/products/products/{id}/force'
     metadata:
       custom: []
       groupName: 'Product API Management'

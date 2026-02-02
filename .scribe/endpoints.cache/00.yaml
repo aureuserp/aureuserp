@@ -7,7 +7,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/v1/admin/accounts/products
+    uri: admin/api/v1/accounts/products
     metadata:
       custom: []
       groupName: 'Account API Management'
@@ -163,7 +163,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/v1/admin/accounts/products
+    uri: admin/api/v1/accounts/products
     metadata:
       custom: []
       groupName: 'Account API Management'
@@ -596,7 +596,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v1/admin/accounts/products/{id}'
+    uri: 'admin/api/v1/accounts/products/{id}'
     metadata:
       custom: []
       groupName: 'Account API Management'
@@ -674,7 +674,7 @@ endpoints:
     httpMethods:
       - PUT
       - PATCH
-    uri: 'api/v1/admin/accounts/products/{id}'
+    uri: 'admin/api/v1/accounts/products/{id}'
     metadata:
       custom: []
       groupName: 'Account API Management'
@@ -1125,7 +1125,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/v1/admin/accounts/products/{id}'
+    uri: 'admin/api/v1/accounts/products/{id}'
     metadata:
       custom: []
       groupName: 'Account API Management'
@@ -1190,7 +1190,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: 'api/v1/admin/accounts/products/{id}/restore'
+    uri: 'admin/api/v1/accounts/products/{id}/restore'
     metadata:
       custom: []
       groupName: 'Account API Management'
