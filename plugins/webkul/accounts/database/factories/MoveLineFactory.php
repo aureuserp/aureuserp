@@ -10,9 +10,11 @@ use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Partner\Models\Partner;
+use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Webkul\Support\Models\UOM;
 
 /**
  * @extends Factory<\App\Models\MoveLine>
@@ -106,6 +108,33 @@ class MoveLineFactory extends Factory
             'debit'        => 0.0,
             'credit'       => 0.0,
             'balance'      => 0.0,
+        ]);
+    }
+
+    public function withProduct(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'product_id' => Product::factory(),
+            'uom_id'     => UOM::factory(),
+            'quantity'   => $this->faker->numberBetween(1, 10),
+            'price_unit' => $this->faker->randomFloat(2, 10, 100),
+        ]);
+    }
+
+    public function withQuantityAndPrice(float $quantity, float $priceUnit, bool $isDebit = true): static
+    {
+        $subtotal = $quantity * $priceUnit;
+
+        return $this->state(fn (array $attributes) => [
+            'quantity'         => $quantity,
+            'price_unit'       => $priceUnit,
+            'price_subtotal'   => $subtotal,
+            'price_total'      => $subtotal,
+            'debit'            => $isDebit ? $subtotal : 0.0,
+            'credit'           => $isDebit ? 0.0 : $subtotal,
+            'balance'          => $isDebit ? $subtotal : -$subtotal,
+            'amount_residual'  => $isDebit ? $subtotal : -$subtotal,
+            'amount_currency'  => $isDebit ? $subtotal : -$subtotal,
         ]);
     }
 }

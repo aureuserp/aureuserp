@@ -3,6 +3,7 @@
 namespace Webkul\Account\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Webkul\Account\Enums\InstallmentMode;
 use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Journal;
@@ -41,7 +42,7 @@ class PaymentRegisterFactory extends Factory
             'writeoff_account_id'         => null,
             'creator_id'                  => User::factory(),
             'communication'               => null,
-            'installments_mode'           => 'none',
+            'installments_mode'           => InstallmentMode::FULL,
             'payment_type'                => PaymentType::RECEIVE,
             'partner_type'                => 'customer',
             'payment_difference_handling' => 'open',
