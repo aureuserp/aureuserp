@@ -24,6 +24,7 @@ class AccountServiceProvider extends PackageServiceProvider
         $package->name(static::$name)
             ->hasViews()
             ->hasTranslations()
+            ->hasRoutes(['api'])
             ->hasMigrations([
                 '2025_01_29_044430_create_accounts_payment_terms_table',
                 '2025_01_29_064646_create_accounts_payment_due_terms_table',
