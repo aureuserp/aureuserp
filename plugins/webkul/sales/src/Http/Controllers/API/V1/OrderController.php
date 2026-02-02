@@ -7,6 +7,7 @@ use Knuckles\Scribe\Attributes\BodyParam;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
 use Knuckles\Scribe\Attributes\QueryParam;
+use Knuckles\Scribe\Attributes\Response;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 use Knuckles\Scribe\Attributes\ResponseFromFile;
 use Knuckles\Scribe\Attributes\Subgroup;
@@ -70,15 +71,12 @@ class OrderController extends Controller
         return OrderResource::collection($orders);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @bodyParam name string Name of the car. Example: Honda
-     * @bodyParam model string Model of the car. Example: 2020
-     * @bodyParam cars object[] List of car details. Example: [{"name": "Carpenter", "year": 2019}, {"name": "Electric", "year": 2020}]
-     * @bodyParam cars[].name string Name of the car.
-     * @bodyParam cars[].year int Example: 1997
-     */
+    #[Endpoint('Create order', 'Create a new order')]
+    #[BodyParam('name', 'string', 'The name of the order', required: true, example: 'SO001')]
+    #[BodyParam('partner_id', 'integer', 'The ID of the partner', required: true, example: 1)]
+    #[BodyParam('message', 'string', 'Additional message or notes', required: false, example: 'Customer requested expedited shipping')]
+    #[ResponseFromApiResource(OrderResource::class, Order::class, status: 201, with: ['partner', 'lines'], additional: ['message' => 'Order created successfully.'])]
+    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."], "partner_id": ["The partner id field is required."]}}')]
     public function store(Request $request)
     {
         dd($request->all());
@@ -123,17 +121,24 @@ class OrderController extends Controller
         return new OrderResource($order);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    #[Endpoint('Update order', 'Update an existing order')]
+    #[UrlParam('id', 'integer', 'The order ID', required: true, example: 1)]
+    #[BodyParam('name', 'string', 'The name of the order', required: false, example: 'SO001')]
+    #[BodyParam('partner_id', 'integer', 'The ID of the partner', required: false, example: 1)]
+    #[BodyParam('message', 'string', 'Additional message or notes', required: false, example: 'Customer requested expedited shipping')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, partnerInvoice, partnerShipping, user, team, company, currency, paymentTerm, fiscalPosition, journal, campaign, utmSource, medium, warehouse, lines, lines.product, lines.linkedSaleOrderSale, lines.uom, lines.productPackaging, lines.currency, lines.orderPartner, lines.salesman, lines.warehouse, lines.route, lines.company', required: false, example: 'partner,lines')]
+    #[ResponseFromApiResource(OrderResource::class, Order::class, with: ['partner', 'lines'], additional: ['message' => 'Order updated successfully.'])]
+    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must be a string."]}}')]
+    #[Response(status: 404, description: 'Order not found', content: '{"message": "Order not found."}')]
     public function update(Request $request, string $id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    #[Endpoint('Delete order', 'Delete an existing order')]
+    #[UrlParam('id', 'integer', 'The order ID', required: true, example: 1)]
+    #[Response(status: 200, description: 'Order deleted successfully', content: '{"message": "Order has been deleted successfully."}')]
+    #[Response(status: 404, description: 'Order not found', content: '{"message": "Order not found."}')]
     public function destroy(string $id)
     {
         //

@@ -6,6 +6,7 @@ use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
 use Knuckles\Scribe\Attributes\QueryParam;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
+use Knuckles\Scribe\Attributes\Response;
 use Knuckles\Scribe\Attributes\Subgroup;
 use Knuckles\Scribe\Attributes\UrlParam;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -53,10 +54,12 @@ class OrderLineController extends Controller
     }
 
     #[Endpoint('Show order line', 'Retrieve a specific line item from an order')]
+ * @apiResourceModel App\Models\User
     #[UrlParam('order', 'integer', 'The order ID', required: true, example: 1)]
     #[UrlParam('line', 'integer', 'The order line ID', required: true, example: 1)]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> product, linkedSaleOrderSale, uom, productPackaging, currency, orderPartner, salesman, warehouse, route, company, order', required: false, example: 'product')]
     #[ResponseFromApiResource(OrderLineResource::class, OrderLine::class, with: ['product'])]
+    #[Response(status: 404, description: 'Order not found', content: '{"message": "Order not found."}')]
     public function show(string $order, string $line)
     {
         $orderModel = Order::findOrFail($order);

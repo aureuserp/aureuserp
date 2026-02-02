@@ -124,8 +124,8 @@ endpoints:
       groupDescription: ''
       subgroup: Orders
       subgroupDescription: 'Do stuff with orders'
-      title: 'Store a newly created resource in storage.'
-      description: ''
+      title: 'Create order'
+      description: 'Create a new order'
       authenticated: false
       deprecated: false
     headers:
@@ -139,76 +139,54 @@ endpoints:
       name:
         custom: []
         name: name
-        description: 'Name of the car.'
-        required: false
-        example: Honda
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      model:
-        custom: []
-        name: model
-        description: 'Model of the car.'
-        required: false
-        example: '2020'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      cars:
-        custom: []
-        name: cars
-        description: 'List of car details.'
-        required: false
-        example:
-          -
-            name: Carpenter
-            year: 2019
-          -
-            name: Electric
-            year: 2020
-        type: 'object[]'
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        deprecated: false
-      'cars[].name':
-        custom: []
-        name: 'cars[].name'
-        description: 'Name of the car.'
-        required: false
-        example: consequatur
+        description: 'The name of the order'
+        required: true
+        example: SO001
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      'cars[].year':
+      partner_id:
         custom: []
-        name: 'cars[].year'
-        description: ''
-        required: false
-        example: 1997
+        name: partner_id
+        description: 'The ID of the partner'
+        required: true
+        example: 1
         type: integer
         enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      message:
+        custom: []
+        name: message
+        description: 'Additional message or notes'
+        required: false
+        example: 'Customer requested expedited shipping'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      name: Honda
-      model: '2020'
-      cars:
-        -
-          name: Carpenter
-          year: 2019
-        -
-          name: Electric
-          year: 2020
+      name: SO001
+      partner_id: 1
+      message: 'Customer requested expedited shipping'
     fileParameters: []
-    responses: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":1,"name":"SO\/1","state":"sale","invoice_status":"invoiced","client_order_ref":null,"origin":null,"reference":null,"date_order":"2026-01-07","validity_date":"2026-02-06","commitment_date":null,"currency_rate":0,"amount_untaxed":2440,"amount_tax":366,"amount_total":2806,"locked":true,"require_signature":false,"require_payment":false,"signed_by":null,"signed_on":null,"prepayment_percent":0,"note":"<p><\/p>","access_token":null,"partner_id":33,"partner_invoice_id":33,"partner_shipping_id":33,"user_id":1,"team_id":null,"company_id":1,"currency_id":1,"payment_term_id":2,"fiscal_position_id":null,"journal_id":null,"campaign_id":null,"utm_source_id":null,"medium_id":null,"warehouse_id":5,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00","deleted_at":null,"partner":{"id":33,"account_type":"individual","sub_type":"customer","name":"Lyle Holman","email":"lyle@holman.com","phone":"12121221212","mobile":"1212121215294","avatar":null,"avatar_url":null,"job_title":"Itaque ratione dicta tenetur omnis reiciendis quidem consequatur","website":"https:\/\/www.zecikapuleze.mobi","tax_id":"Esse dolorum quo vel animi fugiat ipsum dicta et","company_registry":"TEST COMPANY","reference":"Ea aliquid debitis m","is_active":true,"color":null,"street1":"Street 69","street2":"Reprehenderit eos saepe deserunt ut eu ea aliquam magnam saepe reprehenderit cum alias dicta amet ducimus saepe excepturi facere qui","city":"California","zip":"90006","country_id":233,"state_id":13,"parent_id":18,"title_id":1,"company_id":null,"industry_id":null,"user_id":2,"creator_id":null,"created_at":"2025-04-10T10:45:51.000000Z","updated_at":"2025-12-09T11:12:13.000000Z","deleted_at":null},"lines":[{"id":1,"sort":1,"name":"Big Vision 4K Action Camera - Fisheye Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":210,"technical_price_unit":210,"discount":0,"price_subtotal":1050,"price_tax":157.5,"price_total":1207.5,"price_reduce_taxexcl":210,"price_reduce_taxinc":241.5,"purchase_price":100,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1050,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":2,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":2,"sort":2,"name":"Bass Blaze Waterproof Bluetooth Speaker - Blue","display_type":null,"product_uom_qty":4,"product_qty":4,"qty_delivered":4,"qty_invoiced":4,"qty_to_invoice":0,"product_packaging_qty":0.2,"price_unit":60,"technical_price_unit":60,"discount":0,"price_subtotal":240,"price_tax":36,"price_total":276,"price_reduce_taxexcl":60,"price_reduce_taxinc":69,"purchase_price":45,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":240,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":12,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":2,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":3,"sort":3,"name":"Flim Rocket Mini Projector - Telecentric Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":230,"technical_price_unit":230,"discount":0,"price_subtotal":1150,"price_tax":172.5,"price_total":1322.5,"price_reduce_taxexcl":230,"price_reduce_taxinc":264.5,"purchase_price":120,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1150,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":8,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"}]},"message":"Order created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."], "partner_id": ["The partner id field is required."]}}'
+        headers: []
+        description: 'Validation error'
     responseFields: []
     auth: []
     controller: null
@@ -287,8 +265,8 @@ endpoints:
       groupDescription: ''
       subgroup: Orders
       subgroupDescription: 'Do stuff with orders'
-      title: 'Update the specified resource in storage.'
-      description: ''
+      title: 'Update order'
+      description: 'Update an existing order'
       authenticated: false
       deprecated: false
     headers:
@@ -298,22 +276,88 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the order.'
+        description: 'The order ID'
         required: true
-        example: consequatur
-        type: string
+        example: 1
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: consequatur
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, partnerInvoice, partnerShipping, user, team, company, currency, paymentTerm, fiscalPosition, journal, campaign, utmSource, medium, warehouse, lines, lines.product, lines.linkedSaleOrderSale, lines.uom, lines.productPackaging, lines.currency, lines.orderPartner, lines.salesman, lines.warehouse, lines.route, lines.company'
+        required: false
+        example: 'partner,lines'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'partner,lines'
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'The name of the order'
+        required: false
+        example: SO001
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      partner_id:
+        custom: []
+        name: partner_id
+        description: 'The ID of the partner'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      message:
+        custom: []
+        name: message
+        description: 'Additional message or notes'
+        required: false
+        example: 'Customer requested expedited shipping'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      name: SO001
+      partner_id: 1
+      message: 'Customer requested expedited shipping'
     fileParameters: []
-    responses: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"name":"SO\/1","state":"sale","invoice_status":"invoiced","client_order_ref":null,"origin":null,"reference":null,"date_order":"2026-01-07","validity_date":"2026-02-06","commitment_date":null,"currency_rate":0,"amount_untaxed":2440,"amount_tax":366,"amount_total":2806,"locked":true,"require_signature":false,"require_payment":false,"signed_by":null,"signed_on":null,"prepayment_percent":0,"note":"<p><\/p>","access_token":null,"partner_id":33,"partner_invoice_id":33,"partner_shipping_id":33,"user_id":1,"team_id":null,"company_id":1,"currency_id":1,"payment_term_id":2,"fiscal_position_id":null,"journal_id":null,"campaign_id":null,"utm_source_id":null,"medium_id":null,"warehouse_id":5,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00","deleted_at":null,"partner":{"id":33,"account_type":"individual","sub_type":"customer","name":"Lyle Holman","email":"lyle@holman.com","phone":"12121221212","mobile":"1212121215294","avatar":null,"avatar_url":null,"job_title":"Itaque ratione dicta tenetur omnis reiciendis quidem consequatur","website":"https:\/\/www.zecikapuleze.mobi","tax_id":"Esse dolorum quo vel animi fugiat ipsum dicta et","company_registry":"TEST COMPANY","reference":"Ea aliquid debitis m","is_active":true,"color":null,"street1":"Street 69","street2":"Reprehenderit eos saepe deserunt ut eu ea aliquam magnam saepe reprehenderit cum alias dicta amet ducimus saepe excepturi facere qui","city":"California","zip":"90006","country_id":233,"state_id":13,"parent_id":18,"title_id":1,"company_id":null,"industry_id":null,"user_id":2,"creator_id":null,"created_at":"2025-04-10T10:45:51.000000Z","updated_at":"2025-12-09T11:12:13.000000Z","deleted_at":null},"lines":[{"id":1,"sort":1,"name":"Big Vision 4K Action Camera - Fisheye Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":210,"technical_price_unit":210,"discount":0,"price_subtotal":1050,"price_tax":157.5,"price_total":1207.5,"price_reduce_taxexcl":210,"price_reduce_taxinc":241.5,"purchase_price":100,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1050,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":2,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":2,"sort":2,"name":"Bass Blaze Waterproof Bluetooth Speaker - Blue","display_type":null,"product_uom_qty":4,"product_qty":4,"qty_delivered":4,"qty_invoiced":4,"qty_to_invoice":0,"product_packaging_qty":0.2,"price_unit":60,"technical_price_unit":60,"discount":0,"price_subtotal":240,"price_tax":36,"price_total":276,"price_reduce_taxexcl":60,"price_reduce_taxinc":69,"purchase_price":45,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":240,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":12,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":2,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":3,"sort":3,"name":"Flim Rocket Mini Projector - Telecentric Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":230,"technical_price_unit":230,"discount":0,"price_subtotal":1150,"price_tax":172.5,"price_total":1322.5,"price_reduce_taxexcl":230,"price_reduce_taxinc":264.5,"purchase_price":120,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1150,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":8,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"}]},"message":"Order updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Order not found."}'
+        headers: []
+        description: 'Order not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must be a string."]}}'
+        headers: []
+        description: 'Validation error'
     responseFields: []
     auth: []
     controller: null
@@ -330,8 +374,8 @@ endpoints:
       groupDescription: ''
       subgroup: Orders
       subgroupDescription: 'Do stuff with orders'
-      title: 'Remove the specified resource from storage.'
-      description: ''
+      title: 'Delete order'
+      description: 'Delete an existing order'
       authenticated: false
       deprecated: false
     headers:
@@ -341,22 +385,34 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the order.'
+        description: 'The order ID'
         required: true
-        example: consequatur
-        type: string
+        example: 1
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: consequatur
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
-    responses: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Order has been deleted successfully."}'
+        headers: []
+        description: 'Order deleted successfully'
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Order not found."}'
+        headers: []
+        description: 'Order not found'
     responseFields: []
     auth: []
     controller: null
@@ -562,6 +618,12 @@ endpoints:
         content: '{"data":{"id":1,"sort":1,"name":"Big Vision 4K Action Camera - Fisheye Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":210,"technical_price_unit":210,"discount":0,"price_subtotal":1050,"price_tax":157.5,"price_total":1207.5,"price_reduce_taxexcl":210,"price_reduce_taxinc":241.5,"purchase_price":100,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1050,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":2,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00","product":{"id":2,"type":"goods","name":"Big Vision 4K Action Camera - Fisheye Lens","service_tracking":"none","reference":"Action-01-big-vision-4k-action-camera---fisheye-lens","barcode":null,"price":210,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":1,"uom_id":1,"uom_po_id":1,"category_id":11,"company_id":1,"creator_id":1,"created_at":"2025-04-08T03:49:27.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null}}}'
         headers: []
         description: ''
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Order not found."}'
+        headers: []
+        description: 'Order not found'
     responseFields: []
     auth: []
     controller: null

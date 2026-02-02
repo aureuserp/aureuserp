@@ -35,12 +35,14 @@ final class ScalarOpenApiGenerator extends OpenApiGenerator
                 'name' => $groupedEndpoint['name'],
             ];
             $grouped = [];
+            $hasEndpointsWithoutSubgroup = false;
 
             foreach ($groupedEndpoint['endpoints'] as $endpoint) {
                 /** @var Metadata $metadata */
                 $metadata = $endpoint['metadata'];
 
                 if (!$metadata->subgroup) {
+                    $hasEndpointsWithoutSubgroup = true;
                     continue;
                 }
 
@@ -61,11 +63,17 @@ final class ScalarOpenApiGenerator extends OpenApiGenerator
                 $grouped[] = $tagGroup['name'];
             }
 
-            sort($grouped, SORT_STRING);
-            $currentGroupTags['tags'] = $grouped;
-
-            //tag for endpoint with group but without subgroup
-            $currentGroupTags['tags'][] = $currentGroupTags['name'] . config('scribe.groups.default');
+            // Don't sort - maintain the order endpoints are defined in routes
+            // Only add default tag if there are actually endpoints without a subgroup
+            if ($hasEndpointsWithoutSubgroup) {
+                $currentGroupTags['tags'] = array_merge(
+                    [$currentGroupTags['name'] . config('scribe.groups.default')],
+                    $grouped
+                );
+            } else {
+                $currentGroupTags['tags'] = $grouped;
+            }
+            
             $root['x-tagGroups'][] = $currentGroupTags;
         }
 
