@@ -751,6 +751,19 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
+      'filter[trashed]':
+        custom: []
+        name: 'filter[trashed]'
+        description: 'Filter by trashed status: "with" (include trashed), "only" (only trashed), or any other value for non-trashed only'
+        required: false
+        example: with
+        type: string
+        enumValues:
+          - with
+          - only
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
       sort:
         custom: []
         name: sort
@@ -777,6 +790,7 @@ endpoints:
       include: 'category,tags'
       'filter[enable_sales]': 'true'
       'filter[enable_purchase]': 'false'
+      'filter[trashed]': with
       sort: '-created_at'
       page: 1
     bodyParameters: []

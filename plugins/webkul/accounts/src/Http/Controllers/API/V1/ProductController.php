@@ -29,6 +29,7 @@ class ProductController extends Controller
     #[QueryParam('filter[enable_sales]', 'boolean', 'Filter by sales enabled', required: false, example: 'true')]
     #[QueryParam('filter[enable_purchase]', 'boolean', 'Filter by purchase enabled', required: false, example: 'false')]
     #[QueryParam('filter[category_id]', 'string', 'Comma-separated list of category IDs to filter by', required: false, example: 'No-example')]
+    #[QueryParam('filter[trashed]', 'string', 'Filter by trashed status: "with" (include trashed), "only" (only trashed), or any other value for non-trashed only', required: false, enum: ['with', 'only'], example: 'with')]
     #[QueryParam('sort', 'string', 'Sort field', example: '-created_at')]
     #[QueryParam('page', 'int', 'Page number', example: 1)]
     #[ResponseFromApiResource(ProductResource::class, Product::class, collection: true, paginate: 10, with: ['category', 'tags'])]
