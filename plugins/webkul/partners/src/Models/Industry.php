@@ -29,7 +29,6 @@ class Industry extends Model
         'name',
         'description',
         'is_active',
-        'can_send_money',
         'creator_id',
     ];
 

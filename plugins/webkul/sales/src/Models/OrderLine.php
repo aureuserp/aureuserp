@@ -162,4 +162,9 @@ class OrderLine extends Model implements Sortable
     {
         return $this->belongsTo(Route::class, 'route_id');
     }
+
+    protected static function newFactory()
+    {
+        return OrderLineFactory::new();
+    }
 }

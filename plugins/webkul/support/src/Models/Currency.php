@@ -2,11 +2,14 @@
 
 namespace Webkul\Support\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 
 class Currency extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'name',
         'symbol',
@@ -20,6 +23,11 @@ class Currency extends Model
     protected $casts = [
         'active' => 'boolean',
     ];
+
+    protected static function newFactory()
+    {
+        return \Webkul\Support\Database\Factories\CurrencyFactory::new();
+    }
 
     /**
      * Get all states for the country.

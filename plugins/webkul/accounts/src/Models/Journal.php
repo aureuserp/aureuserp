@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Account\Database\Factories\JournalFactory;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Settings\DefaultAccountSettings;
@@ -208,5 +209,10 @@ class Journal extends Model implements Sortable
                 'payment_account_id' => null,
             ];
         })->toArray();
+    }
+
+    protected static function newFactory()
+    {
+        return JournalFactory::new();
     }
 }

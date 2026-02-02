@@ -3,12 +3,12 @@
 namespace Webkul\Security\Models;
 
 use App\Models\User as BaseUser;
-use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
 use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthentication;
-use Filament\Auth\MultiFactor\Email\Contracts\HasEmailAuthentication;
-use Filament\Auth\MultiFactor\Email\Concerns\InteractsWithEmailAuthentication;
-use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
 use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthenticationRecovery;
+use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
+use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
+use Filament\Auth\MultiFactor\Email\Concerns\InteractsWithEmailAuthentication;
+use Filament\Auth\MultiFactor\Email\Contracts\HasEmailAuthentication;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,9 +23,9 @@ use Webkul\Employee\Models\Employee;
 use Webkul\Partner\Models\Partner;
 use Webkul\Support\Models\Company;
 
-class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasEmailAuthentication, HasAppAuthenticationRecovery
+class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery, HasEmailAuthentication
 {
-    use HasRoles, InteractsWithAppAuthentication, InteractsWithEmailAuthentication, InteractsWithAppAuthenticationRecovery, SoftDeletes;
+    use HasRoles, InteractsWithAppAuthentication, InteractsWithAppAuthenticationRecovery, InteractsWithEmailAuthentication, SoftDeletes;
 
     public function __construct(array $attributes = [])
     {
@@ -109,7 +109,7 @@ class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasEm
             'creator_id' => Auth::user()->id ?? $user->id,
             'user_id'    => $user->id,
             'sub_type'   => 'partner',
-            ...Arr::except($user->toArray(), ['id']),
+            ...Arr::except($user->toArray(), ['id', 'partner_id']),
         ]);
 
         $user->partner_id = $partner->id;
@@ -124,7 +124,7 @@ class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasEm
                 'creator_id' => Auth::user()->id ?? $user->id,
                 'user_id'    => $user->id,
                 'sub_type'   => 'partner',
-                ...Arr::except($user->toArray(), ['id']),
+                ...Arr::except($user->toArray(), ['id', 'partner_id']),
             ]
         );
 

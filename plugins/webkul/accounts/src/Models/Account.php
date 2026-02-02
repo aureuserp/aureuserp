@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
+use Webkul\Account\Database\Factories\AccountFactory;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -134,5 +135,10 @@ class Account extends Model
         }
 
         return $query->pluck('account_id')->toArray();
+    }
+
+    protected static function newFactory()
+    {
+        return AccountFactory::new();
     }
 }
