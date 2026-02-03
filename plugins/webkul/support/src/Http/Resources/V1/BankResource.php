@@ -25,12 +25,12 @@ class BankResource extends JsonResource
             'street2'    => $this->street2,
             'city'       => $this->city,
             'zip'        => $this->zip,
-            'state'      => StateResource::make($this->whenLoaded('state')),
-            'country'    => CountryResource::make($this->whenLoaded('country')),
-            'creator'    => UserResource::make($this->whenLoaded('creator')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'deleted_at' => $this->deleted_at,
+            'state'      => StateResource::make($this->whenLoaded('state')),
+            'country'    => CountryResource::make($this->whenLoaded('country')),
+            'creator'    => UserResource::make($this->whenLoaded('creator')),
         ];
     }
 }

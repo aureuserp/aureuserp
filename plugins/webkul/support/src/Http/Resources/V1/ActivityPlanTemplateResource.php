@@ -24,13 +24,13 @@ class ActivityPlanTemplateResource extends JsonResource
             'summary'           => $this->summary,
             'responsible_type'  => $this->responsible_type,
             'note'              => $this->note,
+            'created_at'        => $this->created_at,
+            'updated_at'        => $this->updated_at,
             'activity_plan'     => ActivityPlanResource::make($this->whenLoaded('activityPlan')),
             'activity_type'     => ActivityTypeResource::make($this->whenLoaded('activityType')),
             'responsible'       => UserResource::make($this->whenLoaded('responsible')),
             'creator'           => UserResource::make($this->whenLoaded('createdBy')),
             'assigned_user'     => UserResource::make($this->whenLoaded('assignedUser')),
-            'created_at'        => $this->created_at,
-            'updated_at'        => $this->updated_at,
         ];
     }
 }

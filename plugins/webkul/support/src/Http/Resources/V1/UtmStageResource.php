@@ -19,9 +19,9 @@ class UtmStageResource extends JsonResource
             'id'         => $this->id,
             'sort'       => $this->sort,
             'name'       => $this->name,
-            'creator'    => UserResource::make($this->whenLoaded('createdBy')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'creator'    => UserResource::make($this->whenLoaded('createdBy')),
         ];
     }
 }

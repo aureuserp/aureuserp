@@ -21,10 +21,10 @@ class CountryResource extends JsonResource
             'phone_code'     => $this->phone_code,
             'state_required' => $this->state_required,
             'zip_required'   => $this->zip_required,
-            'currency'       => CurrencyResource::make($this->whenLoaded('currency')),
-            'states'         => StateResource::collection($this->whenLoaded('states')),
             'created_at'     => $this->created_at,
             'updated_at'     => $this->updated_at,
+            'currency'       => CurrencyResource::make($this->whenLoaded('currency')),
+            'states'         => StateResource::collection($this->whenLoaded('states')),
         ];
     }
 }
