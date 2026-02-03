@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\EloquentSortable\Sortable;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Blog\Database\Factories\TagFactory;
 use Webkul\Security\Models\User;
@@ -49,7 +50,7 @@ class Tag extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($tag) {
-            $tag->creator_id = filament()->auth()->id();
+            $tag->creator_id = Auth::id();
         });
     }
 

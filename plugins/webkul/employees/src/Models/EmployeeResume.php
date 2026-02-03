@@ -4,6 +4,7 @@ namespace Webkul\Employee\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Security\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeeResume extends Model
 {
@@ -41,7 +42,7 @@ class EmployeeResume extends Model
         parent::boot();
 
         static::creating(function ($employeeResume) {
-            $employeeResume->creator_id = filament()->auth()->id();
+            $employeeResume->creator_id = Auth::id();
         });
     }
 }

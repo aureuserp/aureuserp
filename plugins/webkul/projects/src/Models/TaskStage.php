@@ -12,6 +12,7 @@ use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Project\Database\Factories\TaskStageFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Illuminate\Support\Facades\Auth;
 
 class TaskStage extends Model implements Sortable
 {
@@ -85,7 +86,7 @@ class TaskStage extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($taskStage) {
-            $taskStage->creator_id = filament()->auth()->id();
+            $taskStage->creator_id = Auth::id();
         });
     }
 

@@ -4,6 +4,7 @@ namespace Webkul\Support\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
 
 class Currency extends Model
@@ -62,7 +63,7 @@ class Currency extends Model
             return 1;
         }
 
-        $company = $company ?? auth()->user()->defaultCompany ?? null;
+        $company = $company ?? Auth::user()->defaultCompany ?? null;
 
         $date = $date ?? now()->toDateString();
 

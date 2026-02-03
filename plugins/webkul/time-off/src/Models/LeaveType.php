@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\TimeOff\Enums\LeaveValidationType;
@@ -68,9 +69,9 @@ class LeaveType extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($leaveType) {
-            $leaveType->creator_id = filament()->auth()->id();
+            $leaveType->creator_id = Auth::id();
 
-            $leaveType->company_id = filament()->auth()->user()->default_company_id;
+            $leaveType->company_id = Auth::user()->default_company_id;
         });
     }
 }

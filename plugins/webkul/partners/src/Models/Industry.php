@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Webkul\Partner\Database\Factories\IndustryFactory;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 
 class Industry extends Model
@@ -54,7 +55,7 @@ class Industry extends Model
         parent::boot();
 
         static::creating(function ($industry) {
-            $industry->creator_id = filament()->auth()->id();
+            $industry->creator_id = Auth::id();
         });
     }
 

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Webkul\Employee\Database\Factories\CalendarFactory;
 use Webkul\Field\Traits\HasCustomFields;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
@@ -48,7 +49,7 @@ class Calendar extends Model
         parent::boot();
 
         static::creating(function ($calendar) {
-            $calendar->creator_id = filament()->auth()->id();
+            $calendar->creator_id = Auth::id();
         });
     }
 

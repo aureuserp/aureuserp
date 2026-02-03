@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use InvalidArgumentException;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Product\Database\Factories\CategoryFactory;
 use Webkul\Security\Models\User;
 
@@ -82,9 +83,9 @@ class Category extends Model
         parent::boot();
 
         static::creating(function ($category) {
-            $category->creator_id = filament()->auth()->id();
+            $category->creator_id = Auth::id();
 
-            $category->company_id = filament()->auth()->user()->default_company_id;
+            $category->company_id = Auth::user()->default_company_id;
 
             if (! static::validateNoRecursion($category)) {
                 throw new InvalidArgumentException('Circular reference detected in product category hierarchy');

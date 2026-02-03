@@ -138,9 +138,9 @@ class Candidate extends Model
         parent::boot();
 
         static::creating(function ($candidate) {
-            $candidate->creator_id ??= filament()->auth()->id();
+            $candidate->creator_id ??= Auth::id();
 
-            $candidate->company_id ??= filament()->auth()->user()->default_company_id;
+            $candidate->company_id ??= Auth::user()->default_company_id;
         });
 
         static::saved(function (self $candidate) {

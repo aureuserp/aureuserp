@@ -190,7 +190,7 @@ class Project extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($project) {
-            $project->creator_id = filament()->auth()->id();
+            $project->creator_id = Auth::id();
         });
     }
 

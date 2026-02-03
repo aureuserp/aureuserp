@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Employee\Models\EmployeeJobPosition;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 
 class Stage extends Model implements Sortable
@@ -55,7 +56,7 @@ class Stage extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($stage) {
-            $stage->creator_id ??= filament()->auth()->id();
+            $stage->creator_id ??= Auth::id();
         });
     }
 }

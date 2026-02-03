@@ -5,6 +5,7 @@ namespace Webkul\Employee\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Employee\Database\Factories\DepartureReasonFactory;
 use Webkul\Field\Traits\HasCustomFields;
@@ -43,7 +44,7 @@ class DepartureReason extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($calendar) {
-            $calendar->creator_id = filament()->auth()->id();
+            $calendar->creator_id = Auth::id();
 
             $calendar->reason_code = crc32($calendar->name) % 100000;
 

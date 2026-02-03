@@ -11,6 +11,7 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
@@ -170,7 +171,7 @@ class PaymentResource extends Resource
                                                     ->required()
                                                     ->searchable()
                                                     ->preload()
-                                                    ->default(fn () => filament()->auth()->user()->defaultCompany?->currency_id),
+                                                    ->default(fn () => Auth::user()->defaultCompany?->currency_id),
                                             ])
                                             ->columns(2),
 

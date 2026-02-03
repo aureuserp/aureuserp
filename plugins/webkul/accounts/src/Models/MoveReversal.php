@@ -5,6 +5,7 @@ namespace Webkul\Account\Models;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Illuminate\Support\Facades\Auth;
 
 class MoveReversal extends Model
 {
@@ -52,9 +53,9 @@ class MoveReversal extends Model
         parent::boot();
 
         static::creating(function ($moveReversal) {
-            $moveReversal->creator_id = filament()->auth()->id();
+            $moveReversal->creator_id = Auth::id();
 
-            $moveReversal->company_id = filament()->auth()->user()->default_company_id;
+            $moveReversal->company_id = Auth::user()->default_company_id;
         });
     }
 }

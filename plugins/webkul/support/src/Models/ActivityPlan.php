@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Webkul\Field\Traits\HasCustomFields;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 
 class ActivityPlan extends Model
@@ -53,9 +54,9 @@ class ActivityPlan extends Model
         parent::boot();
 
         static::creating(function ($activityPlan) {
-            $activityPlan->creator_id = filament()->auth()->id();
+            $activityPlan->creator_id = Auth::id();
 
-            $activityPlan->company_id ??= filament()->auth()->user()->default_company_id;
+            $activityPlan->company_id ??= Auth::user()->default_company_id;
         });
     }
 }

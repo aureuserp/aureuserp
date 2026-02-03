@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Webkul\Security\Models\User;
 use Webkul\Website\Database\Factories\PageFactory;
+use Illuminate\Support\Facades\Auth;
 
 class Page extends Model
 {
@@ -61,7 +62,7 @@ class Page extends Model
         parent::boot();
 
         static::creating(function ($page) {
-            $page->creator_id = filament()->auth()->id();
+            $page->creator_id = Auth::id();
         });
     }
 

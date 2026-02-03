@@ -5,6 +5,7 @@ namespace Webkul\Employee\Models;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeeResumeLineType extends Model implements Sortable
 {
@@ -33,7 +34,7 @@ class EmployeeResumeLineType extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($employeeResumeLineType) {
-            $employeeResumeLineType->creator_id = filament()->auth()->id();
+            $employeeResumeLineType->creator_id = Auth::id();
         });
     }
 }

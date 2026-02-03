@@ -4,6 +4,7 @@ namespace Webkul\TableViews\Filament\Components;
 
 use Closure;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class SavedView extends PresetView
 {
@@ -38,17 +39,17 @@ class SavedView extends PresetView
 
     public function isEditable(): bool
     {
-        return $this->getRecord()->user_id === filament()->auth()->id();
+        return $this->getRecord()->user_id === Auth::id();
     }
 
     public function isReplaceable(): bool
     {
-        return $this->getRecord()->user_id === filament()->auth()->id();
+        return $this->getRecord()->user_id === Auth::id();
     }
 
     public function isDeletable(): bool
     {
-        return $this->getRecord()->user_id === filament()->auth()->id();
+        return $this->getRecord()->user_id === Auth::id();
     }
 
     public function getVisibilityIcon(): string

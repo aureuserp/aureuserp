@@ -21,6 +21,7 @@ use Webkul\Payment\Models\PaymentTransaction;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
+use Illuminate\Support\Facades\Auth;
 
 class Payment extends Model
 {
@@ -275,7 +276,7 @@ class Payment extends Model
 
     public function computeCreatedBy()
     {
-        $this->created_by = filament()->auth()->id();
+        $this->created_by = Auth::id();
     }
 
     public function computePartnerType()

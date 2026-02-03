@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Security\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class RefuseReason extends Model implements Sortable
 {
@@ -30,7 +31,7 @@ class RefuseReason extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($refuseReason) {
-            $refuseReason->creator_id ??= filament()->auth()->id();
+            $refuseReason->creator_id ??= Auth::id();
         });
     }
 }

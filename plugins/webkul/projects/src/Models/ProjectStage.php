@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Project\Database\Factories\ProjectStageFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -73,7 +74,7 @@ class ProjectStage extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($projectStage) {
-            $projectStage->creator_id = filament()->auth()->id();
+            $projectStage->creator_id = Auth::id();
         });
     }
 

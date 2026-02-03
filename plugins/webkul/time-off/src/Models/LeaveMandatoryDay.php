@@ -5,6 +5,7 @@ namespace Webkul\TimeOff\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Security\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Support\Models\Company;
 
 class LeaveMandatoryDay extends Model
@@ -42,9 +43,9 @@ class LeaveMandatoryDay extends Model
         parent::boot();
 
         static::creating(function ($leaveMandatoryDay) {
-            $leaveMandatoryDay->creator_id = filament()->auth()->id();
+            $leaveMandatoryDay->creator_id = Auth::id();
 
-            $leaveMandatoryDay->company_id = filament()->auth()->user()->default_company_id;
+            $leaveMandatoryDay->company_id = Auth::user()->default_company_id;
         });
     }
 }

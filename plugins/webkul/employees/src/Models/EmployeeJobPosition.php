@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Employee\Database\Factories\EmployeeJobPositionFactory;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -79,7 +80,7 @@ class EmployeeJobPosition extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($employeeJobPosition) {
-            $employeeJobPosition->creator_id = filament()->auth()->id();
+            $employeeJobPosition->creator_id = Auth::id();
         });
     }
 

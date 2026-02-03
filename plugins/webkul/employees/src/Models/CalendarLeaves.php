@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Illuminate\Support\Facades\Auth;
 
 class CalendarLeaves extends Model
 {
@@ -43,9 +44,9 @@ class CalendarLeaves extends Model
         parent::boot();
 
         static::creating(function ($calendarLeave) {
-            $calendarLeave->creator_id = filament()->auth()->id();
+            $calendarLeave->creator_id = Auth::id();
 
-            $calendarLeave->company_id ??= filament()->auth()->user()->default_company_id;
+            $calendarLeave->company_id ??= Auth::user()->default_company_id;
         });
     }
 }

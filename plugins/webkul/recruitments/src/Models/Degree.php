@@ -3,6 +3,7 @@
 namespace Webkul\Recruitment\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Security\Models\User;
@@ -30,7 +31,7 @@ class Degree extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($degree) {
-            $degree->creator_id ??= filament()->auth()->id();
+            $degree->creator_id ??= Auth::id();
         });
     }
 }

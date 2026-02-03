@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Webkul\Employee\Database\Factories\SkillTypeFactory;
 use Webkul\Field\Traits\HasCustomFields;
@@ -48,7 +49,7 @@ class SkillType extends Model
         parent::boot();
 
         static::creating(function ($skillType) {
-            $skillType->creator_id = filament()->auth()->id();
+            $skillType->creator_id = Auth::id();
         });
     }
 

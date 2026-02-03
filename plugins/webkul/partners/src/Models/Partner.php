@@ -7,6 +7,7 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -169,7 +170,7 @@ class Partner extends Authenticatable implements FilamentUser
         parent::boot();
 
         static::creating(function ($partner) {
-            $partner->creator_id = filament()->auth()->id();
+            $partner->creator_id = Auth::id();
         });
     }
 

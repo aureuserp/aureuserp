@@ -5,6 +5,7 @@ namespace Webkul\Employee\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Employee\Database\Factories\CalendarAttendanceFactory;
 use Webkul\Security\Models\User;
@@ -51,7 +52,7 @@ class CalendarAttendance extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($calendarAttendance) {
-            $calendarAttendance->creator_id = filament()->auth()->id();
+            $calendarAttendance->creator_id = Auth::id();
         });
     }
 

@@ -11,6 +11,7 @@ use Webkul\Employee\Models\Employee;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\TimeOff\Enums\AllocationType;
+use Illuminate\Support\Facades\Auth;
 
 class LeaveAllocation extends Model
 {
@@ -143,9 +144,9 @@ class LeaveAllocation extends Model
         parent::boot();
 
         static::creating(function ($leaveAllocation) {
-            $leaveAllocation->creator_id = filament()->auth()->id();
+            $leaveAllocation->creator_id = Auth::id();
 
-            $leaveAllocation->employee_company_id ??= filament()->auth()->user()->default_company_id;
+            $leaveAllocation->employee_company_id ??= Auth::user()->default_company_id;
         });
     }
 }
