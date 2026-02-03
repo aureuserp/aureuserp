@@ -121,12 +121,9 @@ class ProductAttributeController extends Controller
 
         $productAttribute->update($data);
 
-        // Update options if provided
         if ($options !== null) {
-            // Delete existing values
             ProductAttributeValue::where('product_attribute_id', $productAttribute->id)->delete();
 
-            // Create new values
             foreach ($options as $optionId) {
                 ProductAttributeValue::create([
                     'product_id'             => $product,

@@ -67,9 +67,11 @@ class ProductVariantController extends Controller
     {
         $product = Product::findOrFail($product);
 
-        $variants = $product->generateVariants();
+        $product->generateVariants();
 
-        return ProductResource::collection($variants)->additional(['message' => 'Product variants synced successfully.']);
+        $product->fresh();
+
+        return ProductResource::collection($product->variants)->additional(['message' => 'Product variants synced successfully.']);
     }
 
     #[Endpoint('Show product variant', 'Retrieve a specific product variant by its ID')]

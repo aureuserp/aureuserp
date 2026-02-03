@@ -191,6 +191,110 @@ class Product extends Model implements Sortable
         }
     }
 
+    /**
+     * Generate or sync variants based on product attributes
+     */
+    public function generateVariants(): void
+    {
+        $attributes = $this->attributes()->with(['values', 'attribute', 'options'])->get();
+
+        if ($attributes->isEmpty()) {
+            return;
+        }
+
+        $existingVariants = $this->variants()->get();
+        
+        $generateCombinations = function ($attrs, $current = [], $index = 0) use (&$generateCombinations) {
+            if ($index >= $attrs->count()) {
+                return [$current];
+            }
+
+            return collect($attrs[$index]->values)
+                ->flatMap(fn($value) => $generateCombinations($attrs, array_merge($current, [$value]), $index + 1))
+                ->all();
+        };
+
+        $getVariantDetails = function ($combination) {
+            $name = $this->name . ' - ' . collect($combination)
+                ->map(fn($value) => $value->attributeOption->name)
+                ->implode(' / ');
+
+            $price = $this->price + collect($combination)->sum('extra_price');
+
+            return compact('name', 'price');
+        };
+
+        $findVariant = function ($combination) use ($existingVariants) {
+            $combinationIds = collect($combination)->pluck('id')->sort()->values()->toArray();
+
+            return $existingVariants->first(function ($variant) use ($combinationIds) {
+                $variantIds = ProductCombination::where('product_id', $variant->id)
+                    ->pluck('product_attribute_value_id')
+                    ->sort()
+                    ->values()
+                    ->toArray();
+
+                return $combinationIds === $variantIds;
+            });
+        };
+
+        $syncCombinations = function ($variant, $combination) {
+            ProductCombination::where('product_id', $variant->id)->delete();
+
+            collect($combination)->each(fn($value) => ProductCombination::create([
+                'product_id'                 => $variant->id,
+                'product_attribute_value_id' => $value->id,
+            ]));
+        };
+
+        $processedVariantIds = collect($generateCombinations($attributes))
+            ->map(function ($combination) use ($findVariant, $getVariantDetails, $syncCombinations) {
+                $variant = $findVariant($combination);
+                $details = $getVariantDetails($combination);
+
+                if ($variant) {
+                    $variant->update($details);
+                } else {
+                    $variant = self::create([
+                        'type'                 => $this->type,
+                        'name'                 => $details['name'],
+                        'price'                => $details['price'],
+                        'cost'                 => $this->cost,
+                        'enable_sales'         => $this->enable_sales,
+                        'enable_purchase'      => $this->enable_purchase,
+                        'parent_id'            => $this->id,
+                        'company_id'           => $this->company_id,
+                        'creator_id'           => Auth::id(),
+                        'uom_id'               => $this->uom_id,
+                        'uom_po_id'            => $this->uom_po_id,
+                        'category_id'          => $this->category_id,
+                        'volume'               => $this->volume,
+                        'weight'               => $this->weight,
+                        'description'          => $this->description,
+                        'description_purchase' => $this->description_purchase,
+                        'description_sale'     => $this->description_sale,
+                        'barcode'              => null,
+                        'reference'            => $this->reference . '-' . strtolower(str_replace(' ', '-', $details['name'])),
+                        'images'               => $this->images,
+                    ]);
+                }
+
+                $syncCombinations($variant, $combination);
+
+                return $variant->id;
+            })
+            ->all();
+
+        $existingVariants
+            ->whereNotIn('id', $processedVariantIds)
+            ->each(function ($variant) {
+                ProductCombination::where('product_id', $variant->id)->delete();
+                $variant->forceDelete();
+            });
+
+        $this->update(['is_configurable' => true]);
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -200,7 +304,7 @@ class Product extends Model implements Sortable
         });
 
         static::saved(function ($product) {
-            $product->variants->each(fn($variant) => $variant->update(['is_storable' => $product->is_storable]));
+            $product->variants->each(fn ($variant) => $variant->update(['is_storable' => $product->is_storable]));
         });
     }
 
