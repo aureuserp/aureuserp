@@ -22,11 +22,11 @@ class PriceListResource extends JsonResource
             'name'       => $this->name,
             'sort'       => $this->sort,
             'is_active'  => $this->is_active,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
             'currency'   => CurrencyResource::make($this->whenLoaded('currency')),
             'company'    => CompanyResource::make($this->whenLoaded('company')),
             'creator'    => UserResource::make($this->whenLoaded('creator')),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
         ];
     }
 }

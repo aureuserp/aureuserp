@@ -120,9 +120,6 @@ class ManageAttributes extends ManageRelatedRecords
                             ->body(__('products::filament/resources/product/pages/manage-attributes.table.actions.edit.notification.body')),
                     ),
                 DeleteAction::make()
-                    ->after(function (ProductAttribute $record) {
-                        $this->updateOrCreateVariants($record);
-                    })
                     ->successNotification(
                         Notification::make()
                             ->success()

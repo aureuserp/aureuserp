@@ -117,7 +117,7 @@ endpoints:
     auth:
       - headers
       - Authorization
-      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
     controller: null
     method: null
     route: null
@@ -206,7 +206,7 @@ endpoints:
     auth:
       - headers
       - Authorization
-      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
     controller: null
     method: null
     route: null
@@ -277,7 +277,7 @@ endpoints:
     auth:
       - headers
       - Authorization
-      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
     controller: null
     method: null
     route: null
@@ -397,7 +397,7 @@ endpoints:
     auth:
       - headers
       - Authorization
-      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
     controller: null
     method: null
     route: null
@@ -462,7 +462,7 @@ endpoints:
     auth:
       - headers
       - Authorization
-      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
     controller: null
     method: null
     route: null
@@ -568,7 +568,7 @@ endpoints:
     auth:
       - headers
       - Authorization
-      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
     controller: null
     method: null
     route: null
@@ -657,7 +657,7 @@ endpoints:
     auth:
       - headers
       - Authorization
-      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
     controller: null
     method: null
     route: null
@@ -813,7 +813,7 @@ endpoints:
     auth:
       - headers
       - Authorization
-      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
     controller: null
     method: null
     route: null
@@ -870,7 +870,7 @@ endpoints:
         name: service_tracking
         description: 'Must not be greater than 255 characters.'
         required: false
-        example: vmqeopfuudtdsufvyvddq
+        example: b
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1014,7 +1014,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - consequatur
+          - architecto
         type: 'string[]'
         enumValues: []
         exampleWasSpecified: false
@@ -1070,7 +1070,7 @@ endpoints:
         description: 'The <code>id</code> of an existing record in the products_tags table.'
         required: false
         example:
-          - 17
+          - 16
         type: 'integer[]'
         enumValues: []
         exampleWasSpecified: false
@@ -1103,7 +1103,7 @@ endpoints:
         name: image
         description: ''
         required: false
-        example: consequatur
+        example: architecto
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1114,7 +1114,7 @@ endpoints:
         name: service_type
         description: ''
         required: false
-        example: consequatur
+        example: architecto
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1125,7 +1125,7 @@ endpoints:
         name: sale_line_warn
         description: ''
         required: false
-        example: consequatur
+        example: architecto
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1136,7 +1136,7 @@ endpoints:
         name: expense_policy
         description: ''
         required: false
-        example: consequatur
+        example: architecto
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1160,7 +1160,7 @@ endpoints:
         name: sale_line_warn_msg
         description: ''
         required: false
-        example: consequatur
+        example: architecto
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1191,7 +1191,7 @@ endpoints:
     cleanBodyParameters:
       type: goods
       name: 'Laptop Computer'
-      service_tracking: vmqeopfuudtdsufvyvddq
+      service_tracking: b
       reference: PROD-001
       barcode: '1234567890'
       price: 999.99
@@ -1205,21 +1205,21 @@ endpoints:
       enable_purchase: false
       is_favorite: false
       images:
-        - consequatur
+        - architecto
       uom_id: 1
       uom_po_id: 1
       category_id: 1
       company_id: 1
       tags:
-        - 17
+        - 16
       property_account_income_id: 1
       property_account_expense_id: 2
-      image: consequatur
-      service_type: consequatur
-      sale_line_warn: consequatur
-      expense_policy: consequatur
+      image: architecto
+      service_type: architecto
+      sale_line_warn: architecto
+      expense_policy: architecto
       invoice_policy: order
-      sale_line_warn_msg: consequatur
+      sale_line_warn_msg: architecto
       sales_ok: false
       purchase_ok: false
     fileParameters: []
@@ -1246,7 +1246,7 @@ endpoints:
     auth:
       - headers
       - Authorization
-      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
     controller: null
     method: null
     route: null
@@ -1323,7 +1323,7 @@ endpoints:
     auth:
       - headers
       - Authorization
-      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
     controller: null
     method: null
     route: null
@@ -1393,7 +1393,7 @@ endpoints:
         name: service_tracking
         description: 'Must not be greater than 255 characters.'
         required: false
-        example: vmqeopfuudtdsufvyvddq
+        example: b
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1537,7 +1537,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - consequatur
+          - architecto
         type: 'string[]'
         enumValues: []
         exampleWasSpecified: false
@@ -1593,7 +1593,7 @@ endpoints:
         description: 'The <code>id</code> of an existing record in the products_tags table.'
         required: false
         example:
-          - 17
+          - 16
         type: 'integer[]'
         enumValues: []
         exampleWasSpecified: false
@@ -1626,7 +1626,7 @@ endpoints:
         name: image
         description: ''
         required: false
-        example: consequatur
+        example: architecto
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1637,7 +1637,7 @@ endpoints:
         name: service_type
         description: ''
         required: false
-        example: consequatur
+        example: architecto
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1648,7 +1648,7 @@ endpoints:
         name: sale_line_warn
         description: ''
         required: false
-        example: consequatur
+        example: architecto
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1659,7 +1659,7 @@ endpoints:
         name: expense_policy
         description: ''
         required: false
-        example: consequatur
+        example: architecto
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1683,7 +1683,7 @@ endpoints:
         name: sale_line_warn_msg
         description: ''
         required: false
-        example: consequatur
+        example: architecto
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1714,7 +1714,7 @@ endpoints:
     cleanBodyParameters:
       type: goods
       name: 'Laptop Computer'
-      service_tracking: vmqeopfuudtdsufvyvddq
+      service_tracking: b
       reference: PROD-001
       barcode: '1234567890'
       price: 999.99
@@ -1728,21 +1728,21 @@ endpoints:
       enable_purchase: false
       is_favorite: false
       images:
-        - consequatur
+        - architecto
       uom_id: 1
       uom_po_id: 1
       category_id: 1
       company_id: 1
       tags:
-        - 17
+        - 16
       property_account_income_id: 1
       property_account_expense_id: 2
-      image: consequatur
-      service_type: consequatur
-      sale_line_warn: consequatur
-      expense_policy: consequatur
+      image: architecto
+      service_type: architecto
+      sale_line_warn: architecto
+      expense_policy: architecto
       invoice_policy: order
-      sale_line_warn_msg: consequatur
+      sale_line_warn_msg: architecto
       sales_ok: false
       purchase_ok: false
     fileParameters: []
@@ -1775,7 +1775,7 @@ endpoints:
     auth:
       - headers
       - Authorization
-      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
     controller: null
     method: null
     route: null
@@ -1840,7 +1840,7 @@ endpoints:
     auth:
       - headers
       - Authorization
-      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
     controller: null
     method: null
     route: null
@@ -1905,7 +1905,7 @@ endpoints:
     auth:
       - headers
       - Authorization
-      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
     controller: null
     method: null
     route: null

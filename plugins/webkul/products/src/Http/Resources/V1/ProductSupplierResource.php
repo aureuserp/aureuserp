@@ -29,13 +29,13 @@ class ProductSupplierResource extends JsonResource
             'min_qty'      => $this->min_qty,
             'price'        => $this->price,
             'discount'     => $this->discount,
+            'created_at'   => $this->created_at,
+            'updated_at'   => $this->updated_at,
             'product'      => ProductResource::make($this->whenLoaded('product')),
             'partner'      => PartnerResource::make($this->whenLoaded('partner')),
             'currency'     => CurrencyResource::make($this->whenLoaded('currency')),
             'company'      => CompanyResource::make($this->whenLoaded('company')),
             'creator'      => UserResource::make($this->whenLoaded('creator')),
-            'created_at'   => $this->created_at,
-            'updated_at'   => $this->updated_at,
         ];
     }
 }

@@ -12,6 +12,7 @@ use Knuckles\Scribe\Attributes\Group;
 use Knuckles\Scribe\Attributes\Subgroup;
 use Knuckles\Scribe\Attributes\Response;
 use Knuckles\Scribe\Attributes\Unauthenticated;
+use Webkul\Security\Models\User;
 
 #[Group('Security API Management')]
 #[Subgroup('Authentication', 'Handle user authentication')]
@@ -31,7 +32,7 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = \App\Models\User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([

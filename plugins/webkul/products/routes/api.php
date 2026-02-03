@@ -4,7 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Webkul\Product\Http\Controllers\API\V1\AttributeController;
 use Webkul\Product\Http\Controllers\API\V1\AttributeOptionController;
 use Webkul\Product\Http\Controllers\API\V1\CategoryController;
+use Webkul\Product\Http\Controllers\API\V1\ProductAttributeController;
 use Webkul\Product\Http\Controllers\API\V1\ProductController;
+use Webkul\Product\Http\Controllers\API\V1\ProductVariantController;
 use Webkul\Product\Http\Controllers\API\V1\TagController;
 
 // Protected routes (require authentication)
@@ -24,4 +26,11 @@ Route::name('admin.api.v1.products.')->prefix('admin/api/v1/products')->middlewa
     Route::apiResource('products', ProductController::class);
     Route::post('products/{id}/restore', [ProductController::class, 'restore'])->name('products.restore');
     Route::delete('products/{id}/force', [ProductController::class, 'forceDelete'])->name('products.force-delete');
+
+    // Nested product routes
+    Route::apiResource('products.attributes', ProductAttributeController::class);
+
+    Route::apiResource('products.variants', ProductVariantController::class);
+    Route::post('products/{product_id}/variants/{id}/restore', [ProductVariantController::class, 'restore'])->name('products.variants.restore');
+    Route::delete('products/{product_id}/variants/{id}/force', [ProductVariantController::class, 'forceDelete'])->name('products.variants.force-delete');
 });

@@ -198,6 +198,10 @@ class Product extends Model implements Sortable
         static::creating(function ($product) {
             $product->creator_id = Auth::id();
         });
+
+        static::saved(function ($product) {
+            $product->variants->each(fn($variant) => $variant->update(['is_storable' => $product->is_storable]));
+        });
     }
 
     protected static function newFactory(): ProductFactory

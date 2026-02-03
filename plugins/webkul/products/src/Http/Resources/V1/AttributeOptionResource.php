@@ -21,10 +21,10 @@ class AttributeOptionResource extends JsonResource
             'color'       => $this->color,
             'extra_price' => $this->extra_price,
             'sort'        => $this->sort,
-            'attribute'   => AttributeResource::make($this->whenLoaded('attribute')),
-            'creator'     => UserResource::make($this->whenLoaded('creator')),
             'created_at'  => $this->created_at,
             'updated_at'  => $this->updated_at,
+            'attribute'   => AttributeResource::make($this->whenLoaded('attribute')),
+            'creator'     => UserResource::make($this->whenLoaded('creator')),
         ];
     }
 }

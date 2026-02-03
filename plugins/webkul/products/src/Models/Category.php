@@ -85,8 +85,6 @@ class Category extends Model
         static::creating(function ($category) {
             $category->creator_id = Auth::id();
 
-            $category->company_id = Auth::user()->default_company_id;
-
             if (! static::validateNoRecursion($category)) {
                 throw new InvalidArgumentException('Circular reference detected in product category hierarchy');
             }

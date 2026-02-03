@@ -23,7 +23,7 @@ use Webkul\Product\Models\Product;
 class ProductController extends Controller
 {
     #[Endpoint('List products', 'Retrieve a paginated list of products with filtering and sorting')]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, uom, uomPO, category, tags, company, creator', required: false, example: 'category,tags')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, variants, uom, uomPO, category, tags, attributes, attribute_values, company, creator', required: false, example: 'category,tags')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[type]', 'string', 'Filter by product type', enum: ProductType::class, required: false, example: 'No-example')]
     #[QueryParam('filter[enable_sales]', 'boolean', 'Filter by sales enabled', required: false, example: 'true')]
@@ -48,9 +48,12 @@ class ProductController extends Controller
             ->allowedSorts(['id', 'name', 'price', 'cost', 'created_at', 'sort'])
             ->allowedIncludes([
                 'parent',
+                'variants',
                 'uom',
                 'uomPO',
                 'category',
+                'attributes',
+                'attribute_values',
                 'tags',
                 'company',
                 'creator',
@@ -85,7 +88,7 @@ class ProductController extends Controller
 
     #[Endpoint('Show product', 'Retrieve a specific product by its ID')]
     #[UrlParam('id', 'integer', 'The product ID', required: true, example: 1)]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, uom, uomPO, category, tags, company, creator', required: false, example: 'category,tags')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, variants, uom, uomPO, category, attributes, attribute_values, tags, company, creator', required: false, example: 'category,tags')]
     #[ResponseFromApiResource(ProductResource::class, Product::class, with: ['category', 'tags'])]
     #[Response(status: 404, description: 'Product not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
@@ -94,9 +97,12 @@ class ProductController extends Controller
         $product = QueryBuilder::for(Product::where('id', $id))
             ->allowedIncludes([
                 'parent',
+                'variants',
                 'uom',
                 'uomPO',
                 'category',
+                'attributes',
+                'attribute_values',
                 'tags',
                 'company',
                 'creator',
