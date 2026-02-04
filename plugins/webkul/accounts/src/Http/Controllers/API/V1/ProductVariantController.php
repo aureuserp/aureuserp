@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\Product\Http\Controllers\API\V1;
+namespace Webkul\Account\Http\Controllers\API\V1;
 
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -12,18 +12,19 @@ use Knuckles\Scribe\Attributes\Subgroup;
 use Knuckles\Scribe\Attributes\UrlParam;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
-use Webkul\Product\Http\Requests\ProductRequest;
-use Webkul\Product\Http\Resources\V1\ProductResource;
-use Webkul\Product\Models\Product;
+use Webkul\Account\Http\Requests\ProductRequest;
+use Webkul\Account\Http\Resources\V1\ProductResource;
+use Webkul\Account\Models\Product;
+use Webkul\Product\Enums\ProductType;
 
-#[Group('Product API Management')]
+#[Group('Account API Management')]
 #[Subgroup('Product Variants', 'Manage product variants')]
 #[Authenticated]
 class ProductVariantController extends Controller
 {
     #[Endpoint('List product variants', 'Retrieve a paginated list of variants for a specific product')]
     #[UrlParam('product_id', 'integer', 'The product ID', required: true, example: 1)]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, uom, uomPO, category, tags, attributes, attribute_values, combinations, company, creator', required: false, example: 'combinations')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, uom, uomPO, category, tags, attributes, attribute_values, combinations, company, creator, propertyAccountIncome, propertyAccountExpense', required: false, example: 'combinations')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[type]', 'string', 'Filter by product type', enum: ProductType::class, required: false, example: 'No-example')]
     #[QueryParam('filter[enable_sales]', 'boolean', 'Filter by sales enabled', required: false, example: 'true')]
@@ -57,6 +58,8 @@ class ProductVariantController extends Controller
                 'combinations',
                 'company',
                 'creator',
+                'propertyAccountIncome',
+                'propertyAccountExpense',
             ])
             ->paginate();
 
@@ -81,7 +84,7 @@ class ProductVariantController extends Controller
     #[Endpoint('Show product variant', 'Retrieve a specific product variant by its ID')]
     #[UrlParam('product_id', 'integer', 'The product ID', required: true, example: 1)]
     #[UrlParam('id', 'integer', 'The variant ID', required: true, example: 1)]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, uom, uomPO, category, tags, attributes, attribute_values, combinations, company, creator', required: false, example: 'combinations')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, uom, uomPO, category, tags, attributes, attribute_values, combinations, company, creator, propertyAccountIncome, propertyAccountExpense', required: false, example: 'combinations')]
     #[ResponseFromApiResource(ProductResource::class, Product::class, with: ['combinations'])]
     #[Response(status: 404, description: 'Product variant not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
@@ -99,6 +102,8 @@ class ProductVariantController extends Controller
                 'combinations',
                 'company',
                 'creator',
+                'propertyAccountIncome',
+                'propertyAccountExpense',
             ])
             ->firstOrFail();
 

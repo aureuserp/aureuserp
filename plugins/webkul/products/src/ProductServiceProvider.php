@@ -19,7 +19,6 @@ class ProductServiceProvider extends PackageServiceProvider
         $package->name(static::$name)
             ->hasViews()
             ->hasTranslations()
-            ->hasRoutes(['api'])
             ->hasMigrations([
                 '2025_01_05_063925_create_products_categories_table',
                 '2025_01_05_100751_create_products_products_table',
