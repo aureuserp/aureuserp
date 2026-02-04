@@ -27,6 +27,7 @@ class PackagingRequest extends FormRequest
             'qty'        => 'required|numeric|min:0',
             'sort'       => 'nullable|integer',
             'product_id' => 'required|integer|exists:products_products,id',
+            'company_id' => 'nullable|integer|exists:companies,id',
         ];
 
         // On update, make all fields optional
@@ -69,6 +70,10 @@ class PackagingRequest extends FormRequest
             ],
             'product_id' => [
                 'description' => 'Product ID that this packaging belongs to.',
+                'example'     => 1,
+            ],
+            'company_id' => [
+                'description' => 'Company ID associated with this packaging.',
                 'example'     => 1,
             ],
         ];
