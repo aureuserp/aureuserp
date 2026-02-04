@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Webkul\Sale\Http\Controllers\API\V1\AttributeController;
 use Webkul\Sale\Http\Controllers\API\V1\AttributeOptionController;
+use Webkul\Sale\Http\Controllers\API\V1\CurrencyController;
+use Webkul\Sale\Http\Controllers\API\V1\CurrencyRateController;
 use Webkul\Sale\Http\Controllers\API\V1\OrderController;
 use Webkul\Sale\Http\Controllers\API\V1\OrderLineController;
 use Webkul\Sale\Http\Controllers\API\V1\PackagingController;
@@ -22,6 +24,10 @@ Route::name('admin.api.v1.sales.')->prefix('admin/api/v1/sales')->middleware(['a
     Route::softDeletableApiResource('products.variants', ProductVariantController::class);
 
     Route::softDeletableApiResource('packagings', PackagingController::class);
+
+    Route::apiResource('currency', CurrencyController::class);
+
+    Route::apiResource('currency.rates', CurrencyRateController::class);
 
     Route::apiResource('orders', OrderController::class);
 
