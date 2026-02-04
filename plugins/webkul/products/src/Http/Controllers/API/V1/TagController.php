@@ -127,7 +127,7 @@ class TagController extends Controller
     #[Response(status: 200, description: 'Tag permanently deleted', content: '{"message": "Tag permanently deleted."}')]
     #[Response(status: 404, description: 'Tag not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
-    public function forceDelete(string $id)
+    public function forceDestroy(string $id)
     {
         $tag = Tag::withTrashed()->findOrFail($id);
         $tag->forceDelete();

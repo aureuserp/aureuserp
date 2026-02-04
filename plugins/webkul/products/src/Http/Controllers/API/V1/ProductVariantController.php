@@ -168,7 +168,7 @@ class ProductVariantController extends Controller
     #[Response(status: 200, description: 'Product variant permanently deleted', content: '{"message": "Product variant permanently deleted."}')]
     #[Response(status: 404, description: 'Product variant not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
-    public function forceDelete(string $product, string $variant)
+    public function forceDestroy(string $product, string $variant)
     {
         $variantModel = Product::withTrashed()->where('id', $variant)->where('parent_id', $product)->firstOrFail();
         $variantModel->forceDelete();

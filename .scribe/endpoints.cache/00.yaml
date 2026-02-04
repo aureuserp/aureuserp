@@ -165,9 +165,45 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
+      property_account_income_id:
+        custom: []
+        name: property_account_income_id
+        description: 'Income account ID for this category. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      property_account_expense_id:
+        custom: []
+        name: property_account_expense_id
+        description: 'Expense account ID for this category. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      property_account_down_payment_id:
+        custom: []
+        name: property_account_down_payment_id
+        description: 'Down payment account ID for this category. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 3
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
     cleanBodyParameters:
       name: Electronics
       parent_id: 1
+      property_account_income_id: 1
+      property_account_expense_id: 2
+      property_account_down_payment_id: 3
     fileParameters: []
     responses:
       -
@@ -332,9 +368,45 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
+      property_account_income_id:
+        custom: []
+        name: property_account_income_id
+        description: 'Income account ID for this category. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      property_account_expense_id:
+        custom: []
+        name: property_account_expense_id
+        description: 'Expense account ID for this category. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      property_account_down_payment_id:
+        custom: []
+        name: property_account_down_payment_id
+        description: 'Down payment account ID for this category. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 3
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
     cleanBodyParameters:
       name: Electronics
       parent_id: 1
+      property_account_income_id: 1
+      property_account_expense_id: 2
+      property_account_down_payment_id: 3
     fileParameters: []
     responses:
       -
@@ -4814,7 +4886,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: 'admin/api/v1/accounts/products/{product_id}/variants/{id}/restore'
+    uri: 'admin/api/v1/accounts/products/{{product}}/variants/{id}/restore'
     metadata:
       custom: []
       groupName: 'Account API Management'
@@ -4830,13 +4902,13 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      product_id:
+      '{product':
         custom: []
-        name: product_id
-        description: 'The product ID'
+        name: '{product'
+        description: ''
         required: true
-        example: 1
-        type: integer
+        example: architecto
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -4852,9 +4924,21 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
     cleanUrlParameters:
-      product_id: 1
+      '{product': architecto
       id: 1
+      product_id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -4891,7 +4975,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'admin/api/v1/accounts/products/{product_id}/variants/{id}/force'
+    uri: 'admin/api/v1/accounts/products/{{product}}/variants/{id}/force'
     metadata:
       custom: []
       groupName: 'Account API Management'
@@ -4907,13 +4991,13 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      product_id:
+      '{product':
         custom: []
-        name: product_id
-        description: 'The product ID'
+        name: '{product'
+        description: ''
         required: true
-        example: 1
-        type: integer
+        example: architecto
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -4929,9 +5013,21 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
     cleanUrlParameters:
-      product_id: 1
+      '{product': architecto
       id: 1
+      product_id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []

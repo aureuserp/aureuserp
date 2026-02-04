@@ -13,23 +13,15 @@ use Webkul\Account\Http\Controllers\API\V1\TagController;
 Route::name('admin.api.v1.accounts.')->prefix('admin/api/v1/accounts')->middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('categories', CategoryController::class);
 
-    Route::apiResource('tags', TagController::class);
-    Route::post('tags/{id}/restore', [TagController::class, 'restore'])->name('tags.restore');
-    Route::delete('tags/{id}/force', [TagController::class, 'forceDelete'])->name('tags.force-delete');
+    Route::softDeletableApiResource('tags', TagController::class);
 
-    Route::apiResource('attributes', AttributeController::class);
-    Route::post('attributes/{id}/restore', [AttributeController::class, 'restore'])->name('attributes.restore');
-    Route::delete('attributes/{id}/force', [AttributeController::class, 'forceDelete'])->name('attributes.force-delete');
+    Route::softDeletableApiResource('attributes', AttributeController::class);
 
     Route::apiResource('attributes.options', AttributeOptionController::class);
 
-    Route::apiResource('products', ProductController::class);
-    Route::post('products/{id}/restore', [ProductController::class, 'restore'])->name('products.restore');
-    Route::delete('products/{id}/force', [ProductController::class, 'forceDelete'])->name('products.force-delete');
+    Route::softDeletableApiResource('products', ProductController::class);
 
     Route::apiResource('products.attributes', ProductAttributeController::class);
 
-    Route::apiResource('products.variants', ProductVariantController::class);
-    Route::post('products/{product_id}/variants/{id}/restore', [ProductVariantController::class, 'restore'])->name('products.variants.restore');
-    Route::delete('products/{product_id}/variants/{id}/force', [ProductVariantController::class, 'forceDelete'])->name('products.variants.force-delete');
+    Route::softDeletableApiResource('products.variants', ProductVariantController::class);
 });

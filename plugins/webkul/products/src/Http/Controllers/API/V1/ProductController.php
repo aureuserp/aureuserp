@@ -171,7 +171,7 @@ class ProductController extends Controller
     #[Response(status: 200, description: 'Product permanently deleted', content: '{"message": "Product permanently deleted."}')]
     #[Response(status: 404, description: 'Product not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
-    public function forceDelete(string $id)
+    public function forceDestroy(string $id)
     {
         $product = Product::withTrashed()->findOrFail($id);
         $product->forceDelete();

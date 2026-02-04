@@ -132,7 +132,7 @@ class AttributeController extends Controller
     #[Response(status: 200, description: 'Attribute permanently deleted', content: '{"message": "Attribute permanently deleted."}')]
     #[Response(status: 404, description: 'Attribute not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
-    public function forceDelete(string $id)
+    public function forceDestroy(string $id)
     {
         $attribute = Attribute::withTrashed()->findOrFail($id);
         $attribute->forceDelete();
