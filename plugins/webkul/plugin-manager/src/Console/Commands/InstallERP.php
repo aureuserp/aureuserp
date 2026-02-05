@@ -137,7 +137,7 @@ class InstallERP extends Command
             Artisan::call('migrate:fresh', [], $this->getOutput());
             $this->info('✅ Database wiped successfully.');
         } catch (Exception $e) {
-            $this->error('❌ Failed to wipe database: '.$e->getMessage());
+            $this->error('❌ Failed to wipe database: ' . $e->getMessage());
 
             $this->error('Please manually drop your database and create a new one before proceeding.');
 
@@ -278,7 +278,7 @@ class InstallERP extends Command
                 'Email address',
                 default: 'admin@example.com',
                 required: true,
-                validate: fn ($email) => $this->validateAdminEmail($email, $userModel)
+                validate: fn($email) => $this->validateAdminEmail($email, $userModel)
             );
         } else {
             $emailValidation = $this->validateAdminEmail($email, $userModel);
@@ -296,7 +296,7 @@ class InstallERP extends Command
             $passwordInput = password(
                 'Password',
                 required: true,
-                validate: fn ($value) => $this->validateAdminPassword($value)
+                validate: fn($value) => $this->validateAdminPassword($value)
             );
         } else {
             $passwordValidation = $this->validateAdminPassword($passwordInput);
@@ -394,14 +394,14 @@ class InstallERP extends Command
             'partners_partners'           => 'creator_id',
             'unit_of_measure_categories'  => 'creator_id',
             'unit_of_measures'            => 'creator_id',
-            'utm_campaigns'               => 'created_by',
+            'utm_campaigns'               => 'creator_id',
             'utm_mediums'                 => 'creator_id',
-            'utm_stages'                  => 'created_by',
+            'utm_stages'                  => 'creator_id',
         ];
 
         collect($mappings)
-            ->filter(fn ($column) => ! is_null($column))
-            ->each(fn ($column, $table) => DB::table($table)->whereNull($column)->update([$column => $user->id]));
+            ->filter(fn($column) => ! is_null($column))
+            ->each(fn($column, $table) => DB::table($table)->whereNull($column)->update([$column => $user->id]));
     }
 
     /**
