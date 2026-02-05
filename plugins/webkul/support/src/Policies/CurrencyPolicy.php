@@ -4,9 +4,9 @@ namespace Webkul\Support\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
+use Webkul\Support\Models\Currency;
 
-class CompanyPolicy
+class CurrencyPolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class CompanyPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_support_company');
+        return $user->can('view_any_support_currency');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Company $company): bool
+    public function view(User $user, Currency $currency): bool
     {
-        return $user->can('view_support_company');
+        return $user->can('view_support_currency');
     }
 
     /**
@@ -31,23 +31,23 @@ class CompanyPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_support_company');
+        return $user->can('create_support_currency');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Company $company): bool
+    public function update(User $user, Currency $currency): bool
     {
-        return $user->can('update_support_company');
+        return $user->can('update_support_currency');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Company $company): bool
+    public function delete(User $user, Currency $currency): bool
     {
-        return $user->can('delete_support_company');
+        return $user->can('delete_support_currency');
     }
 
     /**
@@ -55,15 +55,15 @@ class CompanyPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_support_company');
+        return $user->can('delete_any_support_currency');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Company $company): bool
+    public function forceDelete(User $user, Currency $currency): bool
     {
-        return $user->can('force_delete_support_company');
+        return $user->can('force_delete_support_currency');
     }
 
     /**
@@ -71,15 +71,15 @@ class CompanyPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_support_company');
+        return $user->can('force_delete_any_support_currency');
     }
 
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Company $company): bool
+    public function restore(User $user, Currency $currency): bool
     {
-        return $user->can('restore_support_company');
+        return $user->can('restore_support_currency');
     }
 
     /**
@@ -87,7 +87,7 @@ class CompanyPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_support_company');
+        return $user->can('restore_any_support_currency');
     }
 
     /**
@@ -95,6 +95,6 @@ class CompanyPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_support_company');
+        return $user->can('reorder_support_currency');
     }
 }

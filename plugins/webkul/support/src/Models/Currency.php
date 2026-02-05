@@ -3,6 +3,7 @@
 namespace Webkul\Support\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Webkul\Support\Database\Factories\CurrencyFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
@@ -24,11 +25,6 @@ class Currency extends Model
     protected $casts = [
         'active' => 'boolean',
     ];
-
-    protected static function newFactory()
-    {
-        return \Webkul\Support\Database\Factories\CurrencyFactory::new();
-    }
 
     /**
      * Get all states for the country.
@@ -139,5 +135,10 @@ class Currency extends Model
     protected function isInteger($value)
     {
         return is_numeric($value) && floatval($value) == intval($value);
+    }
+
+    protected static function newFactory()
+    {
+        return CurrencyFactory::new();
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
-namespace Webkul\Support\Policies;
+namespace Webkul\Partner\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Webkul\Partner\Models\Industry;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\Company;
 
-class CompanyPolicy
+class IndustryPolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class CompanyPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_support_company');
+        return $user->can('view_any_partner_industry');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Company $company): bool
+    public function view(User $user, Industry $industry): bool
     {
-        return $user->can('view_support_company');
+        return $user->can('view_partner_industry');
     }
 
     /**
@@ -31,23 +31,23 @@ class CompanyPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_support_company');
+        return $user->can('create_partner_industry');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Company $company): bool
+    public function update(User $user, Industry $industry): bool
     {
-        return $user->can('update_support_company');
+        return $user->can('update_partner_industry');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Company $company): bool
+    public function delete(User $user, Industry $industry): bool
     {
-        return $user->can('delete_support_company');
+        return $user->can('delete_partner_industry');
     }
 
     /**
@@ -55,15 +55,15 @@ class CompanyPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_support_company');
+        return $user->can('delete_any_partner_industry');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Company $company): bool
+    public function forceDelete(User $user, Industry $industry): bool
     {
-        return $user->can('force_delete_support_company');
+        return $user->can('force_delete_partner_industry');
     }
 
     /**
@@ -71,15 +71,15 @@ class CompanyPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_support_company');
+        return $user->can('force_delete_any_partner_industry');
     }
 
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Company $company): bool
+    public function restore(User $user, Industry $industry): bool
     {
-        return $user->can('restore_support_company');
+        return $user->can('restore_partner_industry');
     }
 
     /**
@@ -87,14 +87,6 @@ class CompanyPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_support_company');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_support_company');
+        return $user->can('restore_any_partner_industry');
     }
 }
