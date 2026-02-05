@@ -17,7 +17,7 @@ use Webkul\Partner\Http\Resources\V1\BankAccountResource;
 use Webkul\Partner\Models\BankAccount;
 
 #[Group('Partner API Management')]
-#[Subgroup('Bank Account', 'Manage partner bank accounts')]
+#[Subgroup('Bank Accounts', 'Manage partner bank accounts')]
 #[Authenticated]
 class BankAccountController extends Controller
 {

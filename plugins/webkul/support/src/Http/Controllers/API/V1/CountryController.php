@@ -17,7 +17,7 @@ use Webkul\Support\Http\Resources\V1\CountryResource;
 use Webkul\Support\Models\Country;
 
 #[Group('Support API Management')]
-#[Subgroup('Country', 'Manage countries')]
+#[Subgroup('Countries', 'Manage countries')]
 #[Authenticated]
 class CountryController extends Controller
 {

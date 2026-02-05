@@ -19,7 +19,7 @@ use Webkul\Partner\Enums\AddressType;
 use Webkul\Partner\Models\Partner;
 
 #[Group('Partner API Management')]
-#[Subgroup('Address', 'Manage partner addresses')]
+#[Subgroup('Addresses', 'Manage partner addresses')]
 #[Authenticated]
 class AddressController extends Controller
 {

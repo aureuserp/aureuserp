@@ -17,7 +17,7 @@ use Webkul\Partner\Http\Resources\V1\TitleResource;
 use Webkul\Partner\Models\Title;
 
 #[Group('Partner API Management')]
-#[Subgroup('Title', 'Manage partner titles')]
+#[Subgroup('Titles', 'Manage partner titles')]
 #[Authenticated]
 class TitleController extends Controller
 {

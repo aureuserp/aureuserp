@@ -18,7 +18,7 @@ use Webkul\Partner\Enums\AccountType;
 use Webkul\Partner\Models\Partner;
 
 #[Group('Partner API Management')]
-#[Subgroup('Partner', 'Manage partners (customers, suppliers, contacts)')]
+#[Subgroup('Partners', 'Manage partners (customers, suppliers, contacts)')]
 #[Authenticated]
 class PartnerController extends Controller
 {

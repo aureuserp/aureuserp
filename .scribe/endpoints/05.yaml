@@ -10,7 +10,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: Currency
+      subgroup: Currencies
       subgroupDescription: 'Manage currencies'
       title: 'List currencies'
       description: 'Retrieve a paginated list of currencies with filtering and sorting'
@@ -137,7 +137,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: Currency
+      subgroup: Currencies
       subgroupDescription: 'Manage currencies'
       title: 'Create currency'
       description: 'Create a new currency'
@@ -274,7 +274,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: Currency
+      subgroup: Currencies
       subgroupDescription: 'Manage currencies'
       title: 'Show currency'
       description: 'Retrieve a specific currency by its ID'
@@ -352,7 +352,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: Currency
+      subgroup: Currencies
       subgroupDescription: 'Manage currencies'
       title: 'Update currency'
       description: 'Update an existing currency'
@@ -507,7 +507,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: Currency
+      subgroup: Currencies
       subgroupDescription: 'Manage currencies'
       title: 'Delete currency'
       description: 'Delete a currency'
@@ -572,7 +572,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: 'Currency Rate'
+      subgroup: 'Currency Rates'
       subgroupDescription: 'Manage currency exchange rates'
       title: 'List currency rates'
       description: 'Retrieve a paginated list of currency rates for a specific currency with filtering and sorting'
@@ -700,7 +700,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: 'Currency Rate'
+      subgroup: 'Currency Rates'
       subgroupDescription: 'Manage currency exchange rates'
       title: 'Create currency rate'
       description: 'Create a new currency exchange rate for a specific currency'
@@ -801,7 +801,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: 'Currency Rate'
+      subgroup: 'Currency Rates'
       subgroupDescription: 'Manage currency exchange rates'
       title: 'Show currency rate'
       description: 'Retrieve a specific currency rate by its ID'
@@ -891,7 +891,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: 'Currency Rate'
+      subgroup: 'Currency Rates'
       subgroupDescription: 'Manage currency exchange rates'
       title: 'Update currency rate'
       description: 'Update an existing currency rate'
@@ -1010,7 +1010,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: 'Currency Rate'
+      subgroup: 'Currency Rates'
       subgroupDescription: 'Manage currency exchange rates'
       title: 'Delete currency rate'
       description: 'Delete a currency rate'
@@ -1087,7 +1087,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: Bank
+      subgroup: Banks
       subgroupDescription: 'Manage banks'
       title: 'List banks'
       description: 'Retrieve a paginated list of banks with filtering and sorting'
@@ -1247,7 +1247,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: Bank
+      subgroup: Banks
       subgroupDescription: 'Manage banks'
       title: 'Create bank'
       description: 'Create a new bank'
@@ -1420,7 +1420,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: Bank
+      subgroup: Banks
       subgroupDescription: 'Manage banks'
       title: 'Show bank'
       description: 'Retrieve a specific bank by its ID'
@@ -1510,7 +1510,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: Bank
+      subgroup: Banks
       subgroupDescription: 'Manage banks'
       title: 'Update bank'
       description: 'Update an existing bank'
@@ -1713,7 +1713,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: Bank
+      subgroup: Banks
       subgroupDescription: 'Manage banks'
       title: 'Delete bank'
       description: 'Soft delete a bank'
@@ -1790,7 +1790,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: Bank
+      subgroup: Banks
       subgroupDescription: 'Manage banks'
       title: 'Restore bank'
       description: 'Restore a soft-deleted bank'
@@ -1867,7 +1867,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: Bank
+      subgroup: Banks
       subgroupDescription: 'Manage banks'
       title: 'Force delete bank'
       description: 'Permanently delete a bank'
@@ -1944,7 +1944,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: Country
+      subgroup: Countries
       subgroupDescription: 'Manage countries'
       title: 'List countries'
       description: 'Retrieve a paginated list of countries with filtering and sorting'
@@ -2082,7 +2082,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: Country
+      subgroup: Countries
       subgroupDescription: 'Manage countries'
       title: 'Create country'
       description: 'Create a new country'
@@ -2207,7 +2207,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: Country
+      subgroup: Countries
       subgroupDescription: 'Manage countries'
       title: 'Show country'
       description: 'Retrieve a specific country by its ID'
@@ -2297,7 +2297,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: Country
+      subgroup: Countries
       subgroupDescription: 'Manage countries'
       title: 'Update country'
       description: 'Update an existing country'
@@ -2452,7 +2452,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: Country
+      subgroup: Countries
       subgroupDescription: 'Manage countries'
       title: 'Delete country'
       description: 'Delete a country'
@@ -2529,7 +2529,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: State
+      subgroup: States
       subgroupDescription: 'Manage states/provinces'
       title: 'List states'
       description: 'Retrieve a paginated list of states with filtering and sorting'
@@ -2656,7 +2656,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: State
+      subgroup: States
       subgroupDescription: 'Manage states/provinces'
       title: 'Create state'
       description: 'Create a new state'
@@ -2745,7 +2745,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: State
+      subgroup: States
       subgroupDescription: 'Manage states/provinces'
       title: 'Show state'
       description: 'Retrieve a specific state by its ID'
@@ -2835,7 +2835,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: State
+      subgroup: States
       subgroupDescription: 'Manage states/provinces'
       title: 'Update state'
       description: 'Update an existing state'
@@ -2954,7 +2954,7 @@ endpoints:
       custom: []
       groupName: 'Support API Management'
       groupDescription: ''
-      subgroup: State
+      subgroup: States
       subgroupDescription: 'Manage states/provinces'
       title: 'Delete state'
       description: 'Delete a state'

@@ -17,7 +17,7 @@ use Webkul\Support\Http\Resources\V1\CurrencyResource;
 use Webkul\Support\Models\Currency;
 
 #[Group('Support API Management')]
-#[Subgroup('Currency', 'Manage currencies')]
+#[Subgroup('Currencies', 'Manage currencies')]
 #[Authenticated]
 class CurrencyController extends Controller
 {

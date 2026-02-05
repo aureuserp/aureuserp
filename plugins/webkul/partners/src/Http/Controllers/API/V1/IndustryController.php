@@ -17,7 +17,7 @@ use Webkul\Partner\Http\Resources\V1\IndustryResource;
 use Webkul\Partner\Models\Industry;
 
 #[Group('Partner API Management')]
-#[Subgroup('Industry', 'Manage industries')]
+#[Subgroup('Industries', 'Manage industries')]
 #[Authenticated]
 class IndustryController extends Controller
 {

@@ -17,7 +17,7 @@ use Webkul\Support\Http\Resources\V1\StateResource;
 use Webkul\Support\Models\State;
 
 #[Group('Support API Management')]
-#[Subgroup('State', 'Manage states/provinces')]
+#[Subgroup('States', 'Manage states/provinces')]
 #[Authenticated]
 class StateController extends Controller
 {

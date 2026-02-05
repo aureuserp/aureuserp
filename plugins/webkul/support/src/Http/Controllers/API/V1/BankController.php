@@ -18,7 +18,7 @@ use Webkul\Support\Http\Resources\V1\BankResource;
 use Webkul\Support\Models\Bank;
 
 #[Group('Support API Management')]
-#[Subgroup('Bank', 'Manage banks')]
+#[Subgroup('Banks', 'Manage banks')]
 #[Authenticated]
 class BankController extends Controller
 {

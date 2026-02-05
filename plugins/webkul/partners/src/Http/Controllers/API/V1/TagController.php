@@ -17,7 +17,7 @@ use Webkul\Partner\Http\Resources\V1\TagResource;
 use Webkul\Partner\Models\Tag;
 
 #[Group('Partner API Management')]
-#[Subgroup('Tag', 'Manage partner tags')]
+#[Subgroup('Tags', 'Manage partner tags')]
 #[Authenticated]
 class TagController extends Controller
 {

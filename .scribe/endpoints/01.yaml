@@ -10,7 +10,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Title
+      subgroup: Titles
       subgroupDescription: 'Manage partner titles'
       title: 'List titles'
       description: 'Retrieve a paginated list of titles with filtering and sorting'
@@ -115,7 +115,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Title
+      subgroup: Titles
       subgroupDescription: 'Manage partner titles'
       title: 'Create title'
       description: 'Create a new title'
@@ -192,7 +192,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Title
+      subgroup: Titles
       subgroupDescription: 'Manage partner titles'
       title: 'Show title'
       description: 'Retrieve a specific title by its ID'
@@ -270,7 +270,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Title
+      subgroup: Titles
       subgroupDescription: 'Manage partner titles'
       title: 'Update title'
       description: 'Update an existing title'
@@ -365,7 +365,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Title
+      subgroup: Titles
       subgroupDescription: 'Manage partner titles'
       title: 'Delete title'
       description: 'Delete a title'
@@ -430,7 +430,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Tag
+      subgroup: Tags
       subgroupDescription: 'Manage partner tags'
       title: 'List tags'
       description: 'Retrieve a paginated list of tags with filtering and sorting'
@@ -546,7 +546,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Tag
+      subgroup: Tags
       subgroupDescription: 'Manage partner tags'
       title: 'Create tag'
       description: 'Create a new tag'
@@ -623,7 +623,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Tag
+      subgroup: Tags
       subgroupDescription: 'Manage partner tags'
       title: 'Show tag'
       description: 'Retrieve a specific tag by its ID'
@@ -701,7 +701,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Tag
+      subgroup: Tags
       subgroupDescription: 'Manage partner tags'
       title: 'Update tag'
       description: 'Update an existing tag'
@@ -796,7 +796,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Tag
+      subgroup: Tags
       subgroupDescription: 'Manage partner tags'
       title: 'Delete tag'
       description: 'Soft delete a tag'
@@ -861,7 +861,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Tag
+      subgroup: Tags
       subgroupDescription: 'Manage partner tags'
       title: 'Restore tag'
       description: 'Restore a soft-deleted tag'
@@ -926,7 +926,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Tag
+      subgroup: Tags
       subgroupDescription: 'Manage partner tags'
       title: 'Force delete tag'
       description: 'Permanently delete a tag'
@@ -991,7 +991,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Industry
+      subgroup: Industries
       subgroupDescription: 'Manage industries'
       title: 'List industries'
       description: 'Retrieve a paginated list of industries with filtering and sorting'
@@ -1107,7 +1107,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Industry
+      subgroup: Industries
       subgroupDescription: 'Manage industries'
       title: 'Create industry'
       description: 'Create a new industry'
@@ -1184,7 +1184,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Industry
+      subgroup: Industries
       subgroupDescription: 'Manage industries'
       title: 'Show industry'
       description: 'Retrieve a specific industry by its ID'
@@ -1262,7 +1262,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Industry
+      subgroup: Industries
       subgroupDescription: 'Manage industries'
       title: 'Update industry'
       description: 'Update an existing industry'
@@ -1357,7 +1357,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Industry
+      subgroup: Industries
       subgroupDescription: 'Manage industries'
       title: 'Delete industry'
       description: 'Soft delete an industry'
@@ -1422,7 +1422,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Industry
+      subgroup: Industries
       subgroupDescription: 'Manage industries'
       title: 'Restore industry'
       description: 'Restore a soft-deleted industry'
@@ -1487,7 +1487,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Industry
+      subgroup: Industries
       subgroupDescription: 'Manage industries'
       title: 'Force delete industry'
       description: 'Permanently delete an industry'
@@ -1552,7 +1552,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Partner
+      subgroup: Partners
       subgroupDescription: 'Manage partners (customers, suppliers, contacts)'
       title: 'List partners'
       description: 'Retrieve a paginated list of partners with filtering and sorting'
@@ -1781,7 +1781,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Partner
+      subgroup: Partners
       subgroupDescription: 'Manage partners (customers, suppliers, contacts)'
       title: 'Create partner'
       description: 'Create a new partner'
@@ -2112,7 +2112,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Partner
+      subgroup: Partners
       subgroupDescription: 'Manage partners (customers, suppliers, contacts)'
       title: 'Show partner'
       description: 'Retrieve a specific partner by its ID'
@@ -2190,7 +2190,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Partner
+      subgroup: Partners
       subgroupDescription: 'Manage partners (customers, suppliers, contacts)'
       title: 'Update partner'
       description: 'Update an existing partner'
@@ -2539,7 +2539,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Partner
+      subgroup: Partners
       subgroupDescription: 'Manage partners (customers, suppliers, contacts)'
       title: 'Delete partner'
       description: 'Soft delete a partner'
@@ -2604,7 +2604,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Partner
+      subgroup: Partners
       subgroupDescription: 'Manage partners (customers, suppliers, contacts)'
       title: 'Restore partner'
       description: 'Restore a soft-deleted partner'
@@ -2669,7 +2669,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Partner
+      subgroup: Partners
       subgroupDescription: 'Manage partners (customers, suppliers, contacts)'
       title: 'Force delete partner'
       description: 'Permanently delete a partner'
@@ -2734,7 +2734,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Address
+      subgroup: Addresses
       subgroupDescription: 'Manage partner addresses'
       title: 'List addresses'
       description: 'Retrieve a paginated list of addresses for a specific partner with filtering and sorting'
@@ -2911,7 +2911,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Address
+      subgroup: Addresses
       subgroupDescription: 'Manage partner addresses'
       title: 'Create address'
       description: 'Create a new address for a specific partner'
@@ -3113,7 +3113,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Address
+      subgroup: Addresses
       subgroupDescription: 'Manage partner addresses'
       title: 'Show address'
       description: 'Retrieve a specific address by its ID'
@@ -3203,7 +3203,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Address
+      subgroup: Addresses
       subgroupDescription: 'Manage partner addresses'
       title: 'Update address'
       description: 'Update an existing address'
@@ -3423,7 +3423,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Address
+      subgroup: Addresses
       subgroupDescription: 'Manage partner addresses'
       title: 'Delete address'
       description: 'Soft delete an address'
@@ -3500,7 +3500,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Address
+      subgroup: Addresses
       subgroupDescription: 'Manage partner addresses'
       title: 'Restore address'
       description: 'Restore a soft-deleted address'
@@ -3589,7 +3589,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: Address
+      subgroup: Addresses
       subgroupDescription: 'Manage partner addresses'
       title: 'Force delete address'
       description: 'Permanently delete an address'
@@ -3678,7 +3678,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: 'Bank Account'
+      subgroup: 'Bank Accounts'
       subgroupDescription: 'Manage partner bank accounts'
       title: 'List bank accounts'
       description: 'Retrieve a paginated list of bank accounts for a specific partner with filtering and sorting'
@@ -3806,7 +3806,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: 'Bank Account'
+      subgroup: 'Bank Accounts'
       subgroupDescription: 'Manage partner bank accounts'
       title: 'Create bank account'
       description: 'Create a new bank account for a specific partner'
@@ -3907,7 +3907,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: 'Bank Account'
+      subgroup: 'Bank Accounts'
       subgroupDescription: 'Manage partner bank accounts'
       title: 'Show bank account'
       description: 'Retrieve a specific bank account by its ID'
@@ -3997,7 +3997,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: 'Bank Account'
+      subgroup: 'Bank Accounts'
       subgroupDescription: 'Manage partner bank accounts'
       title: 'Update bank account'
       description: 'Update an existing bank account'
@@ -4116,7 +4116,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: 'Bank Account'
+      subgroup: 'Bank Accounts'
       subgroupDescription: 'Manage partner bank accounts'
       title: 'Delete bank account'
       description: 'Soft delete a bank account'
@@ -4193,7 +4193,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: 'Bank Account'
+      subgroup: 'Bank Accounts'
       subgroupDescription: 'Manage partner bank accounts'
       title: 'Restore bank account'
       description: 'Restore a soft-deleted bank account'
@@ -4282,7 +4282,7 @@ endpoints:
       custom: []
       groupName: 'Partner API Management'
       groupDescription: ''
-      subgroup: 'Bank Account'
+      subgroup: 'Bank Accounts'
       subgroupDescription: 'Manage partner bank accounts'
       title: 'Force delete bank account'
       description: 'Permanently delete a bank account'
