@@ -29,17 +29,7 @@ class Industry extends Model
     protected $fillable = [
         'name',
         'description',
-        'is_active',
         'creator_id',
-    ];
-
-    /**
-     * Table name.
-     *
-     * @var string
-     */
-    protected $casts = [
-        'is_active' => 'boolean',
     ];
 
     public function creator(): BelongsTo

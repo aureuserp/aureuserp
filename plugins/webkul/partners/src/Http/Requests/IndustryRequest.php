@@ -24,7 +24,6 @@ class IndustryRequest extends FormRequest
         $rules = [
             'name'        => 'required|string|max:255',
             'description' => 'nullable|string',
-            'is_active'   => 'required|boolean',
         ];
 
         // On update, make all fields optional
@@ -56,10 +55,6 @@ class IndustryRequest extends FormRequest
             'description' => [
                 'description' => 'Industry description.',
                 'example'     => 'Software and hardware technology companies',
-            ],
-            'is_active' => [
-                'description' => 'Whether the industry is active.',
-                'example'     => true,
             ],
         ];
     }

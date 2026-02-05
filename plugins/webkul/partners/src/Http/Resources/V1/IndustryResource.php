@@ -4,6 +4,7 @@ namespace Webkul\Partner\Http\Resources\V1;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Webkul\Security\Http\Resources\V1\UserResource;
 
 class IndustryResource extends JsonResource
 {
@@ -18,9 +19,9 @@ class IndustryResource extends JsonResource
             'id'          => $this->id,
             'name'        => $this->name,
             'description' => $this->description,
-            'is_active'   => $this->is_active,
             'created_at'  => $this->created_at,
             'updated_at'  => $this->updated_at,
+            'creator'     => new UserResource($this->whenLoaded('creator')),
         ];
     }
 }

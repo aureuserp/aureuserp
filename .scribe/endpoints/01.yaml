@@ -1037,17 +1037,6 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      'filter[is_active]':
-        custom: []
-        name: 'filter[is_active]'
-        description: 'Filter by active status'
-        required: false
-        example: null
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
       'filter[trashed]':
         custom: []
         name: 'filter[trashed]'
@@ -1092,7 +1081,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":null,"name":null,"description":null,"is_active":null,"created_at":null,"updated_at":null},{"id":null,"name":null,"description":null,"is_active":null,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":69,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:16:32.000000Z","updated_at":"2026-02-05T05:16:32.000000Z"},{"id":69,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:16:32.000000Z","updated_at":"2026-02-05T05:16:32.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -1155,27 +1144,15 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
-      is_active:
-        custom: []
-        name: is_active
-        description: 'Whether the industry is active.'
-        required: true
-        example: false
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
     cleanBodyParameters:
       name: Technology
       description: 'Software and hardware technology companies'
-      is_active: false
     fileParameters: []
     responses:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":null,"name":null,"description":null,"is_active":null,"created_at":null,"updated_at":null},"message":"Industry created successfully."}'
+        content: '{"data":{"id":69,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:16:32.000000Z","updated_at":"2026-02-05T05:16:32.000000Z"},"message":"Industry created successfully."}'
         headers: []
         description: ''
       -
@@ -1252,7 +1229,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":null,"description":null,"is_active":null,"created_at":null,"updated_at":null}}'
+        content: '{"data":{"id":69,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:16:32.000000Z","updated_at":"2026-02-05T05:16:32.000000Z"}}'
         headers: []
         description: ''
       -
@@ -1334,27 +1311,15 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
-      is_active:
-        custom: []
-        name: is_active
-        description: 'Whether the industry is active.'
-        required: false
-        example: false
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
     cleanBodyParameters:
       name: Technology
       description: 'Software and hardware technology companies'
-      is_active: false
     fileParameters: []
     responses:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":null,"description":null,"is_active":null,"created_at":null,"updated_at":null},"message":"Industry updated successfully."}'
+        content: '{"data":{"id":69,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:16:32.000000Z","updated_at":"2026-02-05T05:16:32.000000Z"},"message":"Industry updated successfully."}'
         headers: []
         description: ''
       -

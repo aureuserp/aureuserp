@@ -25,7 +25,6 @@ class IndustryController extends Controller
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator', required: false, example: 'creator')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[name]', 'string', 'Filter by industry name (partial match)', required: false, example: 'No-example')]
-    #[QueryParam('filter[is_active]', 'boolean', 'Filter by active status', required: false, example: 'No-example')]
     #[QueryParam('filter[trashed]', 'string', 'Filter by trashed status. </br></br><b>Available options:</b> with, without, only', required: false, example: 'No-example')]
     #[QueryParam('sort', 'string', 'Sort field', example: 'name')]
     #[QueryParam('page', 'int', 'Page number', example: 1)]
@@ -37,7 +36,6 @@ class IndustryController extends Controller
             ->allowedFilters([
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
-                AllowedFilter::exact('is_active'),
                 AllowedFilter::trashed(),
             ])
             ->allowedSorts(['id', 'name', 'created_at'])
