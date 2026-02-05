@@ -71,7 +71,7 @@ class PartnerRequest extends FormRequest
     {
         return [
             'account_type' => [
-                'description' => 'Account type: individual, company, or address.',
+                'description' => 'Account type',
                 'example'     => AccountType::INDIVIDUAL->value,
             ],
             'name' => [

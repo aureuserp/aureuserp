@@ -1757,7 +1757,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null},{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -1801,7 +1801,7 @@ endpoints:
       account_type:
         custom: []
         name: account_type
-        description: 'Account type: individual, company, or address.'
+        description: 'Account type.'
         required: true
         example: individual
         type: string
@@ -1982,7 +1982,7 @@ endpoints:
         name: state_id
         description: 'State ID. The <code>id</code> of an existing record in the states table.'
         required: false
-        example: 1
+        example: 9
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -1993,7 +1993,7 @@ endpoints:
         name: country_id
         description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
         required: false
-        example: 1
+        example: 233
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -2004,7 +2004,7 @@ endpoints:
         name: parent_id
         description: 'Parent partner ID (for addresses and contacts). The <code>id</code> of an existing record in the partners_partners table.'
         required: false
-        example: 1
+        example: null
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -2046,7 +2046,7 @@ endpoints:
       user_id:
         custom: []
         name: user_id
-        description: 'Associated user ID. The <code>id</code> of an existing record in the users table.'
+        description: 'Associated user ID/Responsible Sale user. The <code>id</code> of an existing record in the users table.'
         required: false
         example: 1
         type: integer
@@ -2071,9 +2071,8 @@ endpoints:
       street2: 'Suite 100'
       city: 'New York'
       zip: '10001'
-      state_id: 1
-      country_id: 1
-      parent_id: 1
+      state_id: 9
+      country_id: 233
       title_id: 1
       company_id: 1
       industry_id: 1
@@ -2083,7 +2082,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null},"message":"Partner created successfully."}'
+        content: '{"data":{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Partner created successfully."}'
         headers: []
         description: ''
       -
@@ -2160,7 +2159,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null}}'
+        content: '{"data":{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}}'
         headers: []
         description: ''
       -
@@ -2223,7 +2222,7 @@ endpoints:
       account_type:
         custom: []
         name: account_type
-        description: 'Account type: individual, company, or address.'
+        description: 'Account type.'
         required: false
         example: individual
         type: string
@@ -2404,7 +2403,7 @@ endpoints:
         name: state_id
         description: 'State ID. The <code>id</code> of an existing record in the states table.'
         required: false
-        example: 1
+        example: 9
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -2415,7 +2414,7 @@ endpoints:
         name: country_id
         description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
         required: false
-        example: 1
+        example: 233
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -2426,7 +2425,7 @@ endpoints:
         name: parent_id
         description: 'Parent partner ID (for addresses and contacts). The <code>id</code> of an existing record in the partners_partners table.'
         required: false
-        example: 1
+        example: null
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -2468,7 +2467,7 @@ endpoints:
       user_id:
         custom: []
         name: user_id
-        description: 'Associated user ID. The <code>id</code> of an existing record in the users table.'
+        description: 'Associated user ID/Responsible Sale user. The <code>id</code> of an existing record in the users table.'
         required: false
         example: 1
         type: integer
@@ -2493,9 +2492,8 @@ endpoints:
       street2: 'Suite 100'
       city: 'New York'
       zip: '10001'
-      state_id: 1
-      country_id: 1
-      parent_id: 1
+      state_id: 9
+      country_id: 233
       title_id: 1
       company_id: 1
       industry_id: 1
@@ -2505,7 +2503,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null},"message":"Partner updated successfully."}'
+        content: '{"data":{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Partner updated successfully."}'
         headers: []
         description: ''
       -
@@ -2721,6 +2719,950 @@ endpoints:
         content: '{"message": "Resource not found."}'
         headers: []
         description: 'Partner not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/partners/partners/{partner_id}/addresses'
+    metadata:
+      custom: []
+      groupName: 'Partner API Management'
+      groupDescription: ''
+      subgroup: Address
+      subgroupDescription: 'Manage partner addresses'
+      title: 'List addresses'
+      description: 'Retrieve a paginated list of addresses for a specific partner with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      partner_id:
+        custom: []
+        name: partner_id
+        description: 'The partner ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      partner_id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator'
+        required: false
+        example: creator
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[sub_type]':
+        custom: []
+        name: 'filter[sub_type]'
+        description: 'Filter by address type'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - permanent
+          - present
+          - invoice
+          - delivery
+          - other
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[name]':
+        custom: []
+        name: 'filter[name]'
+        description: 'Filter by address name (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[city]':
+        custom: []
+        name: 'filter[city]'
+        description: 'Filter by city (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[country_id]':
+        custom: []
+        name: 'filter[country_id]'
+        description: 'Comma-separated list of country IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[state_id]':
+        custom: []
+        name: 'filter[state_id]'
+        description: 'Comma-separated list of state IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[trashed]':
+        custom: []
+        name: 'filter[trashed]'
+        description: 'Filter by trashed status. </br></br><b>Available options:</b> with, without, only'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: name
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: creator
+      sort: name
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/partners/partners/{partner_id}/addresses'
+    metadata:
+      custom: []
+      groupName: 'Partner API Management'
+      groupDescription: ''
+      subgroup: Address
+      subgroupDescription: 'Manage partner addresses'
+      title: 'Create address'
+      description: 'Create a new address for a specific partner'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      partner_id:
+        custom: []
+        name: partner_id
+        description: 'The partner ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      partner_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      sub_type:
+        custom: []
+        name: sub_type
+        description: 'Address type.'
+        required: true
+        example: invoice
+        type: string
+        enumValues:
+          - permanent
+          - present
+          - invoice
+          - delivery
+          - other
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      name:
+        custom: []
+        name: name
+        description: 'Address name or label (max 255 characters). Must not be greater than 255 characters.'
+        required: true
+        example: 'Main Office'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      email:
+        custom: []
+        name: email
+        description: 'Email address (max 255 characters). Must be a valid email address. Must not be greater than 255 characters.'
+        required: false
+        example: office@company.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      phone:
+        custom: []
+        name: phone
+        description: 'Phone number (max 20 characters). Must not be greater than 20 characters.'
+        required: false
+        example: '+1234567890'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      mobile:
+        custom: []
+        name: mobile
+        description: 'Mobile number (max 20 characters). Must not be greater than 20 characters.'
+        required: false
+        example: '+1234567890'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      street1:
+        custom: []
+        name: street1
+        description: 'Street address line 1 (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: '123 Main Street'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      street2:
+        custom: []
+        name: street2
+        description: 'Street address line 2 (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: 'Suite 100'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      city:
+        custom: []
+        name: city
+        description: 'City (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: 'New York'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      zip:
+        custom: []
+        name: zip
+        description: 'Postal/ZIP code (max 20 characters). Must not be greater than 20 characters.'
+        required: false
+        example: '10001'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      state_id:
+        custom: []
+        name: state_id
+        description: 'State ID. The <code>id</code> of an existing record in the states table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      country_id:
+        custom: []
+        name: country_id
+        description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      sub_type: invoice
+      name: 'Main Office'
+      email: office@company.com
+      phone: '+1234567890'
+      mobile: '+1234567890'
+      street1: '123 Main Street'
+      street2: 'Suite 100'
+      city: 'New York'
+      zip: '10001'
+      state_id: 1
+      country_id: 1
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Address created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/partners/partners/{partner_id}/addresses/{id}'
+    metadata:
+      custom: []
+      groupName: 'Partner API Management'
+      groupDescription: ''
+      subgroup: Address
+      subgroupDescription: 'Manage partner addresses'
+      title: 'Show address'
+      description: 'Retrieve a specific address by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      partner_id:
+        custom: []
+        name: partner_id
+        description: 'The partner ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The address ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      partner_id: 1
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator'
+        required: false
+        example: 'country,state'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'country,state'
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"parent":null}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Address not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/partners/partners/{partner_id}/addresses/{id}'
+    metadata:
+      custom: []
+      groupName: 'Partner API Management'
+      groupDescription: ''
+      subgroup: Address
+      subgroupDescription: 'Manage partner addresses'
+      title: 'Update address'
+      description: 'Update an existing address'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      partner_id:
+        custom: []
+        name: partner_id
+        description: 'The partner ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The address ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      partner_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      sub_type:
+        custom: []
+        name: sub_type
+        description: 'Address type.'
+        required: false
+        example: invoice
+        type: string
+        enumValues:
+          - permanent
+          - present
+          - invoice
+          - delivery
+          - other
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      name:
+        custom: []
+        name: name
+        description: 'Address name or label (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: 'Main Office'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      email:
+        custom: []
+        name: email
+        description: 'Email address (max 255 characters). Must be a valid email address. Must not be greater than 255 characters.'
+        required: false
+        example: office@company.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      phone:
+        custom: []
+        name: phone
+        description: 'Phone number (max 20 characters). Must not be greater than 20 characters.'
+        required: false
+        example: '+1234567890'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      mobile:
+        custom: []
+        name: mobile
+        description: 'Mobile number (max 20 characters). Must not be greater than 20 characters.'
+        required: false
+        example: '+1234567890'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      street1:
+        custom: []
+        name: street1
+        description: 'Street address line 1 (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: '123 Main Street'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      street2:
+        custom: []
+        name: street2
+        description: 'Street address line 2 (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: 'Suite 100'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      city:
+        custom: []
+        name: city
+        description: 'City (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: 'New York'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      zip:
+        custom: []
+        name: zip
+        description: 'Postal/ZIP code (max 20 characters). Must not be greater than 20 characters.'
+        required: false
+        example: '10001'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      state_id:
+        custom: []
+        name: state_id
+        description: 'State ID. The <code>id</code> of an existing record in the states table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      country_id:
+        custom: []
+        name: country_id
+        description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      sub_type: invoice
+      name: 'Main Office'
+      email: office@company.com
+      phone: '+1234567890'
+      mobile: '+1234567890'
+      street1: '123 Main Street'
+      street2: 'Suite 100'
+      city: 'New York'
+      zip: '10001'
+      state_id: 1
+      country_id: 1
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"parent":null},"message":"Address updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Address not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must be a string."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/partners/partners/{partner_id}/addresses/{id}'
+    metadata:
+      custom: []
+      groupName: 'Partner API Management'
+      groupDescription: ''
+      subgroup: Address
+      subgroupDescription: 'Manage partner addresses'
+      title: 'Delete address'
+      description: 'Soft delete an address'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      partner_id:
+        custom: []
+        name: partner_id
+        description: 'The partner ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The address ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      partner_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Address deleted successfully."}'
+        headers: []
+        description: 'Address deleted successfully'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Address not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/partners/partners/{{partner}}/addresses/{id}/restore'
+    metadata:
+      custom: []
+      groupName: 'Partner API Management'
+      groupDescription: ''
+      subgroup: Address
+      subgroupDescription: 'Manage partner addresses'
+      title: 'Restore address'
+      description: 'Restore a soft-deleted address'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      '{partner':
+        custom: []
+        name: '{partner'
+        description: ''
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The address ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      partner_id:
+        custom: []
+        name: partner_id
+        description: 'The partner ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      '{partner': architecto
+      id: 1
+      partner_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Address restored successfully."}'
+        headers: []
+        description: 'Address restored successfully'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Address not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/partners/partners/{{partner}}/addresses/{id}/force'
+    metadata:
+      custom: []
+      groupName: 'Partner API Management'
+      groupDescription: ''
+      subgroup: Address
+      subgroupDescription: 'Manage partner addresses'
+      title: 'Force delete address'
+      description: 'Permanently delete an address'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      '{partner':
+        custom: []
+        name: '{partner'
+        description: ''
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The address ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      partner_id:
+        custom: []
+        name: partner_id
+        description: 'The partner ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      '{partner': architecto
+      id: 1
+      partner_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Address permanently deleted."}'
+        headers: []
+        description: 'Address permanently deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Address not found'
     responseFields: []
     auth:
       - headers

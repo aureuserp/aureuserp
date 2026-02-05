@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Webkul\Partner\Http\Controllers\API\V1\AddressController;
 use Webkul\Partner\Http\Controllers\API\V1\BankAccountController;
 use Webkul\Partner\Http\Controllers\API\V1\IndustryController;
 use Webkul\Partner\Http\Controllers\API\V1\PartnerController;
@@ -15,6 +16,8 @@ Route::name('admin.api.v1.partners.')->prefix('admin/api/v1/partners')->middlewa
     Route::softDeletableApiResource('industries', IndustryController::class);
 
     Route::softDeletableApiResource('partners', PartnerController::class);
+
+    Route::softDeletableApiResource('partners.addresses', AddressController::class);
 
     Route::softDeletableApiResource('partners.bank-accounts', BankAccountController::class);
 });
