@@ -14,7 +14,7 @@ Route::name('admin.api.v1.support.')->prefix('admin/api/v1/support')->middleware
 
     Route::softDeletableApiResource('banks', BankController::class);
 
-    Route::apiResource('countries', CountryController::class);
+    Route::apiResource('countries', CountryController::class)->only(['index', 'show']);
 
     Route::apiResource('states', StateController::class);
 });

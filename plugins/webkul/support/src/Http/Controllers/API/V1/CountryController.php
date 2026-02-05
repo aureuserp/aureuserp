@@ -52,20 +52,6 @@ class CountryController extends Controller
         return CountryResource::collection($countries);
     }
 
-    #[Endpoint('Create country', 'Create a new country')]
-    #[ResponseFromApiResource(CountryResource::class, Country::class, status: 201, additional: ['message' => 'Country created successfully.'])]
-    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}')]
-    #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
-    public function store(CountryRequest $request)
-    {
-        $country = Country::create($request->validated());
-
-        return (new CountryResource($country))
-            ->additional(['message' => 'Country created successfully.'])
-            ->response()
-            ->setStatusCode(201);
-    }
-
     #[Endpoint('Show country', 'Retrieve a specific country by its ID')]
     #[UrlParam('country', 'integer', 'The country ID', required: true, example: 1)]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> currency, states', required: false, example: 'currency,states')]
@@ -82,33 +68,5 @@ class CountryController extends Controller
             ->firstOrFail();
 
         return new CountryResource($country);
-    }
-
-    #[Endpoint('Update country', 'Update an existing country')]
-    #[UrlParam('country', 'integer', 'The country ID', required: true, example: 1)]
-    #[ResponseFromApiResource(CountryResource::class, Country::class, additional: ['message' => 'Country updated successfully.'])]
-    #[Response(status: 404, description: 'Country not found', content: '{"message": "Resource not found."}')]
-    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
-    #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
-    public function update(CountryRequest $request, string $id)
-    {
-        $country = Country::findOrFail($id);
-        $country->update($request->validated());
-
-        return (new CountryResource($country))
-            ->additional(['message' => 'Country updated successfully.']);
-    }
-
-    #[Endpoint('Delete country', 'Delete a country')]
-    #[UrlParam('country', 'integer', 'The country ID', required: true, example: 1)]
-    #[Response(status: 204, description: 'Country deleted successfully')]
-    #[Response(status: 404, description: 'Country not found', content: '{"message": "Resource not found."}')]
-    #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
-    public function destroy(string $id)
-    {
-        $country = Country::findOrFail($id);
-        $country->delete();
-
-        return response()->noContent();
     }
 }

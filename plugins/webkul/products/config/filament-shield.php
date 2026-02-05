@@ -13,13 +13,5 @@ return [
             AttributeResource::class => ['view_any', 'view', 'create', 'update', 'delete', 'restore', 'delete_any', 'force_delete', 'force_delete_any', 'restore_any'],
             PackagingResource::class => ['view_any', 'view', 'create', 'update', 'delete', 'delete_any'],
         ],
-        'exclude' => [
-            AttributeResource::class,
-            CategoryResource::class,
-            PackagingResource::class,
-            PriceListResource::class,
-            ProductResource::class,
-        ],
     ],
-
 ];
