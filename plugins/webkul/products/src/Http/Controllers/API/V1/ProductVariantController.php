@@ -15,6 +15,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 use Webkul\Product\Http\Requests\ProductRequest;
 use Webkul\Product\Http\Resources\V1\ProductResource;
 use Webkul\Product\Models\Product;
+use Webkul\Product\Enums\ProductType;
 
 #[Group('Product API Management')]
 #[Subgroup('Product Variants', 'Manage product variants')]
