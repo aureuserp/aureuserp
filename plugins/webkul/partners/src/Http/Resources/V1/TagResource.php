@@ -4,6 +4,7 @@ namespace Webkul\Partner\Http\Resources\V1;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Webkul\Security\Http\Resources\V1\UserResource;
 
 class TagResource extends JsonResource
 {
@@ -20,6 +21,7 @@ class TagResource extends JsonResource
             'color'      => $this->color,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'creator'    => new UserResource($this->whenLoaded('creator')),
         ];
     }
 }
