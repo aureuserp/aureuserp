@@ -20,13 +20,14 @@ class UOMResource extends JsonResource
             'type'        => $this->type,
             'name'        => $this->name,
             'factor'      => $this->factor,
+            'rounding'    => $this->rounding,
             'category_id' => $this->category_id,
             'creator_id'  => $this->creator_id,
             'created_at'  => $this->created_at,
             'updated_at'  => $this->updated_at,
             'deleted_at'  => $this->deleted_at,
-            'category'    => new UOMCategoryResource($this->whenLoaded('category')),
-            'creator'     => new UserResource($this->whenLoaded('creator')),
+            'category'    => UOMCategoryResource::make($this->whenLoaded('category')),
+            'creator'     => UserResource::make($this->whenLoaded('creator')),
         ];
     }
 }

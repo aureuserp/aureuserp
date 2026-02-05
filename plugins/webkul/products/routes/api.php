@@ -26,5 +26,5 @@ Route::name('admin.api.v1.products.')->prefix('admin/api/v1/products')->middlewa
 
     Route::softDeletableApiResource('products.variants', ProductVariantController::class);
 
-    Route::softDeletableApiResource('packagings', PackagingController::class);
+    Route::apiResource('packagings', PackagingController::class);
 });

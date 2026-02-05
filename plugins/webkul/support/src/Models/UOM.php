@@ -30,6 +30,7 @@ class UOM extends Model
         'type',
         'name',
         'factor',
+        'rounding',
         'category_id',
         'creator_id',
     ];

@@ -2664,3 +2664,1193 @@ endpoints:
     controller: null
     method: null
     route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: admin/api/v1/support/uom-categories
+    metadata:
+      custom: []
+      groupName: 'Support API Management'
+      groupDescription: ''
+      subgroup: 'UOM Categories'
+      subgroupDescription: 'Manage unit of measure categories'
+      title: 'List UOM categories'
+      description: 'Retrieve a paginated list of UOM categories with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> uoms, creator'
+        required: false
+        example: uoms
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[name]':
+        custom: []
+        name: 'filter[name]'
+        description: 'Filter by category name (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: name
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: uoms
+      sort: name
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"},{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: admin/api/v1/support/uom-categories
+    metadata:
+      custom: []
+      groupName: 'Support API Management'
+      groupDescription: ''
+      subgroup: 'UOM Categories'
+      subgroupDescription: 'Manage unit of measure categories'
+      title: 'Create UOM category'
+      description: 'Create a new UOM category'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'UOM category name. Must not be greater than 255 characters.'
+        required: true
+        example: Weight
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      name: Weight
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"},"message":"UOM category created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/support/uom-categories/{id}'
+    metadata:
+      custom: []
+      groupName: 'Support API Management'
+      groupDescription: ''
+      subgroup: 'UOM Categories'
+      subgroupDescription: 'Manage unit of measure categories'
+      title: 'Show UOM category'
+      description: 'Retrieve a specific UOM category by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the uom category.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      uom_category:
+        custom: []
+        name: uom_category
+        description: 'The UOM category ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      uom_category: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> uoms, creator'
+        required: false
+        example: uoms
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: uoms
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'UOM category not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/support/uom-categories/{id}'
+    metadata:
+      custom: []
+      groupName: 'Support API Management'
+      groupDescription: ''
+      subgroup: 'UOM Categories'
+      subgroupDescription: 'Manage unit of measure categories'
+      title: 'Update UOM category'
+      description: 'Update an existing UOM category'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the uom category.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      uom_category:
+        custom: []
+        name: uom_category
+        description: 'The UOM category ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      uom_category: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'UOM category name. Must not be greater than 255 characters.'
+        required: true
+        example: Weight
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      name: Weight
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"},"message":"UOM category updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'UOM category not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid."}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/support/uom-categories/{id}'
+    metadata:
+      custom: []
+      groupName: 'Support API Management'
+      groupDescription: ''
+      subgroup: 'UOM Categories'
+      subgroupDescription: 'Manage unit of measure categories'
+      title: 'Delete UOM category'
+      description: 'Delete a UOM category'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the uom category.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      uom_category:
+        custom: []
+        name: uom_category
+        description: 'The UOM category ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      uom_category: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: null
+        headers: []
+        description: 'UOM category deleted successfully'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'UOM category not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/support/uom-categories/{uom_category_id}/uoms'
+    metadata:
+      custom: []
+      groupName: 'Support API Management'
+      groupDescription: ''
+      subgroup: 'Units of Measure'
+      subgroupDescription: 'Manage units of measure within a category'
+      title: 'List UOMs'
+      description: 'Retrieve a paginated list of UOMs for a specific category with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      uom_category_id:
+        custom: []
+        name: uom_category_id
+        description: 'The UOM category ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      uom_category_id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> category, creator'
+        required: false
+        example: category
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[type]':
+        custom: []
+        name: 'filter[type]'
+        description: 'Filter by UOM type (reference, bigger, smaller)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[name]':
+        custom: []
+        name: 'filter[name]'
+        description: 'Filter by name (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[trashed]':
+        custom: []
+        name: 'filter[trashed]'
+        description: 'Filter by trashed status. </br></br><b>Available options:</b> with, without, only'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: name
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: category
+      sort: name
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1,"type":"reference","name":"Units","factor":"1.0000","rounding":"0.0100","category_id":1,"creator_id":null,"created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z","deleted_at":null,"category":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}},{"id":1,"type":"reference","name":"Units","factor":"1.0000","rounding":"0.0100","category_id":1,"creator_id":null,"created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z","deleted_at":null,"category":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/support/uom-categories/{uom_category_id}/uoms'
+    metadata:
+      custom: []
+      groupName: 'Support API Management'
+      groupDescription: ''
+      subgroup: 'Units of Measure'
+      subgroupDescription: 'Manage units of measure within a category'
+      title: 'Create UOM'
+      description: 'Create a new UOM for a specific category'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      uom_category_id:
+        custom: []
+        name: uom_category_id
+        description: 'The UOM category ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      uom_category_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      type:
+        custom: []
+        name: type
+        description: 'UOM type (reference, bigger, smaller).'
+        required: true
+        example: reference
+        type: string
+        enumValues:
+          - reference
+          - bigger
+          - smaller
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      name:
+        custom: []
+        name: name
+        description: 'UOM name. Must not be greater than 255 characters.'
+        required: true
+        example: Kilogram
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      factor:
+        custom: []
+        name: factor
+        description: 'Conversion factor. Must be at least 0.'
+        required: true
+        example: 1.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      rounding:
+        custom: []
+        name: rounding
+        description: 'Rounding precision. Must be at least 0.'
+        required: true
+        example: 0.01
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      category_id:
+        custom: []
+        name: category_id
+        description: 'UOM category ID. The <code>id</code> of an existing record in the unit_of_measure_categories table.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      type: reference
+      name: Kilogram
+      factor: 1.0
+      rounding: 0.01
+      category_id: 1
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":1,"type":"reference","name":"Units","factor":"1.0000","rounding":"0.0100","category_id":1,"creator_id":null,"created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z","deleted_at":null,"category":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}},"message":"UOM created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/support/uom-categories/{uom_category_id}/uoms/{id}'
+    metadata:
+      custom: []
+      groupName: 'Support API Management'
+      groupDescription: ''
+      subgroup: 'Units of Measure'
+      subgroupDescription: 'Manage units of measure within a category'
+      title: 'Show UOM'
+      description: 'Retrieve a specific UOM by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      uom_category_id:
+        custom: []
+        name: uom_category_id
+        description: 'The UOM category ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The UOM ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      uom_category_id: 1
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> category, creator'
+        required: false
+        example: category
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: category
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"type":"reference","name":"Units","factor":"1.0000","rounding":"0.0100","category_id":1,"creator_id":null,"created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z","deleted_at":null,"category":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'UOM not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/support/uom-categories/{uom_category_id}/uoms/{id}'
+    metadata:
+      custom: []
+      groupName: 'Support API Management'
+      groupDescription: ''
+      subgroup: 'Units of Measure'
+      subgroupDescription: 'Manage units of measure within a category'
+      title: 'Update UOM'
+      description: 'Update an existing UOM'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      uom_category_id:
+        custom: []
+        name: uom_category_id
+        description: 'The UOM category ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The UOM ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      uom_category_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      type:
+        custom: []
+        name: type
+        description: 'UOM type (reference, bigger, smaller).'
+        required: true
+        example: reference
+        type: string
+        enumValues:
+          - reference
+          - bigger
+          - smaller
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      name:
+        custom: []
+        name: name
+        description: 'UOM name. Must not be greater than 255 characters.'
+        required: true
+        example: Kilogram
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      factor:
+        custom: []
+        name: factor
+        description: 'Conversion factor. Must be at least 0.'
+        required: true
+        example: 1.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      rounding:
+        custom: []
+        name: rounding
+        description: 'Rounding precision. Must be at least 0.'
+        required: true
+        example: 0.01
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      category_id:
+        custom: []
+        name: category_id
+        description: 'UOM category ID. The <code>id</code> of an existing record in the unit_of_measure_categories table.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      type: reference
+      name: Kilogram
+      factor: 1.0
+      rounding: 0.01
+      category_id: 1
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"type":"reference","name":"Units","factor":"1.0000","rounding":"0.0100","category_id":1,"creator_id":null,"created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z","deleted_at":null,"category":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}},"message":"UOM updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'UOM not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid."}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/support/uom-categories/{uom_category_id}/uoms/{id}'
+    metadata:
+      custom: []
+      groupName: 'Support API Management'
+      groupDescription: ''
+      subgroup: 'Units of Measure'
+      subgroupDescription: 'Manage units of measure within a category'
+      title: 'Delete UOM'
+      description: 'Soft delete a UOM'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      uom_category_id:
+        custom: []
+        name: uom_category_id
+        description: 'The UOM category ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The UOM ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      uom_category_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: null
+        headers: []
+        description: 'UOM deleted successfully'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'UOM not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/support/uom-categories/{{uom-category}}/uoms/{id}/restore'
+    metadata:
+      custom: []
+      groupName: 'Support API Management'
+      groupDescription: ''
+      subgroup: 'Units of Measure'
+      subgroupDescription: 'Manage units of measure within a category'
+      title: 'Restore UOM'
+      description: 'Restore a soft-deleted UOM'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      '{uom-category':
+        custom: []
+        name: '{uom-category'
+        description: ''
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The UOM ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      uom_category_id:
+        custom: []
+        name: uom_category_id
+        description: 'The UOM category ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      '{uom-category': architecto
+      id: 1
+      uom_category_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"type":"reference","name":"Units","factor":"1.0000","rounding":"0.0100","category_id":1,"creator_id":null,"created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z","deleted_at":null,"category":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}},"message":"UOM restored successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'UOM not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/support/uom-categories/{{uom-category}}/uoms/{id}/force'
+    metadata:
+      custom: []
+      groupName: 'Support API Management'
+      groupDescription: ''
+      subgroup: 'Units of Measure'
+      subgroupDescription: 'Manage units of measure within a category'
+      title: 'Force delete UOM'
+      description: 'Permanently delete a UOM'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      '{uom-category':
+        custom: []
+        name: '{uom-category'
+        description: ''
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The UOM ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      uom_category_id:
+        custom: []
+        name: uom_category_id
+        description: 'The UOM category ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      '{uom-category': architecto
+      id: 1
+      uom_category_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: null
+        headers: []
+        description: 'UOM permanently deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'UOM not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
