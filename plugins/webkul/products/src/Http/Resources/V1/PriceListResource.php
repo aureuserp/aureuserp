@@ -18,15 +18,18 @@ class PriceListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'         => $this->id,
-            'name'       => $this->name,
-            'sort'       => $this->sort,
-            'is_active'  => $this->is_active,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-            'currency'   => CurrencyResource::make($this->whenLoaded('currency')),
-            'company'    => CompanyResource::make($this->whenLoaded('company')),
-            'creator'    => UserResource::make($this->whenLoaded('creator')),
+            'id'          => $this->id,
+            'name'        => $this->name,
+            'sort'        => $this->sort,
+            'is_active'   => $this->is_active,
+            'currency_id' => $this->currency_id,
+            'creator_id'  => $this->creator_id,
+            'company_id'  => $this->company_id,
+            'created_at'  => $this->created_at,
+            'updated_at'  => $this->updated_at,
+            'currency'    => CurrencyResource::make($this->whenLoaded('currency')),
+            'creator'     => UserResource::make($this->whenLoaded('creator')),
+            'company'     => CompanyResource::make($this->whenLoaded('company')),
         ];
     }
 }

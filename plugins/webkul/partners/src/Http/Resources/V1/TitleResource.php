@@ -19,6 +19,7 @@ class TitleResource extends JsonResource
             'id'         => $this->id,
             'name'       => $this->name,
             'short_name' => $this->short_name,
+            'creator_id' => $this->creator_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'creator'    => new UserResource($this->whenLoaded('creator')),

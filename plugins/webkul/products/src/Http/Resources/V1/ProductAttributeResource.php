@@ -20,6 +20,7 @@ class ProductAttributeResource extends JsonResource
             'sort'         => $this->sort,
             'product_id'   => $this->product_id,
             'attribute_id' => $this->attribute_id,
+            'creator_id'   => $this->creator_id,
             'created_at'   => $this->created_at?->toISOString(),
             'updated_at'   => $this->updated_at?->toISOString(),
             'attribute'    => new AttributeResource($this->whenLoaded('attribute')),

@@ -16,15 +16,16 @@ class AttributeOptionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'          => $this->id,
-            'name'        => $this->name,
-            'color'       => $this->color,
-            'extra_price' => $this->extra_price,
-            'sort'        => $this->sort,
-            'created_at'  => $this->created_at,
-            'updated_at'  => $this->updated_at,
-            'attribute'   => AttributeResource::make($this->whenLoaded('attribute')),
-            'creator'     => UserResource::make($this->whenLoaded('creator')),
+            'id'           => $this->id,
+            'name'         => $this->name,
+            'color'        => $this->color,
+            'extra_price'  => $this->extra_price,
+            'sort'         => $this->sort,
+            'attribute_id' => $this->attribute_id,
+            'created_at'   => $this->created_at,
+            'updated_at'   => $this->updated_at,
+            'attribute'    => AttributeResource::make($this->whenLoaded('attribute')),
+            'creator'      => UserResource::make($this->whenLoaded('creator')),
         ];
     }
 }

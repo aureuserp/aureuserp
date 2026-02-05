@@ -20,11 +20,12 @@ class AttributeResource extends JsonResource
             'name'       => $this->name,
             'type'       => $this->type?->value,
             'sort'       => $this->sort,
+            'creator_id' => $this->creator_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'deleted_at' => $this->deleted_at,
-            'options'    => AttributeOptionResource::collection($this->whenLoaded('options')),
             'creator'    => UserResource::make($this->whenLoaded('creator')),
+            'options'    => AttributeOptionResource::collection($this->whenLoaded('options')),
         ];
     }
 }

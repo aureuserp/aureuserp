@@ -41,8 +41,8 @@ class ProductResource extends JsonResource
             'uom_id'               => $this->uom_id,
             'uom_po_id'            => $this->uom_po_id,
             'category_id'          => $this->category_id,
-            'company_id'           => $this->company_id,
             'creator_id'           => $this->creator_id,
+            'company_id'           => $this->company_id,
             'created_at'           => $this->created_at,
             'updated_at'           => $this->updated_at,
             'deleted_at'           => $this->deleted_at,
@@ -50,9 +50,9 @@ class ProductResource extends JsonResource
             'uom'                  => new UOMResource($this->whenLoaded('uom')),
             'uom_po'               => new UOMResource($this->whenLoaded('uomPO')),
             'category'             => new CategoryResource($this->whenLoaded('category')),
-            'tags'                 => TagResource::collection($this->whenLoaded('tags')),
-            'company'              => new CompanyResource($this->whenLoaded('company')),
             'creator'              => new UserResource($this->whenLoaded('creator')),
+            'company'              => new CompanyResource($this->whenLoaded('company')),
+            'tags'                 => TagResource::collection($this->whenLoaded('tags')),
         ];
     }
 }

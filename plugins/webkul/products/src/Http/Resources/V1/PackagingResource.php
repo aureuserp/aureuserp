@@ -22,11 +22,13 @@ class PackagingResource extends JsonResource
             'barcode'    => $this->barcode,
             'qty'        => $this->qty,
             'sort'       => $this->sort,
+            'product_id' => $this->product_id,
+            'creator_id' => $this->creator_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'product'    => ProductResource::make($this->whenLoaded('product')),
-            'company'    => CompanyResource::make($this->whenLoaded('company')),
             'creator'    => UserResource::make($this->whenLoaded('creator')),
+            'company'    => CompanyResource::make($this->whenLoaded('company')),
         ];
     }
 }

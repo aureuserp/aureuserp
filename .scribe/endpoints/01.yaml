@@ -89,7 +89,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"name":"Mr","short_name":"John","created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"},{"id":1,"name":"Mr","short_name":"John","created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"Mr","short_name":"John","creator_id":1,"created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"},{"id":1,"name":"Mr","short_name":"John","creator_id":1,"created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -160,7 +160,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"name":"Mr","short_name":"John","created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"},"message":"Title created successfully."}'
+        content: '{"data":{"id":1,"name":"Mr","short_name":"John","creator_id":1,"created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"},"message":"Title created successfully."}'
         headers: []
         description: ''
       -
@@ -237,7 +237,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"Mr","short_name":"John","created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"}}'
+        content: '{"data":{"id":1,"name":"Mr","short_name":"John","creator_id":1,"created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"}}'
         headers: []
         description: ''
       -
@@ -327,7 +327,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"Mr","short_name":"John","created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"},"message":"Title updated successfully."}'
+        content: '{"data":{"id":1,"name":"Mr","short_name":"John","creator_id":1,"created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"},"message":"Title updated successfully."}'
         headers: []
         description: ''
       -
@@ -520,7 +520,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"name":"New Customer","color":"#35ff39","created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"},{"id":1,"name":"New Customer","color":"#35ff39","created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"New Customer","color":"#35ff39","creator_id":1,"created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"},{"id":1,"name":"New Customer","color":"#35ff39","creator_id":1,"created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -591,7 +591,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"name":"New Customer","color":"#35ff39","created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"},"message":"Tag created successfully."}'
+        content: '{"data":{"id":1,"name":"New Customer","color":"#35ff39","creator_id":1,"created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"},"message":"Tag created successfully."}'
         headers: []
         description: ''
       -
@@ -668,7 +668,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"New Customer","color":"#35ff39","created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"}}'
+        content: '{"data":{"id":1,"name":"New Customer","color":"#35ff39","creator_id":1,"created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"}}'
         headers: []
         description: ''
       -
@@ -758,7 +758,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"New Customer","color":"#35ff39","created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"},"message":"Tag updated successfully."}'
+        content: '{"data":{"id":1,"name":"New Customer","color":"#35ff39","creator_id":1,"created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"},"message":"Tag updated successfully."}'
         headers: []
         description: ''
       -
@@ -1081,7 +1081,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":71,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"},{"id":71,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":71,"name":"Technology","description":"Software and hardware technology companies","creator_id":1,"created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"},{"id":71,"name":"Technology","description":"Software and hardware technology companies","creator_id":1,"created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -1152,7 +1152,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":71,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"},"message":"Industry created successfully."}'
+        content: '{"data":{"id":71,"name":"Technology","description":"Software and hardware technology companies","creator_id":1,"created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"},"message":"Industry created successfully."}'
         headers: []
         description: ''
       -
@@ -1229,7 +1229,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":71,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"}}'
+        content: '{"data":{"id":71,"name":"Technology","description":"Software and hardware technology companies","creator_id":1,"created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"}}'
         headers: []
         description: ''
       -
@@ -1319,7 +1319,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":71,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"},"message":"Industry updated successfully."}'
+        content: '{"data":{"id":71,"name":"Technology","description":"Software and hardware technology companies","creator_id":1,"created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"},"message":"Industry updated successfully."}'
         headers: []
         description: ''
       -
@@ -1755,7 +1755,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2080,7 +2080,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Partner created successfully."}'
+        content: '{"data":{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Partner created successfully."}'
         headers: []
         description: ''
       -
@@ -2157,7 +2157,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}}'
+        content: '{"data":{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}}'
         headers: []
         description: ''
       -
@@ -2501,7 +2501,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Partner updated successfully."}'
+        content: '{"data":{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Partner updated successfully."}'
         headers: []
         description: ''
       -
@@ -2885,7 +2885,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -3047,7 +3047,7 @@ endpoints:
         name: state_id
         description: 'State ID. The <code>id</code> of an existing record in the states table.'
         required: false
-        example: 1
+        example: 9
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3058,7 +3058,7 @@ endpoints:
         name: country_id
         description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
         required: false
-        example: 1
+        example: 233
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3074,14 +3074,14 @@ endpoints:
       street2: 'Suite 100'
       city: 'New York'
       zip: '10001'
-      state_id: 1
-      country_id: 1
+      state_id: 9
+      country_id: 233
     fileParameters: []
     responses:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Address created successfully."}'
+        content: '{"data":{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Address created successfully."}'
         headers: []
         description: ''
       -
@@ -3170,7 +3170,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"parent":null}}'
+        content: '{"data":{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"parent":null}}'
         headers: []
         description: ''
       -
@@ -3351,7 +3351,7 @@ endpoints:
         name: state_id
         description: 'State ID. The <code>id</code> of an existing record in the states table.'
         required: false
-        example: 1
+        example: 9
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3362,7 +3362,7 @@ endpoints:
         name: country_id
         description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
         required: false
-        example: 1
+        example: 233
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3378,14 +3378,14 @@ endpoints:
       street2: 'Suite 100'
       city: 'New York'
       zip: '10001'
-      state_id: 1
-      country_id: 1
+      state_id: 9
+      country_id: 233
     fileParameters: []
     responses:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"parent":null},"message":"Address updated successfully."}'
+        content: '{"data":{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"parent":null},"message":"Address updated successfully."}'
         headers: []
         description: ''
       -

@@ -21,6 +21,7 @@ class CountryResource extends JsonResource
             'phone_code'     => $this->phone_code,
             'state_required' => $this->state_required,
             'zip_required'   => $this->zip_required,
+            'currency_id'    => $this->currency_id,
             'created_at'     => $this->created_at,
             'updated_at'     => $this->updated_at,
             'currency'       => CurrencyResource::make($this->whenLoaded('currency')),
