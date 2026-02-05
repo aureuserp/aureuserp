@@ -454,14 +454,6 @@ class UserResource extends Resource
                                             ->listWithLineBreaks()
                                             ->bulleted(),
                                         TextEntry::make('resource_permission')
-                                            ->icon(function ($record) {
-                                                return [
-                                                    PermissionType::GLOBAL->value     => 'heroicon-o-globe-alt',
-                                                    PermissionType::INDIVIDUAL->value => 'heroicon-o-user',
-                                                    PermissionType::GROUP->value      => 'heroicon-o-user-group',
-                                                ][$record->resource_permission];
-                                            })
-                                            ->formatStateUsing(fn($state) => PermissionType::options()[$state] ?? $state)
                                             ->placeholder('-')
                                             ->label(__('security::filament/resources/user.infolist.sections.permissions.entries.resource-permission')),
                                     ])

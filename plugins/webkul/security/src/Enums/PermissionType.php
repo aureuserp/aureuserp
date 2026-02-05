@@ -2,10 +2,13 @@
 
 namespace Webkul\Security\Enums;
 
+use BackedEnum;
 use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
+use Illuminate\Contracts\Support\Htmlable;
 
-enum PermissionType: string implements HasColor, HasLabel
+enum PermissionType: string implements HasColor, HasLabel, HasIcon
 {
     case GROUP = 'group';
 
@@ -32,6 +35,15 @@ enum PermissionType: string implements HasColor, HasLabel
     }
 
     public function getColor(): ?string
+    {
+        return match ($this) {
+            self::GROUP      => 'heroicon-o-globe-alt',
+            self::INDIVIDUAL => 'heroicon-o-user',
+            self::GLOBAL     => 'heroicon-o-user-group',
+        };
+    }
+
+    public function getIcon(): string|BackedEnum|Htmlable|null
     {
         return match ($this) {
             self::GROUP      => 'heroicon-o-globe-alt',
