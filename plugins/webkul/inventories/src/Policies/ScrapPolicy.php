@@ -15,7 +15,7 @@ class ScrapPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_scrap');
+        return $user->can('view_any_inventory_scrap');
     }
 
     /**
@@ -23,7 +23,7 @@ class ScrapPolicy
      */
     public function view(User $user, Scrap $scrap): bool
     {
-        return $user->can('view_scrap');
+        return $user->can('view_inventory_scrap');
     }
 
     /**
@@ -31,7 +31,7 @@ class ScrapPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_scrap');
+        return $user->can('create_inventory_scrap');
     }
 
     /**
@@ -39,7 +39,7 @@ class ScrapPolicy
      */
     public function update(User $user, Scrap $scrap): bool
     {
-        return $user->can('update_scrap');
+        return $user->can('update_inventory_scrap');
     }
 
     /**
@@ -47,7 +47,7 @@ class ScrapPolicy
      */
     public function delete(User $user, Scrap $scrap): bool
     {
-        return $user->can('delete_scrap');
+        return $user->can('delete_inventory_scrap');
     }
 
     /**
@@ -55,6 +55,6 @@ class ScrapPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_scrap');
+        return $user->can('delete_any_inventory_scrap');
     }
 }

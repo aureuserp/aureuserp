@@ -9,9 +9,12 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\LocationResource;
 use Webkul\Inventory\Models\Location;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditLocation extends EditRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = LocationResource::class;
 
     protected function getSavedNotification(): Notification

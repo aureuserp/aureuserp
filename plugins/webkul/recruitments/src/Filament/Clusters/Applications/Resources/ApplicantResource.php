@@ -18,7 +18,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Pages\Page;
 use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
@@ -41,10 +40,13 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Oper
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Grouping\Group as TableGroup;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HtmlString;
-use Webkul\Field\Filament\Forms\Components\ProgressStepper;
+use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Recruitment\Enums\ApplicationStatus;
 use Webkul\Recruitment\Enums\RecruitmentState as RecruitmentStateEnum;
 use Webkul\Recruitment\Filament\Clusters\Applications;
@@ -69,8 +71,6 @@ class ApplicantResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
-
     public static function getModelLabel(): string
     {
         return __('recruitments::filament/clusters/applications/resources/applicant.title');
@@ -79,6 +79,11 @@ class ApplicantResource extends Resource
     public static function getNavigationLabel(): string
     {
         return __('recruitments::filament/clusters/applications/resources/applicant.navigation.title');
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
+    {
+        return $record->candidate->name;
     }
 
     public static function getGloballySearchableAttributes(): array
@@ -94,7 +99,7 @@ class ApplicantResource extends Resource
             ->components([
                 Grid::make()
                     ->schema([
-                        ProgressStepper::make('stage_id')
+                        FormProgressStepper::make('stage_id')
                             ->hiddenLabel()
                             ->inline()
                             ->options(fn () => RecruitmentStage::orderBy('sort')->get()->mapWithKeys(fn ($stage) => [$stage->id => $stage->name]))
@@ -571,7 +576,7 @@ class ApplicantResource extends Resource
             ])
             ->filters([
                 QueryBuilder::make()
-                    ->constraintPickerColumns(5)
+                    ->constraintPickerColumns(2)
                     ->constraints([
                         RelationshipConstraint::make('source')
                             ->label(__('recruitments::filament/clusters/applications/resources/applicant.table.filters.source'))
@@ -606,17 +611,9 @@ class ApplicantResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('date_last_stage_updated')
+                        DateConstraint::make('date_last_stage_updated')
                             ->label(__('recruitments::filament/clusters/applications/resources/applicant.table.filters.date-last-stage-updated'))
-                            ->icon('heroicon-o-user-circle')
-                            ->multiple()
-                            ->selectable(
-                                IsRelatedToOperator::make()
-                                    ->titleAttribute('name')
-                                    ->searchable()
-                                    ->multiple()
-                                    ->preload(),
-                            ),
+                            ->icon('heroicon-o-user-circle'),
                         RelationshipConstraint::make('stage')
                             ->label(__('recruitments::filament/clusters/applications/resources/applicant.table.filters.stage'))
                             ->icon('heroicon-o-user-circle')
@@ -704,9 +701,10 @@ class ApplicantResource extends Resource
                 ]),
             ])
             ->modifyQueryUsing(function (Builder $query) {
-                $query
-                    ->where('state', '!=', RecruitmentStateEnum::BLOCKED->value)
-                    ->orWhereNull('state');
+                $query->where(function ($sub) {
+                    $sub->where('state', '!=', RecruitmentStateEnum::BLOCKED->value)
+                        ->orWhereNull('state');
+                });
             });
     }
 
@@ -718,6 +716,19 @@ class ApplicantResource extends Resource
                     ->schema([
                         Group::make()
                             ->schema([
+                                InfolistProgressStepper::make('stage_id')
+                                    ->hiddenLabel()
+                                    ->inline()
+                                    ->options(fn () => RecruitmentStage::orderBy('sort')->get()->mapWithKeys(fn ($stage) => [$stage->id => $stage->name])->toArray())
+                                    ->columnSpan('full')
+                                    ->hidden(function ($record, Set $set) {
+                                        if ($record->refuse_reason_id) {
+                                            $set('stage_id', null);
+
+                                            return true;
+                                        }
+                                    }),
+
                                 Section::make(__('recruitments::filament/clusters/applications/resources/applicant.infolist.sections.general-information.title'))
                                     ->schema([
                                         Group::make()
@@ -739,9 +750,6 @@ class ApplicantResource extends Resource
                                                         return new HtmlString($html);
                                                     })
                                                     ->placeholder('—'),
-                                                TextEntry::make('stage.name')
-                                                    ->hiddenLabel()
-                                                    ->badge(),
                                                 TextEntry::make('application_status')
                                                     ->hiddenLabel()
                                                     ->icon(null)

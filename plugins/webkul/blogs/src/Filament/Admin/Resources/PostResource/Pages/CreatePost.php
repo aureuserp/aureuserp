@@ -4,7 +4,6 @@ namespace Webkul\Blog\Filament\Admin\Resources\PostResource\Pages;
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Blog\Filament\Admin\Resources\PostResource;
 
 class CreatePost extends CreateRecord
@@ -22,14 +21,5 @@ class CreatePost extends CreateRecord
             ->success()
             ->title(__('blogs::filament/admin/resources/post/pages/create-post.notification.title'))
             ->body(__('blogs::filament/admin/resources/post/pages/create-post.notification.body'));
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['creator_id'] = Auth::id();
-
-        $data['author_id'] = Auth::id();
-
-        return $data;
     }
 }

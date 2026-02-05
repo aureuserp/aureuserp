@@ -15,7 +15,7 @@ class LocationPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_location');
+        return $user->can('view_any_inventory_location');
     }
 
     /**
@@ -23,7 +23,7 @@ class LocationPolicy
      */
     public function view(User $user, Location $location): bool
     {
-        return $user->can('view_location');
+        return $user->can('view_inventory_location');
     }
 
     /**
@@ -31,7 +31,7 @@ class LocationPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_location');
+        return $user->can('create_inventory_location');
     }
 
     /**
@@ -39,7 +39,7 @@ class LocationPolicy
      */
     public function update(User $user, Location $location): bool
     {
-        return $user->can('update_location');
+        return $user->can('update_inventory_location');
     }
 
     /**
@@ -47,7 +47,7 @@ class LocationPolicy
      */
     public function delete(User $user, Location $location): bool
     {
-        return $user->can('delete_location');
+        return $user->can('delete_inventory_location');
     }
 
     /**
@@ -55,7 +55,7 @@ class LocationPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_location');
+        return $user->can('delete_any_inventory_location');
     }
 
     /**
@@ -63,7 +63,7 @@ class LocationPolicy
      */
     public function forceDelete(User $user, Location $location): bool
     {
-        return $user->can('force_delete_location');
+        return $user->can('force_delete_inventory_location');
     }
 
     /**
@@ -71,7 +71,7 @@ class LocationPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_location');
+        return $user->can('force_delete_any_inventory_location');
     }
 
     /**
@@ -79,7 +79,7 @@ class LocationPolicy
      */
     public function restore(User $user, Location $location): bool
     {
-        return $user->can('restore_location');
+        return $user->can('restore_inventory_location');
     }
 
     /**
@@ -87,6 +87,6 @@ class LocationPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_location');
+        return $user->can('restore_any_inventory_location');
     }
 }

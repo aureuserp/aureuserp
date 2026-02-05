@@ -6,6 +6,11 @@ return [
         'group' => 'Purchase',
     ],
 
+    'global-search' => [
+        'vendor' => 'Vendor',
+        'type'   => 'Type',
+    ],
+
     'form' => [
         'sections' => [
             'general' => [

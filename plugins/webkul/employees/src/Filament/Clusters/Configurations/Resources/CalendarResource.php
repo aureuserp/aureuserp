@@ -13,7 +13,6 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -37,7 +36,6 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Filament\Clusters\Configurations;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource\Pages\CreateCalendar;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\CalendarResource\Pages\EditCalendar;
@@ -79,8 +77,6 @@ class CalendarResource extends Resource
                             ->schema([
                                 Section::make(__('employees::filament/clusters/configurations/resources/calendar.form.sections.general.title'))
                                     ->schema([
-                                        Hidden::make('creator_id')
-                                            ->default(Auth::user()->id),
                                         TextInput::make('name')
                                             ->label(__('employees::filament/clusters/configurations/resources/calendar.form.sections.general.fields.schedule-name'))
                                             ->maxLength(255)
@@ -153,6 +149,8 @@ class CalendarResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
                 TextColumn::make('id')
                     ->label(__('employees::filament/clusters/configurations/resources/calendar.table.columns.id'))
@@ -376,13 +374,13 @@ class CalendarResource extends Resource
                                         TextEntry::make('hours_per_day')
                                             ->placeholder('—')
                                             ->label(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.configuration.entries.hours-per-day'))
-                                            ->icon('heroicon-o-clock')
-                                            ->date(),
+                                            ->suffix(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.configuration.entries.hours-per-day-suffix'))
+                                            ->icon('heroicon-o-clock'),
                                         TextEntry::make('full_time_required_hours')
                                             ->placeholder('—')
                                             ->label(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.configuration.entries.full-time-required-hours'))
-                                            ->icon('heroicon-o-clock')
-                                            ->date(),
+                                            ->suffix(__('employees::filament/clusters/configurations/resources/calendar.infolist.sections.configuration.entries.full-time-required-hours-suffix'))
+                                            ->icon('heroicon-o-clock'),
                                     ])->columns(2),
                             ])->columnSpan(2),
                         Group::make([

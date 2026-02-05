@@ -15,6 +15,15 @@ class CreateInternal extends CreateRecord
 {
     protected static string $resource = InternalResource::class;
 
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
+
     public function getTitle(): string|Htmlable
     {
         return __('inventories::filament/clusters/operations/resources/internal/pages/create-internal.title');

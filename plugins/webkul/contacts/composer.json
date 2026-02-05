@@ -1,6 +1,6 @@
 {
     "name": "webkul/contacts",
-    "description": "",
+    "description": "Contact management for customers and vendors",
     "authors": [
         {
             "name": "Aureus ERP",
@@ -10,7 +10,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Webkul\\Contact\\Providers\\ContactServiceProvider"
+                "Webkul\\Contact\\ContactServiceProvider"
             ],
             "aliases": {}
         }

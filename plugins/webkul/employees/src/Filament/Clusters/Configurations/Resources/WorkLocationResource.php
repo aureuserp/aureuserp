@@ -11,7 +11,6 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -31,7 +30,6 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Enums\WorkLocation as WorkLocationEnum;
 use Webkul\Employee\Filament\Clusters\Configurations;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\WorkLocationResource\Pages\ListWorkLocations;
@@ -68,9 +66,6 @@ class WorkLocationResource extends Resource
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.form.name'))
                     ->required()
                     ->maxLength(255),
-                Hidden::make('creator_id')
-                    ->required()
-                    ->default(Auth::user()->id),
                 ToggleButtons::make('location_type')
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.form.location-type'))
                     ->inline()
@@ -93,6 +88,8 @@ class WorkLocationResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
                 TextColumn::make('id')
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.table.columns.id'))

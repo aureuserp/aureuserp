@@ -8,9 +8,12 @@ use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Tables\Table;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\VendorResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManagePurchases extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = VendorResource::class;
 
     protected static string $relationship = 'orders';

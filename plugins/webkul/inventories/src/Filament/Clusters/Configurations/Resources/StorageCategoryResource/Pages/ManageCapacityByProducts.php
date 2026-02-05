@@ -16,9 +16,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Unique;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageCapacityByProducts extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = StorageCategoryResource::class;
 
     protected static string $relationship = 'storageCategoryCapacitiesByProduct';

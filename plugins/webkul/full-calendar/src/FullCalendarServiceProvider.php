@@ -2,13 +2,14 @@
 
 namespace Webkul\FullCalendar;
 
+use Filament\Panel;
 use Filament\Support\Assets\AlpineComponent;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
-use Webkul\Support\Console\Commands\InstallCommand;
-use Webkul\Support\Console\Commands\UninstallCommand;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Webkul\PluginManager\Console\Commands\InstallCommand;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class FullCalendarServiceProvider extends PackageServiceProvider
 {
@@ -19,6 +20,7 @@ class FullCalendarServiceProvider extends PackageServiceProvider
     public function configureCustomPackage(Package $package): void
     {
         $package->name(static::$name)
+            ->isCore()
             ->hasViews()
             ->hasTranslations()
             ->hasInstallCommand(function (InstallCommand $command) {})
@@ -28,6 +30,13 @@ class FullCalendarServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         $this->registerCustomCss();
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(FullCalendarPlugin::make());
+        });
     }
 
     public function registerCustomCss()

@@ -16,7 +16,7 @@ class LeavePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_time::off');
+        return $user->can('view_any_time_off_time::off');
     }
 
     /**
@@ -24,7 +24,7 @@ class LeavePolicy
      */
     public function view(User $user, Leave $leave): bool
     {
-        return $user->can('view_time::off');
+        return $user->can('view_time_off_time::off');
     }
 
     /**
@@ -32,7 +32,7 @@ class LeavePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_time::off');
+        return $user->can('create_time_off_time::off');
     }
 
     /**
@@ -40,7 +40,7 @@ class LeavePolicy
      */
     public function update(User $user, Leave $leave): bool
     {
-        if (! $user->can('update_time::off')) {
+        if (! $user->can('update_time_off_time::off')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class LeavePolicy
      */
     public function delete(User $user, Leave $leave): bool
     {
-        if (! $user->can('delete_time::off')) {
+        if (! $user->can('delete_time_off_time::off')) {
             return false;
         }
 
@@ -64,6 +64,6 @@ class LeavePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_time::off');
+        return $user->can('delete_any_time_off_time::off');
     }
 }

@@ -7,7 +7,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
-use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
@@ -20,17 +19,15 @@ use Webkul\Product\Filament\Resources\AttributeResource;
 use Webkul\Product\Filament\Resources\ProductResource;
 use Webkul\Product\Filament\Resources\ProductResource\Actions\GenerateVariantsAction;
 use Webkul\Product\Models\ProductAttribute;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageAttributes extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = ProductResource::class;
 
     protected static string $relationship = 'attributes';
-
-    public static function getSubNavigationPosition(): SubNavigationPosition
-    {
-        return SubNavigationPosition::Top;
-    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-swatch';
 

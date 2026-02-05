@@ -8,8 +8,6 @@ class Products extends Cluster
 {
     protected static ?string $slug = 'inventory/products';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
-
     protected static ?int $navigationSort = 2;
 
     public static function getNavigationLabel(): string

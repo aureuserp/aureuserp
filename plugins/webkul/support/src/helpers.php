@@ -17,4 +17,44 @@ if (! function_exists('money')) {
 
         return Number::currency($amount, $currency, $locale);
     }
+
+    if (! function_exists('random_color')) {
+        function random_color(string $type = 'hex'): string
+        {
+            return match (strtolower($type)) {
+                'rgb' => sprintf(
+                    'rgb(%d, %d, %d)',
+                    random_int(0, 255),
+                    random_int(0, 255),
+                    random_int(0, 255)
+                ),
+
+                'rgba' => sprintf(
+                    'rgba(%d, %d, %d, %.2f)',
+                    random_int(0, 255),
+                    random_int(0, 255),
+                    random_int(0, 255),
+                    random_int(0, 100) / 100
+                ),
+
+                'hsl' => sprintf(
+                    'hsl(%d, %d%%, %d%%)',
+                    random_int(0, 360),
+                    random_int(30, 100),
+                    random_int(20, 80)
+                ),
+
+                'hex' => sprintf(
+                    '#%02X%02X%02X',
+                    random_int(0, 255),
+                    random_int(0, 255),
+                    random_int(0, 255)
+                ),
+
+                default => throw new InvalidArgumentException(
+                    'Invalid color type. Use: hex, rgb, rgba, or hsl'
+                ),
+            };
+        }
+    }
 }

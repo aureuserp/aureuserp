@@ -9,6 +9,15 @@ use Webkul\Partner\Filament\Resources\PartnerResource;
 
 class CreatePartner extends CreateRecord
 {
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
+
     protected static string $resource = PartnerResource::class;
 
     protected function getRedirectUrl(): string

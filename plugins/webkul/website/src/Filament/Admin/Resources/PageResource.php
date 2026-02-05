@@ -47,9 +47,7 @@ class PageResource extends Resource
 
     protected static ?string $slug = 'website/pages';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-window';
-
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     protected static ?string $recordTitleAttribute = 'title';
 
@@ -119,6 +117,8 @@ class PageResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
                 TextColumn::make('title')
                     ->label(__('website::filament/admin/resources/page.table.columns.title'))

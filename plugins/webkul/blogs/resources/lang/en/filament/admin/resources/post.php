@@ -6,6 +6,10 @@ return [
         'group' => 'Website',
     ],
 
+    'global-search' => [
+        'author' => 'Author',
+    ],
+
     'form' => [
         'sections' => [
             'general' => [

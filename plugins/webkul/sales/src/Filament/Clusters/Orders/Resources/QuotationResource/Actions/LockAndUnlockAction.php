@@ -3,9 +3,9 @@
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource\Actions;
 
 use Filament\Actions\Action;
+use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Facades\SaleOrder;
 use Webkul\Sale\Models\Order;
-use Webkul\Sale\Settings\QuotationAndOrderSettings;
 
 class LockAndUnlockAction extends Action
 {
@@ -25,6 +25,6 @@ class LockAndUnlockAction extends Action
             ->action(function (Order $record): void {
                 SaleOrder::lockAndUnlock($record);
             })
-            ->visible(fn (QuotationAndOrderSettings $quotationAndOrderSettings) => $quotationAndOrderSettings?->enable_lock_confirm_sales);
+            ->visible(fn () => $this->getRecord()->state === OrderState::SALE);
     }
 }

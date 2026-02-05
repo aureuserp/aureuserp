@@ -2,5 +2,5 @@
 
 return [
     'biggest-tax' => 'Modify tax amount',
-    'add-invoice' => 'Add Invoice',
+    'add-invoice' => 'Add Invoice Line',
 ];

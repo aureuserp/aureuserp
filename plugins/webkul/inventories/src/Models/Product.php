@@ -5,10 +5,10 @@ namespace Webkul\Inventory\Models;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Webkul\Account\Models\Product as BaseProduct;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\ProductTracking;
-use Webkul\Product\Models\Product as BaseProduct;
 use Webkul\Security\Models\User;
 
 class Product extends BaseProduct

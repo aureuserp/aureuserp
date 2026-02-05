@@ -3,11 +3,12 @@
 namespace Webkul\Project\Filament\Widgets;
 
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
-use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Webkul\Project\Models\Timesheet;
 
@@ -19,9 +20,19 @@ class TopProjectsWidget extends BaseWidget
 
     protected static ?string $pollingInterval = '15s';
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'widget_project_top_projects_widget';
+    }
+
     public function getHeading(): string|Htmlable|null
     {
         return __('projects::filament/widgets/top-projects.heading.title');
+    }
+
+    public function getTableRecordKey(Model|array $record): string
+    {
+        return 'id';
     }
 
     public function table(Table $table): Table
@@ -71,13 +82,13 @@ class TopProjectsWidget extends BaseWidget
             ->query($query)
             ->defaultPaginationPageOption(5)
             ->columns([
-                Tables\Columns\TextColumn::make('project_name')
+                TextColumn::make('project_name')
                     ->label(__('projects::filament/widgets/top-projects.table-columns.project-name'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('total_hours')
+                TextColumn::make('total_hours')
                     ->label(__('projects::filament/widgets/top-projects.table-columns.hours-spent'))
                     ->sortable(),
-                Tables\Columns\TextColumn::make('total_tasks')
+                TextColumn::make('total_tasks')
                     ->label(__('projects::filament/widgets/top-projects.table-columns.tasks'))
                     ->sortable(),
             ]);

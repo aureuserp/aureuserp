@@ -7,6 +7,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Group;
+use Throwable;
 
 class FiltersAction extends Action
 {
@@ -29,7 +30,7 @@ class FiltersAction extends Action
                     return method_exists($livewire, 'getActiveFilters')
                         ? (count($livewire->getActiveFilters()) ?: null)
                         : null;
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     return null;
                 }
             })

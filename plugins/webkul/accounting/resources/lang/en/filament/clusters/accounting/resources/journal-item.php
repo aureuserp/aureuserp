@@ -1,0 +1,97 @@
+<?php
+
+return [
+    'title' => 'Journal Items',
+
+    'navigation' => [
+        'title' => 'Journal Items',
+    ],
+
+    'table' => [
+        'total'   => 'Total',
+        'columns' => [
+            'number'          => 'Number',
+            'date'            => 'Date',
+            'account'         => 'Account',
+            'partner'         => 'Partner',
+            'label'           => 'Label',
+            'reference'       => 'Reference',
+            'journal'         => 'Journal',
+            'debit'           => 'Debit',
+            'credit'          => 'Credit',
+            'balance'         => 'Balance',
+            'currency'        => 'Currency',
+            'company'         => 'Company',
+            'status'          => 'Status',
+            'amount-currency' => 'Amount Currency',
+            'amount-residual' => 'Amount Residual',
+            'reconciled'      => 'Reconciled',
+            'due-date'        => 'Due Date',
+        ],
+
+        'groups' => [
+            'journal-entry' => 'Journal Entry',
+            'account'       => 'Account',
+            'partner'       => 'Partner',
+            'journal'       => 'Journal',
+            'date'          => 'Date',
+            'invoice-date'  => 'Invoice Date',
+            'matching'      => 'Matching',
+            'status'        => 'Status',
+            'company'       => 'Company',
+        ],
+
+        'filters' => [
+            'number'          => 'Number',
+            'label'           => 'Label',
+            'reference'       => 'Reference',
+            'matching-number' => 'Matching Number',
+            'account'         => 'Account',
+            'partner'         => 'Partner',
+            'journal'         => 'Journal',
+            'currency'        => 'Currency',
+            'company'         => 'Company',
+            'date'            => 'Date',
+            'invoice-date'    => 'Invoice Date',
+            'due-date'        => 'Due Date',
+            'discount-date'   => 'Discount Date',
+            'debit'           => 'Debit',
+            'credit'          => 'Credit',
+            'balance'         => 'Balance',
+            'amount-currency' => 'Amount Currency',
+            'amount-residual' => 'Amount Residual',
+            'quantity'        => 'Quantity',
+            'price-unit'      => 'Price Unit',
+            'discount'        => 'Discount',
+            'reconciled'      => 'Reconciled',
+            'imported'        => 'Imported',
+            'down-payment'    => 'Down Payment',
+            'created-at'      => 'Created At',
+            'updated-at'      => 'Updated At',
+        ],
+
+        'saved-filters' => [
+            'label'         => 'Saved Filters',
+            'unposted'      => 'Unposted',
+            'posted'        => 'Posted',
+            'to-check'      => 'To Check',
+            'unreconciled'  => 'Unreconciled',
+            'with-residual' => 'With Residual',
+            'sales'         => 'Sales',
+            'purchases'     => 'Purchases',
+            'bank'          => 'Bank',
+            'cash'          => 'Cash',
+            'credit'        => 'Credit',
+            'miscellaneous' => 'Miscellaneous',
+            'payable'       => 'Payable',
+            'receivable'    => 'Receivable',
+            'pl-accounts'   => 'P&L Accounts',
+        ],
+
+        'toolbar-actions' => [
+            'export' => [
+                'label' => 'Export',
+            ],
+        ],
+    ],
+];

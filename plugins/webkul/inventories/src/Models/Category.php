@@ -4,7 +4,7 @@ namespace Webkul\Inventory\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Webkul\Product\Models\Category as BaseCategory;
+use Webkul\Account\Models\Category as BaseCategory;
 
 class Category extends BaseCategory
 {

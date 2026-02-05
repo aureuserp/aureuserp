@@ -15,7 +15,7 @@ class FieldPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_field');
+        return $user->can('view_any_field_field');
     }
 
     /**
@@ -23,7 +23,7 @@ class FieldPolicy
      */
     public function view(User $user, Field $field): bool
     {
-        return $user->can('view_field');
+        return $user->can('view_field_field');
     }
 
     /**
@@ -31,7 +31,7 @@ class FieldPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_field');
+        return $user->can('create_field_field');
     }
 
     /**
@@ -39,7 +39,7 @@ class FieldPolicy
      */
     public function update(User $user, Field $field): bool
     {
-        return $user->can('update_field');
+        return $user->can('update_field_field');
     }
 
     /**
@@ -47,7 +47,7 @@ class FieldPolicy
      */
     public function delete(User $user, Field $field): bool
     {
-        return $user->can('delete_field');
+        return $user->can('delete_field_field');
     }
 
     /**
@@ -55,7 +55,7 @@ class FieldPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_field');
+        return $user->can('delete_any_field_field');
     }
 
     /**
@@ -63,7 +63,7 @@ class FieldPolicy
      */
     public function forceDelete(User $user, Field $field): bool
     {
-        return $user->can('force_delete_field');
+        return $user->can('force_delete_field_field');
     }
 
     /**
@@ -71,7 +71,7 @@ class FieldPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_field');
+        return $user->can('force_delete_any_field_field');
     }
 
     /**
@@ -79,7 +79,7 @@ class FieldPolicy
      */
     public function restore(User $user, Field $field): bool
     {
-        return $user->can('restore_field');
+        return $user->can('restore_field_field');
     }
 
     /**
@@ -87,6 +87,6 @@ class FieldPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_field');
+        return $user->can('restore_any_field_field');
     }
 }

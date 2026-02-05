@@ -2,7 +2,6 @@
 
 namespace Webkul\Product\Filament\Resources;
 
-use BackedEnum;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -63,7 +62,24 @@ class ProductResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
+    protected static ?string $recordTitleAttribute = 'name';
+
+    protected static bool $isGloballySearchable = false;
+
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'reference', 'barcode'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('products::filament/resources/product.global-search.reference') => $record->reference,
+            __('products::filament/resources/product.global-search.barcode')   => $record->barcode,
+        ];
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -122,7 +138,7 @@ class ProductResource extends Resource
                                             ->maxValue(99999999999),
                                     ]),
                             ])
-                            ->visible(fn (Get $get): bool => $get('type') == ProductType::GOODS->value),
+                            ->visible(fn (Get $get): bool => $get('type') == ProductType::GOODS),
                     ])
                     ->columnSpan(['lg' => 2]),
 
@@ -192,9 +208,11 @@ class ProductResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
                 IconColumn::make('is_favorite')
-                    ->label('')
+                    ->label(__('products::filament/resources/product.table.columns.favorite'))
                     ->icon(fn (Product $record): string => $record->is_favorite ? 'heroicon-s-star' : 'heroicon-o-star')
                     ->color(fn (Product $record): string => $record->is_favorite ? 'warning' : 'gray')
                     ->action(function (Product $record): void {
@@ -393,7 +411,7 @@ class ProductResource extends Resource
                                 ->body(__('products::filament/resources/product.table.actions.delete.notification.body')),
                         ),
                     ForceDeleteAction::make()
-                        ->action(function (Product $record) {
+                        ->action(function (ForceDeleteAction $action, Product $record) {
                             try {
                                 $record->forceDelete();
                             } catch (QueryException $e) {
@@ -402,6 +420,7 @@ class ProductResource extends Resource
                                     ->title(__('products::filament/resources/product.table.actions.force-delete.notification.error.title'))
                                     ->body(__('products::filament/resources/product.table.actions.force-delete.notification.error.body'))
                                     ->send();
+                                $action->cancel();
                             }
                         })
                         ->successNotification(
@@ -469,7 +488,7 @@ class ProductResource extends Resource
                                 ->body(__('products::filament/resources/product.table.bulk-actions.delete.notification.body')),
                         ),
                     ForceDeleteBulkAction::make()
-                        ->action(function (Collection $records) {
+                        ->action(function (ForceDeleteBulkAction $action, Collection $records) {
                             try {
                                 $records->each(fn (Model $record) => $record->forceDelete());
                             } catch (QueryException $e) {
@@ -478,6 +497,7 @@ class ProductResource extends Resource
                                     ->title(__('products::filament/resources/product.table.bulk-actions.force-delete.notification.error.title'))
                                     ->body(__('products::filament/resources/product.table.bulk-actions.force-delete.notification.error.body'))
                                     ->send();
+                                $action->cancel();
                             }
                         })
                         ->successNotification(

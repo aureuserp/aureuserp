@@ -1,6 +1,6 @@
 {
     "name": "webkul/purchases",
-    "description": "",
+    "description": "Procurement and purchase order management",
     "authors": [
         {
             "name": "Aureus ERP",
@@ -10,7 +10,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Webkul\\Purchase\\Providers\\PurchaseServiceProvider"
+                "Webkul\\Purchase\\PurchaseServiceProvider"
             ],
             "aliases": {}
         }

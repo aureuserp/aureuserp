@@ -16,7 +16,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Grid;
@@ -27,7 +26,8 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Field\Filament\Forms\Components\ProgressStepper;
+use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\TimeOff\Enums\AllocationType;
 use Webkul\TimeOff\Enums\State;
 use Webkul\TimeOff\Filament\Clusters\MyTime;
@@ -49,8 +49,6 @@ class MyAllocationResource extends Resource
 
     protected static ?string $modelLabel = 'My Allocation';
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
-
     public static function getModelLabel(): string
     {
         return __('time-off::filament/clusters/my-time/resources/my-allocation.model-label');
@@ -67,7 +65,7 @@ class MyAllocationResource extends Resource
             ->components([
                 Grid::make()
                     ->schema([
-                        ProgressStepper::make('state')
+                        FormProgressStepper::make('state')
                             ->hiddenLabel()
                             ->inline()
                             ->options(function ($record) {
@@ -152,7 +150,7 @@ class MyAllocationResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('allocation_type')
-                    ->formatStateUsing(fn ($state) => AllocationType::options([$state]))
+                    ->formatStateUsing(fn ($state) => AllocationType::options()[$state->value])
                     ->label(__('time-off::filament/clusters/my-time/resources/my-allocation.table.columns.allocation-type'))
                     ->sortable()
                     ->searchable(),
@@ -255,6 +253,24 @@ class MyAllocationResource extends Resource
                     ->schema([
                         Group::make()
                             ->schema([
+                                InfolistProgressStepper::make('state')
+                                    ->hiddenLabel()
+                                    ->inline()
+                                    ->options(function ($record) {
+                                        $onlyStates = [
+                                            State::CONFIRM->value,
+                                            State::VALIDATE_TWO->value,
+                                        ];
+
+                                        if ($record->state === State::REFUSE->value) {
+                                            $onlyStates[] = State::REFUSE->value;
+                                        }
+
+                                        return collect(State::options())->only($onlyStates)->toArray();
+                                    })
+                                    ->default(State::CONFIRM->value)
+                                    ->columnSpan('full'),
+
                                 Section::make(__('time-off::filament/clusters/my-time/resources/my-allocation.infolist.sections.allocation-details.title'))
                                     ->schema([
                                         TextEntry::make('name')
@@ -268,7 +284,7 @@ class MyAllocationResource extends Resource
                                         TextEntry::make('allocation_type')
                                             ->placeholder('—')
                                             ->icon('heroicon-o-queue-list')
-                                            ->formatStateUsing(fn ($state) => AllocationType::options()[$state])
+                                            ->formatStateUsing(fn ($state) => AllocationType::options()[$state->value])
                                             ->label(__('time-off::filament/clusters/my-time/resources/my-allocation.infolist.sections.allocation-details.entries.allocation-type')),
                                     ])->columns(2),
                                 Section::make(__('time-off::filament/clusters/my-time/resources/my-allocation.infolist.sections.validity-period.title'))

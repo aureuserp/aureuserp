@@ -101,14 +101,14 @@ class LeaveTypeResource extends Resource
                                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.general.fields.employee-requests'))
                                                             ->inline(false)
                                                             ->live()
-                                                            ->visible(fn (Get $get) => $get('requires_allocation') === RequiresAllocation::YES->value)
+                                                            ->visible(fn (Get $get) => $get('requires_allocation') === RequiresAllocation::YES)
                                                             ->default(EmployeeRequest::NO->value)
                                                             ->options(EmployeeRequest::class),
                                                         Radio::make('allocation_validation_type')
                                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.general.fields.approval'))
                                                             ->inline(false)
                                                             ->live()
-                                                            ->visible(fn (Get $get) => $get('requires_allocation') === RequiresAllocation::YES->value)
+                                                            ->visible(fn (Get $get) => $get('requires_allocation') === RequiresAllocation::YES)
                                                             ->default(AllocationValidationType::HR->value)
                                                             ->options(AllocationValidationType::class),
                                                     ]),
@@ -153,14 +153,14 @@ class LeaveTypeResource extends Resource
                                             ->default(TimeType::LEAVE->value)
                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.configuration.fields.kind-of-time')),
                                         Toggle::make('allows_negative')
-                                            ->visible(fn (Get $get) => $get('requires_allocation') === RequiresAllocation::YES->value)
+                                            ->visible(fn (Get $get) => $get('requires_allocation') === RequiresAllocation::YES)
                                             ->live()
                                             ->inline(false)
                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.configuration.fields.allow-negative-cap')),
                                         TextInput::make('max_allowed_negative')
                                             ->numeric()
                                             ->default(0)
-                                            ->visible(fn (Get $get) => $get('requires_allocation') === RequiresAllocation::YES->value && $get('allows_negative') === true)
+                                            ->visible(fn (Get $get) => $get('requires_allocation') === RequiresAllocation::YES && $get('allows_negative') === true)
                                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.form.sections.configuration.fields.max-negative-cap'))
                                             ->step(1)
                                             ->live()
@@ -177,6 +177,8 @@ class LeaveTypeResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
                 TextColumn::make('name')
                     ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.columns.name'))

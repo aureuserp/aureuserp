@@ -13,9 +13,12 @@ use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\Route;
 use Webkul\Inventory\Models\Rule;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditWarehouse extends EditRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = WarehouseResource::class;
 
     protected function getSavedNotification(): Notification

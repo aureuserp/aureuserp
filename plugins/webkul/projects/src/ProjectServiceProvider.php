@@ -2,10 +2,11 @@
 
 namespace Webkul\Project;
 
-use Webkul\Support\Console\Commands\InstallCommand;
-use Webkul\Support\Console\Commands\UninstallCommand;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Filament\Panel;
+use Webkul\PluginManager\Console\Commands\InstallCommand;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class ProjectServiceProvider extends PackageServiceProvider
 {
@@ -27,6 +28,7 @@ class ProjectServiceProvider extends PackageServiceProvider
                 '2024_12_12_101350_create_projects_task_users_table',
                 '2024_12_12_101352_create_projects_task_tag_table',
                 '2024_12_18_145142_add_columns_to_analytic_records_table',
+                '2025_09_24_062711_remove_tags_column_from_projects_tasks_table',
             ])
             ->runsMigrations()
             ->hasSettings([
@@ -40,11 +42,19 @@ class ProjectServiceProvider extends PackageServiceProvider
                     ->runsMigrations()
                     ->runsSeeders();
             })
-            ->hasUninstallCommand(function (UninstallCommand $command) {});
+            ->hasUninstallCommand(function (UninstallCommand $command) {})
+            ->icon('projects');
     }
 
     public function packageBooted(): void
     {
         //
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(ProjectPlugin::make());
+        });
     }
 }

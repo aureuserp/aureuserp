@@ -7,8 +7,6 @@ use Filament\Panel;
 
 class Overview extends Cluster
 {
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-view-columns';
-
     protected static ?int $navigationSort = 2;
 
     public static function getSlug(?Panel $panel = null): string

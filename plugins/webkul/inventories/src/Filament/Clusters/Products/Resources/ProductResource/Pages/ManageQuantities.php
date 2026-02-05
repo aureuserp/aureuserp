@@ -29,12 +29,13 @@ use Webkul\Inventory\Models\Warehouse;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
 
 class ManageQuantities extends ManageRelatedRecords
 {
-    use HasTableViews;
+    use HasRecordNavigationTabs, HasTableViews;
 
     protected static string $resource = ProductResource::class;
 

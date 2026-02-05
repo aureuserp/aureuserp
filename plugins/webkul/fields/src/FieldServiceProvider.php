@@ -2,13 +2,14 @@
 
 namespace Webkul\Field;
 
+use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Gate;
 use Webkul\Field\Models\Field;
 use Webkul\Field\Policies\FieldPolicy;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class FieldServiceProvider extends PackageServiceProvider
 {
@@ -33,6 +34,13 @@ class FieldServiceProvider extends PackageServiceProvider
         $this->registerCustomCss();
 
         Gate::policy(Field::class, FieldPolicy::class);
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(FieldsPlugin::make());
+        });
     }
 
     public function registerCustomCss()

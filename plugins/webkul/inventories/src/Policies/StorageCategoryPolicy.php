@@ -15,7 +15,7 @@ class StorageCategoryPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_storage::category');
+        return $user->can('view_any_inventory_storage::category');
     }
 
     /**
@@ -23,7 +23,7 @@ class StorageCategoryPolicy
      */
     public function view(User $user, StorageCategory $storageCategory): bool
     {
-        return $user->can('view_storage::category');
+        return $user->can('view_inventory_storage::category');
     }
 
     /**
@@ -31,7 +31,7 @@ class StorageCategoryPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_storage::category');
+        return $user->can('create_inventory_storage::category');
     }
 
     /**
@@ -39,7 +39,7 @@ class StorageCategoryPolicy
      */
     public function update(User $user, StorageCategory $storageCategory): bool
     {
-        return $user->can('update_storage::category');
+        return $user->can('update_inventory_storage::category');
     }
 
     /**
@@ -47,7 +47,7 @@ class StorageCategoryPolicy
      */
     public function delete(User $user, StorageCategory $storageCategory): bool
     {
-        return $user->can('delete_storage::category');
+        return $user->can('delete_inventory_storage::category');
     }
 
     /**
@@ -55,6 +55,6 @@ class StorageCategoryPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_storage::category');
+        return $user->can('delete_any_inventory_storage::category');
     }
 }

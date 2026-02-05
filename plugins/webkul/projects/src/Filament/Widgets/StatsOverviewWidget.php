@@ -17,6 +17,11 @@ class StatsOverviewWidget extends BaseWidget
 
     protected ?string $pollingInterval = '15s';
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'widget_project_stats_overview_widget';
+    }
+
     protected function getHeading(): ?string
     {
         return __('projects::filament/widgets/stats-overview.heading.title');

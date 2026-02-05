@@ -16,6 +16,7 @@ use Webkul\Inventory\Models\Location;
 use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\OperationType;
 use Webkul\Inventory\Models\Receipt;
+use Webkul\PluginManager\Package;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Purchase\Enums as PurchaseEnums;
 use Webkul\Purchase\Enums\QtyReceivedMethod;
@@ -25,11 +26,13 @@ use Webkul\Purchase\Models\AccountMove;
 use Webkul\Purchase\Models\Order;
 use Webkul\Purchase\Models\OrderLine;
 use Webkul\Purchase\Settings\OrderSettings;
-use Webkul\Support\Package;
 
 class PurchaseOrder
 {
-    public function __construct(protected OrderSettings $orderSettings) {}
+    public static function getOrderSettings(): OrderSettings
+    {
+        return once(fn () => app(OrderSettings::class));
+    }
 
     public function sendRFQ(Order $record, array $data): Order
     {
@@ -67,7 +70,7 @@ class PurchaseOrder
     public function confirmPurchaseOrder(Order $record): Order
     {
         $record->update([
-            'state'       => $this->orderSettings->enable_lock_confirmed_orders
+            'state'       => static::getOrderSettings()->enable_lock_confirmed_orders
                 ? PurchaseEnums\OrderState::DONE
                 : PurchaseEnums\OrderState::PURCHASE,
             'approved_at' => now(),

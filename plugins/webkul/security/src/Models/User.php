@@ -3,6 +3,12 @@
 namespace Webkul\Security\Models;
 
 use App\Models\User as BaseUser;
+use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
+use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthentication;
+use Filament\Auth\MultiFactor\Email\Contracts\HasEmailAuthentication;
+use Filament\Auth\MultiFactor\Email\Concerns\InteractsWithEmailAuthentication;
+use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
+use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthenticationRecovery;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,9 +26,14 @@ use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 
-class User extends BaseUser implements FilamentUser
+class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasEmailAuthentication, HasAppAuthenticationRecovery
 {
-    use HasPermissionScope, HasRoles, SoftDeletes;
+    use HasRoles,
+        InteractsWithAppAuthentication,
+        InteractsWithEmailAuthentication,
+        InteractsWithAppAuthenticationRecovery,
+        SoftDeletes,
+        HasPermissionScope;
 
     public function __construct(array $attributes = [])
     {

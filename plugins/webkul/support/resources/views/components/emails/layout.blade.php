@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
+        .body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
             color: #333;
@@ -30,7 +30,7 @@
     </style>
 </head>
 
-<body>
+<body class='body'>
     <div>
         {{ $slot }}
 

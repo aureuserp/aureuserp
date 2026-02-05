@@ -13,10 +13,12 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource;
 use Webkul\Inventory\Models\Operation;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
 
 class ManageOperations extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
     use HasTableViews;
 
     protected static string $resource = PackageResource::class;

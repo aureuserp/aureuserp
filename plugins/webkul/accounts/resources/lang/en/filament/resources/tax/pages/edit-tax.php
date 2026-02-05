@@ -18,6 +18,10 @@ return [
                     'title' => 'Tax could not be deleted',
                     'body'  => 'The tax cannot be deleted because it is currently in use.',
                 ],
+
+                'invalid-repartition-lines' => [
+                    'title' => 'Invalid Repartition Lines',
+                ],
             ],
         ],
     ],

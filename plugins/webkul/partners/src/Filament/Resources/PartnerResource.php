@@ -14,7 +14,6 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -49,7 +48,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Partner\Enums\AccountType;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Traits\HasResourcePermissionQuery;
@@ -60,9 +58,24 @@ class PartnerResource extends Resource
 
     protected static ?string $model = Partner::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
-
     protected static bool $shouldRegisterNavigation = false;
+
+    protected static bool $isGloballySearchable = false;
+
+    protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'email', 'phone'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('partners::filament/resources/partner.global-search.email') => $record->email ?? '—',
+            __('partners::filament/resources/partner.global-search.phone') => $record->phone ?? '—',
+        ];
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -100,6 +113,10 @@ class PartnerResource extends Resource
                                             ->relationship(
                                                 name: 'parent',
                                                 titleAttribute: 'name',
+                                                modifyQueryUsing: fn ($query) => $query->where(function ($q) {
+                                                    $q->where('account_type', 'company')
+                                                        ->orWhere('sub_type', 'company');
+                                                })
                                             )
                                             ->visible(fn (Get $get): bool => $get('account_type') === AccountType::INDIVIDUAL)
                                             ->searchable()
@@ -188,8 +205,6 @@ class PartnerResource extends Resource
                                             ->required()
                                             ->maxLength(255)
                                             ->unique('partners_titles'),
-                                        Hidden::make('creator_id')
-                                            ->default(Auth::user()->id),
                                     ]),
                                 Select::make('tags')
                                     ->label(__('partners::filament/resources/partner.form.sections.general.fields.tags'))
@@ -377,7 +392,7 @@ class PartnerResource extends Resource
                                 ->color(fn ($state) => Color::generateV3Palette($state['color']))
                                 ->weight(FontWeight::Bold),
                         ])
-                            ->visible(fn ($record): bool => (bool) $record->tags()->get()?->count()),
+                            ->visible(fn ($record): bool => (bool) $record->tags?->count()),
                     ])->space(1),
                 ])->space(4),
             ])
@@ -525,7 +540,7 @@ class PartnerResource extends Resource
                             ->body(__('partners::filament/resources/partner.table.actions.delete.notification.body')),
                     ),
                 ForceDeleteAction::make()
-                    ->action(function (Partner $record) {
+                    ->action(function (ForceDeleteAction $action, Partner $record) {
                         try {
                             $record->forceDelete();
                         } catch (QueryException $e) {
@@ -534,6 +549,8 @@ class PartnerResource extends Resource
                                 ->title(__('partners::filament/resources/partner.table.actions.force-delete.notification.error.title'))
                                 ->body(__('partners::filament/resources/partner.table.actions.force-delete.notification.error.body'))
                                 ->send();
+                            $action->cancel();
+
                         }
                     })
                     ->successNotification(
@@ -560,7 +577,7 @@ class PartnerResource extends Resource
                                 ->body(__('partners::filament/resources/partner.table.bulk-actions.delete.notification.body')),
                         ),
                     ForceDeleteBulkAction::make()
-                        ->action(function (Collection $records) {
+                        ->action(function (ForceDeleteBulkAction $action, Collection $records) {
                             try {
                                 $records->each(fn (Model $record) => $record->forceDelete());
                             } catch (QueryException $e) {
@@ -569,6 +586,8 @@ class PartnerResource extends Resource
                                     ->title(__('partners::filament/resources/partner.table.bulk-actions.force-delete.notification.error.title'))
                                     ->body(__('partners::filament/resources/partner.table.bulk-actions.force-delete.notification.error.body'))
                                     ->send();
+                                $action->cancel();
+
                             }
                         })
                         ->successNotification(
@@ -580,7 +599,7 @@ class PartnerResource extends Resource
                 ]),
             ])
             ->modifyQueryUsing(function (Builder $query) {
-                $query->where('account_type', '!=', AccountType::ADDRESS);
+                $query->with(['tags'])->where('account_type', '!=', AccountType::ADDRESS);
             })
             ->contentGrid([
                 'sm'  => 1,

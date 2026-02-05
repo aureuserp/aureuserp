@@ -6,6 +6,11 @@ return [
         'group' => 'Inventory',
     ],
 
+    'global-search' => [
+        'partner' => 'Partner',
+        'origin'  => 'Origin',
+    ],
+
     'form' => [
         'sections' => [
             'general' => [
@@ -93,6 +98,7 @@ return [
 
     'table' => [
         'columns' => [
+            'favorite'        => 'Favorite',
             'reference'       => 'Reference',
             'from'            => 'From',
             'to'              => 'To',

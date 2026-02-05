@@ -186,7 +186,7 @@ class OrderResource extends Resource
                                                 return __('purchases::filament/customer/clusters/account/resources/order.infolist.general.entries.purchase-order', ['id' => $record->name]);
                                             }),
                                         TextEntry::make('ordered_at')
-                                            ->label(__('purchases::filament/customer/clusters/account/resources/order.infolist.general.entries.quotation')),
+                                            ->label(__('purchases::filament/customer/clusters/account/resources/order.infolist.general.entries.order-date')),
                                         ViewEntry::make('company')
                                             ->label(__('purchases::filament/customer/clusters/account/resources/order.infolist.general.entries.from'))
                                             ->view('purchases::filament.customer.clusters.account.order.pages.view-record.from'),
@@ -255,25 +255,26 @@ class OrderResource extends Resource
                                 Group::make()
                                     ->extraAttributes(['class' => 'mt-8'])
                                     ->schema([
-                                        TextEntry::make('name')
-                                            ->hiddenLabel()
-                                            ->size('text-2xl')
-                                            ->weight(FontWeight::Bold)
-                                            ->formatStateUsing(function (Order $record) {
-                                                return __('purchases::filament/customer/clusters/account/resources/order.infolist.general.entries.communication-history');
-                                            }),
+                                        // TextEntry::make('name')
+                                        //     ->hiddenLabel()
+                                        //     ->size('text-2xl')
+                                        //     ->weight(FontWeight::Bold)
+                                        //     ->formatStateUsing(function (Order $record) {
+                                        //         return __('purchases::filament/customer/clusters/account/resources/order.infolist.general.entries.communication-history');
+                                        //     }),
 
                                         Livewire::make('chatter-panel', function (Order $record) {
                                             $record = Order::findOrFail($record->id);
 
                                             return [
-                                                'record'             => $record,
-                                                'showMessageAction'  => true,
-                                                'showActivityAction' => false,
-                                                'showFollowerAction' => false,
-                                                'showLogAction'      => false,
-                                                'showFileAction'     => false,
-                                                'filters'            => [
+                                                'record'                  => $record,
+                                                'resourceClass'           => static::class,
+                                                'isLogActionVisible'      => false,
+                                                'isActivityActionVisible' => false,
+                                                'isFollowerActionVisible' => false,
+                                                'isFileActionVisible'     => false,
+                                                'inModal'                 => false,
+                                                'filters'                 => [
                                                     'type' => [
                                                         'comment',
                                                     ],

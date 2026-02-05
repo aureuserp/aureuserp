@@ -6,7 +6,7 @@ use Filament\Clusters\Cluster;
 
 class Customer extends Cluster
 {
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
+    protected static ?string $slug = 'invoices/customers';
 
     public static function getNavigationLabel(): string
     {

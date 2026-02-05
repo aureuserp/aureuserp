@@ -156,9 +156,9 @@ return [
                 'title'   => 'Work Hours Configuration',
                 'entries' => [
                     'hours-per-day'                   => 'Hours Per Day',
-                    'hours-per-day-suffix'            => 'Hours',
+                    'hours-per-day-suffix'            => ' Hours',
                     'full-time-required-hours'        => 'Full Time Required Hours',
-                    'full-time-required-hours-suffix' => 'Hours Per Week',
+                    'full-time-required-hours-suffix' => ' Hours Per Week',
                 ],
             ],
 

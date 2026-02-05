@@ -16,7 +16,7 @@ class InternalTransferPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_internal');
+        return $user->can('view_any_inventory_internal');
     }
 
     /**
@@ -24,7 +24,7 @@ class InternalTransferPolicy
      */
     public function view(User $user, InternalTransfer $internalTransfer): bool
     {
-        return $user->can('view_internal');
+        return $user->can('view_inventory_internal');
     }
 
     /**
@@ -32,7 +32,7 @@ class InternalTransferPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_internal');
+        return $user->can('create_inventory_internal');
     }
 
     /**
@@ -40,7 +40,7 @@ class InternalTransferPolicy
      */
     public function update(User $user, InternalTransfer $internalTransfer): bool
     {
-        if (! $user->can('update_internal')) {
+        if (! $user->can('update_inventory_internal')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class InternalTransferPolicy
      */
     public function delete(User $user, InternalTransfer $internalTransfer): bool
     {
-        if (! $user->can('delete_internal')) {
+        if (! $user->can('delete_inventory_internal')) {
             return false;
         }
 
@@ -64,6 +64,6 @@ class InternalTransferPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_internal');
+        return $user->can('delete_any_inventory_internal');
     }
 }

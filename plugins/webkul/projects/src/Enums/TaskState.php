@@ -2,9 +2,11 @@
 
 namespace Webkul\Project\Enums;
 
-use Filament\Support\Contracts;
+use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasIcon;
+use Filament\Support\Contracts\HasLabel;
 
-enum TaskState: string implements Contracts\HasColor, Contracts\HasIcon, Contracts\HasLabel
+enum TaskState: string implements HasColor, HasIcon, HasLabel
 {
     case IN_PROGRESS = 'in_progress';
     case CHANGE_REQUESTED = 'change_requested';

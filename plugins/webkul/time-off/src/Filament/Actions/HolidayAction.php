@@ -42,7 +42,7 @@ class HolidayAction extends Action
                                 ? $holiday->date_from
                                 : "{$holiday->date_from} - {$holiday->date_to}";
 
-                            $companyName = $holiday->calendar->company ? $holiday->calendar->company->name : 'N/A';
+                            $companyName = $holiday->calendar?->company ? $holiday->calendar?->company->name : 'N/A';
 
                             $html .= "
                                 <div class='flex items-center justify-between rounded-lg bg-gray-100 p-4 dark:bg-gray-800'>

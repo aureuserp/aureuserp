@@ -13,7 +13,6 @@ use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\ColorEntry;
@@ -40,7 +39,6 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\CreateDepartment;
 use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\EditDepartment;
 use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\ListDepartments;
@@ -55,9 +53,9 @@ class DepartmentResource extends Resource
 
     protected static ?string $model = Department::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-office-2';
+    protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function getNavigationLabel(): string
     {
@@ -77,7 +75,6 @@ class DepartmentResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            __('employees::filament/resources/department.global-search.name')               => $record->name ?? '—',
             __('employees::filament/resources/department.global-search.department-manager') => $record->manager?->name ?? '—',
             __('employees::filament/resources/department.global-search.company')            => $record->company?->name ?? '—',
         ];
@@ -95,9 +92,6 @@ class DepartmentResource extends Resource
                             ->schema([
                                 Section::make(__('employees::filament/resources/department.form.sections.general.title'))
                                     ->schema([
-                                        Hidden::make('creator_id')
-                                            ->default(Auth::id())
-                                            ->required(),
                                         TextInput::make('name')
                                             ->label(__('employees::filament/resources/department.form.sections.general.fields.name'))
                                             ->required()

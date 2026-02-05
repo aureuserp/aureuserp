@@ -16,11 +16,13 @@ use Webkul\Inventory\Filament\Clusters\Products\Resources\ProductResource;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 use Webkul\TableViews\Filament\Components\PresetView;
 use Webkul\TableViews\Filament\Concerns\HasTableViews;
 
 class ManageMoves extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
     use HasTableViews;
 
     protected static string $resource = ProductResource::class;

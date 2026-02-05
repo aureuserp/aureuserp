@@ -16,7 +16,7 @@ class DropshipPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_dropship');
+        return $user->can('view_any_inventory_dropship');
     }
 
     /**
@@ -24,7 +24,7 @@ class DropshipPolicy
      */
     public function view(User $user, Dropship $dropship): bool
     {
-        return $user->can('view_dropship');
+        return $user->can('view_inventory_dropship');
     }
 
     /**
@@ -32,7 +32,7 @@ class DropshipPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_dropship');
+        return $user->can('create_inventory_dropship');
     }
 
     /**
@@ -40,7 +40,7 @@ class DropshipPolicy
      */
     public function update(User $user, Dropship $dropship): bool
     {
-        if (! $user->can('update_dropship')) {
+        if (! $user->can('update_inventory_dropship')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class DropshipPolicy
      */
     public function delete(User $user, Dropship $dropship): bool
     {
-        if (! $user->can('delete_dropship')) {
+        if (! $user->can('delete_inventory_dropship')) {
             return false;
         }
 
@@ -64,6 +64,6 @@ class DropshipPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_dropship');
+        return $user->can('delete_any_inventory_dropship');
     }
 }

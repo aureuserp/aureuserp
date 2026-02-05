@@ -7,8 +7,6 @@ use Filament\Panel;
 
 class Reporting extends Cluster
 {
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chart-pie';
-
     protected static ?int $navigationSort = 4;
 
     public static function getSlug(?Panel $panel = null): string

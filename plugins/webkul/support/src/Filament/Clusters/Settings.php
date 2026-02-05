@@ -6,8 +6,6 @@ use Filament\Clusters\Cluster;
 
 class Settings extends Cluster
 {
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-wrench';
-
     protected static ?int $navigationSort = 1000;
 
     public static function getNavigationLabel(): string

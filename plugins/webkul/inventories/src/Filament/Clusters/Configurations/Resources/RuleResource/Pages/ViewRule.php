@@ -10,6 +10,15 @@ class ViewRule extends ViewRecord
 {
     protected static string $resource = RuleResource::class;
 
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
+
     protected function getHeaderActions(): array
     {
         return [

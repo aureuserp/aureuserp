@@ -6,6 +6,11 @@ return [
         'group' => 'Inventory',
     ],
 
+    'global-search' => [
+        'ref'     => 'Reference',
+        'product' => 'Product',
+    ],
+
     'form' => [
         'sections' => [
             'general' => [

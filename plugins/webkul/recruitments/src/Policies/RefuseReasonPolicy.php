@@ -15,7 +15,7 @@ class RefuseReasonPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_refuse::reason');
+        return $user->can('view_any_recruitment_refuse::reason');
     }
 
     /**
@@ -23,7 +23,7 @@ class RefuseReasonPolicy
      */
     public function view(User $user, RefuseReason $refuseReason): bool
     {
-        return $user->can('view_refuse::reason');
+        return $user->can('view_recruitment_refuse::reason');
     }
 
     /**
@@ -31,7 +31,7 @@ class RefuseReasonPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_refuse::reason');
+        return $user->can('create_recruitment_refuse::reason');
     }
 
     /**
@@ -39,7 +39,7 @@ class RefuseReasonPolicy
      */
     public function update(User $user, RefuseReason $refuseReason): bool
     {
-        return $user->can('update_refuse::reason');
+        return $user->can('update_recruitment_refuse::reason');
     }
 
     /**
@@ -47,7 +47,7 @@ class RefuseReasonPolicy
      */
     public function delete(User $user, RefuseReason $refuseReason): bool
     {
-        return $user->can('delete_refuse::reason');
+        return $user->can('delete_recruitment_refuse::reason');
     }
 
     /**
@@ -55,7 +55,7 @@ class RefuseReasonPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_refuse::reason');
+        return $user->can('delete_any_recruitment_refuse::reason');
     }
 
     /**
@@ -63,6 +63,6 @@ class RefuseReasonPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_refuse::reason');
+        return $user->can('reorder_recruitment_refuse::reason');
     }
 }

@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'global-search' => [
+        'vendor'    => 'Vendor',
+        'reference' => 'Reference',
+        'amount'    => 'Amount',
+    ],
+
     'form' => [
         'sections' => [
             'general' => [
@@ -99,6 +105,7 @@ return [
 
     'table' => [
         'columns' => [
+            'favorite'         => 'Favorite',
             'priority'         => 'Priority',
             'vendor-reference' => 'Vendor Reference',
             'reference'        => 'Reference',
@@ -112,7 +119,6 @@ return [
             'status'           => 'Status',
             'billing-status'   => 'Billing Status',
             'currency'         => 'Currency',
-            'billing-status'   => 'Billing Status',
         ],
 
         'groups' => [
@@ -179,6 +185,7 @@ return [
                 'title' => 'General',
 
                 'entries' => [
+                    'purchase-order'           => 'Purchase Order',
                     'vendor'                   => 'Vendor',
                     'vendor-reference'         => 'Vendor Reference',
                     'vendor-reference-tooltip' => 'The reference number of the sales order or bid provided by the vendor. It is used for matching when receiving products, as this reference is typically included in the vendor\'s delivery order.',

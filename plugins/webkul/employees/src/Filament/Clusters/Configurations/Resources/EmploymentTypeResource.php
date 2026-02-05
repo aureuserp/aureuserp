@@ -8,7 +8,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
@@ -23,7 +22,6 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Oper
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Filament\Clusters\Configurations;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\EmploymentTypeResource\Pages\ListEmploymentTypes;
 use Webkul\Employee\Models\EmploymentType;
@@ -55,15 +53,13 @@ class EmploymentTypeResource extends Resource
     {
         return $schema
             ->components([
-                Hidden::make('creator_id')
-                    ->default(Auth::user()->id),
                 TextInput::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/employment-type.form.fields.name'))
                     ->required()
                     ->maxLength(255)
                     ->live(onBlur: true),
                 TextInput::make('code')
-                    ->label(__('employees::filament/clusters/configurations/resources/employment-type.form.fields.name')),
+                    ->label(__('employees::filament/clusters/configurations/resources/employment-type.form.fields.code')),
                 Select::make('country_id')
                     ->searchable()
                     ->preload()

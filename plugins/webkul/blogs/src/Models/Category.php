@@ -62,6 +62,15 @@ class Category extends Model
         return $this->belongsTo(User::class);
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($category) {
+            $category->creator_id = filament()->auth()->id();
+        });
+    }
+
     protected static function newFactory(): CategoryFactory
     {
         return CategoryFactory::new();

@@ -60,10 +60,7 @@ class VendorPriceResource extends Resource
                             ->schema([
                                 Select::make('partner_id')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.general.fields.vendor'))
-                                    ->relationship(
-                                        'partner',
-                                        'name',
-                                    )
+                                    ->relationship('partner', 'name')
                                     ->searchable()
                                     ->required()
                                     ->preload(),
@@ -118,7 +115,11 @@ class VendorPriceResource extends Resource
                                             ->default(0),
                                         Select::make('currency_id')
                                             ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.fields.currency'))
-                                            ->relationship('currency', 'name')
+                                            ->relationship(
+                                                'currency',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                            )
                                             ->required()
                                             ->searchable()
                                             ->default(Auth::user()->defaultCompany?->currency_id)
@@ -155,6 +156,8 @@ class VendorPriceResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
                 TextColumn::make('partner.name')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.columns.vendor'))
@@ -222,7 +225,7 @@ class VendorPriceResource extends Resource
             ->filters([
                 SelectFilter::make('partner_id')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.filters.vendor'))
-                    ->relationship('partner', 'name', fn ($query) => $query->where('sub_type', 'supplier'))
+                    ->relationship('partner', 'name')
                     ->searchable()
                     ->preload()
                     ->multiple(),

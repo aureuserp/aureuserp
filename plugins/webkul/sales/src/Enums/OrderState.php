@@ -39,7 +39,7 @@ enum OrderState: string implements HasColor, HasLabel
     {
         return match ($this) {
             self::DRAFT  => 'gray',
-            self::SENT   => 'primary',
+            self::SENT   => 'warning',
             self::SALE   => 'success',
             self::CANCEL => 'danger',
         };

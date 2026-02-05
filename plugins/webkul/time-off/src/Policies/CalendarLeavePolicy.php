@@ -15,7 +15,7 @@ class CalendarLeavePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_public::holiday');
+        return $user->can('view_any_time_off_public::holiday');
     }
 
     /**
@@ -23,7 +23,7 @@ class CalendarLeavePolicy
      */
     public function view(User $user, CalendarLeave $calendarLeave): bool
     {
-        return $user->can('view_public::holiday');
+        return $user->can('view_time_off_public::holiday');
     }
 
     /**
@@ -31,7 +31,7 @@ class CalendarLeavePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_public::holiday');
+        return $user->can('create_time_off_public::holiday');
     }
 
     /**
@@ -39,7 +39,7 @@ class CalendarLeavePolicy
      */
     public function update(User $user, CalendarLeave $calendarLeave): bool
     {
-        return $user->can('update_public::holiday');
+        return $user->can('update_time_off_public::holiday');
     }
 
     /**
@@ -47,7 +47,7 @@ class CalendarLeavePolicy
      */
     public function delete(User $user, CalendarLeave $calendarLeave): bool
     {
-        return $user->can('delete_public::holiday');
+        return $user->can('delete_time_off_public::holiday');
     }
 
     /**
@@ -55,6 +55,6 @@ class CalendarLeavePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_public::holiday');
+        return $user->can('delete_any_time_off_public::holiday');
     }
 }

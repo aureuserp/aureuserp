@@ -15,7 +15,7 @@ class CategoryPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_product::category');
+        return $user->can('view_any_invoice_product::category');
     }
 
     /**
@@ -23,7 +23,7 @@ class CategoryPolicy
      */
     public function view(User $user, Category $category): bool
     {
-        return $user->can('view_product::category');
+        return $user->can('view_invoice_product::category');
     }
 
     /**
@@ -31,7 +31,7 @@ class CategoryPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_product::category');
+        return $user->can('create_invoice_product::category');
     }
 
     /**
@@ -39,7 +39,7 @@ class CategoryPolicy
      */
     public function update(User $user, Category $category): bool
     {
-        return $user->can('update_product::category');
+        return $user->can('update_invoice_product::category');
     }
 
     /**
@@ -47,7 +47,7 @@ class CategoryPolicy
      */
     public function delete(User $user, Category $category): bool
     {
-        return $user->can('delete_product::category');
+        return $user->can('delete_invoice_product::category');
     }
 
     /**
@@ -55,6 +55,6 @@ class CategoryPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_product::category');
+        return $user->can('delete_any_invoice_product::category');
     }
 }

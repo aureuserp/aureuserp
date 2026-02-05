@@ -6,7 +6,6 @@ use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRecords;
 use Filament\Schemas\Components\Tabs\Tab;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Partner\Filament\Resources\BankResource;
 use Webkul\Support\Models\Bank;
 
@@ -20,11 +19,6 @@ class ManageBanks extends ManageRecords
             CreateAction::make()
                 ->label(__('partners::filament/resources/bank/pages/manage-banks.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
-                ->mutateDataUsing(function (array $data): array {
-                    $data['creator_id'] = Auth::id();
-
-                    return $data;
-                })
                 ->successNotification(
                     Notification::make()
                         ->success()

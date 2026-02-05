@@ -2,13 +2,11 @@
 
 namespace Webkul\Website\Filament\Admin\Clusters\Settings\Pages;
 
-use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\TextInput;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use UnitEnum;
 use Webkul\Support\Filament\Clusters\Settings;
 use Webkul\Website\Settings\ContactSettings;
 
@@ -16,17 +14,22 @@ class ManageContacts extends SettingsPage
 {
     use HasPageShield;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-truck';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-truck';
 
     protected static ?string $slug = 'website/manage-contacts';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Website';
+    protected static string|\UnitEnum|null $navigationGroup = 'Website';
 
     protected static ?int $navigationSort = 5;
 
     protected static string $settings = ContactSettings::class;
 
     protected static ?string $cluster = Settings::class;
+
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_website_manage_contacts';
+    }
 
     public function getBreadcrumbs(): array
     {

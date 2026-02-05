@@ -42,6 +42,8 @@ class AttributeResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
+    protected static bool $isGloballySearchable = false;
+
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -64,6 +66,7 @@ class AttributeResource extends Resource
                     ->schema([
                         Repeater::make(__('products::filament/resources/attribute.form.sections.options.title'))
                             ->hiddenLabel()
+                            ->compact()
                             ->relationship('options')
                             ->schema([
                                 TextInput::make('name')

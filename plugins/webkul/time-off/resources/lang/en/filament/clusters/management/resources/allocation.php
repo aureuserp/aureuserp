@@ -9,6 +9,13 @@ return [
         'title' => 'Allocation',
     ],
 
+    'global-search' => [
+        'employee'      => 'Employee',
+        'time-off-type' => 'Time Off Type',
+        'date-from'     => 'Date From',
+        'date-to'       => 'Date To',
+    ],
+
     'form' => [
         'fields' => [
             'name'                => 'Name',

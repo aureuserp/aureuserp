@@ -18,7 +18,7 @@
         ]) }}
 
         @isset($payload['note'])
-            <p>{!! $payload['note'] !!}</p>
+            <p>{!! str($payload['note'])->sanitizeHtml() !!}</p>
         @endisset
     </div>
 

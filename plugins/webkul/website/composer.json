@@ -1,6 +1,6 @@
 {
     "name": "webkul/website",
-    "description": "",
+    "description": "Website for customer",
     "authors": [
         {
             "name": "Aureus ERP",
@@ -10,7 +10,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Webkul\\Website\\Providers\\WebsiteServiceProvider"
+                "Webkul\\Website\\WebsiteServiceProvider"
             ],
             "aliases": {}
         }

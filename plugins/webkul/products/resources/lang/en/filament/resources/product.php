@@ -1,6 +1,11 @@
 <?php
 
 return [
+    'global-search' => [
+        'reference' => 'Reference',
+        'barcode'   => 'Barcode',
+    ],
+
     'form' => [
         'sections' => [
             'general' => [
@@ -64,22 +69,23 @@ return [
 
     'table' => [
         'columns' => [
-            'name'        => 'Name',
-            'variants'    => 'Variants',
-            'images'      => 'Images',
-            'type'        => 'Type',
-            'reference'   => 'Reference',
-            'responsible' => 'Responsible',
-            'barcode'     => 'Barcode',
-            'category'    => 'Category',
-            'company'     => 'Company',
-            'price'       => 'Price',
-            'cost'        => 'Cost',
-            'on-hand'     => 'On Hand',
-            'tags'        => 'Tags',
-            'deleted-at'  => 'Deleted At',
-            'created-at'  => 'Created At',
-            'updated-at'  => 'Updated At',
+            'favorite'        => 'Favorite',
+            'name'            => 'Name',
+            'variants'        => 'Variants',
+            'images'          => 'Images',
+            'type'            => 'Type',
+            'reference'       => 'Reference',
+            'responsible'     => 'Responsible',
+            'barcode'         => 'Barcode',
+            'category'        => 'Category',
+            'company'         => 'Company',
+            'price'           => 'Price',
+            'cost'            => 'Cost',
+            'on-hand'         => 'On Hand',
+            'tags'            => 'Tags',
+            'deleted-at'      => 'Deleted At',
+            'created-at'      => 'Created At',
+            'updated-at'      => 'Updated At',
         ],
 
         'groups' => [

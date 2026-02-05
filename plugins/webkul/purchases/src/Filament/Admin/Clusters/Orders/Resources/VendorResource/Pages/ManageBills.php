@@ -8,9 +8,12 @@ use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Tables\Table;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\VendorResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageBills extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = VendorResource::class;
 
     protected static string $relationship = 'accountMoves';

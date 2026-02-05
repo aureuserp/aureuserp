@@ -1,10 +1,13 @@
-<div class="flex w-full">
-    <livewire:chatter-panel
-        :record="$record ?? $this->record"
-        :activityPlans="$activityPlans ?? $this->activityPlans"
-        :resource="$resource ?? $this->resource"
-        :followerViewMail="$followerViewMail ?? $this->followerViewMail"
-        :messageViewMail="$messageViewMail ?? $this->messageViewMail"
-        lazy
-    />
-</div>
+<livewire:chatter-panel
+    :record="$record"
+    :resource-class="$resourceClass"
+    :message-mail-view-path="$messageMailViewPath"
+    :follower-mail-view-path="$followerMailViewPath"
+    :is-message-action-visible="$isMessageActionVisible"
+    :is-log-action-visible="$isLogActionVisible"
+    :is-activity-action-visible="$isActivityActionVisible"
+    :is-follower-action-visible="$isFileActionVisible"
+    :is-file-action-visible="$isFollowerActionVisible"
+    :activity-plans="$activityPlans"
+    lazy
+/>

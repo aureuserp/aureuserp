@@ -12,7 +12,7 @@ class LogoutResponse implements \Filament\Auth\Http\Responses\Contracts\LogoutRe
         if ($request->route()->getName() == 'filament.customer.auth.logout') {
             return redirect()->route(Homepage::getRouteName());
         } else {
-            return redirect()->route('filament.admin..');
+            return redirect()->route('filament.admin.auth.login');
         }
     }
 }

@@ -15,6 +15,11 @@ class ApplicantChartWidget extends ChartWidget
 
     protected ?string $maxHeight = '400px';
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'widget_recruitment_applicant_chart_widget';
+    }
+
     public function getHeading(): string|Htmlable|null
     {
         return __('recruitments::filament/widgets/applicant.heading.title');
@@ -82,7 +87,7 @@ class ApplicantChartWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label'           => __('recruitments::filament/widgets/applicant.overview.label'),
+                    'label'           => __('recruitments::filament/widgets/applicant.heading.title'),
                     'data'            => array_values($data),
                     'backgroundColor' => array_map(fn ($key) => match ($key) {
                         __('recruitments::filament/widgets/applicant.ongoing')  => '#3b82f6',

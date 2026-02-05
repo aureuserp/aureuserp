@@ -262,10 +262,10 @@
                             <tr>
                                 <td>{{ $item->name }}</td>
                                 <td>{{ $item->product_qty.' '.$item->uom->name }}</td>
-                                <td>{{ number_format($item->price_unit, 2) }}</td>
+                                <td>{{ money($item->price_unit, $record->currency->name) }}</td>
                                 <td>{{ round($item->discount, 2) }}%</td>
                                 <td>{{ $item->taxes->pluck('name')->implode(', ') }}</td>
-                                <td>{{ number_format($item->price_subtotal, 2) }}</td>
+                                <td>{{ money($item->price_subtotal, $record->currency->name) }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -275,17 +275,17 @@
                 <table class="summary-table">
                     <tr>
                         <td>Untaxed Amount</td>
-                        <td style="text-align: right;">{{ number_format($record->untaxed_amount, 2) }}</td>
+                        <td style="text-align: right;">{{ money($record->untaxed_amount, $record->currency->name) }}</td>
                     </tr>
 
                     <tr>
                         <td>Tax</td>
-                        <td style="text-align: right;">{{ number_format($record->tax_amount, 2) }}</td>
+                        <td style="text-align: right;">{{ money($record->tax_amount, $record->currency->name) }}</td>
                     </tr>
 
                     <tr class="total-row">
                         <td>Total</td>
-                        <td style="text-align: right;">{{ number_format($record->total_amount, 2) }}</td>
+                        <td style="text-align: right;">{{ money($record->total_amount, $record->currency->name) }}</td>
                     </tr>
                 </table>
                 

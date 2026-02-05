@@ -32,22 +32,22 @@ class ListTaxes extends ListRecords
                 ->icon('heroicon-o-scale')
                 ->favorite()
                 ->label(__('accounts::filament/resources/tax/pages/list-tax.tabs.sale'))
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('type_tax_use', TypeTaxUse::SALE->value)),
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('type_tax_use', TypeTaxUse::SALE)),
             'purchase' => PresetView::make('purchase')
                 ->icon('heroicon-o-currency-dollar')
                 ->favorite()
                 ->label(__('accounts::filament/resources/tax/pages/list-tax.tabs.purchase'))
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('type_tax_use', TypeTaxUse::PURCHASE->value)),
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('type_tax_use', TypeTaxUse::PURCHASE)),
             'tax_scope' => PresetView::make('tax_scope')
                 ->icon('heroicon-o-magnifying-glass-circle')
                 ->favorite()
                 ->label(__('accounts::filament/resources/tax/pages/list-tax.tabs.tax-scope'))
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('tax_scope', TaxScope::SERVICE->value)),
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('tax_scope', TaxScope::SERVICE)),
             'goods' => PresetView::make('goods')
                 ->icon('heroicon-o-check')
                 ->favorite()
                 ->label(__('accounts::filament/resources/tax/pages/list-tax.tabs.goods'))
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('tax_scope', TaxScope::CONSU->value)),
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('tax_scope', TaxScope::CONSU)),
             'active' => PresetView::make('Active')
                 ->icon('heroicon-o-check-circle')
                 ->favorite()

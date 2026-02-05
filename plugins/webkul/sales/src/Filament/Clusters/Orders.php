@@ -8,8 +8,6 @@ class Orders extends Cluster
 {
     protected static ?string $slug = 'sale/orders';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
-
     public static function getNavigationLabel(): string
     {
         return __('sales::filament/clusters/orders.navigation.title');

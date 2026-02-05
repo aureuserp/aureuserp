@@ -22,6 +22,15 @@ return [
         ],
     ],
 
+    'config' => [
+        'button-text' => [
+            'today' => 'Today',
+            'month' => 'Month',
+            'week'  => 'Week',
+            'list'  => 'List',
+        ],
+    ],
+
     'view-action' => [
         'title'       => 'View',
         'description' => 'View Time Off Request',

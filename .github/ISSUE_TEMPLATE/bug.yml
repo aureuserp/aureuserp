@@ -1,0 +1,98 @@
+name: Bug Report
+description: Report a general issue or unexpected behavior in Aureuserp.
+labels: ["Bug"]
+
+body:
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: ✅ Prerequisites
+      description: Please ensure the following before submitting the issue.
+      options:
+        - label: I have searched for [existing issues](https://github.com/aureuserp/aureuserp/issues) and confirm that this bug has not already been reported.
+          required: true
+
+  - type: input
+    id: versioninput
+    attributes:
+      label: 🧩 Aureuserp Version(s) Affected
+      description: Specify the Aureuserp version(s) where the issue occurs.
+      placeholder: "e.g., v1.1.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📝 Issue Description
+      description: Provide a clear and detailed explanation of the issue.
+      placeholder: |
+        Describe what the bug is and how it's affecting your work.
+    validations:
+      required: true
+
+  - type: textarea
+    id: precon
+    attributes:
+      label: ⚙️ Preconditions
+      description: Describe the environment in which the issue occurred (e.g., PHP version, MySQL version, OS, browser).
+      placeholder: |
+        - PHP version: 8.1
+        - MySQL version: 8.0
+        - Operating System: Ubuntu 22.04
+        - Browser: Chrome 123.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 🔁 Steps to Reproduce
+      description: Clearly outline the steps to reproduce the bug. Include code snippets or links if relevant.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll to '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: ❌ Actual Behavior
+      description: What actually happened instead?
+      placeholder: |
+        The price is shown as 0...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: ✅ Expected Behavior
+      description: What did you expect to happen?
+      placeholder: |
+        The page should display the correct price...
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 📸 Screenshots (if applicable)
+      description: Add screenshots or error logs to help explain your problem.
+      placeholder: |
+        Drag & drop or paste images here.
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: 💡 Additional Context
+      description: Add any other details or context that might help us understand the issue.
+      placeholder: |
+        Any recent changes, installed extensions, etc.
+    validations:
+      required: false

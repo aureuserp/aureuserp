@@ -16,7 +16,7 @@ class EmployeePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_employee');
+        return $user->can('view_any_employee_employee');
     }
 
     /**
@@ -24,7 +24,7 @@ class EmployeePolicy
      */
     public function view(User $user, Employee $employee): bool
     {
-        return $user->can('view_employee');
+        return $user->can('view_employee_employee');
     }
 
     /**
@@ -32,7 +32,7 @@ class EmployeePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_employee');
+        return $user->can('create_employee_employee');
     }
 
     /**
@@ -40,7 +40,7 @@ class EmployeePolicy
      */
     public function update(User $user, Employee $employee): bool
     {
-        if (! $user->can('update_employee')) {
+        if (! $user->can('update_employee_employee')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class EmployeePolicy
      */
     public function delete(User $user, Employee $employee): bool
     {
-        if (! $user->can('delete_employee')) {
+        if (! $user->can('delete_employee_employee')) {
             return false;
         }
 
@@ -64,7 +64,7 @@ class EmployeePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_employee');
+        return $user->can('delete_any_employee_employee');
     }
 
     /**
@@ -72,7 +72,7 @@ class EmployeePolicy
      */
     public function forceDelete(User $user, Employee $employee): bool
     {
-        if (! $user->can('force_delete_employee')) {
+        if (! $user->can('force_delete_employee_employee')) {
             return false;
         }
 
@@ -84,7 +84,7 @@ class EmployeePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_employee');
+        return $user->can('force_delete_any_employee_employee');
     }
 
     /**
@@ -92,7 +92,7 @@ class EmployeePolicy
      */
     public function restore(User $user, Employee $employee): bool
     {
-        if (! $user->can('restore_employee')) {
+        if (! $user->can('restore_employee_employee')) {
             return false;
         }
 

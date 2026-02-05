@@ -10,7 +10,6 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -23,8 +22,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Auth;
-use Webkul\Support\Models\Bank;
+use Webkul\Partner\Models\Bank;
 
 class BankResource extends Resource
 {
@@ -95,8 +93,6 @@ class BankResource extends Resource
                         TextInput::make('zip')
                             ->label(__('partners::filament/resources/bank.form.sections.address.fields.zip'))
                             ->maxLength(255),
-                        Hidden::make('creator_id')
-                            ->default(Auth::user()->id),
                     ])
                     ->columns(2),
             ]);

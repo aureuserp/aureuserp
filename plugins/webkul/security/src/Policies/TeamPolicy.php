@@ -15,7 +15,7 @@ class TeamPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_team');
+        return $user->can('view_any_security_team');
     }
 
     /**
@@ -23,7 +23,7 @@ class TeamPolicy
      */
     public function view(User $user, Team $team): bool
     {
-        return $user->can('view_team');
+        return $user->can('view_security_team');
     }
 
     /**
@@ -31,7 +31,7 @@ class TeamPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_team');
+        return $user->can('create_security_team');
     }
 
     /**
@@ -39,7 +39,7 @@ class TeamPolicy
      */
     public function update(User $user, Team $team): bool
     {
-        return $user->can('update_team');
+        return $user->can('update_security_team');
     }
 
     /**
@@ -47,6 +47,6 @@ class TeamPolicy
      */
     public function delete(User $user, Team $team): bool
     {
-        return $user->can('delete_team');
+        return $user->can('delete_security_team');
     }
 }

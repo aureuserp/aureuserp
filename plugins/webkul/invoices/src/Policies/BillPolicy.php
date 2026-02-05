@@ -15,7 +15,7 @@ class BillPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_bill');
+        return $user->can('view_any_invoice_bill');
     }
 
     /**
@@ -23,7 +23,7 @@ class BillPolicy
      */
     public function view(User $user, Bill $bill): bool
     {
-        return $user->can('view_bill');
+        return $user->can('view_invoice_bill');
     }
 
     /**
@@ -31,7 +31,7 @@ class BillPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_bill');
+        return $user->can('create_invoice_bill');
     }
 
     /**
@@ -39,7 +39,7 @@ class BillPolicy
      */
     public function update(User $user, Bill $bill): bool
     {
-        return $user->can('update_bill');
+        return $user->can('update_invoice_bill');
     }
 
     /**
@@ -47,7 +47,7 @@ class BillPolicy
      */
     public function delete(User $user, Bill $bill): bool
     {
-        return $user->can('delete_bill');
+        return $user->can('delete_invoice_bill');
     }
 
     /**
@@ -55,6 +55,6 @@ class BillPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_bill');
+        return $user->can('delete_any_invoice_bill');
     }
 }

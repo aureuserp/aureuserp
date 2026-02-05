@@ -15,7 +15,7 @@ class EmploymentTypePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_employment::type');
+        return $user->can('view_any_recruitment_employment::type');
     }
 
     /**
@@ -23,7 +23,7 @@ class EmploymentTypePolicy
      */
     public function view(User $user, EmploymentType $employmentType): bool
     {
-        return $user->can('view_employment::type');
+        return $user->can('view_recruitment_employment::type');
     }
 
     /**
@@ -31,7 +31,7 @@ class EmploymentTypePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_employment::type');
+        return $user->can('create_recruitment_employment::type');
     }
 
     /**
@@ -39,7 +39,7 @@ class EmploymentTypePolicy
      */
     public function update(User $user, EmploymentType $employmentType): bool
     {
-        return $user->can('update_employment::type');
+        return $user->can('update_recruitment_employment::type');
     }
 
     /**
@@ -47,7 +47,7 @@ class EmploymentTypePolicy
      */
     public function delete(User $user, EmploymentType $employmentType): bool
     {
-        return $user->can('delete_employment::type');
+        return $user->can('delete_recruitment_employment::type');
     }
 
     /**
@@ -55,7 +55,7 @@ class EmploymentTypePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_employment::type');
+        return $user->can('delete_any_recruitment_employment::type');
     }
 
     /**
@@ -63,6 +63,6 @@ class EmploymentTypePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_employment::type');
+        return $user->can('reorder_recruitment_employment::type');
     }
 }

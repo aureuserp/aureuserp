@@ -17,7 +17,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Partner\Enums\AccountType;
 use Webkul\Partner\Enums\AddressType;
 use Webkul\Partner\Filament\Resources\PartnerResource\Pages\ManageAddresses;
@@ -154,8 +153,6 @@ class AddressResource extends Resource
                     ->icon('heroicon-o-plus-circle')
                     ->mutateDataUsing(function (array $data): array {
                         $data['account_type'] = AccountType::ADDRESS;
-
-                        $data['creator_id'] = Auth::id();
 
                         return $data;
                     })

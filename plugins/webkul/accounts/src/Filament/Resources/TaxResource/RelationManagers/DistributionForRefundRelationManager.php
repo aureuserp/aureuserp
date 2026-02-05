@@ -10,7 +10,7 @@ class DistributionForRefundRelationManager extends RelationManager
 {
     use TaxPartition;
 
-    protected static string $relationship = 'distributionForRefund';
+    protected static string $relationship = 'refundRepartitionLines';
 
     protected static ?string $title = 'Distribution for Refund';
 

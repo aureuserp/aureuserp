@@ -10,6 +10,15 @@ class ViewActivityPlan extends ViewRecord
 {
     protected static string $resource = ActivityPlanResource::class;
 
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
+
     protected function getHeaderActions(): array
     {
         return [

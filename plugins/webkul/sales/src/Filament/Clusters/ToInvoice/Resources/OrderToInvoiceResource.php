@@ -2,7 +2,7 @@
 
 namespace Webkul\Sale\Filament\Clusters\ToInvoice\Resources;
 
-use Filament\Pages\Enums\SubNavigationPosition;
+use BackedEnum;
 use Filament\Resources\Pages\Page;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Sale\Enums\InvoiceStatus;
@@ -11,17 +11,15 @@ use Webkul\Sale\Filament\Clusters\ToInvoice;
 use Webkul\Sale\Filament\Clusters\ToInvoice\Resources\OrderToInvoiceResource\Pages\EditOrderToInvoice;
 use Webkul\Sale\Filament\Clusters\ToInvoice\Resources\OrderToInvoiceResource\Pages\ListOrderToInvoices;
 use Webkul\Sale\Filament\Clusters\ToInvoice\Resources\OrderToInvoiceResource\Pages\ViewOrderToInvoice;
-use Webkul\Sale\Models\Order;
+use Webkul\Sale\Models\OrderToInvoice as Order;
 
 class OrderToInvoiceResource extends QuotationResource
 {
     protected static ?string $model = Order::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-arrow-down';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-arrow-down';
 
     protected static ?string $cluster = ToInvoice::class;
-
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getModelLabel(): string
     {
@@ -39,7 +37,9 @@ class OrderToInvoiceResource extends QuotationResource
 
         $query = static::getModel()::applyPermissionScope($query);
 
-        return $query->where('invoice_status', InvoiceStatus::TO_INVOICE);
+        return $query
+            ->where('invoice_status', InvoiceStatus::TO_INVOICE)
+            ->orderByDesc('id');
     }
 
     public static function getRecordSubNavigation(Page $page): array

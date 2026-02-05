@@ -11,10 +11,12 @@ use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Purchase\Enums\RequisitionState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource;
 use Webkul\Purchase\Models\Requisition;
-use Webkul\Support\Concerns\HasRepeaterColumnManager;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditPurchaseAgreement extends EditRecord
 {
+    use HasRecordNavigationTabs;
     use HasRepeaterColumnManager;
 
     protected static string $resource = PurchaseAgreementResource::class;
@@ -36,7 +38,7 @@ class EditPurchaseAgreement extends EditRecord
     {
         return [
             ChatterAction::make()
-                ->setResource(static::$resource),
+                ->resource(static::$resource),
             Action::make('confirm')
                 ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/edit-purchase-agreement.header-actions.confirm.label'))
                 ->color('primary')

@@ -11,9 +11,12 @@ use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RuleResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageRules extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = RouteResource::class;
 
     protected static string $relationship = 'rules';

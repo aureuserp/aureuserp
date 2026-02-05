@@ -28,11 +28,11 @@ class SendPOEmailAction extends Action
         parent::setUp();
 
         $this
-            ->label(fn (Order $record) => __('purchases::filament/admin/clusters/orders/resources/order/actions/send-po-email.label'))
-            ->schema(fn (Order $record) => [
+            ->label(fn(Order $record) => __('purchases::filament/admin/clusters/orders/resources/order/actions/send-po-email.label'))
+            ->schema(fn(Order $record) => [
                 Select::make('vendors')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order/actions/send-po-email.form.fields.to'))
-                    ->options(fn () => Partner::get()->mapWithKeys(fn ($partner) => [
+                    ->options(fn() => Partner::get()->mapWithKeys(fn($partner) => [
                         $partner->id => $partner->email
                             ? "{$partner->name} <{$partner->email}>"
                             : $partner->name,
@@ -72,7 +72,7 @@ MD;
                 FileUpload::make('attachment')
                     ->hiddenLabel()
                     ->disk('public')
-                    ->default(fn () => PurchaseOrder::generatePurchaseOrderPdf($record))
+                    ->default(fn() => PurchaseOrder::generatePurchaseOrderPdf($record))
                     ->acceptedFileTypes([
                         'image/*',
                         'application/pdf',
@@ -100,9 +100,7 @@ MD;
                     ->success()
                     ->send();
             })
-            ->color(fn (Order $record): string => $record->state === OrderState::DRAFT ? 'primary' : 'gray'
-            )
-            ->visible(fn (Order $record) => $record->state == OrderState::PURCHASE
-            );
+            ->color(fn(Order $record): string => $record->state === OrderState::DRAFT ? 'primary' : 'gray')
+            ->visible(fn(Order $record) => $record->state == OrderState::PURCHASE);
     }
 }

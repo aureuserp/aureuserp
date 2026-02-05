@@ -12,16 +12,19 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\InternalResource;
 use Webkul\Inventory\Models\InternalTransfer;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewInternal extends ViewRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = InternalResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
             ChatterAction::make()
-                ->setResource(static::$resource),
+                ->resource(static::$resource),
             ActionGroup::make([
                 OperationActions\Print\PickingOperationAction::make(),
                 OperationActions\Print\DeliverySlipAction::make(),

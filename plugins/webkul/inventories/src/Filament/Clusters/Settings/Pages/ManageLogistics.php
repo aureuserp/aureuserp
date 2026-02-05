@@ -27,6 +27,11 @@ class ManageLogistics extends SettingsPage
 
     protected static ?string $cluster = Settings::class;
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_inventory_manage_logistics';
+    }
+
     public function getBreadcrumbs(): array
     {
         return [

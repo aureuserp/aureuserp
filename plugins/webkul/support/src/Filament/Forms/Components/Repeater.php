@@ -26,6 +26,11 @@ class Repeater extends BaseRepeater
         return (string) parent::getDefaultView();
     }
 
+    public function isReorderableWithDragAndDrop(): bool
+    {
+        return $this->evaluate($this->isReorderableWithDragAndDrop) && $this->isReorderable();
+    }
+
     public function table(array|Closure|null $columns): static
     {
         $this->isRepeaterHasTableView = true;
@@ -42,7 +47,7 @@ class Repeater extends BaseRepeater
 
     public function getColumnManagerSessionKey(): string
     {
-        return $this->columnManagerSessionKey ??= 'repeater_'.$this->getStatePath().'_column_manager';
+        return $this->columnManagerSessionKey ??= 'repeater_' . $this->getStatePath() . '_column_manager';
     }
 
     public function getMappedColumns(): array
@@ -107,7 +112,7 @@ class Repeater extends BaseRepeater
     {
         $columns = $this->evaluate($this->tableColumns) ?? [];
 
-        return collect($columns)->contains(fn ($column) => $column->isToggleable());
+        return collect($columns)->contains(fn($column) => $column->isToggleable());
     }
 
     public function getColumnManagerApplyAction(): Action
@@ -158,8 +163,8 @@ class Repeater extends BaseRepeater
         }
 
         $columnState = collect($columns)
-            ->filter(fn ($column) => filled(data_get($column, 'name')) && ! is_null(data_get($column, 'isToggled')))
-            ->mapWithKeys(fn ($column) => [
+            ->filter(fn($column) => filled(data_get($column, 'name')) && ! is_null(data_get($column, 'isToggled')))
+            ->mapWithKeys(fn($column) => [
                 data_get($column, 'name') => [
                     'isToggled'    => data_get($column, 'isToggled'),
                     'isToggleable' => data_get($column, 'isToggleable', true),
@@ -178,5 +183,46 @@ class Repeater extends BaseRepeater
     public function hasDeferredColumnManager(): bool
     {
         return false;
+    }
+
+    public function getSummaryForColumn(string $columnName): ?string
+    {
+        $column = collect($this->getTableColumns())
+            ->first(fn(TableColumn $col) => $col->getName() === $columnName);
+
+        if (
+            ! $column
+            || ! $column->hasSummarizer()
+        ) {
+            return null;
+        }
+
+        $summarizer = $column->getSummarizer();
+
+        $items = collect($this->getState() ?? []);
+
+        if ($items->isEmpty()) {
+            return null;
+        }
+
+        $value = $summarizer->summarize($items, $columnName);
+
+        if (is_null($value)) {
+            return null;
+        }
+
+        if ($summarizer->isNumeric() && is_numeric($value)) {
+            $value = number_format($value, 2);
+        }
+
+        $label = $summarizer->getLabel();
+
+        return $label ? "{$label}: {$value}" : (string) $value;
+    }
+
+    public function hasAnySummarizers(): bool
+    {
+        return collect($this->getTableColumns())
+            ->some(fn(TableColumn $column) => $column->hasSummarizer());
     }
 }

@@ -12,9 +12,12 @@ use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Filament\Resources\CategoryResource;
 use Webkul\Product\Filament\Resources\ProductResource;
 use Webkul\Support\Models\UOM;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageProducts extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = CategoryResource::class;
 
     protected static string $relationship = 'products';

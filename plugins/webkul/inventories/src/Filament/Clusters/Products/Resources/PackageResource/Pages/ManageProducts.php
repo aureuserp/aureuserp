@@ -6,9 +6,12 @@ use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageProducts extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = PackageResource::class;
 
     protected static string $relationship = 'quantities';

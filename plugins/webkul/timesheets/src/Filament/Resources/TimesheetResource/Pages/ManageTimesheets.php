@@ -41,7 +41,7 @@ class ManageTimesheets extends ManageRecords
     {
         return [
             'my_timesheets' => PresetView::make(__('timesheets::filament/resources/timesheet/manage-timesheets.tabs.my-timesheets'))
-                ->badge(Timesheet::where('user_id', Auth::id())->count())
+                ->badge(fn (): int => Timesheet::where('user_id', Auth::id())->count())
                 ->icon('heroicon-o-clock')
                 ->modifyQueryUsing(function ($query) {
                     return $query->where('user_id', Auth::id());

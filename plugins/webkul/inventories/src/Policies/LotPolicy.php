@@ -15,7 +15,7 @@ class LotPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_lot');
+        return $user->can('view_any_inventory_lot');
     }
 
     /**
@@ -23,7 +23,7 @@ class LotPolicy
      */
     public function view(User $user, Lot $lot): bool
     {
-        return $user->can('view_lot');
+        return $user->can('view_inventory_lot');
     }
 
     /**
@@ -31,7 +31,7 @@ class LotPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_lot');
+        return $user->can('create_inventory_lot');
     }
 
     /**
@@ -39,7 +39,7 @@ class LotPolicy
      */
     public function update(User $user, Lot $lot): bool
     {
-        return $user->can('update_lot');
+        return $user->can('update_inventory_lot');
     }
 
     /**
@@ -47,7 +47,7 @@ class LotPolicy
      */
     public function delete(User $user, Lot $lot): bool
     {
-        return $user->can('delete_lot');
+        return $user->can('delete_inventory_lot');
     }
 
     /**
@@ -55,6 +55,6 @@ class LotPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_lot');
+        return $user->can('delete_any_inventory_lot');
     }
 }

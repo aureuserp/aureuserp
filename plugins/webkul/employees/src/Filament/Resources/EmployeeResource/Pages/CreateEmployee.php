@@ -4,7 +4,6 @@ namespace Webkul\Employee\Filament\Resources\EmployeeResource\Pages;
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Filament\Resources\EmployeeResource;
 
 class CreateEmployee extends CreateRecord
@@ -22,13 +21,5 @@ class CreateEmployee extends CreateRecord
             ->success()
             ->title(__('employees::filament/resources/employee/pages/create-employee.notification.title'))
             ->body(__('employees::filament/resources/employee/pages/create-employee.notification.body'));
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        return [
-            ...$data,
-            'creator_id' => Auth::user()->id,
-        ];
     }
 }

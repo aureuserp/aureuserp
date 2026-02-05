@@ -27,13 +27,22 @@ class Task extends Model implements Sortable
 
     protected $table = 'projects_tasks';
 
+    public function getModelTitle(): string
+    {
+        return __('projects::models/task.title');
+    }
+
+    /**
+     * Fillable.
+     *
+     * @var array
+     */
     protected $fillable = [
         'title',
         'description',
         'color',
         'priority',
         'state',
-        'tags',
         'sort',
         'is_active',
         'is_recurring',
@@ -57,7 +66,6 @@ class Task extends Model implements Sortable
 
     protected $casts = [
         'is_active'           => 'boolean',
-        'tags'                => 'array',
         'deadline'            => 'datetime',
         'priority'            => 'boolean',
         'is_active'           => 'boolean',
@@ -72,25 +80,27 @@ class Task extends Model implements Sortable
         'state'               => TaskState::class,
     ];
 
-    protected array $logAttributes = [
-        'title',
-        'description',
-        'color',
-        'priority',
-        'state',
-        'tags',
-        'sort',
-        'is_active',
-        'is_recurring',
-        'deadline',
-        'allocated_hours',
-        'stage.name'   => 'Stage',
-        'project.name' => 'Project',
-        'partner.name' => 'Partner',
-        'parent.title' => 'Parent',
-        'company.name' => 'Company',
-        'creator.name' => 'Creator',
-    ];
+    protected function getLogAttributeLabels(): array
+    {
+        return [
+            'title'             => __('projects::models/task.log-attributes.title'),
+            'description'       => __('projects::models/task.log-attributes.description'),
+            'color'             => __('projects::models/task.log-attributes.color'),
+            'priority'          => __('projects::models/task.log-attributes.priority'),
+            'state'             => __('projects::models/task.log-attributes.state'),
+            'sort'              => __('projects::models/task.log-attributes.sort'),
+            'is_active'         => __('projects::models/task.log-attributes.is_active'),
+            'is_recurring'      => __('projects::models/task.log-attributes.is_recurring'),
+            'deadline'          => __('projects::models/task.log-attributes.deadline'),
+            'allocated_hours'   => __('projects::models/task.log-attributes.allocated_hours'),
+            'stage.name'        => __('projects::models/task.log-attributes.stage'),
+            'project.name'      => __('projects::models/task.log-attributes.project'),
+            'partner.name'      => __('projects::models/task.log-attributes.partner'),
+            'parent.title'      => __('projects::models/task.log-attributes.parent'),
+            'company.name'      => __('projects::models/task.log-attributes.company'),
+            'creator.name'      => __('projects::models/task.log-attributes.creator'),
+        ];
+    }
 
     public string $recordTitleAttribute = 'title';
 
@@ -173,6 +183,12 @@ class Task extends Model implements Sortable
     protected static function boot()
     {
         parent::boot();
+
+        static::creating(function ($task) {
+            $task->creator_id = filament()->auth()->id();
+
+            $task->company_id = filament()->auth()->user()->default_company_id;
+        });
 
         static::updated(function ($task) {
             $task->timesheets()->update([

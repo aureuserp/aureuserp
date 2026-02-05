@@ -21,6 +21,11 @@ class ManageActivity extends SettingsPage
 
     protected static string $settings = UserSettings::class;
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_security_manage_activity';
+    }
+
     public static function getNavigationGroup(): string
     {
         return __('security::filament/clusters/manage-activity.group');

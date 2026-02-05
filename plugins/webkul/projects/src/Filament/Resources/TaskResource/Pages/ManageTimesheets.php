@@ -15,7 +15,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Project\Filament\Resources\TaskResource;
 use Webkul\Project\Settings\TimeSettings;
 
@@ -148,8 +147,6 @@ class ManageTimesheets extends ManageRelatedRecords
                     ->label(__('projects::filament/resources/task/pages/manage-timesheets.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
                     ->mutateDataUsing(function (array $data): array {
-                        $data['creator_id'] = Auth::id();
-
                         $ownerRecord = $this->getOwnerRecord();
 
                         $data['project_id'] = $ownerRecord->project_id;

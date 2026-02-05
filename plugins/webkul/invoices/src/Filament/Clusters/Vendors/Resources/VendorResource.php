@@ -2,14 +2,12 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources;
 
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Schemas\Components\Fieldset;
@@ -18,10 +16,10 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Webkul\Invoice\Enums\AutoPostBills;
-use Webkul\Invoice\Enums\InvoiceFormat;
-use Webkul\Invoice\Enums\InvoiceSendingMethod;
-use Webkul\Invoice\Enums\PartyIdentificationScheme;
+use Webkul\Account\Enums\AutoPostBills;
+use Webkul\Account\Enums\InvoiceFormat;
+use Webkul\Account\Enums\InvoiceSendingMethod;
+use Webkul\Account\Enums\PartyIdentificationScheme;
 use Webkul\Invoice\Filament\Clusters\Vendors;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\CreateVendor;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\EditVendor;
@@ -31,24 +29,24 @@ use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\Mana
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ManageContacts;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\Pages\ViewVendor;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\VendorResource\RelationManagers\BankAccountsRelationManager;
-use Webkul\Invoice\Models\Partner;
+use Webkul\Invoice\Models\Vendor;
 use Webkul\Partner\Filament\Resources\PartnerResource as BaseVendorResource;
 
 class VendorResource extends BaseVendorResource
 {
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $model = Partner::class;
+    protected static ?string $model = Vendor::class;
 
     protected static ?string $slug = '';
 
     protected static bool $shouldRegisterNavigation = true;
 
-    protected static ?int $navigationSort = 4;
+    protected static bool $isGloballySearchable = true;
+
+    protected static ?int $navigationSort = 5;
 
     protected static ?string $cluster = Vendors::class;
-
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getModelLabel(): string
     {
@@ -78,8 +76,6 @@ class VendorResource extends BaseVendorResource
         $firstTabFirstChildComponent->childComponents([
             Group::make()
                 ->schema([
-                    Hidden::make('sub_type')
-                        ->default('supplier'),
                     Select::make('user_id')
                         ->relationship('user', 'name')
                         ->preload()
@@ -206,7 +202,7 @@ class VendorResource extends BaseVendorResource
             '2xl' => 3,
         ]);
 
-        $table->modifyQueryUsing(fn ($query) => $query->where('sub_type', 'supplier'));
+        $table->modifyQueryUsing(fn ($query) => $query->where('supplier_rank', '>', 0));
 
         return $table;
     }

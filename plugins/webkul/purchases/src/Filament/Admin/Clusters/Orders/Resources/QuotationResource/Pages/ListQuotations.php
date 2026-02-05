@@ -2,7 +2,7 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource\Pages;
 
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Pages\ListOrders;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\QuotationResource;
 
@@ -13,7 +13,7 @@ class ListQuotations extends ListOrders
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label(__('purchases::filament/admin/clusters/orders/resources/quotation/pages/list-quotation.header-actions.create'))
                 ->icon('heroicon-o-plus-circle'),
         ];

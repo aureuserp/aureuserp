@@ -6,7 +6,6 @@ use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRecords;
 use Filament\Schemas\Components\Tabs\Tab;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Partner\Filament\Resources\TagResource;
 use Webkul\Partner\Models\Tag;
 
@@ -20,11 +19,6 @@ class ManageTags extends ManageRecords
             CreateAction::make()
                 ->label(__('partners::filament/resources/tag/pages/manage-tags.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
-                ->mutateDataUsing(function (array $data): array {
-                    $data['creator_id'] = Auth::id();
-
-                    return $data;
-                })
                 ->successNotification(
                     Notification::make()
                         ->success()

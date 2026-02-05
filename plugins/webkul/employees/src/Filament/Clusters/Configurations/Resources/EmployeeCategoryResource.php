@@ -9,7 +9,6 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\ColorEntry;
 use Filament\Infolists\Components\TextEntry;
@@ -25,7 +24,6 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Oper
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Filament\Clusters\Configurations;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\EmployeeCategoryResource\Pages\ListEmployeeCategories;
 use Webkul\Employee\Models\EmployeeCategory;
@@ -65,8 +63,6 @@ class EmployeeCategoryResource extends Resource
                 ColorPicker::make('color')
                     ->label(__('employees::filament/clusters/configurations/resources/employee-category.form.fields.color'))
                     ->hexColor(),
-                Hidden::make('creator_id')
-                    ->default(Auth::user()->id),
             ]);
     }
 
@@ -150,7 +146,7 @@ class EmployeeCategoryResource extends Resource
                 ViewAction::make(),
                 EditAction::make()
                     ->mutateDataUsing(function (array $data): array {
-                        $data['color'] = $data['color'] ?? fake()->hexColor();
+                        $data['color'] = $data['color'] ?? random_color();
 
                         return $data;
                     })

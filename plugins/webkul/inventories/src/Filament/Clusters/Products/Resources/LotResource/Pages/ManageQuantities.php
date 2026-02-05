@@ -18,9 +18,12 @@ use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageQuantities extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = LotResource::class;
 
     protected static string $relationship = 'quantities';

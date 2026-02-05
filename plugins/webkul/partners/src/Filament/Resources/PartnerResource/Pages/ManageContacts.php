@@ -9,9 +9,12 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Partner\Filament\Resources\PartnerResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageContacts extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = PartnerResource::class;
 
     protected static string $relationship = 'contacts';

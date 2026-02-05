@@ -6,9 +6,12 @@ use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditRoute extends EditRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = RouteResource::class;
 
     protected function getSavedNotification(): Notification

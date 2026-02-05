@@ -25,6 +25,11 @@ class Employee extends Model
 
     protected $table = 'employees_employees';
 
+    public function getModelTitle(): string
+    {
+        return __('employees::models/employee.title');
+    }
+
     /**
      * The attributes that are mass assignable.
      *
@@ -251,6 +256,8 @@ class Employee extends Model
         parent::boot();
 
         static::saved(function (self $employee) {
+            $employee->creator_id = filament()->auth()->id();
+
             if (! $employee->partner_id) {
                 $employee->handlePartnerCreation($employee);
             } else {

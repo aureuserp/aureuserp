@@ -13,6 +13,15 @@ use Webkul\Inventory\Models\OperationType;
 
 class CreateDelivery extends CreateRecord
 {
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
+
     protected static string $resource = DeliveryResource::class;
 
     public function getTitle(): string|Htmlable

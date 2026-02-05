@@ -12,9 +12,12 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\InternalResource;
 use Webkul\Inventory\Models\InternalTransfer;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditInternal extends EditRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = InternalResource::class;
 
     protected function getRedirectUrl(): string
@@ -34,7 +37,7 @@ class EditInternal extends EditRecord
     {
         return [
             ChatterAction::make()
-                ->setResource(static::$resource),
+                ->resource(static::$resource),
             OperationActions\TodoAction::make(),
             OperationActions\CheckAvailabilityAction::make(),
             OperationActions\ValidateAction::make(),

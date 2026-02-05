@@ -15,7 +15,7 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_user');
+        return $user->can('view_any_security_user');
     }
 
     /**
@@ -23,7 +23,7 @@ class UserPolicy
      */
     public function view(User $user, User $record): bool
     {
-        if (! $user->can('view_user')) {
+        if (! $user->can('view_security_user')) {
             return false;
         }
 
@@ -35,7 +35,7 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_user');
+        return $user->can('create_security_user');
     }
 
     /**
@@ -43,7 +43,7 @@ class UserPolicy
      */
     public function update(User $user, User $record): bool
     {
-        if (! $user->can('update_user')) {
+        if (! $user->can('update_security_user')) {
             return false;
         }
 
@@ -55,7 +55,7 @@ class UserPolicy
      */
     public function delete(User $user, User $record): bool
     {
-        if (! $user->can('delete_user')) {
+        if (! $user->can('delete_security_user')) {
             return false;
         }
 
@@ -67,7 +67,7 @@ class UserPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_user');
+        return $user->can('delete_any_security_user');
     }
 
     /**
@@ -75,7 +75,7 @@ class UserPolicy
      */
     public function forceDelete(User $user, User $record): bool
     {
-        if (! $user->can('force_delete_user')) {
+        if (! $user->can('force_delete_security_user')) {
             return false;
         }
 
@@ -87,7 +87,7 @@ class UserPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_user');
+        return $user->can('force_delete_any_security_user');
     }
 
     /**
@@ -95,7 +95,7 @@ class UserPolicy
      */
     public function restore(User $user, User $record): bool
     {
-        if (! $user->can('restore_user')) {
+        if (! $user->can('restore_security_user')) {
             return false;
         }
 
@@ -107,6 +107,6 @@ class UserPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_user');
+        return $user->can('restore_any_security_user');
     }
 }

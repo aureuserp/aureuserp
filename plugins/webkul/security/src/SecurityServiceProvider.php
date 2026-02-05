@@ -4,8 +4,9 @@ namespace Webkul\Security;
 
 use Illuminate\Foundation\AliasLoader;
 use Webkul\Security\Facades\Bouncer as BouncerFacade;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Filament\Panel;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class SecurityServiceProvider extends PackageServiceProvider
 {
@@ -29,6 +30,7 @@ class SecurityServiceProvider extends PackageServiceProvider
                 '2024_12_13_130906_add_partner_id_to_users_table',
                 '2025_08_21_082229_alter_roles_table',
                 '2025_08_21_101646_alter_users_table',
+                '2026_01_23_074142_add_multi_factor_auth_columns_in_users_table',
             ])
             ->hasSettings([
                 '2024_11_05_042358_create_user_settings',
@@ -39,11 +41,15 @@ class SecurityServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        require_once __DIR__.'/Helpers/helpers.php';
+        require_once __DIR__ . '/Helpers/helpers.php';
     }
 
     public function packageRegistered(): void
     {
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(SecurityPlugin::make());
+        });
+
         $loader = AliasLoader::getInstance();
 
         $loader->alias('bouncer', BouncerFacade::class);

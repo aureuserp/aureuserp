@@ -14,10 +14,10 @@ use Webkul\Inventory\Filament\Clusters\Configurations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\PackagingResource\Pages\ManagePackagings;
 use Webkul\Inventory\Models\Packaging;
 use Webkul\Inventory\Settings\OperationSettings;
-use Webkul\Inventory\Settings\ProductSettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Filament\Resources\PackagingResource as BasePackagingResource;
+use Webkul\Product\Settings\ProductSettings;
 
 class PackagingResource extends BasePackagingResource
 {
@@ -41,7 +41,7 @@ class PackagingResource extends BasePackagingResource
             return true;
         }
 
-        return app(ProductSettings::class)->enable_packagings;
+        return static::getProductSettings()->enable_packagings;
     }
 
     public static function getNavigationGroup(): string
@@ -76,7 +76,7 @@ class PackagingResource extends BasePackagingResource
             ->relationship('packageType', 'name')
             ->searchable()
             ->preload()
-            ->visible(fn (OperationSettings $settings) => $settings->enable_packages);
+            ->visible(static::getOperationSettings()->enable_packages);
 
         $components[] = Select::make('routes')
             ->label(__('inventories::filament/clusters/configurations/resources/packaging.form.routes'))
@@ -84,7 +84,7 @@ class PackagingResource extends BasePackagingResource
             ->searchable()
             ->preload()
             ->multiple()
-            ->visible(fn (WarehouseSettings $settings) => $settings->enable_multi_steps_routes);
+            ->visible(static::getWarehouseSettings()->enable_multi_steps_routes);
 
         $schema->components($components);
 
@@ -103,14 +103,14 @@ class PackagingResource extends BasePackagingResource
             ->label(__('inventories::filament/clusters/configurations/resources/packaging.table.columns.package-type'))
             ->numeric()
             ->sortable()
-            ->visible(fn (OperationSettings $settings) => $settings->enable_packages);
+            ->visible(static::getOperationSettings()->enable_packages);
 
         $filters[] = SelectFilter::make('packageType')
             ->label(__('inventories::filament/clusters/configurations/resources/packaging.table.filters.package-type'))
             ->relationship('packageType', 'name')
             ->searchable()
             ->preload()
-            ->visible(fn (OperationSettings $settings) => $settings->enable_packages);
+            ->visible(static::getOperationSettings()->enable_packages);
 
         $table->columns($columns);
 
@@ -131,7 +131,7 @@ class PackagingResource extends BasePackagingResource
             ->label(__('inventories::filament/clusters/configurations/resources/packaging.infolist.sections.general.entries.package_type'))
             ->icon('heroicon-o-archive-box')
             ->placeholder('—')
-            ->visible(fn (OperationSettings $settings) => $settings->enable_packages);
+            ->visible(static::getOperationSettings()->enable_packages);
 
         $components[0]->childComponents($firstSectionChildComponents);
 
@@ -149,12 +149,27 @@ class PackagingResource extends BasePackagingResource
                         ->columns(1),
                 ])
                 ->collapsible()
-                ->visible(fn (WarehouseSettings $settings) => $settings->enable_multi_steps_routes),
+                ->visible(static::getWarehouseSettings()->enable_multi_steps_routes),
         ]);
 
         $schema->components($components);
 
         return $schema;
+    }
+
+    public static function getOperationSettings(): OperationSettings
+    {
+        return once(fn () => app(OperationSettings::class));
+    }
+
+    public static function getProductSettings(): ProductSettings
+    {
+        return once(fn () => app(ProductSettings::class));
+    }
+
+    public static function getWarehouseSettings(): WarehouseSettings
+    {
+        return once(fn () => app(WarehouseSettings::class));
     }
 
     public static function getPages(): array

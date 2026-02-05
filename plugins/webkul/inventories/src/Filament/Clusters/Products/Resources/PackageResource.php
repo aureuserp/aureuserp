@@ -15,7 +15,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
-use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
@@ -55,8 +54,6 @@ class PackageResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
-
     public static function isDiscovered(): bool
     {
         if (app()->runningInConsole()) {
@@ -69,6 +66,19 @@ class PackageResource extends Resource
     public static function getNavigationLabel(): string
     {
         return __('inventories::filament/clusters/products/resources/package.navigation.title');
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('inventories::filament/clusters/products/resources/package.global-search.package-type') => $record->packageType?->name ?? '—',
+            __('inventories::filament/clusters/products/resources/package.global-search.location')     => $record->location?->full_name ?? '—',
+        ];
     }
 
     public static function form(Schema $schema): Schema

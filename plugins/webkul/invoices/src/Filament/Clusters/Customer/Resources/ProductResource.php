@@ -2,8 +2,10 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Customer\Resources;
 
-use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Table;
+use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Invoice\Filament\Clusters\Customer;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource\Pages\CreateProduct;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource\Pages\EditProduct;
@@ -12,7 +14,6 @@ use Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource\Pages\Ma
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource\Pages\ManageVariants;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource\Pages\ViewProduct;
 use Webkul\Invoice\Models\Product;
-use Webkul\Product\Filament\Resources\ProductResource as BaseProductResource;
 
 class ProductResource extends BaseProductResource
 {
@@ -20,9 +21,9 @@ class ProductResource extends BaseProductResource
 
     protected static ?string $cluster = Customer::class;
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
-
     protected static bool $shouldRegisterNavigation = true;
+
+    protected static bool $isGloballySearchable = true;
 
     protected static ?int $navigationSort = 5;
 
@@ -44,6 +45,22 @@ class ProductResource extends BaseProductResource
             ManageAttributes::class,
             ManageVariants::class,
         ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        $table = parent::table($table);
+
+        $filtered = collect($table->getFilters()['queryBuilder']->getConstraints())
+            ->reject(fn ($constraint) => $constraint->getName() == 'responsible')
+            ->all();
+
+        $table = $table->filters([
+            QueryBuilder::make()
+                ->constraints($filtered),
+        ]);
+
+        return $table;
     }
 
     public static function getPages(): array

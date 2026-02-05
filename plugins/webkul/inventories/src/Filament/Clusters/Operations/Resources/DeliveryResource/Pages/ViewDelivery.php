@@ -12,16 +12,20 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource;
 use Webkul\Inventory\Models\Delivery;
+use Webkul\Support\Filament\Concerns\HasRepeatableEntryColumnManager;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewDelivery extends ViewRecord
 {
+    use HasRecordNavigationTabs, HasRepeatableEntryColumnManager;
+
     protected static string $resource = DeliveryResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
             ChatterAction::make()
-                ->setResource(static::$resource),
+                ->resource(static::$resource),
             ActionGroup::make([
                 OperationActions\Print\PickingOperationAction::make(),
                 OperationActions\Print\DeliverySlipAction::make(),

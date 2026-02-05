@@ -1,6 +1,6 @@
 {
     "name": "webkul/blogs",
-    "description": "",
+    "description": "Manage blogs",
     "authors": [
         {
             "name": "Aureus ERP",
@@ -10,7 +10,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Webkul\\Blog\\Providers\\BlogServiceProvider"
+                "Webkul\\Blog\\BlogServiceProvider"
             ],
             "aliases": {}
         }

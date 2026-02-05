@@ -13,11 +13,12 @@ use Webkul\Purchase\Facades\PurchaseOrder;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource\Actions as OrderActions;
 use Webkul\Purchase\Models\Order;
-use Webkul\Support\Concerns\HasRepeaterColumnManager;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditOrder extends EditRecord
 {
-    use HasRepeaterColumnManager;
+    use HasRecordNavigationTabs, HasRepeaterColumnManager;
 
     protected static string $resource = OrderResource::class;
 
@@ -53,11 +54,12 @@ class EditOrder extends EditRecord
     {
         return [
             ChatterAction::make()
-                ->record(\Webkul\Purchase\Models\Order::find($this->getRecord()->id))
+                ->record(Order::find($this->getRecord()->id))
                 ->setResource(self::$resource),
             OrderActions\SendEmailAction::make(),
             OrderActions\SendPOEmailAction::make(),
             OrderActions\PrintRFQAction::make(),
+            OrderActions\PrintPOAction::make(),
             OrderActions\DraftAction::make(),
             OrderActions\ConfirmAction::make(),
             OrderActions\ConfirmReceiptDateAction::make(),

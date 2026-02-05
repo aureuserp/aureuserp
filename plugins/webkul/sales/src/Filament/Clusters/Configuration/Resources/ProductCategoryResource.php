@@ -18,6 +18,8 @@ class ProductCategoryResource extends BaseProductCategoryResource
 
     protected static ?string $cluster = Configuration::class;
 
+    protected static ?int $navigationSort = 3;
+
     public static function getNavigationGroup(): ?string
     {
         return __('sales::filament/clusters/configurations/resources/product-category.navigation.group');

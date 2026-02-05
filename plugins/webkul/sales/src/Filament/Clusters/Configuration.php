@@ -8,8 +8,6 @@ class Configuration extends Cluster
 {
     protected static ?string $slug = 'sale/configurations';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
-
     protected static ?int $navigationSort = 1;
 
     public static function getNavigationLabel(): string

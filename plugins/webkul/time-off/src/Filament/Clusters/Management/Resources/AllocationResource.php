@@ -25,7 +25,9 @@ use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Webkul\Field\Filament\Forms\Components\ProgressStepper;
+use Illuminate\Database\Eloquent\Model;
+use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\TimeOff\Enums\AllocationType;
 use Webkul\TimeOff\Enums\State;
 use Webkul\TimeOff\Filament\Clusters\Management;
@@ -45,6 +47,8 @@ class AllocationResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     public static function getModelLabel(): string
     {
         return __('time-off::filament/clusters/management/resources/allocation.model-label');
@@ -55,13 +59,26 @@ class AllocationResource extends Resource
         return __('time-off::filament/clusters/management/resources/allocation.navigation.title');
     }
 
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['employee.name', 'holidayStatus.name'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('time-off::filament/clusters/management/resources/allocation.global-search.employee')      => $record->employee?->name ?? '—',
+            __('time-off::filament/clusters/management/resources/allocation.global-search.time-off-type') => $record->holidayStatus?->name ?? '—',
+        ];
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
                 Grid::make()
                     ->schema([
-                        ProgressStepper::make('state')
+                        FormProgressStepper::make('state')
                             ->hiddenLabel()
                             ->inline()
                             ->options(function ($record) {
@@ -257,6 +274,24 @@ class AllocationResource extends Resource
                     ->schema([
                         Group::make()
                             ->schema([
+                                InfolistProgressStepper::make('state')
+                                    ->hiddenLabel()
+                                    ->inline()
+                                    ->options(function ($record) {
+                                        $onlyStates = [
+                                            State::CONFIRM->value,
+                                            State::VALIDATE_TWO->value,
+                                        ];
+
+                                        if ($record->state === State::REFUSE->value) {
+                                            $onlyStates[] = State::REFUSE->value;
+                                        }
+
+                                        return collect(State::options())->only($onlyStates)->toArray();
+                                    })
+                                    ->default(State::CONFIRM->value)
+                                    ->columnSpan('full'),
+
                                 Section::make(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.allocation-details.title'))
                                     ->schema([
                                         TextEntry::make('name')

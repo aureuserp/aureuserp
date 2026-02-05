@@ -2,44 +2,28 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\MyTime\Resources;
 
-use Filament\Actions\Action;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Notifications\Notification;
-use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Fieldset;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
-use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Webkul\TimeOff\Enums\RequestDateFromPeriod;
 use Webkul\TimeOff\Enums\State;
+use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource;
 use Webkul\TimeOff\Filament\Clusters\MyTime;
 use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOffResource\Pages\CreateMyTimeOff;
 use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOffResource\Pages\EditMyTimeOff;
 use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOffResource\Pages\ListMyTimeOffs;
 use Webkul\TimeOff\Filament\Clusters\MyTime\Resources\MyTimeOffResource\Pages\ViewMyTimeOff;
 use Webkul\TimeOff\Models\Leave;
-use Webkul\TimeOff\Models\LeaveType;
+use Webkul\TimeOff\Traits\TimeOffHelper;
 
 class MyTimeOffResource extends Resource
 {
+    use TimeOffHelper;
+
     protected static ?string $model = Leave::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-lifebuoy';
@@ -47,8 +31,6 @@ class MyTimeOffResource extends Resource
     protected static ?int $navigationSort = 2;
 
     protected static ?string $cluster = MyTime::class;
-
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getModelLabel(): string
     {
@@ -62,216 +44,12 @@ class MyTimeOffResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema
-            ->components([
-                Section::make()
-                    ->schema([
-                        Group::make()
-                            ->schema([
-                                Select::make('holiday_status_id')
-                                    ->relationship('holidayStatus', 'name')
-                                    ->searchable()
-                                    ->preload()
-                                    ->live()
-                                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.form.fields.time-off-type'))
-                                    ->required(),
-                                Fieldset::make()
-                                    ->label(function (Get $get) {
-                                        if ($get('request_unit_half')) {
-                                            return __('time-off::filament/clusters/my-time/resources/my-time-off.form.fields.date');
-                                        } else {
-                                            return __('time-off::filament/clusters/my-time/resources/my-time-off.form.fields.dates');
-                                        }
-                                    })
-                                    ->live()
-                                    ->schema([
-                                        DatePicker::make('request_date_from')
-                                            ->native(false)
-                                            ->default(now())
-                                            ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.form.fields.request-date-from'))
-                                            ->required(),
-                                        DatePicker::make('request_date_to')
-                                            ->native(false)
-                                            ->default(now())
-                                            ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.form.fields.request-date-to'))
-                                            ->hidden(fn (Get $get) => $get('request_unit_half'))
-                                            ->required(),
-                                        Select::make('request_date_from_period')
-                                            ->options(RequestDateFromPeriod::class)
-                                            ->default(RequestDateFromPeriod::MORNING->value)
-                                            ->native(false)
-                                            ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.form.fields.period'))
-                                            ->visible(fn (Get $get) => $get('request_unit_half'))
-                                            ->required(),
-                                    ]),
-                                Toggle::make('request_unit_half')
-                                    ->live()
-                                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.form.fields.half-day')),
-                                TextEntry::make('duration_info')
-                                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.form.fields.requested-days'))
-                                    ->live()
-                                    ->state(function (Get $get): string {
-                                        if ($get('request_unit_half')) {
-                                            return __('time-off::filament/clusters/my-time/resources/my-time-off.form.fields.day', ['day' => '0.5']);
-                                        }
-
-                                        $startDate = $get('request_date_from');
-                                        $endDate = $get('request_date_to');
-
-                                        if (! $startDate) {
-                                            return __('time-off::filament/clusters/my-time/resources/my-time-off.form.fields.days', ['days' => 0]);
-                                        }
-
-                                        try {
-                                            $startDate = Carbon::parse($startDate);
-                                            $endDate = $endDate ? Carbon::parse($endDate) : $startDate;
-                                            $days = $startDate->diffInDays($endDate) + 1;
-
-                                            return __('time-off::filament/clusters/my-time/resources/my-time-off.form.fields.days', ['days' => $days]);
-                                        } catch (\Exception $e) {
-                                            return __('time-off::filament/clusters/my-time/resources/my-time-off.form.fields.days', ['days' => 0]);
-                                        }
-                                    }),
-                                Textarea::make('private_name')
-                                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.form.fields.description'))
-                                    ->live(),
-                                FileUpload::make('attachment')
-                                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.form.fields.attachment'))
-                                    ->acceptedFileTypes([
-                                        'image/*',
-                                        'application/pdf',
-                                    ])
-                                    ->visible(function (Get $get) {
-                                        $leaveType = LeaveType::find($get('holiday_status_id'));
-
-                                        if ($leaveType) {
-                                            return $leaveType->support_document;
-                                        }
-
-                                        return false;
-                                    })
-                                    ->live(),
-                            ]),
-                    ])->columnSpanFull(),
-            ]);
+        return $schema->components((new self)->getFormSchema());
     }
 
     public static function table(Table $table): Table
     {
-        return $table
-            ->columns([
-                TextColumn::make('employee.name')
-                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.table.columns.employee-name'))
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('holidayStatus.name')
-                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.table.columns.time-off-type'))
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('private_name')
-                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.table.columns.description'))
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('date_from')
-                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.table.columns.date-from'))
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('date_to')
-                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.table.columns.date-to'))
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('duration_display')
-                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.table.columns.duration'))
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('state')
-                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.table.columns.status'))
-                    ->formatStateUsing(fn ($state) => State::options()[$state->value])
-                    ->sortable()
-                    ->badge()
-                    ->searchable(),
-            ])
-            ->groups([
-                Tables\Grouping\Group::make('employee.name')
-                    ->label(__('Employee Name'))
-                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.table.groups.employee-name'))
-                    ->collapsible(),
-                Tables\Grouping\Group::make('holidayStatus.name')
-                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.table.groups.time-off-type'))
-                    ->collapsible(),
-                Tables\Grouping\Group::make('state')
-                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.table.groups.status'))
-                    ->collapsible(),
-                Tables\Grouping\Group::make('date_from')
-                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.table.groups.start-date'))
-                    ->collapsible(),
-                Tables\Grouping\Group::make('date_to')
-                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.table.groups.start-to'))
-                    ->collapsible(),
-            ])
-            ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-                DeleteAction::make()
-                    ->successNotification(
-                        Notification::make()
-                            ->success()
-                            ->title(__('time-off::filament/clusters/my-time/resources/my-time-off.table.actions.delete.notification.title'))
-                            ->body(__('time-off::filament/clusters/my-time/resources/my-time-off.table.actions.delete.notification.body'))
-                    ),
-                Action::make('approve')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->hidden(fn ($record) => $record->state === State::VALIDATE_TWO->value)
-                    ->action(function ($record) {
-                        if ($record->state === State::VALIDATE_ONE->value) {
-                            $record->update(['state' => State::VALIDATE_TWO->value]);
-                        } else {
-                            $record->update(['state' => State::VALIDATE_TWO->value]);
-                        }
-
-                        Notification::make()
-                            ->success()
-                            ->title(__('time-off::filament/clusters/my-time/resources/my-time-off.table.actions.approve.notification.title'))
-                            ->body(__('time-off::filament/clusters/my-time/resources/my-time-off.table.actions.approve.notification.body'))
-                            ->send();
-                    })
-                    ->label(function ($record) {
-                        if ($record->state === State::VALIDATE_ONE->value) {
-                            return __('time-off::filament/clusters/my-time/resources/my-time-off.table.actions.approve.title.validate');
-                        } else {
-                            return __('time-off::filament/clusters/my-time/resources/my-time-off.table.actions.approve.title.approve');
-                        }
-                    }),
-                Action::make('refuse')
-                    ->icon('heroicon-o-x-circle')
-                    ->hidden(fn ($record) => $record->state === State::REFUSE->value)
-                    ->color('danger')
-                    ->action(function ($record) {
-                        $record->update(['state' => State::REFUSE->value]);
-
-                        Notification::make()
-                            ->success()
-                            ->title(__('time-off::filament/clusters/my-time/resources/my-time-off.table.actions.refused.notification.title'))
-                            ->body(__('time-off::filament/clusters/my-time/resources/my-time-off.table.actions.refused.notification.body'))
-                            ->send();
-                    })
-                    ->label(__('time-off::filament/clusters/my-time/resources/my-time-off.table.actions.refused.title')),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make()
-                        ->successNotification(
-                            Notification::make()
-                                ->success()
-                                ->title(__('time-off::filament/clusters/my-time/resources/my-time-off.table.bulk-actions.delete.notification.title'))
-                                ->body(__('time-off::filament/clusters/my-time/resources/my-time-off.table.bulk-actions.delete.notification.body'))
-                        ),
-                ]),
-            ])
-            ->modifyQueryUsing(function ($query) {
-                $query->where('employee_id', Auth::user()?->employee?->id);
-            });
+        return $table = TimeOffResource::table($table);
     }
 
     public static function getPages(): array
@@ -282,6 +60,15 @@ class MyTimeOffResource extends Resource
             'edit'   => EditMyTimeOff::route('/{record}/edit'),
             'view'   => ViewMyTimeOff::route('/{record}'),
         ];
+    }
+
+    public static function isEditableState(?Leave $record): bool
+    {
+        return ! in_array($record?->state, [
+            State::REFUSE,
+            State::VALIDATE_ONE,
+            State::VALIDATE_TWO,
+        ]);
     }
 
     public static function infolist(Schema $schema): Schema

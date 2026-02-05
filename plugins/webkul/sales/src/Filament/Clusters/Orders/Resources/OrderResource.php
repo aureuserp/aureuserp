@@ -2,9 +2,10 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources;
 
-use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
+use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\CreateOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\EditOrder;
@@ -22,8 +23,6 @@ class OrderResource extends QuotationResource
 
     protected static ?int $navigationSort = 2;
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
-
     public static function getModelLabel(): string
     {
         return __('sales::filament/clusters/orders/resources/order.title');
@@ -34,7 +33,17 @@ class OrderResource extends QuotationResource
         return __('sales::filament/clusters/orders/resources/order.navigation.title');
     }
 
-    public static function getEloquentQuery(): Builder
+    public static function getGloballySearchableAttributes(): array
+    {
+        return QuotationResource::getGloballySearchableAttributes();
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return QuotationResource::getGlobalSearchResultDetails($record);
+    }
+
+    public static function form(Schema $schema): Schema
     {
         $query = parent::getEloquentQuery();
 
@@ -63,5 +72,11 @@ class OrderResource extends QuotationResource
             'invoices'   => ManageInvoices::route('/{record}/invoices'),
             'deliveries' => ManageDeliveries::route('/{record}/deliveries'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderByDesc('id');
     }
 }

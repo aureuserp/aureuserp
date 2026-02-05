@@ -46,6 +46,8 @@ class ActivityPlanResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
 
+    protected static ?int $navigationSort = 1;
+
     protected static ?string $cluster = Configuration::class;
 
     public static function getNavigationLabel(): string
@@ -87,6 +89,7 @@ class ActivityPlanResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
             ->columns([
                 TextColumn::make('name')
                     ->label(__('sales::filament/clusters/configurations/resources/activity-plan.table.columns.name'))

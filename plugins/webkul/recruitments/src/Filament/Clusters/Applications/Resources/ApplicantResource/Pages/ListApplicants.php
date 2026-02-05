@@ -11,6 +11,7 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Recruitment\Enums\RecruitmentState;
@@ -164,7 +165,7 @@ class ListApplicants extends ListRecords
 
                     return $data;
                 })
-                ->using(function (array $data): \Illuminate\Database\Eloquent\Model {
+                ->using(function (array $data): Model {
                     $model = static::$resource::getModel();
 
                     $existingApplicant = $model::where('candidate_id', $data['candidate_id'])

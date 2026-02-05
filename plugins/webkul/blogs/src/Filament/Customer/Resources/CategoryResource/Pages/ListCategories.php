@@ -34,7 +34,8 @@ class ListCategories extends ListRecords
 
     protected function getPosts(): Paginator
     {
-        $query = Post::query()->where('is_published', 1);
+        $query = Post::with(['category', 'creator', 'tags'])
+            ->where('is_published', 1);
 
         if (request()->has('search') && $search = request()->input('search')) {
             $query->where(function (Builder $query) use ($search) {

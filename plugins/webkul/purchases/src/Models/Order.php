@@ -30,6 +30,11 @@ class Order extends Model
 {
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope;
 
+    public function getModelTitle(): string
+    {
+        return __('purchases::models/order.title');
+    }
+
     /**
      * Table name.
      *
@@ -98,35 +103,22 @@ class Order extends Model
         'planned_at'               => 'datetime',
         'calendar_start_at'        => 'datetime',
         'effective_date'           => 'datetime',
+        'untaxed_amount'           => 'decimal:4',
     ];
 
-    protected array $logAttributes = [
-        'name',
-        'description',
-        'priority',
-        'origin',
-        'partner_reference',
-        'state',
-        'invoice_status',
-        'receipt_status',
-        'untaxed_amount',
-        'currency_rate',
-        'ordered_at',
-        'approved_at',
-        'planned_at',
-        'calendar_start_at',
-        'incoterm_location',
-        'effective_date',
-        'requisition.name'    => 'Requisition',
-        'partner.name'        => 'Vendor',
-        'currency.name'       => 'Currency',
-        'fiscalPosition'      => 'Fiscal Position',
-        'paymentTerm.name'    => 'Payment Term',
-        'incoterm.name'       => 'Buyer',
-        'user.name'           => 'Buyer',
-        'company.name'        => 'Company',
-        'creator.name'        => 'Creator',
-    ];
+    public function getLogAttributeLabels(): array
+    {
+        return [
+            'state'             => __('purchases::models/order.log-attributes.state'),
+            'untaxed_amount'    => __('purchases::models/order.log-attributes.untaxed-amount'),
+            'partner_reference' => __('purchases::models/order.log-attributes.partner-reference'),
+            'origin'            => __('purchases::models/order.log-attributes.origin'),
+            'partner.name'      => __('purchases::models/order.log-attributes.partner'),
+            'user.name'         => __('purchases::models/order.log-attributes.buyer'),
+            'paymentTerm.name'  => __('purchases::models/order.log-attributes.payment-term'),
+            'fiscalPosition'    => __('purchases::models/order.log-attributes.fiscal-position'),
+        ];
+    }
 
     /**
      * Checks if new invoice is allow or not

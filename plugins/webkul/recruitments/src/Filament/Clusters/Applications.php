@@ -7,8 +7,6 @@ use Filament\Panel;
 
 class Applications extends Cluster
 {
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
-
     protected static ?int $navigationSort = 2;
 
     public static function getSlug(?Panel $panel = null): string

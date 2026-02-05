@@ -3,9 +3,10 @@
 namespace Webkul\Account\Filament\Resources\InvoiceResource\Actions;
 
 use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Livewire\Component;
 use Webkul\Account\Enums\MoveState;
-use Webkul\Account\Facades\Account;
+use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Move;
 
 class ResetToDraftAction extends Action
@@ -24,7 +25,11 @@ class ResetToDraftAction extends Action
             ->color('gray')
             ->icon('heroicon-o-arrow-path')
             ->action(function (Move $record, Component $livewire): void {
-                $record = Account::resetToDraft($record);
+                if (! $this->validateMove($record)) {
+                    return;
+                }
+
+                $record = AccountFacade::resetToDraftMove($record);
 
                 $record->save();
 
@@ -35,5 +40,20 @@ class ResetToDraftAction extends Action
                     $record->state == MoveState::CANCEL
                     || $record->state == MoveState::POSTED;
             });
+    }
+
+    private function validateMove(Move &$record): bool
+    {
+        if (! in_array($record->state, [MoveState::POSTED, MoveState::CANCEL])) {
+            Notification::make()
+                ->warning()
+                ->title(__('accounts::filament/resources/invoice/actions/reset-to-draft-action.validation.notification.error.invalid-state.title'))
+                ->body(__('accounts::filament/resources/invoice/actions/reset-to-draft-action.validation.notification.error.invalid-state.body'))
+                ->send();
+
+            return false;
+        }
+
+        return true;
     }
 }

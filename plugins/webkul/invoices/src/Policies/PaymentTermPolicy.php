@@ -15,7 +15,7 @@ class PaymentTermPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_payment::term');
+        return $user->can('view_any_invoice_payment::term');
     }
 
     /**
@@ -23,7 +23,7 @@ class PaymentTermPolicy
      */
     public function view(User $user, PaymentTerm $paymentTerm): bool
     {
-        return $user->can('view_payment::term');
+        return $user->can('view_invoice_payment::term');
     }
 
     /**
@@ -31,7 +31,7 @@ class PaymentTermPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_payment::term');
+        return $user->can('create_invoice_payment::term');
     }
 
     /**
@@ -39,7 +39,7 @@ class PaymentTermPolicy
      */
     public function update(User $user, PaymentTerm $paymentTerm): bool
     {
-        return $user->can('update_payment::term');
+        return $user->can('update_invoice_payment::term');
     }
 
     /**
@@ -47,7 +47,7 @@ class PaymentTermPolicy
      */
     public function delete(User $user, PaymentTerm $paymentTerm): bool
     {
-        return $user->can('delete_payment::term');
+        return $user->can('delete_invoice_payment::term');
     }
 
     /**
@@ -55,7 +55,7 @@ class PaymentTermPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_payment::term');
+        return $user->can('delete_any_invoice_payment::term');
     }
 
     /**
@@ -63,7 +63,7 @@ class PaymentTermPolicy
      */
     public function forceDelete(User $user, PaymentTerm $paymentTerm): bool
     {
-        return $user->can('force_delete_payment::term');
+        return $user->can('force_delete_invoice_payment::term');
     }
 
     /**
@@ -71,7 +71,7 @@ class PaymentTermPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_payment::term');
+        return $user->can('force_delete_any_invoice_payment::term');
     }
 
     /**
@@ -79,7 +79,7 @@ class PaymentTermPolicy
      */
     public function restore(User $user, PaymentTerm $paymentTerm): bool
     {
-        return $user->can('restore_payment::term');
+        return $user->can('restore_invoice_payment::term');
     }
 
     /**
@@ -87,6 +87,6 @@ class PaymentTermPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_payment::term');
+        return $user->can('restore_any_invoice_payment::term');
     }
 }

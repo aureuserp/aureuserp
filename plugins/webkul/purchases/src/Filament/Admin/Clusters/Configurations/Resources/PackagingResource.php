@@ -15,6 +15,8 @@ class PackagingResource extends BasePackagingResource
 
     protected static ?int $navigationSort = 10;
 
+    protected static ?string $model = Packaging::class;
+
     protected static ?string $cluster = Configurations::class;
 
     protected static ?string $recordTitleAttribute = 'name';

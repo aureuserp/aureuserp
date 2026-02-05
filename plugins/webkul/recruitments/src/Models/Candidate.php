@@ -19,6 +19,11 @@ class Candidate extends Model
 
     protected $table = 'recruitments_candidates';
 
+    public function getModelTitle(): string
+    {
+        return __('recruitments::models/candidate.title');
+    }
+
     protected $fillable = [
         'message_bounced',
         'company_id',
@@ -38,26 +43,30 @@ class Candidate extends Model
         'is_active',
     ];
 
-    protected array $logAttributes = [
-        'company.name'     => 'Company',
-        'partner.name'     => 'Contact',
-        'degree.name'      => 'Degree',
-        'user.name'        => 'Manager',
-        'employee.name'    => 'Employee',
-        'creator.name'     => 'Created By',
-        'phone_sanitized'  => 'Phone',
-        'email_normalized' => 'Email',
-        'email_cc'         => 'Email CC',
-        'name'             => 'Candidate Name',
-        'email_from'       => 'Email From',
-        'phone',
-        'linkedin_profile',
-        'availability_date',
-        'is_active' => 'Status',
-    ];
+    public function getLogAttributeLabels(): array
+    {
+        return [
+            'company.name'      => __('recruitments::models/candidate.log-attributes.company'),
+            'partner.name'      => __('recruitments::models/candidate.log-attributes.contact'),
+            'degree.name'       => __('recruitments::models/candidate.log-attributes.degree'),
+            'user.name'         => __('recruitments::models/candidate.log-attributes.manager'),
+            'employee.name'     => __('recruitments::models/candidate.log-attributes.employee'),
+            'creator.name'      => __('recruitments::models/candidate.log-attributes.creator'),
+            'phone_sanitized'   => __('recruitments::models/candidate.log-attributes.phone'),
+            'email_normalized'  => __('recruitments::models/candidate.log-attributes.email'),
+            'email_cc'          => __('recruitments::models/candidate.log-attributes.email_cc'),
+            'name'              => __('recruitments::models/candidate.log-attributes.name'),
+            'email_from'        => __('recruitments::models/candidate.log-attributes.email_from'),
+            'phone'             => __('recruitments::models/candidate.log-attributes.phone_raw'),
+            'linkedin_profile'  => __('recruitments::models/candidate.log-attributes.linkedin_profile'),
+            'availability_date' => __('recruitments::models/candidate.log-attributes.availability_date'),
+            'is_active'         => __('recruitments::models/candidate.log-attributes.is_active'),
+        ];
+    }
 
     protected $casts = [
         'candidate_properties' => 'array',
+        'is_active'            => 'boolean',
     ];
 
     public function company()
@@ -127,6 +136,12 @@ class Candidate extends Model
     protected static function boot()
     {
         parent::boot();
+
+        static::creating(function ($candidate) {
+            $candidate->creator_id ??= filament()->auth()->id();
+
+            $candidate->company_id ??= filament()->auth()->user()->default_company_id;
+        });
 
         static::saved(function (self $candidate) {
             if (! $candidate->partner_id) {

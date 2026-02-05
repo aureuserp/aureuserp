@@ -58,4 +58,15 @@ class LeaveAccrualPlan extends Model
     {
         return $this->hasMany(LeaveAccrualLevel::class, 'accrual_plan_id');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($leaveAccrualPlan) {
+            $leaveAccrualPlan->creator_id = filament()->auth()->id();
+
+            $leaveAccrualPlan->company_id ??= filament()->auth()->user()->default_company_id;
+        });
+    }
 }

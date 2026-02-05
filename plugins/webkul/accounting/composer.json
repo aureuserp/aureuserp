@@ -1,0 +1,30 @@
+{
+    "name": "webkul/accounting",
+    "description": "",
+    "authors": [
+        {
+            "name": "Aureus ERP",
+            "email": "support@aureuserp.in"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Webkul\\Accounting\\AccountingServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Webkul\\Accounting\\": "src/",
+            "Webkul\\Accounting\\Database\\Factories\\": "database/factories/",
+            "Webkul\\Accounting\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webkul\\Accounting\\Tests\\": "tests/"
+        }
+    }
+}

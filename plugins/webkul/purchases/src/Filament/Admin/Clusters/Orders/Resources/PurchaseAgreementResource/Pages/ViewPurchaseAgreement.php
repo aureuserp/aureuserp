@@ -8,16 +8,19 @@ use Filament\Resources\Pages\ViewRecord;
 use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Purchase\Enums\RequisitionState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewPurchaseAgreement extends ViewRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = PurchaseAgreementResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
             ChatterAction::make()
-                ->setResource(static::$resource),
+                ->resource(static::$resource),
             DeleteAction::make()
                 ->hidden(fn () => $this->getRecord()->state == RequisitionState::CLOSED)
                 ->successNotification(

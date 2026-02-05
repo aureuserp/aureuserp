@@ -34,7 +34,9 @@ class ViewCategory extends ViewRecord
 
     protected function getPosts(): Paginator
     {
-        $query = Post::query()->where('category_id', $this->getRecord()->id)->where('is_published', 1);
+        $query = Post::with(['category', 'creator', 'tags'])
+            ->where('category_id', $this->getRecord()->id)
+            ->where('is_published', 1);
 
         if (request()->has('search') && $search = request()->input('search')) {
             $query->where(function (Builder $query) use ($search) {

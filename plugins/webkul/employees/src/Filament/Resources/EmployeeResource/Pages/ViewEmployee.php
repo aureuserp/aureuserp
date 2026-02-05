@@ -5,7 +5,7 @@ namespace Webkul\Employee\Filament\Resources\EmployeeResource\Pages;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
-use Webkul\Chatter\Filament\Actions as ChatterActions;
+use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Employee\Filament\Resources\EmployeeResource;
 use Webkul\Support\Models\ActivityPlan;
 
@@ -16,9 +16,9 @@ class ViewEmployee extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            ChatterActions\ChatterAction::make()
-                ->setResource(static::$resource)
-                ->setActivityPlans($this->getActivityPlans()),
+            ChatterAction::make()
+                ->resource(static::$resource)
+                ->activityPlans($this->getActivityPlans()),
             DeleteAction::make()
                 ->successNotification(
                     Notification::make()

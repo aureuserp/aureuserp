@@ -234,6 +234,13 @@
                     </td>
                 @endif
 
+                @if ($record->ref)
+                    <td width="33%">
+                        <strong>Source</strong><br>
+                        {{ $record->ref }}
+                    </td>
+                @endif
+
                 @if ($record->invoice_date_due)
                     <td width="33%">
                         <strong>Due Date</strong><br>
@@ -244,14 +251,14 @@
         </table>
 
         <!-- Items Table -->
-        @if (! $record->lines->isEmpty())
+        @if (! $record->invoiceLines->isEmpty())
             <table class="items-table">
                 <thead>
                     <tr>
                         <th>Product</th>
                         <th>Quantity</th>
 
-                        @if (app(\Webkul\Invoice\Settings\ProductSettings::class)->enable_uom)
+                        @if (app(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
                             <th>Unit</th>
                         @endif
 
@@ -260,16 +267,16 @@
                 </thead>
 
                 <tbody>
-                    @foreach ($record->lines as $item)
+                    @foreach ($record->invoiceLines as $item)
                     <tr>
                         <td>{{ $item->product->name }}</td>
                         <td>{{ number_format($item->quantity) }}</td>
 
-                        @if (app(\Webkul\Invoice\Settings\ProductSettings::class)->enable_uom)
+                        @if (app(\Webkul\Product\Settings\ProductSettings::class)->enable_uom)
                             <td>{{ $item->product->uom->name }}</td>
                         @endif
 
-                        <td>{{ number_format($item->price_unit, 2) }}</td>
+                        <td>{{ money($item->price_unit, $record->currency->name) }}</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -282,17 +289,17 @@
                     <tr>
                         <td>Subtotal</td>
                         <td>-</td>
-                        <td>{{ $record->currency->symbol }} {{ number_format($record->amount_untaxed, 2) }}</td>
+                        <td>{{ money($record->amount_untaxed, $record->currency->name) }}</td>
                     </tr>
                     <tr>
                         <td>Tax</td>
                         <td>-</td>
-                        <td>{{ $record->currency->symbol }} {{ number_format($record->amount_tax, 2) }}</td>
+                        <td>{{ money($record->amount_tax, $record->currency->name) }}</td>
                     </tr>
                     <tr>
                         <td>Discount</td>
                         <td>-</td>
-                        <td>-{{ $record->currency->symbol }} {{ number_format($record->total_discount, 2) }}</td>
+                        <td>-{{ money($record->total_discount, $record->currency->name) }}</td>
                     </tr>
                     <tr>
                         <td style="border-top: 1px solid #FFFFFF;">
@@ -300,7 +307,7 @@
                         </td>
                         <td style="border-top: 1px solid #FFFFFF;">-</td>
                         <td style="border-top: 1px solid #FFFFFF;">
-                            <b>{{ $record->currency->symbol }} {{ number_format($record->amount_total, 2) }}</b>
+                            <b>{{ money($record->amount_total, $record->currency->name) }}</b>
                         </td>
                     </tr>
                 </tbody>

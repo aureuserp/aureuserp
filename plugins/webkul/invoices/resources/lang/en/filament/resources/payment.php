@@ -4,8 +4,8 @@ return [
     'form' => [
         'sections' => [
             'fields' => [
-                'vender'                => 'Vender',
-                'vender-bank-account'   => 'Vender Bank Account',
+                'vendor'                => 'Vendor',
+                'vendor-bank-account'   => 'Vendor Bank Account',
             ],
         ],
     ],

@@ -16,9 +16,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Unique;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource;
 use Webkul\Inventory\Settings\OperationSettings;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageCapacityByPackages extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = StorageCategoryResource::class;
 
     protected static string $relationship = 'storageCategoryCapacitiesByPackageType';

@@ -13,9 +13,12 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Product\Models\ProductSupplier;
 use Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources\VendorPriceResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageVendors extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = ProductResource::class;
 
     protected static string $relationship = 'supplierInformation';

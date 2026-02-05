@@ -6,7 +6,6 @@ use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRecords;
 use Filament\Schemas\Components\Tabs\Tab;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\TagResource;
 use Webkul\Project\Models\Tag;
 
@@ -22,8 +21,6 @@ class ManageTags extends ManageRecords
                 ->label(__('projects::filament/clusters/configurations/resources/tag/pages/manage-tags.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
                 ->mutateDataUsing(function (array $data): array {
-                    $data['creator_id'] = Auth::id();
-
                     if (empty($data['color'])) {
                         $data['color'] = '#808080';
                     }

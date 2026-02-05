@@ -8,7 +8,6 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
-use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -37,9 +36,9 @@ class ReceiptResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?string $cluster = Operations::class;
+    protected static bool $isGloballySearchable = true;
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?string $cluster = Operations::class;
 
     public static function getModelLabel(): string
     {
@@ -54,6 +53,26 @@ class ReceiptResource extends Resource
     public static function getNavigationGroup(): string
     {
         return __('inventories::filament/clusters/operations/resources/receipt.navigation.group');
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'partner.name', 'origin'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('inventories::filament/clusters/operations/resources/receipt.global-search.partner') => $record->partner?->name ?? '—',
+            __('inventories::filament/clusters/operations/resources/receipt.global-search.origin')  => $record->origin ?? '—',
+        ];
+    }
+
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return parent::getGlobalSearchEloquentQuery()->whereHas('operationType', function (Builder $query) {
+            $query->where('type', OperationType::INCOMING);
+        });
     }
 
     public static function form(Schema $schema): Schema
@@ -139,5 +158,11 @@ class ReceiptResource extends Resource
             'view'   => ViewReceipt::route('/{record}/view'),
             'moves'  => ManageMoves::route('/{record}/moves'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->orderByDesc('id');
     }
 }

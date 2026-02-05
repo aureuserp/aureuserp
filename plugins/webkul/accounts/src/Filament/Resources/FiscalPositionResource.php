@@ -15,11 +15,12 @@ use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
-use Filament\Resources\RelationManagers\RelationGroup;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -29,8 +30,11 @@ use Webkul\Account\Filament\Resources\FiscalPositionResource\Pages\EditFiscalPos
 use Webkul\Account\Filament\Resources\FiscalPositionResource\Pages\ListFiscalPositions;
 use Webkul\Account\Filament\Resources\FiscalPositionResource\Pages\ManageFiscalPositionTax;
 use Webkul\Account\Filament\Resources\FiscalPositionResource\Pages\ViewFiscalPosition;
-use Webkul\Account\Filament\Resources\FiscalPositionResource\RelationManagers\FiscalPositionTaxRelationManager;
 use Webkul\Account\Models\FiscalPosition;
+use Webkul\Support\Filament\Forms\Components\Repeater;
+use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
+use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
+use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
 
 class FiscalPositionResource extends Resource
 {
@@ -72,13 +76,90 @@ class FiscalPositionResource extends Resource
                                 TextInput::make('zip_to')
                                     ->label(__('accounts::filament/resources/fiscal-position.form.fields.zip-to'))
                                     ->required(),
+                                Select::make('company_id')
+                                    ->relationship('company', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->label(__('accounts::filament/resources/fiscal-position.form.fields.company'))
+                                    ->required(),
+
                                 Toggle::make('auto_reply')
                                     ->inline(false)
                                     ->label(__('accounts::filament/resources/fiscal-position.form.fields.detect-automatically')),
                             ])->columns(2),
                         RichEditor::make('notes')
                             ->label(__('accounts::filament/resources/fiscal-position.form.fields.notes')),
-                    ]),
+                    ])->columnSpanFull(),
+                Tabs::make('Mappings')
+                    ->tabs([
+                        Tab::make('Tax Mapping')
+                            ->schema([
+                                Repeater::make('taxes')
+                                    ->hiddenLabel()
+                                    ->relationship('taxes')
+                                    ->compact()
+                                    ->reactive()
+                                    ->addActionLabel(__('Add Tax Mapping'))
+                                    ->table([
+                                        TableColumn::make('tax_source_id')
+                                            ->label(__('accounts::filament/resources/fiscal-position.form.tabs.tax-mapping.table.columns.tax-source'))
+                                            ->width(200),
+
+                                        TableColumn::make('tax_destination_id')
+                                            ->label(__('accounts::filament/resources/fiscal-position.form.tabs.tax-mapping.table.columns.tax-destination'))
+                                            ->width(200),
+                                    ])
+                                    ->schema([
+                                        Select::make('tax_source_id')
+                                            ->relationship('taxSource', 'name')
+                                            ->label(__('accounts::traits/fiscal-position-tax.form.fields.tax-source'))
+                                            ->preload()
+                                            ->searchable()
+                                            ->required(),
+
+                                        Select::make('tax_destination_id')
+                                            ->relationship('taxDestination', 'name')
+                                            ->label(__('accounts::traits/fiscal-position-tax.form.fields.tax-destination'))
+                                            ->preload()
+                                            ->searchable(),
+                                    ])
+                                    ->columns(2),
+                            ]),
+                        Tab::make('Account Mapping')
+                            ->schema([
+                                Repeater::make('accounts')
+                                    ->hiddenLabel()
+                                    ->relationship('accounts')
+                                    ->compact()
+                                    ->reactive()
+                                    ->addActionLabel(__('Add Account Mapping'))
+                                    ->table([
+                                        TableColumn::make('account_source_id')
+                                            ->label(__('accounts::filament/resources/fiscal-position.form.tabs.account-mapping.table.columns.source-account'))
+                                            ->width(200),
+                                        TableColumn::make('account_destination_id')
+                                            ->label(__('accounts::filament/resources/fiscal-position.form.tabs.account-mapping.table.columns.destination-account'))
+                                            ->width(200),
+                                    ])
+                                    ->schema([
+                                        Select::make('account_source_id')
+                                            ->label('Source Account')
+                                            ->searchable()
+                                            ->preload()
+                                            ->relationship('accountSource', 'name')
+                                            ->required(),
+
+                                        Select::make('account_destination_id')
+                                            ->label('Destination Account')
+                                            ->searchable()
+                                            ->preload()
+                                            ->relationship('accountDestination', 'name')
+                                            ->required(),
+                                    ])
+                                    ->columns(2),
+                            ]),
+                    ])->columnSpanFull(),
+
             ]);
     }
 
@@ -192,7 +273,54 @@ class FiscalPositionResource extends Resource
                             ->label(__('accounts::filament/resources/fiscal-position.infolist.entries.notes'))
                             ->placeholder('-')
                             ->markdown(),
-                    ]),
+                    ])->columnSpanFull(),
+                Tabs::make('Mappings')
+                    ->tabs([
+                        Tab::make('Tax Mapping')
+                            ->schema([
+                                RepeatableEntry::make('taxes')
+                                    ->hiddenLabel()
+                                    ->live()
+                                    ->table([
+                                        InfolistTableColumn::make('taxSource.name')
+                                            ->alignCenter()
+                                            ->label(__('accounts::filament/resources/fiscal-position.form.tabs.tax-mapping.table.columns.tax-source')),
+
+                                        InfolistTableColumn::make('taxDestination.name')
+                                            ->alignCenter()
+                                            ->label(__('accounts::filament/resources/fiscal-position.form.tabs.tax-mapping.table.columns.tax-destination')),
+                                    ])
+                                    ->schema([
+                                        TextEntry::make('taxSource.name')
+                                            ->placeholder('-'),
+
+                                        TextEntry::make('taxDestination.name')
+                                            ->placeholder('-'),
+                                    ]),
+                            ]),
+                        Tab::make('Account Mapping')
+                            ->schema([
+                                RepeatableEntry::make('accounts')
+                                    ->hiddenLabel()
+                                    ->live()
+                                    ->table([
+                                        InfolistTableColumn::make('accountSource.name')
+                                            ->alignCenter()
+                                            ->label(__('accounts::filament/resources/fiscal-position.form.tabs.account-mapping.table.columns.source-account')),
+
+                                        InfolistTableColumn::make('accountDestination.name')
+                                            ->alignCenter()
+                                            ->label(__('accounts::filament/resources/fiscal-position.form.tabs.account-mapping.table.columns.destination-account')),
+                                    ])
+                                    ->schema([
+                                        TextEntry::make('accountSource.name')
+                                            ->placeholder('-'),
+
+                                        TextEntry::make('accountDestination.name')
+                                            ->placeholder('-'),
+                                    ]),
+                            ]),
+                    ])->columnSpanFull(),
             ]);
     }
 
@@ -203,16 +331,6 @@ class FiscalPositionResource extends Resource
             EditFiscalPosition::class,
             ManageFiscalPositionTax::class,
         ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            RelationGroup::make('distribution_for_invoice', [
-                FiscalPositionTaxRelationManager::class,
-            ])
-                ->icon('heroicon-o-banknotes'),
-        ];
     }
 
     public static function getPages(): array

@@ -15,7 +15,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Project\Enums\TaskState;
 use Webkul\Project\Filament\Resources\TaskResource;
 use Webkul\Project\Models\Task;
@@ -53,11 +52,6 @@ class SubTasksRelationManager extends RelationManager
                             'partner_id'   => $this->getOwnerRecord()->partner_id,
                             'users'        => $this->getOwnerRecord()->users->pluck('id')->toArray(),
                         ];
-                    })
-                    ->mutateDataUsing(function (array $data): array {
-                        $data['creator_id'] = Auth::id();
-
-                        return $data;
                     })
                     ->modalWidth('6xl')
                     ->successNotification(

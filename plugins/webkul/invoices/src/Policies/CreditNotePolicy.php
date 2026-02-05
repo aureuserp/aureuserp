@@ -15,7 +15,7 @@ class CreditNotePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_credit::notes');
+        return $user->can('view_any_invoice_credit::note');
     }
 
     /**
@@ -23,7 +23,7 @@ class CreditNotePolicy
      */
     public function view(User $user, CreditNote $creditNote): bool
     {
-        return $user->can('view_credit::notes');
+        return $user->can('view_invoice_credit::note');
     }
 
     /**
@@ -31,7 +31,7 @@ class CreditNotePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_credit::notes');
+        return $user->can('create_invoice_credit::note');
     }
 
     /**
@@ -39,7 +39,7 @@ class CreditNotePolicy
      */
     public function update(User $user, CreditNote $creditNote): bool
     {
-        return $user->can('update_credit::notes');
+        return $user->can('update_invoice_credit::note');
     }
 
     /**
@@ -47,7 +47,7 @@ class CreditNotePolicy
      */
     public function delete(User $user, CreditNote $creditNote): bool
     {
-        return $user->can('delete_credit::notes');
+        return $user->can('delete_invoice_credit::note');
     }
 
     /**
@@ -55,6 +55,6 @@ class CreditNotePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_credit::notes');
+        return $user->can('delete_any_invoice_credit::note');
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Webkul\Project\Filament\Clusters\Configurations\Resources;
 
-use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -31,13 +30,13 @@ use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResour
 use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\ListActivityPlans;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\ViewActivityPlan;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\ActivityPlanResource\RelationManagers\ActivityTemplateRelationManager;
-use Webkul\Support\Models\ActivityPlan;
+use Webkul\Project\Models\ActivityPlan;
 
 class ActivityPlanResource extends Resource
 {
     protected static ?string $model = ActivityPlan::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
 
     protected static ?int $navigationSort = 5;
 
@@ -164,10 +163,6 @@ class ActivityPlanResource extends Resource
 
                         $data['plugin'] = 'projects';
 
-                        $data['creator_id'] = $user->id;
-
-                        $data['company_id'] ??= $user->defaultCompany?->id;
-
                         return $data;
                     })
                     ->successNotification(
@@ -196,7 +191,7 @@ class ActivityPlanResource extends Resource
                             ->label(__('projects::filament/clusters/configurations/resources/activity-plan.infolist.status'))
                             ->boolean(),
                     ])
-                    ->columns(2),
+                    ->columns(2)->columnSpanFull(),
             ]);
     }
 

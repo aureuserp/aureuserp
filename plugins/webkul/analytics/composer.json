@@ -10,7 +10,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Webkul\\Analytic\\Providers\\AnalyticServiceProvider"
+                "Webkul\\Analytic\\AnalyticServiceProvider"
             ],
             "aliases": {}
         }

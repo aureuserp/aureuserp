@@ -15,7 +15,7 @@ class UTMSourcePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_u::t::m::source');
+        return $user->can('view_any_recruitment_u::t::m::source');
     }
 
     /**
@@ -23,7 +23,7 @@ class UTMSourcePolicy
      */
     public function view(User $user, UTMSource $uTMSource): bool
     {
-        return $user->can('view_u::t::m::source');
+        return $user->can('view_recruitment_u::t::m::source');
     }
 
     /**
@@ -31,7 +31,7 @@ class UTMSourcePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_u::t::m::source');
+        return $user->can('create_recruitment_u::t::m::source');
     }
 
     /**
@@ -39,7 +39,7 @@ class UTMSourcePolicy
      */
     public function update(User $user, UTMSource $uTMSource): bool
     {
-        return $user->can('update_u::t::m::source');
+        return $user->can('update_recruitment_u::t::m::source');
     }
 
     /**
@@ -47,7 +47,7 @@ class UTMSourcePolicy
      */
     public function delete(User $user, UTMSource $uTMSource): bool
     {
-        return $user->can('delete_u::t::m::source');
+        return $user->can('delete_recruitment_u::t::m::source');
     }
 
     /**
@@ -55,6 +55,6 @@ class UTMSourcePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_u::t::m::source');
+        return $user->can('delete_any_recruitment_u::t::m::source');
     }
 }

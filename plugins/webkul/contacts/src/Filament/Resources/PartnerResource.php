@@ -11,10 +11,10 @@ use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ListPartners;
 use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ManageAddresses;
 use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ManageContacts;
 use Webkul\Contact\Filament\Resources\PartnerResource\Pages\ViewPartner;
+use Webkul\Contact\Models\Partner;
 use Webkul\Partner\Filament\Resources\PartnerResource as BasePartnerResource;
 use Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers\AddressesRelationManager;
 use Webkul\Partner\Filament\Resources\PartnerResource\RelationManagers\ContactsRelationManager;
-use Webkul\Partner\Models\Partner;
 
 class PartnerResource extends BasePartnerResource
 {
@@ -24,7 +24,7 @@ class PartnerResource extends BasePartnerResource
 
     protected static bool $shouldRegisterNavigation = true;
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getNavigationLabel(): string
     {

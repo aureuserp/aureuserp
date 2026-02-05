@@ -46,10 +46,9 @@ use Webkul\Security\Filament\Resources\CompanyResource\Pages\EditCompany;
 use Webkul\Security\Filament\Resources\CompanyResource\Pages\ListCompanies;
 use Webkul\Security\Filament\Resources\CompanyResource\Pages\ViewCompany;
 use Webkul\Security\Filament\Resources\CompanyResource\RelationManagers\BranchesRelationManager;
-use Webkul\Security\Models\User;
 use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Models\Company;
-use Webkul\Support\Models\Country;
+use Webkul\Security\Models\User;
 use Webkul\Support\Models\Currency;
 
 class CompanyResource extends Resource
@@ -58,9 +57,9 @@ class CompanyResource extends Resource
 
     protected static ?string $model = Company::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-office';
-
     protected static ?int $navigationSort = 2;
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function getNavigationLabel(): string
     {
@@ -80,7 +79,6 @@ class CompanyResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            __('security::filament/resources/company.global-search.name')  => $record->name ?? '—',
             __('security::filament/resources/company.global-search.email') => $record->email ?? '—',
         ];
     }
@@ -139,7 +137,7 @@ class CompanyResource extends Resource
                                                 Select::make('country_id')
                                                     ->label(__('security::filament/resources/company.form.sections.address-information.fields.country'))
                                                     ->relationship(name: 'country', titleAttribute: 'name')
-                                                    ->afterStateUpdated(fn (Set $set) => $set('state_id', null))
+                                                    ->afterStateUpdated(fn(Set $set) => $set('state_id', null))
                                                     ->searchable()
                                                     ->preload()
                                                     ->live(),
@@ -148,7 +146,7 @@ class CompanyResource extends Resource
                                                     ->relationship(
                                                         name: 'state',
                                                         titleAttribute: 'name',
-                                                        modifyQueryUsing: fn (Get $get, Builder $query) => $query->where('country_id', $get('country_id')),
+                                                        modifyQueryUsing: fn(Get $get, Builder $query) => $query->where('country_id', $get('country_id')),
                                                     )
                                                     ->searchable()
                                                     ->preload()
@@ -180,7 +178,11 @@ class CompanyResource extends Resource
                                 Section::make(__('security::filament/resources/company.form.sections.additional-information.title'))
                                     ->schema([
                                         Select::make('currency_id')
-                                            ->relationship('currency', 'full_name')
+                                            ->relationship(
+                                                'currency',
+                                                'full_name',
+                                                modifyQueryUsing: fn(Builder $query) => $query->where('active', 1),
+                                            )
                                             ->label(__('security::filament/resources/company.form.sections.additional-information.fields.default-currency'))
                                             ->searchable()
                                             ->required()
@@ -223,7 +225,7 @@ class CompanyResource extends Resource
                                                     ])->columns(2),
                                             ])
                                             ->createOptionAction(
-                                                fn (Action $action) => $action
+                                                fn(Action $action) => $action
                                                     ->modalHeading(__('security::filament/resources/company.form.sections.additional-information.fields.currency-create'))
                                                     ->modalSubmitActionLabel(__('security::filament/resources/company.form.sections.additional-information.fields.currency-create'))
                                                     ->modalWidth('xl')
@@ -281,7 +283,8 @@ class CompanyResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
+            ->reorderableColumns()
+            ->columns(static::mergeCustomTableColumns([
                 ImageColumn::make('partner.avatar')
                     ->circular()
                     ->imageSize(50)
@@ -332,7 +335,7 @@ class CompanyResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ]))
             ->columnManagerColumns(2)
             ->groups([
                 Tables\Grouping\Group::make('name')
@@ -367,17 +370,15 @@ class CompanyResource extends Resource
                     ->date()
                     ->collapsible(),
             ])
-            ->filters([
-                Tables\Filters\SelectFilter::make('is_active')
+            ->filters(static::mergeCustomTableFilters([
+                SelectFilter::make('is_active')
                     ->label(__('security::filament/resources/company.table.filters.status'))
                     ->options(CompanyStatus::options()),
-                SelectFilter::make('country')
+                SelectFilter::make('country_id')
                     ->label(__('security::filament/resources/company.table.filters.country'))
                     ->multiple()
-                    ->options(function () {
-                        return Country::pluck('name', 'name');
-                    }),
-            ])
+                    ->relationship(name: 'country', titleAttribute: 'name'),
+            ]))
             ->filtersFormColumns(2)
             ->recordActions([
                 ActionGroup::make([
@@ -390,7 +391,7 @@ class CompanyResource extends Resource
                                 ->body(__('security::filament/resources/company.table.actions.edit.notification.body')),
                         ),
                     DeleteAction::make()
-                        ->hidden(fn ($record) => User::where('default_company_id', $record->id)->exists())
+                        ->hidden(fn($record) => User::where('default_company_id', $record->id)->exists())
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -436,7 +437,7 @@ class CompanyResource extends Resource
                     ->whereNull('parent_id');
             })
             ->checkIfRecordIsSelectableUsing(
-                fn (Model $record): bool => ! User::where('default_company_id', $record->id)->exists()
+                fn(Model $record): bool => ! User::where('default_company_id', $record->id)->exists()
             )
             ->reorderable('sort');
     }
@@ -515,6 +516,7 @@ class CompanyResource extends Resource
                                         IconEntry::make('is_active')
                                             ->label(__('security::filament/resources/company.infolist.sections.additional-information.entries.status'))
                                             ->boolean(),
+                                        ...static::getCustomInfolistEntries(),
                                     ])
                                     ->columns(2),
                             ])

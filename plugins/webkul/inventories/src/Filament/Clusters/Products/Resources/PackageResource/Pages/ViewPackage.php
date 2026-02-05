@@ -11,9 +11,12 @@ use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Database\QueryException;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\PackageResource;
 use Webkul\Inventory\Models\Package;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewPackage extends ViewRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = PackageResource::class;
 
     protected function getHeaderActions(): array

@@ -16,7 +16,7 @@ class TimesheetPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_timesheet');
+        return $user->can('view_any_project_timesheet');
     }
 
     /**
@@ -24,7 +24,7 @@ class TimesheetPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_timesheet');
+        return $user->can('create_project_timesheet');
     }
 
     /**
@@ -32,7 +32,7 @@ class TimesheetPolicy
      */
     public function update(User $user, Timesheet $timesheet): bool
     {
-        if (! $user->can('update_timesheet')) {
+        if (! $user->can('update_project_timesheet')) {
             return false;
         }
 
@@ -44,7 +44,7 @@ class TimesheetPolicy
      */
     public function delete(User $user, Timesheet $timesheet): bool
     {
-        if (! $user->can('delete_timesheet')) {
+        if (! $user->can('delete_project_timesheet')) {
             return false;
         }
 
@@ -56,6 +56,6 @@ class TimesheetPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_timesheet');
+        return $user->can('delete_any_project_timesheet');
     }
 }

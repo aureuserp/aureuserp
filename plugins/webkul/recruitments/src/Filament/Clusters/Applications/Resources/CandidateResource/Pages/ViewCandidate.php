@@ -6,13 +6,16 @@ use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
-use Webkul\Chatter\Filament\Actions as ChatterActions;
+use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Employee\Filament\Resources\EmployeeResource;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\CandidateResource;
 use Webkul\Recruitment\Models\Candidate;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewCandidate extends ViewRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = CandidateResource::class;
 
     protected function getHeaderActions(): array
@@ -36,8 +39,8 @@ class ViewCandidate extends ViewRecord
 
                     return redirect(EmployeeResource::getUrl('edit', ['record' => $employee]));
                 }),
-            ChatterActions\ChatterAction::make()
-                ->setResource(static::$resource),
+            ChatterAction::make()
+                ->resource(static::$resource),
             DeleteAction::make()
                 ->successNotification(
                     Notification::make()

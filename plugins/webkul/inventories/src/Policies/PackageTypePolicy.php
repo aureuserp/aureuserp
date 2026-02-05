@@ -15,7 +15,7 @@ class PackageTypePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_package::type');
+        return $user->can('view_any_inventory_package::type');
     }
 
     /**
@@ -23,7 +23,7 @@ class PackageTypePolicy
      */
     public function view(User $user, PackageType $packageType): bool
     {
-        return $user->can('view_package::type');
+        return $user->can('view_inventory_package::type');
     }
 
     /**
@@ -31,7 +31,7 @@ class PackageTypePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_package::type');
+        return $user->can('create_inventory_package::type');
     }
 
     /**
@@ -39,7 +39,7 @@ class PackageTypePolicy
      */
     public function update(User $user, PackageType $packageType): bool
     {
-        return $user->can('update_package::type');
+        return $user->can('update_inventory_package::type');
     }
 
     /**
@@ -47,7 +47,7 @@ class PackageTypePolicy
      */
     public function delete(User $user, PackageType $packageType): bool
     {
-        return $user->can('delete_package::type');
+        return $user->can('delete_inventory_package::type');
     }
 
     /**
@@ -55,6 +55,6 @@ class PackageTypePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_package::type');
+        return $user->can('delete_any_inventory_package::type');
     }
 }

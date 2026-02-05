@@ -142,7 +142,7 @@ class WarehouseResource extends Resource
                                             ->hintIcon('heroicon-m-question-mark-circle', tooltip: __('inventories::filament/clusters/configurations/resources/warehouse.form.sections.settings.fields.outgoing-shipments-hint-tooltip')),
                                     ])
                                     ->columns(1)
-                                    ->visible(fn (WarehouseSettings $settings): bool => $settings->enable_multi_steps_routes),
+                                    ->visible(static::getWarehouseSettings()->enable_multi_steps_routes),
 
                                 Fieldset::make(__('inventories::filament/clusters/configurations/resources/warehouse.form.sections.settings.fields.resupply-management'))
                                     ->schema([
@@ -154,7 +154,7 @@ class WarehouseResource extends Resource
                             ]),
                     ])
                     ->columnSpan(['lg' => 1])
-                    ->visible(fn (WarehouseSettings $settings): bool => $settings->enable_multi_steps_routes),
+                    ->visible(static::getWarehouseSettings()->enable_multi_steps_routes),
             ])
             ->columns(3);
     }
@@ -162,6 +162,7 @@ class WarehouseResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
             ->columns([
                 TextColumn::make('name')
                     ->label(__('inventories::filament/clusters/configurations/resources/warehouse.table.columns.name'))
@@ -341,7 +342,7 @@ class WarehouseResource extends Resource
                                     ->schema([
                                         TextEntry::make('supplierWarehouses.name')
                                             ->label(__('inventories::filament/clusters/configurations/resources/warehouse.infolist.sections.settings.entries.resupply-from'))
-                                            ->icon('heroicon-o-refresh')
+                                            ->icon('heroicon-o-arrow-path')
                                             ->placeholder('—'),
                                     ]),
                             ]),
@@ -370,6 +371,11 @@ class WarehouseResource extends Resource
                     ->columnSpan(['lg' => 1]),
             ])
             ->columns(3);
+    }
+
+    public static function getWarehouseSettings(): WarehouseSettings
+    {
+        return once(fn () => app(WarehouseSettings::class));
     }
 
     public static function getSubNavigationPosition(): SubNavigationPosition

@@ -10,9 +10,12 @@ use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\RouteResource;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\WarehouseResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageRoutes extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = WarehouseResource::class;
 
     protected static string $relationship = 'routes';

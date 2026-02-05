@@ -1,0 +1,16 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="0.5" y="0.5" width="63" height="63" rx="12.5" fill="white"/>
+<rect x="0.5" y="0.5" width="63" height="63" rx="12.5" stroke="#DCE0E5"/>
+<path d="M40.1159 40L47.9169 43.9968C49.0613 44.6693 49.3486 47.1184 48.539 48.1335C47.6175 49.2888 44.7744 49.2888 43.8529 48.1335L39 41.0493L40.1159 40Z" fill="#FDB421"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M14 31C14 22.1634 21.1634 15 30 15C38.8366 15 46 22.1634 46 31C46 39.8366 38.8366 47 30 47C21.1634 47 14 39.8366 14 31Z" fill="#0070F2"/>
+<mask id="mask0_4012_2091" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="16" y="17" width="28" height="28">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M16 31C16 23.268 22.268 17 30 17C37.732 17 44 23.268 44 31C44 38.732 37.732 45 30 45C22.268 45 16 38.732 16 31Z" fill="#0070F2"/>
+</mask>
+<g mask="url(#mask0_4012_2091)">
+<rect x="18" y="26" width="24" height="25" rx="3" fill="#FC5B1C"/>
+</g>
+<path d="M25 31V37C25 38.1046 24.1046 39 23 39C21.8954 39 21 38.1046 21 37L21 36" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M32 33V37C32 38.1046 31.1046 39 30 39C28.8954 39 28 38.1046 28 37V33C28 31.8954 28.8954 31 30 31C31.1046 31 32 31.8954 32 33Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M35 35V39H37C38.1046 39 39 38.1046 39 37C39 35.8954 38.1046 35 37 35H35ZM35 35V31" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M35 35H37C38.1046 35 39 34.1046 39 33C39 31.8954 38.1046 31 37 31H35V35Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -18,6 +18,7 @@
             padding: 8px 0;
             font-size: 14px;
             color: #555;
+            gap: 8px;
         }
 
         :is(.dark .invoice-item) {
@@ -26,6 +27,19 @@
 
         .invoice-item span {
             font-weight: 600;
+        }
+
+        .invoice-item.font-bold span {
+            font-weight: 700 !important;
+            font-size: 16px;
+        }
+
+        .invoice-item.font-semibold span {
+            font-weight: 600 !important;
+        }
+
+        .invoice-item button {
+            flex-shrink: 0;
         }
 
         .divider {
@@ -54,49 +68,110 @@
         }
     </style>
 
-    @if (count($products))
-        <div class="flex justify-end">
-            <div class="invoice-container">
-                @php
-                    $subTotal = 0;
-                    $totalTax = 0;
-                    $grandTotal = 0;
+    <div class="flex justify-end">
+        <div class="invoice-container">
+            <div class="invoice-item">
+                <span>Untaxed Amount</span>
+                <span>{{ money($subtotal, $currency?->name) }}</span>
+            </div>
 
-                    foreach ($products as $product) {
-                        $subTotal += floatval($product['price_subtotal']);
-
-                        if (
-                            isset($amountTax)
-                            && $amountTax > 0
-                        ) {
-                            $totalTax = $amountTax;
-                        } else {
-                            $totalTax += $product['price_tax'] ?? 0;
-                        }
-
-                        $grandTotal += floatval($product['price_total']);
-                    }
-                @endphp
-
-               <div class="invoice-item">
-                    <span>Untaxed Amount</span>
-                    <span>{{ money($subTotal, $currency?->name) }}</span>
+            @if ($totalTax > 0)
+                <div class="invoice-item">
+                    <span>Tax</span>
+                    <span>{{ money($totalTax, $currency?->name) }}</span>
                 </div>
+            @endif
 
-                @if ($totalTax > 0)
-                    <div class="invoice-item">
-                        <span>Tax</span>
-                        <span>{{ money($totalTax, $currency?->name) }}</span>
+            @if ($rounding != 0)
+                <div class="invoice-item">
+                    <span>Cash Rounding</span>
+                    <span>{{ money($rounding, $currency?->name) }}</span>
+                </div>
+            @endif
+
+            <div class="divider"></div>
+
+            <div class="invoice-item font-semibold">
+                <span>Total</span>
+                <span>{{ money($grandTotal, $currency?->name) }}</span>
+            </div>
+
+            <!-- Reconciled Payments Section -->
+            @if ($reconciledPayments && ! empty($reconciledPayments['lines']))
+                <div class="divider"></div>
+                
+                @foreach ($reconciledPayments['lines'] ?? [] as $line)
+                    <div class="invoice-item items-center">
+                        <div class="flex items-center gap-2">
+                            {{ ($this->unReconcileAction())(['partial_id' => $line['partial_id']]) }}
+
+                            <div class="flex-1">
+                                <x-filament::link :href="$this->getResourceUrl($line)">
+                                    {{ $line['ref'] }}
+                                </x-filament::link>
+                                
+                                @if (isset($line['date']))
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                                        Paid on {{ $line['date']->format('M D, Y') }}
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <span class="font-semibold">
+                            {{ $line['amount_currency'] }}
+                        </span>
                     </div>
-                @endif
+                @endforeach
+            @endif
 
+            <!-- Reconcilable Payments Section -->
+            @if ($reconcilablePayments && $reconcilablePayments['outstanding'])
                 <div class="divider"></div>
 
-                <div class="invoice-item font-bold">
-                    <span>Total</span>
-                    <span>{{ money($grandTotal, $currency?->name) }}</span>
+                <div class="mt-4 font-semibold">
+                    {{ $reconcilablePayments['title'] }}
                 </div>
-            </div>
+
+                @foreach ($reconcilablePayments['lines'] ?? [] as $line)
+                    <div class="invoice-item items-center">
+                        <div class="flex items-center gap-2">
+                            {{ ($this->reconcileAction())(['lineId' => $line['id']]) }}
+
+                            <div class="flex-1">
+                                <x-filament::link :href="$this->getResourceUrl($line)">
+                                    {{ $line['journal_name'] }}
+                                </x-filament::link>
+                                
+                                @if (isset($line['date']))
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $line['date'] }}</div>
+                                @endif
+                            </div>
+                        </div>
+                        
+                        <span class="font-semibold">
+                            {{ money($line['amount'], $currency?->name) }}
+                        </span>
+                    </div>
+                @endforeach
+            @endif
+
+            <!-- Amount due or residual -->
+            @if ($record?->state === \Webkul\Account\Enums\MoveState::POSTED)
+                <div class="divider"></div>
+
+                <div class="invoice-item total font-bold">
+                    <span>
+                        Amount Due
+                    </span>
+
+                    <span>
+                        {{ money($record->amount_residual, $currency?->name) }}
+                    </span>
+                </div>
+            @endif
         </div>
-    @endif
+    </div>
+
+    <x-filament-actions::modals />
 </div>

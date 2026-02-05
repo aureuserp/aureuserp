@@ -285,7 +285,7 @@ class LocationResource extends Resource
                             ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.delete.notification.body')),
                     ),
                 ForceDeleteAction::make()
-                    ->action(function (Location $record) {
+                    ->action(function (ForceDeleteAction $action, Location $record) {
                         try {
                             $record->forceDelete();
                         } catch (QueryException $e) {
@@ -294,6 +294,8 @@ class LocationResource extends Resource
                                 ->title(__('inventories::filament/clusters/configurations/resources/location.table.actions.force-delete.notification.error.title'))
                                 ->body(__('inventories::filament/clusters/configurations/resources/location.table.actions.force-delete.notification.error.body'))
                                 ->send();
+                            $action->cancel();
+
                         }
                     })
                     ->successNotification(
@@ -334,7 +336,7 @@ class LocationResource extends Resource
                                 ->body(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.delete.notification.body')),
                         ),
                     ForceDeleteBulkAction::make()
-                        ->action(function (Collection $records) {
+                        ->action(function (ForceDeleteBulkAction $action, Collection $records) {
                             try {
                                 $records->each(fn (Model $record) => $record->forceDelete());
                             } catch (QueryException $e) {
@@ -343,6 +345,8 @@ class LocationResource extends Resource
                                     ->title(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.force-delete.notification.error.title'))
                                     ->body(__('inventories::filament/clusters/configurations/resources/location.table.bulk-actions.force-delete.notification.error.body'))
                                     ->send();
+                                $action->cancel();
+
                             }
                         })
                         ->successNotification(

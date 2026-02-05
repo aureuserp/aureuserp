@@ -7,9 +7,12 @@ use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Webkul\Account\Filament\Resources\CashRoundingResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewCashRounding extends ViewRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = CashRoundingResource::class;
 
     protected function getHeaderActions(): array

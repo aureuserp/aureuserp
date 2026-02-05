@@ -46,6 +46,31 @@ class PreviewAction extends Action
             ->icon('heroicon-o-viewfinder-circle')
             ->modalHeading(__('accounts::filament/resources/invoice/actions/preview.modal.title'))
             ->modalSubmitAction(false)
-            ->modalContent(fn (Move $record) => view($this->getTemplate(), ['record' => $record]));
+            ->modalCancelActionLabel(__('accounts::filament/resources/invoice/actions/preview.modal.action.close.title'))
+            ->modalContent(fn (Move $record) => view($this->getTemplate(), ['record' => $record]))
+            ->modalFooterActions(function (Action $action): array {
+                return [
+                    $action->getModalCancelAction(),
+                    Action::make('print')
+                        ->label(__('accounts::filament/resources/invoice/actions/preview.modal.action.print.title'))
+                        ->icon('heroicon-o-printer')
+                        ->color('primary')
+                        ->action(function (Move $record) {
+                            $pdfPath = $this->prepareInvoice($record);
+
+                            if ($pdfPath) {
+                                return response()->download(storage_path('app/public/'.$pdfPath));
+                            }
+                        }),
+                ];
+            });
+    }
+
+    private function prepareInvoice(Move $record): ?string
+    {
+        return $this->savePDF(
+            view($this->getTemplate(), ['record' => $record])->render(),
+            'invoice-'.$record->created_at->format('d-m-Y')
+        );
     }
 }

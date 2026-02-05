@@ -12,6 +12,15 @@ class EditPackageType extends EditRecord
 {
     protected static string $resource = PackageTypeResource::class;
 
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
+
     protected function getSavedNotification(): Notification
     {
         return Notification::make()

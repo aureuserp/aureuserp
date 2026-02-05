@@ -9,9 +9,12 @@ use Filament\Tables\Table;
 use Livewire\Livewire;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageBills extends ManageRelatedRecords
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = OrderResource::class;
 
     protected static string $relationship = 'accountMoves';

@@ -10,9 +10,12 @@ use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\QueryException;
 use Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource;
 use Webkul\Inventory\Models\Lot;
+use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditLot extends EditRecord
 {
+    use HasRecordNavigationTabs;
+
     protected static string $resource = LotResource::class;
 
     protected function getSavedNotification(): Notification

@@ -7,8 +7,6 @@ use Filament\Panel;
 
 class MyTime extends Cluster
 {
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clock';
-
     protected static ?int $navigationSort = 1;
 
     public static function getSlug(?Panel $panel = null): string

@@ -9,14 +9,34 @@ return [
 
     'form' => [
         'fields' => [
-            'name'                 => 'Name',
-            'foreign-vat'          => 'Foreign VAT',
-            'country'              => 'Country',
-            'country-group'        => 'Country Group',
-            'zip-from'             => 'Zip From',
-            'zip-to'               => 'Zip To',
-            'detect-automatically' => 'Detect Automatically',
-            'notes'                => 'Notes',
+            'name'                   => 'Name',
+            'foreign-vat'            => 'Foreign VAT',
+            'country'                => 'Country',
+            'country-group'          => 'Country Group',
+            'zip-from'               => 'Zip From',
+            'zip-to'                 => 'Zip To',
+            'detect-automatically'   => 'Detect Automatically',
+            'notes'                  => 'Notes',
+            'company'                => 'Company',
+        ],
+        'tabs' => [
+            'account-mapping' => [
+                'table' => [
+                    'columns' => [
+                        'source-account'      => 'Source Account',
+                        'destination-account' => 'Destination Account',
+                    ],
+                ],
+
+            ],
+            'tax-mapping' => [
+                'table' => [
+                    'columns' => [
+                        'tax-source'      => 'Tax Source',
+                        'tax-destination' => 'Tax Destination',
+                    ],
+                ],
+            ],
         ],
     ],
 

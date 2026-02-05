@@ -4,10 +4,13 @@ namespace Webkul\Contact\Filament\Clusters\Configurations\Resources;
 
 use Webkul\Contact\Filament\Clusters\Configurations;
 use Webkul\Contact\Filament\Clusters\Configurations\Resources\IndustryResource\Pages\ManageIndustries;
+use Webkul\Contact\Models\Industry;
 use Webkul\Partner\Filament\Resources\IndustryResource as BaseIndustryResource;
 
 class IndustryResource extends BaseIndustryResource
 {
+    protected static ?string $model = Industry::class;
+
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-office';
 
     protected static bool $shouldRegisterNavigation = true;

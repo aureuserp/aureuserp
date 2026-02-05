@@ -2,8 +2,9 @@
 
 namespace Webkul\Sale\Filament\Clusters\Products\Resources;
 
-use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
+use Filament\Tables\Filters\QueryBuilder;
+use Filament\Tables\Table;
 use Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource as BaseProductResource;
 use Webkul\Sale\Filament\Clusters\Products;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\CreateProduct;
@@ -24,8 +25,6 @@ class ProductResource extends BaseProductResource
 
     protected static ?string $cluster = Products::class;
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
-
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
@@ -34,6 +33,22 @@ class ProductResource extends BaseProductResource
             ManageAttributes::class,
             ManageVariants::class,
         ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        $table = parent::table($table);
+
+        $filtered = collect($table->getFilters()['queryBuilder']->getConstraints())
+            ->reject(fn ($constraint) => $constraint->getName() == 'responsible')
+            ->all();
+
+        $table = $table->filters([
+            QueryBuilder::make()
+                ->constraints($filtered),
+        ]);
+
+        return $table;
     }
 
     public static function getPages(): array

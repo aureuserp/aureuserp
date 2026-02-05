@@ -27,7 +27,7 @@ class CreateInvoiceAction extends Action
 
         $this
             ->color(function (Order $record): string {
-                if ($record->qty_to_invoice == 0) {
+                if ($record->invoice_status != InvoiceStatus::TO_INVOICE) {
                     return 'gray';
                 }
 

@@ -2,6 +2,9 @@
 
 namespace Webkul\Account\Filament\Resources;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Filament\Resources\RefundResource\Pages\CreateRefund;
 use Webkul\Account\Filament\Resources\RefundResource\Pages\EditRefund;
 use Webkul\Account\Filament\Resources\RefundResource\Pages\ListRefunds;
@@ -24,5 +27,14 @@ class RefundResource extends BillResource
             'edit'   => EditRefund::route('/{record}/edit'),
             'view'   => ViewRefund::route('/{record}'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->when(Str::contains(static::class, 'RefundResource'), function (Builder $query) {
+                $query->where('move_type', MoveType::IN_REFUND);
+            })
+            ->orderByDesc('id');
     }
 }

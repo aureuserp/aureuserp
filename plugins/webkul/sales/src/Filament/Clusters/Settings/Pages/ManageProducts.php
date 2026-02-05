@@ -7,7 +7,7 @@ use Filament\Forms;
 use Filament\Forms\Components\Toggle;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Schema;
-use Webkul\Sale\Settings\ProductSettings;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Clusters\Settings;
 
 class ManageProducts extends SettingsPage
@@ -25,6 +25,11 @@ class ManageProducts extends SettingsPage
     protected static string $settings = ProductSettings::class;
 
     protected static ?string $cluster = Settings::class;
+
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_sale_manage_products';
+    }
 
     public function getBreadcrumbs(): array
     {

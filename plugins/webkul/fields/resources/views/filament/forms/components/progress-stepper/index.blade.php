@@ -67,6 +67,7 @@
                     :for="$inputId"
                     :icon="$getIcon($value)"
                     tag="label"
+                    style="{{ $shouldOptionBeDisabled ? 'pointer-events: none;' : '' }}"
                 >
                     {{ $label }}
                 </x-filament::button>

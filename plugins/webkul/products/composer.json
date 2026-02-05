@@ -10,7 +10,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Webkul\\Product\\Providers\\ProductServiceProvider"
+                "Webkul\\Product\\ProductServiceProvider"
             ],
             "aliases": {}
         }

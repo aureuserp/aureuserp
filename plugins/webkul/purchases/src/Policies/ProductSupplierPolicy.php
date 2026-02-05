@@ -15,7 +15,7 @@ class ProductSupplierPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_vendor::price');
+        return $user->can('view_any_purchase_vendor::price');
     }
 
     /**
@@ -23,7 +23,7 @@ class ProductSupplierPolicy
      */
     public function view(User $user, ProductSupplier $productSupplier): bool
     {
-        return $user->can('view_vendor::price');
+        return $user->can('view_purchase_vendor::price');
     }
 
     /**
@@ -31,7 +31,7 @@ class ProductSupplierPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_vendor::price');
+        return $user->can('create_purchase_vendor::price');
     }
 
     /**
@@ -39,7 +39,7 @@ class ProductSupplierPolicy
      */
     public function update(User $user, ProductSupplier $productSupplier): bool
     {
-        return $user->can('update_vendor::price');
+        return $user->can('update_purchase_vendor::price');
     }
 
     /**
@@ -47,7 +47,7 @@ class ProductSupplierPolicy
      */
     public function delete(User $user, ProductSupplier $productSupplier): bool
     {
-        return $user->can('delete_vendor::price');
+        return $user->can('delete_purchase_vendor::price');
     }
 
     /**
@@ -55,6 +55,6 @@ class ProductSupplierPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_vendor::price');
+        return $user->can('delete_any_purchase_vendor::price');
     }
 }

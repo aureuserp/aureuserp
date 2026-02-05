@@ -4,6 +4,7 @@ return [
     App\Providers\AppServiceProvider::class,
     App\Providers\Filament\AdminPanelProvider::class,
     App\Providers\Filament\CustomerPanelProvider::class,
+    Webkul\Accounting\AccountingServiceProvider::class,
     Webkul\Account\AccountServiceProvider::class,
     Webkul\Analytic\AnalyticServiceProvider::class,
     Webkul\Blog\BlogServiceProvider::class,
@@ -27,4 +28,5 @@ return [
     Webkul\FullCalendar\FullCalendarServiceProvider::class,
     Webkul\Timesheet\TimesheetServiceProvider::class,
     Webkul\Website\WebsiteServiceProvider::class,
+    Webkul\PluginManager\PluginManagerServiceProvider::class,
 ];

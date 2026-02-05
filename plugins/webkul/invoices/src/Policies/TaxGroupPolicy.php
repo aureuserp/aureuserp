@@ -15,7 +15,7 @@ class TaxGroupPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_tax::group');
+        return $user->can('view_any_invoice_tax::group');
     }
 
     /**
@@ -23,7 +23,7 @@ class TaxGroupPolicy
      */
     public function view(User $user, TaxGroup $taxGroup): bool
     {
-        return $user->can('view_tax::group');
+        return $user->can('view_invoice_tax::group');
     }
 
     /**
@@ -31,7 +31,7 @@ class TaxGroupPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_tax::group');
+        return $user->can('create_invoice_tax::group');
     }
 
     /**
@@ -39,7 +39,7 @@ class TaxGroupPolicy
      */
     public function update(User $user, TaxGroup $taxGroup): bool
     {
-        return $user->can('update_tax::group');
+        return $user->can('update_invoice_tax::group');
     }
 
     /**
@@ -47,6 +47,6 @@ class TaxGroupPolicy
      */
     public function delete(User $user, TaxGroup $taxGroup): bool
     {
-        return $user->can('delete_tax::group');
+        return $user->can('delete_invoice_tax::group');
     }
 }

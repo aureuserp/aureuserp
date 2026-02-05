@@ -47,6 +47,18 @@ class Industry extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Bootstrap any application services.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($industry) {
+            $industry->creator_id = filament()->auth()->id();
+        });
+    }
+
     protected static function newFactory(): IndustryFactory
     {
         return IndustryFactory::new();

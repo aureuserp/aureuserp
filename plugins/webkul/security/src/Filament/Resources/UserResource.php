@@ -53,9 +53,9 @@ class UserResource extends Resource
 
     protected static ?string $model = User::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
-
     protected static ?int $navigationSort = 4;
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function getNavigationLabel(): string
     {
@@ -75,7 +75,6 @@ class UserResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            __('security::filament/resources/user.global-search.name')  => $record->name ?? '—',
             __('security::filament/resources/user.global-search.email') => $record->email ?? '—',
         ];
     }
@@ -112,7 +111,7 @@ class UserResource extends Resource
                                             ->label(__('security::filament/resources/user.form.sections.general-information.fields.password-confirmation'))
                                             ->password()
                                             ->hiddenOn('edit')
-                                            ->rule('required', fn ($get) => (bool) $get('password'))
+                                            ->rule('required', fn($get) => (bool) $get('password'))
                                             ->same('password'),
                                     ])
                                     ->columns(2),
@@ -148,8 +147,8 @@ class UserResource extends Resource
                                             ->multiple()
                                             ->preload()
                                             ->searchable()
-                                            ->required(fn (Get $get) => $get('resource_permission') == PermissionType::GROUP)
-                                            ->createOptionForm(fn (Schema $schema) => TeamResource::form($schema))
+                                            ->required(fn(Get $get) => $get('resource_permission') == PermissionType::GROUP)
+                                            ->createOptionForm(fn(Schema $schema) => TeamResource::form($schema))
                                             ->createOptionAction(function (Action $action, Get $get) {
                                                 $action
                                                     ->mutateDataUsing(function (array $data) {
@@ -202,15 +201,15 @@ class UserResource extends Resource
                                             ->relationship(
                                                 'defaultCompany',
                                                 'name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
+                                                modifyQueryUsing: fn(Builder $query) => $query->withTrashed(),
                                             )
                                             ->getOptionLabelFromRecordUsing(function ($record): string {
-                                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
+                                                return $record->name . ($record->trashed() ? ' (Deleted)' : '');
                                             })
-                                            ->disableOptionWhen(fn ($label) => str_contains($label, ' (Deleted)'))
+                                            ->disableOptionWhen(fn($label) => str_contains($label, ' (Deleted)'))
                                             ->required()
                                             ->searchable()
-                                            ->createOptionForm(fn (Schema $schema) => CompanyResource::form($schema))
+                                            ->createOptionForm(fn(Schema $schema) => CompanyResource::form($schema))
                                             ->createOptionAction(function (Action $action) {
                                                 $action
                                                     ->fillForm(function (array $arguments): array {
@@ -250,9 +249,11 @@ class UserResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->reorderableColumns()
+            ->columnManagerColumns(2)
             ->columns([
                 ImageColumn::make('partner.avatar')
-                    ->defaultImageUrl(fn ($record) => $record->avatar_url)
+                    ->defaultImageUrl(fn($record) => $record->avatar_url)
                     ->imageSize(50)
                     ->label(__('security::filament/resources/user.table.columns.avatar')),
                 TextColumn::make('name')
@@ -266,24 +267,22 @@ class UserResource extends Resource
                     ->sortable(),
                 TextColumn::make('teams.name')
                     ->label(__('security::filament/resources/user.table.columns.teams'))
-                    ->badge(),
+                    ->badge()
+                    ->listWithLineBreaks(),
                 TextColumn::make('roles.name')
                     ->sortable()
                     ->label(__('security::filament/resources/user.table.columns.role')),
                 TextColumn::make('resource_permission')
                     ->label(__('security::filament/resources/user.table.columns.resource-permission'))
-                    ->formatStateUsing(fn (PermissionType $state) => $state->getLabel())
+                    ->formatStateUsing(fn(PermissionType $state) => $state->getLabel())
                     ->sortable(),
                 TextColumn::make('defaultCompany.name')
                     ->label(__('security::filament/resources/user.table.columns.default-company'))
                     ->sortable(),
                 TextColumn::make('allowedCompanies.name')
                     ->label(__('security::filament/resources/user.table.columns.allowed-company'))
-                    ->badge(),
-                TextColumn::make('createdBy.name')
-                    ->label(__('security::filament/resources/user.table.columns.created-by'))
-                    ->default('—')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->badge()
+                    ->listWithLineBreaks(),
                 TextColumn::make('created_at')
                     ->label(__('security::filament/resources/user.table.columns.created-at'))
                     ->dateTime()
@@ -315,14 +314,14 @@ class UserResource extends Resource
                 SelectFilter::make('teams')
                     ->relationship('teams', 'name')
                     ->label(__('security::filament/resources/user.table.filters.teams'))
-                    ->options(fn (): array => Role::query()->pluck('name', 'id')->all())
+                    ->options(fn(): array => Role::query()->pluck('name', 'id')->all())
                     ->multiple()
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('roles')
                     ->label(__('security::filament/resources/user.table.filters.roles'))
                     ->relationship('roles', 'name')
-                    ->options(fn (): array => Role::query()->pluck('name', 'id')->all())
+                    ->options(fn(): array => Role::query()->pluck('name', 'id')->all())
                     ->multiple()
                     ->searchable()
                     ->preload(),
@@ -331,9 +330,9 @@ class UserResource extends Resource
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make()
-                        ->hidden(fn ($record) => $record->trashed()),
+                        ->hidden(fn($record) => $record->trashed()),
                     EditAction::make()
-                        ->hidden(fn ($record) => $record->trashed())
+                        ->hidden(fn($record) => $record->trashed())
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -341,7 +340,7 @@ class UserResource extends Resource
                                 ->body(__('security::filament/resources/user.table.actions.edit.notification.body')),
                         ),
                     DeleteAction::make()
-                        ->hidden(fn ($record) => $record->trashed() || ! self::canDeleteUser($record))
+                        ->hidden(fn($record) => $record->trashed() || ! self::canDeleteUser($record))
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -360,7 +359,7 @@ class UserResource extends Resource
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->visible(fn (?User $record) => $record && self::canDeleteUser($record))
+                        ->visible(fn(?User $record) => $record && self::canDeleteUser($record))
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -370,7 +369,7 @@ class UserResource extends Resource
                     ForceDeleteBulkAction::make()
                         ->action(function (Collection $records) {
                             try {
-                                $records->each(fn (Model $record) => $record->forceDelete());
+                                $records->each(fn(Model $record) => $record->forceDelete());
                             } catch (QueryException $e) {
                                 Notification::make()
                                     ->danger()
@@ -398,7 +397,7 @@ class UserResource extends Resource
             ->modifyQueryUsing(function ($query) {
                 $query->with('roles', 'teams', 'defaultCompany', 'allowedCompanies');
             })
-            ->checkIfRecordIsSelectableUsing(fn (User $record) => self::canDeleteUser($record))
+            ->checkIfRecordIsSelectableUsing(fn(User $record) => self::canDeleteUser($record))
             ->emptyStateActions([
                 CreateAction::make()
                     ->icon('heroicon-o-plus-circle')
@@ -446,7 +445,7 @@ class UserResource extends Resource
                                             ->placeholder('—')
                                             ->label(__('security::filament/resources/user.infolist.sections.permissions.entries.roles'))
                                             ->listWithLineBreaks()
-                                            ->formatStateUsing(fn ($state) => ucfirst($state))
+                                            ->formatStateUsing(fn($state) => ucfirst($state))
                                             ->bulleted(),
                                         TextEntry::make('teams.name')
                                             ->icon('heroicon-o-user-group')
@@ -462,7 +461,7 @@ class UserResource extends Resource
                                                     PermissionType::GROUP->value      => 'heroicon-o-user-group',
                                                 ][$record->resource_permission];
                                             })
-                                            ->formatStateUsing(fn ($state) => PermissionType::options()[$state] ?? $state)
+                                            ->formatStateUsing(fn($state) => PermissionType::options()[$state] ?? $state)
                                             ->placeholder('-')
                                             ->label(__('security::filament/resources/user.infolist.sections.permissions.entries.resource-permission')),
                                     ])

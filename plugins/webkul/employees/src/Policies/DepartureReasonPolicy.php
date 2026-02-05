@@ -15,7 +15,7 @@ class DepartureReasonPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_departure::reason');
+        return $user->can('view_any_employee_departure::reason');
     }
 
     /**
@@ -23,7 +23,7 @@ class DepartureReasonPolicy
      */
     public function view(User $user, DepartureReason $departureReason): bool
     {
-        return $user->can('view_departure::reason');
+        return $user->can('view_employee_departure::reason');
     }
 
     /**
@@ -31,7 +31,7 @@ class DepartureReasonPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_departure::reason');
+        return $user->can('create_employee_departure::reason');
     }
 
     /**
@@ -39,7 +39,7 @@ class DepartureReasonPolicy
      */
     public function update(User $user, DepartureReason $departureReason): bool
     {
-        return $user->can('update_departure::reason');
+        return $user->can('update_employee_departure::reason');
     }
 
     /**
@@ -47,7 +47,7 @@ class DepartureReasonPolicy
      */
     public function delete(User $user, DepartureReason $departureReason): bool
     {
-        return $user->can('delete_departure::reason');
+        return $user->can('delete_employee_departure::reason');
     }
 
     /**
@@ -55,6 +55,6 @@ class DepartureReasonPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_departure::reason');
+        return $user->can('delete_any_employee_departure::reason');
     }
 }

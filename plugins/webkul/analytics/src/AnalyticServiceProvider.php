@@ -2,8 +2,8 @@
 
 namespace Webkul\Analytic;
 
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class AnalyticServiceProvider extends PackageServiceProvider
 {
