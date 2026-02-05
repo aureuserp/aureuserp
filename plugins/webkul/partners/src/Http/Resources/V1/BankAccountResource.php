@@ -19,7 +19,6 @@ class BankAccountResource extends JsonResource
             'id'                  => $this->id,
             'account_number'      => $this->account_number,
             'account_holder_name' => $this->account_holder_name,
-            'is_active'           => $this->is_active,
             'can_send_money'      => $this->can_send_money,
             'bank_id'             => $this->bank_id,
             'created_at'          => $this->created_at,

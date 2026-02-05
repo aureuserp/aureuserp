@@ -23,7 +23,6 @@ class BankAccountRequest extends FormRequest
     {
         $rules = [
             'account_number' => 'required|string|max:255',
-            'is_active'      => 'required|boolean',
             'can_send_money' => 'required|boolean',
             'bank_id'        => 'required|integer|exists:banks,id',
         ];
@@ -53,10 +52,6 @@ class BankAccountRequest extends FormRequest
             'account_number' => [
                 'description' => 'Bank account number (max 255 characters).',
                 'example'     => '1234567890',
-            ],
-            'is_active' => [
-                'description' => 'Whether the bank account is active.',
-                'example'     => true,
             ],
             'can_send_money' => [
                 'description' => 'Whether money can be sent from this account.',

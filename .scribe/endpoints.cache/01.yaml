@@ -3727,17 +3727,6 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      'filter[is_active]':
-        custom: []
-        name: 'filter[is_active]'
-        description: 'Filter by active status'
-        required: false
-        example: null
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
       'filter[bank_id]':
         custom: []
         name: 'filter[bank_id]'
@@ -3793,7 +3782,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","is_active":true,"can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"},{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","is_active":true,"can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"},{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -3857,17 +3846,6 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      is_active:
-        custom: []
-        name: is_active
-        description: 'Whether the bank account is active.'
-        required: true
-        example: false
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
       can_send_money:
         custom: []
         name: can_send_money
@@ -3892,7 +3870,6 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       account_number: '1234567890'
-      is_active: false
       can_send_money: false
       bank_id: 1
     fileParameters: []
@@ -3900,7 +3877,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","is_active":true,"can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"},"message":"Bank account created successfully."}'
+        content: '{"data":{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"},"message":"Bank account created successfully."}'
         headers: []
         description: ''
       -
@@ -3989,7 +3966,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","is_active":true,"can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"}}'
+        content: '{"data":{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"}}'
         headers: []
         description: ''
       -
@@ -4072,17 +4049,6 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      is_active:
-        custom: []
-        name: is_active
-        description: 'Whether the bank account is active.'
-        required: false
-        example: false
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
       can_send_money:
         custom: []
         name: can_send_money
@@ -4107,7 +4073,6 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       account_number: '1234567890'
-      is_active: false
       can_send_money: false
       bank_id: 1
     fileParameters: []
@@ -4115,7 +4080,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","is_active":true,"can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"},"message":"Bank account updated successfully."}'
+        content: '{"data":{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"},"message":"Bank account updated successfully."}'
         headers: []
         description: ''
       -

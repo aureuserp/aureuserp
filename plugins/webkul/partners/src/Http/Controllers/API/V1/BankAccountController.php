@@ -25,7 +25,6 @@ class BankAccountController extends Controller
     #[UrlParam('partner_id', 'integer', 'The partner ID', required: true, example: 1)]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> bank, creator', required: false, example: 'bank')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: 'No-example')]
-    #[QueryParam('filter[is_active]', 'boolean', 'Filter by active status', required: false, example: 'No-example')]
     #[QueryParam('filter[bank_id]', 'string', 'Comma-separated list of bank IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[trashed]', 'string', 'Filter by trashed status. </br></br><b>Available options:</b> with, without, only', required: false, example: 'No-example')]
     #[QueryParam('sort', 'string', 'Sort field', example: 'created_at')]
@@ -37,7 +36,6 @@ class BankAccountController extends Controller
         $bankAccounts = QueryBuilder::for(BankAccount::where('partner_id', $partner))
             ->allowedFilters([
                 AllowedFilter::exact('id'),
-                AllowedFilter::exact('is_active'),
                 AllowedFilter::exact('bank_id'),
                 AllowedFilter::trashed(),
             ])
