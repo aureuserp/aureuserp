@@ -7,7 +7,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: admin/api/v1/support/currency
+    uri: admin/api/v1/support/currencies
     metadata:
       custom: []
       groupName: 'Support API Management'
@@ -134,7 +134,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: admin/api/v1/support/currency
+    uri: admin/api/v1/support/currencies
     metadata:
       custom: []
       groupName: 'Support API Management'
@@ -271,7 +271,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'admin/api/v1/support/currency/{id}'
+    uri: 'admin/api/v1/support/currencies/{id}'
     metadata:
       custom: []
       groupName: 'Support API Management'
@@ -349,7 +349,7 @@ endpoints:
     httpMethods:
       - PUT
       - PATCH
-    uri: 'admin/api/v1/support/currency/{id}'
+    uri: 'admin/api/v1/support/currencies/{id}'
     metadata:
       custom: []
       groupName: 'Support API Management'
@@ -504,7 +504,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'admin/api/v1/support/currency/{id}'
+    uri: 'admin/api/v1/support/currencies/{id}'
     metadata:
       custom: []
       groupName: 'Support API Management'
@@ -569,7 +569,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'admin/api/v1/support/currency/{currency_id}/rates'
+    uri: 'admin/api/v1/support/currencies/{currency_id}/rates'
     metadata:
       custom: []
       groupName: 'Support API Management'
@@ -697,7 +697,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: 'admin/api/v1/support/currency/{currency_id}/rates'
+    uri: 'admin/api/v1/support/currencies/{currency_id}/rates'
     metadata:
       custom: []
       groupName: 'Support API Management'
@@ -798,7 +798,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'admin/api/v1/support/currency/{currency_id}/rates/{id}'
+    uri: 'admin/api/v1/support/currencies/{currency_id}/rates/{id}'
     metadata:
       custom: []
       groupName: 'Support API Management'
@@ -888,7 +888,7 @@ endpoints:
     httpMethods:
       - PUT
       - PATCH
-    uri: 'admin/api/v1/support/currency/{currency_id}/rates/{id}'
+    uri: 'admin/api/v1/support/currencies/{currency_id}/rates/{id}'
     metadata:
       custom: []
       groupName: 'Support API Management'
@@ -1007,7 +1007,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'admin/api/v1/support/currency/{currency_id}/rates/{id}'
+    uri: 'admin/api/v1/support/currencies/{currency_id}/rates/{id}'
     metadata:
       custom: []
       groupName: 'Support API Management'

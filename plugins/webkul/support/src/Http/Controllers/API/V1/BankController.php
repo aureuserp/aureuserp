@@ -3,6 +3,7 @@
 namespace Webkul\Support\Http\Controllers\API\V1;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -37,6 +38,8 @@ class BankController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index()
     {
+        Gate::authorize('viewAny', Bank::class);
+
         $banks = QueryBuilder::for(Bank::class)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
@@ -64,6 +67,8 @@ class BankController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(BankRequest $request)
     {
+        Gate::authorize('create', Bank::class);
+
         $data = $request->validated();
         $data['creator_id'] = Auth::id();
 
@@ -91,6 +96,8 @@ class BankController extends Controller
             ])
             ->firstOrFail();
 
+        Gate::authorize('view', $bank);
+
         return new BankResource($bank);
     }
 
@@ -103,6 +110,9 @@ class BankController extends Controller
     public function update(BankRequest $request, string $id)
     {
         $bank = Bank::findOrFail($id);
+
+        Gate::authorize('update', $bank);
+
         $bank->update($request->validated());
 
         return (new BankResource($bank))
@@ -117,6 +127,9 @@ class BankController extends Controller
     public function destroy(string $id)
     {
         $bank = Bank::findOrFail($id);
+
+        Gate::authorize('delete', $bank);
+
         $bank->delete();
 
         return response()->noContent();
@@ -130,6 +143,9 @@ class BankController extends Controller
     public function restore(string $id)
     {
         $bank = Bank::withTrashed()->findOrFail($id);
+
+        Gate::authorize('restore', $bank);
+
         $bank->restore();
 
         return (new BankResource($bank))
@@ -144,6 +160,9 @@ class BankController extends Controller
     public function forceDestroy(string $id)
     {
         $bank = Bank::withTrashed()->findOrFail($id);
+
+        Gate::authorize('forceDelete', $bank);
+
         $bank->forceDelete();
 
         return response()->noContent();

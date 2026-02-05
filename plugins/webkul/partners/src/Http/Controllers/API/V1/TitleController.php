@@ -2,6 +2,7 @@
 
 namespace Webkul\Partner\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -31,6 +32,8 @@ class TitleController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index()
     {
+        Gate::authorize('viewAny', Title::class);
+
         $titles = QueryBuilder::for(Title::class)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
@@ -51,6 +54,8 @@ class TitleController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(TitleRequest $request)
     {
+        Gate::authorize('create', Title::class);
+
         $title = Title::create($request->validated());
 
         return (new TitleResource($title))
@@ -73,6 +78,8 @@ class TitleController extends Controller
             ])
             ->firstOrFail();
 
+        Gate::authorize('view', $title);
+
         return new TitleResource($title);
     }
 
@@ -85,6 +92,8 @@ class TitleController extends Controller
     public function update(TitleRequest $request, string $id)
     {
         $title = Title::findOrFail($id);
+
+        Gate::authorize('update', $title);
 
         $title->update($request->validated());
 
@@ -100,6 +109,8 @@ class TitleController extends Controller
     public function destroy(string $id)
     {
         $title = Title::findOrFail($id);
+
+        Gate::authorize('delete', $title);
 
         $title->delete();
 

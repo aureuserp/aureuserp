@@ -2,6 +2,7 @@
 
 namespace Webkul\Product\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -14,6 +15,7 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Webkul\Product\Http\Requests\ProductAttributeRequest;
 use Webkul\Product\Http\Resources\V1\ProductAttributeResource;
+use Webkul\Product\Models\Product;
 use Webkul\Product\Models\ProductAttribute;
 use Webkul\Product\Models\ProductAttributeValue;
 
@@ -33,6 +35,10 @@ class ProductAttributeController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index(string $product)
     {
+        $productModel = Product::findOrFail($product);
+
+        Gate::authorize('view', $productModel);
+
         $productAttributes = QueryBuilder::for(ProductAttribute::where('product_id', $product))
             ->allowedFilters([
                 AllowedFilter::exact('id'),
@@ -57,6 +63,10 @@ class ProductAttributeController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(ProductAttributeRequest $request, string $product)
     {
+        $productModel = Product::findOrFail($product);
+
+        Gate::authorize('update', $productModel);
+
         $data = $request->validated();
         $data['product_id'] = $product;
 
@@ -92,6 +102,10 @@ class ProductAttributeController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function show(string $product, string $attribute)
     {
+        $productModel = Product::findOrFail($product);
+
+        Gate::authorize('view', $productModel);
+
         $productAttribute = QueryBuilder::for(ProductAttribute::where('id', $attribute)->where('product_id', $product))
             ->allowedIncludes([
                 'attribute',
@@ -113,6 +127,10 @@ class ProductAttributeController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function update(ProductAttributeRequest $request, string $product, string $attribute)
     {
+        $productModel = Product::findOrFail($product);
+
+        Gate::authorize('update', $productModel);
+
         $productAttribute = ProductAttribute::where('id', $attribute)->where('product_id', $product)->firstOrFail();
 
         $data = $request->validated();
@@ -146,6 +164,10 @@ class ProductAttributeController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $product, string $attribute)
     {
+        $productModel = Product::findOrFail($product);
+
+        Gate::authorize('update', $productModel);
+
         $productAttribute = ProductAttribute::where('id', $attribute)->where('product_id', $product)->firstOrFail();
         $productAttribute->delete();
 

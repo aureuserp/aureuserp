@@ -2,6 +2,7 @@
 
 namespace Webkul\Product\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -14,6 +15,7 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Webkul\Product\Http\Requests\AttributeOptionRequest;
 use Webkul\Product\Http\Resources\V1\AttributeOptionResource;
+use Webkul\Product\Models\Attribute;
 use Webkul\Product\Models\AttributeOption;
 
 #[Group('Product API Management')]
@@ -32,6 +34,10 @@ class AttributeOptionController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index(string $attribute)
     {
+        $attributeModel = Attribute::findOrFail($attribute);
+
+        Gate::authorize('view', $attributeModel);
+
         $options = QueryBuilder::for(AttributeOption::where('attribute_id', $attribute))
             ->allowedFilters([
                 AllowedFilter::exact('id'),
@@ -53,6 +59,10 @@ class AttributeOptionController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(AttributeOptionRequest $request, string $attribute)
     {
+        $attributeModel = Attribute::findOrFail($attribute);
+
+        Gate::authorize('update', $attributeModel);
+
         $data = $request->validated();
         $data['attribute_id'] = $attribute;
 
@@ -73,6 +83,10 @@ class AttributeOptionController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function show(string $attribute, string $option)
     {
+        $attributeModel = Attribute::findOrFail($attribute);
+
+        Gate::authorize('view', $attributeModel);
+
         $optionModel = QueryBuilder::for(AttributeOption::where('id', $option)->where('attribute_id', $attribute))
             ->allowedIncludes([
                 'creator',
@@ -91,6 +105,10 @@ class AttributeOptionController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function update(AttributeOptionRequest $request, string $attribute, string $option)
     {
+        $attributeModel = Attribute::findOrFail($attribute);
+
+        Gate::authorize('update', $attributeModel);
+
         $optionModel = AttributeOption::where('id', $option)->where('attribute_id', $attribute)->firstOrFail();
         $optionModel->update($request->validated());
 
@@ -106,6 +124,10 @@ class AttributeOptionController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $attribute, string $option)
     {
+        $attributeModel = Attribute::findOrFail($attribute);
+
+        Gate::authorize('update', $attributeModel);
+
         $optionModel = AttributeOption::where('id', $option)->where('attribute_id', $attribute)->firstOrFail();
         $optionModel->delete();
 

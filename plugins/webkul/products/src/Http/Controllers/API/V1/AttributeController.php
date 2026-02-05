@@ -2,6 +2,7 @@
 
 namespace Webkul\Product\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -34,6 +35,8 @@ class AttributeController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index()
     {
+        Gate::authorize('viewAny', Attribute::class);
+
         $attributes = QueryBuilder::for(Attribute::class)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
@@ -57,6 +60,8 @@ class AttributeController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(AttributeRequest $request)
     {
+        Gate::authorize('create', Attribute::class);
+
         $attribute = Attribute::create($request->validated());
 
         return (new AttributeResource($attribute->load(['options'])))
@@ -80,6 +85,8 @@ class AttributeController extends Controller
             ])
             ->firstOrFail();
 
+        Gate::authorize('view', $attribute);
+
         return new AttributeResource($attribute);
     }
 
@@ -92,6 +99,9 @@ class AttributeController extends Controller
     public function update(AttributeRequest $request, string $id)
     {
         $attribute = Attribute::findOrFail($id);
+
+        Gate::authorize('update', $attribute);
+
         $attribute->update($request->validated());
 
         return (new AttributeResource($attribute->load(['options'])))
@@ -106,6 +116,9 @@ class AttributeController extends Controller
     public function destroy(string $id)
     {
         $attribute = Attribute::findOrFail($id);
+
+        Gate::authorize('delete', $attribute);
+
         $attribute->delete();
 
         return response()->json([
@@ -121,6 +134,9 @@ class AttributeController extends Controller
     public function restore(string $id)
     {
         $attribute = Attribute::withTrashed()->findOrFail($id);
+
+        Gate::authorize('restore', $attribute);
+
         $attribute->restore();
 
         return (new AttributeResource($attribute->load(['options'])))
@@ -135,6 +151,9 @@ class AttributeController extends Controller
     public function forceDestroy(string $id)
     {
         $attribute = Attribute::withTrashed()->findOrFail($id);
+
+        Gate::authorize('forceDelete', $attribute);
+
         $attribute->forceDelete();
 
         return response()->json([

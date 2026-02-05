@@ -2,6 +2,7 @@
 
 namespace Webkul\Partner\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -32,6 +33,8 @@ class TagController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index()
     {
+        Gate::authorize('viewAny', Tag::class);
+
         $tags = QueryBuilder::for(Tag::class)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
@@ -53,6 +56,8 @@ class TagController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(TagRequest $request)
     {
+        Gate::authorize('create', Tag::class);
+
         $tag = Tag::create($request->validated());
 
         return (new TagResource($tag))
@@ -75,6 +80,8 @@ class TagController extends Controller
             ])
             ->firstOrFail();
 
+        Gate::authorize('view', $tag);
+
         return new TagResource($tag);
     }
 
@@ -87,6 +94,8 @@ class TagController extends Controller
     public function update(TagRequest $request, string $id)
     {
         $tag = Tag::findOrFail($id);
+
+        Gate::authorize('update', $tag);
 
         $tag->update($request->validated());
 
@@ -103,6 +112,8 @@ class TagController extends Controller
     {
         $tag = Tag::findOrFail($id);
 
+        Gate::authorize('delete', $tag);
+
         $tag->delete();
 
         return response()->json(['message' => 'Tag deleted successfully.']);
@@ -117,6 +128,8 @@ class TagController extends Controller
     {
         $tag = Tag::onlyTrashed()->findOrFail($id);
 
+        Gate::authorize('restore', $tag);
+
         $tag->restore();
 
         return response()->json(['message' => 'Tag restored successfully.']);
@@ -130,6 +143,8 @@ class TagController extends Controller
     public function forceDestroy(string $id)
     {
         $tag = Tag::withTrashed()->findOrFail($id);
+
+        Gate::authorize('forceDelete', $tag);
 
         $tag->forceDelete();
 

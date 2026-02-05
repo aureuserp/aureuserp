@@ -2,6 +2,7 @@
 
 namespace Webkul\Product\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -32,6 +33,8 @@ class CategoryController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index()
     {
+        Gate::authorize('viewAny', Category::class);
+
         $categories = QueryBuilder::for(Category::class)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
@@ -55,6 +58,8 @@ class CategoryController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(CategoryRequest $request)
     {
+        Gate::authorize('create', Category::class);
+
         $category = Category::create($request->validated());
 
         return (new CategoryResource($category->load(['parent'])))
@@ -79,6 +84,8 @@ class CategoryController extends Controller
             ])
             ->firstOrFail();
 
+        Gate::authorize('view', $category);
+
         return new CategoryResource($category);
     }
 
@@ -91,6 +98,9 @@ class CategoryController extends Controller
     public function update(CategoryRequest $request, string $id)
     {
         $category = Category::findOrFail($id);
+
+        Gate::authorize('update', $category);
+
         $category->update($request->validated());
 
         return (new CategoryResource($category->load(['parent'])))
@@ -105,6 +115,9 @@ class CategoryController extends Controller
     public function destroy(string $id)
     {
         $category = Category::findOrFail($id);
+
+        Gate::authorize('delete', $category);
+
         $category->delete();
 
         return response()->json([

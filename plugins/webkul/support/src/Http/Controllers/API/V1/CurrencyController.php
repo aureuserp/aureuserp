@@ -2,6 +2,7 @@
 
 namespace Webkul\Support\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -33,6 +34,8 @@ class CurrencyController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index()
     {
+        Gate::authorize('viewAny', Currency::class);
+
         $currencies = QueryBuilder::for(Currency::class)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
@@ -55,6 +58,8 @@ class CurrencyController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(CurrencyRequest $request)
     {
+        Gate::authorize('create', Currency::class);
+
         $currency = Currency::create($request->validated());
 
         return (new CurrencyResource($currency))
@@ -77,6 +82,8 @@ class CurrencyController extends Controller
             ])
             ->firstOrFail();
 
+        Gate::authorize('view', $currency);
+
         return new CurrencyResource($currency);
     }
 
@@ -89,6 +96,8 @@ class CurrencyController extends Controller
     public function update(CurrencyRequest $request, string $id)
     {
         $currency = Currency::findOrFail($id);
+
+        Gate::authorize('update', $currency);
 
         $currency->update($request->validated());
 
@@ -104,6 +113,8 @@ class CurrencyController extends Controller
     public function destroy(string $id)
     {
         $currency = Currency::findOrFail($id);
+
+        Gate::authorize('delete', $currency);
 
         $currency->delete();
 

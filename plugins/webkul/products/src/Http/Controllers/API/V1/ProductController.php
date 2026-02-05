@@ -2,6 +2,7 @@
 
 namespace Webkul\Product\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -36,6 +37,8 @@ class ProductController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index()
     {
+        Gate::authorize('viewAny', Product::class);
+
         $products = QueryBuilder::for(Product::class)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
@@ -69,6 +72,8 @@ class ProductController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(ProductRequest $request)
     {
+        Gate::authorize('create', Product::class);
+
         $validated = $request->validated();
 
         $tags = $validated['tags'] ?? [];
@@ -109,6 +114,8 @@ class ProductController extends Controller
             ])
             ->firstOrFail();
 
+        Gate::authorize('view', $product);
+
         return new ProductResource($product);
     }
 
@@ -121,6 +128,8 @@ class ProductController extends Controller
     public function update(ProductRequest $request, string $id)
     {
         $product = Product::findOrFail($id);
+
+        Gate::authorize('update', $product);
 
         $validated = $request->validated();
 
@@ -145,6 +154,9 @@ class ProductController extends Controller
     public function destroy(string $id)
     {
         $product = Product::findOrFail($id);
+
+        Gate::authorize('delete', $product);
+
         $product->delete();
 
         return response()->json([
@@ -160,6 +172,9 @@ class ProductController extends Controller
     public function restore(string $id)
     {
         $product = Product::withTrashed()->findOrFail($id);
+
+        Gate::authorize('restore', $product);
+
         $product->restore();
 
         return (new ProductResource($product->load(['category', 'tags'])))
@@ -174,6 +189,9 @@ class ProductController extends Controller
     public function forceDestroy(string $id)
     {
         $product = Product::withTrashed()->findOrFail($id);
+
+        Gate::authorize('forceDelete', $product);
+
         $product->forceDelete();
 
         return response()->json([

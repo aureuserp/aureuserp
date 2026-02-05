@@ -8,9 +8,9 @@ use Webkul\Support\Http\Controllers\API\V1\CurrencyRateController;
 use Webkul\Support\Http\Controllers\API\V1\StateController;
 
 Route::name('admin.api.v1.support.')->prefix('admin/api/v1/support')->middleware(['auth:sanctum'])->group(function () {
-    Route::apiResource('currency', CurrencyController::class);
+    Route::apiResource('currencies', CurrencyController::class);
 
-    Route::apiResource('currency.rates', CurrencyRateController::class);
+    Route::apiResource('currencies.rates', CurrencyRateController::class);
 
     Route::softDeletableApiResource('banks', BankController::class);
 

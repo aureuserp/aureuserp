@@ -2,6 +2,7 @@
 
 namespace Webkul\Product\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -32,6 +33,8 @@ class PackagingController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index()
     {
+        Gate::authorize('viewAny', Packaging::class);
+
         $packagings = QueryBuilder::for(Packaging::class)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
@@ -55,6 +58,8 @@ class PackagingController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(PackagingRequest $request)
     {
+        Gate::authorize('create', Packaging::class);
+
         $packaging = Packaging::create($request->validated());
 
         return (new PackagingResource($packaging))
@@ -79,6 +84,8 @@ class PackagingController extends Controller
             ])
             ->firstOrFail();
 
+        Gate::authorize('view', $packaging);
+
         return new PackagingResource($packaging);
     }
 
@@ -91,6 +98,9 @@ class PackagingController extends Controller
     public function update(PackagingRequest $request, string $id)
     {
         $packaging = Packaging::findOrFail($id);
+
+        Gate::authorize('update', $packaging);
+
         $packaging->update($request->validated());
 
         return (new PackagingResource($packaging))
@@ -105,6 +115,9 @@ class PackagingController extends Controller
     public function destroy(string $id)
     {
         $packaging = Packaging::findOrFail($id);
+
+        Gate::authorize('delete', $packaging);
+
         $packaging->delete();
 
         return response()->json([

@@ -45,6 +45,8 @@ class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasAp
         'default_company_id' => 'integer',
     ];
 
+    protected $guard_name = ['web', 'sanctum'];
+
     public function canAccessPanel(Panel $panel): bool
     {
         return true;

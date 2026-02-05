@@ -2,6 +2,7 @@
 
 namespace Webkul\Partner\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -43,6 +44,8 @@ class PartnerController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index()
     {
+        Gate::authorize('viewAny', Partner::class);
+
         $partners = QueryBuilder::for(Partner::class)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
@@ -85,6 +88,8 @@ class PartnerController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(PartnerRequest $request)
     {
+        Gate::authorize('create', Partner::class);
+
         $partner = Partner::create($request->validated());
 
         return (new PartnerResource($partner))
@@ -118,6 +123,8 @@ class PartnerController extends Controller
             ])
             ->firstOrFail();
 
+        Gate::authorize('view', $partner);
+
         return new PartnerResource($partner);
     }
 
@@ -130,6 +137,8 @@ class PartnerController extends Controller
     public function update(PartnerRequest $request, string $id)
     {
         $partner = Partner::findOrFail($id);
+
+        Gate::authorize('update', $partner);
 
         $partner->update($request->validated());
 
@@ -146,6 +155,8 @@ class PartnerController extends Controller
     {
         $partner = Partner::findOrFail($id);
 
+        Gate::authorize('delete', $partner);
+
         $partner->delete();
 
         return response()->json(['message' => 'Partner deleted successfully.']);
@@ -160,6 +171,8 @@ class PartnerController extends Controller
     {
         $partner = Partner::onlyTrashed()->findOrFail($id);
 
+        Gate::authorize('restore', $partner);
+
         $partner->restore();
 
         return response()->json(['message' => 'Partner restored successfully.']);
@@ -173,6 +186,8 @@ class PartnerController extends Controller
     public function forceDestroy(string $id)
     {
         $partner = Partner::withTrashed()->findOrFail($id);
+
+        Gate::authorize('forceDelete', $partner);
 
         $partner->forceDelete();
 

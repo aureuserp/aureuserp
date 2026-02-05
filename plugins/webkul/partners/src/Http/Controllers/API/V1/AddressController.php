@@ -2,6 +2,7 @@
 
 namespace Webkul\Partner\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -13,9 +14,9 @@ use Knuckles\Scribe\Attributes\UrlParam;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Webkul\Partner\Enums\AccountType;
+use Webkul\Partner\Enums\AddressType;
 use Webkul\Partner\Http\Requests\AddressRequest;
 use Webkul\Partner\Http\Resources\V1\AddressResource;
-use Webkul\Partner\Enums\AddressType;
 use Webkul\Partner\Models\Partner;
 
 #[Group('Partner API Management')]
@@ -39,6 +40,10 @@ class AddressController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index(string $partner)
     {
+        $partnerModel = Partner::findOrFail($partner);
+
+        Gate::authorize('view', $partnerModel);
+
         $addresses = QueryBuilder::for(Partner::where('parent_id', $partner)->where('account_type', AccountType::ADDRESS))
             ->allowedFilters([
                 AllowedFilter::exact('id'),
@@ -65,6 +70,10 @@ class AddressController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(AddressRequest $request, string $partner)
     {
+        $partnerModel = Partner::findOrFail($partner);
+
+        Gate::authorize('update', $partnerModel);
+
         $data = $request->validated();
         $data['parent_id'] = $partner;
         $data['account_type'] = AccountType::ADDRESS;
@@ -86,6 +95,10 @@ class AddressController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function show(string $partner, string $address)
     {
+        $partnerModel = Partner::findOrFail($partner);
+
+        Gate::authorize('view', $partnerModel);
+
         $addressModel = QueryBuilder::for(
             Partner::where('id', $address)
                 ->where('parent_id', $partner)
@@ -108,6 +121,10 @@ class AddressController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function update(AddressRequest $request, string $partner, string $address)
     {
+        $partnerModel = Partner::findOrFail($partner);
+
+        Gate::authorize('update', $partnerModel);
+
         $addressModel = Partner::where('id', $address)
             ->where('parent_id', $partner)
             ->where('account_type', AccountType::ADDRESS)
@@ -127,6 +144,10 @@ class AddressController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $partner, string $address)
     {
+        $partnerModel = Partner::findOrFail($partner);
+
+        Gate::authorize('update', $partnerModel);
+
         $addressModel = Partner::where('id', $address)
             ->where('parent_id', $partner)
             ->where('account_type', AccountType::ADDRESS)
@@ -147,6 +168,10 @@ class AddressController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function restore(string $partner, string $address)
     {
+        $partnerModel = Partner::findOrFail($partner);
+
+        Gate::authorize('update', $partnerModel);
+
         $addressModel = Partner::onlyTrashed()
             ->where('id', $address)
             ->where('parent_id', $partner)
@@ -168,6 +193,10 @@ class AddressController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function forceDestroy(string $partner, string $address)
     {
+        $partnerModel = Partner::findOrFail($partner);
+        
+        Gate::authorize('update', $partnerModel);
+
         $addressModel = Partner::withTrashed()
             ->where('id', $address)
             ->where('parent_id', $partner)

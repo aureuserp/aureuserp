@@ -2,6 +2,7 @@
 
 namespace Webkul\Partner\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -15,6 +16,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 use Webkul\Partner\Http\Requests\BankAccountRequest;
 use Webkul\Partner\Http\Resources\V1\BankAccountResource;
 use Webkul\Partner\Models\BankAccount;
+use Webkul\Partner\Models\Partner;
 
 #[Group('Partner API Management')]
 #[Subgroup('Bank Accounts', 'Manage partner bank accounts')]
@@ -33,6 +35,10 @@ class BankAccountController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index(string $partner)
     {
+        $partnerModel = Partner::findOrFail($partner);
+
+        Gate::authorize('view', $partnerModel);
+
         $bankAccounts = QueryBuilder::for(BankAccount::where('partner_id', $partner))
             ->allowedFilters([
                 AllowedFilter::exact('id'),
@@ -56,6 +62,10 @@ class BankAccountController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(BankAccountRequest $request, string $partner)
     {
+        $partnerModel = Partner::findOrFail($partner);
+
+        Gate::authorize('update', $partnerModel);
+
         $data = $request->validated();
         $data['partner_id'] = $partner;
 
@@ -76,6 +86,10 @@ class BankAccountController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function show(string $partner, string $bankAccount)
     {
+        $partnerModel = Partner::findOrFail($partner);
+
+        Gate::authorize('view', $partnerModel);
+
         $bankAccountModel = QueryBuilder::for(BankAccount::where('id', $bankAccount)->where('partner_id', $partner))
             ->allowedIncludes([
                 'bank',
@@ -95,6 +109,10 @@ class BankAccountController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function update(BankAccountRequest $request, string $partner, string $bankAccount)
     {
+        $partnerModel = Partner::findOrFail($partner);
+
+        Gate::authorize('update', $partnerModel);
+
         $bankAccountModel = BankAccount::where('id', $bankAccount)->where('partner_id', $partner)->firstOrFail();
         $bankAccountModel->update($request->validated());
 
@@ -110,6 +128,10 @@ class BankAccountController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $partner, string $bankAccount)
     {
+        $partnerModel = Partner::findOrFail($partner);
+
+        Gate::authorize('update', $partnerModel);
+
         $bankAccountModel = BankAccount::where('id', $bankAccount)->where('partner_id', $partner)->firstOrFail();
         $bankAccountModel->delete();
 
@@ -126,6 +148,10 @@ class BankAccountController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function restore(string $partner, string $bankAccount)
     {
+        $partnerModel = Partner::findOrFail($partner);
+
+        Gate::authorize('update', $partnerModel);
+
         $bankAccountModel = BankAccount::onlyTrashed()
             ->where('id', $bankAccount)
             ->where('partner_id', $partner)
@@ -146,6 +172,10 @@ class BankAccountController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function forceDestroy(string $partner, string $bankAccount)
     {
+        $partnerModel = Partner::findOrFail($partner);
+        
+        Gate::authorize('update', $partnerModel);
+
         $bankAccountModel = BankAccount::withTrashed()
             ->where('id', $bankAccount)
             ->where('partner_id', $partner)

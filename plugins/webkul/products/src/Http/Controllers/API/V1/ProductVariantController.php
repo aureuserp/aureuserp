@@ -2,6 +2,7 @@
 
 namespace Webkul\Product\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -12,10 +13,10 @@ use Knuckles\Scribe\Attributes\Subgroup;
 use Knuckles\Scribe\Attributes\UrlParam;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
+use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Http\Requests\ProductRequest;
 use Webkul\Product\Http\Resources\V1\ProductResource;
 use Webkul\Product\Models\Product;
-use Webkul\Product\Enums\ProductType;
 
 #[Group('Product API Management')]
 #[Subgroup('Product Variants', 'Manage product variants')]
@@ -37,6 +38,8 @@ class ProductVariantController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index(string $product)
     {
+        Gate::authorize('viewAny', Product::class);
+
         $variants = QueryBuilder::for(Product::where('parent_id', $product))
             ->allowedFilters([
                 AllowedFilter::exact('id'),
@@ -70,6 +73,8 @@ class ProductVariantController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(string $product)
     {
+        Gate::authorize('create', Product::class);
+
         $product = Product::findOrFail($product);
 
         $product->generateVariants();
@@ -103,6 +108,8 @@ class ProductVariantController extends Controller
             ])
             ->firstOrFail();
 
+        Gate::authorize('view', $variantModel);
+
         return new ProductResource($variantModel);
     }
 
@@ -116,6 +123,8 @@ class ProductVariantController extends Controller
     public function update(ProductRequest $request, string $product, string $variant)
     {
         $variantModel = Product::where('id', $variant)->where('parent_id', $product)->firstOrFail();
+
+        Gate::authorize('update', $variantModel);
 
         $validated = $request->validated();
 
@@ -141,6 +150,9 @@ class ProductVariantController extends Controller
     public function destroy(string $product, string $variant)
     {
         $variantModel = Product::where('id', $variant)->where('parent_id', $product)->firstOrFail();
+
+        Gate::authorize('delete', $variantModel);
+
         $variantModel->delete();
 
         return response()->json([
@@ -157,6 +169,9 @@ class ProductVariantController extends Controller
     public function restore(string $product, string $variant)
     {
         $variantModel = Product::withTrashed()->where('id', $variant)->where('parent_id', $product)->firstOrFail();
+
+        Gate::authorize('restore', $variantModel);
+
         $variantModel->restore();
 
         return (new ProductResource($variantModel->load(['combinations'])))
@@ -172,6 +187,9 @@ class ProductVariantController extends Controller
     public function forceDestroy(string $product, string $variant)
     {
         $variantModel = Product::withTrashed()->where('id', $variant)->where('parent_id', $product)->firstOrFail();
+
+        Gate::authorize('forceDelete', $variantModel);
+
         $variantModel->forceDelete();
 
         return response()->json([

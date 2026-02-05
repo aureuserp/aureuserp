@@ -2,6 +2,7 @@
 
 namespace Webkul\Support\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -14,6 +15,7 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Webkul\Support\Http\Requests\CurrencyRateRequest;
 use Webkul\Support\Http\Resources\V1\CurrencyRateResource;
+use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\CurrencyRate;
 
 #[Group('Support API Management')]
@@ -33,6 +35,10 @@ class CurrencyRateController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index(string $currency)
     {
+        $currencyModel = Currency::findOrFail($currency);
+
+        Gate::authorize('view', $currencyModel);
+
         $currencyRates = QueryBuilder::for(CurrencyRate::where('currency_id', $currency))
             ->allowedFilters([
                 AllowedFilter::exact('id'),
@@ -56,6 +62,10 @@ class CurrencyRateController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(CurrencyRateRequest $request, string $currency)
     {
+        $currencyModel = Currency::findOrFail($currency);
+
+        Gate::authorize('update', $currencyModel);
+
         $data = $request->validated();
         $data['currency_id'] = $currency;
 
@@ -76,6 +86,10 @@ class CurrencyRateController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function show(string $currency, string $rate)
     {
+        $currencyModel = Currency::findOrFail($currency);
+
+        Gate::authorize('view', $currencyModel);
+
         $currencyRate = QueryBuilder::for(CurrencyRate::where('id', $rate)->where('currency_id', $currency))
             ->allowedIncludes([
                 'company',
@@ -95,7 +109,12 @@ class CurrencyRateController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function update(CurrencyRateRequest $request, string $currency, string $rate)
     {
+        $currencyModel = Currency::findOrFail($currency);
+
+        Gate::authorize('update', $currencyModel);
+
         $currencyRate = CurrencyRate::where('id', $rate)->where('currency_id', $currency)->firstOrFail();
+
         $currencyRate->update($request->validated());
 
         return (new CurrencyRateResource($currencyRate->load(['currency'])))
@@ -110,7 +129,14 @@ class CurrencyRateController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $currency, string $rate)
     {
+        $currencyModel = Currency::findOrFail($currency);
+
+        Gate::authorize('update', $currencyModel);
+
         $currencyRate = CurrencyRate::where('id', $rate)->where('currency_id', $currency)->firstOrFail();
+
+        Gate::authorize('delete', $currencyRate->currency);
+
         $currencyRate->delete();
 
         return response()->json([

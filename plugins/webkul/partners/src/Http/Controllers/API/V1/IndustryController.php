@@ -2,6 +2,7 @@
 
 namespace Webkul\Partner\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -32,6 +33,8 @@ class IndustryController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index()
     {
+        Gate::authorize('viewAny', Industry::class);
+
         $industries = QueryBuilder::for(Industry::class)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
@@ -53,6 +56,8 @@ class IndustryController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(IndustryRequest $request)
     {
+        Gate::authorize('create', Industry::class);
+
         $industry = Industry::create($request->validated());
 
         return (new IndustryResource($industry))
@@ -75,6 +80,8 @@ class IndustryController extends Controller
             ])
             ->firstOrFail();
 
+        Gate::authorize('view', $industry);
+
         return new IndustryResource($industry);
     }
 
@@ -87,6 +94,8 @@ class IndustryController extends Controller
     public function update(IndustryRequest $request, string $id)
     {
         $industry = Industry::findOrFail($id);
+
+        Gate::authorize('update', $industry);
 
         $industry->update($request->validated());
 
@@ -103,6 +112,8 @@ class IndustryController extends Controller
     {
         $industry = Industry::findOrFail($id);
 
+        Gate::authorize('delete', $industry);
+
         $industry->delete();
 
         return response()->json(['message' => 'Industry deleted successfully.']);
@@ -117,6 +128,8 @@ class IndustryController extends Controller
     {
         $industry = Industry::onlyTrashed()->findOrFail($id);
 
+        Gate::authorize('restore', $industry);
+
         $industry->restore();
 
         return response()->json(['message' => 'Industry restored successfully.']);
@@ -130,6 +143,8 @@ class IndustryController extends Controller
     public function forceDestroy(string $id)
     {
         $industry = Industry::withTrashed()->findOrFail($id);
+
+        Gate::authorize('forceDelete', $industry);
 
         $industry->forceDelete();
 
