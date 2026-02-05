@@ -184,6 +184,7 @@ return [
         'order' => [
             'Security API Management',
             'Support API Management',
+            'Partner API Management',
             'Product API Management',
             'Sales API Management',
             'Account API Management',
