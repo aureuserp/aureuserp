@@ -24,7 +24,6 @@ class PartnerRequest extends FormRequest
     {
         $rules = [
             'account_type'     => 'required|string|in:'.implode(',', array_column(AccountType::cases(), 'value')),
-            'sub_type'         => 'nullable|string|max:255',
             'name'             => 'required|string|max:255',
             'email'            => 'nullable|email|max:255',
             'phone'            => 'nullable|string|max:20',
@@ -73,11 +72,7 @@ class PartnerRequest extends FormRequest
         return [
             'account_type' => [
                 'description' => 'Account type: individual, company, or address.',
-                'example'     => 'company',
-            ],
-            'sub_type' => [
-                'description' => 'Sub type classification (max 255 characters).',
-                'example'     => 'Supplier',
+                'example'     => AccountType::INDIVIDUAL->value,
             ],
             'name' => [
                 'description' => 'Partner name (max 255 characters).',
@@ -141,15 +136,15 @@ class PartnerRequest extends FormRequest
             ],
             'state_id' => [
                 'description' => 'State ID.',
-                'example'     => 1,
+                'example'     => 9,
             ],
             'country_id' => [
                 'description' => 'Country ID.',
-                'example'     => 1,
+                'example'     => 233,
             ],
             'parent_id' => [
                 'description' => 'Parent partner ID (for addresses and contacts).',
-                'example'     => 1,
+                'example'     => null,
             ],
             'title_id' => [
                 'description' => 'Title ID.',
@@ -164,7 +159,7 @@ class PartnerRequest extends FormRequest
                 'example'     => 1,
             ],
             'user_id' => [
-                'description' => 'Associated user ID.',
+                'description' => 'Associated user ID/Responsible Sale user.',
                 'example'     => 1,
             ],
         ];

@@ -14,6 +14,7 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Webkul\Partner\Http\Requests\PartnerRequest;
 use Webkul\Partner\Http\Resources\V1\PartnerResource;
+use Webkul\Partner\Enums\AccountType;
 use Webkul\Partner\Models\Partner;
 
 #[Group('Partner API Management')]
@@ -24,12 +25,17 @@ class PartnerController extends Controller
     #[Endpoint('List partners', 'Retrieve a paginated list of partners with filtering and sorting')]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, country, state, title, company, industry, user, creator, addresses, contacts, bankAccounts, tags', required: false, example: 'tags,addresses')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: 'No-example')]
+    #[QueryParam('filter[account_type]', 'string', 'Filter by account type', enum: AccountType::class, required: false, example: 'No-example')]
     #[QueryParam('filter[name]', 'string', 'Filter by partner name (partial match)', required: false, example: 'No-example')]
     #[QueryParam('filter[email]', 'string', 'Filter by email (partial match)', required: false, example: 'No-example')]
-    #[QueryParam('filter[account_type]', 'string', 'Filter by account type (individual, company, address)', required: false, example: 'No-example')]
+    #[QueryParam('filter[phone]', 'string', 'Filter by phone (partial match)', required: false, example: 'No-example')]
     #[QueryParam('filter[parent_id]', 'string', 'Comma-separated list of parent IDs to filter by', required: false, example: 'No-example')]
+    #[QueryParam('filter[user_id]', 'string', 'Comma-separated list of user IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[company_id]', 'string', 'Comma-separated list of company IDs to filter by', required: false, example: 'No-example')]
+    #[QueryParam('filter[title_id]', 'string', 'Comma-separated list of title IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[industry_id]', 'string', 'Comma-separated list of industry IDs to filter by', required: false, example: 'No-example')]
+    #[QueryParam('filter[country_id]', 'string', 'Comma-separated list of country IDs to filter by', required: false, example: 'No-example')]
+    #[QueryParam('filter[state_id]', 'string', 'Comma-separated list of state IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[trashed]', 'string', 'Filter by trashed status. </br></br><b>Available options:</b> with, without, only', required: false, example: 'No-example')]
     #[QueryParam('sort', 'string', 'Sort field', example: 'name')]
     #[QueryParam('page', 'int', 'Page number', example: 1)]
@@ -40,12 +46,17 @@ class PartnerController extends Controller
         $partners = QueryBuilder::for(Partner::class)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
+                AllowedFilter::exact('account_type'),
                 AllowedFilter::partial('name'),
                 AllowedFilter::partial('email'),
-                AllowedFilter::exact('account_type'),
+                AllowedFilter::partial('phone'),
                 AllowedFilter::exact('parent_id'),
+                AllowedFilter::exact('user_id'),
                 AllowedFilter::exact('company_id'),
+                AllowedFilter::exact('title_id'),
                 AllowedFilter::exact('industry_id'),
+                AllowedFilter::exact('country_id'),
+                AllowedFilter::exact('state_id'),
                 AllowedFilter::trashed(),
             ])
             ->allowedSorts(['id', 'name', 'email', 'created_at'])

@@ -1083,7 +1083,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":69,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:16:32.000000Z","updated_at":"2026-02-05T05:16:32.000000Z"},{"id":69,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:16:32.000000Z","updated_at":"2026-02-05T05:16:32.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":71,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"},{"id":71,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -1154,7 +1154,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":69,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:16:32.000000Z","updated_at":"2026-02-05T05:16:32.000000Z"},"message":"Industry created successfully."}'
+        content: '{"data":{"id":71,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"},"message":"Industry created successfully."}'
         headers: []
         description: ''
       -
@@ -1231,7 +1231,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":69,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:16:32.000000Z","updated_at":"2026-02-05T05:16:32.000000Z"}}'
+        content: '{"data":{"id":71,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"}}'
         headers: []
         description: ''
       -
@@ -1321,7 +1321,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":69,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:16:32.000000Z","updated_at":"2026-02-05T05:16:32.000000Z"},"message":"Industry updated successfully."}'
+        content: '{"data":{"id":71,"name":"Technology","description":"Software and hardware technology companies","created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"},"message":"Industry updated successfully."}'
         headers: []
         description: ''
       -
@@ -1589,6 +1589,20 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
+      'filter[account_type]':
+        custom: []
+        name: 'filter[account_type]'
+        description: 'Filter by account type'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - individual
+          - company
+          - address
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
       'filter[name]':
         custom: []
         name: 'filter[name]'
@@ -1611,10 +1625,10 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      'filter[account_type]':
+      'filter[phone]':
         custom: []
-        name: 'filter[account_type]'
-        description: 'Filter by account type (individual, company, address)'
+        name: 'filter[phone]'
+        description: 'Filter by phone (partial match)'
         required: false
         example: null
         type: string
@@ -1633,6 +1647,17 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
+      'filter[user_id]':
+        custom: []
+        name: 'filter[user_id]'
+        description: 'Comma-separated list of user IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
       'filter[company_id]':
         custom: []
         name: 'filter[company_id]'
@@ -1644,10 +1669,43 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
+      'filter[title_id]':
+        custom: []
+        name: 'filter[title_id]'
+        description: 'Comma-separated list of title IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
       'filter[industry_id]':
         custom: []
         name: 'filter[industry_id]'
         description: 'Comma-separated list of industry IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[country_id]':
+        custom: []
+        name: 'filter[country_id]'
+        description: 'Comma-separated list of country IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[state_id]':
+        custom: []
+        name: 'filter[state_id]'
+        description: 'Comma-separated list of state IDs to filter by'
         required: false
         example: null
         type: string
@@ -1745,7 +1803,7 @@ endpoints:
         name: account_type
         description: 'Account type: individual, company, or address.'
         required: true
-        example: company
+        example: individual
         type: string
         enumValues:
           - individual
@@ -1753,17 +1811,6 @@ endpoints:
           - address
         exampleWasSpecified: false
         nullable: false
-        deprecated: false
-      sub_type:
-        custom: []
-        name: sub_type
-        description: 'Sub type classification (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: Supplier
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
         deprecated: false
       name:
         custom: []
@@ -2008,8 +2055,7 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      account_type: company
-      sub_type: Supplier
+      account_type: individual
       name: 'Acme Corporation'
       email: contact@acme.com
       phone: '+1234567890'
@@ -2179,7 +2225,7 @@ endpoints:
         name: account_type
         description: 'Account type: individual, company, or address.'
         required: false
-        example: company
+        example: individual
         type: string
         enumValues:
           - individual
@@ -2187,17 +2233,6 @@ endpoints:
           - address
         exampleWasSpecified: false
         nullable: false
-        deprecated: false
-      sub_type:
-        custom: []
-        name: sub_type
-        description: 'Sub type classification (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: Supplier
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
         deprecated: false
       name:
         custom: []
@@ -2442,8 +2477,7 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      account_type: company
-      sub_type: Supplier
+      account_type: individual
       name: 'Acme Corporation'
       email: contact@acme.com
       phone: '+1234567890'
