@@ -6,7 +6,6 @@ use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Concerns\HasExtraItemActions;
 use Filament\Infolists\Components\RepeatableEntry as BaseRepeatableEntry;
-use Filament\Schemas\Components\Component;
 use Filament\Support\Enums\Size;
 use Filament\Tables\Table\Concerns\HasColumnManager;
 use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn;

@@ -127,9 +127,6 @@ class Company extends Model implements Sortable
         return $this->parents();
     }
 
-    /**
-     * Scope a query to only include active companies.
-     */
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
@@ -145,6 +142,8 @@ class Company extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($company) {
+            $company->creator_id ??= Auth::id();
+
             if (! $company->partner_id) {
                 $partner = Partner::create([
                     'creator_id'       => $company->creator_id ?? Auth::id(),
@@ -177,7 +176,6 @@ class Company extends Model implements Sortable
                     'id' => $company->partner_id,
                 ],
                 [
-                    'creator_id'       => $company->creator_id ?? Auth::id(),
                     'sub_type'         => 'company',
                     'company_registry' => $company->registration_number,
                     'name'             => $company->name,

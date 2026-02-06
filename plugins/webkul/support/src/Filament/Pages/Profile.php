@@ -80,11 +80,11 @@ class Profile extends Page implements HasForms
                             ->maxSize(2048)
                             ->image()
                             ->imageEditor()
-                            ->imageEditorAspectRatios([
+                            ->imageEditorAspectRatioOptions([
                                 '1:1',
                             ])
                             ->columnSpanFull()
-                            ->helperText(__('support::filament/pages/profile.fields.avatar') . ': ' . __('support::filament/pages/profile.information_description'))
+                            ->helperText(__('support::filament/pages/profile.fields.avatar').': '.__('support::filament/pages/profile.information_description'))
                             ->deletable(true)
                             ->downloadable(false),
 
@@ -153,7 +153,7 @@ class Profile extends Page implements HasForms
                             ->confirmed()
                             ->helperText(__('support::filament/pages/profile.password.helper'))
                             ->different('current_password')
-                            ->dehydrateStateUsing(fn($state): ?string => $state ? Hash::make($state) : null),
+                            ->dehydrateStateUsing(fn ($state): ?string => $state ? Hash::make($state) : null),
 
                         TextInput::make('password_confirmation')
                             ->label(__('support::filament/pages/profile.password.confirm'))
@@ -383,7 +383,7 @@ class Profile extends Page implements HasForms
                         ->confirmed()
                         ->helperText(__('support::filament/pages/profile.password.helper'))
                         ->different('current_password')
-                        ->dehydrateStateUsing(fn($state): ?string => $state ? Hash::make($state) : null),
+                        ->dehydrateStateUsing(fn ($state): ?string => $state ? Hash::make($state) : null),
 
                     TextInput::make('password_confirmation')
                         ->label(__('support::filament/pages/profile.password.confirm'))
@@ -452,8 +452,8 @@ class Profile extends Page implements HasForms
             ->components([
                 Section::make(__('filament-panels::auth/pages/edit-profile.multi_factor_authentication.label'))
                     ->schema(collect(Filament::getMultiFactorAuthenticationProviders())
-                        ->sort(fn(MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): int => $multiFactorAuthenticationProvider->isEnabled($user) ? 0 : 1)
-                        ->map(fn(MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): Component => Group::make($multiFactorAuthenticationProvider->getManagementSchemaComponents())
+                        ->sort(fn (MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): int => $multiFactorAuthenticationProvider->isEnabled($user) ? 0 : 1)
+                        ->map(fn (MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): Component => Group::make($multiFactorAuthenticationProvider->getManagementSchemaComponents())
                             ->statePath($multiFactorAuthenticationProvider->getId()))
                         ->all()),
             ]);

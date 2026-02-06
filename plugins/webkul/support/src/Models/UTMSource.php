@@ -3,6 +3,7 @@
 namespace Webkul\Support\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 
 class UTMSource extends Model
@@ -14,5 +15,14 @@ class UTMSource extends Model
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($utmSource) {
+            $utmSource->creator_id ??= Auth::id();
+        });
     }
 }
