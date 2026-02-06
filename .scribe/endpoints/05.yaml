@@ -111,7 +111,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":null,"name":"KRW","symbol":"\u20b9","iso_numeric":"949","decimal_places":2,"full_name":"nostrum qui","rounding":0.01,"active":true,"created_at":null,"updated_at":null},{"id":null,"name":"SLL","symbol":"\u00a3","iso_numeric":"351","decimal_places":2,"full_name":"dolores enim","rounding":0.01,"active":true,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"USD","symbol":"$","iso_numeric":840,"decimal_places":2,"full_name":"United States dollar","rounding":"0.01","active":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},{"id":1,"name":"USD","symbol":"$","iso_numeric":840,"decimal_places":2,"full_name":"United States dollar","rounding":"0.01","active":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -242,7 +242,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":null,"name":"CHF","symbol":"\u20ac","iso_numeric":"806","decimal_places":2,"full_name":"animi quos","rounding":0.01,"active":true,"created_at":null,"updated_at":null},"message":"Currency created successfully."}'
+        content: '{"data":{"id":1,"name":"USD","symbol":"$","iso_numeric":840,"decimal_places":2,"full_name":"United States dollar","rounding":"0.01","active":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"message":"Currency created successfully."}'
         headers: []
         description: ''
       -
@@ -319,7 +319,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"SOS","symbol":"\u00a3","iso_numeric":"947","decimal_places":2,"full_name":"tempora ex","rounding":0.01,"active":true,"created_at":null,"updated_at":null}}'
+        content: '{"data":{"id":1,"name":"USD","symbol":"$","iso_numeric":840,"decimal_places":2,"full_name":"United States dollar","rounding":"0.01","active":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}'
         headers: []
         description: ''
       -
@@ -469,7 +469,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"AED","symbol":"$","iso_numeric":"196","decimal_places":2,"full_name":"provident perspiciatis","rounding":0.01,"active":true,"created_at":null,"updated_at":null},"message":"Currency updated successfully."}'
+        content: '{"data":{"id":1,"name":"USD","symbol":"$","iso_numeric":840,"decimal_places":2,"full_name":"United States dollar","rounding":"0.01","active":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"message":"Currency updated successfully."}'
         headers: []
         description: ''
       -
@@ -674,7 +674,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":null,"name":"1995-01-30T00:00:00.000000Z","rate":"0.911072","inverse_rate":1.097608092444944,"currency_id":385,"company_id":696,"creator_id":2305,"created_at":null,"updated_at":null},{"id":null,"name":"1977-09-23T00:00:00.000000Z","rate":"1.491164","inverse_rate":0.6706170481583515,"currency_id":386,"company_id":697,"creator_id":2306,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"2026-01-28T00:00:00.000000Z","rate":"2.000000","inverse_rate":0.5,"currency_id":45,"company_id":null,"creator_id":null,"created_at":"2026-01-28T07:30:58.000000Z","updated_at":"2026-01-28T07:30:58.000000Z","currency":{"id":45,"name":"CLP","symbol":"$","iso_numeric":152,"decimal_places":0,"full_name":"Chilean peso","rounding":"1.00","active":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2026-01-28T07:31:05.000000Z"}},{"id":1,"name":"2026-01-28T00:00:00.000000Z","rate":"2.000000","inverse_rate":0.5,"currency_id":45,"company_id":null,"creator_id":null,"created_at":"2026-01-28T07:30:58.000000Z","updated_at":"2026-01-28T07:30:58.000000Z","currency":{"id":45,"name":"CLP","symbol":"$","iso_numeric":152,"decimal_places":0,"full_name":"Chilean peso","rounding":"1.00","active":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2026-01-28T07:31:05.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -769,7 +769,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":null,"name":"1996-01-25T00:00:00.000000Z","rate":"1.992991","inverse_rate":0.501758412356102,"currency_id":387,"company_id":698,"creator_id":2307,"created_at":null,"updated_at":null},"message":"Currency rate created successfully."}'
+        content: '{"data":{"id":1,"name":"2026-01-28T00:00:00.000000Z","rate":"2.000000","inverse_rate":0.5,"currency_id":45,"company_id":null,"creator_id":null,"created_at":"2026-01-28T07:30:58.000000Z","updated_at":"2026-01-28T07:30:58.000000Z","currency":{"id":45,"name":"CLP","symbol":"$","iso_numeric":152,"decimal_places":0,"full_name":"Chilean peso","rounding":"1.00","active":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2026-01-28T07:31:05.000000Z"}},"message":"Currency rate created successfully."}'
         headers: []
         description: ''
       -
@@ -858,7 +858,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"1982-02-01T00:00:00.000000Z","rate":"1.960500","inverse_rate":0.510073960724305,"currency_id":388,"company_id":699,"creator_id":2308,"created_at":null,"updated_at":null}}'
+        content: '{"data":{"id":1,"name":"2026-01-28T00:00:00.000000Z","rate":"2.000000","inverse_rate":0.5,"currency_id":45,"company_id":null,"creator_id":null,"created_at":"2026-01-28T07:30:58.000000Z","updated_at":"2026-01-28T07:30:58.000000Z","currency":{"id":45,"name":"CLP","symbol":"$","iso_numeric":152,"decimal_places":0,"full_name":"Chilean peso","rounding":"1.00","active":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2026-01-28T07:31:05.000000Z"}}}'
         headers: []
         description: ''
       -
@@ -972,7 +972,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"1996-01-25T00:00:00.000000Z","rate":"1.992991","inverse_rate":0.501758412356102,"currency_id":389,"company_id":700,"creator_id":2309,"created_at":null,"updated_at":null},"message":"Currency rate updated successfully."}'
+        content: '{"data":{"id":1,"name":"2026-01-28T00:00:00.000000Z","rate":"2.000000","inverse_rate":0.5,"currency_id":45,"company_id":null,"creator_id":null,"created_at":"2026-01-28T07:30:58.000000Z","updated_at":"2026-01-28T07:30:58.000000Z","currency":{"id":45,"name":"CLP","symbol":"$","iso_numeric":152,"decimal_places":0,"full_name":"Chilean peso","rounding":"1.00","active":true,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2026-01-28T07:31:05.000000Z"}},"message":"Currency rate updated successfully."}'
         headers: []
         description: ''
       -
@@ -1221,7 +1221,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":null,"name":"Morgan Hirthe","code":"DZSNRWVE","email":"oceane14@example.com","phone":"+1-860-464-4697","street1":"90983 Dare Mount","street2":"47747 Wilton Trafficway Apt. 274","city":"New Mitchel","zip":"22541-7960","creator_id":2310,"created_at":null,"updated_at":null,"deleted_at":null,"state":{"id":1782,"name":"North Carolina","code":"HI","country_id":342,"created_at":"2026-02-06T11:41:47.000000Z","updated_at":"2026-02-06T11:41:47.000000Z"},"country":{"id":343,"name":"Latvia","code":"CV","phone_code":"817","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-06T11:41:47.000000Z","updated_at":"2026-02-06T11:41:47.000000Z"}},{"id":null,"name":"Sierra Hettinger I","code":"JSHHOLQQSCY","email":"schuster.lucile@example.org","phone":"+1.980.818.6059","street1":"2312 Schultz Highway Suite 938","street2":"610 Haag River","city":"Hellenmouth","zip":"12097","creator_id":2311,"created_at":null,"updated_at":null,"deleted_at":null,"state":{"id":1783,"name":"Missouri","code":"MN","country_id":344,"created_at":"2026-02-06T11:41:47.000000Z","updated_at":"2026-02-06T11:41:47.000000Z"},"country":{"id":345,"name":"Iceland","code":"AL","phone_code":"667","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-06T11:41:47.000000Z","updated_at":"2026-02-06T11:41:47.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"Bank of California","code":"BOC0001","email":"bankocalifornia@ca.com","phone":"2122211211121","street1":"Wallmart Steet Complex","street2":"First Floor","city":"California","zip":"90006","creator_id":1,"created_at":"2025-04-10T10:47:58.000000Z","updated_at":"2025-04-10T10:47:58.000000Z","deleted_at":null,"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},{"id":1,"name":"Bank of California","code":"BOC0001","email":"bankocalifornia@ca.com","phone":"2122211211121","street1":"Wallmart Steet Complex","street2":"First Floor","city":"California","zip":"90006","creator_id":1,"created_at":"2025-04-10T10:47:58.000000Z","updated_at":"2025-04-10T10:47:58.000000Z","deleted_at":null,"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -1388,7 +1388,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":null,"name":"Ms. Audra Crooks II","code":"YUWPWL36UBQ","email":"qlebsack@example.net","phone":"361.403.8024","street1":"5092 Ferry Mews Apt. 762","street2":"2076 Heathcote Row","city":"Bartonton","zip":"69517-4549","creator_id":2312,"created_at":null,"updated_at":null,"deleted_at":null,"state":{"id":1784,"name":"Illinois","code":"NE","country_id":346,"created_at":"2026-02-06T11:41:47.000000Z","updated_at":"2026-02-06T11:41:47.000000Z"},"country":{"id":347,"name":"Yemen","code":"EH","phone_code":"260","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-06T11:41:47.000000Z","updated_at":"2026-02-06T11:41:47.000000Z"}},"message":"Bank created successfully."}'
+        content: '{"data":{"id":1,"name":"Bank of California","code":"BOC0001","email":"bankocalifornia@ca.com","phone":"2122211211121","street1":"Wallmart Steet Complex","street2":"First Floor","city":"California","zip":"90006","creator_id":1,"created_at":"2025-04-10T10:47:58.000000Z","updated_at":"2025-04-10T10:47:58.000000Z","deleted_at":null,"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Bank created successfully."}'
         headers: []
         description: ''
       -
@@ -1465,7 +1465,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"Morgan Hirthe","code":"DZSNRWVE","email":"dayna86@example.net","phone":"1-484-621-2685","street1":"69558 Breana Tunnel Suite 867","street2":"313 Lind Overpass","city":"Jewelfurt","zip":"09920-2513","creator_id":2313,"created_at":null,"updated_at":null,"deleted_at":null,"state":{"id":1785,"name":"District of Columbia","code":"ND","country_id":348,"created_at":"2026-02-06T11:41:47.000000Z","updated_at":"2026-02-06T11:41:47.000000Z"},"country":{"id":349,"name":"Dominica","code":"PL","phone_code":"639","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-06T11:41:47.000000Z","updated_at":"2026-02-06T11:41:47.000000Z"}}}'
+        content: '{"data":{"id":1,"name":"Bank of California","code":"BOC0001","email":"bankocalifornia@ca.com","phone":"2122211211121","street1":"Wallmart Steet Complex","street2":"First Floor","city":"California","zip":"90006","creator_id":1,"created_at":"2025-04-10T10:47:58.000000Z","updated_at":"2025-04-10T10:47:58.000000Z","deleted_at":null,"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}}'
         headers: []
         description: ''
       -
@@ -1651,7 +1651,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"Ms. Audra Crooks II","code":"YUWPWL36UBQ","email":"carlo.romaguera@example.net","phone":"+1 (662) 882-4978","street1":"874 Funk Street Suite 960","street2":"24350 Berge Summit Suite 513","city":"Schuppechester","zip":"15650","creator_id":2314,"created_at":null,"updated_at":null,"deleted_at":null,"state":{"id":1786,"name":"Nebraska","code":"UT","country_id":350,"created_at":"2026-02-06T11:41:47.000000Z","updated_at":"2026-02-06T11:41:47.000000Z"},"country":{"id":351,"name":"Slovakia (Slovak Republic)","code":"BY","phone_code":"944","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-06T11:41:47.000000Z","updated_at":"2026-02-06T11:41:47.000000Z"}},"message":"Bank updated successfully."}'
+        content: '{"data":{"id":1,"name":"Bank of California","code":"BOC0001","email":"bankocalifornia@ca.com","phone":"2122211211121","street1":"Wallmart Steet Complex","street2":"First Floor","city":"California","zip":"90006","creator_id":1,"created_at":"2025-04-10T10:47:58.000000Z","updated_at":"2025-04-10T10:47:58.000000Z","deleted_at":null,"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Bank updated successfully."}'
         headers: []
         description: ''
       -
@@ -1787,7 +1787,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"Morgan Hirthe","code":"DZSNRWVE","email":"paul.tromp@example.com","phone":"828-649-0867","street1":"313 Lind Overpass","street2":"38282 Goyette Unions","city":"Lake Brennonburgh","zip":"35796-5312","creator_id":2315,"created_at":null,"updated_at":null,"deleted_at":null,"state":{"id":1787,"name":"Mississippi","code":"MS","country_id":352,"created_at":"2026-02-06T11:41:47.000000Z","updated_at":"2026-02-06T11:41:47.000000Z"},"country":{"id":353,"name":"Ireland","code":"MO","phone_code":"509","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-06T11:41:47.000000Z","updated_at":"2026-02-06T11:41:47.000000Z"}},"message":"Bank restored successfully."}'
+        content: '{"data":{"id":1,"name":"Bank of California","code":"BOC0001","email":"bankocalifornia@ca.com","phone":"2122211211121","street1":"Wallmart Steet Complex","street2":"First Floor","city":"California","zip":"90006","creator_id":1,"created_at":"2025-04-10T10:47:58.000000Z","updated_at":"2025-04-10T10:47:58.000000Z","deleted_at":null,"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Bank restored successfully."}'
         headers: []
         description: ''
       -
@@ -1996,7 +1996,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":null,"name":"Liechtenstein","code":"ME","phone_code":339,"state_required":false,"zip_required":false,"currency_id":null,"created_at":null,"updated_at":null},{"id":null,"name":"Netherlands Antilles","code":"CR","phone_code":481,"state_required":false,"zip_required":false,"currency_id":null,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"Andorra","code":"AD","phone_code":"376","state_required":false,"zip_required":true,"currency_id":125,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},{"id":1,"name":"Andorra","code":"AD","phone_code":"376","state_required":false,"zip_required":true,"currency_id":125,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2067,7 +2067,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"Bouvet Island (Bouvetoya)","code":"SI","phone_code":977,"state_required":false,"zip_required":false,"currency_id":null,"created_at":null,"updated_at":null}}'
+        content: '{"data":{"id":1,"name":"Andorra","code":"AD","phone_code":"376","state_required":false,"zip_required":true,"currency_id":125,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}'
         headers: []
         description: ''
       -
@@ -2200,7 +2200,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":null,"name":"Minnesota","code":"WA","country_id":354,"created_at":null,"updated_at":null},{"id":null,"name":"Louisiana","code":"OH","country_id":355,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"Australian Capital Territory","code":"ACT","country_id":13,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},{"id":1,"name":"Australian Capital Territory","code":"ACT","country_id":13,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2283,7 +2283,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":null,"name":"Arkansas","code":"CT","country_id":356,"created_at":null,"updated_at":null},"message":"State created successfully."}'
+        content: '{"data":{"id":1,"name":"Australian Capital Territory","code":"ACT","country_id":13,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"message":"State created successfully."}'
         headers: []
         description: ''
       -
@@ -2360,7 +2360,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"Mississippi","code":"AZ","country_id":357,"created_at":null,"updated_at":null}}'
+        content: '{"data":{"id":1,"name":"Australian Capital Territory","code":"ACT","country_id":13,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}'
         headers: []
         description: ''
       -
@@ -2462,7 +2462,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"Indiana","code":"RI","country_id":358,"created_at":null,"updated_at":null},"message":"State updated successfully."}'
+        content: '{"data":{"id":1,"name":"Australian Capital Territory","code":"ACT","country_id":13,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"message":"State updated successfully."}'
         headers: []
         description: ''
       -
@@ -2644,7 +2644,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":null,"name":"aut adipisci","created_at":null,"updated_at":null},{"id":null,"name":"eos ex","created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"},{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2703,7 +2703,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":null,"name":"architecto eius","created_at":null,"updated_at":null},"message":"UOM category created successfully."}'
+        content: '{"data":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"},"message":"UOM category created successfully."}'
         headers: []
         description: ''
       -
@@ -2780,7 +2780,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"aut adipisci","created_at":null,"updated_at":null}}'
+        content: '{"data":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}}'
         headers: []
         description: ''
       -
@@ -2858,7 +2858,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"architecto eius","created_at":null,"updated_at":null},"message":"UOM category updated successfully."}'
+        content: '{"data":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"},"message":"UOM category updated successfully."}'
         headers: []
         description: ''
       -
@@ -3074,7 +3074,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":null,"type":"smaller","name":"aut","factor":9.74,"rounding":null,"category_id":46,"creator_id":2321,"created_at":null,"updated_at":null,"deleted_at":null},{"id":null,"type":"smaller","name":"ratione","factor":9.68,"rounding":null,"category_id":47,"creator_id":2323,"created_at":null,"updated_at":null,"deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"type":"reference","name":"Units","factor":"1.0000","rounding":"0.0100","category_id":1,"creator_id":null,"created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z","deleted_at":null,"category":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}},{"id":1,"type":"reference","name":"Units","factor":"1.0000","rounding":"0.0100","category_id":1,"creator_id":null,"created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z","deleted_at":null,"category":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -3196,7 +3196,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":null,"type":"smaller","name":"architecto","factor":9.95,"rounding":null,"category_id":48,"creator_id":2325,"created_at":null,"updated_at":null,"deleted_at":null},"message":"UOM created successfully."}'
+        content: '{"data":{"id":1,"type":"reference","name":"Units","factor":"1.0000","rounding":"0.0100","category_id":1,"creator_id":null,"created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z","deleted_at":null,"category":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}},"message":"UOM created successfully."}'
         headers: []
         description: ''
       -
@@ -3285,7 +3285,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"type":"smaller","name":"aut","factor":9.74,"rounding":null,"category_id":49,"creator_id":2327,"created_at":null,"updated_at":null,"deleted_at":null}}'
+        content: '{"data":{"id":1,"type":"reference","name":"Units","factor":"1.0000","rounding":"0.0100","category_id":1,"creator_id":null,"created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z","deleted_at":null,"category":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}}}'
         headers: []
         description: ''
       -
@@ -3426,7 +3426,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"type":"smaller","name":"architecto","factor":9.95,"rounding":null,"category_id":50,"creator_id":2329,"created_at":null,"updated_at":null,"deleted_at":null},"message":"UOM updated successfully."}'
+        content: '{"data":{"id":1,"type":"reference","name":"Units","factor":"1.0000","rounding":"0.0100","category_id":1,"creator_id":null,"created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z","deleted_at":null,"category":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}},"message":"UOM updated successfully."}'
         headers: []
         description: ''
       -
@@ -3586,7 +3586,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"type":"smaller","name":"aut","factor":9.74,"rounding":null,"category_id":51,"creator_id":2331,"created_at":null,"updated_at":null,"deleted_at":null},"message":"UOM restored successfully."}'
+        content: '{"data":{"id":1,"type":"reference","name":"Units","factor":"1.0000","rounding":"0.0100","category_id":1,"creator_id":null,"created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z","deleted_at":null,"category":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}},"message":"UOM restored successfully."}'
         headers: []
         description: ''
       -
