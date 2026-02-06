@@ -24,7 +24,7 @@ use Webkul\Account\Models\Account;
 class AccountController extends Controller
 {
     #[Endpoint('List accounts', 'Retrieve a paginated list of accounts with filtering and sorting')]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> currency, createdBy, taxes, tags, journals, moveLines, companies', required: false, example: 'currency')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> currency, creator, taxes, tags, journals, moveLines, companies', required: false, example: 'currency')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[name]', 'string', 'Filter by account name (partial match)', required: false, example: 'No-example')]
     #[QueryParam('filter[code]', 'string', 'Filter by account code (partial match)', required: false, example: 'No-example')]
@@ -53,7 +53,7 @@ class AccountController extends Controller
             ->allowedSorts(['id', 'code', 'name', 'account_type', 'created_at'])
             ->allowedIncludes([
                 'currency',
-                'createdBy',
+                'creator',
                 'taxes',
                 'tags',
                 'journals',
@@ -85,7 +85,7 @@ class AccountController extends Controller
 
     #[Endpoint('Show account', 'Retrieve a specific account by its ID')]
     #[UrlParam('id', 'integer', 'The account ID', required: true, example: 1)]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> currency, createdBy, taxes, tags, journals, moveLines, companies', required: false, example: 'currency,taxes')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> currency, creator, taxes, tags, journals, moveLines, companies', required: false, example: 'currency,taxes')]
     #[ResponseFromApiResource(AccountResource::class, Account::class)]
     #[Response(status: 404, description: 'Account not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
@@ -94,7 +94,7 @@ class AccountController extends Controller
         $account = QueryBuilder::for(Account::where('id', $id))
             ->allowedIncludes([
                 'currency',
-                'createdBy',
+                'creator',
                 'taxes',
                 'tags',
                 'journals',

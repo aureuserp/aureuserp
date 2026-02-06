@@ -19,8 +19,6 @@ class AccountResource extends JsonResource
     {
         return [
             'id'           => $this->id,
-            'currency_id'  => $this->currency_id,
-            'creator_id'   => $this->creator_id,
             'account_type' => $this->account_type,
             'name'         => $this->name,
             'code'         => $this->code,
@@ -28,10 +26,12 @@ class AccountResource extends JsonResource
             'deprecated'   => $this->deprecated,
             'reconcile'    => $this->reconcile,
             'non_trade'    => $this->non_trade,
+            'currency_id'  => $this->currency_id,
+            'creator_id'   => $this->creator_id,
             'created_at'   => $this->created_at,
             'updated_at'   => $this->updated_at,
             'currency'     => new CurrencyResource($this->whenLoaded('currency')),
-            'createdBy'    => new UserResource($this->whenLoaded('createdBy')),
+            'creator'      => new UserResource($this->whenLoaded('creator')),
             'taxes'        => TaxResource::collection($this->whenLoaded('taxes')),
             'tags'         => TagResource::collection($this->whenLoaded('tags')),
             'journals'     => JournalResource::collection($this->whenLoaded('journals')),
