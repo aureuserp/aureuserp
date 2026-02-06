@@ -38,11 +38,26 @@ class UOMRequest extends FormRequest
     public function bodyParameters(): array
     {
         return [
-            'type'        => ['description' => 'UOM type (reference, bigger, smaller)', 'example' => 'reference'],
-            'name'        => ['description' => 'UOM name', 'example' => 'Kilogram'],
-            'factor'      => ['description' => 'Conversion factor', 'example' => 1.0],
-            'rounding'    => ['description' => 'Rounding precision', 'example' => 0.01],
-            'category_id' => ['description' => 'UOM category ID', 'example' => 1],
+            'type'        => [
+                'description' => 'UOM type (reference, bigger, smaller)',
+                'example' => 'reference'
+            ],
+            'name'        => [
+                'description' => 'UOM name',
+                'example' => 'Kilogram'
+            ],
+            'factor'      => [
+                'description' => 'Conversion factor',
+                'example' => 1.0
+            ],
+            'rounding'    => [
+                'description' => 'Rounding precision',
+                'example' => 0.01
+            ],
+            'category_id' => [
+                'description' => 'UOM category ID',
+                'example' => 1
+            ],
         ];
     }
 }

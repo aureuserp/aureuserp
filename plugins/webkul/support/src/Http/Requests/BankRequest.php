@@ -54,16 +54,46 @@ class BankRequest extends FormRequest
     public function bodyParameters(): array
     {
         return [
-            'name'       => ['description' => 'Bank name', 'example' => 'Chase Bank'],
-            'code'       => ['description' => 'Bank code', 'example' => 'CHASE'],
-            'email'      => ['description' => 'Bank email address', 'example' => 'info@chase.com'],
-            'phone'      => ['description' => 'Bank phone number', 'example' => '+1234567890'],
-            'street1'    => ['description' => 'Street address line 1', 'example' => '123 Main St'],
-            'street2'    => ['description' => 'Street address line 2', 'example' => 'Suite 100'],
-            'city'       => ['description' => 'City', 'example' => 'New York'],
-            'zip'        => ['description' => 'ZIP/Postal code', 'example' => '10001'],
-            'state_id'   => ['description' => 'State ID', 'example' => 1],
-            'country_id' => ['description' => 'Country ID', 'example' => 1],
+            'name'       => [
+                'description' => 'Bank name',
+                'example' => 'Chase Bank'
+            ],
+            'code'       => [
+                'description' => 'Bank code',
+                'example' => 'CHASE'
+            ],
+            'email'      => [
+                'description' => 'Bank email address',
+                'example' => 'info@chase.com'
+            ],
+            'phone'      => [
+                'description' => 'Bank phone number',
+                'example' => '+1234567890'
+            ],
+            'street1'    => [
+                'description' => 'Street address line 1',
+                'example' => '123 Main St'
+            ],
+            'street2'    => [
+                'description' => 'Street address line 2',
+                'example' => 'Suite 100'
+            ],
+            'city'       => [
+                'description' => 'City',
+                'example' => 'New York'
+            ],
+            'zip'        => [
+                'description' => 'ZIP/Postal code',
+                'example' => '10001'
+            ],
+            'state_id'   => [
+                'description' => 'State ID',
+                'example' => 9
+            ],
+            'country_id' => [
+                'description' => 'Country ID',
+                'example' => 233
+            ],
         ];
     }
 }

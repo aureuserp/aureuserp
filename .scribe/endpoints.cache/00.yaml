@@ -1205,9 +1205,9 @@ endpoints:
       include:
         custom: []
         name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> createdBy'
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator'
         required: false
-        example: createdBy
+        example: creator
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1280,7 +1280,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanQueryParameters:
-      include: createdBy
+      include: creator
       sort: code
       page: 1
     bodyParameters: []
@@ -1421,16 +1421,16 @@ endpoints:
       include:
         custom: []
         name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> createdBy'
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator'
         required: false
-        example: createdBy
+        example: creator
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanQueryParameters:
-      include: createdBy
+      include: creator
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
@@ -1777,7 +1777,7 @@ endpoints:
       include:
         custom: []
         name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> currency, createdBy, taxes, tags, journals, moveLines, companies'
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> currency, creator, taxes, tags, journals, moveLines, companies'
         required: false
         example: currency
         type: string
@@ -1913,7 +1913,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"currency_id":1,"creator_id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},{"id":1,"currency_id":1,"creator_id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},{"id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2074,7 +2074,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"currency_id":1,"creator_id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Account created successfully."}'
+        content: '{"data":{"id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Account created successfully."}'
         headers: []
         description: ''
       -
@@ -2134,7 +2134,7 @@ endpoints:
       include:
         custom: []
         name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> currency, createdBy, taxes, tags, journals, moveLines, companies'
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> currency, creator, taxes, tags, journals, moveLines, companies'
         required: false
         example: 'currency,taxes'
         type: string
@@ -2151,7 +2151,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"currency_id":1,"creator_id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}}'
+        content: '{"data":{"id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}}'
         headers: []
         description: ''
       -
@@ -2331,7 +2331,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"currency_id":1,"creator_id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Account updated successfully."}'
+        content: '{"data":{"id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Account updated successfully."}'
         headers: []
         description: ''
       -
@@ -3384,7 +3384,7 @@ endpoints:
         name: country_id
         description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
         required: false
-        example: 1
+        example: 233
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3470,7 +3470,7 @@ endpoints:
     cleanBodyParameters:
       name: Domestic
       company_id: 1
-      country_id: 1
+      country_id: 233
       zip_from: '10000'
       zip_to: '99999'
       notes: 'For domestic transactions'
@@ -3645,7 +3645,7 @@ endpoints:
         name: country_id
         description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
         required: false
-        example: 1
+        example: 233
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3731,7 +3731,7 @@ endpoints:
     cleanBodyParameters:
       name: Domestic
       company_id: 1
-      country_id: 1
+      country_id: 233
       zip_from: '10000'
       zip_to: '99999'
       notes: 'For domestic transactions'
@@ -4381,6 +4381,1427 @@ endpoints:
         content: '{"message": "Resource not found."}'
         headers: []
         description: 'Cash rounding not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: admin/api/v1/accounts/tax-groups
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Tax Groups'
+      subgroupDescription: 'Manage tax groups'
+      title: 'List tax groups'
+      description: 'Retrieve a paginated list of tax groups with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, country, creator'
+        required: false
+        example: company
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[name]':
+        custom: []
+        name: 'filter[name]'
+        description: 'Filter by tax group name (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[company_id]':
+        custom: []
+        name: 'filter[company_id]'
+        description: 'Filter by company ID'
+        required: false
+        example: null
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[country_id]':
+        custom: []
+        name: 'filter[country_id]'
+        description: 'Filter by country ID'
+        required: false
+        example: null
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: sort
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: company
+      sort: sort
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1,"name":"Tax 15%","preceding_subtotal":null,"sort":1,"company_id":1,"country_id":104,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},{"id":1,"name":"Tax 15%","preceding_subtotal":null,"sort":1,"company_id":1,"country_id":104,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: admin/api/v1/accounts/tax-groups
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Tax Groups'
+      subgroupDescription: 'Manage tax groups'
+      title: 'Create tax group'
+      description: 'Create a new tax group'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Tax group name. Must not be greater than 255 characters.'
+        required: true
+        example: 'VAT Group'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID. The <code>id</code> of an existing record in the companies table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      country_id:
+        custom: []
+        name: country_id
+        description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
+        required: false
+        example: 233
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      preceding_subtotal:
+        custom: []
+        name: preceding_subtotal
+        description: 'Preceding subtotal label. Must not be greater than 255 characters.'
+        required: false
+        example: Subtotal
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: 'VAT Group'
+      company_id: 1
+      country_id: 233
+      preceding_subtotal: Subtotal
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":1,"name":"Tax 15%","preceding_subtotal":null,"sort":1,"company_id":1,"country_id":104,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Tax group created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/accounts/tax-groups/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Tax Groups'
+      subgroupDescription: 'Manage tax groups'
+      title: 'Show tax group'
+      description: 'Retrieve a specific tax group by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The tax group ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, country, creator'
+        required: false
+        example: 'company,country'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'company,country'
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"name":"Tax 15%","preceding_subtotal":null,"sort":1,"company_id":1,"country_id":104,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Tax group not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/accounts/tax-groups/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Tax Groups'
+      subgroupDescription: 'Manage tax groups'
+      title: 'Update tax group'
+      description: 'Update an existing tax group'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The tax group ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Tax group name. Must not be greater than 255 characters.'
+        required: true
+        example: 'VAT Group'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID. The <code>id</code> of an existing record in the companies table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      country_id:
+        custom: []
+        name: country_id
+        description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
+        required: false
+        example: 233
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      preceding_subtotal:
+        custom: []
+        name: preceding_subtotal
+        description: 'Preceding subtotal label. Must not be greater than 255 characters.'
+        required: false
+        example: Subtotal
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: 'VAT Group'
+      company_id: 1
+      country_id: 233
+      preceding_subtotal: Subtotal
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"name":"Tax 15%","preceding_subtotal":null,"sort":1,"company_id":1,"country_id":104,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Tax group updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Tax group not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid."}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/accounts/tax-groups/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Tax Groups'
+      subgroupDescription: 'Manage tax groups'
+      title: 'Delete tax group'
+      description: 'Delete a tax group'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The tax group ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Tax group deleted successfully."}'
+        headers: []
+        description: 'Tax group deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Tax group not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: admin/api/v1/accounts/taxes
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: Taxes
+      subgroupDescription: 'Manage taxes'
+      title: 'List taxes'
+      description: 'Retrieve a paginated list of taxes with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, taxGroup, cashBasisTransitionAccount, country, createdBy, childrenTaxes, invoiceRepartitionLines, refundRepartitionLines'
+        required: false
+        example: company
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[name]':
+        custom: []
+        name: 'filter[name]'
+        description: 'Filter by tax name (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[company_id]':
+        custom: []
+        name: 'filter[company_id]'
+        description: 'Filter by company ID'
+        required: false
+        example: null
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[tax_group_id]':
+        custom: []
+        name: 'filter[tax_group_id]'
+        description: 'Filter by tax group ID'
+        required: false
+        example: null
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[country_id]':
+        custom: []
+        name: 'filter[country_id]'
+        description: 'Filter by country ID'
+        required: false
+        example: null
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[type_tax_use]':
+        custom: []
+        name: 'filter[type_tax_use]'
+        description: 'Filter by tax type usage'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - sale
+          - purchase
+          - none
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[amount_type]':
+        custom: []
+        name: 'filter[amount_type]'
+        description: 'Filter by amount type'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - fixed
+          - group
+          - percent
+          - division
+          - code
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[tax_scope]':
+        custom: []
+        name: 'filter[tax_scope]'
+        description: 'Filter by tax scope'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - service
+          - consu
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[price_include_override]':
+        custom: []
+        name: 'filter[price_include_override]'
+        description: 'Filter by price include override'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - default
+          - tax_included
+          - tax_excluded
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[is_active]':
+        custom: []
+        name: 'filter[is_active]'
+        description: 'Filter by active status'
+        required: false
+        example: null
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: sort
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: company
+      sort: sort
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},{"id":1,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: admin/api/v1/accounts/taxes
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: Taxes
+      subgroupDescription: 'Manage taxes'
+      title: 'Create tax'
+      description: 'Create a new tax'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Tax name. Must not be greater than 255 characters.'
+        required: true
+        example: 'VAT 20%'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      type_tax_use:
+        custom: []
+        name: type_tax_use
+        description: 'Tax type usage.'
+        required: true
+        example: sale
+        type: string
+        enumValues:
+          - sale
+          - purchase
+          - none
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      amount_type:
+        custom: []
+        name: amount_type
+        description: 'Tax computation type.'
+        required: true
+        example: percent
+        type: string
+        enumValues:
+          - fixed
+          - group
+          - percent
+          - division
+          - code
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      amount:
+        custom: []
+        name: amount
+        description: 'Tax amount/percentage. Must be at least 0.'
+        required: true
+        example: 20.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      tax_group_id:
+        custom: []
+        name: tax_group_id
+        description: 'Tax group ID. The <code>id</code> of an existing record in the accounts_tax_groups table.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID. The <code>id</code> of an existing record in the companies table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      country_id:
+        custom: []
+        name: country_id
+        description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
+        required: false
+        example: 233
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      tax_scope:
+        custom: []
+        name: tax_scope
+        description: 'Tax scope.'
+        required: false
+        example: service
+        type: string
+        enumValues:
+          - service
+          - consu
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      price_include_override:
+        custom: []
+        name: price_include_override
+        description: 'Price include override.'
+        required: false
+        example: default
+        type: string
+        enumValues:
+          - default
+          - tax_included
+          - tax_excluded
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      cash_basis_transition_account_id:
+        custom: []
+        name: cash_basis_transition_account_id
+        description: 'Cash basis transition account ID. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description:
+        custom: []
+        name: description
+        description: 'Tax description.'
+        required: false
+        example: 'Standard VAT rate'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      invoice_label:
+        custom: []
+        name: invoice_label
+        description: 'Label to display on invoices. Must not be greater than 255 characters.'
+        required: false
+        example: VAT
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      invoice_legal_notes:
+        custom: []
+        name: invoice_legal_notes
+        description: 'Legal notes to display on invoices.'
+        required: false
+        example: 'Subject to VAT regulations'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      tax_exigibility:
+        custom: []
+        name: tax_exigibility
+        description: 'Tax exigibility. Must not be greater than 255 characters.'
+        required: false
+        example: on_invoice
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      is_active:
+        custom: []
+        name: is_active
+        description: 'Tax status active/inactive.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      include_base_amount:
+        custom: []
+        name: include_base_amount
+        description: 'Include base amount in tax calculation.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      is_base_affected:
+        custom: []
+        name: is_base_affected
+        description: 'Is base affected by other taxes.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      analytic:
+        custom: []
+        name: analytic
+        description: 'Enable analytic accounting.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: 'VAT 20%'
+      type_tax_use: sale
+      amount_type: percent
+      amount: 20.0
+      tax_group_id: 1
+      company_id: 1
+      country_id: 233
+      tax_scope: service
+      price_include_override: default
+      cash_basis_transition_account_id: 1
+      description: 'Standard VAT rate'
+      invoice_label: VAT
+      invoice_legal_notes: 'Subject to VAT regulations'
+      tax_exigibility: on_invoice
+      is_active: false
+      include_base_amount: false
+      is_base_affected: false
+      analytic: false
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":1,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Tax created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/accounts/taxes/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: Taxes
+      subgroupDescription: 'Manage taxes'
+      title: 'Show tax'
+      description: 'Retrieve a specific tax by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The tax ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, taxGroup, cashBasisTransitionAccount, country, createdBy, childrenTaxes, invoiceRepartitionLines, refundRepartitionLines'
+        required: false
+        example: 'company,taxGroup'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'company,taxGroup'
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Tax not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/accounts/taxes/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: Taxes
+      subgroupDescription: 'Manage taxes'
+      title: 'Update tax'
+      description: 'Update an existing tax'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The tax ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Tax name. Must not be greater than 255 characters.'
+        required: true
+        example: 'VAT 20%'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      type_tax_use:
+        custom: []
+        name: type_tax_use
+        description: 'Tax type usage.'
+        required: true
+        example: sale
+        type: string
+        enumValues:
+          - sale
+          - purchase
+          - none
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      amount_type:
+        custom: []
+        name: amount_type
+        description: 'Tax computation type.'
+        required: true
+        example: percent
+        type: string
+        enumValues:
+          - fixed
+          - group
+          - percent
+          - division
+          - code
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      amount:
+        custom: []
+        name: amount
+        description: 'Tax amount/percentage. Must be at least 0.'
+        required: true
+        example: 20.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      tax_group_id:
+        custom: []
+        name: tax_group_id
+        description: 'Tax group ID. The <code>id</code> of an existing record in the accounts_tax_groups table.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID. The <code>id</code> of an existing record in the companies table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      country_id:
+        custom: []
+        name: country_id
+        description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
+        required: false
+        example: 233
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      tax_scope:
+        custom: []
+        name: tax_scope
+        description: 'Tax scope.'
+        required: false
+        example: service
+        type: string
+        enumValues:
+          - service
+          - consu
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      price_include_override:
+        custom: []
+        name: price_include_override
+        description: 'Price include override.'
+        required: false
+        example: default
+        type: string
+        enumValues:
+          - default
+          - tax_included
+          - tax_excluded
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      cash_basis_transition_account_id:
+        custom: []
+        name: cash_basis_transition_account_id
+        description: 'Cash basis transition account ID. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description:
+        custom: []
+        name: description
+        description: 'Tax description.'
+        required: false
+        example: 'Standard VAT rate'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      invoice_label:
+        custom: []
+        name: invoice_label
+        description: 'Label to display on invoices. Must not be greater than 255 characters.'
+        required: false
+        example: VAT
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      invoice_legal_notes:
+        custom: []
+        name: invoice_legal_notes
+        description: 'Legal notes to display on invoices.'
+        required: false
+        example: 'Subject to VAT regulations'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      tax_exigibility:
+        custom: []
+        name: tax_exigibility
+        description: 'Tax exigibility. Must not be greater than 255 characters.'
+        required: false
+        example: on_invoice
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      is_active:
+        custom: []
+        name: is_active
+        description: 'Tax status active/inactive.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      include_base_amount:
+        custom: []
+        name: include_base_amount
+        description: 'Include base amount in tax calculation.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      is_base_affected:
+        custom: []
+        name: is_base_affected
+        description: 'Is base affected by other taxes.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      analytic:
+        custom: []
+        name: analytic
+        description: 'Enable analytic accounting.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: 'VAT 20%'
+      type_tax_use: sale
+      amount_type: percent
+      amount: 20.0
+      tax_group_id: 1
+      company_id: 1
+      country_id: 233
+      tax_scope: service
+      price_include_override: default
+      cash_basis_transition_account_id: 1
+      description: 'Standard VAT rate'
+      invoice_label: VAT
+      invoice_legal_notes: 'Subject to VAT regulations'
+      tax_exigibility: on_invoice
+      is_active: false
+      include_base_amount: false
+      is_base_affected: false
+      analytic: false
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Tax updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Tax not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid."}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/accounts/taxes/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: Taxes
+      subgroupDescription: 'Manage taxes'
+      title: 'Delete tax'
+      description: 'Delete a tax'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The tax ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Tax deleted successfully."}'
+        headers: []
+        description: 'Tax deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Tax not found'
     responseFields: []
     auth:
       - headers

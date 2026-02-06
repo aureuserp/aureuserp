@@ -47,9 +47,18 @@ class StateRequest extends FormRequest
     public function bodyParameters(): array
     {
         return [
-            'name'       => ['description' => 'State/Province name', 'example' => 'California'],
-            'code'       => ['description' => 'State/Province code', 'example' => 'CA'],
-            'country_id' => ['description' => 'Country ID', 'example' => 1],
+            'name'       => [
+                'description' => 'State/Province name',
+                'example' => 'California'
+            ],
+            'code'       => [
+                'description' => 'State/Province code',
+                'example' => 'CA'
+            ],
+            'country_id' => [
+                'description' => 'Country ID',
+                'example' => 233
+            ],
         ];
     }
 }

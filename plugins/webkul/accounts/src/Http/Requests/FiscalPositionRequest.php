@@ -51,7 +51,7 @@ class FiscalPositionRequest extends FormRequest
             ],
             'country_id' => [
                 'description' => 'Country ID',
-                'example'     => 1,
+                'example'     => 233,
             ],
             'country_group_id' => [
                 'description' => 'Country group ID',

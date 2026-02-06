@@ -18,18 +18,18 @@ class TaxGroupResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'                  => $this->id,
-            'sort'                => $this->sort,
-            'company_id'          => $this->company_id,
-            'country_id'          => $this->country_id,
-            'creator_id'          => $this->creator_id,
-            'name'                => $this->name,
-            'preceding_subtotal'  => $this->preceding_subtotal,
-            'created_at'          => $this->created_at,
-            'updated_at'          => $this->updated_at,
-            'company'             => CompanyResource::make($this->whenLoaded('company')),
-            'country'             => CountryResource::make($this->whenLoaded('country')),
-            'createdBy'           => UserResource::make($this->whenLoaded('createdBy')),
+            'id'                 => $this->id,
+            'name'               => $this->name,
+            'preceding_subtotal' => $this->preceding_subtotal,
+            'sort'               => $this->sort,
+            'company_id'         => $this->company_id,
+            'country_id'         => $this->country_id,
+            'creator_id'         => $this->creator_id,
+            'created_at'         => $this->created_at,
+            'updated_at'         => $this->updated_at,
+            'company'            => CompanyResource::make($this->whenLoaded('company')),
+            'country'            => CountryResource::make($this->whenLoaded('country')),
+            'creator'            => UserResource::make($this->whenLoaded('creator')),
         ];
     }
 }

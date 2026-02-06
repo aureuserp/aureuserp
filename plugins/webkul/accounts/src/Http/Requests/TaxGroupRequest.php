@@ -45,7 +45,7 @@ class TaxGroupRequest extends FormRequest
             ],
             'country_id' => [
                 'description' => 'Country ID',
-                'example'     => 1,
+                'example'     => 233,
             ],
             'preceding_subtotal' => [
                 'description' => 'Preceding subtotal label',

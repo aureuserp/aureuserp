@@ -32,7 +32,10 @@ class UOMCategoryRequest extends FormRequest
     public function bodyParameters(): array
     {
         return [
-            'name' => ['description' => 'UOM category name', 'example' => 'Weight'],
+            'name' => [
+                'description' => 'UOM category name',
+                'example' => 'Weight'
+            ],
         ];
     }
 }

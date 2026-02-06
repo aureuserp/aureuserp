@@ -17,13 +17,13 @@ use Webkul\Account\Http\Requests\TaxGroupRequest;
 use Webkul\Account\Http\Resources\V1\TaxGroupResource;
 use Webkul\Account\Models\TaxGroup;
 
-#[Group('Accounts API Management')]
+#[Group('Account API Management')]
 #[Subgroup('Tax Groups', 'Manage tax groups')]
 #[Authenticated]
 class TaxGroupController extends Controller
 {
     #[Endpoint('List tax groups', 'Retrieve a paginated list of tax groups with filtering and sorting')]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, country, createdBy', required: false, example: 'company')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, country, creator', required: false, example: 'company')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[name]', 'string', 'Filter by tax group name (partial match)', required: false, example: 'No-example')]
     #[QueryParam('filter[company_id]', 'int', 'Filter by company ID', required: false, example: 'No-example')]
@@ -47,7 +47,7 @@ class TaxGroupController extends Controller
             ->allowedIncludes([
                 'company',
                 'country',
-                'createdBy',
+                'creator',
             ])
             ->paginate();
 
@@ -74,7 +74,7 @@ class TaxGroupController extends Controller
 
     #[Endpoint('Show tax group', 'Retrieve a specific tax group by its ID')]
     #[UrlParam('id', 'integer', 'The tax group ID', required: true, example: 1)]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, country, createdBy', required: false, example: 'company,country')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, country, creator', required: false, example: 'company,country')]
     #[ResponseFromApiResource(TaxGroupResource::class, TaxGroup::class)]
     #[Response(status: 404, description: 'Tax group not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
@@ -84,7 +84,7 @@ class TaxGroupController extends Controller
             ->allowedIncludes([
                 'company',
                 'country',
-                'createdBy',
+                'creator',
             ])
             ->firstOrFail();
 

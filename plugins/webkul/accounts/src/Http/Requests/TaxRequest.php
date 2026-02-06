@@ -80,7 +80,7 @@ class TaxRequest extends FormRequest
             ],
             'country_id' => [
                 'description' => 'Country ID',
-                'example'     => 1,
+                'example'     => 233,
             ],
             'tax_scope' => [
                 'description' => 'Tax scope',

@@ -21,7 +21,7 @@ use Webkul\Account\Http\Requests\TaxRequest;
 use Webkul\Account\Http\Resources\V1\TaxResource;
 use Webkul\Account\Models\Tax;
 
-#[Group('Accounts API Management')]
+#[Group('Account API Management')]
 #[Subgroup('Taxes', 'Manage taxes')]
 #[Authenticated]
 class TaxController extends Controller

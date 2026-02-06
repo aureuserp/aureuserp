@@ -50,12 +50,30 @@ class CountryRequest extends FormRequest
     public function bodyParameters(): array
     {
         return [
-            'name'           => ['description' => 'Country name', 'example' => 'United States'],
-            'code'           => ['description' => 'ISO 3166-1 alpha-2 country code', 'example' => 'US'],
-            'phone_code'     => ['description' => 'Phone country code', 'example' => '+1'],
-            'currency_id'    => ['description' => 'Default currency ID', 'example' => 1],
-            'state_required' => ['description' => 'Whether state is required', 'example' => true],
-            'zip_required'   => ['description' => 'Whether ZIP code is required', 'example' => true],
+            'name'           => [
+                'description' => 'Country name',
+                'example' => 'United States'
+            ],
+            'code'           => [
+                'description' => 'ISO 3166-1 alpha-2 country code',
+                'example' => 'US'
+            ],
+            'phone_code'     => [
+                'description' => 'Phone country code',
+                'example' => '+1'
+            ],
+            'currency_id'    => [
+                'description' => 'Default currency ID',
+                'example' => 1
+            ],
+            'state_required' => [
+                'description' => 'Whether state is required',
+                'example' => true
+            ],
+            'zip_required'   => [
+                'description' => 'Whether ZIP code is required',
+                'example' => true
+            ],
         ];
     }
 }
