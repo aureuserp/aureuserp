@@ -443,10 +443,10 @@ endpoints:
     responses:
       -
         custom: []
-        status: 204
-        content: null
+        status: 200
+        content: '{"message": "Payment term deleted successfully."}'
         headers: []
-        description: 'Payment term deleted successfully'
+        description: 'Payment term deleted'
       -
         custom: []
         status: 401
@@ -573,8 +573,8 @@ endpoints:
     responses:
       -
         custom: []
-        status: 204
-        content: null
+        status: 200
+        content: '{"message": "Payment term permanently deleted."}'
         headers: []
         description: 'Payment term permanently deleted'
       -

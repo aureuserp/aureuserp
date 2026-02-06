@@ -23,7 +23,7 @@ use Webkul\Account\Models\Incoterm;
 class IncotermController extends Controller
 {
     #[Endpoint('List incoterms', 'Retrieve a paginated list of incoterms with filtering and sorting')]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> createdBy', required: false, example: 'createdBy')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator', required: false, example: 'creator')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[code]', 'string', 'Filter by incoterm code (partial match)', required: false, example: 'No-example')]
     #[QueryParam('filter[name]', 'string', 'Filter by incoterm name (partial match)', required: false, example: 'No-example')]
@@ -45,7 +45,7 @@ class IncotermController extends Controller
             ])
             ->allowedSorts(['id', 'code', 'name', 'created_at'])
             ->allowedIncludes([
-                'createdBy',
+                'creator',
             ])
             ->paginate();
 
@@ -72,7 +72,7 @@ class IncotermController extends Controller
 
     #[Endpoint('Show incoterm', 'Retrieve a specific incoterm by its ID')]
     #[UrlParam('id', 'integer', 'The incoterm ID', required: true, example: 1)]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> createdBy', required: false, example: 'createdBy')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator', required: false, example: 'creator')]
     #[ResponseFromApiResource(IncotermResource::class, Incoterm::class)]
     #[Response(status: 404, description: 'Incoterm not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
@@ -80,7 +80,7 @@ class IncotermController extends Controller
     {
         $incoterm = QueryBuilder::for(Incoterm::where('id', $id))
             ->allowedIncludes([
-                'createdBy',
+                'creator',
             ])
             ->firstOrFail();
 

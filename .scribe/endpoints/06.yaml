@@ -1434,17 +1434,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the bank.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      bank:
-        custom: []
-        name: bank
         description: 'The bank ID'
         required: true
         example: 1
@@ -1454,8 +1443,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      bank: 1
+      id: 1
     queryParameters:
       include:
         custom: []
@@ -1524,17 +1512,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the bank.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      bank:
-        custom: []
-        name: bank
         description: 'The bank ID'
         required: true
         example: 1
@@ -1544,8 +1521,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      bank: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -1727,17 +1703,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the bank.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      bank:
-        custom: []
-        name: bank
         description: 'The bank ID'
         required: true
         example: 1
@@ -1747,8 +1712,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      bank: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -1757,10 +1721,10 @@ endpoints:
     responses:
       -
         custom: []
-        status: 204
-        content: null
+        status: 200
+        content: '{"message": "Bank deleted successfully."}'
         headers: []
-        description: 'Bank deleted successfully'
+        description: 'Bank deleted'
       -
         custom: []
         status: 401
@@ -1804,17 +1768,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the bank.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      bank:
-        custom: []
-        name: bank
         description: 'The bank ID'
         required: true
         example: 1
@@ -1824,8 +1777,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      bank: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -1881,17 +1833,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the bank.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      bank:
-        custom: []
-        name: bank
         description: 'The bank ID'
         required: true
         example: 1
@@ -1901,8 +1842,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      bank: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -1911,8 +1851,8 @@ endpoints:
     responses:
       -
         custom: []
-        status: 204
-        content: null
+        status: 200
+        content: '{"message": "Bank permanently deleted."}'
         headers: []
         description: 'Bank permanently deleted'
       -
@@ -2096,17 +2036,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the country.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      country:
-        custom: []
-        name: country
         description: 'The country ID'
         required: true
         example: 1
@@ -2116,8 +2045,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      country: 1
+      id: 1
     queryParameters:
       include:
         custom: []
@@ -2401,17 +2329,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the state.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      state:
-        custom: []
-        name: state
         description: 'The state ID'
         required: true
         example: 1
@@ -2421,8 +2338,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      state: 1
+      id: 1
     queryParameters:
       include:
         custom: []
@@ -2491,17 +2407,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the state.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      state:
-        custom: []
-        name: state
         description: 'The state ID'
         required: true
         example: 1
@@ -2511,8 +2416,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      state: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -2610,17 +2514,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the state.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      state:
-        custom: []
-        name: state
         description: 'The state ID'
         required: true
         example: 1
@@ -2630,8 +2523,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      state: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -2640,10 +2532,10 @@ endpoints:
     responses:
       -
         custom: []
-        status: 204
-        content: null
+        status: 200
+        content: '{"message": "State deleted successfully."}'
         headers: []
-        description: 'State deleted successfully'
+        description: 'State deleted'
       -
         custom: []
         status: 401
@@ -2857,17 +2749,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the uom category.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      uom_category:
-        custom: []
-        name: uom_category
         description: 'The UOM category ID'
         required: true
         example: 1
@@ -2877,8 +2758,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      uom_category: 1
+      id: 1
     queryParameters:
       include:
         custom: []
@@ -2947,17 +2827,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the uom category.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      uom_category:
-        custom: []
-        name: uom_category
         description: 'The UOM category ID'
         required: true
         example: 1
@@ -2967,8 +2836,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      uom_category: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -3042,17 +2910,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the uom category.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      uom_category:
-        custom: []
-        name: uom_category
         description: 'The UOM category ID'
         required: true
         example: 1
@@ -3062,8 +2919,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      uom_category: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -3072,10 +2928,10 @@ endpoints:
     responses:
       -
         custom: []
-        status: 204
-        content: null
+        status: 200
+        content: '{"message": "UOM category deleted successfully."}'
         headers: []
-        description: 'UOM category deleted successfully'
+        description: 'UOM category deleted'
       -
         custom: []
         status: 401
@@ -3652,10 +3508,10 @@ endpoints:
     responses:
       -
         custom: []
-        status: 204
-        content: null
+        status: 200
+        content: '{"message": "UOM deleted successfully."}'
         headers: []
-        description: 'UOM deleted successfully'
+        description: 'UOM deleted'
       -
         custom: []
         status: 401
@@ -3830,8 +3686,8 @@ endpoints:
     responses:
       -
         custom: []
-        status: 204
-        content: null
+        status: 200
+        content: '{"message": "UOM permanently deleted."}'
         headers: []
         description: 'UOM permanently deleted'
       -

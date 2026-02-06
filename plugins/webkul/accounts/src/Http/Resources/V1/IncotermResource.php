@@ -16,14 +16,14 @@ class IncotermResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'          => $this->id,
-            'code'        => $this->code,
-            'name'        => $this->name,
-            'creator_id'  => $this->creator_id,
-            'created_at'  => $this->created_at,
-            'updated_at'  => $this->updated_at,
-            'deleted_at'  => $this->deleted_at,
-            'createdBy'   => new UserResource($this->whenLoaded('createdBy')),
+            'id'         => $this->id,
+            'code'       => $this->code,
+            'name'       => $this->name,
+            'creator_id' => $this->creator_id,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'deleted_at' => $this->deleted_at,
+            'creator'    => new UserResource($this->whenLoaded('creator')),
         ];
     }
 }
