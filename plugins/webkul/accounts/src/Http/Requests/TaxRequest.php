@@ -60,11 +60,11 @@ class TaxRequest extends FormRequest
             ],
             'type_tax_use' => [
                 'description' => 'Tax type usage',
-                'example'     => TypeTaxUse::class,
+                'example'     => TypeTaxUse::SALE->value,
             ],
             'amount_type' => [
                 'description' => 'Tax computation type',
-                'example'     => AmountType::class,
+                'example'     => AmountType::PERCENT->value,
             ],
             'amount' => [
                 'description' => 'Tax amount/percentage',
@@ -84,11 +84,11 @@ class TaxRequest extends FormRequest
             ],
             'tax_scope' => [
                 'description' => 'Tax scope',
-                'example'     => TaxScope::class,
+                'example'     => TaxScope::SERVICE->value,
             ],
             'price_include_override' => [
                 'description' => 'Price include override',
-                'example'     => TaxIncludeOverride::class,
+                'example'     => TaxIncludeOverride::DEFAULT->value,
             ],
             'cash_basis_transition_account_id' => [
                 'description' => 'Cash basis transition account ID',

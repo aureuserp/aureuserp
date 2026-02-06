@@ -2,7 +2,6 @@
 
 namespace Webkul\Account\Http\Controllers\API\V1;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -14,10 +13,10 @@ use Knuckles\Scribe\Attributes\Subgroup;
 use Knuckles\Scribe\Attributes\UrlParam;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
+use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Http\Requests\AccountRequest;
 use Webkul\Account\Http\Resources\V1\AccountResource;
 use Webkul\Account\Models\Account;
-use Webkul\Account\Enums\AccountType;
 
 #[Group('Account API Management')]
 #[Subgroup('Chart of Accounts', 'Manage chart of accounts')]
@@ -85,7 +84,7 @@ class AccountController extends Controller
     }
 
     #[Endpoint('Show account', 'Retrieve a specific account by its ID')]
-    #[UrlParam('account', 'integer', 'The account ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The account ID', required: true, example: 1)]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> currency, createdBy, taxes, tags, journals, moveLines, companies', required: false, example: 'currency,taxes')]
     #[ResponseFromApiResource(AccountResource::class, Account::class)]
     #[Response(status: 404, description: 'Account not found', content: '{"message": "Resource not found."}')]
@@ -110,7 +109,7 @@ class AccountController extends Controller
     }
 
     #[Endpoint('Update account', 'Update an existing account')]
-    #[UrlParam('account', 'integer', 'The account ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The account ID', required: true, example: 1)]
     #[ResponseFromApiResource(AccountResource::class, Account::class, additional: ['message' => 'Account updated successfully.'])]
     #[Response(status: 404, description: 'Account not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
@@ -128,8 +127,8 @@ class AccountController extends Controller
     }
 
     #[Endpoint('Delete account', 'Delete an account')]
-    #[UrlParam('account', 'integer', 'The account ID', required: true, example: 1)]
-    #[Response(status: 204, description: 'Account deleted successfully')]
+    #[UrlParam('id', 'integer', 'The account ID', required: true, example: 1)]
+    #[Response(status: 200, description: 'Account deleted', content: '{"message": "Account deleted successfully."}')]
     #[Response(status: 404, description: 'Account not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $id)
@@ -140,6 +139,8 @@ class AccountController extends Controller
 
         $account->delete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Account deleted successfully.',
+        ]);
     }
 }

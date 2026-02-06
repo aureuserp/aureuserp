@@ -2,7 +2,6 @@
 
 namespace Webkul\Account\Http\Controllers\API\V1;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -14,10 +13,10 @@ use Knuckles\Scribe\Attributes\Subgroup;
 use Knuckles\Scribe\Attributes\UrlParam;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
+use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Http\Requests\JournalRequest;
 use Webkul\Account\Http\Resources\V1\JournalResource;
 use Webkul\Account\Models\Journal;
-use Webkul\Account\Enums\JournalType;
 
 #[Group('Account API Management')]
 #[Subgroup('Journals', 'Manage accounting journals')]
@@ -84,7 +83,7 @@ class JournalController extends Controller
     }
 
     #[Endpoint('Show journal', 'Retrieve a specific journal by its ID')]
-    #[UrlParam('journal', 'integer', 'The journal ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The journal ID', required: true, example: 1)]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, currency, defaultAccount, suspenseAccount, profitAccount, lossAccount, bankAccount, creator', required: false, example: 'company,currency')]
     #[ResponseFromApiResource(JournalResource::class, Journal::class)]
     #[Response(status: 404, description: 'Journal not found', content: '{"message": "Resource not found."}')]
@@ -110,7 +109,7 @@ class JournalController extends Controller
     }
 
     #[Endpoint('Update journal', 'Update an existing journal')]
-    #[UrlParam('journal', 'integer', 'The journal ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The journal ID', required: true, example: 1)]
     #[ResponseFromApiResource(JournalResource::class, Journal::class, additional: ['message' => 'Journal updated successfully.'])]
     #[Response(status: 404, description: 'Journal not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
@@ -128,8 +127,8 @@ class JournalController extends Controller
     }
 
     #[Endpoint('Delete journal', 'Delete a journal')]
-    #[UrlParam('journal', 'integer', 'The journal ID', required: true, example: 1)]
-    #[Response(status: 204, description: 'Journal deleted successfully')]
+    #[UrlParam('id', 'integer', 'The journal ID', required: true, example: 1)]
+    #[Response(status: 200, description: 'Journal deleted', content: '{"message": "Journal deleted successfully."}')]
     #[Response(status: 404, description: 'Journal not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $id)
@@ -140,6 +139,8 @@ class JournalController extends Controller
 
         $journal->delete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Journal deleted successfully.',
+        ]);
     }
 }

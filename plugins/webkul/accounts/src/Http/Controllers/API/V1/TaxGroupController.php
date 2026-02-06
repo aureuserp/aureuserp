@@ -2,7 +2,6 @@
 
 namespace Webkul\Account\Http\Controllers\API\V1;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -74,7 +73,7 @@ class TaxGroupController extends Controller
     }
 
     #[Endpoint('Show tax group', 'Retrieve a specific tax group by its ID')]
-    #[UrlParam('tax_group', 'integer', 'The tax group ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The tax group ID', required: true, example: 1)]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, country, createdBy', required: false, example: 'company,country')]
     #[ResponseFromApiResource(TaxGroupResource::class, TaxGroup::class)]
     #[Response(status: 404, description: 'Tax group not found', content: '{"message": "Resource not found."}')]
@@ -95,7 +94,7 @@ class TaxGroupController extends Controller
     }
 
     #[Endpoint('Update tax group', 'Update an existing tax group')]
-    #[UrlParam('tax_group', 'integer', 'The tax group ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The tax group ID', required: true, example: 1)]
     #[ResponseFromApiResource(TaxGroupResource::class, TaxGroup::class, additional: ['message' => 'Tax group updated successfully.'])]
     #[Response(status: 404, description: 'Tax group not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
@@ -113,8 +112,8 @@ class TaxGroupController extends Controller
     }
 
     #[Endpoint('Delete tax group', 'Delete a tax group')]
-    #[UrlParam('tax_group', 'integer', 'The tax group ID', required: true, example: 1)]
-    #[Response(status: 204, description: 'Tax group deleted successfully')]
+    #[UrlParam('id', 'integer', 'The tax group ID', required: true, example: 1)]
+    #[Response(status: 200, description: 'Tax group deleted', content: '{"message": "Tax group deleted successfully."}')]
     #[Response(status: 404, description: 'Tax group not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $id)
@@ -125,6 +124,8 @@ class TaxGroupController extends Controller
 
         $taxGroup->delete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Tax group deleted successfully.',
+        ]);
     }
 }

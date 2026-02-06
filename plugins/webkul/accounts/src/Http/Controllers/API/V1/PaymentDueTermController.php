@@ -2,7 +2,6 @@
 
 namespace Webkul\Account\Http\Controllers\API\V1;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -14,12 +13,12 @@ use Knuckles\Scribe\Attributes\Subgroup;
 use Knuckles\Scribe\Attributes\UrlParam;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
+use Webkul\Account\Enums\DelayType;
+use Webkul\Account\Enums\DueTermValue;
 use Webkul\Account\Http\Requests\PaymentDueTermRequest;
 use Webkul\Account\Http\Resources\V1\PaymentDueTermResource;
 use Webkul\Account\Models\PaymentDueTerm;
 use Webkul\Account\Models\PaymentTerm;
-use Webkul\Account\Enums\DelayType;
-use Webkul\Account\Enums\DueTermValue;
 
 #[Group('Account API Management')]
 #[Subgroup('Payment Due Terms', 'Manage payment term due terms')]
@@ -127,7 +126,7 @@ class PaymentDueTermController extends Controller
     #[Endpoint('Delete payment due term', 'Delete a payment due term')]
     #[UrlParam('payment_term_id', 'integer', 'The payment term ID', required: true, example: 1)]
     #[UrlParam('id', 'integer', 'The payment due term ID', required: true, example: 1)]
-    #[Response(status: 204, description: 'Payment due term deleted successfully')]
+    #[Response(status: 200, description: 'Payment due term deleted', content: '{"message": "Payment due term deleted successfully."}')]
     #[Response(status: 404, description: 'Payment due term not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $paymentTerm, string $paymentDueTerm)
@@ -140,6 +139,8 @@ class PaymentDueTermController extends Controller
 
         $paymentDueTermModel->delete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Payment due term deleted successfully.',
+        ]);
     }
 }

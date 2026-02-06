@@ -51,7 +51,7 @@ class AccountRequest extends FormRequest
             ],
             'account_type' => [
                 'description' => 'Account type',
-                'example'     => AccountType::class,
+                'example'     => AccountType::ASSET_RECEIVABLE->value,
             ],
             'currency_id' => [
                 'description' => 'Currency ID',

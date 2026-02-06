@@ -2,7 +2,6 @@
 
 namespace Webkul\Account\Http\Controllers\API\V1;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -72,7 +71,7 @@ class IncotermController extends Controller
     }
 
     #[Endpoint('Show incoterm', 'Retrieve a specific incoterm by its ID')]
-    #[UrlParam('incoterm', 'integer', 'The incoterm ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The incoterm ID', required: true, example: 1)]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> createdBy', required: false, example: 'createdBy')]
     #[ResponseFromApiResource(IncotermResource::class, Incoterm::class)]
     #[Response(status: 404, description: 'Incoterm not found', content: '{"message": "Resource not found."}')]
@@ -91,7 +90,7 @@ class IncotermController extends Controller
     }
 
     #[Endpoint('Update incoterm', 'Update an existing incoterm')]
-    #[UrlParam('incoterm', 'integer', 'The incoterm ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The incoterm ID', required: true, example: 1)]
     #[ResponseFromApiResource(IncotermResource::class, Incoterm::class, additional: ['message' => 'Incoterm updated successfully.'])]
     #[Response(status: 404, description: 'Incoterm not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
@@ -109,8 +108,8 @@ class IncotermController extends Controller
     }
 
     #[Endpoint('Delete incoterm', 'Soft delete an incoterm')]
-    #[UrlParam('incoterm', 'integer', 'The incoterm ID', required: true, example: 1)]
-    #[Response(status: 204, description: 'Incoterm deleted successfully')]
+    #[UrlParam('id', 'integer', 'The incoterm ID', required: true, example: 1)]
+    #[Response(status: 200, description: 'Incoterm deleted', content: '{"message": "Incoterm deleted successfully."}')]
     #[Response(status: 404, description: 'Incoterm not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $id)
@@ -121,11 +120,13 @@ class IncotermController extends Controller
 
         $incoterm->delete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Incoterm deleted successfully.',
+        ]);
     }
 
     #[Endpoint('Restore incoterm', 'Restore a soft-deleted incoterm')]
-    #[UrlParam('incoterm', 'integer', 'The incoterm ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The incoterm ID', required: true, example: 1)]
     #[ResponseFromApiResource(IncotermResource::class, Incoterm::class, additional: ['message' => 'Incoterm restored successfully.'])]
     #[Response(status: 404, description: 'Incoterm not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
@@ -142,8 +143,8 @@ class IncotermController extends Controller
     }
 
     #[Endpoint('Force delete incoterm', 'Permanently delete an incoterm')]
-    #[UrlParam('incoterm', 'integer', 'The incoterm ID', required: true, example: 1)]
-    #[Response(status: 204, description: 'Incoterm permanently deleted')]
+    #[UrlParam('id', 'integer', 'The incoterm ID', required: true, example: 1)]
+    #[Response(status: 200, description: 'Incoterm permanently deleted', content: '{"message": "Incoterm permanently deleted."}')]
     #[Response(status: 404, description: 'Incoterm not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function forceDestroy(string $id)
@@ -154,6 +155,8 @@ class IncotermController extends Controller
 
         $incoterm->forceDelete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Incoterm permanently deleted.',
+        ]);
     }
 }

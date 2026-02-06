@@ -2,7 +2,6 @@
 
 namespace Webkul\Account\Http\Controllers\API\V1;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -79,7 +78,7 @@ class FiscalPositionController extends Controller
     }
 
     #[Endpoint('Show fiscal position', 'Retrieve a specific fiscal position by its ID')]
-    #[UrlParam('fiscal_position', 'integer', 'The fiscal position ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The fiscal position ID', required: true, example: 1)]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, country, countryGroup, createdBy, taxes, accounts', required: false, example: 'company,taxes')]
     #[ResponseFromApiResource(FiscalPositionResource::class, FiscalPosition::class)]
     #[Response(status: 404, description: 'Fiscal position not found', content: '{"message": "Resource not found."}')]
@@ -103,7 +102,7 @@ class FiscalPositionController extends Controller
     }
 
     #[Endpoint('Update fiscal position', 'Update an existing fiscal position')]
-    #[UrlParam('fiscal_position', 'integer', 'The fiscal position ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The fiscal position ID', required: true, example: 1)]
     #[ResponseFromApiResource(FiscalPositionResource::class, FiscalPosition::class, additional: ['message' => 'Fiscal position updated successfully.'])]
     #[Response(status: 404, description: 'Fiscal position not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
@@ -121,8 +120,8 @@ class FiscalPositionController extends Controller
     }
 
     #[Endpoint('Delete fiscal position', 'Delete a fiscal position')]
-    #[UrlParam('fiscal_position', 'integer', 'The fiscal position ID', required: true, example: 1)]
-    #[Response(status: 204, description: 'Fiscal position deleted successfully')]
+    #[UrlParam('id', 'integer', 'The fiscal position ID', required: true, example: 1)]
+    #[Response(status: 200, description: 'Fiscal position deleted', content: '{"message": "Fiscal position deleted successfully."}')]
     #[Response(status: 404, description: 'Fiscal position not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $id)
@@ -133,6 +132,8 @@ class FiscalPositionController extends Controller
 
         $fiscalPosition->delete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Fiscal position deleted successfully.',
+        ]);
     }
 }

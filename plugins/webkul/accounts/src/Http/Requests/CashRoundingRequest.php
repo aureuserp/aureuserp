@@ -46,11 +46,11 @@ class CashRoundingRequest extends FormRequest
             ],
             'strategy' => [
                 'description' => 'Rounding strategy',
-                'example'     => RoundingStrategy::class,
+                'example'     => RoundingStrategy::BIGGEST_TAX->value,
             ],
             'rounding_method' => [
                 'description' => 'Rounding method',
-                'example'     => RoundingMethod::class,
+                'example'     => RoundingMethod::UP->value,
             ],
             'rounding' => [
                 'description' => 'Rounding precision',

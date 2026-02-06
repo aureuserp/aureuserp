@@ -2,7 +2,6 @@
 
 namespace Webkul\Account\Http\Controllers\API\V1;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -95,7 +94,7 @@ class TaxController extends Controller
     }
 
     #[Endpoint('Show tax', 'Retrieve a specific tax by its ID')]
-    #[UrlParam('tax', 'integer', 'The tax ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The tax ID', required: true, example: 1)]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, taxGroup, cashBasisTransitionAccount, country, createdBy, childrenTaxes, invoiceRepartitionLines, refundRepartitionLines', required: false, example: 'company,taxGroup')]
     #[ResponseFromApiResource(TaxResource::class, Tax::class)]
     #[Response(status: 404, description: 'Tax not found', content: '{"message": "Resource not found."}')]
@@ -121,7 +120,7 @@ class TaxController extends Controller
     }
 
     #[Endpoint('Update tax', 'Update an existing tax')]
-    #[UrlParam('tax', 'integer', 'The tax ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The tax ID', required: true, example: 1)]
     #[ResponseFromApiResource(TaxResource::class, Tax::class, additional: ['message' => 'Tax updated successfully.'])]
     #[Response(status: 404, description: 'Tax not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
@@ -139,8 +138,8 @@ class TaxController extends Controller
     }
 
     #[Endpoint('Delete tax', 'Delete a tax')]
-    #[UrlParam('tax', 'integer', 'The tax ID', required: true, example: 1)]
-    #[Response(status: 204, description: 'Tax deleted successfully')]
+    #[UrlParam('id', 'integer', 'The tax ID', required: true, example: 1)]
+    #[Response(status: 200, description: 'Tax deleted', content: '{"message": "Tax deleted successfully."}')]
     #[Response(status: 404, description: 'Tax not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $id)
@@ -151,6 +150,8 @@ class TaxController extends Controller
 
         $tax->delete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Tax deleted successfully.',
+        ]);
     }
 }

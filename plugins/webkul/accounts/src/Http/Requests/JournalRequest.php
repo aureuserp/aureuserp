@@ -57,7 +57,7 @@ class JournalRequest extends FormRequest
             ],
             'type' => [
                 'description' => 'Journal type',
-                'example'     => JournalType::class,
+                'example'     => JournalType::BANK->value,
             ],
             'company_id' => [
                 'description' => 'Company ID',

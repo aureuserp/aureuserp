@@ -2,7 +2,6 @@
 
 namespace Webkul\Account\Http\Controllers\API\V1;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -76,7 +75,7 @@ class CashRoundingController extends Controller
     }
 
     #[Endpoint('Show cash rounding', 'Retrieve a specific cash rounding by its ID')]
-    #[UrlParam('cash_rounding', 'integer', 'The cash rounding ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The cash rounding ID', required: true, example: 1)]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> createdBy, profitAccount, lossAccount', required: false, example: 'profitAccount,lossAccount')]
     #[ResponseFromApiResource(CashRoundingResource::class, CashRounding::class)]
     #[Response(status: 404, description: 'Cash rounding not found', content: '{"message": "Resource not found."}')]
@@ -97,7 +96,7 @@ class CashRoundingController extends Controller
     }
 
     #[Endpoint('Update cash rounding', 'Update an existing cash rounding')]
-    #[UrlParam('cash_rounding', 'integer', 'The cash rounding ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The cash rounding ID', required: true, example: 1)]
     #[ResponseFromApiResource(CashRoundingResource::class, CashRounding::class, additional: ['message' => 'Cash rounding updated successfully.'])]
     #[Response(status: 404, description: 'Cash rounding not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
@@ -115,8 +114,8 @@ class CashRoundingController extends Controller
     }
 
     #[Endpoint('Delete cash rounding', 'Delete a cash rounding')]
-    #[UrlParam('cash_rounding', 'integer', 'The cash rounding ID', required: true, example: 1)]
-    #[Response(status: 204, description: 'Cash rounding deleted successfully')]
+    #[UrlParam('id', 'integer', 'The cash rounding ID', required: true, example: 1)]
+    #[Response(status: 200, description: 'Cash rounding deleted', content: '{"message": "Cash rounding deleted successfully."}')]
     #[Response(status: 404, description: 'Cash rounding not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $id)
@@ -127,6 +126,8 @@ class CashRoundingController extends Controller
 
         $cashRounding->delete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Cash rounding deleted successfully.',
+        ]);
     }
 }
