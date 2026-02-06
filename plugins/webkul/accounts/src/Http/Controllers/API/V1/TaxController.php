@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -91,31 +92,35 @@ class TaxController extends Controller
         $refundRepartitionLines = $data['refund_repartition_lines'] ?? [];
         unset($data['invoice_repartition_lines'], $data['refund_repartition_lines']);
 
-        $tax = Tax::create($data);
+        $tax = DB::transaction(function () use ($data, $invoiceRepartitionLines, $refundRepartitionLines) {
+            $tax = Tax::create($data);
 
-        foreach ($invoiceRepartitionLines as $index => $line) {
-            $tax->invoiceRepartitionLines()->create([
-                'repartition_type'    => $line['repartition_type'],
-                'factor_percent'      => $line['factor_percent'] ?? null,
-                'account_id'          => $line['account_id'] ?? null,
-                'use_in_tax_closing'  => $line['use_in_tax_closing'] ?? false,
-                'document_type'       => DocumentType::INVOICE,
-                'sort'                => $index,
-            ]);
-        }
+            foreach ($invoiceRepartitionLines as $index => $line) {
+                $tax->invoiceRepartitionLines()->create([
+                    'repartition_type'    => $line['repartition_type'],
+                    'factor_percent'      => $line['factor_percent'] ?? null,
+                    'account_id'          => $line['account_id'] ?? null,
+                    'use_in_tax_closing'  => $line['use_in_tax_closing'] ?? false,
+                    'document_type'       => DocumentType::INVOICE,
+                    'sort'                => $index,
+                ]);
+            }
 
-        foreach ($refundRepartitionLines as $index => $line) {
-            $tax->refundRepartitionLines()->create([
-                'repartition_type'    => $line['repartition_type'],
-                'factor_percent'      => $line['factor_percent'] ?? null,
-                'account_id'          => $line['account_id'] ?? null,
-                'use_in_tax_closing'  => $line['use_in_tax_closing'] ?? false,
-                'document_type'       => DocumentType::REFUND,
-                'sort'                => $index,
-            ]);
-        }
+            foreach ($refundRepartitionLines as $index => $line) {
+                $tax->refundRepartitionLines()->create([
+                    'repartition_type'    => $line['repartition_type'],
+                    'factor_percent'      => $line['factor_percent'] ?? null,
+                    'account_id'          => $line['account_id'] ?? null,
+                    'use_in_tax_closing'  => $line['use_in_tax_closing'] ?? false,
+                    'document_type'       => DocumentType::REFUND,
+                    'sort'                => $index,
+                ]);
+            }
 
-        TaxPartition::validateRepartitionLines($tax->id);
+            TaxPartition::validateRepartitionLines($tax->id);
+
+            return $tax;
+        });
 
         $tax->load(['invoiceRepartitionLines', 'refundRepartitionLines']);
 
@@ -169,23 +174,25 @@ class TaxController extends Controller
         $refundRepartitionLines = $data['refund_repartition_lines'] ?? [];
         unset($data['invoice_repartition_lines'], $data['refund_repartition_lines']);
 
-        $tax->update($data);
+        DB::transaction(function () use ($tax, $data, $invoiceRepartitionLines, $refundRepartitionLines) {
+            $tax->update($data);
 
-        $this->syncRepartitionLines(
-            $tax->invoiceRepartitionLines()->orderBy('sort')->get(),
-            $invoiceRepartitionLines,
-            $tax,
-            DocumentType::INVOICE
-        );
+            $this->syncRepartitionLines(
+                $tax->invoiceRepartitionLines()->orderBy('sort')->get(),
+                $invoiceRepartitionLines,
+                $tax,
+                DocumentType::INVOICE
+            );
 
-        $this->syncRepartitionLines(
-            $tax->refundRepartitionLines()->orderBy('sort')->get(),
-            $refundRepartitionLines,
-            $tax,
-            DocumentType::REFUND
-        );
+            $this->syncRepartitionLines(
+                $tax->refundRepartitionLines()->orderBy('sort')->get(),
+                $refundRepartitionLines,
+                $tax,
+                DocumentType::REFUND
+            );
 
-        TaxPartition::validateRepartitionLines($tax->id);
+            TaxPartition::validateRepartitionLines($tax->id);
+        });
 
         $tax->load(['invoiceRepartitionLines', 'refundRepartitionLines']);
 
