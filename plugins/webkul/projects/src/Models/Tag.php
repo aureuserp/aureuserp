@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Project\Database\Factories\TagFactory;
 use Webkul\Security\Models\User;
 
@@ -13,18 +14,8 @@ class Tag extends Model
 {
     use HasFactory, SoftDeletes;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'projects_tags';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'color',
@@ -41,7 +32,7 @@ class Tag extends Model
         parent::boot();
 
         static::creating(function ($tag) {
-            $tag->creator_id = filament()->auth()->id();
+            $tag->creator_id ??= Auth::id();
         });
     }
 

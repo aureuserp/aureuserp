@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Chatter\Traits\HasChatter;
@@ -32,11 +33,6 @@ class Task extends Model implements Sortable
         return __('projects::models/task.title');
     }
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'title',
         'description',
@@ -185,9 +181,11 @@ class Task extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($task) {
-            $task->creator_id = filament()->auth()->id();
+            $authUser = Auth::user();
 
-            $task->company_id = filament()->auth()->user()->default_company_id;
+            $task->creator_id ??= $authUser->id;
+
+            $task->company_id ??= $authUser->default_company_id;
         });
 
         static::updated(function ($task) {
