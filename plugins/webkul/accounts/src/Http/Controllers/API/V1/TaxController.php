@@ -27,7 +27,7 @@ use Webkul\Account\Models\Tax;
 class TaxController extends Controller
 {
     #[Endpoint('List taxes', 'Retrieve a paginated list of taxes with filtering and sorting')]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, taxGroup, cashBasisTransitionAccount, country, createdBy, childrenTaxes, invoiceRepartitionLines, refundRepartitionLines', required: false, example: 'company')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, taxGroup, cashBasisTransitionAccount, country, creator, childrenTaxes, invoiceRepartitionLines, refundRepartitionLines', required: false, example: 'company')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[name]', 'string', 'Filter by tax name (partial match)', required: false, example: 'No-example')]
     #[QueryParam('filter[company_id]', 'int', 'Filter by company ID', required: false, example: 'No-example')]
@@ -65,7 +65,7 @@ class TaxController extends Controller
                 'taxGroup',
                 'cashBasisTransitionAccount',
                 'country',
-                'createdBy',
+                'creator',
                 'childrenTaxes',
                 'invoiceRepartitionLines',
                 'refundRepartitionLines',
@@ -95,7 +95,7 @@ class TaxController extends Controller
 
     #[Endpoint('Show tax', 'Retrieve a specific tax by its ID')]
     #[UrlParam('id', 'integer', 'The tax ID', required: true, example: 1)]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, taxGroup, cashBasisTransitionAccount, country, createdBy, childrenTaxes, invoiceRepartitionLines, refundRepartitionLines', required: false, example: 'company,taxGroup')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, taxGroup, cashBasisTransitionAccount, country, creator, childrenTaxes, invoiceRepartitionLines, refundRepartitionLines', required: false, example: 'company,taxGroup')]
     #[ResponseFromApiResource(TaxResource::class, Tax::class)]
     #[Response(status: 404, description: 'Tax not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
@@ -107,7 +107,7 @@ class TaxController extends Controller
                 'taxGroup',
                 'cashBasisTransitionAccount',
                 'country',
-                'createdBy',
+                'creator',
                 'childrenTaxes',
                 'invoiceRepartitionLines',
                 'refundRepartitionLines',
