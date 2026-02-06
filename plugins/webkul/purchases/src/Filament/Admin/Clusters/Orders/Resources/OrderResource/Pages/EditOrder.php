@@ -55,7 +55,7 @@ class EditOrder extends EditRecord
         return [
             ChatterAction::make()
                 ->record(Order::find($this->getRecord()->id))
-                ->setResource(self::$resource),
+                ->resource(self::$resource),
             OrderActions\SendEmailAction::make(),
             OrderActions\SendPOEmailAction::make(),
             OrderActions\PrintRFQAction::make(),

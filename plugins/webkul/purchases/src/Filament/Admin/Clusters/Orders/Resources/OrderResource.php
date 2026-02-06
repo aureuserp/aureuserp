@@ -1129,7 +1129,8 @@ class OrderResource extends Resource
 
                         return ProductResource::getUrl('edit', ['record' => $productId]);
                     }, shouldOpenInNewTab: true)
-                    ->hidden(fn (array $arguments, Get $get): bool => empty($get("products.{$arguments['item']}.product_id"))
+                    ->hidden(
+                        fn (array $arguments, Get $get): bool => empty($get("products.{$arguments['item']}.product_id"))
                     ),
             ]);
     }

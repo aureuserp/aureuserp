@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
@@ -22,11 +23,6 @@ class Requisition extends Model
 {
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SoftDeletes;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'purchases_requisitions';
 
     public function getModelTitle(): string
@@ -34,11 +30,6 @@ class Requisition extends Model
         return __('purchases::models/requisition.title');
     }
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'type',
@@ -54,11 +45,6 @@ class Requisition extends Model
         'creator_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'state' => RequisitionState::class,
         'type'  => RequisitionType::class,
@@ -106,25 +92,6 @@ class Requisition extends Model
         return $this->hasMany(RequisitionLine::class);
     }
 
-    /**
-     * Bootstrap any application services.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function ($order) {
-            $order->updateName();
-        });
-
-        static::created(function ($order) {
-            $order->update(['name' => $order->name]);
-        });
-    }
-
-    /**
-     * Update the full name without triggering additional events
-     */
     public function updateName()
     {
         if ($this->type == RequisitionType::BLANKET_ORDER) {
@@ -137,5 +104,24 @@ class Requisition extends Model
     protected static function newFactory(): RequisitionFactory
     {
         return RequisitionFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($requisition) {
+            $requisition->creator_id ??= Auth::id();
+
+            $requisition->state ??= RequisitionState::DRAFT;
+        });
+
+        static::saving(function ($requisition) {
+            $requisition->updateName();
+        });
+
+        static::created(function ($requisition) {
+            $requisition->update(['name' => $requisition->name]);
+        });
     }
 }

@@ -5,6 +5,7 @@ namespace Webkul\Purchase\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Purchase\Database\Factories\RequisitionLineFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -14,18 +15,8 @@ class RequisitionLine extends Model
 {
     use HasFactory;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'purchases_requisition_lines';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'qty',
         'price_unit',
@@ -64,5 +55,14 @@ class RequisitionLine extends Model
     protected static function newFactory(): RequisitionLineFactory
     {
         return RequisitionLineFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($requisitionLine) {
+            $requisitionLine->creator_id ??= Auth::id();
+        });
     }
 }
