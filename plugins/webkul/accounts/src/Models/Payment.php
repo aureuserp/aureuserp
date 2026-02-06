@@ -45,7 +45,7 @@ class Payment extends Model
         'partner_id',
         'outstanding_account_id',
         'destination_account_id',
-        'created_by',
+        'creator_id',
         'name',
         'state',
         'payment_type',
@@ -150,7 +150,7 @@ class Payment extends Model
 
     public function createdBy()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'creator_id');
     }
 
     public function paymentTransaction()

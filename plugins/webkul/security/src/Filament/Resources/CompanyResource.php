@@ -46,13 +46,14 @@ use Webkul\Security\Filament\Resources\CompanyResource\Pages\EditCompany;
 use Webkul\Security\Filament\Resources\CompanyResource\Pages\ListCompanies;
 use Webkul\Security\Filament\Resources\CompanyResource\Pages\ViewCompany;
 use Webkul\Security\Filament\Resources\CompanyResource\RelationManagers\BranchesRelationManager;
-use Webkul\Security\Models\Company;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
+use Webkul\Support\Models\Company;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Currency;
 
 class CompanyResource extends Resource
 {
-    use HasCustomFields;
+    use HasCustomFields, HasResourcePermissionQuery;
 
     protected static ?string $model = Company::class;
 
@@ -136,7 +137,7 @@ class CompanyResource extends Resource
                                                 Select::make('country_id')
                                                     ->label(__('security::filament/resources/company.form.sections.address-information.fields.country'))
                                                     ->relationship(name: 'country', titleAttribute: 'name')
-                                                    ->afterStateUpdated(fn (Set $set) => $set('state_id', null))
+                                                    ->afterStateUpdated(fn(Set $set) => $set('state_id', null))
                                                     ->searchable()
                                                     ->preload()
                                                     ->live(),
@@ -145,7 +146,7 @@ class CompanyResource extends Resource
                                                     ->relationship(
                                                         name: 'state',
                                                         titleAttribute: 'name',
-                                                        modifyQueryUsing: fn (Get $get, Builder $query) => $query->where('country_id', $get('country_id')),
+                                                        modifyQueryUsing: fn(Get $get, Builder $query) => $query->where('country_id', $get('country_id')),
                                                     )
                                                     ->searchable()
                                                     ->preload()
@@ -180,7 +181,7 @@ class CompanyResource extends Resource
                                             ->relationship(
                                                 'currency',
                                                 'full_name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                                modifyQueryUsing: fn(Builder $query) => $query->where('active', 1),
                                             )
                                             ->label(__('security::filament/resources/company.form.sections.additional-information.fields.default-currency'))
                                             ->searchable()
@@ -224,7 +225,7 @@ class CompanyResource extends Resource
                                                     ])->columns(2),
                                             ])
                                             ->createOptionAction(
-                                                fn (Action $action) => $action
+                                                fn(Action $action) => $action
                                                     ->modalHeading(__('security::filament/resources/company.form.sections.additional-information.fields.currency-create'))
                                                     ->modalSubmitActionLabel(__('security::filament/resources/company.form.sections.additional-information.fields.currency-create'))
                                                     ->modalWidth('xl')
@@ -319,6 +320,11 @@ class CompanyResource extends Resource
                     ->sortable()
                     ->label(__('security::filament/resources/company.table.columns.status'))
                     ->boolean(),
+                TextColumn::make('createdBy.name')
+                    ->label(__('security::filament/resources/company.table.columns.created-by'))
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label(__('security::filament/resources/company.table.columns.created-at'))
                     ->dateTime()
@@ -353,6 +359,9 @@ class CompanyResource extends Resource
                 Tables\Grouping\Group::make('currency_id')
                     ->label(__('security::filament/resources/company.table.groups.currency'))
                     ->collapsible(),
+                Tables\Grouping\Group::make('createdBy.name')
+                    ->label(__('security::filament/resources/company.table.groups.created-by'))
+                    ->collapsible(),
                 Tables\Grouping\Group::make('created_at')
                     ->label(__('security::filament/resources/company.table.groups.created-at'))
                     ->collapsible(),
@@ -382,7 +391,7 @@ class CompanyResource extends Resource
                                 ->body(__('security::filament/resources/company.table.actions.edit.notification.body')),
                         ),
                     DeleteAction::make()
-                        ->hidden(fn ($record) => User::where('default_company_id', $record->id)->exists())
+                        ->hidden(fn($record) => User::where('default_company_id', $record->id)->exists())
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -428,7 +437,7 @@ class CompanyResource extends Resource
                     ->whereNull('parent_id');
             })
             ->checkIfRecordIsSelectableUsing(
-                fn (Model $record): bool => ! User::where('default_company_id', $record->id)->exists()
+                fn(Model $record): bool => ! User::where('default_company_id', $record->id)->exists()
             )
             ->reorderable('sort');
     }

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Models\Tax;
@@ -26,18 +27,8 @@ class OrderLine extends Model implements Sortable
 {
     use HasFactory, SortableTrait;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'purchases_order_lines';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'state',
@@ -73,11 +64,6 @@ class OrderLine extends Model implements Sortable
         'order_point_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'qty_received_method' => QtyReceivedMethod::class,
         'planned_at'          => 'datetime',
@@ -163,5 +149,14 @@ class OrderLine extends Model implements Sortable
     protected static function newFactory(): OrderLineFactory
     {
         return OrderLineFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($orderLine) {
+            $orderLine->creator_id ??= Auth::id();
+        });
     }
 }

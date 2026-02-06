@@ -4,6 +4,7 @@ namespace Webkul\Support\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Security\Models\User;
@@ -17,7 +18,7 @@ class UtmStage extends Model implements Sortable
     protected $fillable = [
         'sort',
         'name',
-        'created_by',
+        'creator_id',
     ];
 
     public $sortable = [
@@ -27,6 +28,15 @@ class UtmStage extends Model implements Sortable
 
     public function createdBy()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($utmStage) {
+            $utmStage->creator_id ??= Auth::id();
+        });
     }
 }

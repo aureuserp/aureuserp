@@ -6,6 +6,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Livewire\Livewire;
 use Webkul\Account\Filament\Resources\InvoiceResource;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
@@ -34,14 +35,20 @@ class ManageInvoices extends ManageRelatedRecords
     public function table(Table $table): Table
     {
         return InvoiceResource::table($table)
+            ->query($this->getTableQuery())
             ->recordActions([
                 ViewAction::make()
-                    ->url(fn ($record) => InvoiceResource::getUrl('view', ['record' => $record]))
+                    ->url(fn($record) => InvoiceResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(false),
 
                 EditAction::make()
-                    ->url(fn ($record) => InvoiceResource::getUrl('edit', ['record' => $record]))
+                    ->url(fn($record) => InvoiceResource::getUrl('edit', ['record' => $record]))
                     ->openUrlInNewTab(false),
             ]);
+    }
+
+    protected function getTableQuery(): Builder
+    {
+        return InvoiceResource::getEloquentQuery();
     }
 }

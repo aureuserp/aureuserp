@@ -130,17 +130,16 @@ class Candidate extends Model
         return $employee;
     }
 
-    /**
-     * Bootstrap the model and its traits.
-     */
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($candidate) {
-            $candidate->creator_id ??= filament()->auth()->id();
+            $authUser = Auth::user();
 
-            $candidate->company_id ??= filament()->auth()->user()->default_company_id;
+            $candidate->creator_id ??= $authUser->id;
+
+            $candidate->company_id ??= $authUser->default_company_id;
         });
 
         static::saved(function (self $candidate) {
@@ -152,9 +151,6 @@ class Candidate extends Model
         });
     }
 
-    /**
-     * Handle the creation of a partner.
-     */
     private function handlePartnerCreation(self $candidate)
     {
         $partner = $candidate->partner()->create([
@@ -170,9 +166,6 @@ class Candidate extends Model
         $candidate->save();
     }
 
-    /**
-     * Handle the updation of a partner.
-     */
     private function handlePartnerUpdation(self $candidate)
     {
         $partner = Partner::updateOrCreate(

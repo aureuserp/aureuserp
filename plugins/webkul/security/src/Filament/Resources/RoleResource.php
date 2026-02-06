@@ -81,7 +81,7 @@ class RoleResource extends RolesRoleResource
                                     ->label(__('filament-shield::filament-shield.field.name'))
                                     ->unique(
                                         ignoreRecord: true,
-                                        modifyRuleUsing: fn (Unique $rule): Unique => Utils::isTenancyEnabled() ? $rule->where(Utils::getTenantModelForeignKey(), Filament::getTenant()?->id) : $rule
+                                        modifyRuleUsing: fn(Unique $rule): Unique => Utils::isTenancyEnabled() ? $rule->where(Utils::getTenantModelForeignKey(), Filament::getTenant()?->id) : $rule
                                     )
                                     ->required()
                                     ->maxLength(255),
@@ -96,9 +96,9 @@ class RoleResource extends RolesRoleResource
                                     ->label(__('filament-shield::filament-shield.field.team'))
                                     ->placeholder(__('filament-shield::filament-shield.field.team.placeholder'))
                                     ->default(Filament::getTenant()?->id)
-                                    ->options(fn (): Arrayable => Utils::getTenantModel() ? Utils::getTenantModel()::pluck('name', 'id') : collect())
-                                    ->hidden(fn (): bool => ! (static::shield()->isCentralApp() && Utils::isTenancyEnabled()))
-                                    ->dehydrated(fn (): bool => ! (static::shield()->isCentralApp() && Utils::isTenancyEnabled())),
+                                    ->options(fn(): Arrayable => Utils::getTenantModel() ? Utils::getTenantModel()::pluck('name', 'id') : collect())
+                                    ->hidden(fn(): bool => ! (static::shield()->isCentralApp() && Utils::isTenancyEnabled()))
+                                    ->dehydrated(fn(): bool => ! (static::shield()->isCentralApp() && Utils::isTenancyEnabled())),
                                 static::getSelectAllFormComponent(),
                             ])
                             ->columns([
@@ -119,7 +119,7 @@ class RoleResource extends RolesRoleResource
                 TextColumn::make('name')
                     ->badge()
                     ->label(__('filament-shield::filament-shield.column.name'))
-                    ->formatStateUsing(fn ($state): string => Str::headline($state))
+                    ->formatStateUsing(fn($state): string => Str::headline($state))
                     ->colors(['primary'])
                     ->searchable(),
                 TextColumn::make('guard_name')
@@ -137,7 +137,7 @@ class RoleResource extends RolesRoleResource
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make()
-                    ->hidden(fn (Model $record) => $record->name == config('filament-shield.panel_user.name')),
+                    ->hidden(fn(Model $record) => $record->name == config('filament-shield.panel_user.name')),
             ])
             ->toolbarActions([
                 DeleteBulkAction::make(),
@@ -160,10 +160,10 @@ class RoleResource extends RolesRoleResource
         return self::shield()->hasSimpleResourcePermissionView()
             ? self::getTabFormComponentForSimpleResourcePermissionsView()
             : Tab::make('resources')
-                ->label(__('filament-shield::filament-shield.resources'))
-                ->visible(fn (): bool => Utils::isResourceTabEnabled())
-                ->badge(static::getResourceTabBadgeCount())
-                ->schema(static::getPluginResourceEntitiesSchema());
+            ->label(__('filament-shield::filament-shield.resources'))
+            ->visible(fn(): bool => Utils::isResourceTabEnabled())
+            ->badge(static::getResourceTabBadgeCount())
+            ->schema(static::getPluginResourceEntitiesSchema());
     }
 
     public static function getTabFormComponentForPage(): Component
@@ -173,7 +173,7 @@ class RoleResource extends RolesRoleResource
 
         return Tab::make('pages')
             ->label(__('filament-shield::filament-shield.pages'))
-            ->visible(fn (): bool => Utils::isPageTabEnabled() && $count > 0)
+            ->visible(fn(): bool => Utils::isPageTabEnabled() && $count > 0)
             ->badge($count)
             ->schema(static::getPluginPageEntitiesSchema());
     }
@@ -185,7 +185,7 @@ class RoleResource extends RolesRoleResource
 
         return Tab::make('widgets')
             ->label(__('filament-shield::filament-shield.widgets'))
-            ->visible(fn (): bool => Utils::isWidgetTabEnabled() && $count > 0)
+            ->visible(fn(): bool => Utils::isWidgetTabEnabled() && $count > 0)
             ->badge($count)
             ->schema(static::getPluginWidgetEntitiesSchema());
     }
@@ -308,12 +308,12 @@ class RoleResource extends RolesRoleResource
                         Grid::make()
                             ->schema(function () use ($plugin, $key) {
                                 $options = collect($plugin)
-                                    ->flatMap(fn ($page) => $page['permissions'])
+                                    ->flatMap(fn($page) => $page['permissions'])
                                     ->toArray();
 
                                 return [
                                     static::getCheckboxListFormComponent(
-                                        name: $key.'_pages_tab',
+                                        name: $key . '_pages_tab',
                                         options: $options,
                                     ),
                                 ];
@@ -336,12 +336,12 @@ class RoleResource extends RolesRoleResource
                         Grid::make()
                             ->schema(function () use ($plugin, $key) {
                                 $options = collect($plugin)
-                                    ->flatMap(fn ($page) => $page['permissions'])
+                                    ->flatMap(fn($page) => $page['permissions'])
                                     ->toArray();
 
                                 return [
                                     static::getCheckboxListFormComponent(
-                                        name: $key.'_widgets_tab',
+                                        name: $key . '_widgets_tab',
                                         options: $options,
                                     ),
                                 ];

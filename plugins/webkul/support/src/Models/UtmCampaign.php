@@ -4,6 +4,7 @@ namespace Webkul\Support\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 
 class UtmCampaign extends Model
@@ -16,7 +17,7 @@ class UtmCampaign extends Model
         'user_id',
         'stage_id',
         'color',
-        'created_by',
+        'creator_id',
         'name',
         'title',
         'is_active',
@@ -36,11 +37,20 @@ class UtmCampaign extends Model
 
     public function createdBy()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'creator_id');
     }
 
     public function company()
     {
         return $this->belongsTo(Company::class, 'company_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($utmCampaign) {
+            $utmCampaign->creator_id ??= Auth::id();
+        });
     }
 }

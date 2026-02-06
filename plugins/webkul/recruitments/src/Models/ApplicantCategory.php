@@ -3,6 +3,7 @@
 namespace Webkul\Recruitment\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 
 class ApplicantCategory extends Model
@@ -21,7 +22,7 @@ class ApplicantCategory extends Model
         parent::boot();
 
         static::creating(function ($applicantCategory) {
-            $applicantCategory->creator_id ??= filament()->auth()->id();
+            $applicantCategory->creator_id ??= Auth::id();
         });
     }
 }

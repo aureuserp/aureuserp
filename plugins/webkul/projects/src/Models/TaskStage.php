@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Project\Database\Factories\TaskStageFactory;
@@ -17,18 +18,8 @@ class TaskStage extends Model implements Sortable
 {
     use HasFactory, SoftDeletes, SortableTrait;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'projects_task_stages';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'is_active',
@@ -40,11 +31,6 @@ class TaskStage extends Model implements Sortable
         'creator_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'is_active'    => 'boolean',
         'is_collapsed' => 'boolean',
@@ -85,7 +71,7 @@ class TaskStage extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($taskStage) {
-            $taskStage->creator_id = filament()->auth()->id();
+            $taskStage->creator_id ??= Auth::id();
         });
     }
 

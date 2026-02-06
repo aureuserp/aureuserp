@@ -4,7 +4,6 @@ namespace Webkul\Sale\Filament\Clusters\Configuration\Resources\TeamResource\Pag
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\TeamResource;
 
 class CreateTeam extends CreateRecord
@@ -22,14 +21,5 @@ class CreateTeam extends CreateRecord
             ->success()
             ->title(__('sales::filament/clusters/configurations/resources/team/pages/create-team.notification.title'))
             ->body(__('sales::filament/clusters/configurations/resources/team/pages/create-team.notification.body'));
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $user = Auth::user();
-
-        $data['creator_id'] = $user->id;
-
-        return $data;
     }
 }

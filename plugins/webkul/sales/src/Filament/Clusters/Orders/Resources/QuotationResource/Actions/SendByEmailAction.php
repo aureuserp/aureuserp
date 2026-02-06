@@ -29,22 +29,22 @@ class SendByEmailAction extends Action
         parent::setUp();
 
         $this
-            ->color(fn (): string => $this->getRecord()->state === OrderState::DRAFT ? 'primary' : 'gray')
+            ->color(fn(): string => $this->getRecord()->state === OrderState::DRAFT ? 'primary' : 'gray')
             ->beforeFormFilled(function (Order $record, Action $action) {
                 $pdf = Pdf::loadView('sales::sales.quotation', compact('record'))
                     ->setPaper('A4', 'portrait')
                     ->setOption('defaultFont', 'Arial');
 
-                $fileName = "$record->name-".time().'.pdf';
-                $filePath = 'sales-orders/'.$fileName;
+                $fileName = "$record->name-" . time() . '.pdf';
+                $filePath = 'sales-orders/' . $fileName;
 
                 Storage::disk('public')->put($filePath, $pdf->output());
 
                 $action->fillForm([
                     'file'        => $filePath,
                     'partners'    => [$record->partner_id],
-                    'subject'     => $record->partner->name.' Quotation (Ref '.$record->name.')',
-                    'description' => 'Dear '.$record->partner->name.', <br/><br/>Your quotation <strong>'.$record->name.'</strong> amounting in <strong>'.$record->currency->symbol.' '.$record->amount_total.'</strong> is ready for review.<br/><br/>Should you have any questions or require further assistance, please feel free to reach out to us.',
+                    'subject'     => $record->partner->name . ' Quotation (Ref ' . $record->name . ')',
+                    'description' => 'Dear ' . $record->partner->name . ', <br/><br/>Your quotation <strong>' . $record->name . '</strong> amounting in <strong>' . $record->currency->symbol . ' ' . $record->amount_total . '</strong> is ready for review.<br/><br/>Should you have any questions or require further assistance, please feel free to reach out to us.',
                 ]);
             })
             ->label(__('sales::filament/clusters/orders/resources/quotation/actions/send-by-email.title'))
@@ -78,7 +78,7 @@ class SendByEmailAction extends Action
             )
             ->modalIcon('heroicon-s-envelope')
             ->modalHeading(__('sales::filament/clusters/orders/resources/quotation/actions/send-by-email.modal.heading'))
-            ->hidden(fn (Order $record) => $record->state == OrderState::SALE)
+            ->hidden(fn(Order $record) => $record->state == OrderState::SALE)
             ->action(function (Order $record, array $data, Component $livewire) {
                 $result = SaleOrder::sendQuotationOrOrderByEmail($record, $data);
 
@@ -184,6 +184,6 @@ class SendByEmailAction extends Action
             'failures' => implode('; ', $failedMessages),
         ]);
 
-        return $successPart."\n\n".$failurePart;
+        return $successPart . "\n\n" . $failurePart;
     }
 }

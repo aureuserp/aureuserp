@@ -49,11 +49,11 @@ class ManageDeliveries extends ManageRelatedRecords
         return OperationResource::table($table)
             ->recordActions([
                 ViewAction::make()
-                    ->url(fn ($record) => DeliveryResource::getUrl('view', ['record' => $record]))
+                    ->url(fn($record) => DeliveryResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(false),
 
                 EditAction::make()
-                    ->url(fn ($record) => DeliveryResource::getUrl('edit', ['record' => $record]))
+                    ->url(fn($record) => DeliveryResource::getUrl('edit', ['record' => $record]))
                     ->openUrlInNewTab(false),
             ])
             ->toolbarActions([]);

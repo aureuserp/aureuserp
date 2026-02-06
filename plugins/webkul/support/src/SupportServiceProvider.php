@@ -2,6 +2,7 @@
 
 namespace Webkul\Support;
 
+use BezhanSalleh\FilamentShield\Facades\FilamentShield;
 use Filament\Panel;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
@@ -9,6 +10,7 @@ use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 use Livewire\Livewire;
 use Webkul\PluginManager\Package;
 use Webkul\PluginManager\PackageServiceProvider;
@@ -53,6 +55,8 @@ class SupportServiceProvider extends PackageServiceProvider
                 '2025_01_10_094325_create_utm_campaigns_table',
                 '2025_04_04_061507_add_address_columns_in_companies_table',
                 '2025_04_04_062023_alter_companies_table',
+                '2025_08_08_104317_alter_utm_stages_table',
+                '2025_08_08_104814_alter_utm_campaigns_table',
                 '2025_10_10_080114_create_currency_rates_table',
                 '2025_11_14_102615_alter_currency_rates_table',
             ])
@@ -61,7 +65,7 @@ class SupportServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        include __DIR__.'/helpers.php';
+        include __DIR__ . '/helpers.php';
 
         Livewire::component('accept-invitation', AcceptInvitation::class);
 
@@ -76,7 +80,7 @@ class SupportServiceProvider extends PackageServiceProvider
         ])->where(['filename' => '[ \w\\.\\/\\-\\@\(\)\=]+']);
 
         FilamentAsset::register([
-            Css::make('support', __DIR__.'/../resources/dist/support.css'),
+            Css::make('support', __DIR__ . '/../resources/dist/support.css'),
         ], 'support');
     }
 
@@ -95,7 +99,7 @@ class SupportServiceProvider extends PackageServiceProvider
 
         FilamentView::registerRenderHook(
             PanelsRenderHook::USER_MENU_PROFILE_BEFORE,
-            fn (): string => Blade::render(<<<'BLADE'
+            fn(): string => Blade::render(<<<'BLADE'
                 <x-filament::dropdown.list>
                     <x-filament::dropdown.list.item>
                         <div class="flex items-center gap-2">

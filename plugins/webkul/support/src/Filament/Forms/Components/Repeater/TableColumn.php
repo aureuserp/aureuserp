@@ -3,6 +3,7 @@
 namespace Webkul\Support\Filament\Forms\Components\Repeater;
 
 use Closure;
+use LogicException;
 use Filament\Schemas\Components\Concerns\HasLabel;
 use Filament\Schemas\Components\Concerns\HasName;
 use Filament\Support\Components\Component;
@@ -11,7 +12,6 @@ use Filament\Support\Concerns\HasAlignment;
 use Filament\Support\Concerns\HasWidth;
 use Filament\Tables\Columns\Concerns\BelongsToGroup;
 use Filament\Tables\Columns\Concerns\CanBeToggled;
-use LogicException;
 use Webkul\Support\Filament\Concerns\CanBeHidden;
 use Webkul\Support\Filament\Concerns\CanBeSummarized;
 

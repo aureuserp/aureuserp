@@ -4,6 +4,7 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
@@ -20,6 +21,7 @@ use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UtmCampaign;
@@ -28,7 +30,7 @@ use Webkul\Support\Models\UTMSource;
 
 class Move extends Model implements Sortable
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SortableTrait;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope, SortableTrait;
 
     protected $table = 'accounts_account_moves';
 
@@ -163,6 +165,11 @@ class Move extends Model implements Sortable
         'order_column_name'  => 'sort',
         'sort_when_creating' => true,
     ];
+
+    protected function getAssignmentColumn(): ?string
+    {
+        return 'invoice_user_id';
+    }
 
     public function campaign()
     {
@@ -444,7 +451,7 @@ class Move extends Model implements Sortable
             return;
         }
 
-        $this->creator_id = auth()->id();
+        $this->creator_id = Auth::id();
     }
 
     public function computeName()
@@ -473,7 +480,7 @@ class Move extends Model implements Sortable
             $this->date?->format('Y') ?? now()->format('Y'),
         );
 
-        $this->name = $this->sequence_prefix.'/'.$this->id;
+        $this->name = $this->sequence_prefix . '/' . $this->id;
     }
 
     public function computeCurrencyId()
@@ -956,7 +963,7 @@ class Move extends Model implements Sortable
                 part.debit_amount_currency AS amount,
                 part.credit_move_id AS counterpart_line_id
             FROM accounts_partial_reconciles part
-            WHERE part.debit_move_id IN ('.implode(',', $lineIds).')
+            WHERE part.debit_move_id IN (' . implode(',', $lineIds) . ')
 
             UNION ALL
 
@@ -966,12 +973,12 @@ class Move extends Model implements Sortable
                 part.credit_amount_currency AS amount,
                 part.debit_move_id AS counterpart_line_id
             FROM accounts_partial_reconciles part
-            WHERE part.credit_move_id IN ('.implode(',', $lineIds).')
+            WHERE part.credit_move_id IN (' . implode(',', $lineIds) . ')
         ';
 
         $results = DB::select($sql);
 
-        $partialValuesList = collect($results)->map(fn ($values) => [
+        $partialValuesList = collect($results)->map(fn($values) => [
             'line_id'    => $values->counterpart_line_id,
             'partial_id' => $values->id,
             'amount'     => $values->amount,
@@ -992,8 +999,8 @@ class Move extends Model implements Sortable
                     part.credit_move_id AS counterpart_line_id
                 FROM accounts_partial_reconciles part
                 JOIN account_move_line credit_line ON credit_line.id = part.credit_move_id
-                WHERE credit_line.move_id IN ('.$exchangeMoveIdsStr.') 
-                    AND part.debit_move_id IN ('.$counterpartLineIdsStr.')
+                WHERE credit_line.move_id IN (' . $exchangeMoveIdsStr . ') 
+                    AND part.debit_move_id IN (' . $counterpartLineIdsStr . ')
 
                 UNION ALL
 
@@ -1002,8 +1009,8 @@ class Move extends Model implements Sortable
                     part.debit_move_id AS counterpart_line_id
                 FROM accounts_partial_reconciles part
                 JOIN account_move_line debit_line ON debit_line.id = part.debit_move_id
-                WHERE debit_line.move_id IN ('.$exchangeMoveIdsStr.') 
-                    AND part.credit_move_id IN ('.$counterpartLineIdsStr.')
+                WHERE debit_line.move_id IN (' . $exchangeMoveIdsStr . ') 
+                    AND part.credit_move_id IN (' . $counterpartLineIdsStr . ')
             ';
 
             $exchangeResults = DB::select($sql);

@@ -3,10 +3,15 @@
 namespace Webkul\Security\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Auth;
+use Webkul\Security\Traits\HasPermissionScope;
 
 class Team extends Model
 {
+    use HasPermissionScope;
+
     /**
      * Fillable.
      *
@@ -14,7 +19,16 @@ class Team extends Model
      */
     protected $fillable = [
         'name',
+        'creator_id',
     ];
+
+    /**
+     * The user that created the team.
+     */
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'creator_id');
+    }
 
     /**
      * The users that belong to the team.
@@ -22,5 +36,14 @@ class Team extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'user_team', 'team_id', 'user_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($team) {
+            $team->creator_id ??= Auth::id();
+        });
     }
 }

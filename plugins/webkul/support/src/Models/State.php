@@ -7,23 +7,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class State extends Model
 {
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'country_id',
         'name',
         'code',
     ];
 
-    /**
-     * Get the country that owns the state.
-     *
-     * @return BelongsTo
-     */
-    public function country()
+    public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class, 'country_id');
     }

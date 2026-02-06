@@ -208,38 +208,6 @@ class EditApplicant extends EditRecord
         ];
     }
 
-    protected function mutateFormDataBeforeSave(array $data): array
-    {
-        $record = $this->record->load('interviewer');
-        $oldData = $record->getRawOriginal();
-
-        if (isset($data['recruiter_id']) && $data['recruiter_id'] !== $oldData['recruiter_id']) {
-            $data['date_opened'] = now();
-        }
-
-        if (isset($data['stage_id']) && empty($oldData['stage_id'])) {
-            $data['date_last_stage_updated'] = now();
-            $this->notificationData = $data;
-        } elseif (isset($data['stage_id']) && $data['stage_id'] !== $oldData['stage_id']) {
-            $data['date_last_stage_updated'] = now();
-            $data['last_stage_id'] = $oldData['stage_id'];
-        }
-
-        if (isset($data['recruitments_applicant_interviewers']) && is_array($data['recruitments_applicant_interviewers'])) {
-            $oldInterviewers = collect($record->interviewer->pluck('id'));
-            $newInterviewers = collect($data['recruitments_applicant_interviewers']);
-
-            if (! $oldInterviewers->isEmpty() || ! $newInterviewers->isEmpty()) {
-                $this->interviewerChanges = [
-                    'old' => $oldInterviewers,
-                    'new' => $newInterviewers,
-                ];
-            }
-        }
-
-        return $data;
-    }
-
     protected function afterSave(): void
     {
         if (! empty($this->notificationData)) {

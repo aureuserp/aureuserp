@@ -5,6 +5,7 @@ namespace Webkul\Sale\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Chatter\Traits\HasChatter;
@@ -75,5 +76,14 @@ class Team extends Model implements Sortable
     protected static function newFactory(): TeamFactory
     {
         return TeamFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($team) {
+            $team->creator_id ??= Auth::id();
+        });
     }
 }
