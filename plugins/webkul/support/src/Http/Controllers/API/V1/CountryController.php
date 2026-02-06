@@ -52,7 +52,7 @@ class CountryController extends Controller
     }
 
     #[Endpoint('Show country', 'Retrieve a specific country by its ID')]
-    #[UrlParam('country', 'integer', 'The country ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The country ID', required: true, example: 1)]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> currency, states', required: false, example: 'currency,states')]
     #[ResponseFromApiResource(CountryResource::class, Country::class)]
     #[Response(status: 404, description: 'Country not found', content: '{"message": "Resource not found."}')]
