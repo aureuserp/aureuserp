@@ -2,6 +2,7 @@
 
 namespace Webkul\Sale\Filament\Clusters\Configuration\Resources;
 
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -45,7 +46,7 @@ class TeamResource extends Resource
 {
     protected static ?string $model = Team::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
     protected static ?string $cluster = Configuration::class;
 
