@@ -252,17 +252,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the tax group.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      tax_group:
-        custom: []
-        name: tax_group
         description: 'The tax group ID'
         required: true
         example: 1
@@ -272,8 +261,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      tax_group: 1
+      id: 1
     queryParameters:
       include:
         custom: []
@@ -342,17 +330,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the tax group.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      tax_group:
-        custom: []
-        name: tax_group
         description: 'The tax group ID'
         required: true
         example: 1
@@ -362,8 +339,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      tax_group: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -473,17 +449,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the tax group.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      tax_group:
-        custom: []
-        name: tax_group
         description: 'The tax group ID'
         required: true
         example: 1
@@ -493,8 +458,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      tax_group: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -503,10 +467,10 @@ endpoints:
     responses:
       -
         custom: []
-        status: 204
-        content: null
+        status: 200
+        content: '{"message": "Tax group deleted successfully."}'
         headers: []
-        description: 'Tax group deleted successfully'
+        description: 'Tax group deleted'
       -
         custom: []
         status: 401
@@ -773,7 +737,7 @@ endpoints:
         name: type_tax_use
         description: 'Tax type usage.'
         required: true
-        example: Webkul\Account\Enums\TypeTaxUse
+        example: sale
         type: string
         enumValues:
           - sale
@@ -787,7 +751,7 @@ endpoints:
         name: amount_type
         description: 'Tax computation type.'
         required: true
-        example: Webkul\Account\Enums\AmountType
+        example: percent
         type: string
         enumValues:
           - fixed
@@ -847,7 +811,7 @@ endpoints:
         name: tax_scope
         description: 'Tax scope.'
         required: false
-        example: Webkul\Account\Enums\TaxScope
+        example: service
         type: string
         enumValues:
           - service
@@ -860,7 +824,7 @@ endpoints:
         name: price_include_override
         description: 'Price include override.'
         required: false
-        example: Webkul\Account\Enums\TaxIncludeOverride
+        example: default
         type: string
         enumValues:
           - default
@@ -970,14 +934,14 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       name: 'VAT 20%'
-      type_tax_use: Webkul\Account\Enums\TypeTaxUse
-      amount_type: Webkul\Account\Enums\AmountType
+      type_tax_use: sale
+      amount_type: percent
       amount: 20.0
       tax_group_id: 1
       company_id: 1
       country_id: 1
-      tax_scope: Webkul\Account\Enums\TaxScope
-      price_include_override: Webkul\Account\Enums\TaxIncludeOverride
+      tax_scope: service
+      price_include_override: default
       cash_basis_transition_account_id: 1
       description: 'Standard VAT rate'
       invoice_label: VAT
@@ -1038,17 +1002,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the tax.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      tax:
-        custom: []
-        name: tax
         description: 'The tax ID'
         required: true
         example: 1
@@ -1058,8 +1011,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      tax: 1
+      id: 1
     queryParameters:
       include:
         custom: []
@@ -1128,17 +1080,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the tax.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      tax:
-        custom: []
-        name: tax
         description: 'The tax ID'
         required: true
         example: 1
@@ -1148,8 +1089,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      tax: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -1169,7 +1109,7 @@ endpoints:
         name: type_tax_use
         description: 'Tax type usage.'
         required: true
-        example: Webkul\Account\Enums\TypeTaxUse
+        example: sale
         type: string
         enumValues:
           - sale
@@ -1183,7 +1123,7 @@ endpoints:
         name: amount_type
         description: 'Tax computation type.'
         required: true
-        example: Webkul\Account\Enums\AmountType
+        example: percent
         type: string
         enumValues:
           - fixed
@@ -1243,7 +1183,7 @@ endpoints:
         name: tax_scope
         description: 'Tax scope.'
         required: false
-        example: Webkul\Account\Enums\TaxScope
+        example: service
         type: string
         enumValues:
           - service
@@ -1256,7 +1196,7 @@ endpoints:
         name: price_include_override
         description: 'Price include override.'
         required: false
-        example: Webkul\Account\Enums\TaxIncludeOverride
+        example: default
         type: string
         enumValues:
           - default
@@ -1366,14 +1306,14 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       name: 'VAT 20%'
-      type_tax_use: Webkul\Account\Enums\TypeTaxUse
-      amount_type: Webkul\Account\Enums\AmountType
+      type_tax_use: sale
+      amount_type: percent
       amount: 20.0
       tax_group_id: 1
       company_id: 1
       country_id: 1
-      tax_scope: Webkul\Account\Enums\TaxScope
-      price_include_override: Webkul\Account\Enums\TaxIncludeOverride
+      tax_scope: service
+      price_include_override: default
       cash_basis_transition_account_id: 1
       description: 'Standard VAT rate'
       invoice_label: VAT
@@ -1440,17 +1380,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the tax.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      tax:
-        custom: []
-        name: tax
         description: 'The tax ID'
         required: true
         example: 1
@@ -1460,8 +1389,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      tax: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -1470,10 +1398,10 @@ endpoints:
     responses:
       -
         custom: []
-        status: 204
-        content: null
+        status: 200
+        content: '{"message": "Tax deleted successfully."}'
         headers: []
-        description: 'Tax deleted successfully'
+        description: 'Tax deleted'
       -
         custom: []
         status: 401

@@ -12,7 +12,6 @@ use Knuckles\Scribe\Attributes\Subgroup;
 use Knuckles\Scribe\Attributes\UrlParam;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
-use Webkul\Support\Http\Requests\CountryRequest;
 use Webkul\Support\Http\Resources\V1\CountryResource;
 use Webkul\Support\Models\Country;
 

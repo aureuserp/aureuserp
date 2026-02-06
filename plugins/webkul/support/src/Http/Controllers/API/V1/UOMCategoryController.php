@@ -2,7 +2,6 @@
 
 namespace Webkul\Support\Http\Controllers\API\V1;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -59,7 +58,7 @@ class UOMCategoryController extends Controller
         Gate::authorize('create', UOMCategory::class);
 
         $data = $request->validated();
-        
+
         $uomCategory = UOMCategory::create($data);
 
         return (new UOMCategoryResource($uomCategory))
@@ -69,7 +68,7 @@ class UOMCategoryController extends Controller
     }
 
     #[Endpoint('Show UOM category', 'Retrieve a specific UOM category by its ID')]
-    #[UrlParam('uom_category', 'integer', 'The UOM category ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The UOM category ID', required: true, example: 1)]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> uoms, creator', required: false, example: 'uoms')]
     #[ResponseFromApiResource(UOMCategoryResource::class, UOMCategory::class)]
     #[Response(status: 404, description: 'UOM category not found', content: '{"message": "Resource not found."}')]
@@ -89,7 +88,7 @@ class UOMCategoryController extends Controller
     }
 
     #[Endpoint('Update UOM category', 'Update an existing UOM category')]
-    #[UrlParam('uom_category', 'integer', 'The UOM category ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The UOM category ID', required: true, example: 1)]
     #[ResponseFromApiResource(UOMCategoryResource::class, UOMCategory::class, additional: ['message' => 'UOM category updated successfully.'])]
     #[Response(status: 404, description: 'UOM category not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
@@ -107,8 +106,8 @@ class UOMCategoryController extends Controller
     }
 
     #[Endpoint('Delete UOM category', 'Delete a UOM category')]
-    #[UrlParam('uom_category', 'integer', 'The UOM category ID', required: true, example: 1)]
-    #[Response(status: 204, description: 'UOM category deleted successfully')]
+    #[UrlParam('id', 'integer', 'The UOM category ID', required: true, example: 1)]
+    #[Response(status: 200, description: 'UOM category deleted', content: '{"message": "UOM category deleted successfully."}')]
     #[Response(status: 404, description: 'UOM category not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $id)
@@ -119,6 +118,8 @@ class UOMCategoryController extends Controller
 
         $uomCategory->delete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'UOM category deleted successfully.',
+        ]);
     }
 }

@@ -64,7 +64,7 @@ class StateController extends Controller
     }
 
     #[Endpoint('Show state', 'Retrieve a specific state by its ID')]
-    #[UrlParam('state', 'integer', 'The state ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The state ID', required: true, example: 1)]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> country', required: false, example: 'country')]
     #[ResponseFromApiResource(StateResource::class, State::class)]
     #[Response(status: 404, description: 'State not found', content: '{"message": "Resource not found."}')]
@@ -81,7 +81,7 @@ class StateController extends Controller
     }
 
     #[Endpoint('Update state', 'Update an existing state')]
-    #[UrlParam('state', 'integer', 'The state ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The state ID', required: true, example: 1)]
     #[ResponseFromApiResource(StateResource::class, State::class, additional: ['message' => 'State updated successfully.'])]
     #[Response(status: 404, description: 'State not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
@@ -96,8 +96,8 @@ class StateController extends Controller
     }
 
     #[Endpoint('Delete state', 'Delete a state')]
-    #[UrlParam('state', 'integer', 'The state ID', required: true, example: 1)]
-    #[Response(status: 204, description: 'State deleted successfully')]
+    #[UrlParam('id', 'integer', 'The state ID', required: true, example: 1)]
+    #[Response(status: 200, description: 'State deleted', content: '{"message": "State deleted successfully."}')]
     #[Response(status: 404, description: 'State not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $id)
@@ -105,6 +105,8 @@ class StateController extends Controller
         $state = State::findOrFail($id);
         $state->delete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'State deleted successfully.',
+        ]);
     }
 }

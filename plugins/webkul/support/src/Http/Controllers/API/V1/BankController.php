@@ -2,7 +2,6 @@
 
 namespace Webkul\Support\Http\Controllers\API\V1;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -80,7 +79,7 @@ class BankController extends Controller
     }
 
     #[Endpoint('Show bank', 'Retrieve a specific bank by its ID')]
-    #[UrlParam('bank', 'integer', 'The bank ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The bank ID', required: true, example: 1)]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> country, state, creator', required: false, example: 'country,state')]
     #[ResponseFromApiResource(BankResource::class, Bank::class)]
     #[Response(status: 404, description: 'Bank not found', content: '{"message": "Resource not found."}')]
@@ -101,7 +100,7 @@ class BankController extends Controller
     }
 
     #[Endpoint('Update bank', 'Update an existing bank')]
-    #[UrlParam('bank', 'integer', 'The bank ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The bank ID', required: true, example: 1)]
     #[ResponseFromApiResource(BankResource::class, Bank::class, additional: ['message' => 'Bank updated successfully.'])]
     #[Response(status: 404, description: 'Bank not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
@@ -119,8 +118,8 @@ class BankController extends Controller
     }
 
     #[Endpoint('Delete bank', 'Soft delete a bank')]
-    #[UrlParam('bank', 'integer', 'The bank ID', required: true, example: 1)]
-    #[Response(status: 204, description: 'Bank deleted successfully')]
+    #[UrlParam('id', 'integer', 'The bank ID', required: true, example: 1)]
+    #[Response(status: 200, description: 'Bank deleted', content: '{"message": "Bank deleted successfully."}')]
     #[Response(status: 404, description: 'Bank not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $id)
@@ -131,11 +130,13 @@ class BankController extends Controller
 
         $bank->delete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Bank deleted successfully.',
+        ]);
     }
 
     #[Endpoint('Restore bank', 'Restore a soft-deleted bank')]
-    #[UrlParam('bank', 'integer', 'The bank ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The bank ID', required: true, example: 1)]
     #[ResponseFromApiResource(BankResource::class, Bank::class, additional: ['message' => 'Bank restored successfully.'])]
     #[Response(status: 404, description: 'Bank not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
@@ -152,8 +153,8 @@ class BankController extends Controller
     }
 
     #[Endpoint('Force delete bank', 'Permanently delete a bank')]
-    #[UrlParam('bank', 'integer', 'The bank ID', required: true, example: 1)]
-    #[Response(status: 204, description: 'Bank permanently deleted')]
+    #[UrlParam('id', 'integer', 'The bank ID', required: true, example: 1)]
+    #[Response(status: 200, description: 'Bank permanently deleted', content: '{"message": "Bank permanently deleted."}')]
     #[Response(status: 404, description: 'Bank not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function forceDestroy(string $id)
@@ -164,6 +165,8 @@ class BankController extends Controller
 
         $bank->forceDelete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Bank permanently deleted.',
+        ]);
     }
 }

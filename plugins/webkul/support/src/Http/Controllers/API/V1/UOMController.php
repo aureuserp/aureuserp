@@ -2,7 +2,6 @@
 
 namespace Webkul\Support\Http\Controllers\API\V1;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -127,7 +126,7 @@ class UOMController extends Controller
     #[Endpoint('Delete UOM', 'Soft delete a UOM')]
     #[UrlParam('uom_category_id', 'integer', 'The UOM category ID', required: true, example: 1)]
     #[UrlParam('id', 'integer', 'The UOM ID', required: true, example: 1)]
-    #[Response(status: 204, description: 'UOM deleted successfully')]
+    #[Response(status: 200, description: 'UOM deleted', content: '{"message": "UOM deleted successfully."}')]
     #[Response(status: 404, description: 'UOM not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $uomCategory, string $uom)
@@ -140,7 +139,9 @@ class UOMController extends Controller
 
         $uomModel->delete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'UOM deleted successfully.',
+        ]);
     }
 
     #[Endpoint('Restore UOM', 'Restore a soft-deleted UOM')]
@@ -166,7 +167,7 @@ class UOMController extends Controller
     #[Endpoint('Force delete UOM', 'Permanently delete a UOM')]
     #[UrlParam('uom_category_id', 'integer', 'The UOM category ID', required: true, example: 1)]
     #[UrlParam('id', 'integer', 'The UOM ID', required: true, example: 1)]
-    #[Response(status: 204, description: 'UOM permanently deleted')]
+    #[Response(status: 200, description: 'UOM permanently deleted', content: '{"message": "UOM permanently deleted."}')]
     #[Response(status: 404, description: 'UOM not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function forceDestroy(string $uomCategory, string $uom)
@@ -179,6 +180,8 @@ class UOMController extends Controller
 
         $uomModel->forceDelete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'UOM permanently deleted.',
+        ]);
     }
 }

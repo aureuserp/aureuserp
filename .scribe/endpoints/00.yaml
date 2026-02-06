@@ -26,9 +26,9 @@ endpoints:
       include:
         custom: []
         name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, creator'
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, creator, dueTerms'
         required: false
-        example: company
+        example: dueTerms
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -101,7 +101,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanQueryParameters:
-      include: company
+      include: dueTerms
       sort: name
       page: 1
     bodyParameters: []
@@ -111,7 +111,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null,"due-terms":[{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}]},{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null,"due-terms":[{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -254,7 +254,7 @@ endpoints:
       include:
         custom: []
         name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, creator'
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, creator, dueTerms'
         required: false
         example: company
         type: string
@@ -271,7 +271,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}}'
+        content: '{"data":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null,"due-terms":[{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}]}}'
         headers: []
         description: ''
       -
@@ -714,7 +714,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}},{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -772,7 +772,7 @@ endpoints:
         name: value
         description: 'Due term value type.'
         required: true
-        example: Webkul\Account\Enums\DueTermValue
+        example: percent
         type: string
         enumValues:
           - percent
@@ -796,7 +796,7 @@ endpoints:
         name: delay_type
         description: 'Delay type.'
         required: true
-        example: Webkul\Account\Enums\DelayType
+        example: days_after
         type: string
         enumValues:
           - days_after
@@ -828,30 +828,18 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
-      payment_id:
-        custom: []
-        name: payment_id
-        description: 'Payment term ID. The <code>id</code> of an existing record in the accounts_payment_terms table.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
     cleanBodyParameters:
-      value: Webkul\Account\Enums\DueTermValue
+      value: percent
       value_amount: 100.0
-      delay_type: Webkul\Account\Enums\DelayType
+      delay_type: days_after
       nb_days: 30
       days_next_month: 15
-      payment_id: 1
     fileParameters: []
     responses:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}},"message":"Payment due term created successfully."}'
+        content: '{"data":{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Payment due term created successfully."}'
         headers: []
         description: ''
       -
@@ -940,7 +928,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}}}'
+        content: '{"data":{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}}'
         headers: []
         description: ''
       -
@@ -1017,7 +1005,7 @@ endpoints:
         name: value
         description: 'Due term value type.'
         required: true
-        example: Webkul\Account\Enums\DueTermValue
+        example: percent
         type: string
         enumValues:
           - percent
@@ -1041,7 +1029,7 @@ endpoints:
         name: delay_type
         description: 'Delay type.'
         required: true
-        example: Webkul\Account\Enums\DelayType
+        example: days_after
         type: string
         enumValues:
           - days_after
@@ -1073,30 +1061,18 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
-      payment_id:
-        custom: []
-        name: payment_id
-        description: 'Payment term ID. The <code>id</code> of an existing record in the accounts_payment_terms table.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
     cleanBodyParameters:
-      value: Webkul\Account\Enums\DueTermValue
+      value: percent
       value_amount: 100.0
-      delay_type: Webkul\Account\Enums\DelayType
+      delay_type: days_after
       nb_days: 30
       days_next_month: 15
-      payment_id: 1
     fileParameters: []
     responses:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}},"message":"Payment due term updated successfully."}'
+        content: '{"data":{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Payment due term updated successfully."}'
         headers: []
         description: ''
       -
@@ -1178,10 +1154,10 @@ endpoints:
     responses:
       -
         custom: []
-        status: 204
-        content: null
+        status: 200
+        content: '{"message": "Payment due term deleted successfully."}'
         headers: []
-        description: 'Payment due term deleted successfully'
+        description: 'Payment due term deleted'
       -
         custom: []
         status: 401
@@ -1429,17 +1405,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the incoterm.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      incoterm:
-        custom: []
-        name: incoterm
         description: 'The incoterm ID'
         required: true
         example: 1
@@ -1449,8 +1414,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      incoterm: 1
+      id: 1
     queryParameters:
       include:
         custom: []
@@ -1519,17 +1483,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the incoterm.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      incoterm:
-        custom: []
-        name: incoterm
         description: 'The incoterm ID'
         required: true
         example: 1
@@ -1539,8 +1492,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      incoterm: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -1626,17 +1578,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the incoterm.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      incoterm:
-        custom: []
-        name: incoterm
         description: 'The incoterm ID'
         required: true
         example: 1
@@ -1646,8 +1587,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      incoterm: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -1656,10 +1596,10 @@ endpoints:
     responses:
       -
         custom: []
-        status: 204
-        content: null
+        status: 200
+        content: '{"message": "Incoterm deleted successfully."}'
         headers: []
-        description: 'Incoterm deleted successfully'
+        description: 'Incoterm deleted'
       -
         custom: []
         status: 401
@@ -1703,17 +1643,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the incoterm.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      incoterm:
-        custom: []
-        name: incoterm
         description: 'The incoterm ID'
         required: true
         example: 1
@@ -1723,8 +1652,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      incoterm: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -1780,17 +1708,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the incoterm.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      incoterm:
-        custom: []
-        name: incoterm
         description: 'The incoterm ID'
         required: true
         example: 1
@@ -1800,8 +1717,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      incoterm: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -1810,8 +1726,8 @@ endpoints:
     responses:
       -
         custom: []
-        status: 204
-        content: null
+        status: 200
+        content: '{"message": "Incoterm permanently deleted."}'
         headers: []
         description: 'Incoterm permanently deleted'
       -
@@ -2063,7 +1979,7 @@ endpoints:
         name: account_type
         description: 'Account type.'
         required: true
-        example: Webkul\Account\Enums\AccountType
+        example: asset_receivable
         type: string
         enumValues:
           - asset_receivable
@@ -2145,7 +2061,7 @@ endpoints:
     cleanBodyParameters:
       name: 'Cash and Bank'
       code: '1000'
-      account_type: Webkul\Account\Enums\AccountType
+      account_type: asset_receivable
       currency_id: 1
       note: 'Primary cash account'
       deprecated: false
@@ -2202,17 +2118,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the account.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      account:
-        custom: []
-        name: account
         description: 'The account ID'
         required: true
         example: 1
@@ -2222,8 +2127,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      account: 1
+      id: 1
     queryParameters:
       include:
         custom: []
@@ -2292,17 +2196,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the account.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      account:
-        custom: []
-        name: account
         description: 'The account ID'
         required: true
         example: 1
@@ -2312,8 +2205,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      account: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -2344,7 +2236,7 @@ endpoints:
         name: account_type
         description: 'Account type.'
         required: true
-        example: Webkul\Account\Enums\AccountType
+        example: asset_receivable
         type: string
         enumValues:
           - asset_receivable
@@ -2426,7 +2318,7 @@ endpoints:
     cleanBodyParameters:
       name: 'Cash and Bank'
       code: '1000'
-      account_type: Webkul\Account\Enums\AccountType
+      account_type: asset_receivable
       currency_id: 1
       note: 'Primary cash account'
       deprecated: false
@@ -2489,17 +2381,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the account.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      account:
-        custom: []
-        name: account
         description: 'The account ID'
         required: true
         example: 1
@@ -2509,8 +2390,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      account: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -2519,10 +2399,10 @@ endpoints:
     responses:
       -
         custom: []
-        status: 204
-        content: null
+        status: 200
+        content: '{"message": "Account deleted successfully."}'
         headers: []
-        description: 'Account deleted successfully'
+        description: 'Account deleted'
       -
         custom: []
         status: 401
@@ -2749,7 +2629,7 @@ endpoints:
         name: type
         description: 'Journal type.'
         required: true
-        example: Webkul\Account\Enums\JournalType
+        example: bank
         type: string
         enumValues:
           - sale
@@ -2885,7 +2765,7 @@ endpoints:
     cleanBodyParameters:
       name: 'Bank Journal'
       code: BNK
-      type: Webkul\Account\Enums\JournalType
+      type: bank
       company_id: 1
       currency_id: 1
       default_account_id: 1
@@ -2948,17 +2828,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the journal.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      journal:
-        custom: []
-        name: journal
         description: 'The journal ID'
         required: true
         example: 1
@@ -2968,8 +2837,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      journal: 1
+      id: 1
     queryParameters:
       include:
         custom: []
@@ -3038,17 +2906,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the journal.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      journal:
-        custom: []
-        name: journal
         description: 'The journal ID'
         required: true
         example: 1
@@ -3058,8 +2915,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      journal: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -3090,7 +2946,7 @@ endpoints:
         name: type
         description: 'Journal type.'
         required: true
-        example: Webkul\Account\Enums\JournalType
+        example: bank
         type: string
         enumValues:
           - sale
@@ -3226,7 +3082,7 @@ endpoints:
     cleanBodyParameters:
       name: 'Bank Journal'
       code: BNK
-      type: Webkul\Account\Enums\JournalType
+      type: bank
       company_id: 1
       currency_id: 1
       default_account_id: 1
@@ -3295,17 +3151,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the journal.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      journal:
-        custom: []
-        name: journal
         description: 'The journal ID'
         required: true
         example: 1
@@ -3315,8 +3160,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      journal: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -3325,10 +3169,10 @@ endpoints:
     responses:
       -
         custom: []
-        status: 204
-        content: null
+        status: 200
+        content: '{"message": "Journal deleted successfully."}'
         headers: []
-        description: 'Journal deleted successfully'
+        description: 'Journal deleted'
       -
         custom: []
         status: 401
@@ -3681,17 +3525,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the fiscal position.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      fiscal_position:
-        custom: []
-        name: fiscal_position
         description: 'The fiscal position ID'
         required: true
         example: 1
@@ -3701,8 +3534,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      fiscal_position: 1
+      id: 1
     queryParameters:
       include:
         custom: []
@@ -3771,17 +3603,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the fiscal position.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      fiscal_position:
-        custom: []
-        name: fiscal_position
         description: 'The fiscal position ID'
         required: true
         example: 1
@@ -3791,8 +3612,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      fiscal_position: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -3972,17 +3792,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the fiscal position.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      fiscal_position:
-        custom: []
-        name: fiscal_position
         description: 'The fiscal position ID'
         required: true
         example: 1
@@ -3992,8 +3801,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      fiscal_position: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -4002,10 +3810,10 @@ endpoints:
     responses:
       -
         custom: []
-        status: 204
-        content: null
+        status: 200
+        content: '{"message": "Fiscal position deleted successfully."}'
         headers: []
-        description: 'Fiscal position deleted successfully'
+        description: 'Fiscal position deleted'
       -
         custom: []
         status: 401
@@ -4198,7 +4006,7 @@ endpoints:
         name: strategy
         description: 'Rounding strategy.'
         required: true
-        example: Webkul\Account\Enums\RoundingStrategy
+        example: biggest_tax
         type: string
         enumValues:
           - biggest_tax
@@ -4211,7 +4019,7 @@ endpoints:
         name: rounding_method
         description: 'Rounding method.'
         required: true
-        example: Webkul\Account\Enums\RoundingMethod
+        example: UP
         type: string
         enumValues:
           - UP
@@ -4255,8 +4063,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       name: '0.05 Rounding'
-      strategy: Webkul\Account\Enums\RoundingStrategy
-      rounding_method: Webkul\Account\Enums\RoundingMethod
+      strategy: biggest_tax
+      rounding_method: UP
       rounding: 0.05
       profit_account_id: 1
       loss_account_id: 2
@@ -4311,17 +4119,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the cash rounding.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      cash_rounding:
-        custom: []
-        name: cash_rounding
         description: 'The cash rounding ID'
         required: true
         example: 1
@@ -4331,8 +4128,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      cash_rounding: 1
+      id: 1
     queryParameters:
       include:
         custom: []
@@ -4401,17 +4197,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the cash rounding.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      cash_rounding:
-        custom: []
-        name: cash_rounding
         description: 'The cash rounding ID'
         required: true
         example: 1
@@ -4421,8 +4206,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      cash_rounding: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -4442,7 +4226,7 @@ endpoints:
         name: strategy
         description: 'Rounding strategy.'
         required: true
-        example: Webkul\Account\Enums\RoundingStrategy
+        example: biggest_tax
         type: string
         enumValues:
           - biggest_tax
@@ -4455,7 +4239,7 @@ endpoints:
         name: rounding_method
         description: 'Rounding method.'
         required: true
-        example: Webkul\Account\Enums\RoundingMethod
+        example: UP
         type: string
         enumValues:
           - UP
@@ -4499,8 +4283,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       name: '0.05 Rounding'
-      strategy: Webkul\Account\Enums\RoundingStrategy
-      rounding_method: Webkul\Account\Enums\RoundingMethod
+      strategy: biggest_tax
+      rounding_method: UP
       rounding: 0.05
       profit_account_id: 1
       loss_account_id: 2
@@ -4561,17 +4345,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the cash rounding.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      cash_rounding:
-        custom: []
-        name: cash_rounding
         description: 'The cash rounding ID'
         required: true
         example: 1
@@ -4581,8 +4354,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      cash_rounding: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -4591,10 +4363,10 @@ endpoints:
     responses:
       -
         custom: []
-        status: 204
-        content: null
+        status: 200
+        content: '{"message": "Cash rounding deleted successfully."}'
         headers: []
-        description: 'Cash rounding deleted successfully'
+        description: 'Cash rounding deleted'
       -
         custom: []
         status: 401

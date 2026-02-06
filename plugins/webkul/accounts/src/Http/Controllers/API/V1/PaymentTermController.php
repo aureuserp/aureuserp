@@ -2,7 +2,6 @@
 
 namespace Webkul\Account\Http\Controllers\API\V1;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -114,7 +113,7 @@ class PaymentTermController extends Controller
 
     #[Endpoint('Delete payment term', 'Soft delete a payment term')]
     #[UrlParam('id', 'integer', 'The payment term ID', required: true, example: 1)]
-    #[Response(status: 204, description: 'Payment term deleted successfully')]
+    #[Response(status: 200, description: 'Payment term deleted', content: '{"message": "Payment term deleted successfully."}')]
     #[Response(status: 404, description: 'Payment term not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $id)
@@ -125,7 +124,9 @@ class PaymentTermController extends Controller
 
         $paymentTerm->delete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Payment term deleted successfully.',
+        ]);
     }
 
     #[Endpoint('Restore payment term', 'Restore a soft-deleted payment term')]
@@ -147,7 +148,7 @@ class PaymentTermController extends Controller
 
     #[Endpoint('Force delete payment term', 'Permanently delete a payment term')]
     #[UrlParam('id', 'integer', 'The payment term ID', required: true, example: 1)]
-    #[Response(status: 204, description: 'Payment term permanently deleted')]
+    #[Response(status: 200, description: 'Payment term permanently deleted', content: '{"message": "Payment term permanently deleted."}')]
     #[Response(status: 404, description: 'Payment term not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function forceDestroy(string $id)
@@ -158,6 +159,8 @@ class PaymentTermController extends Controller
 
         $paymentTerm->forceDelete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'Payment term permanently deleted.',
+        ]);
     }
 }
