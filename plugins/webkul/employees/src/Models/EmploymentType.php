@@ -8,6 +8,7 @@ use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Employee\Database\Factories\EmploymentTypeFactory;
 use Webkul\Field\Traits\HasCustomFields;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Country;
 
@@ -47,7 +48,7 @@ class EmploymentType extends Model implements Sortable
         static::creating(function ($employmentType) {
             $employmentType->code ??= $employmentType->name;
 
-            $employmentType->creator_id = filament()->auth()->id();
+            $employmentType->creator_id = Auth::id();
         });
     }
 

@@ -3,6 +3,7 @@
 namespace Webkul\Project\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -186,9 +187,9 @@ class Task extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($task) {
-            $task->creator_id = filament()->auth()->id();
+            $task->creator_id = Auth::id();
 
-            $task->company_id = filament()->auth()->user()->default_company_id;
+            $task->company_id = Auth::user()->default_company_id;
         });
 
         static::updated(function ($task) {

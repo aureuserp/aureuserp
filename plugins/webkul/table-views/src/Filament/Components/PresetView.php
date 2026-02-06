@@ -5,6 +5,7 @@ namespace Webkul\TableViews\Filament\Components;
 use Closure;
 use Filament\Schemas\Components\Tabs\Tab;
 use Webkul\TableViews\Models\TableViewFavorite;
+use Illuminate\Support\Facades\Auth;
 
 class PresetView extends Tab
 {
@@ -27,7 +28,7 @@ class PresetView extends Tab
     public function getFavoriteTableViews(): mixed
     {
         return TableViewFavorite::query()
-            ->where('user_id', filament()->auth()->id())
+            ->where('user_id', Auth::id())
             ->get();
     }
 

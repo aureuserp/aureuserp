@@ -5,6 +5,7 @@ namespace Webkul\Employee\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Database\Factories\EmployeeSkillFactory;
 use Webkul\Security\Models\User;
 
@@ -52,7 +53,7 @@ class EmployeeSkill extends Model
         parent::boot();
 
         static::creating(function ($employeeSkill) {
-            $employeeSkill->creator_id = filament()->auth()->id();
+            $employeeSkill->creator_id = Auth::id();
         });
     }
 

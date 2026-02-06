@@ -4,6 +4,7 @@ namespace Webkul\Account\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Webkul\Account\Database\Factories\PaymentDueTermFactory;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Security\Models\User;
 
@@ -56,5 +57,10 @@ class PaymentDueTerm extends Model
         }
 
         return $dueDate->copy()->addDays($this->nb_days);
+    }
+
+    protected static function newFactory(): PaymentDueTermFactory
+    {
+        return PaymentDueTermFactory::new();
     }
 }

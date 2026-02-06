@@ -7,6 +7,7 @@ use Filament\Actions\Concerns\CanCustomizeProcess;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Support\Enums\Width;
+use Illuminate\Support\Facades\Auth;
 use Guava\IconPicker\Forms\Components\IconPicker;
 use Webkul\TableViews\Models\TableView;
 use Webkul\TableViews\Models\TableViewFavorite;
@@ -30,7 +31,7 @@ class EditViewAction extends Action
                 $tableView = TableView::find($arguments['view_key']);
 
                 $tableViewFavorite = TableViewFavorite::query()
-                    ->where('user_id', filament()->auth()->id())
+                    ->where('user_id', Auth::id())
                     ->where('view_type', 'saved')
                     ->where('view_key', $tableView->id)
                     ->where('filterable_type', $tableView->filterable_type)
@@ -73,7 +74,7 @@ class EditViewAction extends Action
                             'view_type'       => 'saved',
                             'view_key'        => $tableView->id,
                             'filterable_type' => $tableView->filterable_type,
-                            'user_id'         => filament()->auth()->id(),
+                            'user_id'         => Auth::id(),
                         ], [
                             'is_favorite' => $data['is_favorite'],
                         ]

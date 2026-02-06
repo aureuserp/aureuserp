@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Webkul\Partner\Database\Factories\BankAccountFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Bank;
+use Illuminate\Support\Facades\Auth;
 
 class BankAccount extends Model
 {
@@ -69,7 +70,7 @@ class BankAccount extends Model
         parent::boot();
 
         static::creating(function ($bankAccount) {
-            $bankAccount->creator_id = filament()->auth()->id();
+            $bankAccount->creator_id = Auth::id();
 
             $bankAccount->account_holder_name = $bankAccount->partner->name;
         });

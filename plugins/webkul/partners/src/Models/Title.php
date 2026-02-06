@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Webkul\Partner\Database\Factories\TitleFactory;
 use Webkul\Security\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class Title extends Model
 {
@@ -43,7 +44,7 @@ class Title extends Model
         parent::boot();
 
         static::creating(function ($title) {
-            $title->creator_id = filament()->auth()->id();
+            $title->creator_id = Auth::id();
         });
     }
 

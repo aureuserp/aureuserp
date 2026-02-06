@@ -5,6 +5,7 @@ namespace Webkul\Project\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Webkul\Project\Database\Factories\TagFactory;
 use Webkul\Security\Models\User;
@@ -41,7 +42,7 @@ class Tag extends Model
         parent::boot();
 
         static::creating(function ($tag) {
-            $tag->creator_id = filament()->auth()->id();
+            $tag->creator_id = Auth::id();
         });
     }
 

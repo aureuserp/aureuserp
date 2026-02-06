@@ -5,6 +5,7 @@ namespace Webkul\Support\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Security\Models\User;
+use Webkul\Support\Database\Factories\UtmCampaignFactory;
 
 class UtmCampaign extends Model
 {
@@ -42,5 +43,10 @@ class UtmCampaign extends Model
     public function company()
     {
         return $this->belongsTo(Company::class, 'company_id');
+    }
+
+    protected static function newFactory()
+    {
+        return UtmCampaignFactory::new();
     }
 }

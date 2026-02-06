@@ -6,6 +6,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveType;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Journal;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource;
@@ -44,7 +45,7 @@ class CreateJournalEntry extends CreateRecord
         parent::mount();
 
         $journal = Journal::where('type', JournalType::GENERAL)
-            ->where('company_id', filament()->auth()->user()->default_company_id)
+            ->where('company_id', Auth::user()->default_company_id)
             ->first();
 
         $this->data['move_type'] ??= MoveType::ENTRY->value;

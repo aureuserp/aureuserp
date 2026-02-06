@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Webkul\Partner\Database\Factories\IndustryFactory;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 
 class Industry extends Model
@@ -28,18 +29,7 @@ class Industry extends Model
     protected $fillable = [
         'name',
         'description',
-        'is_active',
-        'can_send_money',
         'creator_id',
-    ];
-
-    /**
-     * Table name.
-     *
-     * @var string
-     */
-    protected $casts = [
-        'is_active' => 'boolean',
     ];
 
     public function creator(): BelongsTo
@@ -55,7 +45,7 @@ class Industry extends Model
         parent::boot();
 
         static::creating(function ($industry) {
-            $industry->creator_id = filament()->auth()->id();
+            $industry->creator_id = Auth::id();
         });
     }
 

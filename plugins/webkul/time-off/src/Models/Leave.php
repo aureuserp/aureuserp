@@ -13,6 +13,7 @@ use Webkul\Employee\Models\Employee;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\TimeOff\Enums\RequestDateFromPeriod;
+use Illuminate\Support\Facades\Auth;
 use Webkul\TimeOff\Enums\State;
 
 class Leave extends Model
@@ -156,9 +157,9 @@ class Leave extends Model
         parent::boot();
 
         static::creating(function ($leave) {
-            $leave->creator_id = filament()->auth()->id();
+            $leave->creator_id = Auth::id();
 
-            $leave->company_id = filament()->auth()->user()->default_company_id;
+            $leave->company_id = Auth::user()->default_company_id;
         });
     }
 }

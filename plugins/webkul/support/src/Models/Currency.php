@@ -2,11 +2,16 @@
 
 namespace Webkul\Support\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Webkul\Support\Database\Factories\CurrencyFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
 
 class Currency extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'name',
         'symbol',
@@ -54,7 +59,7 @@ class Currency extends Model
             return 1;
         }
 
-        $company = $company ?? auth()->user()->defaultCompany ?? null;
+        $company = $company ?? Auth::user()->defaultCompany ?? null;
 
         $date = $date ?? now()->toDateString();
 
@@ -130,5 +135,10 @@ class Currency extends Model
     protected function isInteger($value)
     {
         return is_numeric($value) && floatval($value) == intval($value);
+    }
+
+    protected static function newFactory()
+    {
+        return CurrencyFactory::new();
     }
 }

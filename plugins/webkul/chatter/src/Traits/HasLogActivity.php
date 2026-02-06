@@ -6,6 +6,8 @@ use BackedEnum;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
+use Filament\Facades\Filament;
+use Illuminate\Support\Facades\Auth;
 
 trait HasLogActivity
 {
@@ -38,7 +40,7 @@ trait HasLogActivity
      */
     public function logModelActivity(string $event): ?Model
     {
-        $user = filament()->auth()->user();
+        $user = Filament::auth()->user() ?? Auth::user();
 
         try {
             $changes = $this->determineChanges($event);
@@ -53,8 +55,8 @@ trait HasLogActivity
                 'body'         => $this->generateActivityDescription($event),
                 'subject_type' => $this->getMorphClass(),
                 'subject_id'   => $this->getKey(),
-                'causer_type'  => $user->getMorphClass(),
-                'causer_id'    => $user->id,
+                'causer_type'  => $user?->getMorphClass(),
+                'causer_id'    => $user?->id,
                 'event'        => $event,
                 'properties'   => $changes,
             ]);

@@ -201,11 +201,6 @@ class PackagingResource extends Resource
                 CreateAction::make()
                     ->label(__('products::filament/resources/packaging.table.empty-state-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
-                    ->mutateDataUsing(function (array $data): array {
-                        $data['creator_id'] = Auth::id();
-
-                        return $data;
-                    })
                     ->successNotification(
                         Notification::make()
                             ->success()

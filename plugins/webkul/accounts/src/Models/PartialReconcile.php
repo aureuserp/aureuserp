@@ -4,6 +4,7 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Currency;
 
@@ -77,7 +78,7 @@ class PartialReconcile extends Model
 
     public function computeCreatedBy()
     {
-        $this->created_by = filament()->auth()->user()->id ?? null;
+        $this->created_by = Auth::user()->id ?? null;
     }
 
     public function computeDebitCurrencyId()

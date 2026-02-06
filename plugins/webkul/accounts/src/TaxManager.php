@@ -8,6 +8,7 @@ use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Models\Account;
 use Webkul\Account\Models\Product;
 use Webkul\Account\Models\Tax;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Models\TaxPartition;
 use Webkul\Account\Settings\TaxesSettings;
 use Webkul\Partner\Models\Partner;
@@ -870,7 +871,7 @@ class TaxManager
         if ($roundingMethod === 'round_per_line') {
             $rawBase = float_round(
                 $rawBase,
-                precisionRounding: $precisionRounding ?: filament()->auth()->user()->company->currency->rounding
+                precisionRounding: $precisionRounding ?: Auth::user()->company->currency->rounding
             );
         }
 

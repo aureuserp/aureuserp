@@ -19,6 +19,7 @@ use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\BankAccount;
 use Webkul\Partner\Models\Partner;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
@@ -444,7 +445,7 @@ class Move extends Model implements Sortable
             return;
         }
 
-        $this->creator_id = auth()->id();
+        $this->creator_id = Auth::id();
     }
 
     public function computeName()

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Security\Models\User;
@@ -84,7 +85,7 @@ class ActivityType extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($activityType) {
-            $activityType->creator_id = filament()->auth()->id();
+            $activityType->creator_id = Auth::id();
         });
     }
 }

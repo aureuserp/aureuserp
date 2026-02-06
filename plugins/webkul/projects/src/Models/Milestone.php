@@ -5,6 +5,7 @@ namespace Webkul\Project\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Project\Database\Factories\MilestoneFactory;
 use Webkul\Security\Models\User;
 
@@ -59,7 +60,7 @@ class Milestone extends Model
         parent::boot();
 
         static::creating(function ($milestone) {
-            $milestone->creator_id = filament()->auth()->id();
+            $milestone->creator_id = Auth::id();
         });
     }
 

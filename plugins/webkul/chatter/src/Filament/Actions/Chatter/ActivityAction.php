@@ -6,6 +6,7 @@ use Exception;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -131,7 +132,7 @@ class ActivityAction extends Action
             })
             ->action(function (array $data, ?Model $record = null) {
                 try {
-                    $user = filament()->auth()->user();
+                    $user = Auth::user();
 
                     $data['assigned_to'] = $data['assigned_to'] ?? $user->id;
 

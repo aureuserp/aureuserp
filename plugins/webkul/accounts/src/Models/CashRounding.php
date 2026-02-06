@@ -3,6 +3,7 @@
 namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Webkul\Account\Database\Factories\CashRoundingFactory;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Currency;
@@ -50,5 +51,10 @@ class CashRounding extends Model
     public function round(float $amount): float
     {
         return float_round($amount, precisionRounding: $this->rounding, roundingMethod: $this->rounding_method);
+    }
+
+    protected static function newFactory()
+    {
+        return CashRoundingFactory::new();
     }
 }

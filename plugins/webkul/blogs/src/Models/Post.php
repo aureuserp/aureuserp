@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Blog\Database\Factories\PostFactory;
 use Webkul\Security\Models\User;
 
@@ -109,9 +110,9 @@ class Post extends Model
         parent::boot();
 
         static::creating(function ($post) {
-            $post->author_id = filament()->auth()->id();
+            $post->author_id = Auth::id();
 
-            $post->creator_id = filament()->auth()->id();
+            $post->creator_id = Auth::id();
         });
     }
 

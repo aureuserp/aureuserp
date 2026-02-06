@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Webkul\Employee\Database\Factories\EmployeeCategoryFactory;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeeCategory extends Model
 {
@@ -26,7 +27,7 @@ class EmployeeCategory extends Model
         parent::boot();
 
         static::creating(function ($employeeCategory) {
-            $employeeCategory->creator_id = filament()->auth()->id();
+            $employeeCategory->creator_id = Auth::id();
 
             $employeeCategory->color ??= random_color();
 

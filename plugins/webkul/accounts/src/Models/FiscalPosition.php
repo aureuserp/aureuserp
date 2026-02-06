@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Account\Database\Factories\FiscalPositionFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
@@ -75,5 +76,10 @@ class FiscalPosition extends Model implements Sortable
         return $mapping
             ? Account::find($mapping->account_destination_id)
             : $account;
+    }
+
+    protected static function newFactory()
+    {
+        return FiscalPositionFactory::new();
     }
 }

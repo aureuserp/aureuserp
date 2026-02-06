@@ -7,6 +7,7 @@ use Webkul\Employee\Models\Skill;
 use Webkul\Employee\Models\SkillLevel;
 use Webkul\Employee\Models\SkillType;
 use Webkul\Security\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class CandidateSkill extends Model
 {
@@ -56,7 +57,7 @@ class CandidateSkill extends Model
         parent::boot();
 
         static::creating(function ($candidateSkill) {
-            $candidateSkill->creator_id ??= filament()->auth()->id();
+            $candidateSkill->creator_id ??= Auth::id();
         });
     }
 }

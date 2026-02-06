@@ -3,6 +3,7 @@
 namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Webkul\Account\Database\Factories\TaxGroupFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
@@ -43,5 +44,10 @@ class TaxGroup extends Model implements Sortable
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    protected static function newFactory(): TaxGroupFactory
+    {
+        return TaxGroupFactory::new();
     }
 }

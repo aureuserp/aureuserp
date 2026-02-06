@@ -4,6 +4,7 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 
 class FullReconcile extends Model
@@ -38,6 +39,6 @@ class FullReconcile extends Model
 
     public function computeCreatedId()
     {
-        $this->created_id = filament()->auth()->user()->id ?? null;
+        $this->created_id = Auth::user()->id ?? null;
     }
 }

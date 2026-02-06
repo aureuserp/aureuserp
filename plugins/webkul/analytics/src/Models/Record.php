@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
+use Illuminate\Support\Facades\Auth;
 
 class Record extends Model
 {
@@ -71,7 +72,7 @@ class Record extends Model
         parent::boot();
 
         static::creating(function ($record) {
-            $record->creator_id = filament()->auth()->id();
+            $record->creator_id = Auth::id();
         });
     }
 }

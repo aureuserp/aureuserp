@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 use Webkul\Blog\Database\Factories\CategoryFactory;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 
 class Category extends Model
@@ -67,7 +68,7 @@ class Category extends Model
         parent::boot();
 
         static::creating(function ($category) {
-            $category->creator_id = filament()->auth()->id();
+            $category->creator_id = Auth::id();
         });
     }
 

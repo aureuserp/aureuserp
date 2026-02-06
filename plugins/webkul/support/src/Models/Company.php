@@ -168,6 +168,8 @@ class Company extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($company) {
+            $company->creator_id = Auth::id();
+
             if (! $company->partner_id) {
                 $partner = Partner::create([
                     'creator_id'       => $company->creator_id ?? Auth::id(),

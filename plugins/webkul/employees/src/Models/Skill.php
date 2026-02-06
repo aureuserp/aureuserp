@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
@@ -56,7 +57,7 @@ class Skill extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($skill) {
-            $skill->creator_id = filament()->auth()->id();
+            $skill->creator_id = Auth::id();
         });
     }
 

@@ -3,6 +3,7 @@
 namespace Webkul\TimeOff\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -64,9 +65,9 @@ class LeaveAccrualPlan extends Model
         parent::boot();
 
         static::creating(function ($leaveAccrualPlan) {
-            $leaveAccrualPlan->creator_id = filament()->auth()->id();
+            $leaveAccrualPlan->creator_id = Auth::id();
 
-            $leaveAccrualPlan->company_id ??= filament()->auth()->user()->default_company_id;
+            $leaveAccrualPlan->company_id ??= Auth::user()->default_company_id;
         });
     }
 }

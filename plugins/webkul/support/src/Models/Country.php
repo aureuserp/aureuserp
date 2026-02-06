@@ -2,12 +2,15 @@
 
 namespace Webkul\Support\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Webkul\Support\Database\Factories\CountryFactory;
 
 class Country extends Model
 {
+    use HasFactory;
     /**
      * The attributes that are mass assignable.
      *
@@ -50,5 +53,10 @@ class Country extends Model
     public function states()
     {
         return $this->hasMany(State::class, 'country_id');
+    }
+
+    protected static function newFactory()
+    {
+        return CountryFactory::new();
     }
 }

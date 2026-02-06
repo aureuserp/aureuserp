@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Webkul\Partner\Database\Factories\TagFactory;
 use Webkul\Security\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class Tag extends Model
 {
@@ -44,7 +45,7 @@ class Tag extends Model
         parent::boot();
 
         static::creating(function ($tag) {
-            $tag->creator_id = filament()->auth()->id();
+            $tag->creator_id = Auth::id();
         });
     }
 

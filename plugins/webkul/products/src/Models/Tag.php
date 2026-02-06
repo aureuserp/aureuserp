@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Webkul\Product\Database\Factories\TagFactory;
 use Webkul\Security\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class Tag extends Model
 {
@@ -34,6 +35,15 @@ class Tag extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($tag) {
+            $tag->creator_id = Auth::id();
+        });
     }
 
     protected static function newFactory(): TagFactory

@@ -5,6 +5,7 @@ namespace Webkul\Recruitment\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
@@ -234,9 +235,9 @@ class Applicant extends Model
         parent::boot();
 
         static::creating(function ($applicant) {
-            $applicant->creator_id ??= filament()->auth()->id();
+            $applicant->creator_id ??= Auth::id();
 
-            $applicant->company_id ??= filament()->auth()->user()->default_company_id;
+            $applicant->company_id ??= Auth::user()->default_company_id;
         });
     }
 }
