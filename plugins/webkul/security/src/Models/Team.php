@@ -5,6 +5,7 @@ namespace Webkul\Security\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Traits\HasPermissionScope;
 
 class Team extends Model
@@ -35,5 +36,14 @@ class Team extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'user_team', 'team_id', 'user_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($team) {
+            $team->creator_id ??= Auth::id();
+        });
     }
 }

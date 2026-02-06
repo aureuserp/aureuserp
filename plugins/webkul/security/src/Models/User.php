@@ -3,12 +3,12 @@
 namespace Webkul\Security\Models;
 
 use App\Models\User as BaseUser;
-use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
 use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthentication;
-use Filament\Auth\MultiFactor\Email\Contracts\HasEmailAuthentication;
-use Filament\Auth\MultiFactor\Email\Concerns\InteractsWithEmailAuthentication;
-use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
 use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthenticationRecovery;
+use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
+use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
+use Filament\Auth\MultiFactor\Email\Concerns\InteractsWithEmailAuthentication;
+use Filament\Auth\MultiFactor\Email\Contracts\HasEmailAuthentication;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,14 +26,14 @@ use Webkul\Security\Enums\PermissionType;
 use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 
-class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasEmailAuthentication, HasAppAuthenticationRecovery
+class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery, HasEmailAuthentication
 {
-    use HasRoles,
+    use HasPermissionScope,
+        HasRoles,
         InteractsWithAppAuthentication,
-        InteractsWithEmailAuthentication,
         InteractsWithAppAuthenticationRecovery,
-        SoftDeletes,
-        HasPermissionScope;
+        InteractsWithEmailAuthentication,
+        SoftDeletes;
 
     public function __construct(array $attributes = [])
     {
@@ -112,6 +112,10 @@ class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasEm
     protected static function boot()
     {
         parent::boot();
+
+        static::creating(function ($user) {
+            $user->creator_id ??= Auth::id();
+        });
 
         static::saved(function ($user) {
             if (! $user->partner_id) {
