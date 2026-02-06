@@ -27,7 +27,7 @@ class PaymentTermResource extends JsonResource
             'deleted_at' => $this->deleted_at,
             'company'    => CompanyResource::make($this->whenLoaded('company')),
             'creator'    => UserResource::make($this->whenLoaded('creator')),
-            'due-terms'  => PaymentDueTermResource::collection($this->whenLoaded('dueTerms')),
+            'due_terms'  => PaymentDueTermResource::collection($this->whenLoaded('dueTerms')),
         ];
     }
 }

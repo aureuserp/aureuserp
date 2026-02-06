@@ -42,13 +42,13 @@ class TaxResource extends JsonResource
             'created_at'                       => $this->created_at,
             'updated_at'                       => $this->updated_at,
             'company'                          => CompanyResource::make($this->whenLoaded('company')),
-            'taxGroup'                         => TaxGroupResource::make($this->whenLoaded('taxGroup')),
-            'cashBasisTransitionAccount'       => AccountResource::make($this->whenLoaded('cashBasisTransitionAccount')),
+            'tax_group'                        => TaxGroupResource::make($this->whenLoaded('taxGroup')),
+            'cash_basis_transition_account'    => AccountResource::make($this->whenLoaded('cashBasisTransitionAccount')),
             'country'                          => CountryResource::make($this->whenLoaded('country')),
             'creator'                          => UserResource::make($this->whenLoaded('creator')),
-            'childrenTaxes'                    => self::collection($this->whenLoaded('childrenTaxes')),
-            'invoiceRepartitionLines'          => TaxPartitionResource::collection($this->whenLoaded('invoiceRepartitionLines')),
-            'refundRepartitionLines'           => TaxPartitionResource::collection($this->whenLoaded('refundRepartitionLines')),
+            'children_taxes'                   => self::collection($this->whenLoaded('childrenTaxes')),
+            'invoice_repartition_lines'        => TaxPartitionResource::collection($this->whenLoaded('invoiceRepartitionLines')),
+            'refund_repartition_lines'         => TaxPartitionResource::collection($this->whenLoaded('refundRepartitionLines')),
         ];
     }
 }

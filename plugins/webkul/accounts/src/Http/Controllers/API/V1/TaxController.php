@@ -14,12 +14,14 @@ use Knuckles\Scribe\Attributes\UrlParam;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Webkul\Account\Enums\AmountType;
+use Webkul\Account\Enums\DocumentType;
 use Webkul\Account\Enums\TaxIncludeOverride;
 use Webkul\Account\Enums\TaxScope;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Http\Requests\TaxRequest;
 use Webkul\Account\Http\Resources\V1\TaxResource;
 use Webkul\Account\Models\Tax;
+use Webkul\Account\Models\TaxPartition;
 
 #[Group('Account API Management')]
 #[Subgroup('Taxes', 'Manage taxes')]
@@ -27,7 +29,7 @@ use Webkul\Account\Models\Tax;
 class TaxController extends Controller
 {
     #[Endpoint('List taxes', 'Retrieve a paginated list of taxes with filtering and sorting')]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, taxGroup, cashBasisTransitionAccount, country, creator, childrenTaxes, invoiceRepartitionLines, refundRepartitionLines', required: false, example: 'company')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, taxGroup, cashBasisTransitionAccount, country, creator, childrenTaxes, invoiceRepartitionLines, refundRepartitionLines', required: false, example: 'invoiceRepartitionLines,refundRepartitionLines')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[name]', 'string', 'Filter by tax name (partial match)', required: false, example: 'No-example')]
     #[QueryParam('filter[company_id]', 'int', 'Filter by company ID', required: false, example: 'No-example')]
@@ -40,7 +42,7 @@ class TaxController extends Controller
     #[QueryParam('filter[is_active]', 'boolean', 'Filter by active status', required: false, example: 'No-example')]
     #[QueryParam('sort', 'string', 'Sort field', example: 'sort')]
     #[QueryParam('page', 'int', 'Page number', example: 1)]
-    #[ResponseFromApiResource(TaxResource::class, Tax::class, collection: true, paginate: 10)]
+    #[ResponseFromApiResource(TaxResource::class, Tax::class, collection: true, paginate: 10, with: ['invoiceRepartitionLines', 'refundRepartitionLines'])]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index()
     {
@@ -85,7 +87,37 @@ class TaxController extends Controller
 
         $data = $request->validated();
 
+        $invoiceRepartitionLines = $data['invoice_repartition_lines'] ?? [];
+        $refundRepartitionLines = $data['refund_repartition_lines'] ?? [];
+        unset($data['invoice_repartition_lines'], $data['refund_repartition_lines']);
+
         $tax = Tax::create($data);
+
+        foreach ($invoiceRepartitionLines as $index => $line) {
+            $tax->invoiceRepartitionLines()->create([
+                'repartition_type'    => $line['repartition_type'],
+                'factor_percent'      => $line['factor_percent'] ?? null,
+                'account_id'          => $line['account_id'] ?? null,
+                'use_in_tax_closing'  => $line['use_in_tax_closing'] ?? false,
+                'document_type'       => DocumentType::INVOICE,
+                'sort'                => $index,
+            ]);
+        }
+
+        foreach ($refundRepartitionLines as $index => $line) {
+            $tax->refundRepartitionLines()->create([
+                'repartition_type'    => $line['repartition_type'],
+                'factor_percent'      => $line['factor_percent'] ?? null,
+                'account_id'          => $line['account_id'] ?? null,
+                'use_in_tax_closing'  => $line['use_in_tax_closing'] ?? false,
+                'document_type'       => DocumentType::REFUND,
+                'sort'                => $index,
+            ]);
+        }
+
+        TaxPartition::validateRepartitionLines($tax->id);
+
+        $tax->load(['invoiceRepartitionLines', 'refundRepartitionLines']);
 
         return (new TaxResource($tax))
             ->additional(['message' => 'Tax created successfully.'])
@@ -95,8 +127,8 @@ class TaxController extends Controller
 
     #[Endpoint('Show tax', 'Retrieve a specific tax by its ID')]
     #[UrlParam('id', 'integer', 'The tax ID', required: true, example: 1)]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, taxGroup, cashBasisTransitionAccount, country, creator, childrenTaxes, invoiceRepartitionLines, refundRepartitionLines', required: false, example: 'company,taxGroup')]
-    #[ResponseFromApiResource(TaxResource::class, Tax::class)]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, taxGroup, cashBasisTransitionAccount, country, creator, childrenTaxes, invoiceRepartitionLines, refundRepartitionLines', required: false, example: 'invoiceRepartitionLines,refundRepartitionLines')]
+    #[ResponseFromApiResource(TaxResource::class, Tax::class, with: ['invoiceRepartitionLines', 'refundRepartitionLines'])]
     #[Response(status: 404, description: 'Tax not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function show(string $id)
@@ -131,10 +163,74 @@ class TaxController extends Controller
 
         Gate::authorize('update', $tax);
 
-        $tax->update($request->validated());
+        $data = $request->validated();
+
+        $invoiceRepartitionLines = $data['invoice_repartition_lines'] ?? [];
+        $refundRepartitionLines = $data['refund_repartition_lines'] ?? [];
+        unset($data['invoice_repartition_lines'], $data['refund_repartition_lines']);
+
+        $tax->update($data);
+
+        $this->syncRepartitionLines(
+            $tax->invoiceRepartitionLines()->orderBy('sort')->get(),
+            $invoiceRepartitionLines,
+            $tax,
+            DocumentType::INVOICE
+        );
+
+        $this->syncRepartitionLines(
+            $tax->refundRepartitionLines()->orderBy('sort')->get(),
+            $refundRepartitionLines,
+            $tax,
+            DocumentType::REFUND
+        );
+
+        TaxPartition::validateRepartitionLines($tax->id);
+
+        $tax->load(['invoiceRepartitionLines', 'refundRepartitionLines']);
 
         return (new TaxResource($tax))
             ->additional(['message' => 'Tax updated successfully.']);
+    }
+
+    /**
+     * Sync repartition lines - update existing, create new, delete removed.
+     */
+    protected function syncRepartitionLines($existingLines, array $newLines, Tax $tax, DocumentType $documentType): void
+    {
+        $relationMethod = $documentType === DocumentType::INVOICE
+            ? 'invoiceRepartitionLines'
+            : 'refundRepartitionLines';
+
+        $processedIds = [];
+
+        foreach ($newLines as $index => $lineData) {
+            $attributes = [
+                'repartition_type'   => $lineData['repartition_type'],
+                'factor_percent'     => $lineData['factor_percent'] ?? null,
+                'account_id'         => $lineData['account_id'] ?? null,
+                'use_in_tax_closing' => $lineData['use_in_tax_closing'] ?? false,
+                'sort'               => $index,
+            ];
+
+            if (isset($lineData['id'])) {
+                $line = $existingLines->firstWhere('id', $lineData['id']);
+                if ($line) {
+                    $line->update($attributes);
+                    $processedIds[] = $lineData['id'];
+                }
+            } else {
+                $tax->$relationMethod()->create(array_merge($attributes, [
+                    'document_type' => $documentType,
+                ]));
+            }
+        }
+
+        foreach ($existingLines as $line) {
+            if (! in_array($line->id, $processedIds)) {
+                $line->delete();
+            }
+        }
     }
 
     #[Endpoint('Delete tax', 'Delete a tax')]

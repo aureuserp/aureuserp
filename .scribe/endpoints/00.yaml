@@ -111,7 +111,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null,"due-terms":[{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}]},{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null,"due-terms":[{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null,"due_terms":[{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}]},{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null,"due_terms":[{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -271,7 +271,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null,"due-terms":[{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}]}}'
+        content: '{"data":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null,"due_terms":[{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}]}}'
         headers: []
         description: ''
       -
@@ -4902,9 +4902,9 @@ endpoints:
       include:
         custom: []
         name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, taxGroup, cashBasisTransitionAccount, country, createdBy, childrenTaxes, invoiceRepartitionLines, refundRepartitionLines'
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, taxGroup, cashBasisTransitionAccount, country, creator, childrenTaxes, invoiceRepartitionLines, refundRepartitionLines'
         required: false
-        example: company
+        example: 'invoiceRepartitionLines,refundRepartitionLines'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -5056,7 +5056,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanQueryParameters:
-      include: company
+      include: 'invoiceRepartitionLines,refundRepartitionLines'
       sort: sort
       page: 1
     bodyParameters: []
@@ -5066,7 +5066,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},{"id":1,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","invoice_repartition_lines":[],"refund_repartition_lines":[]},{"id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","invoice_repartition_lines":[],"refund_repartition_lines":[]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -5318,6 +5318,162 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
+      invoice_repartition_lines:
+        custom: []
+        name: invoice_repartition_lines
+        description: 'Tax repartition lines for invoices (at least 1 base and 1 tax line required). For updates: include "id" to update existing line, omit to create new. Lines not included will be deleted. Must have at least 2 items.'
+        required: true
+        example:
+          -
+            repartition_type: base
+            factor_percent: null
+            account_id: null
+            use_in_tax_closing: false
+          -
+            repartition_type: tax
+            factor_percent: 100.0
+            account_id: 1
+            use_in_tax_closing: false
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      refund_repartition_lines:
+        custom: []
+        name: refund_repartition_lines
+        description: 'Tax repartition lines for refunds (must match invoice lines structure). For updates: include "id" to update existing line, omit to create new. Lines not included will be deleted. Must have at least 2 items.'
+        required: true
+        example:
+          -
+            repartition_type: base
+            factor_percent: null
+            account_id: null
+            use_in_tax_closing: false
+          -
+            repartition_type: tax
+            factor_percent: 100.0
+            account_id: 1
+            use_in_tax_closing: false
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'invoice_repartition_lines[].id':
+        custom: []
+        name: 'invoice_repartition_lines[].id'
+        description: 'The <code>id</code> of an existing record in the accounts_tax_partition_lines table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'invoice_repartition_lines[].repartition_type':
+        custom: []
+        name: 'invoice_repartition_lines[].repartition_type'
+        description: ''
+        required: true
+        example: base
+        type: string
+        enumValues:
+          - base
+          - tax
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'invoice_repartition_lines[].factor_percent':
+        custom: []
+        name: 'invoice_repartition_lines[].factor_percent'
+        description: 'Must be at least -100. Must not be greater than 100.'
+        required: false
+        example: 22
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'invoice_repartition_lines[].account_id':
+        custom: []
+        name: 'invoice_repartition_lines[].account_id'
+        description: 'The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'invoice_repartition_lines[].use_in_tax_closing':
+        custom: []
+        name: 'invoice_repartition_lines[].use_in_tax_closing'
+        description: ''
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'refund_repartition_lines[].id':
+        custom: []
+        name: 'refund_repartition_lines[].id'
+        description: 'The <code>id</code> of an existing record in the accounts_tax_partition_lines table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'refund_repartition_lines[].repartition_type':
+        custom: []
+        name: 'refund_repartition_lines[].repartition_type'
+        description: ''
+        required: true
+        example: base
+        type: string
+        enumValues:
+          - base
+          - tax
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'refund_repartition_lines[].factor_percent':
+        custom: []
+        name: 'refund_repartition_lines[].factor_percent'
+        description: 'Must be at least -100. Must not be greater than 100.'
+        required: false
+        example: 22
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'refund_repartition_lines[].account_id':
+        custom: []
+        name: 'refund_repartition_lines[].account_id'
+        description: 'The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'refund_repartition_lines[].use_in_tax_closing':
+        custom: []
+        name: 'refund_repartition_lines[].use_in_tax_closing'
+        description: ''
+        required: false
+        example: true
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
     cleanBodyParameters:
       name: 'VAT 20%'
       type_tax_use: sale
@@ -5337,12 +5493,34 @@ endpoints:
       include_base_amount: false
       is_base_affected: false
       analytic: false
+      invoice_repartition_lines:
+        -
+          repartition_type: base
+          factor_percent: null
+          account_id: null
+          use_in_tax_closing: false
+        -
+          repartition_type: tax
+          factor_percent: 100.0
+          account_id: 1
+          use_in_tax_closing: false
+      refund_repartition_lines:
+        -
+          repartition_type: base
+          factor_percent: null
+          account_id: null
+          use_in_tax_closing: true
+        -
+          repartition_type: tax
+          factor_percent: 100.0
+          account_id: 1
+          use_in_tax_closing: false
     fileParameters: []
     responses:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Tax created successfully."}'
+        content: '{"data":{"id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Tax created successfully."}'
         headers: []
         description: ''
       -
@@ -5402,16 +5580,16 @@ endpoints:
       include:
         custom: []
         name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, taxGroup, cashBasisTransitionAccount, country, createdBy, childrenTaxes, invoiceRepartitionLines, refundRepartitionLines'
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, taxGroup, cashBasisTransitionAccount, country, creator, childrenTaxes, invoiceRepartitionLines, refundRepartitionLines'
         required: false
-        example: 'company,taxGroup'
+        example: 'invoiceRepartitionLines,refundRepartitionLines'
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanQueryParameters:
-      include: 'company,taxGroup'
+      include: 'invoiceRepartitionLines,refundRepartitionLines'
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
@@ -5419,7 +5597,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}}'
+        content: '{"data":{"id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","invoice_repartition_lines":[],"refund_repartition_lines":[]}}'
         headers: []
         description: ''
       -
@@ -5690,6 +5868,162 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
+      invoice_repartition_lines:
+        custom: []
+        name: invoice_repartition_lines
+        description: 'Tax repartition lines for invoices (at least 1 base and 1 tax line required). For updates: include "id" to update existing line, omit to create new. Lines not included will be deleted. Must have at least 2 items.'
+        required: true
+        example:
+          -
+            repartition_type: base
+            factor_percent: null
+            account_id: null
+            use_in_tax_closing: false
+          -
+            repartition_type: tax
+            factor_percent: 100.0
+            account_id: 1
+            use_in_tax_closing: false
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      refund_repartition_lines:
+        custom: []
+        name: refund_repartition_lines
+        description: 'Tax repartition lines for refunds (must match invoice lines structure). For updates: include "id" to update existing line, omit to create new. Lines not included will be deleted. Must have at least 2 items.'
+        required: true
+        example:
+          -
+            repartition_type: base
+            factor_percent: null
+            account_id: null
+            use_in_tax_closing: false
+          -
+            repartition_type: tax
+            factor_percent: 100.0
+            account_id: 1
+            use_in_tax_closing: false
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'invoice_repartition_lines[].id':
+        custom: []
+        name: 'invoice_repartition_lines[].id'
+        description: 'The <code>id</code> of an existing record in the accounts_tax_partition_lines table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'invoice_repartition_lines[].repartition_type':
+        custom: []
+        name: 'invoice_repartition_lines[].repartition_type'
+        description: ''
+        required: true
+        example: tax
+        type: string
+        enumValues:
+          - base
+          - tax
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'invoice_repartition_lines[].factor_percent':
+        custom: []
+        name: 'invoice_repartition_lines[].factor_percent'
+        description: 'Must be at least -100. Must not be greater than 100.'
+        required: false
+        example: 22
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'invoice_repartition_lines[].account_id':
+        custom: []
+        name: 'invoice_repartition_lines[].account_id'
+        description: 'The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'invoice_repartition_lines[].use_in_tax_closing':
+        custom: []
+        name: 'invoice_repartition_lines[].use_in_tax_closing'
+        description: ''
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'refund_repartition_lines[].id':
+        custom: []
+        name: 'refund_repartition_lines[].id'
+        description: 'The <code>id</code> of an existing record in the accounts_tax_partition_lines table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'refund_repartition_lines[].repartition_type':
+        custom: []
+        name: 'refund_repartition_lines[].repartition_type'
+        description: ''
+        required: true
+        example: tax
+        type: string
+        enumValues:
+          - base
+          - tax
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'refund_repartition_lines[].factor_percent':
+        custom: []
+        name: 'refund_repartition_lines[].factor_percent'
+        description: 'Must be at least -100. Must not be greater than 100.'
+        required: false
+        example: 22
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'refund_repartition_lines[].account_id':
+        custom: []
+        name: 'refund_repartition_lines[].account_id'
+        description: 'The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'refund_repartition_lines[].use_in_tax_closing':
+        custom: []
+        name: 'refund_repartition_lines[].use_in_tax_closing'
+        description: ''
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
     cleanBodyParameters:
       name: 'VAT 20%'
       type_tax_use: sale
@@ -5709,12 +6043,34 @@ endpoints:
       include_base_amount: false
       is_base_affected: false
       analytic: false
+      invoice_repartition_lines:
+        -
+          repartition_type: base
+          factor_percent: null
+          account_id: null
+          use_in_tax_closing: false
+        -
+          repartition_type: tax
+          factor_percent: 100.0
+          account_id: 1
+          use_in_tax_closing: false
+      refund_repartition_lines:
+        -
+          repartition_type: base
+          factor_percent: null
+          account_id: null
+          use_in_tax_closing: false
+        -
+          repartition_type: tax
+          factor_percent: 100.0
+          account_id: 1
+          use_in_tax_closing: false
     fileParameters: []
     responses:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Tax updated successfully."}'
+        content: '{"data":{"id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Tax updated successfully."}'
         headers: []
         description: ''
       -
