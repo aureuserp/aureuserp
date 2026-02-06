@@ -3859,7 +3859,7 @@ endpoints:
       include:
         custom: []
         name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> createdBy, profitAccount, lossAccount'
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> profitAccount, lossAccount, creator'
         required: false
         example: profitAccount
         type: string
@@ -3949,7 +3949,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":null,"creator_id":null,"name":null,"strategy":null,"rounding_method":null,"rounding":null,"profit_account_id":null,"loss_account_id":null,"created_at":null,"updated_at":null},{"id":null,"creator_id":null,"name":null,"strategy":null,"rounding_method":null,"rounding":null,"profit_account_id":null,"loss_account_id":null,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":null,"name":null,"strategy":null,"rounding_method":null,"rounding":null,"profit_account_id":null,"loss_account_id":null,"creator_id":null,"created_at":null,"updated_at":null},{"id":null,"name":null,"strategy":null,"rounding_method":null,"rounding":null,"profit_account_id":null,"loss_account_id":null,"creator_id":null,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -4073,7 +4073,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":null,"creator_id":null,"name":null,"strategy":null,"rounding_method":null,"rounding":null,"profit_account_id":null,"loss_account_id":null,"created_at":null,"updated_at":null},"message":"Cash rounding created successfully."}'
+        content: '{"data":{"id":null,"name":null,"strategy":null,"rounding_method":null,"rounding":null,"profit_account_id":null,"loss_account_id":null,"creator_id":null,"created_at":null,"updated_at":null},"message":"Cash rounding created successfully."}'
         headers: []
         description: ''
       -
@@ -4133,7 +4133,7 @@ endpoints:
       include:
         custom: []
         name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> createdBy, profitAccount, lossAccount'
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> profitAccount, lossAccount, creator'
         required: false
         example: 'profitAccount,lossAccount'
         type: string
@@ -4150,7 +4150,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"creator_id":null,"name":null,"strategy":null,"rounding_method":null,"rounding":null,"profit_account_id":null,"loss_account_id":null,"created_at":null,"updated_at":null}}'
+        content: '{"data":{"id":null,"name":null,"strategy":null,"rounding_method":null,"rounding":null,"profit_account_id":null,"loss_account_id":null,"creator_id":null,"created_at":null,"updated_at":null}}'
         headers: []
         description: ''
       -
@@ -4293,7 +4293,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"creator_id":null,"name":null,"strategy":null,"rounding_method":null,"rounding":null,"profit_account_id":null,"loss_account_id":null,"created_at":null,"updated_at":null},"message":"Cash rounding updated successfully."}'
+        content: '{"data":{"id":null,"name":null,"strategy":null,"rounding_method":null,"rounding":null,"profit_account_id":null,"loss_account_id":null,"creator_id":null,"created_at":null,"updated_at":null},"message":"Cash rounding updated successfully."}'
         headers: []
         description: ''
       -
@@ -5376,7 +5376,7 @@ endpoints:
         name: 'invoice_repartition_lines[].repartition_type'
         description: ''
         required: true
-        example: base
+        example: tax
         type: string
         enumValues:
           - base
@@ -5411,7 +5411,7 @@ endpoints:
         name: 'invoice_repartition_lines[].use_in_tax_closing'
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -5433,7 +5433,7 @@ endpoints:
         name: 'refund_repartition_lines[].repartition_type'
         description: ''
         required: true
-        example: base
+        example: tax
         type: string
         enumValues:
           - base
@@ -5468,7 +5468,7 @@ endpoints:
         name: 'refund_repartition_lines[].use_in_tax_closing'
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -5498,7 +5498,7 @@ endpoints:
           repartition_type: base
           factor_percent: null
           account_id: null
-          use_in_tax_closing: false
+          use_in_tax_closing: true
         -
           repartition_type: tax
           factor_percent: 100.0
@@ -5509,7 +5509,7 @@ endpoints:
           repartition_type: base
           factor_percent: null
           account_id: null
-          use_in_tax_closing: true
+          use_in_tax_closing: false
         -
           repartition_type: tax
           factor_percent: 100.0
@@ -5983,7 +5983,7 @@ endpoints:
         name: 'refund_repartition_lines[].repartition_type'
         description: ''
         required: true
-        example: tax
+        example: base
         type: string
         enumValues:
           - base
@@ -6018,7 +6018,7 @@ endpoints:
         name: 'refund_repartition_lines[].use_in_tax_closing'
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -6059,7 +6059,7 @@ endpoints:
           repartition_type: base
           factor_percent: null
           account_id: null
-          use_in_tax_closing: false
+          use_in_tax_closing: true
         -
           repartition_type: tax
           factor_percent: 100.0
@@ -8338,7 +8338,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: 'admin/api/v1/accounts/products/{{product}}/variants/{id}/restore'
+    uri: 'admin/api/v1/accounts/products/{product_id}/variants/{id}/restore'
     metadata:
       custom: []
       groupName: 'Account API Management'
@@ -8354,13 +8354,13 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      '{product':
+      product_id:
         custom: []
-        name: '{product'
-        description: ''
+        name: product_id
+        description: 'The product ID'
         required: true
-        example: architecto
-        type: string
+        example: 1
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -8376,21 +8376,9 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      product_id:
-        custom: []
-        name: product_id
-        description: 'The product ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
     cleanUrlParameters:
-      '{product': architecto
-      id: 1
       product_id: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -8427,7 +8415,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'admin/api/v1/accounts/products/{{product}}/variants/{id}/force'
+    uri: 'admin/api/v1/accounts/products/{product_id}/variants/{id}/force'
     metadata:
       custom: []
       groupName: 'Account API Management'
@@ -8443,13 +8431,13 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      '{product':
+      product_id:
         custom: []
-        name: '{product'
-        description: ''
+        name: product_id
+        description: 'The product ID'
         required: true
-        example: architecto
-        type: string
+        example: 1
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -8465,21 +8453,9 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      product_id:
-        custom: []
-        name: product_id
-        description: 'The product ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
     cleanUrlParameters:
-      '{product': architecto
-      id: 1
       product_id: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []

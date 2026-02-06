@@ -3538,7 +3538,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: 'admin/api/v1/support/uom-categories/{{uom-category}}/uoms/{id}/restore'
+    uri: 'admin/api/v1/support/uom-categories/{uom_category_id}/uoms/{id}/restore'
     metadata:
       custom: []
       groupName: 'Support API Management'
@@ -3554,13 +3554,13 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      '{uom-category':
+      uom_category_id:
         custom: []
-        name: '{uom-category'
-        description: ''
+        name: uom_category_id
+        description: 'The UOM category ID'
         required: true
-        example: architecto
-        type: string
+        example: 1
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -3576,21 +3576,9 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      uom_category_id:
-        custom: []
-        name: uom_category_id
-        description: 'The UOM category ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
     cleanUrlParameters:
-      '{uom-category': architecto
-      id: 1
       uom_category_id: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -3627,7 +3615,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'admin/api/v1/support/uom-categories/{{uom-category}}/uoms/{id}/force'
+    uri: 'admin/api/v1/support/uom-categories/{uom_category_id}/uoms/{id}/force'
     metadata:
       custom: []
       groupName: 'Support API Management'
@@ -3643,13 +3631,13 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      '{uom-category':
+      uom_category_id:
         custom: []
-        name: '{uom-category'
-        description: ''
+        name: uom_category_id
+        description: 'The UOM category ID'
         required: true
-        example: architecto
-        type: string
+        example: 1
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -3665,21 +3653,9 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      uom_category_id:
-        custom: []
-        name: uom_category_id
-        description: 'The UOM category ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
     cleanUrlParameters:
-      '{uom-category': architecto
-      id: 1
       uom_category_id: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []

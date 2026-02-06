@@ -25,7 +25,7 @@ use Webkul\Account\Models\CashRounding;
 class CashRoundingController extends Controller
 {
     #[Endpoint('List cash roundings', 'Retrieve a paginated list of cash roundings with filtering and sorting')]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> createdBy, profitAccount, lossAccount', required: false, example: 'profitAccount')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> profitAccount, lossAccount, creator', required: false, example: 'profitAccount')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[name]', 'string', 'Filter by cash rounding name (partial match)', required: false, example: 'No-example')]
     #[QueryParam('filter[strategy]', 'string', 'Filter by rounding strategy', enum: RoundingStrategy::class, required: false, example: 'No-example')]
@@ -47,9 +47,9 @@ class CashRoundingController extends Controller
             ])
             ->allowedSorts(['id', 'name', 'rounding', 'created_at'])
             ->allowedIncludes([
-                'createdBy',
                 'profitAccount',
                 'lossAccount',
+                'creator',
             ])
             ->paginate();
 
@@ -76,7 +76,7 @@ class CashRoundingController extends Controller
 
     #[Endpoint('Show cash rounding', 'Retrieve a specific cash rounding by its ID')]
     #[UrlParam('id', 'integer', 'The cash rounding ID', required: true, example: 1)]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> createdBy, profitAccount, lossAccount', required: false, example: 'profitAccount,lossAccount')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> profitAccount, lossAccount, creator', required: false, example: 'profitAccount,lossAccount')]
     #[ResponseFromApiResource(CashRoundingResource::class, CashRounding::class)]
     #[Response(status: 404, description: 'Cash rounding not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
@@ -84,9 +84,9 @@ class CashRoundingController extends Controller
     {
         $cashRounding = QueryBuilder::for(CashRounding::where('id', $id))
             ->allowedIncludes([
-                'createdBy',
                 'profitAccount',
                 'lossAccount',
+                'creator',
             ])
             ->firstOrFail();
 

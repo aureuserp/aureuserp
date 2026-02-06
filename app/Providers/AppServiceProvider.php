@@ -38,9 +38,9 @@ class AppServiceProvider extends ServiceProvider
                         return $segment;
                     }
 
-                    $parentParam = str($segments[$index - 1])->singular();
+                    $parentParam = str_replace('-', '_', str($segments[$index - 1])->singular()->toString()).'_id';
 
-                    return "{{{$parentParam}}}/{$segment}";
+                    return "{{$parentParam}}/{$segment}";
                 })
                 ->implode('/');
 

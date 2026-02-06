@@ -3495,7 +3495,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: 'admin/api/v1/partners/partners/{{partner}}/addresses/{id}/restore'
+    uri: 'admin/api/v1/partners/partners/{partner_id}/addresses/{id}/restore'
     metadata:
       custom: []
       groupName: 'Partner API Management'
@@ -3511,13 +3511,13 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      '{partner':
+      partner_id:
         custom: []
-        name: '{partner'
-        description: ''
+        name: partner_id
+        description: 'The partner ID'
         required: true
-        example: architecto
-        type: string
+        example: 1
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -3533,21 +3533,9 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      partner_id:
-        custom: []
-        name: partner_id
-        description: 'The partner ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
     cleanUrlParameters:
-      '{partner': architecto
-      id: 1
       partner_id: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -3584,7 +3572,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'admin/api/v1/partners/partners/{{partner}}/addresses/{id}/force'
+    uri: 'admin/api/v1/partners/partners/{partner_id}/addresses/{id}/force'
     metadata:
       custom: []
       groupName: 'Partner API Management'
@@ -3600,13 +3588,13 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      '{partner':
+      partner_id:
         custom: []
-        name: '{partner'
-        description: ''
+        name: partner_id
+        description: 'The partner ID'
         required: true
-        example: architecto
-        type: string
+        example: 1
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -3622,21 +3610,9 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      partner_id:
-        custom: []
-        name: partner_id
-        description: 'The partner ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
     cleanUrlParameters:
-      '{partner': architecto
-      id: 1
       partner_id: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -4188,7 +4164,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: 'admin/api/v1/partners/partners/{{partner}}/bank-accounts/{id}/restore'
+    uri: 'admin/api/v1/partners/partners/{partner_id}/bank-accounts/{id}/restore'
     metadata:
       custom: []
       groupName: 'Partner API Management'
@@ -4204,13 +4180,13 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      '{partner':
+      partner_id:
         custom: []
-        name: '{partner'
-        description: ''
+        name: partner_id
+        description: 'The partner ID'
         required: true
-        example: architecto
-        type: string
+        example: 1
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -4226,21 +4202,9 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      partner_id:
-        custom: []
-        name: partner_id
-        description: 'The partner ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
     cleanUrlParameters:
-      '{partner': architecto
-      id: 1
       partner_id: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -4277,7 +4241,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'admin/api/v1/partners/partners/{{partner}}/bank-accounts/{id}/force'
+    uri: 'admin/api/v1/partners/partners/{partner_id}/bank-accounts/{id}/force'
     metadata:
       custom: []
       groupName: 'Partner API Management'
@@ -4293,13 +4257,13 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      '{partner':
+      partner_id:
         custom: []
-        name: '{partner'
-        description: ''
+        name: partner_id
+        description: 'The partner ID'
         required: true
-        example: architecto
-        type: string
+        example: 1
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -4315,21 +4279,9 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      partner_id:
-        custom: []
-        name: partner_id
-        description: 'The partner ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
     cleanUrlParameters:
-      '{partner': architecto
-      id: 1
       partner_id: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []

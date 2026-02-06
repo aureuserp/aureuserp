@@ -17,16 +17,16 @@ class CashRoundingResource extends JsonResource
     {
         return [
             'id'                => $this->id,
-            'creator_id'        => $this->creator_id,
             'name'              => $this->name,
             'strategy'          => $this->strategy,
             'rounding_method'   => $this->rounding_method,
             'rounding'          => $this->rounding,
             'profit_account_id' => $this->profit_account_id,
             'loss_account_id'   => $this->loss_account_id,
+            'creator_id'        => $this->creator_id,
             'created_at'        => $this->created_at,
             'updated_at'        => $this->updated_at,
-            'createdBy'         => UserResource::make($this->whenLoaded('createdBy')),
+            'creator'           => UserResource::make($this->whenLoaded('creator')),
             'profitAccount'     => AccountResource::make($this->whenLoaded('profitAccount')),
             'lossAccount'       => AccountResource::make($this->whenLoaded('lossAccount')),
         ];

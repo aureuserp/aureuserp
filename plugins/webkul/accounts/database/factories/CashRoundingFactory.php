@@ -16,13 +16,13 @@ class CashRoundingFactory extends Factory
     public function definition(): array
     {
         return [
-            'creator_id'        => User::factory(),
             'strategy'          => RoundingStrategy::BIGGEST_TAX,
             'rounding_method'   => RoundingMethod::HALF_UP,
             'name'              => $this->faker->words(2, true),
             'rounding'          => 0.05,
             'profit_account_id' => Account::factory(),
             'loss_account_id'   => Account::factory(),
+            'creator_id'        => User::factory(),
         ];
     }
 

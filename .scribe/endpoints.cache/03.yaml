@@ -2177,7 +2177,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: 'admin/api/v1/sales/products/{{product}}/variants/{id}/restore'
+    uri: 'admin/api/v1/sales/products/{product_id}/variants/{id}/restore'
     metadata:
       custom: []
       groupName: 'Sales API Management'
@@ -2193,13 +2193,13 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      '{product':
+      product_id:
         custom: []
-        name: '{product'
-        description: ''
+        name: product_id
+        description: 'The product ID'
         required: true
-        example: architecto
-        type: string
+        example: 1
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -2215,21 +2215,9 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      product_id:
-        custom: []
-        name: product_id
-        description: 'The product ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
     cleanUrlParameters:
-      '{product': architecto
-      id: 1
       product_id: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -2266,7 +2254,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'admin/api/v1/sales/products/{{product}}/variants/{id}/force'
+    uri: 'admin/api/v1/sales/products/{product_id}/variants/{id}/force'
     metadata:
       custom: []
       groupName: 'Sales API Management'
@@ -2282,13 +2270,13 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      '{product':
+      product_id:
         custom: []
-        name: '{product'
-        description: ''
+        name: product_id
+        description: 'The product ID'
         required: true
-        example: architecto
-        type: string
+        example: 1
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -2304,21 +2292,9 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      product_id:
-        custom: []
-        name: product_id
-        description: 'The product ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
     cleanUrlParameters:
-      '{product': architecto
-      id: 1
       product_id: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
