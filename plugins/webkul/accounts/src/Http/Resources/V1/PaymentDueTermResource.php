@@ -17,13 +17,13 @@ class PaymentDueTermResource extends JsonResource
     {
         return [
             'id'              => $this->id,
-            'payment_id'      => $this->payment_id,
-            'creator_id'      => $this->creator_id,
             'value'           => $this->value,
             'value_amount'    => $this->value_amount,
             'delay_type'      => $this->delay_type,
             'nb_days'         => $this->nb_days,
             'days_next_month' => $this->days_next_month,
+            'payment_id'      => $this->payment_id,
+            'creator_id'      => $this->creator_id,
             'created_at'      => $this->created_at,
             'updated_at'      => $this->updated_at,
             'paymentTerm'     => PaymentTermResource::make($this->whenLoaded('paymentTerm')),

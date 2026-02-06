@@ -85,7 +85,6 @@ class TaxController extends Controller
         Gate::authorize('create', Tax::class);
 
         $data = $request->validated();
-        $data['creator_id'] = Auth::id();
 
         $tax = Tax::create($data);
 

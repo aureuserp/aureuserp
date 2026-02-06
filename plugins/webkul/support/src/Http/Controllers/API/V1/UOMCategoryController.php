@@ -59,8 +59,7 @@ class UOMCategoryController extends Controller
         Gate::authorize('create', UOMCategory::class);
 
         $data = $request->validated();
-        $data['creator_id'] = Auth::id();
-
+        
         $uomCategory = UOMCategory::create($data);
 
         return (new UOMCategoryResource($uomCategory))

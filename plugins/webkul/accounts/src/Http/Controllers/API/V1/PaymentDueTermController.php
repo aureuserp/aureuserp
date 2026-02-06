@@ -34,7 +34,7 @@ class PaymentDueTermController extends Controller
     #[QueryParam('filter[delay_type]', 'string', 'Filter by delay type', enum: DelayType::class, required: false, example: 'No-example')]
     #[QueryParam('sort', 'string', 'Sort field', example: 'created_at')]
     #[QueryParam('page', 'int', 'Page number', example: 1)]
-    #[ResponseFromApiResource(PaymentDueTermResource::class, PaymentDueTerm::class, collection: true, paginate: 10, with: ['paymentTerm'])]
+    #[ResponseFromApiResource(PaymentDueTermResource::class, PaymentDueTerm::class, collection: true, paginate: 10)]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index(string $paymentTerm)
     {
@@ -60,7 +60,7 @@ class PaymentDueTermController extends Controller
 
     #[Endpoint('Create payment due term', 'Create a new payment due term for a specific payment term')]
     #[UrlParam('payment_term_id', 'integer', 'The payment term ID', required: true, example: 1)]
-    #[ResponseFromApiResource(PaymentDueTermResource::class, PaymentDueTerm::class, status: 201, with: ['paymentTerm'], additional: ['message' => 'Payment due term created successfully.'])]
+    #[ResponseFromApiResource(PaymentDueTermResource::class, PaymentDueTerm::class, status: 201, additional: ['message' => 'Payment due term created successfully.'])]
     #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"value": ["The value field is required."]}}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(PaymentDueTermRequest $request, string $paymentTerm)
@@ -71,7 +71,6 @@ class PaymentDueTermController extends Controller
 
         $data = $request->validated();
         $data['payment_id'] = $paymentTerm;
-        $data['creator_id'] = Auth::id();
 
         $paymentDueTerm = PaymentDueTerm::create($data);
 
@@ -85,7 +84,7 @@ class PaymentDueTermController extends Controller
     #[UrlParam('payment_term_id', 'integer', 'The payment term ID', required: true, example: 1)]
     #[UrlParam('id', 'integer', 'The payment due term ID', required: true, example: 1)]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> paymentTerm, creator', required: false, example: 'paymentTerm')]
-    #[ResponseFromApiResource(PaymentDueTermResource::class, PaymentDueTerm::class, with: ['paymentTerm'])]
+    #[ResponseFromApiResource(PaymentDueTermResource::class, PaymentDueTerm::class)]
     #[Response(status: 404, description: 'Payment due term not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function show(string $paymentTerm, string $paymentDueTerm)
@@ -107,7 +106,7 @@ class PaymentDueTermController extends Controller
     #[Endpoint('Update payment due term', 'Update an existing payment due term')]
     #[UrlParam('payment_term_id', 'integer', 'The payment term ID', required: true, example: 1)]
     #[UrlParam('id', 'integer', 'The payment due term ID', required: true, example: 1)]
-    #[ResponseFromApiResource(PaymentDueTermResource::class, PaymentDueTerm::class, with: ['paymentTerm'], additional: ['message' => 'Payment due term updated successfully.'])]
+    #[ResponseFromApiResource(PaymentDueTermResource::class, PaymentDueTerm::class, additional: ['message' => 'Payment due term updated successfully.'])]
     #[Response(status: 404, description: 'Payment due term not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]

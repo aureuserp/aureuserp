@@ -64,7 +64,6 @@ class TaxGroupController extends Controller
         Gate::authorize('create', TaxGroup::class);
 
         $data = $request->validated();
-        $data['creator_id'] = Auth::id();
 
         $taxGroup = TaxGroup::create($data);
 

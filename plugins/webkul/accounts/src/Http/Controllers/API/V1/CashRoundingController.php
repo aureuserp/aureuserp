@@ -66,7 +66,6 @@ class CashRoundingController extends Controller
         Gate::authorize('create', CashRounding::class);
 
         $data = $request->validated();
-        $data['creator_id'] = Auth::id();
 
         $cashRounding = CashRounding::create($data);
 

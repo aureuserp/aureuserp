@@ -17,22 +17,17 @@ class PaymentTermResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'                   => $this->id,
-            'company_id'           => $this->company_id,
-            'creator_id'           => $this->creator_id,
-            'name'                 => $this->name,
-            'note'                 => $this->note,
-            'sort'                 => $this->sort,
-            'display_on_invoice'   => $this->display_on_invoice,
-            'early_pay_discount'   => $this->early_pay_discount,
-            'discount_percentage'  => $this->discount_percentage,
-            'discount_days'        => $this->discount_days,
-            'created_at'           => $this->created_at,
-            'updated_at'           => $this->updated_at,
-            'deleted_at'           => $this->deleted_at,
-            'company'              => CompanyResource::make($this->whenLoaded('company')),
-            'createdBy'            => UserResource::make($this->whenLoaded('createdBy')),
-            'dueTerms'             => PaymentDueTermResource::collection($this->whenLoaded('dueTerms')),
+            'id'         => $this->id,
+            'name'       => $this->name,
+            'note'       => $this->note,
+            'company_id' => $this->company_id,
+            'creator_id' => $this->creator_id,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'deleted_at' => $this->deleted_at,
+            'company'    => CompanyResource::make($this->whenLoaded('company')),
+            'creator'    => UserResource::make($this->whenLoaded('creator')),
+            'due-terms'  => PaymentDueTermResource::collection($this->whenLoaded('dueTerms')),
         ];
     }
 }

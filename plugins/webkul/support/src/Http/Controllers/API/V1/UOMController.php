@@ -71,7 +71,6 @@ class UOMController extends Controller
 
         $data = $request->validated();
         $data['category_id'] = $uomCategory;
-        $data['creator_id'] = Auth::id();
 
         $uom = UOM::create($data);
 

@@ -28,7 +28,7 @@ endpoints:
       include:
         custom: []
         name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, createdBy'
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, creator'
         required: false
         example: company
         type: string
@@ -113,7 +113,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -187,64 +187,16 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
-      display_on_invoice:
-        custom: []
-        name: display_on_invoice
-        description: 'Display on invoice.'
-        required: false
-        example: false
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      early_pay_discount:
-        custom: []
-        name: early_pay_discount
-        description: 'Early payment discount enabled.'
-        required: false
-        example: false
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      discount_percentage:
-        custom: []
-        name: discount_percentage
-        description: 'Discount percentage. Must be at least 0. Must not be greater than 100.'
-        required: false
-        example: 2.5
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      discount_days:
-        custom: []
-        name: discount_days
-        description: 'Days for early discount. Must be at least 0.'
-        required: false
-        example: 10
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
     cleanBodyParameters:
       name: '30 Days'
       company_id: 1
       note: 'Payment due within 30 days'
-      display_on_invoice: false
-      early_pay_discount: false
-      discount_percentage: 2.5
-      discount_days: 10
     fileParameters: []
     responses:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},"message":"Payment term created successfully."}'
+        content: '{"data":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},"message":"Payment term created successfully."}'
         headers: []
         description: ''
       -
@@ -290,17 +242,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the payment term.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      payment_term:
-        custom: []
-        name: payment_term
         description: 'The payment term ID'
         required: true
         example: 1
@@ -310,13 +251,12 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      payment_term: 1
+      id: 1
     queryParameters:
       include:
         custom: []
         name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, createdBy'
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, creator'
         required: false
         example: company
         type: string
@@ -333,7 +273,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}}'
+        content: '{"data":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}}'
         headers: []
         description: ''
       -
@@ -380,17 +320,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the payment term.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      payment_term:
-        custom: []
-        name: payment_term
         description: 'The payment term ID'
         required: true
         example: 1
@@ -400,8 +329,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      payment_term: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -438,64 +366,16 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
-      display_on_invoice:
-        custom: []
-        name: display_on_invoice
-        description: 'Display on invoice.'
-        required: false
-        example: false
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      early_pay_discount:
-        custom: []
-        name: early_pay_discount
-        description: 'Early payment discount enabled.'
-        required: false
-        example: false
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      discount_percentage:
-        custom: []
-        name: discount_percentage
-        description: 'Discount percentage. Must be at least 0. Must not be greater than 100.'
-        required: false
-        example: 2.5
-        type: number
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      discount_days:
-        custom: []
-        name: discount_days
-        description: 'Days for early discount. Must be at least 0.'
-        required: false
-        example: 10
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
     cleanBodyParameters:
       name: '30 Days'
       company_id: 1
       note: 'Payment due within 30 days'
-      display_on_invoice: false
-      early_pay_discount: false
-      discount_percentage: 2.5
-      discount_days: 10
     fileParameters: []
     responses:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},"message":"Payment term updated successfully."}'
+        content: '{"data":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},"message":"Payment term updated successfully."}'
         headers: []
         description: ''
       -
@@ -547,17 +427,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the payment term.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      payment_term:
-        custom: []
-        name: payment_term
         description: 'The payment term ID'
         required: true
         example: 1
@@ -567,8 +436,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      payment_term: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -624,17 +492,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the payment term.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      payment_term:
-        custom: []
-        name: payment_term
         description: 'The payment term ID'
         required: true
         example: 1
@@ -644,8 +501,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      payment_term: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -655,7 +511,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},"message":"Payment term restored successfully."}'
+        content: '{"data":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},"message":"Payment term restored successfully."}'
         headers: []
         description: ''
       -
@@ -701,17 +557,6 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The ID of the payment term.'
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      payment_term:
-        custom: []
-        name: payment_term
         description: 'The payment term ID'
         required: true
         example: 1
@@ -721,8 +566,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: architecto
-      payment_term: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -872,7 +716,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}},{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}},{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -1009,7 +853,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}},"message":"Payment due term created successfully."}'
+        content: '{"data":{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}},"message":"Payment due term created successfully."}'
         headers: []
         description: ''
       -
@@ -1098,7 +942,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}}}'
+        content: '{"data":{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}}}'
         headers: []
         description: ''
       -
@@ -1254,7 +1098,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}},"message":"Payment due term updated successfully."}'
+        content: '{"data":{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}},"message":"Payment due term updated successfully."}'
         headers: []
         description: ''
       -

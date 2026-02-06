@@ -24,14 +24,14 @@ use Webkul\Account\Models\PaymentTerm;
 class PaymentTermController extends Controller
 {
     #[Endpoint('List payment terms', 'Retrieve a paginated list of payment terms with filtering and sorting')]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, createdBy', required: false, example: 'company')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, creator, dueTerms', required: false, example: 'dueTerms')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[name]', 'string', 'Filter by payment term name (partial match)', required: false, example: 'No-example')]
     #[QueryParam('filter[company_id]', 'int', 'Filter by company ID', required: false, example: 'No-example')]
     #[QueryParam('filter[trashed]', 'string', 'Filter by trashed status. Options: with, only', required: false, example: 'No-example')]
     #[QueryParam('sort', 'string', 'Sort field', example: 'name')]
     #[QueryParam('page', 'int', 'Page number', example: 1)]
-    #[ResponseFromApiResource(PaymentTermResource::class, PaymentTerm::class, collection: true, paginate: 10)]
+    #[ResponseFromApiResource(PaymentTermResource::class, PaymentTerm::class, collection: true, paginate: 10, with: ['dueTerms'])]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index()
     {
@@ -47,7 +47,8 @@ class PaymentTermController extends Controller
             ->allowedSorts(['id', 'name', 'sort', 'created_at'])
             ->allowedIncludes([
                 'company',
-                'createdBy',
+                'creator',
+                'dueTerms',
             ])
             ->paginate();
 
@@ -63,7 +64,6 @@ class PaymentTermController extends Controller
         Gate::authorize('create', PaymentTerm::class);
 
         $data = $request->validated();
-        $data['creator_id'] = Auth::id();
 
         $paymentTerm = PaymentTerm::create($data);
 
@@ -74,9 +74,9 @@ class PaymentTermController extends Controller
     }
 
     #[Endpoint('Show payment term', 'Retrieve a specific payment term by its ID')]
-    #[UrlParam('payment_term', 'integer', 'The payment term ID', required: true, example: 1)]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, createdBy', required: false, example: 'company')]
-    #[ResponseFromApiResource(PaymentTermResource::class, PaymentTerm::class)]
+    #[UrlParam('id', 'integer', 'The payment term ID', required: true, example: 1)]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, creator, dueTerms', required: false, example: 'company')]
+    #[ResponseFromApiResource(PaymentTermResource::class, PaymentTerm::class, with: ['dueTerms'])]
     #[Response(status: 404, description: 'Payment term not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function show(string $id)
@@ -84,7 +84,8 @@ class PaymentTermController extends Controller
         $paymentTerm = QueryBuilder::for(PaymentTerm::where('id', $id))
             ->allowedIncludes([
                 'company',
-                'createdBy',
+                'creator',
+                'dueTerms',
             ])
             ->firstOrFail();
 
@@ -94,7 +95,7 @@ class PaymentTermController extends Controller
     }
 
     #[Endpoint('Update payment term', 'Update an existing payment term')]
-    #[UrlParam('payment_term', 'integer', 'The payment term ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The payment term ID', required: true, example: 1)]
     #[ResponseFromApiResource(PaymentTermResource::class, PaymentTerm::class, additional: ['message' => 'Payment term updated successfully.'])]
     #[Response(status: 404, description: 'Payment term not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid."}')]
@@ -112,7 +113,7 @@ class PaymentTermController extends Controller
     }
 
     #[Endpoint('Delete payment term', 'Soft delete a payment term')]
-    #[UrlParam('payment_term', 'integer', 'The payment term ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The payment term ID', required: true, example: 1)]
     #[Response(status: 204, description: 'Payment term deleted successfully')]
     #[Response(status: 404, description: 'Payment term not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
@@ -128,7 +129,7 @@ class PaymentTermController extends Controller
     }
 
     #[Endpoint('Restore payment term', 'Restore a soft-deleted payment term')]
-    #[UrlParam('payment_term', 'integer', 'The payment term ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The payment term ID', required: true, example: 1)]
     #[ResponseFromApiResource(PaymentTermResource::class, PaymentTerm::class, additional: ['message' => 'Payment term restored successfully.'])]
     #[Response(status: 404, description: 'Payment term not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
@@ -145,7 +146,7 @@ class PaymentTermController extends Controller
     }
 
     #[Endpoint('Force delete payment term', 'Permanently delete a payment term')]
-    #[UrlParam('payment_term', 'integer', 'The payment term ID', required: true, example: 1)]
+    #[UrlParam('id', 'integer', 'The payment term ID', required: true, example: 1)]
     #[Response(status: 204, description: 'Payment term permanently deleted')]
     #[Response(status: 404, description: 'Payment term not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]

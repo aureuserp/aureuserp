@@ -62,7 +62,6 @@ class IncotermController extends Controller
         Gate::authorize('create', Incoterm::class);
 
         $data = $request->validated();
-        $data['creator_id'] = Auth::id();
 
         $incoterm = Incoterm::create($data);
 

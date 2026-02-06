@@ -75,7 +75,6 @@ class AccountController extends Controller
         Gate::authorize('create', Account::class);
 
         $data = $request->validated();
-        $data['creator_id'] = Auth::id();
 
         $account = Account::create($data);
 

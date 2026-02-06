@@ -30,7 +30,6 @@ class PaymentDueTermRequest extends FormRequest
             'delay_type'      => ['required', Rule::enum(DelayType::class)],
             'nb_days'         => ['required', 'integer', 'min:0'],
             'days_next_month' => ['nullable', 'integer', 'min:1', 'max:31'],
-            'payment_id'      => ['required', 'integer', 'exists:accounts_payment_terms,id'],
         ];
     }
 
@@ -42,7 +41,7 @@ class PaymentDueTermRequest extends FormRequest
         return [
             'value' => [
                 'description' => 'Due term value type',
-                'example'     => DueTermValue::class,
+                'example'     => DueTermValue::PERCENT->value,
             ],
             'value_amount' => [
                 'description' => 'Value amount (percentage or fixed amount)',
@@ -50,7 +49,7 @@ class PaymentDueTermRequest extends FormRequest
             ],
             'delay_type' => [
                 'description' => 'Delay type',
-                'example'     => DelayType::class,
+                'example'     => DelayType::DAYS_AFTER->value,
             ],
             'nb_days' => [
                 'description' => 'Number of days',
@@ -59,10 +58,6 @@ class PaymentDueTermRequest extends FormRequest
             'days_next_month' => [
                 'description' => 'Day of next month (1-31)',
                 'example'     => 15,
-            ],
-            'payment_id' => [
-                'description' => 'Payment term ID',
-                'example'     => 1,
             ],
         ];
     }

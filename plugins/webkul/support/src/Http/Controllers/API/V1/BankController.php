@@ -70,7 +70,6 @@ class BankController extends Controller
         Gate::authorize('create', Bank::class);
 
         $data = $request->validated();
-        $data['creator_id'] = Auth::id();
 
         $bank = Bank::create($data);
 

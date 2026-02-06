@@ -74,7 +74,6 @@ class JournalController extends Controller
         Gate::authorize('create', Journal::class);
 
         $data = $request->validated();
-        $data['creator_id'] = Auth::id();
 
         $journal = Journal::create($data);
 

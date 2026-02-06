@@ -69,7 +69,6 @@ class FiscalPositionController extends Controller
         Gate::authorize('create', FiscalPosition::class);
 
         $data = $request->validated();
-        $data['creator_id'] = Auth::id();
 
         $fiscalPosition = FiscalPosition::create($data);
 
