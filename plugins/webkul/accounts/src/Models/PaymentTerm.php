@@ -179,7 +179,7 @@ class PaymentTerm extends Model implements Sortable
         });
     }
 
-    protected static function newFactory()
+    protected static function newFactory(): PaymentTermFactory
     {
         return PaymentTermFactory::new();
     }

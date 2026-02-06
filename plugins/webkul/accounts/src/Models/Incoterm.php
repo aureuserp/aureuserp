@@ -3,6 +3,7 @@
 namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Webkul\Account\Database\Factories\IncotermFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Webkul\Security\Models\User;
@@ -22,5 +23,10 @@ class Incoterm extends Model
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    protected static function newFactory(): IncotermFactory
+    {
+        return IncotermFactory::new();
     }
 }

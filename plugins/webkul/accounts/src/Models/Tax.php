@@ -4,6 +4,7 @@ namespace Webkul\Account\Models;
 
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Webkul\Account\Database\Factories\TaxFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
@@ -167,5 +168,10 @@ class Tax extends Model implements Sortable
                 throw $e;
             }
         });
+    }
+
+    protected static function newFactory(): TaxFactory
+    {
+        return TaxFactory::new();
     }
 }

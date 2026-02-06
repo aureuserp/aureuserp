@@ -2,12 +2,16 @@
 
 namespace Webkul\Support\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Webkul\Support\Database\Factories\CurrencyRateFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Webkul\Security\Models\User;
 
 class CurrencyRate extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'name',
         'rate',
@@ -44,5 +48,10 @@ class CurrencyRate extends Model
         }
 
         return 1 / $this->rate;
+    }
+
+    protected static function newFactory(): CurrencyRateFactory
+    {
+        return CurrencyRateFactory::new();
     }
 }

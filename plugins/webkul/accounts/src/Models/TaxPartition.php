@@ -3,6 +3,7 @@
 namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Webkul\Account\Database\Factories\TaxPartitionFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\ValidationException;
 use Spatie\EloquentSortable\Sortable;
@@ -119,5 +120,10 @@ class TaxPartition extends Model implements Sortable
                 'invoice_repartition_lines' => 'Total negative factors must equal -100%.',
             ]);
         }
+    }
+
+    protected static function newFactory(): TaxPartitionFactory
+    {
+        return TaxPartitionFactory::new();
     }
 }

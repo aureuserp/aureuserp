@@ -25,7 +25,7 @@ class ProductVariantController extends Controller
 {
     #[Endpoint('List product variants', 'Retrieve a paginated list of variants for a specific product')]
     #[UrlParam('product_id', 'integer', 'The product ID', required: true, example: 1)]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, uom, uomPO, category, tags, attributes, attribute_values, combinations, company, creator', required: false, example: 'combinations')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, uom, uomPO, category, tags, attributes, attribute_values, company, creator', required: false, example: 'attributes')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[type]', 'string', 'Filter by product type', enum: ProductType::class, required: false, example: 'No-example')]
     #[QueryParam('filter[enable_sales]', 'boolean', 'Filter by sales enabled', required: false, example: 'true')]
@@ -34,7 +34,7 @@ class ProductVariantController extends Controller
     #[QueryParam('filter[trashed]', 'string', 'Filter by trashed status: "with" (include trashed), "only" (only trashed), or any other value for non-trashed only', required: false, enum: ['with', 'only'], example: 'with')]
     #[QueryParam('sort', 'string', 'Sort field', example: '-created_at')]
     #[QueryParam('page', 'int', 'Page number', example: 1)]
-    #[ResponseFromApiResource(ProductResource::class, Product::class, collection: true, paginate: 10, with: ['combinations'])]
+    #[ResponseFromApiResource(ProductResource::class, Product::class, collection: true, paginate: 10, with: ['attributes'])]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index(string $product)
     {
@@ -58,7 +58,6 @@ class ProductVariantController extends Controller
                 'tags',
                 'attributes',
                 'attribute_values',
-                'combinations',
                 'company',
                 'creator',
             ])
@@ -69,7 +68,7 @@ class ProductVariantController extends Controller
 
     #[Endpoint('Sync product variants', 'Sync variants for a specific product based on attributes')]
     #[UrlParam('product_id', 'integer', 'The product ID', required: true, example: 1)]
-    #[ResponseFromApiResource(ProductResource::class, Product::class, collection: true, status: 201, with: ['combinations'], additional: ['message' => 'Product variants synced successfully.'])]
+    #[ResponseFromApiResource(ProductResource::class, Product::class, collection: true, status: 201, with: ['attributes'], additional: ['message' => 'Product variants synced successfully.'])]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(string $product)
     {
@@ -87,8 +86,8 @@ class ProductVariantController extends Controller
     #[Endpoint('Show product variant', 'Retrieve a specific product variant by its ID')]
     #[UrlParam('product_id', 'integer', 'The product ID', required: true, example: 1)]
     #[UrlParam('id', 'integer', 'The variant ID', required: true, example: 1)]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, uom, uomPO, category, tags, attributes, attribute_values, combinations, company, creator', required: false, example: 'combinations')]
-    #[ResponseFromApiResource(ProductResource::class, Product::class, with: ['combinations'])]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, uom, uomPO, category, tags, attributes, attribute_values, company, creator', required: false, example: 'attributes')]
+    #[ResponseFromApiResource(ProductResource::class, Product::class, with: ['attributes'])]
     #[Response(status: 404, description: 'Product variant not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function show(string $product, string $variant)
@@ -102,7 +101,6 @@ class ProductVariantController extends Controller
                 'tags',
                 'attributes',
                 'attribute_values',
-                'combinations',
                 'company',
                 'creator',
             ])
@@ -116,7 +114,7 @@ class ProductVariantController extends Controller
     #[Endpoint('Update product variant', 'Update an existing product variant')]
     #[UrlParam('product_id', 'integer', 'The product ID', required: true, example: 1)]
     #[UrlParam('id', 'integer', 'The variant ID', required: true, example: 1)]
-    #[ResponseFromApiResource(ProductResource::class, Product::class, with: ['combinations'], additional: ['message' => 'Product variant updated successfully.'])]
+    #[ResponseFromApiResource(ProductResource::class, Product::class, with: ['attributes'], additional: ['message' => 'Product variant updated successfully.'])]
     #[Response(status: 404, description: 'Product variant not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must be a string."]}}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
@@ -137,7 +135,7 @@ class ProductVariantController extends Controller
             $variantModel->tags()->sync($tags);
         }
 
-        return (new ProductResource($variantModel->load(['combinations', 'tags'])))
+        return (new ProductResource($variantModel->load(['attributes', 'tags'])))
             ->additional(['message' => 'Product variant updated successfully.']);
     }
 
@@ -163,7 +161,7 @@ class ProductVariantController extends Controller
     #[Endpoint('Restore product variant', 'Restore a soft-deleted product variant')]
     #[UrlParam('product_id', 'integer', 'The product ID', required: true, example: 1)]
     #[UrlParam('id', 'integer', 'The variant ID', required: true, example: 1)]
-    #[ResponseFromApiResource(ProductResource::class, Product::class, with: ['combinations'], additional: ['message' => 'Product variant restored successfully.'])]
+    #[ResponseFromApiResource(ProductResource::class, Product::class, with: ['attributes'], additional: ['message' => 'Product variant restored successfully.'])]
     #[Response(status: 404, description: 'Product variant not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function restore(string $product, string $variant)
@@ -174,7 +172,7 @@ class ProductVariantController extends Controller
 
         $variantModel->restore();
 
-        return (new ProductResource($variantModel->load(['combinations'])))
+        return (new ProductResource($variantModel->load(['attributes'])))
             ->additional(['message' => 'Product variant restored successfully.']);
     }
 
