@@ -27,9 +27,9 @@ class TaxGroupResource extends JsonResource
             'preceding_subtotal'  => $this->preceding_subtotal,
             'created_at'          => $this->created_at,
             'updated_at'          => $this->updated_at,
-            'company'             => new CompanyResource($this->whenLoaded('company')),
-            'country'             => new CountryResource($this->whenLoaded('country')),
-            'createdBy'           => new UserResource($this->whenLoaded('createdBy')),
+            'company'             => CompanyResource::make($this->whenLoaded('company')),
+            'country'             => CountryResource::make($this->whenLoaded('country')),
+            'createdBy'           => UserResource::make($this->whenLoaded('createdBy')),
         ];
     }
 }

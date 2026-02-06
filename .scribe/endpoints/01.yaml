@@ -1,19 +1,19 @@
-name: 'Partner API Management'
+name: 'Accounts API Management'
 description: ''
 endpoints:
   -
     custom: []
     httpMethods:
       - GET
-    uri: admin/api/v1/partners/titles
+    uri: admin/api/v1/accounts/tax-groups
     metadata:
       custom: []
-      groupName: 'Partner API Management'
+      groupName: 'Accounts API Management'
       groupDescription: ''
-      subgroup: Titles
-      subgroupDescription: 'Manage partner titles'
-      title: 'List titles'
-      description: 'Retrieve a paginated list of titles with filtering and sorting'
+      subgroup: 'Tax Groups'
+      subgroupDescription: 'Manage tax groups'
+      title: 'List tax groups'
+      description: 'Retrieve a paginated list of tax groups with filtering and sorting'
       authenticated: true
       deprecated: false
     headers:
@@ -26,9 +26,9 @@ endpoints:
       include:
         custom: []
         name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator'
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, country, createdBy'
         required: false
-        example: creator
+        example: company
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -48,1607 +48,7 @@ endpoints:
       'filter[name]':
         custom: []
         name: 'filter[name]'
-        description: 'Filter by title name (partial match)'
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      sort:
-        custom: []
-        name: sort
-        description: 'Sort field'
-        required: true
-        example: name
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      page:
-        custom: []
-        name: page
-        description: 'Page number'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      include: creator
-      sort: name
-      page: 1
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"data":[{"id":1,"name":"Mr","short_name":"John","creator_id":1,"created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"},{"id":1,"name":"Mr","short_name":"John","creator_id":1,"created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: admin/api/v1/partners/titles
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Titles
-      subgroupDescription: 'Manage partner titles'
-      title: 'Create title'
-      description: 'Create a new title'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      name:
-        custom: []
-        name: name
-        description: 'Title name (max 255 characters). Must not be greater than 255 characters.'
-        required: true
-        example: Mr.
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      short_name:
-        custom: []
-        name: short_name
-        description: 'Short name for the title (max 50 characters). Must not be greater than 50 characters.'
-        required: false
-        example: Mr
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-    cleanBodyParameters:
-      name: Mr.
-      short_name: Mr
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 201
-        content: '{"data":{"id":1,"name":"Mr","short_name":"John","creator_id":1,"created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"},"message":"Title created successfully."}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 422
-        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}'
-        headers: []
-        description: 'Validation error'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: 'admin/api/v1/partners/titles/{id}'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Titles
-      subgroupDescription: 'Manage partner titles'
-      title: 'Show title'
-      description: 'Retrieve a specific title by its ID'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The title ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 1
-    queryParameters:
-      include:
-        custom: []
-        name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator'
-        required: false
-        example: creator
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      include: creator
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"data":{"id":1,"name":"Mr","short_name":"John","creator_id":1,"created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Title not found'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - PUT
-      - PATCH
-    uri: 'admin/api/v1/partners/titles/{id}'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Titles
-      subgroupDescription: 'Manage partner titles'
-      title: 'Update title'
-      description: 'Update an existing title'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The title ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      name:
-        custom: []
-        name: name
-        description: 'Title name (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: Mr.
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      short_name:
-        custom: []
-        name: short_name
-        description: 'Short name for the title (max 50 characters). Must not be greater than 50 characters.'
-        required: false
-        example: Mr
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-    cleanBodyParameters:
-      name: Mr.
-      short_name: Mr
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"data":{"id":1,"name":"Mr","short_name":"John","creator_id":1,"created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"},"message":"Title updated successfully."}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Title not found'
-      -
-        custom: []
-        status: 422
-        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must not exceed 255 characters."]}}'
-        headers: []
-        description: 'Validation error'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - DELETE
-    uri: 'admin/api/v1/partners/titles/{id}'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Titles
-      subgroupDescription: 'Manage partner titles'
-      title: 'Delete title'
-      description: 'Delete a title'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The title ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"message": "Title deleted successfully."}'
-        headers: []
-        description: 'Title deleted successfully'
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Title not found'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: admin/api/v1/partners/tags
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Tags
-      subgroupDescription: 'Manage partner tags'
-      title: 'List tags'
-      description: 'Retrieve a paginated list of tags with filtering and sorting'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters:
-      include:
-        custom: []
-        name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator'
-        required: false
-        example: creator
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      'filter[id]':
-        custom: []
-        name: 'filter[id]'
-        description: 'Comma-separated list of IDs to filter by'
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      'filter[name]':
-        custom: []
-        name: 'filter[name]'
-        description: 'Filter by tag name (partial match)'
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      'filter[trashed]':
-        custom: []
-        name: 'filter[trashed]'
-        description: 'Filter by trashed status. </br></br><b>Available options:</b> with, without, only'
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      sort:
-        custom: []
-        name: sort
-        description: 'Sort field'
-        required: true
-        example: name
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      page:
-        custom: []
-        name: page
-        description: 'Page number'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      include: creator
-      sort: name
-      page: 1
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"data":[{"id":1,"name":"New Customer","color":"#35ff39","creator_id":1,"created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"},{"id":1,"name":"New Customer","color":"#35ff39","creator_id":1,"created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: admin/api/v1/partners/tags
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Tags
-      subgroupDescription: 'Manage partner tags'
-      title: 'Create tag'
-      description: 'Create a new tag'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      name:
-        custom: []
-        name: name
-        description: 'Tag name (max 255 characters). Must not be greater than 255 characters.'
-        required: true
-        example: 'VIP Client'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      color:
-        custom: []
-        name: color
-        description: 'Tag color in hex format (max 7 characters). Must not be greater than 7 characters.'
-        required: false
-        example: '#FF5733'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-    cleanBodyParameters:
-      name: 'VIP Client'
-      color: '#FF5733'
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 201
-        content: '{"data":{"id":1,"name":"New Customer","color":"#35ff39","creator_id":1,"created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"},"message":"Tag created successfully."}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 422
-        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}'
-        headers: []
-        description: 'Validation error'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: 'admin/api/v1/partners/tags/{id}'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Tags
-      subgroupDescription: 'Manage partner tags'
-      title: 'Show tag'
-      description: 'Retrieve a specific tag by its ID'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The tag ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 1
-    queryParameters:
-      include:
-        custom: []
-        name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator'
-        required: false
-        example: creator
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      include: creator
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"data":{"id":1,"name":"New Customer","color":"#35ff39","creator_id":1,"created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Tag not found'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - PUT
-      - PATCH
-    uri: 'admin/api/v1/partners/tags/{id}'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Tags
-      subgroupDescription: 'Manage partner tags'
-      title: 'Update tag'
-      description: 'Update an existing tag'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The tag ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      name:
-        custom: []
-        name: name
-        description: 'Tag name (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: 'VIP Client'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      color:
-        custom: []
-        name: color
-        description: 'Tag color in hex format (max 7 characters). Must not be greater than 7 characters.'
-        required: false
-        example: '#FF5733'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-    cleanBodyParameters:
-      name: 'VIP Client'
-      color: '#FF5733'
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"data":{"id":1,"name":"New Customer","color":"#35ff39","creator_id":1,"created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"},"message":"Tag updated successfully."}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Tag not found'
-      -
-        custom: []
-        status: 422
-        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must not exceed 255 characters."]}}'
-        headers: []
-        description: 'Validation error'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - DELETE
-    uri: 'admin/api/v1/partners/tags/{id}'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Tags
-      subgroupDescription: 'Manage partner tags'
-      title: 'Delete tag'
-      description: 'Soft delete a tag'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The tag ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"message": "Tag deleted successfully."}'
-        headers: []
-        description: 'Tag deleted successfully'
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Tag not found'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: 'admin/api/v1/partners/tags/{id}/restore'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Tags
-      subgroupDescription: 'Manage partner tags'
-      title: 'Restore tag'
-      description: 'Restore a soft-deleted tag'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The tag ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"message": "Tag restored successfully."}'
-        headers: []
-        description: 'Tag restored successfully'
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Tag not found'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - DELETE
-    uri: 'admin/api/v1/partners/tags/{id}/force'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Tags
-      subgroupDescription: 'Manage partner tags'
-      title: 'Force delete tag'
-      description: 'Permanently delete a tag'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The tag ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"message": "Tag permanently deleted."}'
-        headers: []
-        description: 'Tag permanently deleted'
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Tag not found'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: admin/api/v1/partners/industries
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Industries
-      subgroupDescription: 'Manage industries'
-      title: 'List industries'
-      description: 'Retrieve a paginated list of industries with filtering and sorting'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters:
-      include:
-        custom: []
-        name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator'
-        required: false
-        example: creator
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      'filter[id]':
-        custom: []
-        name: 'filter[id]'
-        description: 'Comma-separated list of IDs to filter by'
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      'filter[name]':
-        custom: []
-        name: 'filter[name]'
-        description: 'Filter by industry name (partial match)'
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      'filter[trashed]':
-        custom: []
-        name: 'filter[trashed]'
-        description: 'Filter by trashed status. </br></br><b>Available options:</b> with, without, only'
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      sort:
-        custom: []
-        name: sort
-        description: 'Sort field'
-        required: true
-        example: name
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      page:
-        custom: []
-        name: page
-        description: 'Page number'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      include: creator
-      sort: name
-      page: 1
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"data":[{"id":71,"name":"Technology","description":"Software and hardware technology companies","creator_id":1,"created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"},{"id":71,"name":"Technology","description":"Software and hardware technology companies","creator_id":1,"created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: admin/api/v1/partners/industries
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Industries
-      subgroupDescription: 'Manage industries'
-      title: 'Create industry'
-      description: 'Create a new industry'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      name:
-        custom: []
-        name: name
-        description: 'Industry name (max 255 characters). Must not be greater than 255 characters.'
-        required: true
-        example: Technology
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      description:
-        custom: []
-        name: description
-        description: 'Industry description.'
-        required: false
-        example: 'Software and hardware technology companies'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-    cleanBodyParameters:
-      name: Technology
-      description: 'Software and hardware technology companies'
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 201
-        content: '{"data":{"id":71,"name":"Technology","description":"Software and hardware technology companies","creator_id":1,"created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"},"message":"Industry created successfully."}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 422
-        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}'
-        headers: []
-        description: 'Validation error'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: 'admin/api/v1/partners/industries/{id}'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Industries
-      subgroupDescription: 'Manage industries'
-      title: 'Show industry'
-      description: 'Retrieve a specific industry by its ID'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The industry ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 1
-    queryParameters:
-      include:
-        custom: []
-        name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator'
-        required: false
-        example: creator
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      include: creator
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"data":{"id":71,"name":"Technology","description":"Software and hardware technology companies","creator_id":1,"created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Industry not found'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - PUT
-      - PATCH
-    uri: 'admin/api/v1/partners/industries/{id}'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Industries
-      subgroupDescription: 'Manage industries'
-      title: 'Update industry'
-      description: 'Update an existing industry'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The industry ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      name:
-        custom: []
-        name: name
-        description: 'Industry name (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: Technology
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      description:
-        custom: []
-        name: description
-        description: 'Industry description.'
-        required: false
-        example: 'Software and hardware technology companies'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-    cleanBodyParameters:
-      name: Technology
-      description: 'Software and hardware technology companies'
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"data":{"id":71,"name":"Technology","description":"Software and hardware technology companies","creator_id":1,"created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"},"message":"Industry updated successfully."}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Industry not found'
-      -
-        custom: []
-        status: 422
-        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must not exceed 255 characters."]}}'
-        headers: []
-        description: 'Validation error'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - DELETE
-    uri: 'admin/api/v1/partners/industries/{id}'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Industries
-      subgroupDescription: 'Manage industries'
-      title: 'Delete industry'
-      description: 'Soft delete an industry'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The industry ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"message": "Industry deleted successfully."}'
-        headers: []
-        description: 'Industry deleted successfully'
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Industry not found'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: 'admin/api/v1/partners/industries/{id}/restore'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Industries
-      subgroupDescription: 'Manage industries'
-      title: 'Restore industry'
-      description: 'Restore a soft-deleted industry'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The industry ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"message": "Industry restored successfully."}'
-        headers: []
-        description: 'Industry restored successfully'
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Industry not found'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - DELETE
-    uri: 'admin/api/v1/partners/industries/{id}/force'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Industries
-      subgroupDescription: 'Manage industries'
-      title: 'Force delete industry'
-      description: 'Permanently delete an industry'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The industry ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"message": "Industry permanently deleted."}'
-        headers: []
-        description: 'Industry permanently deleted'
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Industry not found'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: admin/api/v1/partners/partners
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Partners
-      subgroupDescription: 'Manage partners (customers, suppliers, contacts)'
-      title: 'List partners'
-      description: 'Retrieve a paginated list of partners with filtering and sorting'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters:
-      include:
-        custom: []
-        name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, country, state, title, company, industry, user, creator, addresses, contacts, bankAccounts, tags'
-        required: false
-        example: 'tags,addresses'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      'filter[id]':
-        custom: []
-        name: 'filter[id]'
-        description: 'Comma-separated list of IDs to filter by'
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      'filter[account_type]':
-        custom: []
-        name: 'filter[account_type]'
-        description: 'Filter by account type'
-        required: false
-        example: null
-        type: string
-        enumValues:
-          - individual
-          - company
-          - address
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      'filter[name]':
-        custom: []
-        name: 'filter[name]'
-        description: 'Filter by partner name (partial match)'
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      'filter[email]':
-        custom: []
-        name: 'filter[email]'
-        description: 'Filter by email (partial match)'
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      'filter[phone]':
-        custom: []
-        name: 'filter[phone]'
-        description: 'Filter by phone (partial match)'
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      'filter[parent_id]':
-        custom: []
-        name: 'filter[parent_id]'
-        description: 'Comma-separated list of parent IDs to filter by'
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      'filter[user_id]':
-        custom: []
-        name: 'filter[user_id]'
-        description: 'Comma-separated list of user IDs to filter by'
+        description: 'Filter by tax group name (partial match)'
         required: false
         example: null
         type: string
@@ -1659,32 +59,10 @@ endpoints:
       'filter[company_id]':
         custom: []
         name: 'filter[company_id]'
-        description: 'Comma-separated list of company IDs to filter by'
+        description: 'Filter by company ID'
         required: false
         example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      'filter[title_id]':
-        custom: []
-        name: 'filter[title_id]'
-        description: 'Comma-separated list of title IDs to filter by'
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      'filter[industry_id]':
-        custom: []
-        name: 'filter[industry_id]'
-        description: 'Comma-separated list of industry IDs to filter by'
-        required: false
-        example: null
-        type: string
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -1692,32 +70,10 @@ endpoints:
       'filter[country_id]':
         custom: []
         name: 'filter[country_id]'
-        description: 'Comma-separated list of country IDs to filter by'
+        description: 'Filter by country ID'
         required: false
         example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      'filter[state_id]':
-        custom: []
-        name: 'filter[state_id]'
-        description: 'Comma-separated list of state IDs to filter by'
-        required: false
-        example: null
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      'filter[trashed]':
-        custom: []
-        name: 'filter[trashed]'
-        description: 'Filter by trashed status. </br></br><b>Available options:</b> with, without, only'
-        required: false
-        example: null
-        type: string
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -1727,7 +83,7 @@ endpoints:
         name: sort
         description: 'Sort field'
         required: true
-        example: name
+        example: sort
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1745,8 +101,8 @@ endpoints:
         nullable: false
         deprecated: false
     cleanQueryParameters:
-      include: 'tags,addresses'
-      sort: name
+      include: company
+      sort: sort
       page: 1
     bodyParameters: []
     cleanBodyParameters: []
@@ -1755,7 +111,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"sort":1,"company_id":1,"country_id":104,"creator_id":1,"name":"Tax 15%","preceding_subtotal":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},{"id":1,"sort":1,"company_id":1,"country_id":104,"creator_id":1,"name":"Tax 15%","preceding_subtotal":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -1776,15 +132,15 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: admin/api/v1/partners/partners
+    uri: admin/api/v1/accounts/tax-groups
     metadata:
       custom: []
-      groupName: 'Partner API Management'
+      groupName: 'Accounts API Management'
       groupDescription: ''
-      subgroup: Partners
-      subgroupDescription: 'Manage partners (customers, suppliers, contacts)'
-      title: 'Create partner'
-      description: 'Create a new partner'
+      subgroup: 'Tax Groups'
+      subgroupDescription: 'Manage tax groups'
+      title: 'Create tax group'
+      description: 'Create a new tax group'
       authenticated: true
       deprecated: false
     headers:
@@ -1796,228 +152,16 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      account_type:
-        custom: []
-        name: account_type
-        description: 'Account type.'
-        required: true
-        example: individual
-        type: string
-        enumValues:
-          - individual
-          - company
-          - address
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
       name:
         custom: []
         name: name
-        description: 'Partner name (max 255 characters). Must not be greater than 255 characters.'
+        description: 'Tax group name. Must not be greater than 255 characters.'
         required: true
-        example: 'Acme Corporation'
+        example: 'VAT Group'
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
-        deprecated: false
-      email:
-        custom: []
-        name: email
-        description: 'Email address (max 255 characters). Must be a valid email address. Must not be greater than 255 characters.'
-        required: false
-        example: contact@acme.com
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      phone:
-        custom: []
-        name: phone
-        description: 'Phone number (max 20 characters). Must not be greater than 20 characters.'
-        required: false
-        example: '+1234567890'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      mobile:
-        custom: []
-        name: mobile
-        description: 'Mobile number (max 20 characters). Must not be greater than 20 characters.'
-        required: false
-        example: '+1234567890'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      avatar:
-        custom: []
-        name: avatar
-        description: 'Avatar file path (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: avatars/partner.jpg
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      job_title:
-        custom: []
-        name: job_title
-        description: 'Job title (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: CEO
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      website:
-        custom: []
-        name: website
-        description: 'Website URL (max 255 characters). Must be a valid URL. Must not be greater than 255 characters.'
-        required: false
-        example: 'https://acme.com'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      tax_id:
-        custom: []
-        name: tax_id
-        description: 'Tax identification number (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: TAX-123456
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      company_registry:
-        custom: []
-        name: company_registry
-        description: 'Company registry number (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: REG-123456
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      reference:
-        custom: []
-        name: reference
-        description: 'Reference code (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: PART-001
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      color:
-        custom: []
-        name: color
-        description: 'Color in hex format (max 7 characters). Must not be greater than 7 characters.'
-        required: false
-        example: '#FF5733'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      street1:
-        custom: []
-        name: street1
-        description: 'Street address line 1 (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: '123 Main Street'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      street2:
-        custom: []
-        name: street2
-        description: 'Street address line 2 (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: 'Suite 100'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      city:
-        custom: []
-        name: city
-        description: 'City (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: 'New York'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      zip:
-        custom: []
-        name: zip
-        description: 'Postal/ZIP code (max 20 characters). Must not be greater than 20 characters.'
-        required: false
-        example: '10001'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      state_id:
-        custom: []
-        name: state_id
-        description: 'State ID. The <code>id</code> of an existing record in the states table.'
-        required: false
-        example: 9
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      country_id:
-        custom: []
-        name: country_id
-        description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
-        required: false
-        example: 233
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      parent_id:
-        custom: []
-        name: parent_id
-        description: 'Parent partner ID (for addresses and contacts). The <code>id</code> of an existing record in the partners_partners table.'
-        required: false
-        example: null
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      title_id:
-        custom: []
-        name: title_id
-        description: 'Title ID. The <code>id</code> of an existing record in the partners_titles table.'
-        required: false
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
         deprecated: false
       company_id:
         custom: []
@@ -2030,10 +174,10 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
-      industry_id:
+      country_id:
         custom: []
-        name: industry_id
-        description: 'Industry ID. The <code>id</code> of an existing record in the partners_industries table.'
+        name: country_id
+        description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
         required: false
         example: 1
         type: integer
@@ -2041,46 +185,28 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
-      user_id:
+      preceding_subtotal:
         custom: []
-        name: user_id
-        description: 'Associated user ID/Responsible Sale user. The <code>id</code> of an existing record in the users table.'
+        name: preceding_subtotal
+        description: 'Preceding subtotal label. Must not be greater than 255 characters.'
         required: false
-        example: 1
-        type: integer
+        example: Subtotal
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      account_type: individual
-      name: 'Acme Corporation'
-      email: contact@acme.com
-      phone: '+1234567890'
-      mobile: '+1234567890'
-      avatar: avatars/partner.jpg
-      job_title: CEO
-      website: 'https://acme.com'
-      tax_id: TAX-123456
-      company_registry: REG-123456
-      reference: PART-001
-      color: '#FF5733'
-      street1: '123 Main Street'
-      street2: 'Suite 100'
-      city: 'New York'
-      zip: '10001'
-      state_id: 9
-      country_id: 233
-      title_id: 1
+      name: 'VAT Group'
       company_id: 1
-      industry_id: 1
-      user_id: 1
+      country_id: 1
+      preceding_subtotal: Subtotal
     fileParameters: []
     responses:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Partner created successfully."}'
+        content: '{"data":{"id":1,"sort":1,"company_id":1,"country_id":104,"creator_id":1,"name":"Tax 15%","preceding_subtotal":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Tax group created successfully."}'
         headers: []
         description: ''
       -
@@ -2107,15 +233,15 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'admin/api/v1/partners/partners/{id}'
+    uri: 'admin/api/v1/accounts/tax-groups/{id}'
     metadata:
       custom: []
-      groupName: 'Partner API Management'
+      groupName: 'Accounts API Management'
       groupDescription: ''
-      subgroup: Partners
-      subgroupDescription: 'Manage partners (customers, suppliers, contacts)'
-      title: 'Show partner'
-      description: 'Retrieve a specific partner by its ID'
+      subgroup: 'Tax Groups'
+      subgroupDescription: 'Manage tax groups'
+      title: 'Show tax group'
+      description: 'Retrieve a specific tax group by its ID'
       authenticated: true
       deprecated: false
     headers:
@@ -2126,7 +252,18 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The partner ID'
+        description: 'The ID of the tax group.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      tax_group:
+        custom: []
+        name: tax_group
+        description: 'The tax group ID'
         required: true
         example: 1
         type: integer
@@ -2135,21 +272,22 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 1
+      id: architecto
+      tax_group: 1
     queryParameters:
       include:
         custom: []
         name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, country, state, title, company, industry, user, creator, addresses, contacts, bankAccounts, tags'
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, country, createdBy'
         required: false
-        example: 'tags,addresses'
+        example: 'company,country'
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanQueryParameters:
-      include: 'tags,addresses'
+      include: 'company,country'
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
@@ -2157,7 +295,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}}'
+        content: '{"data":{"id":1,"sort":1,"company_id":1,"country_id":104,"creator_id":1,"name":"Tax 15%","preceding_subtotal":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}}'
         headers: []
         description: ''
       -
@@ -2171,7 +309,7 @@ endpoints:
         status: 404
         content: '{"message": "Resource not found."}'
         headers: []
-        description: 'Partner not found'
+        description: 'Tax group not found'
     responseFields: []
     auth:
       - headers
@@ -2185,15 +323,15 @@ endpoints:
     httpMethods:
       - PUT
       - PATCH
-    uri: 'admin/api/v1/partners/partners/{id}'
+    uri: 'admin/api/v1/accounts/tax-groups/{id}'
     metadata:
       custom: []
-      groupName: 'Partner API Management'
+      groupName: 'Accounts API Management'
       groupDescription: ''
-      subgroup: Partners
-      subgroupDescription: 'Manage partners (customers, suppliers, contacts)'
-      title: 'Update partner'
-      description: 'Update an existing partner'
+      subgroup: 'Tax Groups'
+      subgroupDescription: 'Manage tax groups'
+      title: 'Update tax group'
+      description: 'Update an existing tax group'
       authenticated: true
       deprecated: false
     headers:
@@ -2204,7 +342,18 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The partner ID'
+        description: 'The ID of the tax group.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      tax_group:
+        custom: []
+        name: tax_group
+        description: 'The tax group ID'
         required: true
         example: 1
         type: integer
@@ -2213,232 +362,21 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 1
+      id: architecto
+      tax_group: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      account_type:
-        custom: []
-        name: account_type
-        description: 'Account type.'
-        required: false
-        example: individual
-        type: string
-        enumValues:
-          - individual
-          - company
-          - address
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
       name:
         custom: []
         name: name
-        description: 'Partner name (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: 'Acme Corporation'
+        description: 'Tax group name. Must not be greater than 255 characters.'
+        required: true
+        example: 'VAT Group'
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
-        deprecated: false
-      email:
-        custom: []
-        name: email
-        description: 'Email address (max 255 characters). Must be a valid email address. Must not be greater than 255 characters.'
-        required: false
-        example: contact@acme.com
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      phone:
-        custom: []
-        name: phone
-        description: 'Phone number (max 20 characters). Must not be greater than 20 characters.'
-        required: false
-        example: '+1234567890'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      mobile:
-        custom: []
-        name: mobile
-        description: 'Mobile number (max 20 characters). Must not be greater than 20 characters.'
-        required: false
-        example: '+1234567890'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      avatar:
-        custom: []
-        name: avatar
-        description: 'Avatar file path (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: avatars/partner.jpg
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      job_title:
-        custom: []
-        name: job_title
-        description: 'Job title (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: CEO
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      website:
-        custom: []
-        name: website
-        description: 'Website URL (max 255 characters). Must be a valid URL. Must not be greater than 255 characters.'
-        required: false
-        example: 'https://acme.com'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      tax_id:
-        custom: []
-        name: tax_id
-        description: 'Tax identification number (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: TAX-123456
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      company_registry:
-        custom: []
-        name: company_registry
-        description: 'Company registry number (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: REG-123456
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      reference:
-        custom: []
-        name: reference
-        description: 'Reference code (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: PART-001
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      color:
-        custom: []
-        name: color
-        description: 'Color in hex format (max 7 characters). Must not be greater than 7 characters.'
-        required: false
-        example: '#FF5733'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      street1:
-        custom: []
-        name: street1
-        description: 'Street address line 1 (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: '123 Main Street'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      street2:
-        custom: []
-        name: street2
-        description: 'Street address line 2 (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: 'Suite 100'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      city:
-        custom: []
-        name: city
-        description: 'City (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: 'New York'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      zip:
-        custom: []
-        name: zip
-        description: 'Postal/ZIP code (max 20 characters). Must not be greater than 20 characters.'
-        required: false
-        example: '10001'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      state_id:
-        custom: []
-        name: state_id
-        description: 'State ID. The <code>id</code> of an existing record in the states table.'
-        required: false
-        example: 9
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      country_id:
-        custom: []
-        name: country_id
-        description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
-        required: false
-        example: 233
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      parent_id:
-        custom: []
-        name: parent_id
-        description: 'Parent partner ID (for addresses and contacts). The <code>id</code> of an existing record in the partners_partners table.'
-        required: false
-        example: null
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      title_id:
-        custom: []
-        name: title_id
-        description: 'Title ID. The <code>id</code> of an existing record in the partners_titles table.'
-        required: false
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
         deprecated: false
       company_id:
         custom: []
@@ -2451,10 +389,10 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
-      industry_id:
+      country_id:
         custom: []
-        name: industry_id
-        description: 'Industry ID. The <code>id</code> of an existing record in the partners_industries table.'
+        name: country_id
+        description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
         required: false
         example: 1
         type: integer
@@ -2462,46 +400,28 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
-      user_id:
+      preceding_subtotal:
         custom: []
-        name: user_id
-        description: 'Associated user ID/Responsible Sale user. The <code>id</code> of an existing record in the users table.'
+        name: preceding_subtotal
+        description: 'Preceding subtotal label. Must not be greater than 255 characters.'
         required: false
-        example: 1
-        type: integer
+        example: Subtotal
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      account_type: individual
-      name: 'Acme Corporation'
-      email: contact@acme.com
-      phone: '+1234567890'
-      mobile: '+1234567890'
-      avatar: avatars/partner.jpg
-      job_title: CEO
-      website: 'https://acme.com'
-      tax_id: TAX-123456
-      company_registry: REG-123456
-      reference: PART-001
-      color: '#FF5733'
-      street1: '123 Main Street'
-      street2: 'Suite 100'
-      city: 'New York'
-      zip: '10001'
-      state_id: 9
-      country_id: 233
-      title_id: 1
+      name: 'VAT Group'
       company_id: 1
-      industry_id: 1
-      user_id: 1
+      country_id: 1
+      preceding_subtotal: Subtotal
     fileParameters: []
     responses:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Partner updated successfully."}'
+        content: '{"data":{"id":1,"sort":1,"company_id":1,"country_id":104,"creator_id":1,"name":"Tax 15%","preceding_subtotal":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Tax group updated successfully."}'
         headers: []
         description: ''
       -
@@ -2515,11 +435,11 @@ endpoints:
         status: 404
         content: '{"message": "Resource not found."}'
         headers: []
-        description: 'Partner not found'
+        description: 'Tax group not found'
       -
         custom: []
         status: 422
-        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must not exceed 255 characters."]}}'
+        content: '{"message": "The given data was invalid."}'
         headers: []
         description: 'Validation error'
     responseFields: []
@@ -2534,15 +454,15 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'admin/api/v1/partners/partners/{id}'
+    uri: 'admin/api/v1/accounts/tax-groups/{id}'
     metadata:
       custom: []
-      groupName: 'Partner API Management'
+      groupName: 'Accounts API Management'
       groupDescription: ''
-      subgroup: Partners
-      subgroupDescription: 'Manage partners (customers, suppliers, contacts)'
-      title: 'Delete partner'
-      description: 'Soft delete a partner'
+      subgroup: 'Tax Groups'
+      subgroupDescription: 'Manage tax groups'
+      title: 'Delete tax group'
+      description: 'Delete a tax group'
       authenticated: true
       deprecated: false
     headers:
@@ -2553,7 +473,18 @@ endpoints:
       id:
         custom: []
         name: id
-        description: 'The partner ID'
+        description: 'The ID of the tax group.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      tax_group:
+        custom: []
+        name: tax_group
+        description: 'The tax group ID'
         required: true
         example: 1
         type: integer
@@ -2562,7 +493,8 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 1
+      id: architecto
+      tax_group: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -2571,10 +503,10 @@ endpoints:
     responses:
       -
         custom: []
-        status: 200
-        content: '{"message": "Partner deleted successfully."}'
+        status: 204
+        content: null
         headers: []
-        description: 'Partner deleted successfully'
+        description: 'Tax group deleted successfully'
       -
         custom: []
         status: 401
@@ -2586,137 +518,7 @@ endpoints:
         status: 404
         content: '{"message": "Resource not found."}'
         headers: []
-        description: 'Partner not found'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: 'admin/api/v1/partners/partners/{id}/restore'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Partners
-      subgroupDescription: 'Manage partners (customers, suppliers, contacts)'
-      title: 'Restore partner'
-      description: 'Restore a soft-deleted partner'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The partner ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"message": "Partner restored successfully."}'
-        headers: []
-        description: 'Partner restored successfully'
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Partner not found'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - DELETE
-    uri: 'admin/api/v1/partners/partners/{id}/force'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Partners
-      subgroupDescription: 'Manage partners (customers, suppliers, contacts)'
-      title: 'Force delete partner'
-      description: 'Permanently delete a partner'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      id:
-        custom: []
-        name: id
-        description: 'The partner ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"message": "Partner permanently deleted."}'
-        headers: []
-        description: 'Partner permanently deleted'
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Partner not found'
+        description: 'Tax group not found'
     responseFields: []
     auth:
       - headers
@@ -2729,42 +531,30 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'admin/api/v1/partners/partners/{partner_id}/addresses'
+    uri: admin/api/v1/accounts/taxes
     metadata:
       custom: []
-      groupName: 'Partner API Management'
+      groupName: 'Accounts API Management'
       groupDescription: ''
-      subgroup: Addresses
-      subgroupDescription: 'Manage partner addresses'
-      title: 'List addresses'
-      description: 'Retrieve a paginated list of addresses for a specific partner with filtering and sorting'
+      subgroup: Taxes
+      subgroupDescription: 'Manage taxes'
+      title: 'List taxes'
+      description: 'Retrieve a paginated list of taxes with filtering and sorting'
       authenticated: true
       deprecated: false
     headers:
       Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
       Content-Type: application/json
       Accept: application/json
-    urlParameters:
-      partner_id:
-        custom: []
-        name: partner_id
-        description: 'The partner ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      partner_id: 1
+    urlParameters: []
+    cleanUrlParameters: []
     queryParameters:
       include:
         custom: []
         name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator'
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, taxGroup, cashBasisTransitionAccount, country, createdBy, childrenTaxes, invoiceRepartitionLines, refundRepartitionLines'
         required: false
-        example: creator
+        example: company
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2781,26 +571,10 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      'filter[sub_type]':
-        custom: []
-        name: 'filter[sub_type]'
-        description: 'Filter by address type'
-        required: false
-        example: null
-        type: string
-        enumValues:
-          - permanent
-          - present
-          - invoice
-          - delivery
-          - other
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
       'filter[name]':
         custom: []
         name: 'filter[name]'
-        description: 'Filter by address name (partial match)'
+        description: 'Filter by tax name (partial match)'
         required: false
         example: null
         type: string
@@ -2808,13 +582,24 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      'filter[city]':
+      'filter[company_id]':
         custom: []
-        name: 'filter[city]'
-        description: 'Filter by city (partial match)'
+        name: 'filter[company_id]'
+        description: 'Filter by company ID'
         required: false
         example: null
-        type: string
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[tax_group_id]':
+        custom: []
+        name: 'filter[tax_group_id]'
+        description: 'Filter by tax group ID'
+        required: false
+        example: null
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -2822,32 +607,78 @@ endpoints:
       'filter[country_id]':
         custom: []
         name: 'filter[country_id]'
-        description: 'Comma-separated list of country IDs to filter by'
+        description: 'Filter by country ID'
         required: false
         example: null
-        type: string
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      'filter[state_id]':
+      'filter[type_tax_use]':
         custom: []
-        name: 'filter[state_id]'
-        description: 'Comma-separated list of state IDs to filter by'
+        name: 'filter[type_tax_use]'
+        description: 'Filter by tax type usage'
         required: false
         example: null
         type: string
-        enumValues: []
+        enumValues:
+          - sale
+          - purchase
+          - none
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      'filter[trashed]':
+      'filter[amount_type]':
         custom: []
-        name: 'filter[trashed]'
-        description: 'Filter by trashed status. </br></br><b>Available options:</b> with, without, only'
+        name: 'filter[amount_type]'
+        description: 'Filter by amount type'
         required: false
         example: null
         type: string
+        enumValues:
+          - fixed
+          - group
+          - percent
+          - division
+          - code
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[tax_scope]':
+        custom: []
+        name: 'filter[tax_scope]'
+        description: 'Filter by tax scope'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - service
+          - consu
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[price_include_override]':
+        custom: []
+        name: 'filter[price_include_override]'
+        description: 'Filter by price include override'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - default
+          - tax_included
+          - tax_excluded
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[is_active]':
+        custom: []
+        name: 'filter[is_active]'
+        description: 'Filter by active status'
+        required: false
+        example: null
+        type: boolean
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -2857,7 +688,7 @@ endpoints:
         name: sort
         description: 'Sort field'
         required: true
-        example: name
+        example: sort
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2875,8 +706,8 @@ endpoints:
         nullable: false
         deprecated: false
     cleanQueryParameters:
-      include: creator
-      sort: name
+      include: company
+      sort: sort
       page: 1
     bodyParameters: []
     cleanBodyParameters: []
@@ -2885,7 +716,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},{"id":1,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2906,26 +737,82 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: 'admin/api/v1/partners/partners/{partner_id}/addresses'
+    uri: admin/api/v1/accounts/taxes
     metadata:
       custom: []
-      groupName: 'Partner API Management'
+      groupName: 'Accounts API Management'
       groupDescription: ''
-      subgroup: Addresses
-      subgroupDescription: 'Manage partner addresses'
-      title: 'Create address'
-      description: 'Create a new address for a specific partner'
+      subgroup: Taxes
+      subgroupDescription: 'Manage taxes'
+      title: 'Create tax'
+      description: 'Create a new tax'
       authenticated: true
       deprecated: false
     headers:
       Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
       Content-Type: application/json
       Accept: application/json
-    urlParameters:
-      partner_id:
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
         custom: []
-        name: partner_id
-        description: 'The partner ID'
+        name: name
+        description: 'Tax name. Must not be greater than 255 characters.'
+        required: true
+        example: 'VAT 20%'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      type_tax_use:
+        custom: []
+        name: type_tax_use
+        description: 'Tax type usage.'
+        required: true
+        example: Webkul\Account\Enums\TypeTaxUse
+        type: string
+        enumValues:
+          - sale
+          - purchase
+          - none
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      amount_type:
+        custom: []
+        name: amount_type
+        description: 'Tax computation type.'
+        required: true
+        example: Webkul\Account\Enums\AmountType
+        type: string
+        enumValues:
+          - fixed
+          - group
+          - percent
+          - division
+          - code
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      amount:
+        custom: []
+        name: amount
+        description: 'Tax amount/percentage. Must be at least 0.'
+        required: true
+        example: 20.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      tax_group_id:
+        custom: []
+        name: tax_group_id
+        description: 'Tax group ID. The <code>id</code> of an existing record in the accounts_tax_groups table.'
         required: true
         example: 1
         type: integer
@@ -2933,121 +820,12 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-    cleanUrlParameters:
-      partner_id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      sub_type:
+      company_id:
         custom: []
-        name: sub_type
-        description: 'Address type.'
-        required: true
-        example: invoice
-        type: string
-        enumValues:
-          - permanent
-          - present
-          - invoice
-          - delivery
-          - other
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      name:
-        custom: []
-        name: name
-        description: 'Address name or label (max 255 characters). Must not be greater than 255 characters.'
-        required: true
-        example: 'Main Office'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      email:
-        custom: []
-        name: email
-        description: 'Email address (max 255 characters). Must be a valid email address. Must not be greater than 255 characters.'
+        name: company_id
+        description: 'Company ID. The <code>id</code> of an existing record in the companies table.'
         required: false
-        example: office@company.com
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      phone:
-        custom: []
-        name: phone
-        description: 'Phone number (max 20 characters). Must not be greater than 20 characters.'
-        required: false
-        example: '+1234567890'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      mobile:
-        custom: []
-        name: mobile
-        description: 'Mobile number (max 20 characters). Must not be greater than 20 characters.'
-        required: false
-        example: '+1234567890'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      street1:
-        custom: []
-        name: street1
-        description: 'Street address line 1 (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: '123 Main Street'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      street2:
-        custom: []
-        name: street2
-        description: 'Street address line 2 (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: 'Suite 100'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      city:
-        custom: []
-        name: city
-        description: 'City (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: 'New York'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      zip:
-        custom: []
-        name: zip
-        description: 'Postal/ZIP code (max 20 characters). Must not be greater than 20 characters.'
-        required: false
-        example: '10001'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      state_id:
-        custom: []
-        name: state_id
-        description: 'State ID. The <code>id</code> of an existing record in the states table.'
-        required: false
-        example: 9
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3058,30 +836,163 @@ endpoints:
         name: country_id
         description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
         required: false
-        example: 233
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         deprecated: false
+      tax_scope:
+        custom: []
+        name: tax_scope
+        description: 'Tax scope.'
+        required: false
+        example: Webkul\Account\Enums\TaxScope
+        type: string
+        enumValues:
+          - service
+          - consu
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      price_include_override:
+        custom: []
+        name: price_include_override
+        description: 'Price include override.'
+        required: false
+        example: Webkul\Account\Enums\TaxIncludeOverride
+        type: string
+        enumValues:
+          - default
+          - tax_included
+          - tax_excluded
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      cash_basis_transition_account_id:
+        custom: []
+        name: cash_basis_transition_account_id
+        description: 'Cash basis transition account ID. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description:
+        custom: []
+        name: description
+        description: 'Tax description.'
+        required: false
+        example: 'Standard VAT rate'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      invoice_label:
+        custom: []
+        name: invoice_label
+        description: 'Label to display on invoices. Must not be greater than 255 characters.'
+        required: false
+        example: VAT
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      invoice_legal_notes:
+        custom: []
+        name: invoice_legal_notes
+        description: 'Legal notes to display on invoices.'
+        required: false
+        example: 'Subject to VAT regulations'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      tax_exigibility:
+        custom: []
+        name: tax_exigibility
+        description: 'Tax exigibility. Must not be greater than 255 characters.'
+        required: false
+        example: on_invoice
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      is_active:
+        custom: []
+        name: is_active
+        description: 'Tax status active/inactive.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      include_base_amount:
+        custom: []
+        name: include_base_amount
+        description: 'Include base amount in tax calculation.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      is_base_affected:
+        custom: []
+        name: is_base_affected
+        description: 'Is base affected by other taxes.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      analytic:
+        custom: []
+        name: analytic
+        description: 'Enable analytic accounting.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
     cleanBodyParameters:
-      sub_type: invoice
-      name: 'Main Office'
-      email: office@company.com
-      phone: '+1234567890'
-      mobile: '+1234567890'
-      street1: '123 Main Street'
-      street2: 'Suite 100'
-      city: 'New York'
-      zip: '10001'
-      state_id: 9
-      country_id: 233
+      name: 'VAT 20%'
+      type_tax_use: Webkul\Account\Enums\TypeTaxUse
+      amount_type: Webkul\Account\Enums\AmountType
+      amount: 20.0
+      tax_group_id: 1
+      company_id: 1
+      country_id: 1
+      tax_scope: Webkul\Account\Enums\TaxScope
+      price_include_override: Webkul\Account\Enums\TaxIncludeOverride
+      cash_basis_transition_account_id: 1
+      description: 'Standard VAT rate'
+      invoice_label: VAT
+      invoice_legal_notes: 'Subject to VAT regulations'
+      tax_exigibility: on_invoice
+      is_active: false
+      include_base_amount: false
+      is_base_affected: false
+      analytic: false
     fileParameters: []
     responses:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Address created successfully."}'
+        content: '{"data":{"id":1,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Tax created successfully."}'
         headers: []
         description: ''
       -
@@ -3108,15 +1019,15 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'admin/api/v1/partners/partners/{partner_id}/addresses/{id}'
+    uri: 'admin/api/v1/accounts/taxes/{id}'
     metadata:
       custom: []
-      groupName: 'Partner API Management'
+      groupName: 'Accounts API Management'
       groupDescription: ''
-      subgroup: Addresses
-      subgroupDescription: 'Manage partner addresses'
-      title: 'Show address'
-      description: 'Retrieve a specific address by its ID'
+      subgroup: Taxes
+      subgroupDescription: 'Manage taxes'
+      title: 'Show tax'
+      description: 'Retrieve a specific tax by its ID'
       authenticated: true
       deprecated: false
     headers:
@@ -3124,21 +1035,21 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      partner_id:
+      id:
         custom: []
-        name: partner_id
-        description: 'The partner ID'
+        name: id
+        description: 'The ID of the tax.'
         required: true
-        example: 1
-        type: integer
+        example: architecto
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      id:
+      tax:
         custom: []
-        name: id
-        description: 'The address ID'
+        name: tax
+        description: 'The tax ID'
         required: true
         example: 1
         type: integer
@@ -3147,22 +1058,22 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      partner_id: 1
-      id: 1
+      id: architecto
+      tax: 1
     queryParameters:
       include:
         custom: []
         name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator'
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, taxGroup, cashBasisTransitionAccount, country, createdBy, childrenTaxes, invoiceRepartitionLines, refundRepartitionLines'
         required: false
-        example: 'country,state'
+        example: 'company,taxGroup'
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanQueryParameters:
-      include: 'country,state'
+      include: 'company,taxGroup'
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
@@ -3170,7 +1081,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"parent":null}}'
+        content: '{"data":{"id":1,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}}'
         headers: []
         description: ''
       -
@@ -3184,7 +1095,7 @@ endpoints:
         status: 404
         content: '{"message": "Resource not found."}'
         headers: []
-        description: 'Address not found'
+        description: 'Tax not found'
     responseFields: []
     auth:
       - headers
@@ -3198,15 +1109,15 @@ endpoints:
     httpMethods:
       - PUT
       - PATCH
-    uri: 'admin/api/v1/partners/partners/{partner_id}/addresses/{id}'
+    uri: 'admin/api/v1/accounts/taxes/{id}'
     metadata:
       custom: []
-      groupName: 'Partner API Management'
+      groupName: 'Accounts API Management'
       groupDescription: ''
-      subgroup: Addresses
-      subgroupDescription: 'Manage partner addresses'
-      title: 'Update address'
-      description: 'Update an existing address'
+      subgroup: Taxes
+      subgroupDescription: 'Manage taxes'
+      title: 'Update tax'
+      description: 'Update an existing tax'
       authenticated: true
       deprecated: false
     headers:
@@ -3214,21 +1125,21 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      partner_id:
+      id:
         custom: []
-        name: partner_id
-        description: 'The partner ID'
+        name: id
+        description: 'The ID of the tax.'
         required: true
-        example: 1
-        type: integer
+        example: architecto
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      id:
+      tax:
         custom: []
-        name: id
-        description: 'The address ID'
+        name: tax
+        description: 'The tax ID'
         required: true
         example: 1
         type: integer
@@ -3237,121 +1148,80 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      partner_id: 1
-      id: 1
+      id: architecto
+      tax: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      sub_type:
-        custom: []
-        name: sub_type
-        description: 'Address type.'
-        required: false
-        example: invoice
-        type: string
-        enumValues:
-          - permanent
-          - present
-          - invoice
-          - delivery
-          - other
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
       name:
         custom: []
         name: name
-        description: 'Address name or label (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: 'Main Office'
+        description: 'Tax name. Must not be greater than 255 characters.'
+        required: true
+        example: 'VAT 20%'
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      email:
+      type_tax_use:
         custom: []
-        name: email
-        description: 'Email address (max 255 characters). Must be a valid email address. Must not be greater than 255 characters.'
-        required: false
-        example: office@company.com
+        name: type_tax_use
+        description: 'Tax type usage.'
+        required: true
+        example: Webkul\Account\Enums\TypeTaxUse
         type: string
+        enumValues:
+          - sale
+          - purchase
+          - none
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      amount_type:
+        custom: []
+        name: amount_type
+        description: 'Tax computation type.'
+        required: true
+        example: Webkul\Account\Enums\AmountType
+        type: string
+        enumValues:
+          - fixed
+          - group
+          - percent
+          - division
+          - code
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      amount:
+        custom: []
+        name: amount
+        description: 'Tax amount/percentage. Must be at least 0.'
+        required: true
+        example: 20.0
+        type: number
         enumValues: []
         exampleWasSpecified: false
-        nullable: true
+        nullable: false
         deprecated: false
-      phone:
+      tax_group_id:
         custom: []
-        name: phone
-        description: 'Phone number (max 20 characters). Must not be greater than 20 characters.'
-        required: false
-        example: '+1234567890'
-        type: string
+        name: tax_group_id
+        description: 'Tax group ID. The <code>id</code> of an existing record in the accounts_tax_groups table.'
+        required: true
+        example: 1
+        type: integer
         enumValues: []
         exampleWasSpecified: false
-        nullable: true
+        nullable: false
         deprecated: false
-      mobile:
+      company_id:
         custom: []
-        name: mobile
-        description: 'Mobile number (max 20 characters). Must not be greater than 20 characters.'
+        name: company_id
+        description: 'Company ID. The <code>id</code> of an existing record in the companies table.'
         required: false
-        example: '+1234567890'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      street1:
-        custom: []
-        name: street1
-        description: 'Street address line 1 (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: '123 Main Street'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      street2:
-        custom: []
-        name: street2
-        description: 'Street address line 2 (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: 'Suite 100'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      city:
-        custom: []
-        name: city
-        description: 'City (max 255 characters). Must not be greater than 255 characters.'
-        required: false
-        example: 'New York'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      zip:
-        custom: []
-        name: zip
-        description: 'Postal/ZIP code (max 20 characters). Must not be greater than 20 characters.'
-        required: false
-        example: '10001'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      state_id:
-        custom: []
-        name: state_id
-        description: 'State ID. The <code>id</code> of an existing record in the states table.'
-        required: false
-        example: 9
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3362,723 +1232,163 @@ endpoints:
         name: country_id
         description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
         required: false
-        example: 233
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         deprecated: false
-    cleanBodyParameters:
-      sub_type: invoice
-      name: 'Main Office'
-      email: office@company.com
-      phone: '+1234567890'
-      mobile: '+1234567890'
-      street1: '123 Main Street'
-      street2: 'Suite 100'
-      city: 'New York'
-      zip: '10001'
-      state_id: 9
-      country_id: 233
-    fileParameters: []
-    responses:
-      -
+      tax_scope:
         custom: []
-        status: 200
-        content: '{"data":{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"parent":null},"message":"Address updated successfully."}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Address not found'
-      -
-        custom: []
-        status: 422
-        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must be a string."]}}'
-        headers: []
-        description: 'Validation error'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - DELETE
-    uri: 'admin/api/v1/partners/partners/{partner_id}/addresses/{id}'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Addresses
-      subgroupDescription: 'Manage partner addresses'
-      title: 'Delete address'
-      description: 'Soft delete an address'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      partner_id:
-        custom: []
-        name: partner_id
-        description: 'The partner ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      id:
-        custom: []
-        name: id
-        description: 'The address ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      partner_id: 1
-      id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"message": "Address deleted successfully."}'
-        headers: []
-        description: 'Address deleted successfully'
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Address not found'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: 'admin/api/v1/partners/partners/{{partner}}/addresses/{id}/restore'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Addresses
-      subgroupDescription: 'Manage partner addresses'
-      title: 'Restore address'
-      description: 'Restore a soft-deleted address'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      '{partner':
-        custom: []
-        name: '{partner'
-        description: ''
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      id:
-        custom: []
-        name: id
-        description: 'The address ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      partner_id:
-        custom: []
-        name: partner_id
-        description: 'The partner ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      '{partner': architecto
-      id: 1
-      partner_id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"message": "Address restored successfully."}'
-        headers: []
-        description: 'Address restored successfully'
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Address not found'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - DELETE
-    uri: 'admin/api/v1/partners/partners/{{partner}}/addresses/{id}/force'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: Addresses
-      subgroupDescription: 'Manage partner addresses'
-      title: 'Force delete address'
-      description: 'Permanently delete an address'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      '{partner':
-        custom: []
-        name: '{partner'
-        description: ''
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      id:
-        custom: []
-        name: id
-        description: 'The address ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      partner_id:
-        custom: []
-        name: partner_id
-        description: 'The partner ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      '{partner': architecto
-      id: 1
-      partner_id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"message": "Address permanently deleted."}'
-        headers: []
-        description: 'Address permanently deleted'
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Address not found'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: 'admin/api/v1/partners/partners/{partner_id}/bank-accounts'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: 'Bank Accounts'
-      subgroupDescription: 'Manage partner bank accounts'
-      title: 'List bank accounts'
-      description: 'Retrieve a paginated list of bank accounts for a specific partner with filtering and sorting'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      partner_id:
-        custom: []
-        name: partner_id
-        description: 'The partner ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      partner_id: 1
-    queryParameters:
-      include:
-        custom: []
-        name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> bank, creator'
+        name: tax_scope
+        description: 'Tax scope.'
         required: false
-        example: bank
+        example: Webkul\Account\Enums\TaxScope
         type: string
-        enumValues: []
+        enumValues:
+          - service
+          - consu
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
         deprecated: false
-      'filter[id]':
+      price_include_override:
         custom: []
-        name: 'filter[id]'
-        description: 'Comma-separated list of IDs to filter by'
+        name: price_include_override
+        description: 'Price include override.'
         required: false
-        example: null
+        example: Webkul\Account\Enums\TaxIncludeOverride
         type: string
-        enumValues: []
+        enumValues:
+          - default
+          - tax_included
+          - tax_excluded
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
         deprecated: false
-      'filter[bank_id]':
+      cash_basis_transition_account_id:
         custom: []
-        name: 'filter[bank_id]'
-        description: 'Comma-separated list of bank IDs to filter by'
+        name: cash_basis_transition_account_id
+        description: 'Cash basis transition account ID. The <code>id</code> of an existing record in the accounts_accounts table.'
         required: false
-        example: null
-        type: string
+        example: 1
+        type: integer
         enumValues: []
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
         deprecated: false
-      'filter[trashed]':
+      description:
         custom: []
-        name: 'filter[trashed]'
-        description: 'Filter by trashed status. </br></br><b>Available options:</b> with, without, only'
+        name: description
+        description: 'Tax description.'
         required: false
-        example: null
+        example: 'Standard VAT rate'
         type: string
         enumValues: []
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
         deprecated: false
-      sort:
+      invoice_label:
         custom: []
-        name: sort
-        description: 'Sort field'
-        required: true
-        example: created_at
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      page:
-        custom: []
-        name: page
-        description: 'Page number'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanQueryParameters:
-      include: bank
-      sort: created_at
-      page: 1
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"data":[{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"},{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: 'admin/api/v1/partners/partners/{partner_id}/bank-accounts'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: 'Bank Accounts'
-      subgroupDescription: 'Manage partner bank accounts'
-      title: 'Create bank account'
-      description: 'Create a new bank account for a specific partner'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      partner_id:
-        custom: []
-        name: partner_id
-        description: 'The partner ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      partner_id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      account_number:
-        custom: []
-        name: account_number
-        description: 'Bank account number (max 255 characters). Must not be greater than 255 characters.'
-        required: true
-        example: '1234567890'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      can_send_money:
-        custom: []
-        name: can_send_money
-        description: 'Whether money can be sent from this account.'
-        required: true
-        example: false
-        type: boolean
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      bank_id:
-        custom: []
-        name: bank_id
-        description: 'Bank ID. The <code>id</code> of an existing record in the banks table.'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanBodyParameters:
-      account_number: '1234567890'
-      can_send_money: false
-      bank_id: 1
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 201
-        content: '{"data":{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"},"message":"Bank account created successfully."}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 422
-        content: '{"message": "The given data was invalid.", "errors": {"account_number": ["The account number field is required."]}}'
-        headers: []
-        description: 'Validation error'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: 'admin/api/v1/partners/partners/{partner_id}/bank-accounts/{id}'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: 'Bank Accounts'
-      subgroupDescription: 'Manage partner bank accounts'
-      title: 'Show bank account'
-      description: 'Retrieve a specific bank account by its ID'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      partner_id:
-        custom: []
-        name: partner_id
-        description: 'The partner ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      id:
-        custom: []
-        name: id
-        description: 'The bank account ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      partner_id: 1
-      id: 1
-    queryParameters:
-      include:
-        custom: []
-        name: include
-        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> bank, creator'
+        name: invoice_label
+        description: 'Label to display on invoices. Must not be greater than 255 characters.'
         required: false
-        example: bank
+        example: VAT
         type: string
         enumValues: []
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
         deprecated: false
-    cleanQueryParameters:
-      include: bank
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
+      invoice_legal_notes:
         custom: []
-        status: 200
-        content: '{"data":{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"}}'
-        headers: []
-        description: ''
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Bank account not found'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - PUT
-      - PATCH
-    uri: 'admin/api/v1/partners/partners/{partner_id}/bank-accounts/{id}'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: 'Bank Accounts'
-      subgroupDescription: 'Manage partner bank accounts'
-      title: 'Update bank account'
-      description: 'Update an existing bank account'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      partner_id:
-        custom: []
-        name: partner_id
-        description: 'The partner ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      id:
-        custom: []
-        name: id
-        description: 'The bank account ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      partner_id: 1
-      id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      account_number:
-        custom: []
-        name: account_number
-        description: 'Bank account number (max 255 characters). Must not be greater than 255 characters.'
+        name: invoice_legal_notes
+        description: 'Legal notes to display on invoices.'
         required: false
-        example: '1234567890'
+        example: 'Subject to VAT regulations'
         type: string
         enumValues: []
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
         deprecated: false
-      can_send_money:
+      tax_exigibility:
         custom: []
-        name: can_send_money
-        description: 'Whether money can be sent from this account.'
+        name: tax_exigibility
+        description: 'Tax exigibility. Must not be greater than 255 characters.'
+        required: false
+        example: on_invoice
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      is_active:
+        custom: []
+        name: is_active
+        description: 'Tax status active/inactive.'
         required: false
         example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
         deprecated: false
-      bank_id:
+      include_base_amount:
         custom: []
-        name: bank_id
-        description: 'Bank ID. The <code>id</code> of an existing record in the banks table.'
+        name: include_base_amount
+        description: 'Include base amount in tax calculation.'
         required: false
-        example: 1
-        type: integer
+        example: false
+        type: boolean
         enumValues: []
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
+        deprecated: false
+      is_base_affected:
+        custom: []
+        name: is_base_affected
+        description: 'Is base affected by other taxes.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      analytic:
+        custom: []
+        name: analytic
+        description: 'Enable analytic accounting.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
         deprecated: false
     cleanBodyParameters:
-      account_number: '1234567890'
-      can_send_money: false
-      bank_id: 1
+      name: 'VAT 20%'
+      type_tax_use: Webkul\Account\Enums\TypeTaxUse
+      amount_type: Webkul\Account\Enums\AmountType
+      amount: 20.0
+      tax_group_id: 1
+      company_id: 1
+      country_id: 1
+      tax_scope: Webkul\Account\Enums\TaxScope
+      price_include_override: Webkul\Account\Enums\TaxIncludeOverride
+      cash_basis_transition_account_id: 1
+      description: 'Standard VAT rate'
+      invoice_label: VAT
+      invoice_legal_notes: 'Subject to VAT regulations'
+      tax_exigibility: on_invoice
+      is_active: false
+      include_base_amount: false
+      is_base_affected: false
+      analytic: false
     fileParameters: []
     responses:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"},"message":"Bank account updated successfully."}'
+        content: '{"data":{"id":1,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Tax updated successfully."}'
         headers: []
         description: ''
       -
@@ -4092,11 +1402,11 @@ endpoints:
         status: 404
         content: '{"message": "Resource not found."}'
         headers: []
-        description: 'Bank account not found'
+        description: 'Tax not found'
       -
         custom: []
         status: 422
-        content: '{"message": "The given data was invalid.", "errors": {"account_number": ["The account number field must be a string."]}}'
+        content: '{"message": "The given data was invalid."}'
         headers: []
         description: 'Validation error'
     responseFields: []
@@ -4111,15 +1421,15 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'admin/api/v1/partners/partners/{partner_id}/bank-accounts/{id}'
+    uri: 'admin/api/v1/accounts/taxes/{id}'
     metadata:
       custom: []
-      groupName: 'Partner API Management'
+      groupName: 'Accounts API Management'
       groupDescription: ''
-      subgroup: 'Bank Accounts'
-      subgroupDescription: 'Manage partner bank accounts'
-      title: 'Delete bank account'
-      description: 'Soft delete a bank account'
+      subgroup: Taxes
+      subgroupDescription: 'Manage taxes'
+      title: 'Delete tax'
+      description: 'Delete a tax'
       authenticated: true
       deprecated: false
     headers:
@@ -4127,87 +1437,10 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      partner_id:
-        custom: []
-        name: partner_id
-        description: 'The partner ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
       id:
         custom: []
         name: id
-        description: 'The bank account ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      partner_id: 1
-      id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"message": "Bank account deleted successfully."}'
-        headers: []
-        description: 'Bank account deleted successfully'
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Bank account not found'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: 'admin/api/v1/partners/partners/{{partner}}/bank-accounts/{id}/restore'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: 'Bank Accounts'
-      subgroupDescription: 'Manage partner bank accounts'
-      title: 'Restore bank account'
-      description: 'Restore a soft-deleted bank account'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      '{partner':
-        custom: []
-        name: '{partner'
-        description: ''
+        description: 'The ID of the tax.'
         required: true
         example: architecto
         type: string
@@ -4215,21 +1448,10 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-      id:
+      tax:
         custom: []
-        name: id
-        description: 'The bank account ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      partner_id:
-        custom: []
-        name: partner_id
-        description: 'The partner ID'
+        name: tax
+        description: 'The tax ID'
         required: true
         example: 1
         type: integer
@@ -4238,9 +1460,8 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      '{partner': architecto
-      id: 1
-      partner_id: 1
+      id: architecto
+      tax: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -4249,10 +1470,10 @@ endpoints:
     responses:
       -
         custom: []
-        status: 200
-        content: '{"message": "Bank account restored successfully."}'
+        status: 204
+        content: null
         headers: []
-        description: 'Bank account restored successfully'
+        description: 'Tax deleted successfully'
       -
         custom: []
         status: 401
@@ -4264,96 +1485,7 @@ endpoints:
         status: 404
         content: '{"message": "Resource not found."}'
         headers: []
-        description: 'Bank account not found'
-    responseFields: []
-    auth:
-      - headers
-      - Authorization
-      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - DELETE
-    uri: 'admin/api/v1/partners/partners/{{partner}}/bank-accounts/{id}/force'
-    metadata:
-      custom: []
-      groupName: 'Partner API Management'
-      groupDescription: ''
-      subgroup: 'Bank Accounts'
-      subgroupDescription: 'Manage partner bank accounts'
-      title: 'Force delete bank account'
-      description: 'Permanently delete a bank account'
-      authenticated: true
-      deprecated: false
-    headers:
-      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters:
-      '{partner':
-        custom: []
-        name: '{partner'
-        description: ''
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      id:
-        custom: []
-        name: id
-        description: 'The bank account ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      partner_id:
-        custom: []
-        name: partner_id
-        description: 'The partner ID'
-        required: true
-        example: 1
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      '{partner': architecto
-      id: 1
-      partner_id: 1
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 200
-        content: '{"message": "Bank account permanently deleted."}'
-        headers: []
-        description: 'Bank account permanently deleted'
-      -
-        custom: []
-        status: 401
-        content: '{"message": "Unauthenticated."}'
-        headers: []
-        description: Unauthenticated
-      -
-        custom: []
-        status: 404
-        content: '{"message": "Resource not found."}'
-        headers: []
-        description: 'Bank account not found'
+        description: 'Tax not found'
     responseFields: []
     auth:
       - headers

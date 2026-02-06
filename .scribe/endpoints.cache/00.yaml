@@ -7,6 +7,4776 @@ endpoints:
     custom: []
     httpMethods:
       - GET
+    uri: admin/api/v1/accounts/payment-terms
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Payment Terms'
+      subgroupDescription: 'Manage payment terms'
+      title: 'List payment terms'
+      description: 'Retrieve a paginated list of payment terms with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, createdBy'
+        required: false
+        example: company
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[name]':
+        custom: []
+        name: 'filter[name]'
+        description: 'Filter by payment term name (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[company_id]':
+        custom: []
+        name: 'filter[company_id]'
+        description: 'Filter by company ID'
+        required: false
+        example: null
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[trashed]':
+        custom: []
+        name: 'filter[trashed]'
+        description: 'Filter by trashed status. Options: with, only'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: name
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: company
+      sort: name
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: admin/api/v1/accounts/payment-terms
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Payment Terms'
+      subgroupDescription: 'Manage payment terms'
+      title: 'Create payment term'
+      description: 'Create a new payment term'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Payment term name. Must not be greater than 255 characters.'
+        required: true
+        example: '30 Days'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID. The <code>id</code> of an existing record in the companies table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      note:
+        custom: []
+        name: note
+        description: 'Payment term notes.'
+        required: false
+        example: 'Payment due within 30 days'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      display_on_invoice:
+        custom: []
+        name: display_on_invoice
+        description: 'Display on invoice.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      early_pay_discount:
+        custom: []
+        name: early_pay_discount
+        description: 'Early payment discount enabled.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      discount_percentage:
+        custom: []
+        name: discount_percentage
+        description: 'Discount percentage. Must be at least 0. Must not be greater than 100.'
+        required: false
+        example: 2.5
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      discount_days:
+        custom: []
+        name: discount_days
+        description: 'Days for early discount. Must be at least 0.'
+        required: false
+        example: 10
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: '30 Days'
+      company_id: 1
+      note: 'Payment due within 30 days'
+      display_on_invoice: false
+      early_pay_discount: false
+      discount_percentage: 2.5
+      discount_days: 10
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},"message":"Payment term created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/accounts/payment-terms/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Payment Terms'
+      subgroupDescription: 'Manage payment terms'
+      title: 'Show payment term'
+      description: 'Retrieve a specific payment term by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the payment term.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      payment_term:
+        custom: []
+        name: payment_term
+        description: 'The payment term ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      payment_term: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, createdBy'
+        required: false
+        example: company
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: company
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Payment term not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/accounts/payment-terms/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Payment Terms'
+      subgroupDescription: 'Manage payment terms'
+      title: 'Update payment term'
+      description: 'Update an existing payment term'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the payment term.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      payment_term:
+        custom: []
+        name: payment_term
+        description: 'The payment term ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      payment_term: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Payment term name. Must not be greater than 255 characters.'
+        required: true
+        example: '30 Days'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID. The <code>id</code> of an existing record in the companies table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      note:
+        custom: []
+        name: note
+        description: 'Payment term notes.'
+        required: false
+        example: 'Payment due within 30 days'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      display_on_invoice:
+        custom: []
+        name: display_on_invoice
+        description: 'Display on invoice.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      early_pay_discount:
+        custom: []
+        name: early_pay_discount
+        description: 'Early payment discount enabled.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      discount_percentage:
+        custom: []
+        name: discount_percentage
+        description: 'Discount percentage. Must be at least 0. Must not be greater than 100.'
+        required: false
+        example: 2.5
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      discount_days:
+        custom: []
+        name: discount_days
+        description: 'Days for early discount. Must be at least 0.'
+        required: false
+        example: 10
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: '30 Days'
+      company_id: 1
+      note: 'Payment due within 30 days'
+      display_on_invoice: false
+      early_pay_discount: false
+      discount_percentage: 2.5
+      discount_days: 10
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},"message":"Payment term updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Payment term not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid."}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/accounts/payment-terms/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Payment Terms'
+      subgroupDescription: 'Manage payment terms'
+      title: 'Delete payment term'
+      description: 'Soft delete a payment term'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the payment term.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      payment_term:
+        custom: []
+        name: payment_term
+        description: 'The payment term ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      payment_term: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: null
+        headers: []
+        description: 'Payment term deleted successfully'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Payment term not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/accounts/payment-terms/{id}/restore'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Payment Terms'
+      subgroupDescription: 'Manage payment terms'
+      title: 'Restore payment term'
+      description: 'Restore a soft-deleted payment term'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the payment term.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      payment_term:
+        custom: []
+        name: payment_term
+        description: 'The payment term ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      payment_term: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},"message":"Payment term restored successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Payment term not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/accounts/payment-terms/{id}/force'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Payment Terms'
+      subgroupDescription: 'Manage payment terms'
+      title: 'Force delete payment term'
+      description: 'Permanently delete a payment term'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the payment term.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      payment_term:
+        custom: []
+        name: payment_term
+        description: 'The payment term ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      payment_term: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: null
+        headers: []
+        description: 'Payment term permanently deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Payment term not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/accounts/payment-terms/{payment_term_id}/due-terms'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Payment Due Terms'
+      subgroupDescription: 'Manage payment term due terms'
+      title: 'List payment due terms'
+      description: 'Retrieve a paginated list of payment due terms for a specific payment term'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      payment_term_id:
+        custom: []
+        name: payment_term_id
+        description: 'The payment term ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      payment_term_id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> paymentTerm, creator'
+        required: false
+        example: paymentTerm
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[value]':
+        custom: []
+        name: 'filter[value]'
+        description: 'Filter by value type'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - percent
+          - fixed
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[delay_type]':
+        custom: []
+        name: 'filter[delay_type]'
+        description: 'Filter by delay type'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - days_after
+          - days_after_end_of_month
+          - days_after_end_of_next_month
+          - days_end_of_month_no_the
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: created_at
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: paymentTerm
+      sort: created_at
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}},{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/accounts/payment-terms/{payment_term_id}/due-terms'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Payment Due Terms'
+      subgroupDescription: 'Manage payment term due terms'
+      title: 'Create payment due term'
+      description: 'Create a new payment due term for a specific payment term'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      payment_term_id:
+        custom: []
+        name: payment_term_id
+        description: 'The payment term ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      payment_term_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      value:
+        custom: []
+        name: value
+        description: 'Due term value type.'
+        required: true
+        example: Webkul\Account\Enums\DueTermValue
+        type: string
+        enumValues:
+          - percent
+          - fixed
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      value_amount:
+        custom: []
+        name: value_amount
+        description: 'Value amount (percentage or fixed amount). Must be at least 0. Must not be greater than 100.'
+        required: true
+        example: 100.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      delay_type:
+        custom: []
+        name: delay_type
+        description: 'Delay type.'
+        required: true
+        example: Webkul\Account\Enums\DelayType
+        type: string
+        enumValues:
+          - days_after
+          - days_after_end_of_month
+          - days_after_end_of_next_month
+          - days_end_of_month_no_the
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      nb_days:
+        custom: []
+        name: nb_days
+        description: 'Number of days. Must be at least 0.'
+        required: true
+        example: 30
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      days_next_month:
+        custom: []
+        name: days_next_month
+        description: 'Day of next month (1-31). Must be at least 1. Must not be greater than 31.'
+        required: false
+        example: 15
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      payment_id:
+        custom: []
+        name: payment_id
+        description: 'Payment term ID. The <code>id</code> of an existing record in the accounts_payment_terms table.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      value: Webkul\Account\Enums\DueTermValue
+      value_amount: 100.0
+      delay_type: Webkul\Account\Enums\DelayType
+      nb_days: 30
+      days_next_month: 15
+      payment_id: 1
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}},"message":"Payment due term created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"value": ["The value field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/accounts/payment-terms/{payment_term_id}/due-terms/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Payment Due Terms'
+      subgroupDescription: 'Manage payment term due terms'
+      title: 'Show payment due term'
+      description: 'Retrieve a specific payment due term by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      payment_term_id:
+        custom: []
+        name: payment_term_id
+        description: 'The payment term ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The payment due term ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      payment_term_id: 1
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> paymentTerm, creator'
+        required: false
+        example: paymentTerm
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: paymentTerm
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Payment due term not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/accounts/payment-terms/{payment_term_id}/due-terms/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Payment Due Terms'
+      subgroupDescription: 'Manage payment term due terms'
+      title: 'Update payment due term'
+      description: 'Update an existing payment due term'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      payment_term_id:
+        custom: []
+        name: payment_term_id
+        description: 'The payment term ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The payment due term ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      payment_term_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      value:
+        custom: []
+        name: value
+        description: 'Due term value type.'
+        required: true
+        example: Webkul\Account\Enums\DueTermValue
+        type: string
+        enumValues:
+          - percent
+          - fixed
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      value_amount:
+        custom: []
+        name: value_amount
+        description: 'Value amount (percentage or fixed amount). Must be at least 0. Must not be greater than 100.'
+        required: true
+        example: 100.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      delay_type:
+        custom: []
+        name: delay_type
+        description: 'Delay type.'
+        required: true
+        example: Webkul\Account\Enums\DelayType
+        type: string
+        enumValues:
+          - days_after
+          - days_after_end_of_month
+          - days_after_end_of_next_month
+          - days_end_of_month_no_the
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      nb_days:
+        custom: []
+        name: nb_days
+        description: 'Number of days. Must be at least 0.'
+        required: true
+        example: 30
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      days_next_month:
+        custom: []
+        name: days_next_month
+        description: 'Day of next month (1-31). Must be at least 1. Must not be greater than 31.'
+        required: false
+        example: 15
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      payment_id:
+        custom: []
+        name: payment_id
+        description: 'Payment term ID. The <code>id</code> of an existing record in the accounts_payment_terms table.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      value: Webkul\Account\Enums\DueTermValue
+      value_amount: 100.0
+      delay_type: Webkul\Account\Enums\DelayType
+      nb_days: 30
+      days_next_month: 15
+      payment_id: 1
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"payment_id":1,"creator_id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","paymentTerm":{"id":1,"company_id":1,"creator_id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","sort":1,"display_on_invoice":1,"early_pay_discount":"on_early_payment","discount_percentage":"2.0000","discount_days":10,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}},"message":"Payment due term updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Payment due term not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid."}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/accounts/payment-terms/{payment_term_id}/due-terms/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Payment Due Terms'
+      subgroupDescription: 'Manage payment term due terms'
+      title: 'Delete payment due term'
+      description: 'Delete a payment due term'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      payment_term_id:
+        custom: []
+        name: payment_term_id
+        description: 'The payment term ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The payment due term ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      payment_term_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: null
+        headers: []
+        description: 'Payment due term deleted successfully'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Payment due term not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: admin/api/v1/accounts/incoterms
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: Incoterms
+      subgroupDescription: 'Manage international commercial terms'
+      title: 'List incoterms'
+      description: 'Retrieve a paginated list of incoterms with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> createdBy'
+        required: false
+        example: createdBy
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[code]':
+        custom: []
+        name: 'filter[code]'
+        description: 'Filter by incoterm code (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[name]':
+        custom: []
+        name: 'filter[name]'
+        description: 'Filter by incoterm name (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[trashed]':
+        custom: []
+        name: 'filter[trashed]'
+        description: 'Filter by trashed status. Options: with, only'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: code
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: createdBy
+      sort: code
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1,"code":"EXW","name":"EX WORKS","creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},{"id":1,"code":"EXW","name":"EX WORKS","creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: admin/api/v1/accounts/incoterms
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: Incoterms
+      subgroupDescription: 'Manage international commercial terms'
+      title: 'Create incoterm'
+      description: 'Create a new incoterm'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      code:
+        custom: []
+        name: code
+        description: 'Incoterm code (3 characters). Must not be greater than 3 characters.'
+        required: true
+        example: EXW
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      name:
+        custom: []
+        name: name
+        description: 'Incoterm name. Must not be greater than 255 characters.'
+        required: true
+        example: 'Ex Works'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      code: EXW
+      name: 'Ex Works'
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":1,"code":"EXW","name":"EX WORKS","creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},"message":"Incoterm created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"code": ["The code field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/accounts/incoterms/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: Incoterms
+      subgroupDescription: 'Manage international commercial terms'
+      title: 'Show incoterm'
+      description: 'Retrieve a specific incoterm by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the incoterm.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      incoterm:
+        custom: []
+        name: incoterm
+        description: 'The incoterm ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      incoterm: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> createdBy'
+        required: false
+        example: createdBy
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: createdBy
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"code":"EXW","name":"EX WORKS","creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Incoterm not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/accounts/incoterms/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: Incoterms
+      subgroupDescription: 'Manage international commercial terms'
+      title: 'Update incoterm'
+      description: 'Update an existing incoterm'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the incoterm.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      incoterm:
+        custom: []
+        name: incoterm
+        description: 'The incoterm ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      incoterm: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      code:
+        custom: []
+        name: code
+        description: 'Incoterm code (3 characters). Must not be greater than 3 characters.'
+        required: true
+        example: EXW
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      name:
+        custom: []
+        name: name
+        description: 'Incoterm name. Must not be greater than 255 characters.'
+        required: true
+        example: 'Ex Works'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      code: EXW
+      name: 'Ex Works'
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"code":"EXW","name":"EX WORKS","creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},"message":"Incoterm updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Incoterm not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid."}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/accounts/incoterms/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: Incoterms
+      subgroupDescription: 'Manage international commercial terms'
+      title: 'Delete incoterm'
+      description: 'Soft delete an incoterm'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the incoterm.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      incoterm:
+        custom: []
+        name: incoterm
+        description: 'The incoterm ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      incoterm: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: null
+        headers: []
+        description: 'Incoterm deleted successfully'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Incoterm not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/accounts/incoterms/{id}/restore'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: Incoterms
+      subgroupDescription: 'Manage international commercial terms'
+      title: 'Restore incoterm'
+      description: 'Restore a soft-deleted incoterm'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the incoterm.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      incoterm:
+        custom: []
+        name: incoterm
+        description: 'The incoterm ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      incoterm: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"code":"EXW","name":"EX WORKS","creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},"message":"Incoterm restored successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Incoterm not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/accounts/incoterms/{id}/force'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: Incoterms
+      subgroupDescription: 'Manage international commercial terms'
+      title: 'Force delete incoterm'
+      description: 'Permanently delete an incoterm'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the incoterm.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      incoterm:
+        custom: []
+        name: incoterm
+        description: 'The incoterm ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      incoterm: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: null
+        headers: []
+        description: 'Incoterm permanently deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Incoterm not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: admin/api/v1/accounts/accounts
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Chart of Accounts'
+      subgroupDescription: 'Manage chart of accounts'
+      title: 'List accounts'
+      description: 'Retrieve a paginated list of accounts with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> currency, createdBy, taxes, tags, journals, moveLines, companies'
+        required: false
+        example: currency
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[name]':
+        custom: []
+        name: 'filter[name]'
+        description: 'Filter by account name (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[code]':
+        custom: []
+        name: 'filter[code]'
+        description: 'Filter by account code (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[account_type]':
+        custom: []
+        name: 'filter[account_type]'
+        description: 'Filter by account type'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - asset_receivable
+          - asset_cash
+          - asset_current
+          - asset_non_current
+          - asset_prepayments
+          - asset_fixed
+          - liability_payable
+          - liability_credit_card
+          - liability_current
+          - liability_non_current
+          - equity
+          - equity_unaffected
+          - income
+          - income_other
+          - expense
+          - expense_depreciation
+          - expense_direct_cost
+          - off_balance
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[currency_id]':
+        custom: []
+        name: 'filter[currency_id]'
+        description: 'Filter by currency ID'
+        required: false
+        example: null
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[deprecated]':
+        custom: []
+        name: 'filter[deprecated]'
+        description: 'Filter by deprecated status'
+        required: false
+        example: null
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[reconcile]':
+        custom: []
+        name: 'filter[reconcile]'
+        description: 'Filter by reconcile flag'
+        required: false
+        example: null
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: code
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: currency
+      sort: code
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1,"currency_id":1,"creator_id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},{"id":1,"currency_id":1,"creator_id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: admin/api/v1/accounts/accounts
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Chart of Accounts'
+      subgroupDescription: 'Manage chart of accounts'
+      title: 'Create account'
+      description: 'Create a new account'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Account name. Must not be greater than 255 characters.'
+        required: true
+        example: 'Cash and Bank'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      code:
+        custom: []
+        name: code
+        description: 'Account code. Must not be greater than 64 characters.'
+        required: true
+        example: '1000'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      account_type:
+        custom: []
+        name: account_type
+        description: 'Account type.'
+        required: true
+        example: Webkul\Account\Enums\AccountType
+        type: string
+        enumValues:
+          - asset_receivable
+          - asset_cash
+          - asset_current
+          - asset_non_current
+          - asset_prepayments
+          - asset_fixed
+          - liability_payable
+          - liability_credit_card
+          - liability_current
+          - liability_non_current
+          - equity
+          - equity_unaffected
+          - income
+          - income_other
+          - expense
+          - expense_depreciation
+          - expense_direct_cost
+          - off_balance
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      currency_id:
+        custom: []
+        name: currency_id
+        description: 'Currency ID. The <code>id</code> of an existing record in the currencies table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      note:
+        custom: []
+        name: note
+        description: 'Account notes.'
+        required: false
+        example: 'Primary cash account'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      deprecated:
+        custom: []
+        name: deprecated
+        description: 'Mark account as deprecated.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      reconcile:
+        custom: []
+        name: reconcile
+        description: 'Enable reconciliation.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      non_trade:
+        custom: []
+        name: non_trade
+        description: 'Non-trade account flag.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: 'Cash and Bank'
+      code: '1000'
+      account_type: Webkul\Account\Enums\AccountType
+      currency_id: 1
+      note: 'Primary cash account'
+      deprecated: false
+      reconcile: false
+      non_trade: false
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":1,"currency_id":1,"creator_id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Account created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/accounts/accounts/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Chart of Accounts'
+      subgroupDescription: 'Manage chart of accounts'
+      title: 'Show account'
+      description: 'Retrieve a specific account by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the account.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      account:
+        custom: []
+        name: account
+        description: 'The account ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      account: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> currency, createdBy, taxes, tags, journals, moveLines, companies'
+        required: false
+        example: 'currency,taxes'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'currency,taxes'
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"currency_id":1,"creator_id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Account not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/accounts/accounts/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Chart of Accounts'
+      subgroupDescription: 'Manage chart of accounts'
+      title: 'Update account'
+      description: 'Update an existing account'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the account.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      account:
+        custom: []
+        name: account
+        description: 'The account ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      account: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Account name. Must not be greater than 255 characters.'
+        required: true
+        example: 'Cash and Bank'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      code:
+        custom: []
+        name: code
+        description: 'Account code. Must not be greater than 64 characters.'
+        required: true
+        example: '1000'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      account_type:
+        custom: []
+        name: account_type
+        description: 'Account type.'
+        required: true
+        example: Webkul\Account\Enums\AccountType
+        type: string
+        enumValues:
+          - asset_receivable
+          - asset_cash
+          - asset_current
+          - asset_non_current
+          - asset_prepayments
+          - asset_fixed
+          - liability_payable
+          - liability_credit_card
+          - liability_current
+          - liability_non_current
+          - equity
+          - equity_unaffected
+          - income
+          - income_other
+          - expense
+          - expense_depreciation
+          - expense_direct_cost
+          - off_balance
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      currency_id:
+        custom: []
+        name: currency_id
+        description: 'Currency ID. The <code>id</code> of an existing record in the currencies table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      note:
+        custom: []
+        name: note
+        description: 'Account notes.'
+        required: false
+        example: 'Primary cash account'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      deprecated:
+        custom: []
+        name: deprecated
+        description: 'Mark account as deprecated.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      reconcile:
+        custom: []
+        name: reconcile
+        description: 'Enable reconciliation.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      non_trade:
+        custom: []
+        name: non_trade
+        description: 'Non-trade account flag.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: 'Cash and Bank'
+      code: '1000'
+      account_type: Webkul\Account\Enums\AccountType
+      currency_id: 1
+      note: 'Primary cash account'
+      deprecated: false
+      reconcile: false
+      non_trade: false
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"currency_id":1,"creator_id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Account updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Account not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid."}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/accounts/accounts/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Chart of Accounts'
+      subgroupDescription: 'Manage chart of accounts'
+      title: 'Delete account'
+      description: 'Delete an account'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the account.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      account:
+        custom: []
+        name: account
+        description: 'The account ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      account: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: null
+        headers: []
+        description: 'Account deleted successfully'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Account not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: admin/api/v1/accounts/journals
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: Journals
+      subgroupDescription: 'Manage accounting journals'
+      title: 'List journals'
+      description: 'Retrieve a paginated list of journals with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, currency, defaultAccount, suspenseAccount, profitAccount, lossAccount, bankAccount, creator'
+        required: false
+        example: 'company,currency'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[name]':
+        custom: []
+        name: 'filter[name]'
+        description: 'Filter by journal name (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[code]':
+        custom: []
+        name: 'filter[code]'
+        description: 'Filter by journal code (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[type]':
+        custom: []
+        name: 'filter[type]'
+        description: 'Filter by journal type'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - sale
+          - purchase
+          - cash
+          - bank
+          - credit
+          - general
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[company_id]':
+        custom: []
+        name: 'filter[company_id]'
+        description: 'Filter by company ID'
+        required: false
+        example: null
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[show_on_dashboard]':
+        custom: []
+        name: 'filter[show_on_dashboard]'
+        description: 'Filter by dashboard visibility'
+        required: false
+        example: null
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: name
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'company,currency'
+      sort: name
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1,"company_id":1,"currency_id":1,"default_account_id":27,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":1,"name":"Customer Invoices","code":"INV","type":"sale","color":"11","sort":5,"show_on_dashboard":1,"refund_order":1,"payment_order":0,"created_at":null,"updated_at":null},{"id":1,"company_id":1,"currency_id":1,"default_account_id":27,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":1,"name":"Customer Invoices","code":"INV","type":"sale","color":"11","sort":5,"show_on_dashboard":1,"refund_order":1,"payment_order":0,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: admin/api/v1/accounts/journals
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: Journals
+      subgroupDescription: 'Manage accounting journals'
+      title: 'Create journal'
+      description: 'Create a new journal'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Journal name. Must not be greater than 255 characters.'
+        required: true
+        example: 'Bank Journal'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      code:
+        custom: []
+        name: code
+        description: 'Journal code (max 5 chars). Must not be greater than 5 characters.'
+        required: true
+        example: BNK
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      type:
+        custom: []
+        name: type
+        description: 'Journal type.'
+        required: true
+        example: Webkul\Account\Enums\JournalType
+        type: string
+        enumValues:
+          - sale
+          - purchase
+          - cash
+          - bank
+          - credit
+          - general
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID. The <code>id</code> of an existing record in the companies table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      currency_id:
+        custom: []
+        name: currency_id
+        description: 'Currency ID. The <code>id</code> of an existing record in the currencies table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      default_account_id:
+        custom: []
+        name: default_account_id
+        description: 'Default account ID. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      suspense_account_id:
+        custom: []
+        name: suspense_account_id
+        description: 'Suspense account ID. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      profit_account_id:
+        custom: []
+        name: profit_account_id
+        description: 'Profit account ID. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 3
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      loss_account_id:
+        custom: []
+        name: loss_account_id
+        description: 'Loss account ID. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 4
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      bank_account_id:
+        custom: []
+        name: bank_account_id
+        description: 'Bank account ID. The <code>id</code> of an existing record in the partner_bank_accounts table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      color:
+        custom: []
+        name: color
+        description: 'Journal color (hex). Must not be greater than 7 characters.'
+        required: false
+        example: '#3b82f6'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      show_on_dashboard:
+        custom: []
+        name: show_on_dashboard
+        description: 'Show on dashboard.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      refund_order:
+        custom: []
+        name: refund_order
+        description: 'Refund order flag.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      payment_order:
+        custom: []
+        name: payment_order
+        description: 'Payment order flag.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: 'Bank Journal'
+      code: BNK
+      type: Webkul\Account\Enums\JournalType
+      company_id: 1
+      currency_id: 1
+      default_account_id: 1
+      suspense_account_id: 2
+      profit_account_id: 3
+      loss_account_id: 4
+      bank_account_id: 1
+      color: '#3b82f6'
+      show_on_dashboard: false
+      refund_order: false
+      payment_order: false
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":1,"company_id":1,"currency_id":1,"default_account_id":27,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":1,"name":"Customer Invoices","code":"INV","type":"sale","color":"11","sort":5,"show_on_dashboard":1,"refund_order":1,"payment_order":0,"created_at":null,"updated_at":null},"message":"Journal created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/accounts/journals/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: Journals
+      subgroupDescription: 'Manage accounting journals'
+      title: 'Show journal'
+      description: 'Retrieve a specific journal by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the journal.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      journal:
+        custom: []
+        name: journal
+        description: 'The journal ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      journal: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, currency, defaultAccount, suspenseAccount, profitAccount, lossAccount, bankAccount, creator'
+        required: false
+        example: 'company,currency'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'company,currency'
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"company_id":1,"currency_id":1,"default_account_id":27,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":1,"name":"Customer Invoices","code":"INV","type":"sale","color":"11","sort":5,"show_on_dashboard":1,"refund_order":1,"payment_order":0,"created_at":null,"updated_at":null}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Journal not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/accounts/journals/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: Journals
+      subgroupDescription: 'Manage accounting journals'
+      title: 'Update journal'
+      description: 'Update an existing journal'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the journal.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      journal:
+        custom: []
+        name: journal
+        description: 'The journal ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      journal: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Journal name. Must not be greater than 255 characters.'
+        required: true
+        example: 'Bank Journal'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      code:
+        custom: []
+        name: code
+        description: 'Journal code (max 5 chars). Must not be greater than 5 characters.'
+        required: true
+        example: BNK
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      type:
+        custom: []
+        name: type
+        description: 'Journal type.'
+        required: true
+        example: Webkul\Account\Enums\JournalType
+        type: string
+        enumValues:
+          - sale
+          - purchase
+          - cash
+          - bank
+          - credit
+          - general
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID. The <code>id</code> of an existing record in the companies table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      currency_id:
+        custom: []
+        name: currency_id
+        description: 'Currency ID. The <code>id</code> of an existing record in the currencies table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      default_account_id:
+        custom: []
+        name: default_account_id
+        description: 'Default account ID. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      suspense_account_id:
+        custom: []
+        name: suspense_account_id
+        description: 'Suspense account ID. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      profit_account_id:
+        custom: []
+        name: profit_account_id
+        description: 'Profit account ID. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 3
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      loss_account_id:
+        custom: []
+        name: loss_account_id
+        description: 'Loss account ID. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 4
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      bank_account_id:
+        custom: []
+        name: bank_account_id
+        description: 'Bank account ID. The <code>id</code> of an existing record in the partner_bank_accounts table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      color:
+        custom: []
+        name: color
+        description: 'Journal color (hex). Must not be greater than 7 characters.'
+        required: false
+        example: '#3b82f6'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      show_on_dashboard:
+        custom: []
+        name: show_on_dashboard
+        description: 'Show on dashboard.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      refund_order:
+        custom: []
+        name: refund_order
+        description: 'Refund order flag.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      payment_order:
+        custom: []
+        name: payment_order
+        description: 'Payment order flag.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: 'Bank Journal'
+      code: BNK
+      type: Webkul\Account\Enums\JournalType
+      company_id: 1
+      currency_id: 1
+      default_account_id: 1
+      suspense_account_id: 2
+      profit_account_id: 3
+      loss_account_id: 4
+      bank_account_id: 1
+      color: '#3b82f6'
+      show_on_dashboard: false
+      refund_order: false
+      payment_order: false
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"company_id":1,"currency_id":1,"default_account_id":27,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":1,"name":"Customer Invoices","code":"INV","type":"sale","color":"11","sort":5,"show_on_dashboard":1,"refund_order":1,"payment_order":0,"created_at":null,"updated_at":null},"message":"Journal updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Journal not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid."}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/accounts/journals/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: Journals
+      subgroupDescription: 'Manage accounting journals'
+      title: 'Delete journal'
+      description: 'Delete a journal'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the journal.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      journal:
+        custom: []
+        name: journal
+        description: 'The journal ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      journal: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: null
+        headers: []
+        description: 'Journal deleted successfully'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Journal not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: admin/api/v1/accounts/fiscal-positions
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Fiscal Positions'
+      subgroupDescription: 'Manage fiscal positions'
+      title: 'List fiscal positions'
+      description: 'Retrieve a paginated list of fiscal positions with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, country, countryGroup, createdBy, taxes, accounts'
+        required: false
+        example: company
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[name]':
+        custom: []
+        name: 'filter[name]'
+        description: 'Filter by fiscal position name (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[company_id]':
+        custom: []
+        name: 'filter[company_id]'
+        description: 'Filter by company ID'
+        required: false
+        example: null
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[country_id]':
+        custom: []
+        name: 'filter[country_id]'
+        description: 'Filter by country ID'
+        required: false
+        example: null
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[vat_required]':
+        custom: []
+        name: 'filter[vat_required]'
+        description: 'Filter by VAT required flag'
+        required: false
+        example: null
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: sort
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: company
+      sort: sort
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":null,"company_id":null,"country_id":null,"country_group_id":null,"creator_id":null,"name":null,"zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":null,"vat_required":null,"sort":null,"created_at":null,"updated_at":null},{"id":null,"company_id":null,"country_id":null,"country_group_id":null,"creator_id":null,"name":null,"zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":null,"vat_required":null,"sort":null,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: admin/api/v1/accounts/fiscal-positions
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Fiscal Positions'
+      subgroupDescription: 'Manage fiscal positions'
+      title: 'Create fiscal position'
+      description: 'Create a new fiscal position'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Fiscal position name. Must not be greater than 255 characters.'
+        required: true
+        example: Domestic
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID. The <code>id</code> of an existing record in the companies table.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      country_id:
+        custom: []
+        name: country_id
+        description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      country_group_id:
+        custom: []
+        name: country_group_id
+        description: 'Country group ID. The <code>id</code> of an existing record in the countries table.'
+        required: false
+        example: null
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      zip_from:
+        custom: []
+        name: zip_from
+        description: 'ZIP code from. Must not be greater than 10 characters.'
+        required: false
+        example: '10000'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      zip_to:
+        custom: []
+        name: zip_to
+        description: 'ZIP code to. Must not be greater than 10 characters.'
+        required: false
+        example: '99999'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      notes:
+        custom: []
+        name: notes
+        description: 'Fiscal position notes.'
+        required: false
+        example: 'For domestic transactions'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      auto_reply:
+        custom: []
+        name: auto_reply
+        description: 'Auto reply enabled.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      vat_required:
+        custom: []
+        name: vat_required
+        description: 'VAT required flag.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      foreign_vat:
+        custom: []
+        name: foreign_vat
+        description: 'Foreign VAT. Must not be greater than 255 characters.'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: Domestic
+      company_id: 1
+      country_id: 1
+      zip_from: '10000'
+      zip_to: '99999'
+      notes: 'For domestic transactions'
+      auto_reply: false
+      vat_required: false
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":null,"company_id":null,"country_id":null,"country_group_id":null,"creator_id":null,"name":null,"zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":null,"vat_required":null,"sort":null,"created_at":null,"updated_at":null},"message":"Fiscal position created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/accounts/fiscal-positions/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Fiscal Positions'
+      subgroupDescription: 'Manage fiscal positions'
+      title: 'Show fiscal position'
+      description: 'Retrieve a specific fiscal position by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the fiscal position.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      fiscal_position:
+        custom: []
+        name: fiscal_position
+        description: 'The fiscal position ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      fiscal_position: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, country, countryGroup, createdBy, taxes, accounts'
+        required: false
+        example: 'company,taxes'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'company,taxes'
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":null,"company_id":null,"country_id":null,"country_group_id":null,"creator_id":null,"name":null,"zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":null,"vat_required":null,"sort":null,"created_at":null,"updated_at":null}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Fiscal position not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/accounts/fiscal-positions/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Fiscal Positions'
+      subgroupDescription: 'Manage fiscal positions'
+      title: 'Update fiscal position'
+      description: 'Update an existing fiscal position'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the fiscal position.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      fiscal_position:
+        custom: []
+        name: fiscal_position
+        description: 'The fiscal position ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      fiscal_position: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Fiscal position name. Must not be greater than 255 characters.'
+        required: true
+        example: Domestic
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID. The <code>id</code> of an existing record in the companies table.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      country_id:
+        custom: []
+        name: country_id
+        description: 'Country ID. The <code>id</code> of an existing record in the countries table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      country_group_id:
+        custom: []
+        name: country_group_id
+        description: 'Country group ID. The <code>id</code> of an existing record in the countries table.'
+        required: false
+        example: null
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      zip_from:
+        custom: []
+        name: zip_from
+        description: 'ZIP code from. Must not be greater than 10 characters.'
+        required: false
+        example: '10000'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      zip_to:
+        custom: []
+        name: zip_to
+        description: 'ZIP code to. Must not be greater than 10 characters.'
+        required: false
+        example: '99999'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      notes:
+        custom: []
+        name: notes
+        description: 'Fiscal position notes.'
+        required: false
+        example: 'For domestic transactions'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      auto_reply:
+        custom: []
+        name: auto_reply
+        description: 'Auto reply enabled.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      vat_required:
+        custom: []
+        name: vat_required
+        description: 'VAT required flag.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      foreign_vat:
+        custom: []
+        name: foreign_vat
+        description: 'Foreign VAT. Must not be greater than 255 characters.'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: Domestic
+      company_id: 1
+      country_id: 1
+      zip_from: '10000'
+      zip_to: '99999'
+      notes: 'For domestic transactions'
+      auto_reply: false
+      vat_required: false
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":null,"company_id":null,"country_id":null,"country_group_id":null,"creator_id":null,"name":null,"zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":null,"vat_required":null,"sort":null,"created_at":null,"updated_at":null},"message":"Fiscal position updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Fiscal position not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid."}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/accounts/fiscal-positions/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Fiscal Positions'
+      subgroupDescription: 'Manage fiscal positions'
+      title: 'Delete fiscal position'
+      description: 'Delete a fiscal position'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the fiscal position.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      fiscal_position:
+        custom: []
+        name: fiscal_position
+        description: 'The fiscal position ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      fiscal_position: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: null
+        headers: []
+        description: 'Fiscal position deleted successfully'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Fiscal position not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: admin/api/v1/accounts/cash-roundings
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Cash Roundings'
+      subgroupDescription: 'Manage cash roundings'
+      title: 'List cash roundings'
+      description: 'Retrieve a paginated list of cash roundings with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> createdBy, profitAccount, lossAccount'
+        required: false
+        example: profitAccount
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[name]':
+        custom: []
+        name: 'filter[name]'
+        description: 'Filter by cash rounding name (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[strategy]':
+        custom: []
+        name: 'filter[strategy]'
+        description: 'Filter by rounding strategy'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - biggest_tax
+          - add_invoice_line
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[rounding_method]':
+        custom: []
+        name: 'filter[rounding_method]'
+        description: 'Filter by rounding method'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - UP
+          - DOWN
+          - HALF-UP
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: name
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: profitAccount
+      sort: name
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":null,"creator_id":null,"name":null,"strategy":null,"rounding_method":null,"rounding":null,"profit_account_id":null,"loss_account_id":null,"created_at":null,"updated_at":null},{"id":null,"creator_id":null,"name":null,"strategy":null,"rounding_method":null,"rounding":null,"profit_account_id":null,"loss_account_id":null,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: admin/api/v1/accounts/cash-roundings
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Cash Roundings'
+      subgroupDescription: 'Manage cash roundings'
+      title: 'Create cash rounding'
+      description: 'Create a new cash rounding'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Cash rounding name. Must not be greater than 255 characters.'
+        required: true
+        example: '0.05 Rounding'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      strategy:
+        custom: []
+        name: strategy
+        description: 'Rounding strategy.'
+        required: true
+        example: Webkul\Account\Enums\RoundingStrategy
+        type: string
+        enumValues:
+          - biggest_tax
+          - add_invoice_line
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      rounding_method:
+        custom: []
+        name: rounding_method
+        description: 'Rounding method.'
+        required: true
+        example: Webkul\Account\Enums\RoundingMethod
+        type: string
+        enumValues:
+          - UP
+          - DOWN
+          - HALF-UP
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      rounding:
+        custom: []
+        name: rounding
+        description: 'Rounding precision. Must be at least 0.'
+        required: true
+        example: 0.05
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      profit_account_id:
+        custom: []
+        name: profit_account_id
+        description: 'Profit account ID. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      loss_account_id:
+        custom: []
+        name: loss_account_id
+        description: 'Loss account ID. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: '0.05 Rounding'
+      strategy: Webkul\Account\Enums\RoundingStrategy
+      rounding_method: Webkul\Account\Enums\RoundingMethod
+      rounding: 0.05
+      profit_account_id: 1
+      loss_account_id: 2
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":null,"creator_id":null,"name":null,"strategy":null,"rounding_method":null,"rounding":null,"profit_account_id":null,"loss_account_id":null,"created_at":null,"updated_at":null},"message":"Cash rounding created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/accounts/cash-roundings/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Cash Roundings'
+      subgroupDescription: 'Manage cash roundings'
+      title: 'Show cash rounding'
+      description: 'Retrieve a specific cash rounding by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the cash rounding.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      cash_rounding:
+        custom: []
+        name: cash_rounding
+        description: 'The cash rounding ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      cash_rounding: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> createdBy, profitAccount, lossAccount'
+        required: false
+        example: 'profitAccount,lossAccount'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'profitAccount,lossAccount'
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":null,"creator_id":null,"name":null,"strategy":null,"rounding_method":null,"rounding":null,"profit_account_id":null,"loss_account_id":null,"created_at":null,"updated_at":null}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Cash rounding not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/accounts/cash-roundings/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Cash Roundings'
+      subgroupDescription: 'Manage cash roundings'
+      title: 'Update cash rounding'
+      description: 'Update an existing cash rounding'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the cash rounding.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      cash_rounding:
+        custom: []
+        name: cash_rounding
+        description: 'The cash rounding ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      cash_rounding: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Cash rounding name. Must not be greater than 255 characters.'
+        required: true
+        example: '0.05 Rounding'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      strategy:
+        custom: []
+        name: strategy
+        description: 'Rounding strategy.'
+        required: true
+        example: Webkul\Account\Enums\RoundingStrategy
+        type: string
+        enumValues:
+          - biggest_tax
+          - add_invoice_line
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      rounding_method:
+        custom: []
+        name: rounding_method
+        description: 'Rounding method.'
+        required: true
+        example: Webkul\Account\Enums\RoundingMethod
+        type: string
+        enumValues:
+          - UP
+          - DOWN
+          - HALF-UP
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      rounding:
+        custom: []
+        name: rounding
+        description: 'Rounding precision. Must be at least 0.'
+        required: true
+        example: 0.05
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      profit_account_id:
+        custom: []
+        name: profit_account_id
+        description: 'Profit account ID. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      loss_account_id:
+        custom: []
+        name: loss_account_id
+        description: 'Loss account ID. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: '0.05 Rounding'
+      strategy: Webkul\Account\Enums\RoundingStrategy
+      rounding_method: Webkul\Account\Enums\RoundingMethod
+      rounding: 0.05
+      profit_account_id: 1
+      loss_account_id: 2
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":null,"creator_id":null,"name":null,"strategy":null,"rounding_method":null,"rounding":null,"profit_account_id":null,"loss_account_id":null,"created_at":null,"updated_at":null},"message":"Cash rounding updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Cash rounding not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid."}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/accounts/cash-roundings/{id}'
+    metadata:
+      custom: []
+      groupName: 'Account API Management'
+      groupDescription: ''
+      subgroup: 'Cash Roundings'
+      subgroupDescription: 'Manage cash roundings'
+      title: 'Delete cash rounding'
+      description: 'Delete a cash rounding'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the cash rounding.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      cash_rounding:
+        custom: []
+        name: cash_rounding
+        description: 'The cash rounding ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+      cash_rounding: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 204
+        content: null
+        headers: []
+        description: 'Cash rounding deleted successfully'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Cash rounding not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
     uri: admin/api/v1/accounts/products
     metadata:
       custom: []
