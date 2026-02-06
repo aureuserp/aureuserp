@@ -2,6 +2,7 @@
 
 namespace Webkul\TimeOff\Filament\Pages;
 
+use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Webkul\TimeOff\Filament\Clusters\Reporting;
@@ -13,7 +14,7 @@ class ByType extends BaseDashboard
 
     protected static string $routePath = 'reporting/by-type';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-folder';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-folder';
 
     protected static ?int $navigationSort = 2;
 

@@ -11,6 +11,8 @@ class CreateMyTimeOff extends CreateRecord
 {
     use TimeOffHelper;
 
+    protected static string $resource = MyTimeOffResource::class;
+
     public function getSubNavigation(): array
     {
         if (filled($cluster = static::getCluster())) {
@@ -19,8 +21,6 @@ class CreateMyTimeOff extends CreateRecord
 
         return [];
     }
-
-    protected static string $resource = MyTimeOffResource::class;
 
     protected function getRedirectUrl(): string
     {
@@ -38,6 +38,5 @@ class CreateMyTimeOff extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         return $this->mutateTimeOffData($data, $this->record?->id);
-
     }
 }

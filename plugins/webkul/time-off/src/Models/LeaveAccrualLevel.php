@@ -4,6 +4,7 @@ namespace Webkul\TimeOff\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Security\Models\User;
@@ -63,7 +64,7 @@ class LeaveAccrualLevel extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($leaveAccrualLevel) {
-            $leaveAccrualLevel->creator_id = filament()->auth()->id();
+            $leaveAccrualLevel->creator_id = Auth::id();
         });
     }
 }

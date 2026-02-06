@@ -2,6 +2,7 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources;
 
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -33,7 +34,7 @@ class PublicHolidayResource extends Resource
 {
     protected static ?string $model = CalendarLeave::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-lifebuoy';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-lifebuoy';
 
     protected static ?string $cluster = Configurations::class;
 

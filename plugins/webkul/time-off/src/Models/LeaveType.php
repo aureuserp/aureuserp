@@ -5,6 +5,7 @@ namespace Webkul\TimeOff\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Security\Models\User;
@@ -68,9 +69,11 @@ class LeaveType extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($leaveType) {
-            $leaveType->creator_id = filament()->auth()->id();
+            $authUser = Auth::user();
 
-            $leaveType->company_id = filament()->auth()->user()->default_company_id;
+            $leaveType->creator_id = $authUser->id;
+
+            $leaveType->company_id ??= $authUser->default_company_id;
         });
     }
 }

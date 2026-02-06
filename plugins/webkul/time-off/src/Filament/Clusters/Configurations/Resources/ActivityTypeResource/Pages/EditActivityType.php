@@ -9,6 +9,8 @@ class EditActivityType extends BaseEditActivityType
 {
     protected static string $resource = ActivityTypeResource::class;
 
+    protected static ?string $pluginName = 'time-off';
+
     public function getSubNavigation(): array
     {
         if (filled($cluster = static::getCluster())) {
@@ -17,6 +19,4 @@ class EditActivityType extends BaseEditActivityType
 
         return [];
     }
-
-    protected static ?string $pluginName = 'time-off';
 }

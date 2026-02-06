@@ -5,6 +5,7 @@ namespace Webkul\TimeOff\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Employee\Models\Calendar;
@@ -156,9 +157,11 @@ class Leave extends Model
         parent::boot();
 
         static::creating(function ($leave) {
-            $leave->creator_id = filament()->auth()->id();
+            $authUser = Auth::user();
 
-            $leave->company_id = filament()->auth()->user()->default_company_id;
+            $leave->creator_id = $authUser->id;
+
+            $leave->company_id ??= $authUser->default_company_id;
         });
     }
 }
