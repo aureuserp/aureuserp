@@ -76,7 +76,7 @@ class OrderLineFactory extends Factory
             'price_tax'                    => $priceTax,
             'product_qty'                  => $quantity,
             'product_packaging_qty'        => null,
-            'customer_lead'                => null,
+            'customer_lead'                => $this->faker->numberBetween(1, 30),
             'purchase_price'               => $purchasePrice,
             'margin'                       => $margin,
             'margin_percent'               => $marginPercent,

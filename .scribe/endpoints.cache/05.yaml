@@ -113,7 +113,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1357,"name":"SOS","symbol":"\u00a3","iso_numeric":351,"decimal_places":2,"full_name":"dolores enim","rounding":"0.01","active":true,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z"},{"id":1358,"name":"MNT","symbol":"\u00a3","iso_numeric":24,"decimal_places":2,"full_name":"ex voluptatem","rounding":"0.01","active":true,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1482,"name":"KRW","symbol":"\u20b9","iso_numeric":949,"decimal_places":2,"full_name":"nostrum qui","rounding":"0.01","active":true,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"},{"id":1483,"name":"SLL","symbol":"\u00a3","iso_numeric":351,"decimal_places":2,"full_name":"dolores enim","rounding":"0.01","active":true,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -244,7 +244,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1359,"name":"CHF","symbol":"\u20ac","iso_numeric":806,"decimal_places":2,"full_name":"animi quos","rounding":"0.01","active":true,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z"},"message":"Currency created successfully."}'
+        content: '{"data":{"id":1484,"name":"CHF","symbol":"\u20ac","iso_numeric":806,"decimal_places":2,"full_name":"animi quos","rounding":"0.01","active":true,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"},"message":"Currency created successfully."}'
         headers: []
         description: ''
       -
@@ -321,7 +321,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1360,"name":"SLL","symbol":"\u00a3","iso_numeric":515,"decimal_places":2,"full_name":"enim non","rounding":"0.01","active":true,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z"}}'
+        content: '{"data":{"id":1485,"name":"SOS","symbol":"\u00a3","iso_numeric":24,"decimal_places":2,"full_name":"ex voluptatem","rounding":"0.01","active":true,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"}}'
         headers: []
         description: ''
       -
@@ -471,7 +471,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1361,"name":"BBD","symbol":"\u20ac","iso_numeric":196,"decimal_places":2,"full_name":"provident perspiciatis","rounding":"0.01","active":true,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z"},"message":"Currency updated successfully."}'
+        content: '{"data":{"id":1486,"name":"BBD","symbol":"\u20ac","iso_numeric":196,"decimal_places":2,"full_name":"provident perspiciatis","rounding":"0.01","active":true,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"},"message":"Currency updated successfully."}'
         headers: []
         description: ''
       -
@@ -676,7 +676,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":47,"name":"1982-01-29T00:00:00.000000Z","rate":"1.960500","inverse_rate":0.510073960724305,"currency_id":1362,"company_id":3704,"creator_id":14587,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z","currency":{"id":1362,"name":"ZMW","symbol":"$","iso_numeric":287,"decimal_places":2,"full_name":"voluptas optio","rounding":"0.01","active":true,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z"}},{"id":48,"name":"1991-09-15T00:00:00.000000Z","rate":"1.084422","inverse_rate":0.9221502330273639,"currency_id":1363,"company_id":3705,"creator_id":14588,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z","currency":{"id":1363,"name":"BOB","symbol":"\u00a5","iso_numeric":145,"decimal_places":2,"full_name":"ut a","rounding":"0.01","active":true,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":57,"name":"1982-01-29T00:00:00.000000Z","rate":"1.960500","inverse_rate":0.510073960724305,"currency_id":1487,"company_id":4093,"creator_id":16405,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z","currency":{"id":1487,"name":"TOP","symbol":"\u00a5","iso_numeric":295,"decimal_places":2,"full_name":"qui sapiente","rounding":"0.01","active":true,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"}},{"id":58,"name":"1990-03-17T00:00:00.000000Z","rate":"1.893363","inverse_rate":0.5281607383264594,"currency_id":1488,"company_id":4094,"creator_id":16406,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z","currency":{"id":1488,"name":"MNT","symbol":"\u20ac","iso_numeric":728,"decimal_places":2,"full_name":"rerum ut","rounding":"0.01","active":true,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -771,7 +771,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":49,"name":"1996-01-25T00:00:00.000000Z","rate":"1.992991","inverse_rate":0.501758412356102,"currency_id":1364,"company_id":3706,"creator_id":14589,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z","currency":{"id":1364,"name":"RSD","symbol":"\u00a3","iso_numeric":944,"decimal_places":2,"full_name":"quam iusto","rounding":"0.01","active":true,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z"}},"message":"Currency rate created successfully."}'
+        content: '{"data":{"id":59,"name":"1996-01-25T00:00:00.000000Z","rate":"1.992991","inverse_rate":0.501758412356102,"currency_id":1489,"company_id":4095,"creator_id":16407,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z","currency":{"id":1489,"name":"SYP","symbol":"\u00a3","iso_numeric":772,"decimal_places":2,"full_name":"optio error","rounding":"0.01","active":true,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"}},"message":"Currency rate created successfully."}'
         headers: []
         description: ''
       -
@@ -860,7 +860,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":50,"name":"1982-01-29T00:00:00.000000Z","rate":"1.960500","inverse_rate":0.510073960724305,"currency_id":1365,"company_id":3707,"creator_id":14590,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z","currency":{"id":1365,"name":"LYD","symbol":"\u00a5","iso_numeric":394,"decimal_places":2,"full_name":"maxime corrupti","rounding":"0.01","active":true,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z"}}}'
+        content: '{"data":{"id":60,"name":"1982-01-29T00:00:00.000000Z","rate":"1.960500","inverse_rate":0.510073960724305,"currency_id":1490,"company_id":4096,"creator_id":16408,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z","currency":{"id":1490,"name":"KPW","symbol":"\u00a3","iso_numeric":599,"decimal_places":2,"full_name":"ut ut","rounding":"0.01","active":true,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"}}}'
         headers: []
         description: ''
       -
@@ -974,7 +974,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":51,"name":"1996-01-25T00:00:00.000000Z","rate":"1.992991","inverse_rate":0.501758412356102,"currency_id":1366,"company_id":3708,"creator_id":14591,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z","currency":{"id":1366,"name":"KES","symbol":"\u20b9","iso_numeric":991,"decimal_places":2,"full_name":"corrupti voluptatum","rounding":"0.01","active":true,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z"}},"message":"Currency rate updated successfully."}'
+        content: '{"data":{"id":61,"name":"1996-01-25T00:00:00.000000Z","rate":"1.992991","inverse_rate":0.501758412356102,"currency_id":1491,"company_id":4097,"creator_id":16409,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z","currency":{"id":1491,"name":"RSD","symbol":"\u00a3","iso_numeric":944,"decimal_places":2,"full_name":"quam iusto","rounding":"0.01","active":true,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"}},"message":"Currency rate updated successfully."}'
         headers: []
         description: ''
       -
@@ -1223,7 +1223,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":55,"name":"Alyson Witting","code":"UXLSLTMHWOA","email":"wtoy@example.net","phone":"530.588.1167","street1":"98761 Maxine Mission","street2":"75644 Jaydon Place Apt. 914","city":"Nicolasmouth","zip":"76312-2447","creator_id":14592,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z","deleted_at":null,"state":{"id":2060,"name":"Nevada","code":"PA","country_id":1180,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z"},"country":{"id":1181,"name":"Anguilla","code":"DJ","phone_code":"106","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z"}},{"id":56,"name":"Ms. Leann Schaefer","code":"IOGCKX53","email":"crist.colleen@example.net","phone":"1-636-819-3451","street1":"203 Klein Rue","street2":"6983 Marilou Courts","city":"Gustborough","zip":"89003","creator_id":14593,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z","deleted_at":null,"state":{"id":2061,"name":"New Hampshire","code":"SC","country_id":1182,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z"},"country":{"id":1183,"name":"Malawi","code":"CZ","phone_code":"982","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-09T12:41:16.000000Z","updated_at":"2026-02-09T12:41:16.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":77,"name":"Arvel Mueller","code":"KYZQRQEYOUQ","email":"ratke.carlo@example.net","phone":"+1-463-702-1246","street1":"87553 Teresa Circle","street2":"74695 Kendall Heights Suite 400","city":"North Charityfort","zip":"45518","creator_id":9717,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z","deleted_at":null,"state":{"id":1436,"name":"Uri","code":"UR","country_id":43,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":72,"name":"Falkland Islands","code":"FK","phone_code":"500","state_required":false,"zip_required":true,"currency_id":78,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},{"id":78,"name":"Toni Beier","code":"AZBVQIY7","email":"mose69@example.net","phone":"+1-951-546-6319","street1":"3247 Stephany Village Apt. 204","street2":"5396 Arlo Overpass Suite 218","city":"Doyleton","zip":"05303","creator_id":9717,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z","deleted_at":null,"state":{"id":1436,"name":"Uri","code":"UR","country_id":43,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":72,"name":"Falkland Islands","code":"FK","phone_code":"500","state_required":false,"zip_required":true,"currency_id":78,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -1390,7 +1390,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":57,"name":"Ms. Audra Crooks II","code":"YUWPWL36UBQ","email":"tkeeling@example.com","phone":"+1.260.717.2185","street1":"5869 Schoen Lodge","street2":"61898 Retha Ridge Apt. 891","city":"Rosalynfurt","zip":"12520","creator_id":14594,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z","deleted_at":null,"state":{"id":2062,"name":"Kentucky","code":"OH","country_id":1184,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"},"country":{"id":1185,"name":"New Caledonia","code":"HK","phone_code":"998","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"}},"message":"Bank created successfully."}'
+        content: '{"data":{"id":79,"name":"Ms. Audra Crooks II","code":"YUWPWL36UBQ","email":"clotilde65@example.org","phone":"920.718.9293","street1":"872 Dach Neck","street2":"818 Denesik Cove Apt. 787","city":"Schneiderside","zip":"64779","creator_id":9717,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z","deleted_at":null,"state":{"id":1436,"name":"Uri","code":"UR","country_id":43,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":72,"name":"Falkland Islands","code":"FK","phone_code":"500","state_required":false,"zip_required":true,"currency_id":78,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Bank created successfully."}'
         headers: []
         description: ''
       -
@@ -1467,7 +1467,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":58,"name":"Morgan Hirthe","code":"DZSNRWVE","email":"mschoen@example.com","phone":"+1.435.441.2298","street1":"7548 Kathryne Square Apt. 637","street2":"4075 Carter Shore Suite 873","city":"West Erikabury","zip":"73622","creator_id":14595,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z","deleted_at":null,"state":{"id":2063,"name":"Indiana","code":"RI","country_id":1186,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"},"country":{"id":1187,"name":"Western Sahara","code":"WF","phone_code":"405","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"}}}'
+        content: '{"data":{"id":80,"name":"Morgan Hirthe","code":"DZSNRWVE","email":"rippin.jody@example.com","phone":"+1-586-633-5118","street1":"950 Sabina Trail","street2":"6779 Lila Passage","city":"Joyceton","zip":"43559-5284","creator_id":9717,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z","deleted_at":null,"state":{"id":1436,"name":"Uri","code":"UR","country_id":43,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":72,"name":"Falkland Islands","code":"FK","phone_code":"500","state_required":false,"zip_required":true,"currency_id":78,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}}'
         headers: []
         description: ''
       -
@@ -1653,7 +1653,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":59,"name":"Ms. Audra Crooks II","code":"YUWPWL36UBQ","email":"zander40@example.com","phone":"+1-442-482-2520","street1":"177 Kihn Courts Suite 655","street2":"68394 Hickle Springs Suite 270","city":"Haydenmouth","zip":"18451","creator_id":14596,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z","deleted_at":null,"state":{"id":2064,"name":"Montana","code":"IL","country_id":1188,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"},"country":{"id":1189,"name":"Eritrea","code":"FM","phone_code":"322","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"}},"message":"Bank updated successfully."}'
+        content: '{"data":{"id":81,"name":"Ms. Audra Crooks II","code":"YUWPWL36UBQ","email":"asia27@example.net","phone":"1-678-630-9551","street1":"915 Major Junction","street2":"6818 Joyce Terrace","city":"Binsstad","zip":"03894","creator_id":9717,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z","deleted_at":null,"state":{"id":1436,"name":"Uri","code":"UR","country_id":43,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":72,"name":"Falkland Islands","code":"FK","phone_code":"500","state_required":false,"zip_required":true,"currency_id":78,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Bank updated successfully."}'
         headers: []
         description: ''
       -
@@ -1789,7 +1789,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":60,"name":"Morgan Hirthe","code":"DZSNRWVE","email":"gmante@example.net","phone":"(760) 527-5848","street1":"875 Hermiston Cliffs Apt. 991","street2":"6148 Jaylon Neck Suite 890","city":"Welchhaven","zip":"39130-7263","creator_id":14597,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z","deleted_at":null,"state":{"id":2065,"name":"Delaware","code":"NV","country_id":1190,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"},"country":{"id":1191,"name":"Myanmar","code":"LA","phone_code":"154","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"}},"message":"Bank restored successfully."}'
+        content: '{"data":{"id":82,"name":"Morgan Hirthe","code":"DZSNRWVE","email":"noconner@example.net","phone":"+1-680-557-1918","street1":"70411 Fay Passage","street2":"480 Bins Dam","city":"Waldotown","zip":"60475","creator_id":9717,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z","deleted_at":null,"state":{"id":1436,"name":"Uri","code":"UR","country_id":43,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":72,"name":"Falkland Islands","code":"FK","phone_code":"500","state_required":false,"zip_required":true,"currency_id":78,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Bank restored successfully."}'
         headers: []
         description: ''
       -
@@ -1998,7 +1998,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1192,"name":"Liechtenstein","code":"ME","phone_code":"339","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"},{"id":1193,"name":"Netherlands Antilles","code":"CR","phone_code":"481","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1238,"name":"Liechtenstein","code":"ME","phone_code":"339","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"},{"id":1239,"name":"Netherlands Antilles","code":"CR","phone_code":"481","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2069,7 +2069,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1194,"name":"Bouvet Island (Bouvetoya)","code":"SI","phone_code":"977","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"}}'
+        content: '{"data":{"id":1240,"name":"Bouvet Island (Bouvetoya)","code":"SI","phone_code":"977","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"}}'
         headers: []
         description: ''
       -
@@ -2202,7 +2202,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":2066,"name":"Mississippi","code":"AZ","country_id":1195,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"},{"id":2067,"name":"Kentucky","code":"ME","country_id":1196,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":2076,"name":"Mississippi","code":"AZ","country_id":1241,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"},{"id":2077,"name":"Kentucky","code":"ME","country_id":1242,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2285,7 +2285,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":2068,"name":"Arkansas","code":"CT","country_id":1197,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"},"message":"State created successfully."}'
+        content: '{"data":{"id":2078,"name":"Arkansas","code":"CT","country_id":1243,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"},"message":"State created successfully."}'
         headers: []
         description: ''
       -
@@ -2362,7 +2362,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":2069,"name":"Pennsylvania","code":"MO","country_id":1198,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"}}'
+        content: '{"data":{"id":2079,"name":"Pennsylvania","code":"MO","country_id":1244,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"}}'
         headers: []
         description: ''
       -
@@ -2464,7 +2464,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":2070,"name":"North Dakota","code":"CO","country_id":1199,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"},"message":"State updated successfully."}'
+        content: '{"data":{"id":2080,"name":"Indiana","code":"RI","country_id":1245,"created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"},"message":"State updated successfully."}'
         headers: []
         description: ''
       -
@@ -2646,7 +2646,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1204,"name":"corporis perferendis","created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"},{"id":1205,"name":"vero nulla","created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1479,"name":"consequuntur est","created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"},{"id":1480,"name":"vitae sapiente","created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2705,7 +2705,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1206,"name":"architecto eius","created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"},"message":"UOM category created successfully."}'
+        content: '{"data":{"id":1481,"name":"architecto eius","created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"},"message":"UOM category created successfully."}'
         headers: []
         description: ''
       -
@@ -2782,7 +2782,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1207,"name":"aut adipisci","created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"}}'
+        content: '{"data":{"id":1482,"name":"aut adipisci","created_at":"2026-02-09T12:46:17.000000Z","updated_at":"2026-02-09T12:46:17.000000Z"}}'
         headers: []
         description: ''
       -
@@ -2860,7 +2860,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1208,"name":"architecto eius","created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"},"message":"UOM category updated successfully."}'
+        content: '{"data":{"id":1483,"name":"architecto eius","created_at":"2026-02-09T12:46:18.000000Z","updated_at":"2026-02-09T12:46:18.000000Z"},"message":"UOM category updated successfully."}'
         headers: []
         description: ''
       -
@@ -3076,7 +3076,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1107,"type":"smaller","name":"aut","factor":"9.7400","rounding":"0.0000","category_id":1209,"creator_id":14603,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z","deleted_at":null,"category":{"id":1209,"name":"earum totam","created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"}},{"id":1108,"type":"smaller","name":"eum","factor":"6.5600","rounding":"0.0000","category_id":1210,"creator_id":14605,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z","deleted_at":null,"category":{"id":1210,"name":"iure eos","created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1372,"type":"smaller","name":"aut","factor":"9.7400","rounding":"0.0000","category_id":1484,"creator_id":16415,"created_at":"2026-02-09T12:46:18.000000Z","updated_at":"2026-02-09T12:46:18.000000Z","deleted_at":null,"category":{"id":1484,"name":"dolore ut","created_at":"2026-02-09T12:46:18.000000Z","updated_at":"2026-02-09T12:46:18.000000Z"}},{"id":1373,"type":"smaller","name":"et","factor":"7.1000","rounding":"0.0000","category_id":1485,"creator_id":16417,"created_at":"2026-02-09T12:46:18.000000Z","updated_at":"2026-02-09T12:46:18.000000Z","deleted_at":null,"category":{"id":1485,"name":"et iusto","created_at":"2026-02-09T12:46:18.000000Z","updated_at":"2026-02-09T12:46:18.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -3198,7 +3198,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1109,"type":"smaller","name":"architecto","factor":"9.9500","rounding":"0.0000","category_id":1211,"creator_id":14607,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z","deleted_at":null,"category":{"id":1211,"name":"aut et","created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"}},"message":"UOM created successfully."}'
+        content: '{"data":{"id":1374,"type":"smaller","name":"architecto","factor":"9.9500","rounding":"0.0000","category_id":1486,"creator_id":16419,"created_at":"2026-02-09T12:46:18.000000Z","updated_at":"2026-02-09T12:46:18.000000Z","deleted_at":null,"category":{"id":1486,"name":"ut a","created_at":"2026-02-09T12:46:18.000000Z","updated_at":"2026-02-09T12:46:18.000000Z"}},"message":"UOM created successfully."}'
         headers: []
         description: ''
       -
@@ -3287,7 +3287,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1110,"type":"smaller","name":"aut","factor":"9.7400","rounding":"0.0000","category_id":1212,"creator_id":14609,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z","deleted_at":null,"category":{"id":1212,"name":"et et","created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"}}}'
+        content: '{"data":{"id":1375,"type":"smaller","name":"aut","factor":"9.7400","rounding":"0.0000","category_id":1487,"creator_id":16421,"created_at":"2026-02-09T12:46:18.000000Z","updated_at":"2026-02-09T12:46:18.000000Z","deleted_at":null,"category":{"id":1487,"name":"dicta ducimus","created_at":"2026-02-09T12:46:18.000000Z","updated_at":"2026-02-09T12:46:18.000000Z"}}}'
         headers: []
         description: ''
       -
@@ -3428,7 +3428,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1111,"type":"smaller","name":"architecto","factor":"9.9500","rounding":"0.0000","category_id":1213,"creator_id":14611,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z","deleted_at":null,"category":{"id":1213,"name":"nostrum aut","created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"}},"message":"UOM updated successfully."}'
+        content: '{"data":{"id":1376,"type":"smaller","name":"architecto","factor":"9.9500","rounding":"0.0000","category_id":1488,"creator_id":16423,"created_at":"2026-02-09T12:46:18.000000Z","updated_at":"2026-02-09T12:46:18.000000Z","deleted_at":null,"category":{"id":1488,"name":"voluptatum et","created_at":"2026-02-09T12:46:18.000000Z","updated_at":"2026-02-09T12:46:18.000000Z"}},"message":"UOM updated successfully."}'
         headers: []
         description: ''
       -
@@ -3588,7 +3588,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1112,"type":"smaller","name":"aut","factor":"9.7400","rounding":"0.0000","category_id":1214,"creator_id":14613,"created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z","deleted_at":null,"category":{"id":1214,"name":"ullam atque","created_at":"2026-02-09T12:41:17.000000Z","updated_at":"2026-02-09T12:41:17.000000Z"}},"message":"UOM restored successfully."}'
+        content: '{"data":{"id":1377,"type":"smaller","name":"aut","factor":"9.7400","rounding":"0.0000","category_id":1489,"creator_id":16425,"created_at":"2026-02-09T12:46:18.000000Z","updated_at":"2026-02-09T12:46:18.000000Z","deleted_at":null,"category":{"id":1489,"name":"veniam dignissimos","created_at":"2026-02-09T12:46:18.000000Z","updated_at":"2026-02-09T12:46:18.000000Z"}},"message":"UOM restored successfully."}'
         headers: []
         description: ''
       -
