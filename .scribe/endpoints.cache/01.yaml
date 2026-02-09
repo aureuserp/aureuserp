@@ -91,7 +91,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"name":"Mr","short_name":"John","creator_id":1,"created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"},{"id":1,"name":"Mr","short_name":"John","creator_id":1,"created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1262,"name":"Morgan Hirthe","short_name":"Pearl Hauck Sr.","creator_id":null,"created_at":"2026-02-09T12:41:01.000000Z","updated_at":"2026-02-09T12:41:01.000000Z"},{"id":1263,"name":"Carey Smitham","short_name":"Elenora Stokes","creator_id":null,"created_at":"2026-02-09T12:41:01.000000Z","updated_at":"2026-02-09T12:41:01.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -162,7 +162,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"name":"Mr","short_name":"John","creator_id":1,"created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"},"message":"Title created successfully."}'
+        content: '{"data":{"id":1264,"name":"Ms. Audra Crooks II","short_name":"Aleen O''Kon","creator_id":null,"created_at":"2026-02-09T12:41:01.000000Z","updated_at":"2026-02-09T12:41:01.000000Z"},"message":"Title created successfully."}'
         headers: []
         description: ''
       -
@@ -239,7 +239,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"Mr","short_name":"John","creator_id":1,"created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"}}'
+        content: '{"data":{"id":1265,"name":"Morgan Hirthe","short_name":"Pearl Hauck Sr.","creator_id":null,"created_at":"2026-02-09T12:41:01.000000Z","updated_at":"2026-02-09T12:41:01.000000Z"}}'
         headers: []
         description: ''
       -
@@ -329,7 +329,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"Mr","short_name":"John","creator_id":1,"created_at":"2025-04-10T10:44:48.000000Z","updated_at":"2025-04-10T10:44:48.000000Z"},"message":"Title updated successfully."}'
+        content: '{"data":{"id":1266,"name":"Ms. Audra Crooks II","short_name":"Aleen O''Kon","creator_id":null,"created_at":"2026-02-09T12:41:01.000000Z","updated_at":"2026-02-09T12:41:01.000000Z"},"message":"Title updated successfully."}'
         headers: []
         description: ''
       -
@@ -522,7 +522,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"name":"New Customer","color":"#35ff39","creator_id":1,"created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"},{"id":1,"name":"New Customer","color":"#35ff39","creator_id":1,"created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":48,"name":"Ms. Felicia Tillman Jr.","color":"#9c99de","creator_id":null,"created_at":"2026-02-09T12:41:01.000000Z","updated_at":"2026-02-09T12:41:01.000000Z"},{"id":49,"name":"Melyna Roberts","color":"#7b39fc","creator_id":null,"created_at":"2026-02-09T12:41:01.000000Z","updated_at":"2026-02-09T12:41:01.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -593,7 +593,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"name":"New Customer","color":"#35ff39","creator_id":1,"created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"},"message":"Tag created successfully."}'
+        content: '{"data":{"id":50,"name":"Ms. Audra Crooks II","color":"#b35e11","creator_id":null,"created_at":"2026-02-09T12:41:01.000000Z","updated_at":"2026-02-09T12:41:01.000000Z"},"message":"Tag created successfully."}'
         headers: []
         description: ''
       -
@@ -670,7 +670,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"New Customer","color":"#35ff39","creator_id":1,"created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"}}'
+        content: '{"data":{"id":51,"name":"Morgan Hirthe","color":"#bd6da5","creator_id":null,"created_at":"2026-02-09T12:41:02.000000Z","updated_at":"2026-02-09T12:41:02.000000Z"}}'
         headers: []
         description: ''
       -
@@ -760,7 +760,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"New Customer","color":"#35ff39","creator_id":1,"created_at":"2025-04-10T10:44:31.000000Z","updated_at":"2025-04-10T10:44:31.000000Z"},"message":"Tag updated successfully."}'
+        content: '{"data":{"id":52,"name":"Ms. Audra Crooks II","color":"#b35e11","creator_id":null,"created_at":"2026-02-09T12:41:02.000000Z","updated_at":"2026-02-09T12:41:02.000000Z"},"message":"Tag updated successfully."}'
         headers: []
         description: ''
       -
@@ -1083,7 +1083,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":71,"name":"Technology","description":"Software and hardware technology companies","creator_id":1,"created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"},{"id":71,"name":"Technology","description":"Software and hardware technology companies","creator_id":1,"created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1257,"name":"Morgan Hirthe","description":"Qui commodi incidunt iure odit.","creator_id":null,"created_at":"2026-02-09T12:41:02.000000Z","updated_at":"2026-02-09T12:41:02.000000Z"},{"id":1258,"name":"Dr. Alan Green","description":"Est alias tenetur ratione.","creator_id":null,"created_at":"2026-02-09T12:41:02.000000Z","updated_at":"2026-02-09T12:41:02.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -1154,7 +1154,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":71,"name":"Technology","description":"Software and hardware technology companies","creator_id":1,"created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"},"message":"Industry created successfully."}'
+        content: '{"data":{"id":1259,"name":"Ms. Audra Crooks II","description":"Et fugiat sunt nihil accusantium.","creator_id":null,"created_at":"2026-02-09T12:41:02.000000Z","updated_at":"2026-02-09T12:41:02.000000Z"},"message":"Industry created successfully."}'
         headers: []
         description: ''
       -
@@ -1231,7 +1231,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":71,"name":"Technology","description":"Software and hardware technology companies","creator_id":1,"created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"}}'
+        content: '{"data":{"id":1260,"name":"Morgan Hirthe","description":"Qui commodi incidunt iure odit.","creator_id":null,"created_at":"2026-02-09T12:41:02.000000Z","updated_at":"2026-02-09T12:41:02.000000Z"}}'
         headers: []
         description: ''
       -
@@ -1321,7 +1321,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":71,"name":"Technology","description":"Software and hardware technology companies","creator_id":1,"created_at":"2026-02-05T05:23:48.000000Z","updated_at":"2026-02-05T05:23:48.000000Z"},"message":"Industry updated successfully."}'
+        content: '{"data":{"id":1261,"name":"Ms. Audra Crooks II","description":"Et fugiat sunt nihil accusantium.","creator_id":null,"created_at":"2026-02-09T12:41:02.000000Z","updated_at":"2026-02-09T12:41:02.000000Z"},"message":"Industry updated successfully."}'
         headers: []
         description: ''
       -
@@ -1757,7 +1757,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":18498,"account_type":"individual","sub_type":"partner","name":"Eve Okuneva","email":"mayer.chase@example.org","phone":"617.909.0105","mobile":"+1-458-921-1799","avatar":null,"avatar_url":null,"job_title":"Lathe Operator","website":"http:\/\/green.biz\/consequatur-et-enim-nihil-dicta.html","tax_id":"7145384619","company_registry":"CR-09013807","reference":"minus","is_active":true,"color":"#f9c773","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":1267,"company_id":3549,"industry_id":1262,"user_id":13822,"creator_id":null,"created_at":"2026-02-09T12:41:02.000000Z","updated_at":"2026-02-09T12:41:02.000000Z","deleted_at":null,"country":null,"state":null},{"id":18504,"account_type":"individual","sub_type":"partner","name":"Chelsea Wyman","email":"cassidy97@example.org","phone":"+1.303.864.0866","mobile":"+1 (848) 459-2688","avatar":null,"avatar_url":null,"job_title":"Drafter","website":"http:\/\/renner.org\/deleniti-ut-earum-doloremque-sequi-eius","tax_id":"2931857243","company_registry":"CR-67854654","reference":"excepturi","is_active":true,"color":"#c2a8a3","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":1268,"company_id":3550,"industry_id":1263,"user_id":13826,"creator_id":null,"created_at":"2026-02-09T12:41:02.000000Z","updated_at":"2026-02-09T12:41:02.000000Z","deleted_at":null,"country":null,"state":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2082,7 +2082,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Partner created successfully."}'
+        content: '{"data":{"id":18510,"account_type":"individual","sub_type":"partner","name":"Ms. Audra Crooks II","email":"gulgowski.asia@example.com","phone":"+1-626-249-0432","mobile":"1-989-272-7365","avatar":null,"avatar_url":null,"job_title":"Teacher","website":"http:\/\/tillman.com\/","tax_id":"4440147632","company_registry":"CR-48669606","reference":"et","is_active":true,"color":"#d7f7e8","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":1269,"company_id":3551,"industry_id":1264,"user_id":13830,"creator_id":null,"created_at":"2026-02-09T12:41:02.000000Z","updated_at":"2026-02-09T12:41:02.000000Z","deleted_at":null,"country":null,"state":null},"message":"Partner created successfully."}'
         headers: []
         description: ''
       -
@@ -2159,7 +2159,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}}'
+        content: '{"data":{"id":18516,"account_type":"individual","sub_type":"partner","name":"Morgan Hirthe","email":"margaretta98@example.net","phone":"+19014148241","mobile":"+1.385.959.6330","avatar":null,"avatar_url":null,"job_title":"Plating Machine Operator","website":"https:\/\/www.bernhard.com\/ut-ratione-iure-impedit","tax_id":"6123519221","company_registry":"CR-60106176","reference":"dicta","is_active":true,"color":"#15a9ea","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":1270,"company_id":3552,"industry_id":1265,"user_id":13834,"creator_id":null,"created_at":"2026-02-09T12:41:02.000000Z","updated_at":"2026-02-09T12:41:02.000000Z","deleted_at":null,"country":null,"state":null}}'
         headers: []
         description: ''
       -
@@ -2503,7 +2503,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"account_type":"individual","sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","avatar":"company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","avatar_url":"http:\/\/127.0.0.1:8000\/storage\/company-logos\/01JRA5TEK5HTHJAYXSDBZRJF8B.png","job_title":null,"website":"https:\/\/www.technovasolutions.com","tax_id":"TNS123456","company_registry":"TN-20251234","reference":null,"is_active":true,"color":"#AAAAAA","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"title_id":null,"company_id":1,"industry_id":null,"user_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Partner updated successfully."}'
+        content: '{"data":{"id":18522,"account_type":"individual","sub_type":"partner","name":"Ms. Audra Crooks II","email":"idickens@example.org","phone":"1-989-272-7365","mobile":"870-215-1024","avatar":null,"avatar_url":null,"job_title":"Microbiologist","website":"http:\/\/www.dubuque.net\/quo-omnis-nostrum-aut-adipisci","tax_id":"9354509492","company_registry":"CR-04415490","reference":"laboriosam","is_active":true,"color":"#6b4062","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":1271,"company_id":3553,"industry_id":1266,"user_id":13838,"creator_id":null,"created_at":"2026-02-09T12:41:02.000000Z","updated_at":"2026-02-09T12:41:02.000000Z","deleted_at":null,"country":null,"state":null},"message":"Partner updated successfully."}'
         headers: []
         description: ''
       -
@@ -2887,7 +2887,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":18528,"sub_type":"partner","name":"Mr. Eliezer Veum MD","email":"hyatt.kamren@example.com","phone":"938-317-1833","mobile":"325.894.1865","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"creator_id":null,"created_at":"2026-02-09T12:41:02.000000Z","updated_at":"2026-02-09T12:41:02.000000Z","deleted_at":null,"country":null,"state":null},{"id":18534,"sub_type":"partner","name":"Ms. Jalyn Hill Sr.","email":"ashlee.dubuque@example.com","phone":"+1 (234) 751-4030","mobile":"1-228-424-1538","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"creator_id":null,"created_at":"2026-02-09T12:41:02.000000Z","updated_at":"2026-02-09T12:41:02.000000Z","deleted_at":null,"country":null,"state":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -3083,7 +3083,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Address created successfully."}'
+        content: '{"data":{"id":18540,"sub_type":"partner","name":"Ms. Audra Crooks II","email":"pfritsch@example.com","phone":"(585) 986-2203","mobile":"+16612295933","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"creator_id":null,"created_at":"2026-02-09T12:41:02.000000Z","updated_at":"2026-02-09T12:41:02.000000Z","deleted_at":null,"country":null,"state":null},"message":"Address created successfully."}'
         headers: []
         description: ''
       -
@@ -3172,7 +3172,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"parent":null}}'
+        content: '{"data":{"id":18552,"sub_type":"partner","name":"Morgan Hirthe","email":"yziemann@example.org","phone":"954-857-3369","mobile":"1-619-503-6405","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":18551,"creator_id":null,"created_at":"2026-02-09T12:41:03.000000Z","updated_at":"2026-02-09T12:41:03.000000Z","deleted_at":null,"country":null,"state":null,"parent":{"id":18551,"account_type":"individual","sub_type":"partner","name":"Tyrique Watsica","email":"stephen.sanford@example.com","phone":"682-568-9904","mobile":"301-309-2570","avatar":null,"avatar_url":null,"job_title":"Concierge","website":"http:\/\/www.rohan.net\/aut-illum-provident-ea-nam-ducimus-corrupti","tax_id":"8352140677","company_registry":"CR-03842609","reference":"deserunt","is_active":true,"color":"#b6eda8","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":1276,"company_id":3558,"industry_id":1271,"user_id":13858,"creator_id":null,"created_at":"2026-02-09T12:41:03.000000Z","updated_at":"2026-02-09T12:41:03.000000Z","deleted_at":null,"country":null,"state":null}}}'
         headers: []
         description: ''
       -
@@ -3387,7 +3387,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"sub_type":"company","name":"TechNova Solutions Pvt. Ltd.","email":"technova@solutions.com","phone":"1234567890","mobile":"1234567890","street1":"1234 Silicon Street","street2":"Tech Park","city":"New York","zip":"10001","country_id":233,"state_id":35,"parent_id":null,"creator_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-08T07:46:16.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":35,"name":"New York","code":"NY","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"parent":null},"message":"Address updated successfully."}'
+        content: '{"data":{"id":18564,"sub_type":"partner","name":"Ms. Audra Crooks II","email":"tod.okuneva@example.net","phone":"954-857-3369","mobile":"1-619-503-6405","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":18563,"creator_id":null,"created_at":"2026-02-09T12:41:03.000000Z","updated_at":"2026-02-09T12:41:03.000000Z","deleted_at":null,"country":null,"state":null,"parent":{"id":18563,"account_type":"individual","sub_type":"partner","name":"Heidi Price","email":"nienow.maynard@example.net","phone":"+19842066358","mobile":"+1.865.816.5632","avatar":null,"avatar_url":null,"job_title":"Rough Carpenter","website":"https:\/\/www.barton.org\/et-sit-doloribus-accusantium-adipisci-aspernatur","tax_id":"5455870966","company_registry":"CR-66139280","reference":"provident","is_active":true,"color":"#78345f","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":1278,"company_id":3560,"industry_id":1273,"user_id":13866,"creator_id":null,"created_at":"2026-02-09T12:41:03.000000Z","updated_at":"2026-02-09T12:41:03.000000Z","deleted_at":null,"country":null,"state":null}},"message":"Address updated successfully."}'
         headers: []
         description: ''
       -
@@ -3758,7 +3758,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"},{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":34,"account_number":"031881","account_holder_name":"Dr. Harmony Bahringer DDS","can_send_money":true,"bank_id":50,"created_at":"2026-02-09T12:41:03.000000Z","updated_at":"2026-02-09T12:41:03.000000Z"},{"id":35,"account_number":"27529296456","account_holder_name":"Mr. Kaden Kuphal MD","can_send_money":true,"bank_id":51,"created_at":"2026-02-09T12:41:03.000000Z","updated_at":"2026-02-09T12:41:03.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -3853,7 +3853,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"},"message":"Bank account created successfully."}'
+        content: '{"data":{"id":36,"account_number":"88002631600564","account_holder_name":"Joshua Casper","can_send_money":true,"bank_id":52,"created_at":"2026-02-09T12:41:03.000000Z","updated_at":"2026-02-09T12:41:03.000000Z"},"message":"Bank account created successfully."}'
         headers: []
         description: ''
       -
@@ -3942,7 +3942,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"}}'
+        content: '{"data":{"id":37,"account_number":"031881","account_holder_name":"Loy Breitenberg","can_send_money":true,"bank_id":53,"created_at":"2026-02-09T12:41:03.000000Z","updated_at":"2026-02-09T12:41:03.000000Z"}}'
         headers: []
         description: ''
       -
@@ -4056,7 +4056,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"account_number":"123123123123","account_holder_name":"Ethan Young","can_send_money":false,"bank_id":1,"created_at":"2025-04-10T10:48:09.000000Z","updated_at":"2025-04-10T10:51:16.000000Z"},"message":"Bank account updated successfully."}'
+        content: '{"data":{"id":38,"account_number":"88002631600564","account_holder_name":"Miss Leta Becker","can_send_money":true,"bank_id":54,"created_at":"2026-02-09T12:41:03.000000Z","updated_at":"2026-02-09T12:41:03.000000Z"},"message":"Bank account updated successfully."}'
         headers: []
         description: ''
       -

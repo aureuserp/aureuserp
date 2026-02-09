@@ -63,9 +63,9 @@ class Packaging extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($packaging) {
-            $packaging->creator_id = Auth::id();
+            $packaging->creator_id ??= Auth::id();
 
-            $packaging->company_id ??= Auth::user()->default_company_id;
+            $packaging->company_id ??= Auth::user()?->default_company_id;
         });
     }
 

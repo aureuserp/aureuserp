@@ -70,7 +70,7 @@ class BankAccount extends Model
         parent::boot();
 
         static::creating(function ($bankAccount) {
-            $bankAccount->creator_id = Auth::id();
+            $bankAccount->creator_id ??= Auth::id();
 
             $bankAccount->account_holder_name = $bankAccount->partner->name;
         });

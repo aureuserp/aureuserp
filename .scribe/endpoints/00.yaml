@@ -111,7 +111,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null,"due_terms":[{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}]},{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null,"due_terms":[{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":168,"name":"Commodi incidunt.","note":null,"company_id":3494,"creator_id":13621,"created_at":"2026-02-09T12:40:56.000000Z","updated_at":"2026-02-09T12:40:56.000000Z","deleted_at":null,"due_terms":[{"id":241,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":168,"creator_id":null,"created_at":"2026-02-09T12:40:57.000000Z","updated_at":"2026-02-09T12:40:57.000000Z"},{"id":242,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":168,"creator_id":13622,"created_at":"2026-02-09T12:40:57.000000Z","updated_at":"2026-02-09T12:40:57.000000Z"}]},{"id":169,"name":"Ducimus corrupti et dolores.","note":null,"company_id":3495,"creator_id":13623,"created_at":"2026-02-09T12:40:57.000000Z","updated_at":"2026-02-09T12:40:57.000000Z","deleted_at":null,"due_terms":[{"id":243,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":169,"creator_id":null,"created_at":"2026-02-09T12:40:57.000000Z","updated_at":"2026-02-09T12:40:57.000000Z"},{"id":244,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":169,"creator_id":13624,"created_at":"2026-02-09T12:40:57.000000Z","updated_at":"2026-02-09T12:40:57.000000Z"}]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -194,7 +194,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},"message":"Payment term created successfully."}'
+        content: '{"data":{"id":170,"name":"Velit et fugiat.","note":null,"company_id":3496,"creator_id":13625,"created_at":"2026-02-09T12:40:57.000000Z","updated_at":"2026-02-09T12:40:57.000000Z","deleted_at":null},"message":"Payment term created successfully."}'
         headers: []
         description: ''
       -
@@ -271,7 +271,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null,"due_terms":[{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}]}}'
+        content: '{"data":{"id":171,"name":"Commodi incidunt.","note":null,"company_id":3497,"creator_id":13626,"created_at":"2026-02-09T12:40:57.000000Z","updated_at":"2026-02-09T12:40:57.000000Z","deleted_at":null,"due_terms":[{"id":246,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":171,"creator_id":null,"created_at":"2026-02-09T12:40:57.000000Z","updated_at":"2026-02-09T12:40:57.000000Z"},{"id":247,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":171,"creator_id":13627,"created_at":"2026-02-09T12:40:57.000000Z","updated_at":"2026-02-09T12:40:57.000000Z"}]}}'
         headers: []
         description: ''
       -
@@ -373,7 +373,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},"message":"Payment term updated successfully."}'
+        content: '{"data":{"id":172,"name":"Velit et fugiat.","note":null,"company_id":3498,"creator_id":13628,"created_at":"2026-02-09T12:40:57.000000Z","updated_at":"2026-02-09T12:40:57.000000Z","deleted_at":null},"message":"Payment term updated successfully."}'
         headers: []
         description: ''
       -
@@ -509,7 +509,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"Immediate Payment","note":"<p>Payment terms: Immediate Payment<\/p>","company_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},"message":"Payment term restored successfully."}'
+        content: '{"data":{"id":173,"name":"Commodi incidunt.","note":null,"company_id":3499,"creator_id":13629,"created_at":"2026-02-09T12:40:57.000000Z","updated_at":"2026-02-09T12:40:57.000000Z","deleted_at":null},"message":"Payment term restored successfully."}'
         headers: []
         description: ''
       -
@@ -714,7 +714,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":251,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":174,"creator_id":13631,"created_at":"2026-02-09T12:40:57.000000Z","updated_at":"2026-02-09T12:40:57.000000Z"},{"id":253,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":175,"creator_id":13633,"created_at":"2026-02-09T12:40:57.000000Z","updated_at":"2026-02-09T12:40:57.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -839,7 +839,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Payment due term created successfully."}'
+        content: '{"data":{"id":255,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":176,"creator_id":13635,"created_at":"2026-02-09T12:40:57.000000Z","updated_at":"2026-02-09T12:40:57.000000Z"},"message":"Payment due term created successfully."}'
         headers: []
         description: ''
       -
@@ -928,7 +928,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}}'
+        content: '{"data":{"id":257,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":177,"creator_id":13637,"created_at":"2026-02-09T12:40:57.000000Z","updated_at":"2026-02-09T12:40:57.000000Z"}}'
         headers: []
         description: ''
       -
@@ -1072,7 +1072,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Payment due term updated successfully."}'
+        content: '{"data":{"id":259,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":178,"creator_id":13639,"created_at":"2026-02-09T12:40:57.000000Z","updated_at":"2026-02-09T12:40:57.000000Z"},"message":"Payment due term updated successfully."}'
         headers: []
         description: ''
       -
@@ -1288,7 +1288,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"code":"EXW","name":"EX WORKS","creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},{"id":1,"code":"EXW","name":"EX WORKS","creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":66,"code":"UWP","name":"nostrum qui commodi","creator_id":13640,"created_at":"2026-02-09T12:40:57.000000Z","updated_at":"2026-02-09T12:40:57.000000Z","deleted_at":null},{"id":67,"code":"SCQ","name":"consequatur aut dolores","creator_id":13641,"created_at":"2026-02-09T12:40:57.000000Z","updated_at":"2026-02-09T12:40:57.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -1359,7 +1359,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"code":"EXW","name":"EX WORKS","creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},"message":"Incoterm created successfully."}'
+        content: '{"data":{"id":68,"code":"BNG","name":"animi quos velit","creator_id":13642,"created_at":"2026-02-09T12:40:57.000000Z","updated_at":"2026-02-09T12:40:57.000000Z","deleted_at":null},"message":"Incoterm created successfully."}'
         headers: []
         description: ''
       -
@@ -1436,7 +1436,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"code":"EXW","name":"EX WORKS","creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null}}'
+        content: '{"data":{"id":69,"code":"WLV","name":"incidunt iure odit","creator_id":13643,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z","deleted_at":null}}'
         headers: []
         description: ''
       -
@@ -1526,7 +1526,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"code":"EXW","name":"EX WORKS","creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},"message":"Incoterm updated successfully."}'
+        content: '{"data":{"id":70,"code":"ZMI","name":"et fugiat sunt","creator_id":13644,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z","deleted_at":null},"message":"Incoterm updated successfully."}'
         headers: []
         description: ''
       -
@@ -1662,7 +1662,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"code":"EXW","name":"EX WORKS","creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","deleted_at":null},"message":"Incoterm restored successfully."}'
+        content: '{"data":{"id":71,"code":"QWR","name":"et et modi","creator_id":13645,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z","deleted_at":null},"message":"Incoterm restored successfully."}'
         headers: []
         description: ''
       -
@@ -1911,7 +1911,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},{"id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":486,"account_type":"asset_current","name":"aut adipisci quidem","code":"432","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1299,"creator_id":13646,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"},{"id":487,"account_type":"asset_current","name":"non facere tempora","code":"043","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1300,"creator_id":13647,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2072,7 +2072,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Account created successfully."}'
+        content: '{"data":{"id":488,"account_type":"asset_current","name":"architecto eius et","code":"365","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1301,"creator_id":13648,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"},"message":"Account created successfully."}'
         headers: []
         description: ''
       -
@@ -2149,7 +2149,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}}'
+        content: '{"data":{"id":489,"account_type":"asset_current","name":"aut adipisci quidem","code":"881","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1302,"creator_id":13649,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"}}'
         headers: []
         description: ''
       -
@@ -2329,7 +2329,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"account_type":"asset_current","name":"Current Assets","code":"101000","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Account updated successfully."}'
+        content: '{"data":{"id":490,"account_type":"asset_current","name":"architecto eius et","code":"564","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1303,"creator_id":13650,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"},"message":"Account updated successfully."}'
         headers: []
         description: ''
       -
@@ -2561,7 +2561,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"company_id":1,"currency_id":1,"default_account_id":27,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":1,"name":"Customer Invoices","code":"INV","type":"sale","color":"11","sort":5,"show_on_dashboard":1,"refund_order":1,"payment_order":0,"created_at":null,"updated_at":null},{"id":1,"company_id":1,"currency_id":1,"default_account_id":27,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":1,"name":"Customer Invoices","code":"INV","type":"sale","color":"11","sort":5,"show_on_dashboard":1,"refund_order":1,"payment_order":0,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":56,"company_id":3505,"currency_id":1305,"default_account_id":491,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":13652,"name":"eum tenetur","code":"UY","type":"general","color":"9","sort":11,"show_on_dashboard":1,"refund_order":0,"payment_order":0,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"},{"id":57,"company_id":3506,"currency_id":1307,"default_account_id":492,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":13654,"name":"minus velit","code":"ZG","type":"general","color":"10","sort":12,"show_on_dashboard":1,"refund_order":0,"payment_order":0,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2782,7 +2782,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"company_id":1,"currency_id":1,"default_account_id":27,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":1,"name":"Customer Invoices","code":"INV","type":"sale","color":"11","sort":5,"show_on_dashboard":1,"refund_order":1,"payment_order":0,"created_at":null,"updated_at":null},"message":"Journal created successfully."}'
+        content: '{"data":{"id":58,"company_id":3507,"currency_id":1309,"default_account_id":493,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":13656,"name":"animi quos","code":"NG","type":"general","color":"6","sort":11,"show_on_dashboard":1,"refund_order":0,"payment_order":0,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"},"message":"Journal created successfully."}'
         headers: []
         description: ''
       -
@@ -2859,7 +2859,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"company_id":1,"currency_id":1,"default_account_id":27,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":1,"name":"Customer Invoices","code":"INV","type":"sale","color":"11","sort":5,"show_on_dashboard":1,"refund_order":1,"payment_order":0,"created_at":null,"updated_at":null}}'
+        content: '{"data":{"id":59,"company_id":3508,"currency_id":1311,"default_account_id":494,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":13658,"name":"nostrum qui","code":"WP","type":"general","color":"1","sort":11,"show_on_dashboard":1,"refund_order":0,"payment_order":0,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"}}'
         headers: []
         description: ''
       -
@@ -3099,7 +3099,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"company_id":1,"currency_id":1,"default_account_id":27,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":1,"name":"Customer Invoices","code":"INV","type":"sale","color":"11","sort":5,"show_on_dashboard":1,"refund_order":1,"payment_order":0,"created_at":null,"updated_at":null},"message":"Journal updated successfully."}'
+        content: '{"data":{"id":60,"company_id":3509,"currency_id":1313,"default_account_id":495,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":13660,"name":"velit et","code":"ZM","type":"general","color":"6","sort":11,"show_on_dashboard":1,"refund_order":0,"payment_order":0,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"},"message":"Journal updated successfully."}'
         headers: []
         description: ''
       -
@@ -3314,7 +3314,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":null,"company_id":1115,"country_id":441,"country_group_id":null,"creator_id":3631,"name":"aut adipisci","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":false,"vat_required":false,"sort":0,"created_at":null,"updated_at":null},{"id":null,"company_id":1116,"country_id":442,"country_group_id":null,"creator_id":3632,"name":"tenetur ratione","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":false,"vat_required":false,"sort":0,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":49,"company_id":3510,"country_id":1155,"country_group_id":null,"creator_id":13661,"name":"aut adipisci","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":0,"vat_required":0,"sort":1,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"},{"id":50,"company_id":3511,"country_id":1156,"country_group_id":null,"creator_id":13662,"name":"tenetur ratione","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":0,"vat_required":0,"sort":2,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -3479,7 +3479,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":null,"company_id":1117,"country_id":443,"country_group_id":null,"creator_id":3633,"name":"architecto eius","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":false,"vat_required":false,"sort":0,"created_at":null,"updated_at":null},"message":"Fiscal position created successfully."}'
+        content: '{"data":{"id":51,"company_id":3512,"country_id":1157,"country_group_id":null,"creator_id":13663,"name":"architecto eius","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":0,"vat_required":0,"sort":1,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"},"message":"Fiscal position created successfully."}'
         headers: []
         description: ''
       -
@@ -3556,7 +3556,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"company_id":1118,"country_id":444,"country_group_id":null,"creator_id":3634,"name":"aut adipisci","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":false,"vat_required":false,"sort":0,"created_at":null,"updated_at":null}}'
+        content: '{"data":{"id":52,"company_id":3513,"country_id":1158,"country_group_id":null,"creator_id":13664,"name":"aut adipisci","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":0,"vat_required":0,"sort":1,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"}}'
         headers: []
         description: ''
       -
@@ -3740,7 +3740,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"company_id":1119,"country_id":445,"country_group_id":null,"creator_id":3635,"name":"architecto eius","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":false,"vat_required":false,"sort":0,"created_at":null,"updated_at":null},"message":"Fiscal position updated successfully."}'
+        content: '{"data":{"id":53,"company_id":3514,"country_id":1159,"country_group_id":null,"creator_id":13665,"name":"architecto eius","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":0,"vat_required":0,"sort":1,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"},"message":"Fiscal position updated successfully."}'
         headers: []
         description: ''
       -
@@ -3949,7 +3949,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":null,"name":"aut adipisci","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":0.05,"profit_account_id":182,"loss_account_id":183,"creator_id":3638,"created_at":null,"updated_at":null},{"id":null,"name":"nemo odit","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":0.05,"profit_account_id":184,"loss_account_id":185,"creator_id":3641,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":47,"name":"aut adipisci","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":"0.0500","profit_account_id":496,"loss_account_id":497,"creator_id":13668,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"},{"id":48,"name":"neque blanditiis","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":"0.0500","profit_account_id":498,"loss_account_id":499,"creator_id":13671,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -4073,7 +4073,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":null,"name":"architecto eius","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":0.05,"profit_account_id":186,"loss_account_id":187,"creator_id":3644,"created_at":null,"updated_at":null},"message":"Cash rounding created successfully."}'
+        content: '{"data":{"id":49,"name":"architecto eius","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":"0.0500","profit_account_id":500,"loss_account_id":501,"creator_id":13674,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"},"message":"Cash rounding created successfully."}'
         headers: []
         description: ''
       -
@@ -4150,7 +4150,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"aut adipisci","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":0.05,"profit_account_id":188,"loss_account_id":189,"creator_id":3647,"created_at":null,"updated_at":null}}'
+        content: '{"data":{"id":50,"name":"aut adipisci","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":"0.0500","profit_account_id":502,"loss_account_id":503,"creator_id":13677,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"}}'
         headers: []
         description: ''
       -
@@ -4293,7 +4293,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"architecto eius","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":0.05,"profit_account_id":190,"loss_account_id":191,"creator_id":3650,"created_at":null,"updated_at":null},"message":"Cash rounding updated successfully."}'
+        content: '{"data":{"id":51,"name":"architecto eius","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":"0.0500","profit_account_id":504,"loss_account_id":505,"creator_id":13680,"created_at":"2026-02-09T12:40:58.000000Z","updated_at":"2026-02-09T12:40:58.000000Z"},"message":"Cash rounding updated successfully."}'
         headers: []
         description: ''
       -
@@ -4497,7 +4497,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"name":"Tax 15%","preceding_subtotal":null,"sort":1,"company_id":1,"country_id":104,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},{"id":1,"name":"Tax 15%","preceding_subtotal":null,"sort":1,"company_id":1,"country_id":104,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":139,"name":"mollitia vel","preceding_subtotal":"0","sort":2,"company_id":3515,"country_id":1160,"creator_id":13681,"created_at":"2026-02-09T12:40:59.000000Z","updated_at":"2026-02-09T12:40:59.000000Z"},{"id":140,"name":"expedita molestias","preceding_subtotal":"0","sort":3,"company_id":3516,"country_id":1161,"creator_id":13682,"created_at":"2026-02-09T12:40:59.000000Z","updated_at":"2026-02-09T12:40:59.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -4592,7 +4592,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"name":"Tax 15%","preceding_subtotal":null,"sort":1,"company_id":1,"country_id":104,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Tax group created successfully."}'
+        content: '{"data":{"id":141,"name":"architecto eius","preceding_subtotal":"0","sort":2,"company_id":3517,"country_id":1162,"creator_id":13683,"created_at":"2026-02-09T12:40:59.000000Z","updated_at":"2026-02-09T12:40:59.000000Z"},"message":"Tax group created successfully."}'
         headers: []
         description: ''
       -
@@ -4669,7 +4669,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"Tax 15%","preceding_subtotal":null,"sort":1,"company_id":1,"country_id":104,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"}}'
+        content: '{"data":{"id":142,"name":"aut adipisci","preceding_subtotal":"0","sort":2,"company_id":3518,"country_id":1163,"creator_id":13684,"created_at":"2026-02-09T12:40:59.000000Z","updated_at":"2026-02-09T12:40:59.000000Z"}}'
         headers: []
         description: ''
       -
@@ -4783,7 +4783,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"name":"Tax 15%","preceding_subtotal":null,"sort":1,"company_id":1,"country_id":104,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Tax group updated successfully."}'
+        content: '{"data":{"id":143,"name":"architecto eius","preceding_subtotal":"0","sort":2,"company_id":3519,"country_id":1164,"creator_id":13685,"created_at":"2026-02-09T12:40:59.000000Z","updated_at":"2026-02-09T12:40:59.000000Z"},"message":"Tax group updated successfully."}'
         headers: []
         description: ''
       -
@@ -5066,7 +5066,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","invoice_repartition_lines":[],"refund_repartition_lines":[]},{"id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","invoice_repartition_lines":[],"refund_repartition_lines":[]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":49,"type_tax_use":"sale","tax_scope":"consu","amount_type":"percent","price_include_override":"default","tax_exigibility":"on_invoice","name":"aut adipisci","description":null,"invoice_label":null,"invoice_legal_notes":null,"amount":"10.0000","is_active":1,"include_base_amount":0,"is_base_affected":0,"analytic":0,"sort":3,"company_id":3520,"tax_group_id":144,"cash_basis_transition_account_id":null,"country_id":null,"creator_id":13687,"created_at":"2026-02-09T12:40:59.000000Z","updated_at":"2026-02-09T12:40:59.000000Z","invoice_repartition_lines":[{"id":63,"account_id":506,"tax_id":49,"company_id":3522,"sort":2,"repartition_type":"base","document_type":"invoice","use_in_tax_closing":"1","factor_percent":"100.00","creator_id":13689,"created_at":"2026-02-09T12:40:59.000000Z","updated_at":"2026-02-09T12:40:59.000000Z"},{"id":64,"account_id":507,"tax_id":49,"company_id":3523,"sort":3,"repartition_type":"base","document_type":"invoice","use_in_tax_closing":"1","factor_percent":"100.00","creator_id":13691,"created_at":"2026-02-09T12:40:59.000000Z","updated_at":"2026-02-09T12:40:59.000000Z"}],"refund_repartition_lines":[]},{"id":50,"type_tax_use":"sale","tax_scope":"consu","amount_type":"percent","price_include_override":"default","tax_exigibility":"on_invoice","name":"quos omnis","description":null,"invoice_label":null,"invoice_legal_notes":null,"amount":"10.0000","is_active":1,"include_base_amount":0,"is_base_affected":0,"analytic":0,"sort":4,"company_id":3524,"tax_group_id":145,"cash_basis_transition_account_id":null,"country_id":null,"creator_id":13693,"created_at":"2026-02-09T12:40:59.000000Z","updated_at":"2026-02-09T12:40:59.000000Z","invoice_repartition_lines":[{"id":65,"account_id":508,"tax_id":50,"company_id":3526,"sort":4,"repartition_type":"base","document_type":"invoice","use_in_tax_closing":"1","factor_percent":"100.00","creator_id":13695,"created_at":"2026-02-09T12:40:59.000000Z","updated_at":"2026-02-09T12:40:59.000000Z"},{"id":66,"account_id":509,"tax_id":50,"company_id":3527,"sort":5,"repartition_type":"base","document_type":"invoice","use_in_tax_closing":"1","factor_percent":"100.00","creator_id":13697,"created_at":"2026-02-09T12:40:59.000000Z","updated_at":"2026-02-09T12:40:59.000000Z"}],"refund_repartition_lines":[]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -5376,7 +5376,7 @@ endpoints:
         name: 'invoice_repartition_lines[].repartition_type'
         description: ''
         required: true
-        example: tax
+        example: base
         type: string
         enumValues:
           - base
@@ -5433,7 +5433,7 @@ endpoints:
         name: 'refund_repartition_lines[].repartition_type'
         description: ''
         required: true
-        example: tax
+        example: base
         type: string
         enumValues:
           - base
@@ -5468,7 +5468,7 @@ endpoints:
         name: 'refund_repartition_lines[].use_in_tax_closing'
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -5509,7 +5509,7 @@ endpoints:
           repartition_type: base
           factor_percent: null
           account_id: null
-          use_in_tax_closing: true
+          use_in_tax_closing: false
         -
           repartition_type: tax
           factor_percent: 100.0
@@ -5520,7 +5520,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Tax created successfully."}'
+        content: '{"data":{"id":51,"type_tax_use":"sale","tax_scope":"consu","amount_type":"percent","price_include_override":"default","tax_exigibility":"on_invoice","name":"eius et","description":null,"invoice_label":null,"invoice_legal_notes":null,"amount":"10.0000","is_active":1,"include_base_amount":0,"is_base_affected":0,"analytic":0,"sort":3,"company_id":3528,"tax_group_id":146,"cash_basis_transition_account_id":null,"country_id":null,"creator_id":13699,"created_at":"2026-02-09T12:40:59.000000Z","updated_at":"2026-02-09T12:40:59.000000Z"},"message":"Tax created successfully."}'
         headers: []
         description: ''
       -
@@ -5597,7 +5597,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z","invoice_repartition_lines":[],"refund_repartition_lines":[]}}'
+        content: '{"data":{"id":52,"type_tax_use":"sale","tax_scope":"consu","amount_type":"percent","price_include_override":"default","tax_exigibility":"on_invoice","name":"aut adipisci","description":null,"invoice_label":null,"invoice_legal_notes":null,"amount":"10.0000","is_active":1,"include_base_amount":0,"is_base_affected":0,"analytic":0,"sort":3,"company_id":3530,"tax_group_id":147,"cash_basis_transition_account_id":null,"country_id":null,"creator_id":13701,"created_at":"2026-02-09T12:40:59.000000Z","updated_at":"2026-02-09T12:40:59.000000Z","invoice_repartition_lines":[{"id":67,"account_id":510,"tax_id":52,"company_id":3532,"sort":2,"repartition_type":"base","document_type":"invoice","use_in_tax_closing":"1","factor_percent":"100.00","creator_id":13703,"created_at":"2026-02-09T12:40:59.000000Z","updated_at":"2026-02-09T12:40:59.000000Z"},{"id":68,"account_id":511,"tax_id":52,"company_id":3533,"sort":3,"repartition_type":"base","document_type":"invoice","use_in_tax_closing":"1","factor_percent":"100.00","creator_id":13705,"created_at":"2026-02-09T12:40:59.000000Z","updated_at":"2026-02-09T12:40:59.000000Z"}],"refund_repartition_lines":[]}}'
         headers: []
         description: ''
       -
@@ -5926,7 +5926,7 @@ endpoints:
         name: 'invoice_repartition_lines[].repartition_type'
         description: ''
         required: true
-        example: base
+        example: tax
         type: string
         enumValues:
           - base
@@ -5961,7 +5961,7 @@ endpoints:
         name: 'invoice_repartition_lines[].use_in_tax_closing'
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -6048,7 +6048,7 @@ endpoints:
           repartition_type: base
           factor_percent: null
           account_id: null
-          use_in_tax_closing: true
+          use_in_tax_closing: false
         -
           repartition_type: tax
           factor_percent: 100.0
@@ -6070,7 +6070,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"type_tax_use":"sale","tax_scope":null,"amount_type":"percent","price_include_override":null,"tax_exigibility":"on_invoice","name":"15 %","description":"<p>CESS 5%<\/p>","invoice_label":"Tax 15 %","invoice_legal_notes":null,"amount":"15.0000","is_active":1,"include_base_amount":1,"is_base_affected":0,"analytic":null,"sort":1,"company_id":1,"tax_group_id":1,"cash_basis_transition_account_id":null,"country_id":233,"creator_id":1,"created_at":"2026-01-07T11:08:43.000000Z","updated_at":"2026-01-07T11:08:43.000000Z"},"message":"Tax updated successfully."}'
+        content: '{"data":{"id":53,"type_tax_use":"sale","tax_scope":"consu","amount_type":"percent","price_include_override":"default","tax_exigibility":"on_invoice","name":"eius et","description":null,"invoice_label":null,"invoice_legal_notes":null,"amount":"10.0000","is_active":1,"include_base_amount":0,"is_base_affected":0,"analytic":0,"sort":3,"company_id":3534,"tax_group_id":148,"cash_basis_transition_account_id":null,"country_id":null,"creator_id":13707,"created_at":"2026-02-09T12:40:59.000000Z","updated_at":"2026-02-09T12:40:59.000000Z"},"message":"Tax updated successfully."}'
         headers: []
         description: ''
       -
@@ -6303,7 +6303,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"category":{"id":11,"name":"Electronic''s Devices","full_name":"All \/ Electronic''s Devices","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-04-08T03:34:44.000000Z","updated_at":"2025-04-08T03:34:44.000000Z"},"tags":[],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"category":{"id":11,"name":"Electronic''s Devices","full_name":"All \/ Electronic''s Devices","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-04-08T03:34:44.000000Z","updated_at":"2025-04-08T03:34:44.000000Z"},"tags":[],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":602,"type":"goods","name":"Prof. Jackson Bailey IV","service_tracking":"none","reference":null,"barcode":"9177743077611","price":54.34,"cost":12.47,"volume":43.96,"weight":11.77,"description":"Eos qui praesentium facere velit et delectus iste.","description_purchase":"Officiis eligendi et reiciendis est.","description_sale":"Quo nulla alias est recusandae.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":976,"uom_po_id":977,"category_id":1146,"creator_id":null,"company_id":3536,"created_at":"2026-02-09T12:40:59.000000Z","updated_at":"2026-02-09T12:40:59.000000Z","deleted_at":null,"category":{"id":1146,"name":"Rowland Ruecker","full_name":"Rowland Ruecker","parent_path":"\/","parent_id":null,"creator_id":null,"created_at":"2026-02-09T12:40:59.000000Z","updated_at":"2026-02-09T12:40:59.000000Z"},"tags":[{"id":185,"name":"Zula Grant","color":"#031e45","created_at":"2026-02-09T12:40:59.000000Z","updated_at":"2026-02-09T12:40:59.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},{"id":603,"type":"goods","name":"Tess Parker Jr.","service_tracking":"none","reference":null,"barcode":"2397899033157","price":97.26,"cost":86.79,"volume":74.3,"weight":12.78,"description":"Facilis sunt reiciendis sequi eum et maxime ut placeat.","description_purchase":"Qui harum et cumque aut quia architecto.","description_sale":"Voluptate possimus eum libero maxime.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":978,"uom_po_id":979,"category_id":1147,"creator_id":null,"company_id":3537,"created_at":"2026-02-09T12:41:00.000000Z","updated_at":"2026-02-09T12:41:00.000000Z","deleted_at":null,"category":{"id":1147,"name":"Selmer Konopelski","full_name":"Selmer Konopelski","parent_path":"\/","parent_id":null,"creator_id":null,"created_at":"2026-02-09T12:41:00.000000Z","updated_at":"2026-02-09T12:41:00.000000Z"},"tags":[{"id":186,"name":"Carlotta Becker","color":"#22e60e","created_at":"2026-02-09T12:41:00.000000Z","updated_at":"2026-02-09T12:41:00.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -6730,7 +6730,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"category":{"id":11,"name":"Electronic''s Devices","full_name":"All \/ Electronic''s Devices","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-04-08T03:34:44.000000Z","updated_at":"2025-04-08T03:34:44.000000Z"},"tags":[],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product created successfully."}'
+        content: '{"data":{"id":604,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":980,"uom_po_id":981,"category_id":1148,"creator_id":null,"company_id":3538,"created_at":"2026-02-09T12:41:00.000000Z","updated_at":"2026-02-09T12:41:00.000000Z","deleted_at":null,"category":{"id":1148,"name":"Mrs. Ethyl Gleason","full_name":"Mrs. Ethyl Gleason","parent_path":"\/","parent_id":null,"creator_id":null,"created_at":"2026-02-09T12:41:00.000000Z","updated_at":"2026-02-09T12:41:00.000000Z"},"tags":[{"id":187,"name":"Lambert Watsica","color":"#a79ffd","created_at":"2026-02-09T12:41:00.000000Z","updated_at":"2026-02-09T12:41:00.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product created successfully."}'
         headers: []
         description: ''
       -
@@ -6807,7 +6807,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"category":{"id":11,"name":"Electronic''s Devices","full_name":"All \/ Electronic''s Devices","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-04-08T03:34:44.000000Z","updated_at":"2025-04-08T03:34:44.000000Z"},"tags":[],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}}'
+        content: '{"data":{"id":605,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":982,"uom_po_id":983,"category_id":1149,"creator_id":null,"company_id":3539,"created_at":"2026-02-09T12:41:00.000000Z","updated_at":"2026-02-09T12:41:00.000000Z","deleted_at":null,"category":{"id":1149,"name":"Maximillian Wolf","full_name":"Maximillian Wolf","parent_path":"\/","parent_id":null,"creator_id":null,"created_at":"2026-02-09T12:41:00.000000Z","updated_at":"2026-02-09T12:41:00.000000Z"},"tags":[{"id":188,"name":"Dorian Brekke","color":"#064aa2","created_at":"2026-02-09T12:41:00.000000Z","updated_at":"2026-02-09T12:41:00.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}}'
         headers: []
         description: ''
       -
@@ -7253,7 +7253,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"category":{"id":11,"name":"Electronic''s Devices","full_name":"All \/ Electronic''s Devices","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-04-08T03:34:44.000000Z","updated_at":"2025-04-08T03:34:44.000000Z"},"tags":[],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product updated successfully."}'
+        content: '{"data":{"id":606,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":984,"uom_po_id":985,"category_id":1150,"creator_id":null,"company_id":3540,"created_at":"2026-02-09T12:41:00.000000Z","updated_at":"2026-02-09T12:41:00.000000Z","deleted_at":null,"category":{"id":1150,"name":"Prof. Dorian Brekke","full_name":"Prof. Dorian Brekke","parent_path":"\/","parent_id":null,"creator_id":null,"created_at":"2026-02-09T12:41:00.000000Z","updated_at":"2026-02-09T12:41:00.000000Z"},"tags":[{"id":189,"name":"Justice Cartwright","color":"#f54a4f","created_at":"2026-02-09T12:41:00.000000Z","updated_at":"2026-02-09T12:41:00.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product updated successfully."}'
         headers: []
         description: ''
       -
@@ -7389,7 +7389,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"category":{"id":11,"name":"Electronic''s Devices","full_name":"All \/ Electronic''s Devices","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-04-08T03:34:44.000000Z","updated_at":"2025-04-08T03:34:44.000000Z"},"tags":[],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product restored successfully."}'
+        content: '{"data":{"id":607,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":986,"uom_po_id":987,"category_id":1151,"creator_id":null,"company_id":3541,"created_at":"2026-02-09T12:41:00.000000Z","updated_at":"2026-02-09T12:41:00.000000Z","deleted_at":null,"category":{"id":1151,"name":"Jaycee Kirlin","full_name":"Jaycee Kirlin","parent_path":"\/","parent_id":null,"creator_id":null,"created_at":"2026-02-09T12:41:00.000000Z","updated_at":"2026-02-09T12:41:00.000000Z"},"tags":[{"id":190,"name":"Una Murray","color":"#cdd642","created_at":"2026-02-09T12:41:00.000000Z","updated_at":"2026-02-09T12:41:00.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product restored successfully."}'
         headers: []
         description: ''
       -
@@ -7628,7 +7628,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":608,"type":"goods","name":"Beth Kulas","service_tracking":"none","reference":null,"barcode":"5802836404435","price":55.21,"cost":55.71,"volume":89.29,"weight":70.62,"description":"Autem quisquam molestiae nihil id.","description_purchase":"Nulla ex recusandae numquam in.","description_sale":"Dolores suscipit itaque optio dolores vel explicabo.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":988,"uom_po_id":989,"category_id":1152,"creator_id":null,"company_id":3542,"created_at":"2026-02-09T12:41:00.000000Z","updated_at":"2026-02-09T12:41:00.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},{"id":609,"type":"goods","name":"Christiana Hermann","service_tracking":"none","reference":null,"barcode":"2767159067800","price":43.12,"cost":14.03,"volume":31.39,"weight":73.08,"description":"Qui mollitia culpa et perferendis.","description_purchase":"Inventore autem sapiente id cumque nihil et.","description_sale":"Adipisci voluptate omnis ut.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":990,"uom_po_id":991,"category_id":1153,"creator_id":null,"company_id":3543,"created_at":"2026-02-09T12:41:00.000000Z","updated_at":"2026-02-09T12:41:00.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -7687,7 +7687,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":[{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}],"message":"Product variants synced successfully."}'
+        content: '{"data":[{"id":610,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":992,"uom_po_id":993,"category_id":1154,"creator_id":null,"company_id":3544,"created_at":"2026-02-09T12:41:01.000000Z","updated_at":"2026-02-09T12:41:01.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},{"id":611,"type":"goods","name":"Mrs. Donna Kessler DDS","service_tracking":"none","reference":null,"barcode":"7984093662051","price":46.84,"cost":31.51,"volume":14.5,"weight":14.67,"description":"Nulla in unde rerum voluptas.","description_purchase":"Maxime qui rerum sed quasi et harum.","description_sale":"Nostrum ipsa quas natus sed dolorem sed voluptatem.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":994,"uom_po_id":995,"category_id":1155,"creator_id":null,"company_id":3545,"created_at":"2026-02-09T12:41:01.000000Z","updated_at":"2026-02-09T12:41:01.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}],"message":"Product variants synced successfully."}'
         headers: []
         description: ''
       -
@@ -7770,7 +7770,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}}'
+        content: '{"data":{"id":612,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":996,"uom_po_id":997,"category_id":1156,"creator_id":null,"company_id":3546,"created_at":"2026-02-09T12:41:01.000000Z","updated_at":"2026-02-09T12:41:01.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}}'
         headers: []
         description: ''
       -
@@ -8228,7 +8228,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product variant updated successfully."}'
+        content: '{"data":{"id":613,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":998,"uom_po_id":999,"category_id":1157,"creator_id":null,"company_id":3547,"created_at":"2026-02-09T12:41:01.000000Z","updated_at":"2026-02-09T12:41:01.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product variant updated successfully."}'
         headers: []
         description: ''
       -
@@ -8388,7 +8388,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product variant restored successfully."}'
+        content: '{"data":{"id":614,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1000,"uom_po_id":1001,"category_id":1158,"creator_id":null,"company_id":3548,"created_at":"2026-02-09T12:41:01.000000Z","updated_at":"2026-02-09T12:41:01.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product variant restored successfully."}'
         headers: []
         description: ''
       -

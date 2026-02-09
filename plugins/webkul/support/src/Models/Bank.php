@@ -56,7 +56,7 @@ class Bank extends Model
         parent::boot();
 
         static::creating(function ($bank) {
-            $bank->creator_id = Auth::id();
+            $bank->creator_id ??= Auth::id();
         });
     }
 
