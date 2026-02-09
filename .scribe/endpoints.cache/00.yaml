@@ -113,7 +113,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":201,"name":"Commodi incidunt.","note":null,"company_id":4098,"creator_id":16427,"created_at":"2026-02-09T12:57:40.000000Z","updated_at":"2026-02-09T12:57:40.000000Z","deleted_at":null,"due_terms":[{"id":298,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":201,"creator_id":null,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z"},{"id":299,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":201,"creator_id":16428,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z"}]},{"id":202,"name":"Ducimus corrupti et dolores.","note":null,"company_id":4099,"creator_id":16429,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z","deleted_at":null,"due_terms":[{"id":300,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":202,"creator_id":null,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z"},{"id":301,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":202,"creator_id":16430,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z"}]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":212,"name":"Commodi incidunt.","note":null,"company_id":4272,"creator_id":17256,"created_at":"2026-02-09T13:18:59.000000Z","updated_at":"2026-02-09T13:18:59.000000Z","deleted_at":null,"due_terms":[{"id":317,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":212,"creator_id":null,"created_at":"2026-02-09T13:18:59.000000Z","updated_at":"2026-02-09T13:18:59.000000Z"},{"id":318,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":212,"creator_id":17257,"created_at":"2026-02-09T13:18:59.000000Z","updated_at":"2026-02-09T13:18:59.000000Z"}]},{"id":213,"name":"Ducimus corrupti et dolores.","note":null,"company_id":4273,"creator_id":17258,"created_at":"2026-02-09T13:18:59.000000Z","updated_at":"2026-02-09T13:18:59.000000Z","deleted_at":null,"due_terms":[{"id":319,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":213,"creator_id":null,"created_at":"2026-02-09T13:18:59.000000Z","updated_at":"2026-02-09T13:18:59.000000Z"},{"id":320,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":213,"creator_id":17259,"created_at":"2026-02-09T13:18:59.000000Z","updated_at":"2026-02-09T13:18:59.000000Z"}]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -196,7 +196,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":203,"name":"Velit et fugiat.","note":null,"company_id":4100,"creator_id":16431,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z","deleted_at":null},"message":"Payment term created successfully."}'
+        content: '{"data":{"id":214,"name":"Velit et fugiat.","note":null,"company_id":4274,"creator_id":17260,"created_at":"2026-02-09T13:18:59.000000Z","updated_at":"2026-02-09T13:18:59.000000Z","deleted_at":null},"message":"Payment term created successfully."}'
         headers: []
         description: ''
       -
@@ -273,7 +273,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":204,"name":"Commodi incidunt.","note":null,"company_id":4101,"creator_id":16432,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z","deleted_at":null,"due_terms":[{"id":303,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":204,"creator_id":null,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z"},{"id":304,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":204,"creator_id":16433,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z"}]}}'
+        content: '{"data":{"id":215,"name":"Commodi incidunt.","note":null,"company_id":4275,"creator_id":17261,"created_at":"2026-02-09T13:18:59.000000Z","updated_at":"2026-02-09T13:18:59.000000Z","deleted_at":null,"due_terms":[{"id":322,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":0,"days_next_month":"10","payment_id":215,"creator_id":null,"created_at":"2026-02-09T13:18:59.000000Z","updated_at":"2026-02-09T13:18:59.000000Z"},{"id":323,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":215,"creator_id":17262,"created_at":"2026-02-09T13:18:59.000000Z","updated_at":"2026-02-09T13:18:59.000000Z"}]}}'
         headers: []
         description: ''
       -
@@ -375,7 +375,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":205,"name":"Velit et fugiat.","note":null,"company_id":4102,"creator_id":16434,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z","deleted_at":null},"message":"Payment term updated successfully."}'
+        content: '{"data":{"id":216,"name":"Velit et fugiat.","note":null,"company_id":4276,"creator_id":17263,"created_at":"2026-02-09T13:18:59.000000Z","updated_at":"2026-02-09T13:18:59.000000Z","deleted_at":null},"message":"Payment term updated successfully."}'
         headers: []
         description: ''
       -
@@ -511,7 +511,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":206,"name":"Commodi incidunt.","note":null,"company_id":4103,"creator_id":16435,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z","deleted_at":null},"message":"Payment term restored successfully."}'
+        content: '{"data":{"id":217,"name":"Commodi incidunt.","note":null,"company_id":4277,"creator_id":17264,"created_at":"2026-02-09T13:18:59.000000Z","updated_at":"2026-02-09T13:18:59.000000Z","deleted_at":null},"message":"Payment term restored successfully."}'
         headers: []
         description: ''
       -
@@ -716,7 +716,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":308,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":207,"creator_id":16437,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z"},{"id":310,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":208,"creator_id":16439,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":327,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":218,"creator_id":17266,"created_at":"2026-02-09T13:18:59.000000Z","updated_at":"2026-02-09T13:18:59.000000Z"},{"id":329,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":219,"creator_id":17268,"created_at":"2026-02-09T13:18:59.000000Z","updated_at":"2026-02-09T13:18:59.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -841,7 +841,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":312,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":209,"creator_id":16441,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z"},"message":"Payment due term created successfully."}'
+        content: '{"data":{"id":331,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":220,"creator_id":17270,"created_at":"2026-02-09T13:18:59.000000Z","updated_at":"2026-02-09T13:18:59.000000Z"},"message":"Payment due term created successfully."}'
         headers: []
         description: ''
       -
@@ -930,7 +930,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":314,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":210,"creator_id":16443,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z"}}'
+        content: '{"data":{"id":333,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":221,"creator_id":17272,"created_at":"2026-02-09T13:18:59.000000Z","updated_at":"2026-02-09T13:18:59.000000Z"}}'
         headers: []
         description: ''
       -
@@ -1074,7 +1074,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":316,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":211,"creator_id":16445,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z"},"message":"Payment due term updated successfully."}'
+        content: '{"data":{"id":335,"value":"percent","value_amount":"100.0000","delay_type":"days_after","nb_days":30,"days_next_month":"0","payment_id":222,"creator_id":17274,"created_at":"2026-02-09T13:18:59.000000Z","updated_at":"2026-02-09T13:18:59.000000Z"},"message":"Payment due term updated successfully."}'
         headers: []
         description: ''
       -
@@ -1290,7 +1290,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":84,"code":"UWP","name":"nostrum qui commodi","creator_id":16446,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z","deleted_at":null},{"id":85,"code":"SCQ","name":"consequatur aut dolores","creator_id":16447,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":90,"code":"UWP","name":"nostrum qui commodi","creator_id":17275,"created_at":"2026-02-09T13:18:59.000000Z","updated_at":"2026-02-09T13:18:59.000000Z","deleted_at":null},{"id":91,"code":"SCQ","name":"consequatur aut dolores","creator_id":17276,"created_at":"2026-02-09T13:18:59.000000Z","updated_at":"2026-02-09T13:18:59.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -1361,7 +1361,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":86,"code":"BNG","name":"animi quos velit","creator_id":16448,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z","deleted_at":null},"message":"Incoterm created successfully."}'
+        content: '{"data":{"id":92,"code":"BNG","name":"animi quos velit","creator_id":17277,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z","deleted_at":null},"message":"Incoterm created successfully."}'
         headers: []
         description: ''
       -
@@ -1438,7 +1438,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":87,"code":"WLV","name":"incidunt iure odit","creator_id":16449,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z","deleted_at":null}}'
+        content: '{"data":{"id":93,"code":"WLV","name":"incidunt iure odit","creator_id":17278,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z","deleted_at":null}}'
         headers: []
         description: ''
       -
@@ -1528,7 +1528,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":88,"code":"ZMI","name":"et fugiat sunt","creator_id":16450,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z","deleted_at":null},"message":"Incoterm updated successfully."}'
+        content: '{"data":{"id":94,"code":"ZMI","name":"et fugiat sunt","creator_id":17279,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z","deleted_at":null},"message":"Incoterm updated successfully."}'
         headers: []
         description: ''
       -
@@ -1664,7 +1664,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":89,"code":"QWR","name":"et et modi","creator_id":16451,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z","deleted_at":null},"message":"Incoterm restored successfully."}'
+        content: '{"data":{"id":95,"code":"QWR","name":"et et modi","creator_id":17280,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z","deleted_at":null},"message":"Incoterm restored successfully."}'
         headers: []
         description: ''
       -
@@ -1913,7 +1913,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":564,"account_type":"asset_current","name":"aut adipisci quidem","code":"432","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1492,"creator_id":16452,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z"},{"id":565,"account_type":"asset_current","name":"non facere tempora","code":"043","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1493,"creator_id":16453,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":590,"account_type":"asset_current","name":"aut adipisci quidem","code":"432","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1549,"creator_id":17281,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z"},{"id":591,"account_type":"asset_current","name":"non facere tempora","code":"043","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1550,"creator_id":17282,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2074,7 +2074,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":566,"account_type":"asset_current","name":"architecto eius et","code":"365","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1494,"creator_id":16454,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z"},"message":"Account created successfully."}'
+        content: '{"data":{"id":592,"account_type":"asset_current","name":"architecto eius et","code":"365","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1551,"creator_id":17283,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z"},"message":"Account created successfully."}'
         headers: []
         description: ''
       -
@@ -2151,7 +2151,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":567,"account_type":"asset_current","name":"aut adipisci quidem","code":"881","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1495,"creator_id":16455,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z"}}'
+        content: '{"data":{"id":593,"account_type":"asset_current","name":"aut adipisci quidem","code":"881","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1552,"creator_id":17284,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z"}}'
         headers: []
         description: ''
       -
@@ -2331,7 +2331,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":568,"account_type":"asset_current","name":"architecto eius et","code":"564","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1496,"creator_id":16456,"created_at":"2026-02-09T12:57:41.000000Z","updated_at":"2026-02-09T12:57:41.000000Z"},"message":"Account updated successfully."}'
+        content: '{"data":{"id":594,"account_type":"asset_current","name":"architecto eius et","code":"564","note":null,"deprecated":false,"reconcile":false,"non_trade":false,"currency_id":1553,"creator_id":17285,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z"},"message":"Account updated successfully."}'
         headers: []
         description: ''
       -
@@ -2563,7 +2563,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":71,"company_id":4109,"currency_id":1498,"default_account_id":569,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":16458,"name":"provident dolorem","code":"NN","type":"general","color":"4","sort":11,"show_on_dashboard":1,"refund_order":0,"payment_order":0,"created_at":"2026-02-09T12:57:42.000000Z","updated_at":"2026-02-09T12:57:42.000000Z"},{"id":72,"company_id":4110,"currency_id":1500,"default_account_id":570,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":16460,"name":"quam nesciunt","code":"AL","type":"general","color":"9","sort":12,"show_on_dashboard":1,"refund_order":0,"payment_order":0,"created_at":"2026-02-09T12:57:42.000000Z","updated_at":"2026-02-09T12:57:42.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":77,"name":"aspernatur alias","code":"MU","type":"general","color":"2","sort":12,"show_on_dashboard":1,"refund_order":0,"payment_order":0,"company_id":4283,"currency_id":1555,"default_account_id":595,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":17287,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z"},{"id":78,"name":"cupiditate qui","code":"ZP","type":"general","color":"5","sort":13,"show_on_dashboard":1,"refund_order":0,"payment_order":0,"company_id":4284,"currency_id":1557,"default_account_id":596,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":17289,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2712,7 +2712,7 @@ endpoints:
       bank_account_id:
         custom: []
         name: bank_account_id
-        description: 'Bank account ID. The <code>id</code> of an existing record in the partner_bank_accounts table.'
+        description: 'Bank account ID. The <code>id</code> of an existing record in the partners_bank_accounts table.'
         required: false
         example: 1
         type: integer
@@ -2912,7 +2912,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":73,"company_id":4111,"currency_id":1502,"default_account_id":571,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":16462,"name":"quos velit","code":"GZ","type":"general","color":"2","sort":11,"show_on_dashboard":1,"refund_order":0,"payment_order":0,"created_at":"2026-02-09T12:57:42.000000Z","updated_at":"2026-02-09T12:57:42.000000Z"},"message":"Journal created successfully."}'
+        content: '{"data":{"id":79,"name":"quos velit","code":"GZ","type":"general","color":"2","sort":12,"show_on_dashboard":1,"refund_order":0,"payment_order":0,"company_id":4285,"currency_id":1559,"default_account_id":597,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":17291,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z"},"message":"Journal created successfully."}'
         headers: []
         description: ''
       -
@@ -2989,7 +2989,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":74,"company_id":4112,"currency_id":1504,"default_account_id":572,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":16464,"name":"nostrum qui","code":"WP","type":"general","color":"1","sort":11,"show_on_dashboard":1,"refund_order":0,"payment_order":0,"created_at":"2026-02-09T12:57:42.000000Z","updated_at":"2026-02-09T12:57:42.000000Z"}}'
+        content: '{"data":{"id":80,"name":"nostrum qui","code":"WP","type":"general","color":"1","sort":12,"show_on_dashboard":1,"refund_order":0,"payment_order":0,"company_id":4286,"currency_id":1561,"default_account_id":598,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":17293,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z"}}'
         headers: []
         description: ''
       -
@@ -3157,7 +3157,7 @@ endpoints:
       bank_account_id:
         custom: []
         name: bank_account_id
-        description: 'Bank account ID. The <code>id</code> of an existing record in the partner_bank_accounts table.'
+        description: 'Bank account ID. The <code>id</code> of an existing record in the partners_bank_accounts table.'
         required: false
         example: 1
         type: integer
@@ -3357,7 +3357,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":75,"company_id":4113,"currency_id":1506,"default_account_id":573,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":16466,"name":"et fugiat","code":"MI","type":"general","color":"2","sort":11,"show_on_dashboard":1,"refund_order":0,"payment_order":0,"created_at":"2026-02-09T12:57:42.000000Z","updated_at":"2026-02-09T12:57:42.000000Z"},"message":"Journal updated successfully."}'
+        content: '{"data":{"id":81,"name":"et fugiat","code":"MI","type":"general","color":"2","sort":12,"show_on_dashboard":1,"refund_order":0,"payment_order":0,"company_id":4287,"currency_id":1563,"default_account_id":599,"suspense_account_id":null,"profit_account_id":null,"loss_account_id":null,"bank_account_id":null,"creator_id":17295,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z"},"message":"Journal updated successfully."}'
         headers: []
         description: ''
       -
@@ -3572,7 +3572,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":64,"company_id":4114,"country_id":1246,"country_group_id":null,"creator_id":16467,"name":"aut adipisci","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":0,"vat_required":0,"sort":1,"created_at":"2026-02-09T12:57:42.000000Z","updated_at":"2026-02-09T12:57:42.000000Z"},{"id":65,"company_id":4115,"country_id":1247,"country_group_id":null,"creator_id":16468,"name":"tenetur ratione","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":0,"vat_required":0,"sort":2,"created_at":"2026-02-09T12:57:42.000000Z","updated_at":"2026-02-09T12:57:42.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":69,"company_id":4288,"country_id":1269,"country_group_id":null,"creator_id":17296,"name":"aut adipisci","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":0,"vat_required":0,"sort":1,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z"},{"id":70,"company_id":4289,"country_id":1270,"country_group_id":null,"creator_id":17297,"name":"tenetur ratione","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":0,"vat_required":0,"sort":2,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -3723,6 +3723,100 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
+      taxes:
+        custom: []
+        name: taxes
+        description: 'Tax mappings array. Include id for update, omit for create.'
+        required: false
+        example:
+          -
+            tax_source_id: 1
+            tax_destination_id: 2
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      accounts:
+        custom: []
+        name: accounts
+        description: 'Account mappings array. Include id for update, omit for create.'
+        required: false
+        example:
+          -
+            account_source_id: 5
+            account_destination_id: 6
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'taxes[].id':
+        custom: []
+        name: 'taxes[].id'
+        description: 'The <code>id</code> of an existing record in the accounts_fiscal_position_taxes table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'taxes[].tax_source_id':
+        custom: []
+        name: 'taxes[].tax_source_id'
+        description: 'The <code>id</code> of an existing record in the accounts_taxes table.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'taxes[].tax_destination_id':
+        custom: []
+        name: 'taxes[].tax_destination_id'
+        description: 'The <code>id</code> of an existing record in the accounts_taxes table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'accounts[].id':
+        custom: []
+        name: 'accounts[].id'
+        description: 'The <code>id</code> of an existing record in the accounts_fiscal_position_accounts table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'accounts[].account_source_id':
+        custom: []
+        name: 'accounts[].account_source_id'
+        description: 'The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'accounts[].account_destination_id':
+        custom: []
+        name: 'accounts[].account_destination_id'
+        description: 'The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
     cleanBodyParameters:
       name: Domestic
       company_id: 1
@@ -3732,12 +3826,20 @@ endpoints:
       notes: 'For domestic transactions'
       auto_reply: false
       vat_required: false
+      taxes:
+        -
+          tax_source_id: 1
+          tax_destination_id: 2
+      accounts:
+        -
+          account_source_id: 5
+          account_destination_id: 6
     fileParameters: []
     responses:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":66,"company_id":4116,"country_id":1248,"country_group_id":null,"creator_id":16469,"name":"architecto eius","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":0,"vat_required":0,"sort":1,"created_at":"2026-02-09T12:57:42.000000Z","updated_at":"2026-02-09T12:57:42.000000Z"},"message":"Fiscal position created successfully."}'
+        content: '{"data":{"id":71,"company_id":4290,"country_id":1271,"country_group_id":null,"creator_id":17298,"name":"eius et","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":0,"vat_required":0,"sort":1,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z"},"message":"Fiscal position created successfully."}'
         headers: []
         description: ''
       -
@@ -3814,7 +3916,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":67,"company_id":4117,"country_id":1249,"country_group_id":null,"creator_id":16470,"name":"aut adipisci","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":0,"vat_required":0,"sort":1,"created_at":"2026-02-09T12:57:42.000000Z","updated_at":"2026-02-09T12:57:42.000000Z"}}'
+        content: '{"data":{"id":72,"company_id":4291,"country_id":1272,"country_group_id":null,"creator_id":17299,"name":"aut adipisci","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":0,"vat_required":0,"sort":1,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z"}}'
         headers: []
         description: ''
       -
@@ -3984,6 +4086,100 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
+      taxes:
+        custom: []
+        name: taxes
+        description: 'Tax mappings array. Include id for update, omit for create.'
+        required: false
+        example:
+          -
+            tax_source_id: 1
+            tax_destination_id: 2
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      accounts:
+        custom: []
+        name: accounts
+        description: 'Account mappings array. Include id for update, omit for create.'
+        required: false
+        example:
+          -
+            account_source_id: 5
+            account_destination_id: 6
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'taxes[].id':
+        custom: []
+        name: 'taxes[].id'
+        description: 'The <code>id</code> of an existing record in the accounts_fiscal_position_taxes table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'taxes[].tax_source_id':
+        custom: []
+        name: 'taxes[].tax_source_id'
+        description: 'The <code>id</code> of an existing record in the accounts_taxes table.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'taxes[].tax_destination_id':
+        custom: []
+        name: 'taxes[].tax_destination_id'
+        description: 'The <code>id</code> of an existing record in the accounts_taxes table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'accounts[].id':
+        custom: []
+        name: 'accounts[].id'
+        description: 'The <code>id</code> of an existing record in the accounts_fiscal_position_accounts table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'accounts[].account_source_id':
+        custom: []
+        name: 'accounts[].account_source_id'
+        description: 'The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'accounts[].account_destination_id':
+        custom: []
+        name: 'accounts[].account_destination_id'
+        description: 'The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
     cleanBodyParameters:
       name: Domestic
       company_id: 1
@@ -3993,12 +4189,20 @@ endpoints:
       notes: 'For domestic transactions'
       auto_reply: false
       vat_required: false
+      taxes:
+        -
+          tax_source_id: 1
+          tax_destination_id: 2
+      accounts:
+        -
+          account_source_id: 5
+          account_destination_id: 6
     fileParameters: []
     responses:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":68,"company_id":4118,"country_id":1250,"country_group_id":null,"creator_id":16471,"name":"architecto eius","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":0,"vat_required":0,"sort":1,"created_at":"2026-02-09T12:57:42.000000Z","updated_at":"2026-02-09T12:57:42.000000Z"},"message":"Fiscal position updated successfully."}'
+        content: '{"data":{"id":73,"company_id":4292,"country_id":1273,"country_group_id":null,"creator_id":17300,"name":"eius et","zip_from":null,"zip_to":null,"foreign_vat":null,"notes":null,"auto_reply":0,"vat_required":0,"sort":1,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z"},"message":"Fiscal position updated successfully."}'
         headers: []
         description: ''
       -
@@ -4207,7 +4411,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":62,"name":"fuga est","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":"0.0500","profit_account_id":574,"loss_account_id":575,"creator_id":16474,"created_at":"2026-02-09T12:57:42.000000Z","updated_at":"2026-02-09T12:57:42.000000Z"},{"id":63,"name":"quia aut","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":"0.0500","profit_account_id":576,"loss_account_id":577,"creator_id":16477,"created_at":"2026-02-09T12:57:42.000000Z","updated_at":"2026-02-09T12:57:42.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":67,"name":"consequatur tempore","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":"0.0500","profit_account_id":600,"loss_account_id":601,"creator_id":17303,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z"},{"id":68,"name":"amet voluptatem","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":"0.0500","profit_account_id":602,"loss_account_id":603,"creator_id":17306,"created_at":"2026-02-09T13:19:00.000000Z","updated_at":"2026-02-09T13:19:00.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -4331,7 +4535,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":64,"name":"architecto eius","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":"0.0500","profit_account_id":578,"loss_account_id":579,"creator_id":16480,"created_at":"2026-02-09T12:57:42.000000Z","updated_at":"2026-02-09T12:57:42.000000Z"},"message":"Cash rounding created successfully."}'
+        content: '{"data":{"id":69,"name":"architecto eius","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":"0.0500","profit_account_id":604,"loss_account_id":605,"creator_id":17309,"created_at":"2026-02-09T13:19:01.000000Z","updated_at":"2026-02-09T13:19:01.000000Z"},"message":"Cash rounding created successfully."}'
         headers: []
         description: ''
       -
@@ -4408,7 +4612,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":65,"name":"aut adipisci","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":"0.0500","profit_account_id":580,"loss_account_id":581,"creator_id":16483,"created_at":"2026-02-09T12:57:42.000000Z","updated_at":"2026-02-09T12:57:42.000000Z"}}'
+        content: '{"data":{"id":70,"name":"aut adipisci","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":"0.0500","profit_account_id":606,"loss_account_id":607,"creator_id":17312,"created_at":"2026-02-09T13:19:01.000000Z","updated_at":"2026-02-09T13:19:01.000000Z"}}'
         headers: []
         description: ''
       -
@@ -4551,7 +4755,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":66,"name":"architecto eius","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":"0.0500","profit_account_id":582,"loss_account_id":583,"creator_id":16486,"created_at":"2026-02-09T12:57:42.000000Z","updated_at":"2026-02-09T12:57:42.000000Z"},"message":"Cash rounding updated successfully."}'
+        content: '{"data":{"id":71,"name":"architecto eius","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":"0.0500","profit_account_id":608,"loss_account_id":609,"creator_id":17315,"created_at":"2026-02-09T13:19:01.000000Z","updated_at":"2026-02-09T13:19:01.000000Z"},"message":"Cash rounding updated successfully."}'
         headers: []
         description: ''
       -
@@ -4755,7 +4959,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":169,"name":"aut adipisci","preceding_subtotal":"0","sort":2,"company_id":4119,"country_id":1251,"creator_id":16487,"created_at":"2026-02-09T12:57:42.000000Z","updated_at":"2026-02-09T12:57:42.000000Z"},{"id":170,"name":"ut ratione","preceding_subtotal":"0","sort":3,"company_id":4120,"country_id":1252,"creator_id":16488,"created_at":"2026-02-09T12:57:42.000000Z","updated_at":"2026-02-09T12:57:42.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":179,"name":"aut adipisci","preceding_subtotal":"0","sort":2,"company_id":4293,"country_id":1274,"creator_id":17316,"created_at":"2026-02-09T13:19:01.000000Z","updated_at":"2026-02-09T13:19:01.000000Z"},{"id":180,"name":"ut ratione","preceding_subtotal":"0","sort":3,"company_id":4294,"country_id":1275,"creator_id":17317,"created_at":"2026-02-09T13:19:01.000000Z","updated_at":"2026-02-09T13:19:01.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -4850,7 +5054,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":171,"name":"architecto eius","preceding_subtotal":"0","sort":2,"company_id":4121,"country_id":1253,"creator_id":16489,"created_at":"2026-02-09T12:57:42.000000Z","updated_at":"2026-02-09T12:57:42.000000Z"},"message":"Tax group created successfully."}'
+        content: '{"data":{"id":181,"name":"architecto eius","preceding_subtotal":"0","sort":2,"company_id":4295,"country_id":1276,"creator_id":17318,"created_at":"2026-02-09T13:19:01.000000Z","updated_at":"2026-02-09T13:19:01.000000Z"},"message":"Tax group created successfully."}'
         headers: []
         description: ''
       -
@@ -4927,7 +5131,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":172,"name":"aut adipisci","preceding_subtotal":"0","sort":2,"company_id":4122,"country_id":1254,"creator_id":16490,"created_at":"2026-02-09T12:57:43.000000Z","updated_at":"2026-02-09T12:57:43.000000Z"}}'
+        content: '{"data":{"id":182,"name":"aut adipisci","preceding_subtotal":"0","sort":2,"company_id":4296,"country_id":1277,"creator_id":17319,"created_at":"2026-02-09T13:19:01.000000Z","updated_at":"2026-02-09T13:19:01.000000Z"}}'
         headers: []
         description: ''
       -
@@ -5041,7 +5245,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":173,"name":"architecto eius","preceding_subtotal":"0","sort":2,"company_id":4123,"country_id":1255,"creator_id":16491,"created_at":"2026-02-09T12:57:43.000000Z","updated_at":"2026-02-09T12:57:43.000000Z"},"message":"Tax group updated successfully."}'
+        content: '{"data":{"id":183,"name":"architecto eius","preceding_subtotal":"0","sort":2,"company_id":4297,"country_id":1278,"creator_id":17320,"created_at":"2026-02-09T13:19:01.000000Z","updated_at":"2026-02-09T13:19:01.000000Z"},"message":"Tax group updated successfully."}'
         headers: []
         description: ''
       -
@@ -5324,7 +5528,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":64,"type_tax_use":"sale","tax_scope":"consu","amount_type":"percent","price_include_override":"default","tax_exigibility":"on_invoice","name":"libero accusantium","description":null,"invoice_label":null,"invoice_legal_notes":null,"amount":"10.0000","is_active":1,"include_base_amount":0,"is_base_affected":0,"analytic":0,"sort":3,"company_id":4124,"tax_group_id":174,"cash_basis_transition_account_id":null,"country_id":null,"creator_id":16493,"created_at":"2026-02-09T12:57:43.000000Z","updated_at":"2026-02-09T12:57:43.000000Z","invoice_repartition_lines":[{"id":81,"account_id":584,"tax_id":64,"company_id":4126,"sort":2,"repartition_type":"base","document_type":"invoice","use_in_tax_closing":"1","factor_percent":"100.00","creator_id":16495,"created_at":"2026-02-09T12:57:43.000000Z","updated_at":"2026-02-09T12:57:43.000000Z"},{"id":82,"account_id":585,"tax_id":64,"company_id":4127,"sort":3,"repartition_type":"base","document_type":"invoice","use_in_tax_closing":"1","factor_percent":"100.00","creator_id":16497,"created_at":"2026-02-09T12:57:43.000000Z","updated_at":"2026-02-09T12:57:43.000000Z"}],"refund_repartition_lines":[]},{"id":65,"type_tax_use":"sale","tax_scope":"consu","amount_type":"percent","price_include_override":"default","tax_exigibility":"on_invoice","name":"fugiat vel","description":null,"invoice_label":null,"invoice_legal_notes":null,"amount":"10.0000","is_active":1,"include_base_amount":0,"is_base_affected":0,"analytic":0,"sort":4,"company_id":4128,"tax_group_id":175,"cash_basis_transition_account_id":null,"country_id":null,"creator_id":16499,"created_at":"2026-02-09T12:57:43.000000Z","updated_at":"2026-02-09T12:57:43.000000Z","invoice_repartition_lines":[{"id":83,"account_id":586,"tax_id":65,"company_id":4130,"sort":4,"repartition_type":"base","document_type":"invoice","use_in_tax_closing":"1","factor_percent":"100.00","creator_id":16501,"created_at":"2026-02-09T12:57:43.000000Z","updated_at":"2026-02-09T12:57:43.000000Z"},{"id":84,"account_id":587,"tax_id":65,"company_id":4131,"sort":5,"repartition_type":"base","document_type":"invoice","use_in_tax_closing":"1","factor_percent":"100.00","creator_id":16503,"created_at":"2026-02-09T12:57:43.000000Z","updated_at":"2026-02-09T12:57:43.000000Z"}],"refund_repartition_lines":[]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":69,"type_tax_use":"sale","tax_scope":"consu","amount_type":"percent","price_include_override":"default","tax_exigibility":"on_invoice","name":"earum magnam","description":null,"invoice_label":null,"invoice_legal_notes":null,"amount":"10.0000","is_active":1,"include_base_amount":0,"is_base_affected":0,"analytic":0,"sort":3,"company_id":4298,"tax_group_id":184,"cash_basis_transition_account_id":null,"country_id":null,"creator_id":17322,"created_at":"2026-02-09T13:19:01.000000Z","updated_at":"2026-02-09T13:19:01.000000Z","invoice_repartition_lines":[{"id":87,"account_id":610,"tax_id":69,"company_id":4300,"sort":2,"repartition_type":"base","document_type":"invoice","use_in_tax_closing":"1","factor_percent":"100.00","creator_id":17324,"created_at":"2026-02-09T13:19:01.000000Z","updated_at":"2026-02-09T13:19:01.000000Z"},{"id":88,"account_id":611,"tax_id":69,"company_id":4301,"sort":3,"repartition_type":"base","document_type":"invoice","use_in_tax_closing":"1","factor_percent":"100.00","creator_id":17326,"created_at":"2026-02-09T13:19:01.000000Z","updated_at":"2026-02-09T13:19:01.000000Z"}],"refund_repartition_lines":[]},{"id":70,"type_tax_use":"sale","tax_scope":"consu","amount_type":"percent","price_include_override":"default","tax_exigibility":"on_invoice","name":"delectus voluptas","description":null,"invoice_label":null,"invoice_legal_notes":null,"amount":"10.0000","is_active":1,"include_base_amount":0,"is_base_affected":0,"analytic":0,"sort":4,"company_id":4302,"tax_group_id":185,"cash_basis_transition_account_id":null,"country_id":null,"creator_id":17328,"created_at":"2026-02-09T13:19:01.000000Z","updated_at":"2026-02-09T13:19:01.000000Z","invoice_repartition_lines":[{"id":89,"account_id":612,"tax_id":70,"company_id":4304,"sort":4,"repartition_type":"base","document_type":"invoice","use_in_tax_closing":"1","factor_percent":"100.00","creator_id":17330,"created_at":"2026-02-09T13:19:01.000000Z","updated_at":"2026-02-09T13:19:01.000000Z"},{"id":90,"account_id":613,"tax_id":70,"company_id":4305,"sort":5,"repartition_type":"base","document_type":"invoice","use_in_tax_closing":"1","factor_percent":"100.00","creator_id":17332,"created_at":"2026-02-09T13:19:01.000000Z","updated_at":"2026-02-09T13:19:01.000000Z"}],"refund_repartition_lines":[]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -5669,7 +5873,7 @@ endpoints:
         name: 'invoice_repartition_lines[].use_in_tax_closing'
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -5726,7 +5930,7 @@ endpoints:
         name: 'refund_repartition_lines[].use_in_tax_closing'
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -5756,7 +5960,7 @@ endpoints:
           repartition_type: base
           factor_percent: null
           account_id: null
-          use_in_tax_closing: true
+          use_in_tax_closing: false
         -
           repartition_type: tax
           factor_percent: 100.0
@@ -5767,7 +5971,7 @@ endpoints:
           repartition_type: base
           factor_percent: null
           account_id: null
-          use_in_tax_closing: false
+          use_in_tax_closing: true
         -
           repartition_type: tax
           factor_percent: 100.0
@@ -5778,7 +5982,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":66,"type_tax_use":"sale","tax_scope":"consu","amount_type":"percent","price_include_override":"default","tax_exigibility":"on_invoice","name":"eius et","description":null,"invoice_label":null,"invoice_legal_notes":null,"amount":"10.0000","is_active":1,"include_base_amount":0,"is_base_affected":0,"analytic":0,"sort":3,"company_id":4132,"tax_group_id":176,"cash_basis_transition_account_id":null,"country_id":null,"creator_id":16505,"created_at":"2026-02-09T12:57:43.000000Z","updated_at":"2026-02-09T12:57:43.000000Z"},"message":"Tax created successfully."}'
+        content: '{"data":{"id":71,"type_tax_use":"sale","tax_scope":"consu","amount_type":"percent","price_include_override":"default","tax_exigibility":"on_invoice","name":"eius et","description":null,"invoice_label":null,"invoice_legal_notes":null,"amount":"10.0000","is_active":1,"include_base_amount":0,"is_base_affected":0,"analytic":0,"sort":3,"company_id":4306,"tax_group_id":186,"cash_basis_transition_account_id":null,"country_id":null,"creator_id":17334,"created_at":"2026-02-09T13:19:01.000000Z","updated_at":"2026-02-09T13:19:01.000000Z"},"message":"Tax created successfully."}'
         headers: []
         description: ''
       -
@@ -5855,7 +6059,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":67,"type_tax_use":"sale","tax_scope":"consu","amount_type":"percent","price_include_override":"default","tax_exigibility":"on_invoice","name":"aut adipisci","description":null,"invoice_label":null,"invoice_legal_notes":null,"amount":"10.0000","is_active":1,"include_base_amount":0,"is_base_affected":0,"analytic":0,"sort":3,"company_id":4134,"tax_group_id":177,"cash_basis_transition_account_id":null,"country_id":null,"creator_id":16507,"created_at":"2026-02-09T12:57:43.000000Z","updated_at":"2026-02-09T12:57:43.000000Z","invoice_repartition_lines":[{"id":85,"account_id":588,"tax_id":67,"company_id":4136,"sort":2,"repartition_type":"base","document_type":"invoice","use_in_tax_closing":"1","factor_percent":"100.00","creator_id":16509,"created_at":"2026-02-09T12:57:43.000000Z","updated_at":"2026-02-09T12:57:43.000000Z"},{"id":86,"account_id":589,"tax_id":67,"company_id":4137,"sort":3,"repartition_type":"base","document_type":"invoice","use_in_tax_closing":"1","factor_percent":"100.00","creator_id":16511,"created_at":"2026-02-09T12:57:43.000000Z","updated_at":"2026-02-09T12:57:43.000000Z"}],"refund_repartition_lines":[]}}'
+        content: '{"data":{"id":72,"type_tax_use":"sale","tax_scope":"consu","amount_type":"percent","price_include_override":"default","tax_exigibility":"on_invoice","name":"aut adipisci","description":null,"invoice_label":null,"invoice_legal_notes":null,"amount":"10.0000","is_active":1,"include_base_amount":0,"is_base_affected":0,"analytic":0,"sort":3,"company_id":4308,"tax_group_id":187,"cash_basis_transition_account_id":null,"country_id":null,"creator_id":17336,"created_at":"2026-02-09T13:19:01.000000Z","updated_at":"2026-02-09T13:19:01.000000Z","invoice_repartition_lines":[{"id":91,"account_id":614,"tax_id":72,"company_id":4310,"sort":2,"repartition_type":"base","document_type":"invoice","use_in_tax_closing":"1","factor_percent":"100.00","creator_id":17338,"created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z"},{"id":92,"account_id":615,"tax_id":72,"company_id":4311,"sort":3,"repartition_type":"base","document_type":"invoice","use_in_tax_closing":"1","factor_percent":"100.00","creator_id":17340,"created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z"}],"refund_repartition_lines":[]}}'
         headers: []
         description: ''
       -
@@ -6184,7 +6388,7 @@ endpoints:
         name: 'invoice_repartition_lines[].repartition_type'
         description: ''
         required: true
-        example: tax
+        example: base
         type: string
         enumValues:
           - base
@@ -6219,7 +6423,7 @@ endpoints:
         name: 'invoice_repartition_lines[].use_in_tax_closing'
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -6241,7 +6445,7 @@ endpoints:
         name: 'refund_repartition_lines[].repartition_type'
         description: ''
         required: true
-        example: tax
+        example: base
         type: string
         enumValues:
           - base
@@ -6306,7 +6510,7 @@ endpoints:
           repartition_type: base
           factor_percent: null
           account_id: null
-          use_in_tax_closing: true
+          use_in_tax_closing: false
         -
           repartition_type: tax
           factor_percent: 100.0
@@ -6328,7 +6532,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":68,"type_tax_use":"sale","tax_scope":"consu","amount_type":"percent","price_include_override":"default","tax_exigibility":"on_invoice","name":"eius et","description":null,"invoice_label":null,"invoice_legal_notes":null,"amount":"10.0000","is_active":1,"include_base_amount":0,"is_base_affected":0,"analytic":0,"sort":3,"company_id":4138,"tax_group_id":178,"cash_basis_transition_account_id":null,"country_id":null,"creator_id":16513,"created_at":"2026-02-09T12:57:43.000000Z","updated_at":"2026-02-09T12:57:43.000000Z"},"message":"Tax updated successfully."}'
+        content: '{"data":{"id":73,"type_tax_use":"sale","tax_scope":"consu","amount_type":"percent","price_include_override":"default","tax_exigibility":"on_invoice","name":"eius et","description":null,"invoice_label":null,"invoice_legal_notes":null,"amount":"10.0000","is_active":1,"include_base_amount":0,"is_base_affected":0,"analytic":0,"sort":3,"company_id":4312,"tax_group_id":188,"cash_basis_transition_account_id":null,"country_id":null,"creator_id":17342,"created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z"},"message":"Tax updated successfully."}'
         headers: []
         description: ''
       -
@@ -6561,7 +6765,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":779,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1378,"uom_po_id":1379,"category_id":1356,"creator_id":null,"company_id":4140,"created_at":"2026-02-09T12:57:43.000000Z","updated_at":"2026-02-09T12:57:43.000000Z","deleted_at":null,"category":{"id":1356,"name":"Lorena Schroeder II","full_name":"Lorena Schroeder II","parent_path":"\/","parent_id":null,"creator_id":null,"created_at":"2026-02-09T12:57:43.000000Z","updated_at":"2026-02-09T12:57:43.000000Z"},"tags":[{"id":257,"name":"Miss Eldridge Rolfson III","color":"#746102","created_at":"2026-02-09T12:57:43.000000Z","updated_at":"2026-02-09T12:57:43.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},{"id":780,"type":"goods","name":"Prof. Kenna Ortiz","service_tracking":"none","reference":null,"barcode":"6320340647920","price":5.93,"cost":10.78,"volume":18.78,"weight":50.82,"description":"Aliquam consequatur qui amet quasi.","description_purchase":"Aut sequi molestiae voluptatem et.","description_sale":"Quibusdam aut odio dolorum voluptates.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":1380,"uom_po_id":1381,"category_id":1357,"creator_id":null,"company_id":4141,"created_at":"2026-02-09T12:57:43.000000Z","updated_at":"2026-02-09T12:57:43.000000Z","deleted_at":null,"category":{"id":1357,"name":"Amina Daniel","full_name":"Amina Daniel","parent_path":"\/","parent_id":null,"creator_id":null,"created_at":"2026-02-09T12:57:43.000000Z","updated_at":"2026-02-09T12:57:43.000000Z"},"tags":[{"id":258,"name":"Miss Leta Becker","color":"#255efc","created_at":"2026-02-09T12:57:43.000000Z","updated_at":"2026-02-09T12:57:43.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":836,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1506,"uom_po_id":1507,"category_id":1424,"creator_id":null,"company_id":4314,"created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z","deleted_at":null,"category":{"id":1424,"name":"Lorena Schroeder II","full_name":"Lorena Schroeder II","parent_path":"\/","parent_id":null,"creator_id":null,"created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z"},"tags":[{"id":281,"name":"Miss Eldridge Rolfson III","color":"#746102","created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},{"id":837,"type":"goods","name":"Prof. Kenna Ortiz","service_tracking":"none","reference":null,"barcode":"6320340647920","price":5.93,"cost":10.78,"volume":18.78,"weight":50.82,"description":"Aliquam consequatur qui amet quasi.","description_purchase":"Aut sequi molestiae voluptatem et.","description_sale":"Quibusdam aut odio dolorum voluptates.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":1508,"uom_po_id":1509,"category_id":1425,"creator_id":null,"company_id":4315,"created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z","deleted_at":null,"category":{"id":1425,"name":"Amina Daniel","full_name":"Amina Daniel","parent_path":"\/","parent_id":null,"creator_id":null,"created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z"},"tags":[{"id":282,"name":"Miss Leta Becker","color":"#255efc","created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -6988,7 +7192,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":781,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1382,"uom_po_id":1383,"category_id":1358,"creator_id":null,"company_id":4142,"created_at":"2026-02-09T12:57:44.000000Z","updated_at":"2026-02-09T12:57:44.000000Z","deleted_at":null,"category":{"id":1358,"name":"Lorena Schroeder II","full_name":"Lorena Schroeder II","parent_path":"\/","parent_id":null,"creator_id":null,"created_at":"2026-02-09T12:57:44.000000Z","updated_at":"2026-02-09T12:57:44.000000Z"},"tags":[{"id":259,"name":"Loyce Waelchi Jr.","color":"#dc68be","created_at":"2026-02-09T12:57:44.000000Z","updated_at":"2026-02-09T12:57:44.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product created successfully."}'
+        content: '{"data":{"id":838,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1510,"uom_po_id":1511,"category_id":1426,"creator_id":null,"company_id":4316,"created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z","deleted_at":null,"category":{"id":1426,"name":"Lorena Schroeder II","full_name":"Lorena Schroeder II","parent_path":"\/","parent_id":null,"creator_id":null,"created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z"},"tags":[{"id":283,"name":"Loyce Waelchi Jr.","color":"#dc68be","created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product created successfully."}'
         headers: []
         description: ''
       -
@@ -7065,7 +7269,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":782,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1384,"uom_po_id":1385,"category_id":1359,"creator_id":null,"company_id":4143,"created_at":"2026-02-09T12:57:44.000000Z","updated_at":"2026-02-09T12:57:44.000000Z","deleted_at":null,"category":{"id":1359,"name":"Mr. Clinton Ondricka MD","full_name":"Mr. Clinton Ondricka MD","parent_path":"\/","parent_id":null,"creator_id":null,"created_at":"2026-02-09T12:57:44.000000Z","updated_at":"2026-02-09T12:57:44.000000Z"},"tags":[{"id":260,"name":"Christian Klocko PhD","color":"#c96a7c","created_at":"2026-02-09T12:57:44.000000Z","updated_at":"2026-02-09T12:57:44.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}}'
+        content: '{"data":{"id":839,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1512,"uom_po_id":1513,"category_id":1427,"creator_id":null,"company_id":4317,"created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z","deleted_at":null,"category":{"id":1427,"name":"Lorena Schroeder II","full_name":"Lorena Schroeder II","parent_path":"\/","parent_id":null,"creator_id":null,"created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z"},"tags":[{"id":284,"name":"Lamont Ortiz","color":"#ac1336","created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}}'
         headers: []
         description: ''
       -
@@ -7511,7 +7715,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":783,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1386,"uom_po_id":1387,"category_id":1360,"creator_id":null,"company_id":4144,"created_at":"2026-02-09T12:57:44.000000Z","updated_at":"2026-02-09T12:57:44.000000Z","deleted_at":null,"category":{"id":1360,"name":"Nicholas Barton","full_name":"Nicholas Barton","parent_path":"\/","parent_id":null,"creator_id":null,"created_at":"2026-02-09T12:57:44.000000Z","updated_at":"2026-02-09T12:57:44.000000Z"},"tags":[{"id":261,"name":"Elenora Mills","color":"#0aae1f","created_at":"2026-02-09T12:57:44.000000Z","updated_at":"2026-02-09T12:57:44.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product updated successfully."}'
+        content: '{"data":{"id":840,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1514,"uom_po_id":1515,"category_id":1428,"creator_id":null,"company_id":4318,"created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z","deleted_at":null,"category":{"id":1428,"name":"Mr. Clinton Ondricka MD","full_name":"Mr. Clinton Ondricka MD","parent_path":"\/","parent_id":null,"creator_id":null,"created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z"},"tags":[{"id":285,"name":"Christian Klocko PhD","color":"#c96a7c","created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product updated successfully."}'
         headers: []
         description: ''
       -
@@ -7647,7 +7851,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":784,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1388,"uom_po_id":1389,"category_id":1361,"creator_id":null,"company_id":4145,"created_at":"2026-02-09T12:57:44.000000Z","updated_at":"2026-02-09T12:57:44.000000Z","deleted_at":null,"category":{"id":1361,"name":"Elroy Hill PhD","full_name":"Elroy Hill PhD","parent_path":"\/","parent_id":null,"creator_id":null,"created_at":"2026-02-09T12:57:44.000000Z","updated_at":"2026-02-09T12:57:44.000000Z"},"tags":[{"id":262,"name":"Ignacio Kessler DDS","color":"#318d02","created_at":"2026-02-09T12:57:44.000000Z","updated_at":"2026-02-09T12:57:44.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product restored successfully."}'
+        content: '{"data":{"id":841,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1516,"uom_po_id":1517,"category_id":1429,"creator_id":null,"company_id":4319,"created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z","deleted_at":null,"category":{"id":1429,"name":"Georgiana Hane","full_name":"Georgiana Hane","parent_path":"\/","parent_id":null,"creator_id":null,"created_at":"2026-02-09T13:19:02.000000Z","updated_at":"2026-02-09T13:19:02.000000Z"},"tags":[{"id":286,"name":"Lelah Gutmann","color":"#9b9615","created_at":"2026-02-09T13:19:03.000000Z","updated_at":"2026-02-09T13:19:03.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product restored successfully."}'
         headers: []
         description: ''
       -
@@ -7886,7 +8090,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":785,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1390,"uom_po_id":1391,"category_id":1362,"creator_id":null,"company_id":4146,"created_at":"2026-02-09T12:57:44.000000Z","updated_at":"2026-02-09T12:57:44.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},{"id":786,"type":"goods","name":"Dr. Cody Welch","service_tracking":"none","reference":null,"barcode":"5756166948254","price":98.93,"cost":5.43,"volume":35.9,"weight":44.2,"description":"Dolorem sed voluptatem ut enim.","description_purchase":"Provident aut non officiis molestiae in.","description_sale":"Molestiae officia harum ex laudantium ut voluptates.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":1392,"uom_po_id":1393,"category_id":1363,"creator_id":null,"company_id":4147,"created_at":"2026-02-09T12:57:44.000000Z","updated_at":"2026-02-09T12:57:44.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":842,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1518,"uom_po_id":1519,"category_id":1430,"creator_id":null,"company_id":4320,"created_at":"2026-02-09T13:19:03.000000Z","updated_at":"2026-02-09T13:19:03.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},{"id":843,"type":"goods","name":"Camryn Yundt I","service_tracking":"none","reference":null,"barcode":"3638532281795","price":13.66,"cost":35.05,"volume":1.87,"weight":85.89,"description":"Provident aut non officiis molestiae in.","description_purchase":"Molestiae officia harum ex laudantium ut voluptates.","description_sale":"Incidunt aut omnis totam aut et.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":1520,"uom_po_id":1521,"category_id":1431,"creator_id":null,"company_id":4321,"created_at":"2026-02-09T13:19:03.000000Z","updated_at":"2026-02-09T13:19:03.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -7945,7 +8149,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":[{"id":787,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1394,"uom_po_id":1395,"category_id":1364,"creator_id":null,"company_id":4148,"created_at":"2026-02-09T12:57:44.000000Z","updated_at":"2026-02-09T12:57:44.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},{"id":788,"type":"goods","name":"Esther Schmitt","service_tracking":"none","reference":null,"barcode":"3641008914783","price":66.6,"cost":73.71,"volume":45.69,"weight":90.48,"description":"Ut voluptates dicta incidunt aut.","description_purchase":"Totam aut et itaque nihil laboriosam id.","description_sale":"Aut aut sequi saepe doloribus.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":1396,"uom_po_id":1397,"category_id":1365,"creator_id":null,"company_id":4149,"created_at":"2026-02-09T12:57:45.000000Z","updated_at":"2026-02-09T12:57:45.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}],"message":"Product variants synced successfully."}'
+        content: '{"data":[{"id":844,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1522,"uom_po_id":1523,"category_id":1432,"creator_id":null,"company_id":4322,"created_at":"2026-02-09T13:19:03.000000Z","updated_at":"2026-02-09T13:19:03.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},{"id":845,"type":"goods","name":"David Ziemann","service_tracking":"none","reference":null,"barcode":"0401518343533","price":80.13,"cost":31.55,"volume":95.45,"weight":13.18,"description":"Molestiae in totam molestiae officia harum.","description_purchase":"Laudantium ut voluptates dicta incidunt aut omnis totam aut.","description_sale":"Itaque nihil laboriosam id enim aut aut.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":1524,"uom_po_id":1525,"category_id":1433,"creator_id":null,"company_id":4323,"created_at":"2026-02-09T13:19:03.000000Z","updated_at":"2026-02-09T13:19:03.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}],"message":"Product variants synced successfully."}'
         headers: []
         description: ''
       -
@@ -8028,7 +8232,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":789,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1398,"uom_po_id":1399,"category_id":1366,"creator_id":null,"company_id":4150,"created_at":"2026-02-09T12:57:45.000000Z","updated_at":"2026-02-09T12:57:45.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}}'
+        content: '{"data":{"id":846,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1526,"uom_po_id":1527,"category_id":1434,"creator_id":null,"company_id":4324,"created_at":"2026-02-09T13:19:03.000000Z","updated_at":"2026-02-09T13:19:03.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}}'
         headers: []
         description: ''
       -
@@ -8486,7 +8690,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":790,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1400,"uom_po_id":1401,"category_id":1367,"creator_id":null,"company_id":4151,"created_at":"2026-02-09T12:57:45.000000Z","updated_at":"2026-02-09T12:57:45.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product variant updated successfully."}'
+        content: '{"data":{"id":847,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1528,"uom_po_id":1529,"category_id":1435,"creator_id":null,"company_id":4325,"created_at":"2026-02-09T13:19:03.000000Z","updated_at":"2026-02-09T13:19:03.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product variant updated successfully."}'
         headers: []
         description: ''
       -
@@ -8646,7 +8850,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":791,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1402,"uom_po_id":1403,"category_id":1368,"creator_id":null,"company_id":4152,"created_at":"2026-02-09T12:57:45.000000Z","updated_at":"2026-02-09T12:57:45.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product variant restored successfully."}'
+        content: '{"data":{"id":848,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1530,"uom_po_id":1531,"category_id":1436,"creator_id":null,"company_id":4326,"created_at":"2026-02-09T13:19:04.000000Z","updated_at":"2026-02-09T13:19:04.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product variant restored successfully."}'
         headers: []
         description: ''
       -

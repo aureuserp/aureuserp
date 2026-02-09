@@ -32,6 +32,18 @@ class FiscalPositionRequest extends FormRequest
             'auto_reply'       => ['nullable', 'boolean'],
             'vat_required'     => ['nullable', 'boolean'],
             'foreign_vat'      => ['nullable', 'string', 'max:255'],
+
+            // Tax mappings
+            'taxes'                          => ['nullable', 'array'],
+            'taxes.*.id'                     => ['sometimes', 'integer', 'exists:accounts_fiscal_position_taxes,id'],
+            'taxes.*.tax_source_id'          => ['required', 'integer', 'exists:accounts_taxes,id'],
+            'taxes.*.tax_destination_id'     => ['nullable', 'integer', 'exists:accounts_taxes,id'],
+
+            // Account mappings
+            'accounts'                          => ['nullable', 'array'],
+            'accounts.*.id'                     => ['sometimes', 'integer', 'exists:accounts_fiscal_position_accounts,id'],
+            'accounts.*.account_source_id'      => ['required', 'integer', 'exists:accounts_accounts,id'],
+            'accounts.*.account_destination_id' => ['required', 'integer', 'exists:accounts_accounts,id'],
         ];
     }
 
@@ -80,6 +92,24 @@ class FiscalPositionRequest extends FormRequest
             'foreign_vat' => [
                 'description' => 'Foreign VAT',
                 'example'     => null,
+            ],
+            'taxes' => [
+                'description' => 'Tax mappings array. Include id for update, omit for create.',
+                'example'     => [
+                    [
+                        'tax_source_id'      => 1,
+                        'tax_destination_id' => 2,
+                    ],
+                ],
+            ],
+            'accounts' => [
+                'description' => 'Account mappings array. Include id for update, omit for create.',
+                'example'     => [
+                    [
+                        'account_source_id'      => 5,
+                        'account_destination_id' => 6,
+                    ],
+                ],
             ],
         ];
     }

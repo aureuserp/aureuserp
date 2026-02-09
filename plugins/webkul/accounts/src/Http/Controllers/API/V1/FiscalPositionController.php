@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -69,7 +70,29 @@ class FiscalPositionController extends Controller
 
         $data = $request->validated();
 
-        $fiscalPosition = FiscalPosition::create($data);
+        $taxes = $data['taxes'] ?? [];
+        $accounts = $data['accounts'] ?? [];
+        unset($data['taxes'], $data['accounts']);
+
+        $fiscalPosition = DB::transaction(function () use ($data, $taxes, $accounts) {
+            $fiscalPosition = FiscalPosition::create($data);
+
+            foreach ($taxes as $taxData) {
+                $fiscalPosition->taxes()->create([
+                    'tax_source_id'      => $taxData['tax_source_id'],
+                    'tax_destination_id' => $taxData['tax_destination_id'] ?? null,
+                ]);
+            }
+
+            foreach ($accounts as $accountData) {
+                $fiscalPosition->accounts()->create([
+                    'account_source_id'      => $accountData['account_source_id'],
+                    'account_destination_id' => $accountData['account_destination_id'],
+                ]);
+            }
+
+            return $fiscalPosition;
+        });
 
         return (new FiscalPositionResource($fiscalPosition))
             ->additional(['message' => 'Fiscal position created successfully.'])
@@ -113,7 +136,23 @@ class FiscalPositionController extends Controller
 
         Gate::authorize('update', $fiscalPosition);
 
-        $fiscalPosition->update($request->validated());
+        $data = $request->validated();
+
+        $taxes = $data['taxes'] ?? null;
+        $accounts = $data['accounts'] ?? null;
+        unset($data['taxes'], $data['accounts']);
+
+        DB::transaction(function () use ($fiscalPosition, $data, $taxes, $accounts) {
+            $fiscalPosition->update($data);
+
+            if ($taxes !== null) {
+                $this->syncTaxes($fiscalPosition, $taxes);
+            }
+
+            if ($accounts !== null) {
+                $this->syncAccounts($fiscalPosition, $accounts);
+            }
+        });
 
         return (new FiscalPositionResource($fiscalPosition))
             ->additional(['message' => 'Fiscal position updated successfully.']);
@@ -135,5 +174,60 @@ class FiscalPositionController extends Controller
         return response()->json([
             'message' => 'Fiscal position deleted successfully.',
         ]);
+    }
+
+    /**
+     * Sync tax mappings (update existing, create new, delete missing)
+     */
+    private function syncTaxes(FiscalPosition $fiscalPosition, array $taxes): void
+    {
+        $providedIds = [];
+
+        foreach ($taxes as $taxData) {
+            if (isset($taxData['id'])) {
+                // Update existing tax mapping
+                $fiscalPosition->taxes()->where('id', $taxData['id'])->update([
+                    'tax_source_id'      => $taxData['tax_source_id'],
+                    'tax_destination_id' => $taxData['tax_destination_id'] ?? null,
+                ]);
+                $providedIds[] = $taxData['id'];
+            } else {
+                // Create new tax mapping
+                $newTax = $fiscalPosition->taxes()->create([
+                    'tax_source_id'      => $taxData['tax_source_id'],
+                    'tax_destination_id' => $taxData['tax_destination_id'] ?? null,
+                ]);
+                $providedIds[] = $newTax->id;
+            }
+        }
+
+        // Delete tax mappings that were not in the payload
+        $fiscalPosition->taxes()->whereNotIn('id', $providedIds)->delete();
+    }
+
+    /**
+     * Sync account mappings (update existing, create new, delete missing)
+     */
+    private function syncAccounts(FiscalPosition $fiscalPosition, array $accounts): void
+    {
+        $providedIds = [];
+
+        foreach ($accounts as $accountData) {
+            if (isset($accountData['id'])) {
+                $fiscalPosition->accounts()->where('id', $accountData['id'])->update([
+                    'account_source_id'      => $accountData['account_source_id'],
+                    'account_destination_id' => $accountData['account_destination_id'],
+                ]);
+                $providedIds[] = $accountData['id'];
+            } else {
+                $newAccount = $fiscalPosition->accounts()->create([
+                    'account_source_id'      => $accountData['account_source_id'],
+                    'account_destination_id' => $accountData['account_destination_id'],
+                ]);
+                $providedIds[] = $newAccount->id;
+            }
+        }
+
+        $fiscalPosition->accounts()->whereNotIn('id', $providedIds)->delete();
     }
 }
