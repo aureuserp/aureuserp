@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Http\Controllers\API\V1;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -24,7 +25,7 @@ use Webkul\Account\Models\Journal;
 class JournalController extends Controller
 {
     #[Endpoint('List journals', 'Retrieve a paginated list of journals with filtering and sorting')]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, currency, defaultAccount, suspenseAccount, profitAccount, lossAccount, bankAccount, creator', required: false, example: 'company,currency')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, currency, defaultAccount, suspenseAccount, profitAccount, lossAccount, bankAccount, creator, inboundPaymentMethodLines, outboundPaymentMethodLines', required: false, example: 'company,currency')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[name]', 'string', 'Filter by journal name (partial match)', required: false, example: 'No-example')]
     #[QueryParam('filter[code]', 'string', 'Filter by journal code (partial match)', required: false, example: 'No-example')]
@@ -58,6 +59,8 @@ class JournalController extends Controller
                 'lossAccount',
                 'bankAccount',
                 'creator',
+                'inboundPaymentMethodLines',
+                'outboundPaymentMethodLines',
             ])
             ->paginate();
 
@@ -74,7 +77,33 @@ class JournalController extends Controller
 
         $data = $request->validated();
 
-        $journal = Journal::create($data);
+        $inboundLines = $data['inbound_payment_method_lines'] ?? [];
+        $outboundLines = $data['outbound_payment_method_lines'] ?? [];
+        unset($data['inbound_payment_method_lines'], $data['outbound_payment_method_lines']);
+
+        $journal = DB::transaction(function () use ($data, $inboundLines, $outboundLines) {
+            $journal = Journal::create($data);
+
+            foreach ($inboundLines as $index => $line) {
+                $journal->inboundPaymentMethodLines()->create([
+                    'payment_method_id'  => $line['payment_method_id'],
+                    'name'               => $line['name'],
+                    'payment_account_id' => $line['payment_account_id'] ?? null,
+                    'sort'               => $index,
+                ]);
+            }
+
+            foreach ($outboundLines as $index => $line) {
+                $journal->outboundPaymentMethodLines()->create([
+                    'payment_method_id'  => $line['payment_method_id'],
+                    'name'               => $line['name'],
+                    'payment_account_id' => $line['payment_account_id'] ?? null,
+                    'sort'               => $index,
+                ]);
+            }
+
+            return $journal;
+        });
 
         return (new JournalResource($journal))
             ->additional(['message' => 'Journal created successfully.'])
@@ -84,7 +113,7 @@ class JournalController extends Controller
 
     #[Endpoint('Show journal', 'Retrieve a specific journal by its ID')]
     #[UrlParam('id', 'integer', 'The journal ID', required: true, example: 1)]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, currency, defaultAccount, suspenseAccount, profitAccount, lossAccount, bankAccount, creator', required: false, example: 'company,currency')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> company, currency, defaultAccount, suspenseAccount, profitAccount, lossAccount, bankAccount, creator, inboundPaymentMethodLines, outboundPaymentMethodLines', required: false, example: 'company,currency')]
     #[ResponseFromApiResource(JournalResource::class, Journal::class)]
     #[Response(status: 404, description: 'Journal not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
@@ -100,6 +129,8 @@ class JournalController extends Controller
                 'lossAccount',
                 'bankAccount',
                 'creator',
+                'inboundPaymentMethodLines',
+                'outboundPaymentMethodLines',
             ])
             ->firstOrFail();
 
@@ -120,7 +151,23 @@ class JournalController extends Controller
 
         Gate::authorize('update', $journal);
 
-        $journal->update($request->validated());
+        $data = $request->validated();
+
+        $inboundLines = $data['inbound_payment_method_lines'] ?? null;
+        $outboundLines = $data['outbound_payment_method_lines'] ?? null;
+        unset($data['inbound_payment_method_lines'], $data['outbound_payment_method_lines']);
+
+        DB::transaction(function () use ($journal, $data, $inboundLines, $outboundLines) {
+            $journal->update($data);
+
+            if ($inboundLines !== null) {
+                $this->syncPaymentMethodLines($journal, $inboundLines, 'inboundPaymentMethodLines');
+            }
+
+            if ($outboundLines !== null) {
+                $this->syncPaymentMethodLines($journal, $outboundLines, 'outboundPaymentMethodLines');
+            }
+        });
 
         return (new JournalResource($journal))
             ->additional(['message' => 'Journal updated successfully.']);
@@ -142,5 +189,37 @@ class JournalController extends Controller
         return response()->json([
             'message' => 'Journal deleted successfully.',
         ]);
+    }
+
+    /**
+     * Sync payment method lines (update existing, create new, delete missing)
+     */
+    private function syncPaymentMethodLines(Journal $journal, array $lines, string $relationMethod): void
+    {
+        $providedIds = [];
+
+        foreach ($lines as $index => $lineData) {
+            if (isset($lineData['id'])) {
+                $journal->{$relationMethod}()->where('id', $lineData['id'])->update([
+                    'payment_method_id'  => $lineData['payment_method_id'],
+                    'name'               => $lineData['name'],
+                    'payment_account_id' => $lineData['payment_account_id'] ?? null,
+                    'sort'               => $index,
+                ]);
+                
+                $providedIds[] = $lineData['id'];
+            } else {
+                $newLine = $journal->{$relationMethod}()->create([
+                    'payment_method_id'  => $lineData['payment_method_id'],
+                    'name'               => $lineData['name'],
+                    'payment_account_id' => $lineData['payment_account_id'] ?? null,
+                    'sort'               => $index,
+                ]);
+
+                $providedIds[] = $newLine->id;
+            }
+        }
+
+        $journal->{$relationMethod}()->whereNotIn('id', $providedIds)->delete();
     }
 }

@@ -33,11 +33,25 @@ class JournalRequest extends FormRequest
             'suspense_account_id'       => ['nullable', 'integer', 'exists:accounts_accounts,id'],
             'profit_account_id'         => ['nullable', 'integer', 'exists:accounts_accounts,id'],
             'loss_account_id'           => ['nullable', 'integer', 'exists:accounts_accounts,id'],
-            'bank_account_id'           => ['nullable', 'integer', 'exists:partner_bank_accounts,id'],
+            'bank_account_id'           => ['nullable', 'integer', 'exists:partners_bank_accounts,id'],
             'color'                     => ['nullable', 'string', 'max:7'],
             'show_on_dashboard'         => ['nullable', 'boolean'],
             'refund_order'              => ['nullable', 'boolean'],
             'payment_order'             => ['nullable', 'boolean'],
+
+            // Inbound payment method lines
+            'inbound_payment_method_lines'                       => ['nullable', 'array'],
+            'inbound_payment_method_lines.*.id'                  => ['sometimes', 'integer', 'exists:accounts_payment_method_lines,id'],
+            'inbound_payment_method_lines.*.payment_method_id'   => ['required', 'integer', 'exists:accounts_payment_methods,id'],
+            'inbound_payment_method_lines.*.name'                => ['required', 'string', 'max:255'],
+            'inbound_payment_method_lines.*.payment_account_id'  => ['nullable', 'integer', 'exists:accounts_accounts,id'],
+
+            // Outbound payment method lines
+            'outbound_payment_method_lines'                      => ['nullable', 'array'],
+            'outbound_payment_method_lines.*.id'                 => ['sometimes', 'integer', 'exists:accounts_payment_method_lines,id'],
+            'outbound_payment_method_lines.*.payment_method_id'  => ['required', 'integer', 'exists:accounts_payment_methods,id'],
+            'outbound_payment_method_lines.*.name'               => ['required', 'string', 'max:255'],
+            'outbound_payment_method_lines.*.payment_account_id' => ['nullable', 'integer', 'exists:accounts_accounts,id'],
         ];
     }
 
@@ -102,6 +116,26 @@ class JournalRequest extends FormRequest
             'payment_order' => [
                 'description' => 'Payment order flag',
                 'example'     => false,
+            ],
+            'inbound_payment_method_lines' => [
+                'description' => 'Inbound payment method lines (for BANK, CASH, CREDIT_CARD journals). Include id for update, omit for create.',
+                'example'     => [
+                    [
+                        'payment_method_id'  => 1,
+                        'name'               => 'Manual',
+                        'payment_account_id' => 5,
+                    ],
+                ],
+            ],
+            'outbound_payment_method_lines' => [
+                'description' => 'Outbound payment method lines (for BANK, CASH, CREDIT_CARD journals). Include id for update, omit for create.',
+                'example'     => [
+                    [
+                        'payment_method_id'  => 2,
+                        'name'               => 'Electronic',
+                        'payment_account_id' => 6,
+                    ],
+                ],
             ],
         ];
     }
