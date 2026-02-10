@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources;
 
+use BackedEnum;
 use Exception;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -50,7 +51,7 @@ class TaxResource extends Resource
 {
     protected static ?string $model = Tax::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
 
     protected static bool $shouldRegisterNavigation = false;
 
@@ -349,7 +350,7 @@ class TaxResource extends Resource
                 Tables\Grouping\Group::make('country.name')
                     ->label(__('accounts::filament/resources/tax.table.groups.country'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('createdBy.name')
+                Tables\Grouping\Group::make('creator.name')
                     ->label(__('accounts::filament/resources/tax.table.groups.created-by'))
                     ->collapsible(),
                 Tables\Grouping\Group::make('type_tax_use')

@@ -4,6 +4,8 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Currency;
 
@@ -23,7 +25,7 @@ class CashRounding extends Model
         'loss_account_id',
     ];
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -50,5 +52,14 @@ class CashRounding extends Model
     public function round(float $amount): float
     {
         return float_round($amount, precisionRounding: $this->rounding, roundingMethod: $this->rounding_method);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($cashRounding) {
+            $cashRounding->creator_id ??= Auth::id();
+        });
     }
 }

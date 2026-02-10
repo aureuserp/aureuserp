@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\ProductQuantityFactory;
 use Webkul\Inventory\Settings\OperationSettings;
 use Webkul\Partner\Models\Partner;
@@ -16,18 +17,8 @@ class ProductQuantity extends Model
 {
     use HasFactory;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_product_quantities';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'quantity',
         'reserved_quantity',
@@ -48,11 +39,6 @@ class ProductQuantity extends Model
         'creator_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'inventory_quantity_set' => 'boolean',
         'scheduled_at'           => 'date',
@@ -109,28 +95,15 @@ class ProductQuantity extends Model
         return $this->quantity - $this->reserved_quantity;
     }
 
-    /**
-     * Bootstrap any application services.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function ($productQuantity) {
-            $productQuantity->updateScheduledAt();
-        });
-    }
-
-    /**
-     * Update the scheduled_at attribute
-     */
     public function updateScheduledAt()
     {
         $this->scheduled_at = Carbon::create(
             now()->year,
             app(OperationSettings::class)->annual_inventory_month,
             app(OperationSettings::class)->annual_inventory_day,
-            0, 0, 0
+            0,
+            0,
+            0
         );
 
         if ($this->location?->cyclic_inventory_frequency) {
@@ -141,5 +114,18 @@ class ProductQuantity extends Model
     protected static function newFactory(): ProductQuantityFactory
     {
         return ProductQuantityFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($productQuantity) {
+            $productQuantity->creator_id ??= Auth::id();
+        });
+
+        static::saving(function ($productQuantity) {
+            $productQuantity->updateScheduledAt();
+        });
     }
 }

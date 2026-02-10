@@ -5,6 +5,8 @@ namespace Webkul\Account\Models;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\JournalType;
@@ -98,7 +100,7 @@ class PaymentRegister extends Model
         return $this->belongsTo(Account::class, 'writeoff_account_id');
     }
 
-    public function creator()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -111,6 +113,10 @@ class PaymentRegister extends Model
     protected static function boot()
     {
         parent::boot();
+
+        static::creating(function ($paymentRegister) {
+            $paymentRegister->creator_id ??= Auth::id();
+        });
 
         static::retrieved(function ($paymentRegister) {
             $paymentRegister->computeBatches();

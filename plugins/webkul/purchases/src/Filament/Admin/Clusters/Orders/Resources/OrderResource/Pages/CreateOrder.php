@@ -4,8 +4,6 @@ namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\Auth;
-use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Facades\PurchaseOrder;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
@@ -13,6 +11,8 @@ use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 class CreateOrder extends CreateRecord
 {
     use HasRepeaterColumnManager;
+
+    protected static string $resource = OrderResource::class;
 
     public function getSubNavigation(): array
     {
@@ -22,8 +22,6 @@ class CreateOrder extends CreateRecord
 
         return [];
     }
-
-    protected static string $resource = OrderResource::class;
 
     protected function getRedirectUrl(): string
     {
@@ -36,17 +34,6 @@ class CreateOrder extends CreateRecord
             ->success()
             ->title(__('purchases::filament/admin/clusters/orders/resources/order/pages/create-order.notification.title'))
             ->body(__('purchases::filament/admin/clusters/orders/resources/order/pages/create-order.notification.body'));
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['creator_id'] = Auth::id();
-
-        $data['calendar_start_at'] = $data['ordered_at'];
-
-        $data['state'] ??= OrderState::DRAFT;
-
-        return $data;
     }
 
     protected function afterCreate(): void

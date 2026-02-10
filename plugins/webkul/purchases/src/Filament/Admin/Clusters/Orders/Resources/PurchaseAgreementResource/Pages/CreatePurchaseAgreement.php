@@ -5,14 +5,14 @@ namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgree
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Support\Facades\Auth;
-use Webkul\Purchase\Enums\RequisitionState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\PurchaseAgreementResource;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreatePurchaseAgreement extends CreateRecord
 {
     use HasRepeaterColumnManager;
+
+    protected static string $resource = PurchaseAgreementResource::class;
 
     public function getSubNavigation(): array
     {
@@ -22,8 +22,6 @@ class CreatePurchaseAgreement extends CreateRecord
 
         return [];
     }
-
-    protected static string $resource = PurchaseAgreementResource::class;
 
     public function getTitle(): string|Htmlable
     {
@@ -41,14 +39,5 @@ class CreatePurchaseAgreement extends CreateRecord
             ->success()
             ->title(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/create-purchase-agreement.notification.title'))
             ->body(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement/pages/create-purchase-agreement.notification.body'));
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['creator_id'] = Auth::id();
-
-        $data['state'] ??= RequisitionState::DRAFT;
-
-        return $data;
     }
 }

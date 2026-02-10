@@ -8,25 +8,10 @@ use Webkul\Security\Models\User;
 
 class ProductAttributeValue extends Model
 {
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'products_product_attribute_values';
 
-    /**
-     * Timestamps.
-     *
-     * @var bool
-     */
     public $timestamps = false;
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'extra_price',
         'product_id',

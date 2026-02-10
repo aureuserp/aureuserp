@@ -3,6 +3,8 @@
 namespace Webkul\Support\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 
 class UTMMedium extends Model
@@ -11,8 +13,17 @@ class UTMMedium extends Model
 
     protected $fillable = ['name', 'creator_id'];
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($utmMedium) {
+            $utmMedium->creator_id ??= Auth::id();
+        });
     }
 }

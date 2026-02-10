@@ -4,6 +4,8 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
@@ -16,7 +18,7 @@ class BankStatement extends Model
     protected $fillable = [
         'company_id',
         'journal_id',
-        'created_by',
+        'creator_id',
         'name',
         'reference',
         'first_line_index',
@@ -37,8 +39,17 @@ class BankStatement extends Model
         return $this->belongsTo(Journal::class, 'journal_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($bankStatement) {
+            $bankStatement->creator_id ??= Auth::id();
+        });
     }
 }

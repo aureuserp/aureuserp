@@ -5,6 +5,8 @@ namespace Webkul\Account\Models;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveType;
@@ -45,7 +47,7 @@ class Payment extends Model
         'partner_id',
         'outstanding_account_id',
         'destination_account_id',
-        'created_by',
+        'creator_id',
         'name',
         'state',
         'payment_type',
@@ -148,9 +150,9 @@ class Payment extends Model
         return $this->belongsTo(Account::class, 'destination_account_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'creator_id');
     }
 
     public function paymentTransaction()
@@ -219,6 +221,10 @@ class Payment extends Model
     {
         parent::boot();
 
+        static::creating(function ($payment) {
+            $payment->creator_id ??= Auth::id();
+        });
+
         static::created(function ($move) {
             $move->computeName();
 
@@ -230,7 +236,7 @@ class Payment extends Model
 
             $payment->computePartnerType();
 
-            $payment->computeCreatedBy();
+            $payment->computeCreator();
 
             $payment->computeCompanyId();
 
@@ -273,9 +279,9 @@ class Payment extends Model
         }
     }
 
-    public function computeCreatedBy()
+    public function computeCreator()
     {
-        $this->created_by = filament()->auth()->id();
+        $this->creator_id = filament()->auth()->id();
     }
 
     public function computePartnerType()
@@ -548,7 +554,8 @@ class Payment extends Model
                 'balance'         => $liquidityBalance,
                 'partner_id'      => $this->partner_id,
                 'account_id'      => $this->outstanding_account_id,
-            ], [
+            ],
+            [
                 'name'            => $lineName,
                 'date_maturity'   => $this->date,
                 'amount_currency' => $counterpartAmountCurrency,

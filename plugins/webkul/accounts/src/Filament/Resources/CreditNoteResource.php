@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources;
 
+use BackedEnum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Webkul\Account\Enums\MoveType;
@@ -15,7 +16,7 @@ class CreditNoteResource extends InvoiceResource
 {
     protected static ?string $model = AccountMove::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-credit-card';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-credit-card';
 
     public static function getPages(): array
     {

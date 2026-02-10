@@ -15,11 +15,6 @@ class Product extends BaseProduct
 {
     use HasCustomFields;
 
-    /**
-     * Create a new Eloquent model instance.
-     *
-     * @return void
-     */
     public function __construct(array $attributes = [])
     {
         $this->mergeFillable([

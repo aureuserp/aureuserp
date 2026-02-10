@@ -3,6 +3,8 @@
 namespace Webkul\Employee\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 
 class EmployeeResume extends Model
@@ -21,7 +23,7 @@ class EmployeeResume extends Model
         'description',
     ];
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -41,7 +43,7 @@ class EmployeeResume extends Model
         parent::boot();
 
         static::creating(function ($employeeResume) {
-            $employeeResume->creator_id = filament()->auth()->id();
+            $employeeResume->creator_id ??= Auth::id();
         });
     }
 }

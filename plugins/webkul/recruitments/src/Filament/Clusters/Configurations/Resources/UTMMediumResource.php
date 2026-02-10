@@ -69,7 +69,7 @@ class UTMMediumResource extends Resource
                     ->label(__('recruitments::filament/clusters/configurations/resources/utm-medium.table.columns.name'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/utm-medium.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

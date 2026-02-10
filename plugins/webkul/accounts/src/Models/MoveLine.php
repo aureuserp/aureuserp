@@ -4,6 +4,8 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
@@ -13,7 +15,6 @@ use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\TypeTaxUse;
-use Webkul\Account\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
@@ -44,7 +45,7 @@ class MoveLine extends Model implements Sortable
         'statement_line_id',
         'product_id',
         'uom_id',
-        'created_by',
+        'creator_id',
         'move_name',
         'parent_state',
         'reference',
@@ -162,7 +163,7 @@ class MoveLine extends Model implements Sortable
         return $this->belongsTo(UOM::class, 'uom_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -253,6 +254,10 @@ class MoveLine extends Model implements Sortable
     protected static function boot()
     {
         parent::boot();
+
+        static::creating(function ($moveLine) {
+            $moveLine->creator_id ??= Auth::id();
+        });
 
         static::saving(function ($moveLine) {
             $moveLine->move_name = $moveLine->move->name;

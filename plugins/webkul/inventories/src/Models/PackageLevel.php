@@ -5,6 +5,7 @@ namespace Webkul\Inventory\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\PackageLevelFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -13,18 +14,8 @@ class PackageLevel extends Model
 {
     use HasFactory;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_package_levels';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'package_id',
         'operation_id',
@@ -61,5 +52,14 @@ class PackageLevel extends Model
     protected static function newFactory(): PackageLevelFactory
     {
         return PackageLevelFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($packageLevel) {
+            $packageLevel->creator_id ??= Auth::id();
+        });
     }
 }

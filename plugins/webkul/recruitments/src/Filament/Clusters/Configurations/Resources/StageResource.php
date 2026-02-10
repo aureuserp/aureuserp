@@ -156,7 +156,7 @@ class StageResource extends Resource
                 IconColumn::make('hired_stage')
                     ->boolean()
                     ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.hired-stage')),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true)
@@ -206,7 +206,7 @@ class StageResource extends Resource
                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.filters.red-label')),
                         RelationshipConstraint::make('legend_done')
                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.filters.green-label')),
-                        RelationshipConstraint::make('createdBy')
+                        RelationshipConstraint::make('creator')
                             ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.filters.created-by'))
                             ->multiple()
                             ->icon('heroicon-o-user')
@@ -240,7 +240,7 @@ class StageResource extends Resource
                 Tables\Grouping\Group::make('legend_done')
                     ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.groups.green-label'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('createdBy.name')
+                Tables\Grouping\Group::make('creator.name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/stage.table.groups.created-by'))
                     ->collapsible(),
                 Tables\Grouping\Group::make('created_at')

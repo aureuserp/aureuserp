@@ -8,21 +8,13 @@ use Webkul\Account\Models\Category as BaseCategory;
 
 class Category extends BaseCategory
 {
-    /**
-     * Create a new Eloquent model instance.
-     *
-     * @return void
-     */
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
-        $this->mergeFillable([
-        ]);
+        $this->mergeFillable([]);
 
-        $this->mergeCasts([
-
-        ]);
+        $this->mergeCasts([]);
     }
 
     public function routes(): BelongsToMany

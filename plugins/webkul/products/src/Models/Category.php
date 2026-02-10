@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
@@ -16,11 +17,6 @@ class Category extends Model
 {
     use HasChatter, HasFactory, HasLogActivity;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'products_categories';
 
     public function getModelTitle(): string
@@ -28,11 +24,6 @@ class Category extends Model
         return __('products::models/category.title');
     }
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'full_name',
@@ -75,27 +66,6 @@ class Category extends Model
     public function priceRuleItems(): HasMany
     {
         return $this->hasMany(PriceRuleItem::class);
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($productCategory) {
-            if (! static::validateNoRecursion($productCategory)) {
-                throw new InvalidArgumentException('Circular reference detected in product category hierarchy');
-            }
-
-            static::handleProductCategoryData($productCategory);
-        });
-
-        static::updating(function ($productCategory) {
-            if (! static::validateNoRecursion($productCategory)) {
-                throw new InvalidArgumentException('Circular reference detected in product category hierarchy');
-            }
-
-            static::handleProductCategoryData($productCategory);
-        });
     }
 
     protected static function validateNoRecursion($productCategory)
@@ -173,5 +143,32 @@ class Category extends Model
     protected static function newFactory(): CategoryFactory
     {
         return CategoryFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($productCategory) {
+            if (! static::validateNoRecursion($productCategory)) {
+                throw new InvalidArgumentException('Circular reference detected in product category hierarchy');
+            }
+
+            $authUser = Auth::user();
+
+            $productCategory->creator_id ??= $authUser->id;
+
+            $productCategory->company_id ??= $authUser->default_company_id;
+
+            static::handleProductCategoryData($productCategory);
+        });
+
+        static::updating(function ($productCategory) {
+            if (! static::validateNoRecursion($productCategory)) {
+                throw new InvalidArgumentException('Circular reference detected in product category hierarchy');
+            }
+
+            static::handleProductCategoryData($productCategory);
+        });
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\Move;
@@ -21,6 +22,7 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Sale\Enums\InvoiceStatus;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UtmCampaign;
@@ -29,7 +31,7 @@ use Webkul\Support\Models\UTMSource;
 
 class Order extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SoftDeletes;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope, SoftDeletes;
 
     protected $table = 'sales_orders';
 
@@ -171,7 +173,7 @@ class Order extends Model
         return $this->belongsTo(Team::class);
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -211,9 +213,37 @@ class Order extends Model
         return $this->hasMany(Operation::class, 'sale_order_id');
     }
 
+    public function updateName()
+    {
+        $this->name = 'SO/'.$this->id;
+    }
+
+    public function handleOrderCreation()
+    {
+        $authUser = Auth::user();
+
+        $this->creator_id ??= $authUser->id;
+        $this->user_id ??= $authUser->id;
+        $this->company_id ??= $authUser->default_company_id;
+
+        $this->state ??= OrderState::DRAFT;
+
+        if ($this->partner_id) {
+            $partner = Partner::find($this->partner_id);
+
+            $this->partner_shipping_id ??= $partner->id;
+            $this->partner_invoice_id ??= $partner->id;
+            $this->partner_id ??= $partner->id;
+        }
+    }
+
     protected static function boot()
     {
         parent::boot();
+
+        static::creating(function ($order) {
+            $order->handleOrderCreation();
+        });
 
         static::saving(function ($order) {
             $order->updateName();
@@ -222,13 +252,5 @@ class Order extends Model
         static::created(function ($order) {
             $order->update(['name' => $order->name]);
         });
-    }
-
-    /**
-     * Update the name based on the state without trigger any additional events.
-     */
-    public function updateName()
-    {
-        $this->name = 'SO/'.$this->id;
     }
 }

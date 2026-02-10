@@ -5,6 +5,7 @@ namespace Webkul\Product\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Product\Database\Factories\AttributeOptionFactory;
@@ -14,18 +15,8 @@ class AttributeOption extends Model implements Sortable
 {
     use HasFactory, SortableTrait;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'products_attribute_options';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'color',
@@ -53,5 +44,14 @@ class AttributeOption extends Model implements Sortable
     protected static function newFactory(): AttributeOptionFactory
     {
         return AttributeOptionFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($attributeOption) {
+            $attributeOption->creator_id ??= Auth::id();
+        });
     }
 }

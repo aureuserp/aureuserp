@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Database\Factories\SkillTypeFactory;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
@@ -38,7 +39,7 @@ class SkillType extends Model
         return $this->hasMany(Skill::class, 'skill_type_id');
     }
 
-    public function createdBy(): BelongsTo
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -48,13 +49,10 @@ class SkillType extends Model
         parent::boot();
 
         static::creating(function ($skillType) {
-            $skillType->creator_id = filament()->auth()->id();
+            $skillType->creator_id ??= Auth::id();
         });
     }
 
-    /**
-     * Get the factory instance for the model.
-     */
     protected static function newFactory(): SkillTypeFactory
     {
         return SkillTypeFactory::new();

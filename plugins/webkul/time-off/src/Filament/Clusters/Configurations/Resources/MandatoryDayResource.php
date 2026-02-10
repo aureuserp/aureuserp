@@ -2,6 +2,7 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources;
 
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -30,7 +31,7 @@ class MandatoryDayResource extends Resource
 {
     protected static ?string $model = LeaveMandatoryDay::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path-rounded-square';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path-rounded-square';
 
     protected static ?string $cluster = Configurations::class;
 
@@ -83,7 +84,7 @@ class MandatoryDayResource extends Resource
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.columns.company-name'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.columns.created-by'))
                     ->searchable()
                     ->sortable(),
@@ -105,7 +106,7 @@ class MandatoryDayResource extends Resource
                     ->preload()
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.filters.company-name')),
                 SelectFilter::make('creator_id')
-                    ->relationship('createdBy', 'name')
+                    ->relationship('creator', 'name')
                     ->searchable()
                     ->preload()
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.filters.created-by')),
@@ -131,7 +132,7 @@ class MandatoryDayResource extends Resource
                 Group::make('name')
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.groups.name'))
                     ->collapsible(),
-                Group::make('createdBy.name')
+                Group::make('creator.name')
                     ->label(__('time-off::filament/clusters/configurations/resources/mandatory-days.table.groups.created-by'))
                     ->collapsible(),
                 Group::make('company.name')

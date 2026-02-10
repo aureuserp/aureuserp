@@ -2,6 +2,7 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources;
 
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -54,7 +55,7 @@ class LeaveTypeResource extends Resource
 {
     protected static ?string $model = LeaveType::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?string $cluster = Configurations::class;
 
@@ -243,7 +244,7 @@ class LeaveTypeResource extends Resource
                         TextConstraint::make('request_unit')
                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.filters.request-unit'))
                             ->icon('heroicon-o-clock'),
-                        RelationshipConstraint::make('created_by')
+                        RelationshipConstraint::make('creator_Id')
                             ->label(__('time-off::filament/clusters/configurations/resources/leave-type.table.filters.created-by'))
                             ->icon('heroicon-o-user')
                             ->multiple()

@@ -1,6 +1,9 @@
 {
     "preset": "laravel",
     "rules": {
+        "concat_space": {
+            "spacing": "none"
+        },
         "binary_operator_spaces": {
             "operators": {
                 "=>": "align"

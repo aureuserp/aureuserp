@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Website\Database\Factories\PageFactory;
 
@@ -13,18 +14,8 @@ class Page extends Model
 {
     use HasFactory, SoftDeletes;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'website_pages';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'title',
         'content',
@@ -39,11 +30,6 @@ class Page extends Model
         'creator_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'is_published'      => 'boolean',
         'is_header_visible' => 'boolean',
@@ -61,7 +47,7 @@ class Page extends Model
         parent::boot();
 
         static::creating(function ($page) {
-            $page->creator_id = filament()->auth()->id();
+            $page->creator_id ??= Auth::id();
         });
     }
 

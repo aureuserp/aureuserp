@@ -4,7 +4,9 @@ namespace Webkul\Employee\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Database\Factories\CalendarFactory;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Security\Models\User;
@@ -28,7 +30,7 @@ class Calendar extends Model
         'company_id',
     ];
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -48,13 +50,10 @@ class Calendar extends Model
         parent::boot();
 
         static::creating(function ($calendar) {
-            $calendar->creator_id = filament()->auth()->id();
+            $calendar->creator_id ??= Auth::id();
         });
     }
 
-    /**
-     * Get the factory instance for the model.
-     */
     protected static function newFactory(): CalendarFactory
     {
         return CalendarFactory::new();

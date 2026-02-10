@@ -2,6 +2,7 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources;
 
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -52,7 +53,7 @@ class RouteResource extends Resource
 {
     protected static ?string $model = Route::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path';
 
     protected static ?int $navigationSort = 3;
 

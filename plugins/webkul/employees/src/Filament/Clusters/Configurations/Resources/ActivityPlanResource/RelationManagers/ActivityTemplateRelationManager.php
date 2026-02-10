@@ -158,7 +158,7 @@ class ActivityTemplateRelationManager extends RelationManager
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.columns.delay-from'))
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

@@ -69,7 +69,7 @@ class UTMSourceResource extends Resource
                     ->label(__('recruitments::filament/clusters/configurations/resources/utm-source.table.columns.name'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/utm-source.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

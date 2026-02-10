@@ -4,7 +4,9 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Enums\JournalType;
@@ -66,7 +68,7 @@ class Journal extends Model implements Sortable
         return $this->belongsTo(Company::class);
     }
 
-    public function creator()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -152,15 +154,6 @@ class Journal extends Model implements Sortable
             : $this->outboundPaymentMethodLines;
     }
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function ($journal) {
-            $journal->computeSuspenseAccountId();
-        });
-    }
-
     public function computeSuspenseAccountId()
     {
         if (! in_array($this->type, [JournalType::BANK, JournalType::CASH, JournalType::CREDIT_CARD])) {
@@ -208,5 +201,18 @@ class Journal extends Model implements Sortable
                 'payment_account_id' => null,
             ];
         })->toArray();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($journal) {
+            $journal->creator_id ??= Auth::id();
+        });
+
+        static::saving(function ($journal) {
+            $journal->computeSuspenseAccountId();
+        });
     }
 }

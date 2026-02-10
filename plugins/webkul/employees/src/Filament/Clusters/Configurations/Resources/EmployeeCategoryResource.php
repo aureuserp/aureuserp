@@ -84,7 +84,7 @@ class EmployeeCategoryResource extends Resource
                     ->label(__('employees::filament/clusters/configurations/resources/employee-category.table.columns.color'))
                     ->toggleable(isToggledHiddenByDefault: false)
                     ->sortable(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('employees::filament/clusters/configurations/resources/employee-category.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -106,7 +106,7 @@ class EmployeeCategoryResource extends Resource
                         TextConstraint::make('name')
                             ->label(__('employees::filament/clusters/configurations/resources/employee-category.table.filters.name'))
                             ->icon('heroicon-o-user'),
-                        RelationshipConstraint::make('createdBy')
+                        RelationshipConstraint::make('creator')
                             ->label(__('employees::filament/clusters/configurations/resources/employee-category.table.filters.created-by'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -131,7 +131,7 @@ class EmployeeCategoryResource extends Resource
                 Group::make('color')
                     ->label(__('employees::filament/clusters/configurations/resources/employee-category.table.groups.color'))
                     ->collapsible(),
-                Group::make('createdBy.name')
+                Group::make('creator.name')
                     ->label(__('employees::filament/clusters/configurations/resources/employee-category.table.groups.created-by'))
                     ->collapsible(),
                 Group::make('created_at')

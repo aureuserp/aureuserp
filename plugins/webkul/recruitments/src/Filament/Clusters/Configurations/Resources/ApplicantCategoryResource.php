@@ -77,7 +77,7 @@ class ApplicantCategoryResource extends Resource
                     ->sortable(),
                 ColorColumn::make('color')
                     ->label(__('recruitments::filament/clusters/configurations/resources/applicant-category.table.columns.color')),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/applicant-category.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

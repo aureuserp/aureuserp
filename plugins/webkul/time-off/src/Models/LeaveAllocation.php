@@ -4,6 +4,8 @@ namespace Webkul\TimeOff\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Employee\Models\Department;
@@ -61,7 +63,7 @@ class LeaveAllocation extends Model
             'secondApprover.name'               => __('time-off::models/leave-allocation.log-attributes.second_approver'),
             'department.name'                   => __('time-off::models/leave-allocation.log-attributes.department'),
             'accrualPlan.name'                  => __('time-off::models/leave-allocation.log-attributes.accrual_plan'),
-            'createdBy.name'                    => __('time-off::models/leave-allocation.log-attributes.created_by'),
+            'creator.name'                      => __('time-off::models/leave-allocation.log-attributes.created_by'),
             'name'                              => __('time-off::models/leave-allocation.log-attributes.name'),
             'state'                             => __('time-off::models/leave-allocation.log-attributes.state'),
             'allocation_type'                   => __('time-off::models/leave-allocation.log-attributes.allocation_type'),
@@ -128,7 +130,7 @@ class LeaveAllocation extends Model
         return $this->belongsTo(LeaveAccrualPlan::class, 'accrual_plan_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
@@ -143,9 +145,11 @@ class LeaveAllocation extends Model
         parent::boot();
 
         static::creating(function ($leaveAllocation) {
-            $leaveAllocation->creator_id = filament()->auth()->id();
+            $authUser = Auth::user();
 
-            $leaveAllocation->employee_company_id ??= filament()->auth()->user()->default_company_id;
+            $leaveAllocation->creator_id = $authUser->id;
+
+            $leaveAllocation->employee_company_id ??= $authUser->default_company_id;
         });
     }
 }

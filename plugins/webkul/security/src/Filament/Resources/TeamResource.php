@@ -15,9 +15,12 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Webkul\Security\Filament\Resources\TeamResource\Pages\ManageTeams;
 use Webkul\Security\Models\Team;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class TeamResource extends Resource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = Team::class;
 
     protected static ?int $navigationSort = 3;
@@ -52,6 +55,11 @@ class TeamResource extends Resource
                     ->searchable()
                     ->limit(50)
                     ->sortable(),
+                TextColumn::make('creator.name')
+                    ->label(__('security::filament/resources/team.table.columns.created-by'))
+                    ->searchable()
+                    ->limit(50)
+                    ->sortable(),
             ])
             ->recordActions([
                 ViewAction::make(),
@@ -63,6 +71,7 @@ class TeamResource extends Resource
                             ->body(__('security::filament/resources/team.table.actions.edit.notification.body'))
                     ),
                 DeleteAction::make()
+                    ->hidden(fn (Team $record): bool => $record->users?->isNotEmpty())
                     ->successNotification(
                         Notification::make()
                             ->success()
