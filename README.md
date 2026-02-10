@@ -365,16 +365,19 @@ We will acknowledge your email within 48 hours and provide a detailed response w
 
 Need help or want to connect with other AureusERP users?
 
-### Get Support
-- 📖 **Documentation:** [Coming Soon]
-- 💬 **Community Forum:** [Coming Soon]
-- 🐛 **Issue Tracker:** [GitHub Issues](https://github.com/aureuserp/aureuserp/issues)
-- 📧 **Email:** support@webkul.com
+### 📚 Documentation
+- 📖 **Developer Documentation:** [devdocs.aureuserp.com](https://devdocs.aureuserp.com/) - Technical guides, API references, and development resources
+- 📘 **User Guide:** [docs.aureuserp.com](https://docs.aureuserp.com/) - Step-by-step tutorials and user manuals
 
-### Stay Updated
-- ⭐ Star this repository to stay updated
-- 👁️ Watch for new releases and updates
-- 🍴 Fork to contribute to the project
+### 🤝 Get Support
+- 💬 **Community Forum:** [Coming Soon] - Connect with other users and share experiences
+- 🐛 **Issue Tracker:** [GitHub Issues](https://github.com/aureuserp/aureuserp/issues) - Report bugs and request features
+- 📧 **Email Support:** support@webkul.com - Direct support from the team
+
+### 🔔 Stay Updated
+- ⭐ **Star** this repository to show your support
+- 👁️ **Watch** for new releases and updates
+- 🍴 **Fork** to contribute to the project
 
 ---
 
