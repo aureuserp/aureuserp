@@ -300,10 +300,12 @@ class JournalResource extends Resource
                                                     ->visible(fn (Get $get) => $get('type') === JournalType::SALE)
                                                     ->schema([
                                                         Select::make('invoice_reference_type')
-                                                            ->options(CommunicationType::options())
+                                                            ->options(CommunicationType::class)
+                                                            ->default(CommunicationType::INVOICE)
                                                             ->label(__('accounts::filament/resources/journal.form.tabs.advanced-settings.fields.communication-type')),
                                                         Select::make('invoice_reference_model')
-                                                            ->options(CommunicationStandard::options())
+                                                            ->options(CommunicationStandard::class)
+                                                            ->default(CommunicationStandard::AUREUS)
                                                             ->label(__('accounts::filament/resources/journal.form.tabs.advanced-settings.fields.communication-standard')),
                                                     ]),
                                             ]),
