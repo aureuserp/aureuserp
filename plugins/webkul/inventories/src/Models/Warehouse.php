@@ -248,7 +248,7 @@ class Warehouse extends Model implements Sortable
         $this->lot_stock_location_id = Location::create([
             'type'         => LocationType::INTERNAL,
             'name'         => 'Stock',
-            'barcode'      => $this->code.'STOCK',
+            'barcode'      => $this->code . 'STOCK',
             'is_scrap'     => false,
             'is_replenish' => true,
             'parent_id'    => $this->view_location_id,
@@ -259,7 +259,7 @@ class Warehouse extends Model implements Sortable
         $this->input_stock_location_id = Location::create([
             'type'         => LocationType::INTERNAL,
             'name'         => 'Input',
-            'barcode'      => $this->code.'INPUT',
+            'barcode'      => $this->code . 'INPUT',
             'is_scrap'     => false,
             'is_replenish' => false,
             'parent_id'    => $this->view_location_id,
@@ -271,7 +271,7 @@ class Warehouse extends Model implements Sortable
         $this->qc_stock_location_id = Location::create([
             'type'         => LocationType::INTERNAL,
             'name'         => 'Quality Control',
-            'barcode'      => $this->code.'QUALITY',
+            'barcode'      => $this->code . 'QUALITY',
             'is_scrap'     => false,
             'is_replenish' => false,
             'parent_id'    => $this->view_location_id,
@@ -283,7 +283,7 @@ class Warehouse extends Model implements Sortable
         $this->output_stock_location_id = Location::create([
             'type'         => LocationType::INTERNAL,
             'name'         => 'Output',
-            'barcode'      => $this->code.'OUTPUT',
+            'barcode'      => $this->code . 'OUTPUT',
             'is_scrap'     => false,
             'is_replenish' => false,
             'parent_id'    => $this->view_location_id,
@@ -295,7 +295,7 @@ class Warehouse extends Model implements Sortable
         $this->pack_stock_location_id = Location::create([
             'type'         => LocationType::INTERNAL,
             'name'         => 'Packing Zone',
-            'barcode'      => $this->code.'PACKING',
+            'barcode'      => $this->code . 'PACKING',
             'is_scrap'     => false,
             'is_replenish' => false,
             'parent_id'    => $this->view_location_id,
@@ -320,7 +320,7 @@ class Warehouse extends Model implements Sortable
             'product_label_format'    => '2x7xprice',
             'lot_label_format'        => '4x12_lots',
             'package_label_to_print'  => 'pdf',
-            'barcode'                 => $this->code.'IN',
+            'barcode'                 => $this->code . 'IN',
             'create_backorder'        => CreateBackorder::ASK,
             'move_type'               => MoveType::DIRECT,
             'use_create_lots'         => true,
@@ -346,7 +346,7 @@ class Warehouse extends Model implements Sortable
             'product_label_format'    => '2x7xprice',
             'lot_label_format'        => '4x12_lots',
             'package_label_to_print'  => 'pdf',
-            'barcode'                 => $this->code.'OUT',
+            'barcode'                 => $this->code . 'OUT',
             'create_backorder'        => CreateBackorder::ASK,
             'move_type'               => MoveType::DIRECT,
             'use_create_lots'         => true,
@@ -372,7 +372,7 @@ class Warehouse extends Model implements Sortable
             'product_label_format'    => '2x7xprice',
             'lot_label_format'        => '4x12_lots',
             'package_label_to_print'  => 'pdf',
-            'barcode'                 => $this->code.'PICK',
+            'barcode'                 => $this->code . 'PICK',
             'create_backorder'        => CreateBackorder::ASK,
             'move_type'               => MoveType::DIRECT,
             'use_create_lots'         => true,
@@ -399,7 +399,7 @@ class Warehouse extends Model implements Sortable
             'product_label_format'    => '2x7xprice',
             'lot_label_format'        => '4x12_lots',
             'package_label_to_print'  => 'pdf',
-            'barcode'                 => $this->code.'PACK',
+            'barcode'                 => $this->code . 'PACK',
             'create_backorder'        => CreateBackorder::ASK,
             'move_type'               => MoveType::DIRECT,
             'use_create_lots'         => false,
@@ -422,7 +422,7 @@ class Warehouse extends Model implements Sortable
             'product_label_format'    => '2x7xprice',
             'lot_label_format'        => '4x12_lots',
             'package_label_to_print'  => 'pdf',
-            'barcode'                 => $this->code.'QC',
+            'barcode'                 => $this->code . 'QC',
             'create_backorder'        => CreateBackorder::ASK,
             'move_type'               => MoveType::DIRECT,
             'use_create_lots'         => false,
@@ -445,7 +445,7 @@ class Warehouse extends Model implements Sortable
             'product_label_format'    => '2x7xprice',
             'lot_label_format'        => '4x12_lots',
             'package_label_to_print'  => 'pdf',
-            'barcode'                 => $this->code.'STOR',
+            'barcode'                 => $this->code . 'STOR',
             'create_backorder'        => CreateBackorder::ASK,
             'move_type'               => MoveType::DIRECT,
             'use_create_lots'         => false,
@@ -472,7 +472,7 @@ class Warehouse extends Model implements Sortable
             'product_label_format'    => '2x7xprice',
             'lot_label_format'        => '4x12_lots',
             'package_label_to_print'  => 'pdf',
-            'barcode'                 => $this->code.'INT',
+            'barcode'                 => $this->code . 'INT',
             'create_backorder'        => CreateBackorder::ASK,
             'move_type'               => MoveType::DIRECT,
             'use_create_lots'         => false,
@@ -495,7 +495,7 @@ class Warehouse extends Model implements Sortable
             'product_label_format'    => '2x7xprice',
             'lot_label_format'        => '4x12_lots',
             'package_label_to_print'  => 'pdf',
-            'barcode'                 => $this->code.'XD',
+            'barcode'                 => $this->code . 'XD',
             'create_backorder'        => CreateBackorder::ASK,
             'move_type'               => MoveType::DIRECT,
             'use_create_lots'         => false,
@@ -515,9 +515,9 @@ class Warehouse extends Model implements Sortable
     {
         $this->reception_route_id = Route::create([
             'name' => match ($this->reception_steps) {
-                ReceptionStep::ONE_STEP    => $this->name.': Receive in 1 step (Stock)',
-                ReceptionStep::TWO_STEPS   => $this->name.': Receive in 2 steps (Input + Stock)',
-                ReceptionStep::THREE_STEPS => $this->name.': Receive in 3 steps (Input + Quality + Stock)',
+                ReceptionStep::ONE_STEP    => $this->name . ': Receive in 1 step (Stock)',
+                ReceptionStep::TWO_STEPS   => $this->name . ': Receive in 2 steps (Input + Stock)',
+                ReceptionStep::THREE_STEPS => $this->name . ': Receive in 3 steps (Input + Quality + Stock)',
             },
             'product_selectable'          => false,
             'product_category_selectable' => true,
@@ -529,9 +529,9 @@ class Warehouse extends Model implements Sortable
 
         $this->delivery_route_id = Route::create([
             'name' => match ($this->delivery_steps) {
-                DeliveryStep::ONE_STEP    => $this->name.': Deliver in 1 step (Ship)',
-                DeliveryStep::TWO_STEPS   => $this->name.': Deliver in 2 steps (Pick + Ship)',
-                DeliveryStep::THREE_STEPS => $this->name.': Deliver in 3 steps (Pick + Pack + Ship)',
+                DeliveryStep::ONE_STEP    => $this->name . ': Deliver in 1 step (Ship)',
+                DeliveryStep::TWO_STEPS   => $this->name . ': Deliver in 2 steps (Pick + Ship)',
+                DeliveryStep::THREE_STEPS => $this->name . ': Deliver in 3 steps (Pick + Pack + Ship)',
             },
             'product_selectable'          => false,
             'product_category_selectable' => true,
@@ -542,7 +542,7 @@ class Warehouse extends Model implements Sortable
         ])->id;
 
         $this->crossdock_route_id = Route::create([
-            'name'                        => $this->name.': Cross-Dock',
+            'name'                        => $this->name . ': Cross-Dock',
             'product_selectable'          => true,
             'product_category_selectable' => true,
             'warehouse_selectable'        => false,
@@ -562,7 +562,7 @@ class Warehouse extends Model implements Sortable
 
         $this->routeIds[] = Rule::create([
             'sort'                     => 1,
-            'name'                     => $this->code.': Vendors → Stock',
+            'name'                     => $this->code . ': Vendors → Stock',
             'route_sort'               => 9,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PULL,
@@ -581,7 +581,7 @@ class Warehouse extends Model implements Sortable
 
         $this->routeIds[] = Rule::create([
             'sort'                      => 2,
-            'name'                      => $this->code.': Stock → Customers',
+            'name'                      => $this->code . ': Stock → Customers',
             'route_sort'                => 10,
             'group_propagation_option'  => GroupPropagation::PROPAGATE,
             'action'                    => RuleAction::PULL,
@@ -600,7 +600,7 @@ class Warehouse extends Model implements Sortable
 
         $this->routeIds[] = Rule::create([
             'sort'                     => 3,
-            'name'                     => $this->code.': Vendors → Customers',
+            'name'                     => $this->code . ': Vendors → Customers',
             'route_sort'               => 20,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PULL,
@@ -620,7 +620,7 @@ class Warehouse extends Model implements Sortable
 
         $this->routeIds[] = Rule::create([
             'sort'                     => 4,
-            'name'                     => $this->code.': Input → Output',
+            'name'                     => $this->code . ': Input → Output',
             'route_sort'               => 20,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PUSH,
@@ -640,7 +640,7 @@ class Warehouse extends Model implements Sortable
 
         $this->routeIds[] = $this->mto_pull_id = Rule::create([
             'sort'                     => 5,
-            'name'                     => $this->code.': Stock → Customers (MTO)',
+            'name'                     => $this->code . ': Stock → Customers (MTO)',
             'route_sort'               => 5,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PULL,
@@ -658,7 +658,7 @@ class Warehouse extends Model implements Sortable
 
         $this->routeIds[] = Rule::create([
             'sort'                     => 6,
-            'name'                     => $this->code.': Input → Quality Control',
+            'name'                     => $this->code . ': Input → Quality Control',
             'route_sort'               => 6,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PUSH,
@@ -677,7 +677,7 @@ class Warehouse extends Model implements Sortable
 
         $this->routeIds[] = Rule::create([
             'sort'                     => 7,
-            'name'                     => $this->code.': Quality Control → Stock',
+            'name'                     => $this->code . ': Quality Control → Stock',
             'route_sort'               => 7,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PUSH,
@@ -696,7 +696,7 @@ class Warehouse extends Model implements Sortable
 
         $this->routeIds[] = Rule::create([
             'sort'                     => 8,
-            'name'                     => $this->code.': Stock → Customers',
+            'name'                     => $this->code . ': Stock → Customers',
             'route_sort'               => 8,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PULL,
@@ -715,7 +715,7 @@ class Warehouse extends Model implements Sortable
 
         $this->routeIds[] = Rule::create([
             'sort'                     => 9,
-            'name'                     => $this->code.': Packing Zone → Output',
+            'name'                     => $this->code . ': Packing Zone → Output',
             'route_sort'               => 9,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PUSH,
@@ -734,7 +734,7 @@ class Warehouse extends Model implements Sortable
 
         $this->routeIds[] = Rule::create([
             'sort'                     => 10,
-            'name'                     => $this->code.': Output → Customers',
+            'name'                     => $this->code . ': Output → Customers',
             'route_sort'               => 10,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PUSH,
@@ -753,7 +753,7 @@ class Warehouse extends Model implements Sortable
 
         $this->routeIds[] = Rule::create([
             'sort'                     => 11,
-            'name'                     => $this->code.': Input → Stock',
+            'name'                     => $this->code . ': Input → Stock',
             'route_sort'               => 11,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::PUSH,
@@ -772,7 +772,7 @@ class Warehouse extends Model implements Sortable
 
         $this->routeIds[] = Rule::create([
             'sort'                     => 12,
-            'name'                     => $this->code.': False → Customers',
+            'name'                     => $this->code . ': False → Customers',
             'route_sort'               => 12,
             'group_propagation_option' => GroupPropagation::PROPAGATE,
             'action'                   => RuleAction::BUY,
@@ -802,36 +802,6 @@ class Warehouse extends Model implements Sortable
 
         static::creating(function (Warehouse $warehouse) {
             $warehouse->handleWarehouseCreation();
-        });
-
-        static::created(function (Warehouse $warehouse) {
-            Location::withTrashed()->whereIn('id', [
-                $warehouse->view_location_id,
-                $warehouse->lot_stock_location_id,
-                $warehouse->input_stock_location_id,
-                $warehouse->qc_stock_location_id,
-                $warehouse->output_stock_location_id,
-                $warehouse->pack_stock_location_id,
-            ])->update(['warehouse_id' => $warehouse->id]);
-
-            OperationType::withTrashed()->whereIn('id', [
-                $warehouse->in_type_id,
-                $warehouse->out_type_id,
-                $warehouse->pick_type_id,
-                $warehouse->pack_type_id,
-                $warehouse->qc_type_id,
-                $warehouse->store_type_id,
-                $warehouse->internal_type_id,
-                $warehouse->xdock_type_id,
-            ])->update(['warehouse_id' => $warehouse->id]);
-
-            $warehouse->routes()->sync([
-                $warehouse->reception_route_id,
-                $warehouse->delivery_route_id,
-                $warehouse->crossdock_route_id,
-            ]);
-
-            Rule::withTrashed()->whereIn('id', $warehouse->routeIds)->update(['warehouse_id' => $warehouse->id]);
         });
 
         static::updated(function (Warehouse $warehouse) {
