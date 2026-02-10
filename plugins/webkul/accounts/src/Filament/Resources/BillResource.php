@@ -244,14 +244,24 @@ class BillResource extends Resource
                                                     ->preload()
                                                     ->required()
                                                     ->label(__('accounts::filament/resources/bill.form.section.general.fields.journal'))
-                                                    ->createOptionForm(fn ($form) => JournalResource::form($form))
+                                                    ->createOptionForm(function ($form) {
+                                                        $schema = JournalResource::form($form);
+
+                                                        // Find and disable the type field
+                                                        $components = $schema->getComponents();
+                                                        foreach ($components as $component) {
+                                                            static::disableTypeField($component);
+                                                        }
+
+                                                        return $schema;
+                                                    })
                                                     ->createOptionAction(
                                                         fn (Action $action, Get $get) => $action
                                                             ->fillForm(fn () => [
-                                                                'type'  => JournalType::PURCHASE,
-                                                                'invoice_reference_type'  => CommunicationType::INVOICE,
+                                                                'type'                     => JournalType::PURCHASE,
+                                                                'invoice_reference_type'   => CommunicationType::INVOICE,
                                                                 'invoice_reference_model'  => CommunicationStandard::AUREUS,
-                                                                'company_id' => $get('company_id') ?? Auth::user()->default_company_id,
+                                                                'company_id'               => $get('company_id') ?? Auth::user()->default_company_id,
                                                             ])
                                                     )
                                                     ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
@@ -718,7 +728,7 @@ class BillResource extends Resource
                             ->badge(),
                     ])
                     ->compact(),
-                    
+
                 Section::make(__('accounts::filament/resources/bill.infolist.section.general.title'))
                     ->icon('heroicon-o-document-text')
                     ->schema([
@@ -1467,5 +1477,18 @@ class BillResource extends Resource
                 $query->where('move_type', MoveType::IN_INVOICE);
             })
             ->orderByDesc('id');
+    }
+
+    protected static function disableTypeField($component): void
+    {
+        if (method_exists($component, 'getChildComponents')) {
+            foreach ($component->getChildComponents() as $child) {
+                static::disableTypeField($child);
+            }
+        }
+
+        if (method_exists($component, 'getName') && $component->getName() === 'type') {
+            $component->disabled()->dehydrated();
+        }
     }
 }
