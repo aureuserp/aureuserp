@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Models\MoveLine;
@@ -148,7 +149,7 @@ class OrderLine extends Model implements Sortable
         return $this->belongsTo(self::class, 'linked_sale_order_sale_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -161,6 +162,15 @@ class OrderLine extends Model implements Sortable
     public function route(): BelongsTo
     {
         return $this->belongsTo(Route::class, 'route_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($orderLine) {
+            $orderLine->creator_id ??= Auth::id();
+        });
     }
 
     protected static function newFactory()

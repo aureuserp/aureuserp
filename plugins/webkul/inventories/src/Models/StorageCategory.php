@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Inventory\Database\Factories\StorageCategoryFactory;
@@ -17,18 +18,8 @@ class StorageCategory extends Model implements Sortable
 {
     use HasFactory, SortableTrait;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_storage_categories';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'sort',
@@ -39,11 +30,6 @@ class StorageCategory extends Model implements Sortable
         'creator_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'allow_new_products' => AllowNewProduct::class,
     ];
@@ -86,5 +72,14 @@ class StorageCategory extends Model implements Sortable
     protected static function newFactory(): StorageCategoryFactory
     {
         return StorageCategoryFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($storageCategory) {
+            $storageCategory->creator_id ??= Auth::id();
+        });
     }
 }

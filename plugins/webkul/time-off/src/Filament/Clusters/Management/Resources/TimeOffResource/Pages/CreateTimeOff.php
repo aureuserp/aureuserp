@@ -33,6 +33,5 @@ class CreateTimeOff extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         return $this->mutateTimeOffData($data, $this->record?->id);
-
     }
 }

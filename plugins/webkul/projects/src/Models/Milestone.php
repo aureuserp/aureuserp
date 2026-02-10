@@ -13,18 +13,8 @@ class Milestone extends Model
 {
     use HasFactory;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'projects_milestones';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'deadline',
@@ -34,11 +24,6 @@ class Milestone extends Model
         'creator_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'is_completed' => 'boolean',
         'deadline'     => 'datetime',
@@ -60,7 +45,7 @@ class Milestone extends Model
         parent::boot();
 
         static::creating(function ($milestone) {
-            $milestone->creator_id = Auth::id();
+            $milestone->creator_id ??= Auth::id();
         });
     }
 

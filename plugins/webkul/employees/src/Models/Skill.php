@@ -47,7 +47,7 @@ class Skill extends Model implements Sortable
         return $this->hasMany(EmployeeSkill::class, 'skill_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -57,13 +57,10 @@ class Skill extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($skill) {
-            $skill->creator_id = Auth::id();
+            $skill->creator_id ??= Auth::id();
         });
     }
 
-    /**
-     * Get the factory instance for the model.
-     */
     protected static function newFactory(): SkillFactory
     {
         return SkillFactory::new();

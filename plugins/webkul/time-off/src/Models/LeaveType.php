@@ -4,10 +4,11 @@ namespace Webkul\TimeOff\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\TimeOff\Enums\LeaveValidationType;
@@ -59,7 +60,7 @@ class LeaveType extends Model implements Sortable
         return $this->belongsToMany(User::class, 'time_off_user_leave_types', 'leave_type_id', 'user_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -69,9 +70,11 @@ class LeaveType extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($leaveType) {
-            $leaveType->creator_id = Auth::id();
+            $authUser = Auth::user();
 
-            $leaveType->company_id = Auth::user()->default_company_id;
+            $leaveType->creator_id = $authUser->id;
+
+            $leaveType->company_id ??= $authUser->default_company_id;
         });
     }
 }

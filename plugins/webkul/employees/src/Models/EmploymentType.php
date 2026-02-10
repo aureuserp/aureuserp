@@ -4,11 +4,12 @@ namespace Webkul\Employee\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Employee\Database\Factories\EmploymentTypeFactory;
 use Webkul\Field\Traits\HasCustomFields;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Country;
 
@@ -36,7 +37,7 @@ class EmploymentType extends Model implements Sortable
         return $this->belongsTo(Country::class);
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -48,13 +49,10 @@ class EmploymentType extends Model implements Sortable
         static::creating(function ($employmentType) {
             $employmentType->code ??= $employmentType->name;
 
-            $employmentType->creator_id = Auth::id();
+            $employmentType->creator_id ??= Auth::id();
         });
     }
 
-    /**
-     * Get the factory instance for the model.
-     */
     protected static function newFactory(): EmploymentTypeFactory
     {
         return EmploymentTypeFactory::new();

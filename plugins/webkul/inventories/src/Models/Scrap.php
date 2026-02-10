@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Inventory\Database\Factories\ScrapFactory;
@@ -21,23 +22,8 @@ class Scrap extends Model
 {
     use HasChatter, HasFactory, HasLogActivity;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_scraps';
 
-    public function getModelTitle(): string
-    {
-        return __('inventories::models/scrap.title');
-    }
-
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'origin',
@@ -56,6 +42,11 @@ class Scrap extends Model
         'company_id',
         'creator_id',
     ];
+
+    public function getModelTitle(): string
+    {
+        return __('inventories::models/scrap.title');
+    }
 
     protected function getLogAttributeLabels(): array
     {
@@ -79,11 +70,6 @@ class Scrap extends Model
         ];
     }
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'state'            => ScrapState::class,
         'should_replenish' => 'boolean',
@@ -156,21 +142,6 @@ class Scrap extends Model
         return $this->hasManyThrough(MoveLine::class, Move::class);
     }
 
-    /**
-     * Bootstrap any application services.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function ($scrap) {
-            $scrap->updateName();
-        });
-    }
-
-    /**
-     * Update the full name without triggering additional events
-     */
     public function updateName()
     {
         $this->name = 'SP/'.$this->id;
@@ -179,5 +150,18 @@ class Scrap extends Model
     protected static function newFactory(): ScrapFactory
     {
         return ScrapFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($scrap) {
+            $scrap->creator_id ??= Auth::id();
+        });
+
+        static::saving(function ($scrap) {
+            $scrap->updateName();
+        });
     }
 }

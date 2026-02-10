@@ -5,6 +5,7 @@ namespace Webkul\Inventory\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\PackageDestinationFactory;
 use Webkul\Security\Models\User;
 
@@ -12,18 +13,8 @@ class PackageDestination extends Model
 {
     use HasFactory;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_package_destinations';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'operation_id',
         'destination_location_id',
@@ -48,5 +39,14 @@ class PackageDestination extends Model
     protected static function newFactory(): PackageDestinationFactory
     {
         return PackageDestinationFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($packageDestination) {
+            $packageDestination->creator_id ??= Auth::id();
+        });
     }
 }

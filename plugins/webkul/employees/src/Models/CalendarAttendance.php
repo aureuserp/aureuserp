@@ -4,8 +4,9 @@ namespace Webkul\Employee\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\EloquentSortable\Sortable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Employee\Database\Factories\CalendarAttendanceFactory;
 use Webkul\Security\Models\User;
@@ -42,7 +43,7 @@ class CalendarAttendance extends Model implements Sortable
         return $this->belongsTo(Calendar::class);
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -52,13 +53,10 @@ class CalendarAttendance extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($calendarAttendance) {
-            $calendarAttendance->creator_id = Auth::id();
+            $calendarAttendance->creator_id ??= Auth::id();
         });
     }
 
-    /**
-     * Get the factory instance for the model.
-     */
     protected static function newFactory(): CalendarAttendanceFactory
     {
         return CalendarAttendanceFactory::new();

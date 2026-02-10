@@ -5,6 +5,7 @@ namespace Webkul\TimeOff\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Employee\Models\Calendar;
@@ -13,7 +14,6 @@ use Webkul\Employee\Models\Employee;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\TimeOff\Enums\RequestDateFromPeriod;
-use Illuminate\Support\Facades\Auth;
 use Webkul\TimeOff\Enums\State;
 
 class Leave extends Model
@@ -147,7 +147,7 @@ class Leave extends Model
         return $this->belongsTo(Employee::class, 'second_approver_id');
     }
 
-    public function createdBy(): BelongsTo
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -157,9 +157,11 @@ class Leave extends Model
         parent::boot();
 
         static::creating(function ($leave) {
-            $leave->creator_id = Auth::id();
+            $authUser = Auth::user();
 
-            $leave->company_id = Auth::user()->default_company_id;
+            $leave->creator_id = $authUser->id;
+
+            $leave->company_id ??= $authUser->default_company_id;
         });
     }
 }

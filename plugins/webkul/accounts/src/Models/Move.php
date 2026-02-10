@@ -4,6 +4,7 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
@@ -21,6 +22,7 @@ use Webkul\Partner\Models\BankAccount;
 use Webkul\Partner\Models\Partner;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UtmCampaign;
@@ -29,7 +31,7 @@ use Webkul\Support\Models\UTMSource;
 
 class Move extends Model implements Sortable
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SortableTrait;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope, SortableTrait;
 
     protected $table = 'accounts_account_moves';
 
@@ -165,6 +167,11 @@ class Move extends Model implements Sortable
         'sort_when_creating' => true,
     ];
 
+    protected function getAssignmentColumn(): ?string
+    {
+        return 'invoice_user_id';
+    }
+
     public function campaign()
     {
         return $this->belongsTo(UtmCampaign::class, 'campaign_id');
@@ -250,7 +257,7 @@ class Move extends Model implements Sortable
         return $this->belongsTo(CashRounding::class, 'invoice_cash_rounding_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -409,16 +416,14 @@ class Move extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($move) {
-            $move->computeCreatorId();
-
             $move->computeCurrencyId();
+
+            $move->creator_id ??= Auth::id();
 
             $move->date ??= now();
         });
 
         static::saving(function ($move) {
-            $move->computeCreatorId();
-
             $move->computeCurrencyId();
 
             $move->computePartnerDisplayInfo();
@@ -437,15 +442,6 @@ class Move extends Model implements Sortable
 
             $move->computePaymentState();
         });
-    }
-
-    public function computeCreatorId()
-    {
-        if ($this->creator_id) {
-            return;
-        }
-
-        $this->creator_id = Auth::id();
     }
 
     public function computeName()
@@ -494,7 +490,7 @@ class Move extends Model implements Sortable
             if ($this->invoice_source_email) {
                 $vendorDisplayName = "@From: {$this->invoice_source_email}";
             } else {
-                $vendorDisplayName = "#Created by: {$this->createdBy->name}";
+                $vendorDisplayName = "#Created by: {$this->creator->name}";
             }
         }
 

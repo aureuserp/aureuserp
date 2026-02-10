@@ -4,8 +4,9 @@ namespace Webkul\TimeOff\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Webkul\Security\Models\User;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
 class LeaveMandatoryDay extends Model
@@ -33,7 +34,7 @@ class LeaveMandatoryDay extends Model
         return $this->belongsTo(Company::class, 'company_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -43,9 +44,11 @@ class LeaveMandatoryDay extends Model
         parent::boot();
 
         static::creating(function ($leaveMandatoryDay) {
-            $leaveMandatoryDay->creator_id = Auth::id();
+            $authUser = Auth::user();
 
-            $leaveMandatoryDay->company_id = Auth::user()->default_company_id;
+            $leaveMandatoryDay->creator_id ??= $authUser->id;
+
+            $leaveMandatoryDay->company_id ??= $authUser->default_company_id;
         });
     }
 }

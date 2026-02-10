@@ -3,6 +3,8 @@
 namespace Webkul\Recruitment\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Security\Models\User;
@@ -21,7 +23,7 @@ class RefuseReason extends Model implements Sortable
 
     protected $fillable = ['creator_id', 'sort', 'name', 'template', 'is_active'];
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }

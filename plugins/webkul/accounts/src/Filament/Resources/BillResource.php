@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources;
 
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -51,6 +52,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Webkul\Account\Enums\CommunicationStandard;
+use Webkul\Account\Enums\CommunicationType;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
@@ -89,7 +92,7 @@ class BillResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static bool $shouldRegisterNavigation = false;
 
@@ -242,7 +245,27 @@ class BillResource extends Resource
                                                     ->preload()
                                                     ->required()
                                                     ->label(__('accounts::filament/resources/bill.form.section.general.fields.journal'))
-                                                    ->createOptionForm(fn ($form) => JournalResource::form($form))
+                                                    ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL]))
+                                                    ->createOptionForm(function ($form) {
+                                                        $schema = JournalResource::form($form);
+
+                                                        $components = $schema->getComponents();
+
+                                                        foreach ($components as $component) {
+                                                            static::disableTypeField($component);
+                                                        }
+
+                                                        return $schema;
+                                                    })
+                                                    ->createOptionAction(
+                                                        fn (Action $action, Get $get) => $action
+                                                            ->fillForm(fn () => [
+                                                                'type'                     => JournalType::PURCHASE,
+                                                                'invoice_reference_type'   => CommunicationType::INVOICE,
+                                                                'invoice_reference_model'  => CommunicationStandard::AUREUS,
+                                                                'company_id'               => $get('company_id') ?? Auth::user()->default_company_id,
+                                                            ])
+                                                    )
                                                     ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
 
                                                 Select::make('currency_id')
@@ -707,7 +730,7 @@ class BillResource extends Resource
                             ->badge(),
                     ])
                     ->compact(),
-                    
+
                 Section::make(__('accounts::filament/resources/bill.infolist.section.general.title'))
                     ->icon('heroicon-o-document-text')
                     ->schema([
@@ -1456,5 +1479,18 @@ class BillResource extends Resource
                 $query->where('move_type', MoveType::IN_INVOICE);
             })
             ->orderByDesc('id');
+    }
+
+    protected static function disableTypeField($component): void
+    {
+        if (method_exists($component, 'getChildComponents')) {
+            foreach ($component->getChildComponents() as $child) {
+                static::disableTypeField($child);
+            }
+        }
+
+        if (method_exists($component, 'getName') && $component->getName() === 'type') {
+            $component->disabled()->dehydrated();
+        }
     }
 }

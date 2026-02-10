@@ -9,6 +9,8 @@ use Webkul\Partner\Filament\Resources\PartnerResource;
 
 class CreatePartner extends CreateRecord
 {
+    protected static string $resource = PartnerResource::class;
+
     public function getSubNavigation(): array
     {
         if (filled($cluster = static::getCluster())) {
@@ -17,8 +19,6 @@ class CreatePartner extends CreateRecord
 
         return [];
     }
-
-    protected static string $resource = PartnerResource::class;
 
     protected function getRedirectUrl(): string
     {

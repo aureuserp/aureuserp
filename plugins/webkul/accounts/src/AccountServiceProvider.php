@@ -72,13 +72,20 @@ class AccountServiceProvider extends PackageServiceProvider
                 '2025_02_28_142520_create_accounts_accounts_move_payment_table',
                 '2025_04_10_053345_alter_accounts_account_moves_table',
                 '2025_04_10_053349_alter_accounts_account_move_lines_table',
+                '2025_08_11_043945_alter_accounts_reconciles_table',
+                '2025_08_11_044151_alter_accounts_payments_methods_table',
+                '2025_08_11_044258_alter_accounts_bank_statements_table',
+                '2025_08_11_044445_alter_accounts_account_payments_table',
+                '2025_08_11_044603_alter_accounts_bank_statement_lines_table',
+                '2025_08_11_044842_alter_accounts_account_move_lines_table',
+                '2025_08_11_044931_alter_accounts_partial_reconciles_table',
                 '2025_08_04_062050_alter_accounts_taxes_table',
                 '2025_08_01_091957_alter_accounts_payment_terms_table',
                 '2025_10_23_082243_alter_products_categories_table',
                 '2025_11_19_081920_alter_accounts_account_move_lines_table',
                 '2025_12_09_103848_alter_accounts_payment_method_lines_table',
                 '2025_12_16_074557_add_journal_id_in_accounts_accounts_move_reversals_table',
-                '2026_01_15_060821_backfill_customer_and_supplier_rank_in_partners_table',
+                '2026_01_15_060822_backfill_customer_and_supplier_rank_in_partners_table',
             ])
             ->runsMigrations()
             ->hasSettings([

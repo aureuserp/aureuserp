@@ -1,0 +1,16 @@
+{
+  "name": "e2e-tests",
+  "version": "1.0.0",
+  "description": "End-to-end tests for AureusERP",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "dotenv": "^16.0.0"
+  }
+}

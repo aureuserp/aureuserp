@@ -25,16 +25,6 @@ class Employee extends Model
 
     protected $table = 'employees_employees';
 
-    public function getModelTitle(): string
-    {
-        return __('employees::models/employee.title');
-    }
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'company_id',
         'user_id',
@@ -108,17 +98,17 @@ class Employee extends Model
         'work_permit_scheduled_activity',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
     protected $casts = [
         'is_active'                      => 'boolean',
         'is_flexible'                    => 'boolean',
         'is_fully_flexible'              => 'boolean',
         'work_permit_scheduled_activity' => 'boolean',
     ];
+
+    public function getModelTitle(): string
+    {
+        return __('employees::models/employee.title');
+    }
 
     public function privateState(): BelongsTo
     {
@@ -225,9 +215,6 @@ class Employee extends Model
         return $this->hasMany(EmployeeResume::class, 'employee_id');
     }
 
-    /**
-     * Get the factory instance for the model.
-     */
     protected static function newFactory(): EmployeeFactory
     {
         return EmployeeFactory::new();
@@ -248,15 +235,12 @@ class Employee extends Model
         return $this->belongsTo(Partner::class, 'address_id');
     }
 
-    /**
-     * Bootstrap the model and its traits.
-     */
     protected static function boot()
     {
         parent::boot();
 
         static::saved(function (self $employee) {
-            $employee->creator_id = Auth::id();
+            $employee->creator_id ??= Auth::id();
 
             if (! $employee->partner_id) {
                 $employee->handlePartnerCreation($employee);
@@ -266,15 +250,12 @@ class Employee extends Model
         });
     }
 
-    /**
-     * Handle the creation of the partner.
-     */
     private function handlePartnerCreation(self $employee): void
     {
         $partner = $employee->partner()->create([
             'account_type' => 'individual',
             'sub_type'     => 'employee',
-            'creator_id'   => Auth::id(),
+            'creator_id'   => $employee->creator_id ?? Auth::id(),
             'name'         => $employee?->name,
             'email'        => $employee?->work_email ?? $employee?->private_email,
             'job_title'    => $employee?->job_title,
@@ -290,9 +271,6 @@ class Employee extends Model
         $employee->save();
     }
 
-    /**
-     * Handle the updation of the partner.
-     */
     private function handlePartnerUpdation(self $employee): void
     {
         $partner = Partner::updateOrCreate(
@@ -300,7 +278,7 @@ class Employee extends Model
             [
                 'account_type' => 'individual',
                 'sub_type'     => 'employee',
-                'creator_id'   => Auth::id(),
+                'creator_id'   => $employee->creator_id ?? Auth::id(),
                 'name'         => $employee?->name,
                 'email'        => $employee?->work_email ?? $employee?->private_email,
                 'job_title'    => $employee?->job_title,

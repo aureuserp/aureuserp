@@ -16,18 +16,8 @@ class Post extends Model
 {
     use HasFactory, SoftDeletes;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'blogs_posts';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'title',
         'sub_title',
@@ -47,21 +37,11 @@ class Post extends Model
         'last_editor_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'is_published' => 'boolean',
         'published_at' => 'datetime',
     ];
 
-    /**
-     * Get image url for the product image.
-     *
-     * @return string
-     */
     public function getImageUrlAttribute()
     {
         if (! $this->image) {
@@ -110,9 +90,11 @@ class Post extends Model
         parent::boot();
 
         static::creating(function ($post) {
-            $post->author_id = Auth::id();
+            $authId = Auth::id();
 
-            $post->creator_id = Auth::id();
+            $post->author_id ??= $authId;
+
+            $post->creator_id ??= $authId;
         });
     }
 

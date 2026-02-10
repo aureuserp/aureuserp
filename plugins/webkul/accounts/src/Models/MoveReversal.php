@@ -3,9 +3,10 @@
 namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
-use Illuminate\Support\Facades\Auth;
 
 class MoveReversal extends Model
 {
@@ -43,7 +44,7 @@ class MoveReversal extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function creator()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -53,9 +54,11 @@ class MoveReversal extends Model
         parent::boot();
 
         static::creating(function ($moveReversal) {
-            $moveReversal->creator_id = Auth::id();
+            $authUser = Auth::user();
 
-            $moveReversal->company_id = Auth::user()->default_company_id;
+            $moveReversal->creator_id ??= $authUser->id;
+
+            $moveReversal->company_id ??= $authUser->default_company_id;
         });
     }
 }

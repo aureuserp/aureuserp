@@ -3,6 +3,8 @@
 namespace Webkul\Recruitment\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Models\Skill;
 use Webkul\Employee\Models\SkillLevel;
 use Webkul\Employee\Models\SkillType;
@@ -42,7 +44,7 @@ class CandidateSkill extends Model
         return $this->belongsTo(SkillType::class);
     }
 
-    public function creator()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }

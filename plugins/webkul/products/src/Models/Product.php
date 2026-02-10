@@ -23,23 +23,8 @@ class Product extends Model implements Sortable
 {
     use HasChatter, HasFactory, HasLogActivity, SoftDeletes, SortableTrait;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'products_products';
 
-    public function getModelTitle(): string
-    {
-        return __('products::models/product.title');
-    }
-
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'type',
         'name',
@@ -67,11 +52,11 @@ class Product extends Model implements Sortable
         'creator_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
+    public function getModelTitle(): string
+    {
+        return __('products::models/product.title');
+    }
+
     protected $casts = [
         'type'             => ProductType::class,
         'enable_sales'     => 'boolean',
@@ -311,5 +296,14 @@ class Product extends Model implements Sortable
     protected static function newFactory(): ProductFactory
     {
         return ProductFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($product) {
+            $product->creator_id ??= Auth::id();
+        });
     }
 }

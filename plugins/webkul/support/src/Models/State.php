@@ -22,12 +22,7 @@ class State extends Model
         'code',
     ];
 
-    /**
-     * Get the country that owns the state.
-     *
-     * @return BelongsTo
-     */
-    public function country()
+    public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class, 'country_id');
     }

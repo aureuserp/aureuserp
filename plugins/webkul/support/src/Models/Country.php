@@ -11,6 +11,7 @@ use Webkul\Support\Database\Factories\CountryFactory;
 class Country extends Model
 {
     use HasFactory;
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -25,32 +26,17 @@ class Country extends Model
         'zip_required',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
         'state_required' => 'boolean',
         'zip_required'   => 'boolean',
     ];
 
-    /**
-     * Get the currency associated with the country.
-     *
-     * @return BelongsTo
-     */
-    public function currency()
+    public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class, 'currency_id');
     }
 
-    /**
-     * Get all states for the country.
-     *
-     * @return HasMany
-     */
-    public function states()
+    public function states(): HasMany
     {
         return $this->hasMany(State::class, 'country_id');
     }

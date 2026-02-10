@@ -5,6 +5,7 @@ namespace Webkul\Support\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Webkul\Support\Database\Factories\CurrencyFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
 
@@ -26,12 +27,7 @@ class Currency extends Model
         'active' => 'boolean',
     ];
 
-    /**
-     * Get all states for the country.
-     *
-     * @return HasMany
-     */
-    public function rates()
+    public function rates(): HasMany
     {
         return $this->hasMany(CurrencyRate::class);
     }
@@ -59,7 +55,7 @@ class Currency extends Model
             return 1;
         }
 
-        $company = $company ?? Auth::user()->defaultCompany ?? null;
+        $company = $company ?? Auth::user()?->defaultCompany;
 
         $date = $date ?? now()->toDateString();
 

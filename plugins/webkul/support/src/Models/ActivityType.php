@@ -70,9 +70,9 @@ class ActivityType extends Model implements Sortable
         return $this->belongsToMany(self::class, 'activity_type_suggestions', 'activity_type_id', 'suggested_activity_type_id');
     }
 
-    public function createdBy(): BelongsTo
+    public function creator(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'creator_id');
     }
 
     public function defaultUser(): BelongsTo
@@ -85,7 +85,7 @@ class ActivityType extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($activityType) {
-            $activityType->creator_id = Auth::id();
+            $activityType->creator_id ??= Auth::id();
         });
     }
 }

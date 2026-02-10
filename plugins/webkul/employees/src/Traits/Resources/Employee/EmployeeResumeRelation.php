@@ -118,7 +118,7 @@ trait EmployeeResumeRelation
                     ->limit(50)
                     ->wrap()
                     ->searchable(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('employees::filament/resources/employee/relation-manager/resume.table.columns.created-by'))
                     ->sortable(),
                 TextColumn::make('created_at')

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Webkul\Support\Database\Factories\CurrencyRateFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 
 class CurrencyRate extends Model
@@ -48,6 +49,15 @@ class CurrencyRate extends Model
         }
 
         return 1 / $this->rate;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($currencyRate) {
+            $currencyRate->creator_id ??= Auth::id();
+        });
     }
 
     protected static function newFactory(): CurrencyRateFactory

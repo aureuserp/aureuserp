@@ -46,6 +46,7 @@ use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
 use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
+use Webkul\Support\Models\Company;
 
 class JournalResource extends Resource
 {
@@ -300,10 +301,12 @@ class JournalResource extends Resource
                                                     ->visible(fn (Get $get) => $get('type') === JournalType::SALE)
                                                     ->schema([
                                                         Select::make('invoice_reference_type')
-                                                            ->options(CommunicationType::options())
+                                                            ->options(CommunicationType::class)
+                                                            ->default(CommunicationType::INVOICE)
                                                             ->label(__('accounts::filament/resources/journal.form.tabs.advanced-settings.fields.communication-type')),
                                                         Select::make('invoice_reference_model')
-                                                            ->options(CommunicationStandard::options())
+                                                            ->options(CommunicationStandard::class)
+                                                            ->default(CommunicationStandard::AUREUS)
                                                             ->label(__('accounts::filament/resources/journal.form.tabs.advanced-settings.fields.communication-standard')),
                                                     ]),
                                             ]),
@@ -337,7 +340,8 @@ class JournalResource extends Resource
                                                 Select::make('company_id')
                                                     ->label(__('accounts::filament/resources/journal.form.general.fields.company'))
                                                     ->disabled()
-                                                    ->relationship('company', 'name')
+                                                    ->dehydrated()
+                                                    ->options(fn () => Company::pluck('name', 'id'))
                                                     ->default(Auth::user()->default_company_id)
                                                     ->required(),
                                             ]),

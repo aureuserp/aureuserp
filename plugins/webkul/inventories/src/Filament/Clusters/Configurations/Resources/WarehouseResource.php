@@ -2,6 +2,7 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources;
 
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -54,7 +55,7 @@ class WarehouseResource extends Resource
 
     protected static ?string $model = Warehouse::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-storefront';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-storefront';
 
     protected static ?int $navigationSort = 1;
 

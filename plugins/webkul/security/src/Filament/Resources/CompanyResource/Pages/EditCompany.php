@@ -7,7 +7,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Filament\Resources\CompanyResource;
 
 class EditCompany extends EditRecord
@@ -39,14 +38,6 @@ class EditCompany extends EditRecord
                         ->title(__('security::filament/resources/company/pages/edit-company.header-actions.delete.notification.title'))
                         ->body(__('security::filament/resources/company/pages/edit-company.header-actions.delete.notification.body'))
                 ),
-        ];
-    }
-
-    protected function mutateFormDataBeforeSave(array $data): array
-    {
-        return [
-            'creator_id' => Auth::user()->id,
-            ...$data,
         ];
     }
 }

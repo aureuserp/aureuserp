@@ -6,6 +6,7 @@ use Exception;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\MoveState;
@@ -105,16 +106,16 @@ class AccountManager
         }
 
         if ($record->isSaleDocument()) {
-            $record->partner?->increment('customer_rank');
+            $record->partner?->update(['customer_rank' => DB::raw('COALESCE(customer_rank, 0) + 1')]);
         } elseif ($record->isPurchaseDocument()) {
-            $record->partner?->increment('supplier_rank');
+            $record->partner?->update(['supplier_rank' => DB::raw('COALESCE(supplier_rank, 0) + 1')]);
         } elseif ($record->move_type == MoveType::ENTRY) {
             $record->lines
                 ->filter(fn ($line) => $line->partner_id && $line->account->account_type == AccountType::ASSET_RECEIVABLE)
                 ->pluck('partner')
                 ->unique()
                 ->each(function ($partner) {
-                    $partner?->increment('customer_rank');
+                    $partner?->update(['customer_rank' => DB::raw('COALESCE(customer_rank, 0) + 1')]);
                 });
 
             $record->lines
@@ -122,7 +123,7 @@ class AccountManager
                 ->pluck('partner')
                 ->unique()
                 ->each(function ($partner) {
-                    $partner?->increment('supplier_rank');
+                    $partner?->update(['supplier_rank' => DB::raw('COALESCE(supplier_rank, 0) + 1')]);
                 });
         }
 

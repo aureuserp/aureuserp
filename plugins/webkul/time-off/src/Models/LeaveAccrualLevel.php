@@ -4,6 +4,8 @@ namespace Webkul\TimeOff\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Illuminate\Support\Facades\Auth;
@@ -54,7 +56,7 @@ class LeaveAccrualLevel extends Model implements Sortable
         return $this->belongsTo(LeaveAccrualPlan::class, 'accrual_plan_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }

@@ -4,6 +4,7 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Currency;
@@ -22,7 +23,7 @@ class PartialReconcile extends Model
         'debit_currency_id',
         'credit_currency_id',
         'company_id',
-        'created_by',
+        'creator_id',
         'max_date',
         'amount',
         'debit_amount_currency',
@@ -54,31 +55,15 @@ class PartialReconcile extends Model
         return $this->belongsTo(Currency::class, 'debit_currency_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($partialReconcile) {
-            $partialReconcile->computeCreatedBy();
-        });
-
-        static::saving(function ($partialReconcile) {
-            $partialReconcile->computeDebitCurrencyId();
-
-            $partialReconcile->computeCreditCurrencyId();
-
-            $partialReconcile->computeMaxDate();
-        });
     }
 
     public function computeCreatedBy()
     {
         $this->created_by = Auth::user()->id ?? null;
+        return $this->belongsTo(User::class, 'creator_id');
     }
 
     public function computeDebitCurrencyId()
@@ -98,5 +83,22 @@ class PartialReconcile extends Model
         $creditDate = $this->creditMove->move->date;
 
         $this->max_date = ($debitDate > $creditDate) ? $debitDate : $creditDate;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($partialReconcile) {
+            $partialReconcile->creator_id ??= Auth::id();
+        });
+
+        static::saving(function ($partialReconcile) {
+            $partialReconcile->computeDebitCurrencyId();
+
+            $partialReconcile->computeCreditCurrencyId();
+
+            $partialReconcile->computeMaxDate();
+        });
     }
 }

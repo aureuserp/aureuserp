@@ -63,7 +63,7 @@ class ActivityPlanResource extends BaseActivityPlanResource
                     ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.columns.status'))
                     ->sortable()
                     ->boolean(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -136,7 +136,7 @@ class ActivityPlanResource extends BaseActivityPlanResource
                 Group::make('name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.groups.name'))
                     ->collapsible(),
-                Group::make('createdBy.name')
+                Group::make('creator.name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/activity-plan.table.groups.created-by'))
                     ->collapsible(),
                 Group::make('is_active')

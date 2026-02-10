@@ -3,6 +3,7 @@
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources;
 
 use Filament\Actions\Action;
+use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Database\Eloquent\Model;
@@ -15,10 +16,13 @@ use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\Mana
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\ViewRefund;
 use Webkul\Invoice\Livewire\InvoiceSummary;
 use Webkul\Invoice\Models\Refund;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 
 class RefundResource extends BaseRefundResource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = Refund::class;
 
     protected static ?int $navigationSort = 2;
@@ -26,6 +30,8 @@ class RefundResource extends BaseRefundResource
     protected static bool $shouldRegisterNavigation = true;
 
     protected static ?string $cluster = Vendors::class;
+
+    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function getNavigationGroup(): ?string
     {
@@ -75,12 +81,14 @@ class RefundResource extends BaseRefundResource
                 Action::make('openProduct')
                     ->tooltip('Open product')
                     ->icon('heroicon-m-arrow-top-right-on-square')
-                    ->url(fn (array $arguments, Get $get): ?string => ProductResource::getUrl('edit', [
-                        'record' => $get("products.{$arguments['item']}.product_id"),
-                    ])
+                    ->url(
+                        fn (array $arguments, Get $get): ?string => ProductResource::getUrl('edit', [
+                            'record' => $get("products.{$arguments['item']}.product_id"),
+                        ])
                     )
                     ->openUrlInNewTab()
-                    ->visible(fn (array $arguments, Get $get): bool => filled($get("products.{$arguments['item']}.product_id"))
+                    ->visible(
+                        fn (array $arguments, Get $get): bool => filled($get("products.{$arguments['item']}.product_id"))
                     ),
             ]);
     }

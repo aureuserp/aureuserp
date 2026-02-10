@@ -6,6 +6,8 @@ use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Webkul\Account\Database\Factories\TaxFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Enums\AmountType;
@@ -77,7 +79,7 @@ class Tax extends Model implements Sortable
         return $this->belongsTo(Country::class, 'country_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -158,6 +160,10 @@ class Tax extends Model implements Sortable
     protected static function boot()
     {
         parent::boot();
+
+        static::creating(function ($tax) {
+            $tax->creator_id ??= Auth::id();
+        });
 
         static::saved(function (self $tax) {
             try {

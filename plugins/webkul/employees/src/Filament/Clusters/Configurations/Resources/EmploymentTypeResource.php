@@ -90,7 +90,7 @@ class EmploymentTypeResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->label(__('employees::filament/clusters/configurations/resources/employment-type.table.columns.country')),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('employees::filament/clusters/configurations/resources/employment-type.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -123,7 +123,7 @@ class EmploymentTypeResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('createdBy')
+                        RelationshipConstraint::make('creator')
                             ->label(__('employees::filament/clusters/configurations/resources/employment-type.table.filters.created-by'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -150,7 +150,7 @@ class EmploymentTypeResource extends Resource
                 Group::make('country.name')
                     ->label(__('employees::filament/clusters/configurations/resources/employment-type.table.groups.country'))
                     ->collapsible(),
-                Group::make('createdBy.name')
+                Group::make('creator.name')
                     ->label(__('employees::filament/clusters/configurations/resources/employment-type.table.groups.created-by'))
                     ->collapsible(),
                 Group::make('created_at')

@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources;
 
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -51,6 +52,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Webkul\Account\Enums\CommunicationStandard;
+use Webkul\Account\Enums\CommunicationType;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
@@ -75,6 +78,7 @@ use Webkul\Account\Settings\CustomerInvoiceSettings;
 use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
 use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Product\Settings\ProductSettings;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -85,11 +89,13 @@ use Webkul\Support\Models\UOM;
 
 class InvoiceResource extends Resource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = AccountMove::class;
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-receipt-percent';
 
     protected static bool $shouldRegisterNavigation = false;
 
@@ -222,7 +228,26 @@ class InvoiceResource extends Resource
                                                     ->preload()
                                                     ->required()
                                                     ->label(__('accounts::filament/resources/invoice.form.section.general.fields.journal'))
-                                                    ->createOptionForm(fn ($form) => JournalResource::form($form))
+                                                    ->createOptionForm(function ($form) {
+                                                        $schema = JournalResource::form($form);
+
+                                                        // Find and disable the type field
+                                                        $components = $schema->getComponents();
+                                                        foreach ($components as $component) {
+                                                            static::disableTypeField($component);
+                                                        }
+
+                                                        return $schema;
+                                                    })
+                                                    ->createOptionAction(
+                                                        fn (Action $action, Get $get) => $action
+                                                            ->fillForm(fn () => [
+                                                                'type'                     => JournalType::SALE,
+                                                                'invoice_reference_type'   => CommunicationType::INVOICE,
+                                                                'invoice_reference_model'  => CommunicationStandard::AUREUS,
+                                                                'company_id'               => $get('company_id') ?? Auth::user()->default_company_id,
+                                                            ])
+                                                    )
                                                     ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
 
                                                 Select::make('currency_id')
@@ -400,6 +425,11 @@ class InvoiceResource extends Resource
                 TextColumn::make('state')
                     ->placeholder('-')
                     ->label(__('accounts::filament/resources/invoice.table.columns.state'))
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: false),
+                TextColumn::make('creator.name')
+                    ->placeholder('-')
+                    ->label(__('accounts::filament/resources/invoice.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('invoice_partner_display_name')
@@ -1502,5 +1532,18 @@ class InvoiceResource extends Resource
                 $query->where('move_type', MoveType::OUT_INVOICE);
             })
             ->orderByDesc('id');
+    }
+
+    protected static function disableTypeField($component): void
+    {
+        if (method_exists($component, 'getChildComponents')) {
+            foreach ($component->getChildComponents() as $child) {
+                static::disableTypeField($child);
+            }
+        }
+
+        if (method_exists($component, 'getName') && $component->getName() === 'type') {
+            $component->disabled()->dehydrated();
+        }
     }
 }

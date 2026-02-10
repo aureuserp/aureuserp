@@ -5,7 +5,6 @@ namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCat
 use Filament\Notifications\Notification;
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\StorageCategoryResource;
 
 class CreateStorageCategory extends CreateRecord
@@ -37,12 +36,5 @@ class CreateStorageCategory extends CreateRecord
             ->success()
             ->title(__('inventories::filament/clusters/configurations/resources/storage-category/pages/create-storage-category.notification.title'))
             ->body(__('inventories::filament/clusters/configurations/resources/storage-category/pages/create-storage-category.notification.body'));
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['creator_id'] = Auth::id();
-
-        return $data;
     }
 }

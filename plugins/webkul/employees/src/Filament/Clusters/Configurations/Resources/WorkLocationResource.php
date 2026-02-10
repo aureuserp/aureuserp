@@ -113,7 +113,7 @@ class WorkLocationResource extends Resource
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.table.columns.location-number'))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -137,7 +137,7 @@ class WorkLocationResource extends Resource
                 Group::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.table.groups.name'))
                     ->collapsible(),
-                Group::make('createdBy.name')
+                Group::make('creator.name')
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.table.groups.created-by'))
                     ->collapsible(),
                 Group::make('location_type')
@@ -183,7 +183,7 @@ class WorkLocationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('createdBy')
+                        RelationshipConstraint::make('creator')
                             ->label(__('employees::filament/clusters/configurations/resources/work-location.table.filters.created-by'))
                             ->icon('heroicon-o-user')
                             ->multiple()

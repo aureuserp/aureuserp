@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources;
 
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -32,7 +33,7 @@ class AccountTagResource extends Resource
 {
     protected static ?string $model = Tag::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tag';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-tag';
 
     protected static bool $shouldRegisterNavigation = false;
 
@@ -82,7 +83,7 @@ class AccountTagResource extends Resource
                     ->maxValue(99999999999)
                     ->label(__('accounts::filament/resources/account-tag.table.columns.country'))
                     ->sortable(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('accounts::filament/resources/account-tag.table.columns.created-by'))
                     ->sortable(),
                 TextColumn::make('applicability')
@@ -109,7 +110,7 @@ class AccountTagResource extends Resource
                 Tables\Grouping\Group::make('country.name')
                     ->label(__('accounts::filament/resources/account-tag.table.groups.country'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('createdBy.name')
+                Tables\Grouping\Group::make('creator.name')
                     ->label(__('accounts::filament/resources/account-tag.table.groups.created-by'))
                     ->collapsible(),
                 Tables\Grouping\Group::make('applicability')

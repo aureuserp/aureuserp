@@ -22,11 +22,6 @@ class Department extends Model
 
     protected $table = 'employees_departments';
 
-    public function getModelTitle(): string
-    {
-        return __('employees::models/department.title');
-    }
-
     protected $fillable = [
         'name',
         'manager_id',
@@ -39,7 +34,12 @@ class Department extends Model
         'color',
     ];
 
-    public function createdBy(): BelongsTo
+    public function getModelTitle(): string
+    {
+        return __('employees::models/department.title');
+    }
+
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -84,7 +84,7 @@ class Department extends Model
         parent::boot();
 
         static::creating(function ($department) {
-            $department->creator_id = Auth::id();
+            $department->creator_id ??= Auth::id();
 
             if (! static::validateNoRecursion($department)) {
                 throw new InvalidArgumentException('Circular reference detected in department hierarchy');

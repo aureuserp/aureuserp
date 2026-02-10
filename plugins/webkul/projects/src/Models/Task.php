@@ -19,17 +19,13 @@ use Webkul\Project\Database\Factories\TaskFactory;
 use Webkul\Project\Enums\TaskState;
 use Webkul\Security\Models\Scopes\UserPermissionScope;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 
 class Task extends Model implements Sortable
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SoftDeletes, SortableTrait;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope, SoftDeletes, SortableTrait;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'projects_tasks';
 
     public function getModelTitle(): string
@@ -37,11 +33,6 @@ class Task extends Model implements Sortable
         return __('projects::models/task.title');
     }
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'title',
         'description',
@@ -69,11 +60,6 @@ class Task extends Model implements Sortable
         'creator_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'is_active'           => 'boolean',
         'deadline'            => 'datetime',
@@ -118,6 +104,17 @@ class Task extends Model implements Sortable
         'order_column_name'  => 'sort',
         'sort_when_creating' => true,
     ];
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        $this->setPivotTable('projects_task_users');
+
+        $this->setPivotForeignKey('task_id');
+
+        $this->setPivotRelatedKey('user_id');
+    }
 
     public function parent(): BelongsTo
     {
@@ -179,17 +176,16 @@ class Task extends Model implements Sortable
         static::addGlobalScope(new UserPermissionScope('users'));
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($task) {
-            $task->creator_id = Auth::id();
+            $authUser = Auth::user();
 
-            $task->company_id = Auth::user()->default_company_id;
+            $task->creator_id ??= $authUser->id;
+
+            $task->company_id ??= $authUser->default_company_id;
         });
 
         static::updated(function ($task) {

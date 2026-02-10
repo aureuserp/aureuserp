@@ -4,7 +4,6 @@ namespace Webkul\Product\Filament\Resources\AttributeResource\Pages;
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Product\Filament\Resources\AttributeResource;
 
 class CreateAttribute extends CreateRecord
@@ -22,12 +21,5 @@ class CreateAttribute extends CreateRecord
             ->success()
             ->title(__('products::filament/resources/attribute/pages/create-attribute.notification.title'))
             ->body(__('products::filament/resources/attribute/pages/create-attribute.notification.body'));
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['creator_id'] = Auth::id();
-
-        return $data;
     }
 }

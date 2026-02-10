@@ -4,9 +4,10 @@ namespace Webkul\Employee\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
-use Illuminate\Support\Facades\Auth;
 
 class CalendarLeaves extends Model
 {
@@ -24,7 +25,7 @@ class CalendarLeaves extends Model
         'creator_id',
     ];
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -44,9 +45,11 @@ class CalendarLeaves extends Model
         parent::boot();
 
         static::creating(function ($calendarLeave) {
-            $calendarLeave->creator_id = Auth::id();
+            $authUser = Auth::user();
 
-            $calendarLeave->company_id ??= Auth::user()->default_company_id;
+            $calendarLeave->creator_id ??= $authUser->id;
+
+            $calendarLeave->company_id ??= $authUser->default_company_id;
         });
     }
 }

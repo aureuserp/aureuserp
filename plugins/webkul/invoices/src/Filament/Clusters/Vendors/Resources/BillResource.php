@@ -14,10 +14,13 @@ use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource\Pages\Manage
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource\Pages\ViewBill;
 use Webkul\Invoice\Livewire\InvoiceSummary;
 use Webkul\Invoice\Models\Bill;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 
 class BillResource extends BaseBillResource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = Bill::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-credit-card';
@@ -66,12 +69,14 @@ class BillResource extends BaseBillResource
                 Action::make('openProduct')
                     ->tooltip('Open product')
                     ->icon('heroicon-m-arrow-top-right-on-square')
-                    ->url(fn (array $arguments, Get $get): ?string => ProductResource::getUrl('edit', [
-                        'record' => $get("products.{$arguments['item']}.product_id"),
-                    ])
+                    ->url(
+                        fn (array $arguments, Get $get): ?string => ProductResource::getUrl('edit', [
+                            'record' => $get("products.{$arguments['item']}.product_id"),
+                        ])
                     )
                     ->openUrlInNewTab()
-                    ->visible(fn (array $arguments, Get $get): bool => filled($get("products.{$arguments['item']}.product_id"))
+                    ->visible(
+                        fn (array $arguments, Get $get): bool => filled($get("products.{$arguments['item']}.product_id"))
                     ),
             ]);
     }

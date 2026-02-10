@@ -4,6 +4,7 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 
@@ -23,7 +24,7 @@ class FullReconcile extends Model
         return $this->belongsTo(Move::class, 'exchange_move_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_id');
     }
@@ -33,12 +34,7 @@ class FullReconcile extends Model
         parent::boot();
 
         static::creating(function ($fullReconcile) {
-            $fullReconcile->computeCreatedId();
+            $fullReconcile->created_id ??= Auth::id();
         });
-    }
-
-    public function computeCreatedId()
-    {
-        $this->created_id = Auth::user()->id ?? null;
     }
 }

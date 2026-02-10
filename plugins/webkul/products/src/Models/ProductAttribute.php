@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Product\Database\Factories\ProductAttributeFactory;
@@ -16,18 +17,8 @@ class ProductAttribute extends Model implements Sortable
 {
     use HasFactory, SortableTrait;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'products_product_attributes';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'sort',
         'product_id',
@@ -68,6 +59,10 @@ class ProductAttribute extends Model implements Sortable
     protected static function boot()
     {
         parent::boot();
+
+        static::creating(function ($attribute) {
+            $attribute->creator_id ??= Auth::id();
+        });
 
         static::deleting(function ($attribute) {
             $attribute->product->variants()->forceDelete();

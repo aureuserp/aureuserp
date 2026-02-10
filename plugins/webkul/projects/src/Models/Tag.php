@@ -14,18 +14,8 @@ class Tag extends Model
 {
     use HasFactory, SoftDeletes;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'projects_tags';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'color',
@@ -42,7 +32,7 @@ class Tag extends Model
         parent::boot();
 
         static::creating(function ($tag) {
-            $tag->creator_id = Auth::id();
+            $tag->creator_id ??= Auth::id();
         });
     }
 

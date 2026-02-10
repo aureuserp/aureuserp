@@ -3,6 +3,8 @@
 namespace Webkul\Sale\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Security\Models\User;
@@ -52,8 +54,17 @@ class OrderOption extends Model implements Sortable
         return $this->belongsTo(UOM::class, 'uom_id');
     }
 
-    public function creator()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($orderOption) {
+            $orderOption->creator_id ??= Auth::id();
+        });
     }
 }

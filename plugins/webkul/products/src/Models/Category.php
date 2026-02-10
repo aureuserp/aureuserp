@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Product\Database\Factories\CategoryFactory;
 use Webkul\Security\Models\User;
 
@@ -17,11 +17,6 @@ class Category extends Model
 {
     use HasChatter, HasFactory, HasLogActivity;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'products_categories';
 
     public function getModelTitle(): string
@@ -29,11 +24,6 @@ class Category extends Model
         return __('products::models/category.title');
     }
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'full_name',
@@ -83,11 +73,15 @@ class Category extends Model
         parent::boot();
 
         static::creating(function ($category) {
-            $category->creator_id = Auth::id();
-
             if (! static::validateNoRecursion($category)) {
                 throw new InvalidArgumentException('Circular reference detected in product category hierarchy');
             }
+
+            $authUser = Auth::user();
+
+            $category->creator_id ??= $authUser->id;
+
+            $category->company_id ??= $authUser->default_company_id;
 
             static::handleProductCategoryData($category);
         });

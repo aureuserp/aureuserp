@@ -3,6 +3,8 @@
 namespace Webkul\Recruitment\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +14,7 @@ class ApplicantCategory extends Model
 
     protected $fillable = ['name', 'color', 'creator_id'];
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }

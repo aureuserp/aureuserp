@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\LotFactory;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Security\Models\User;
@@ -16,18 +17,8 @@ class Lot extends Model
 {
     use HasFactory;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_lots';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'description',
@@ -45,11 +36,6 @@ class Lot extends Model
         'creator_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'properties'      => 'array',
         'expiry_reminded' => 'boolean',
@@ -102,5 +88,14 @@ class Lot extends Model
     protected static function newFactory(): LotFactory
     {
         return LotFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($lot) {
+            $lot->creator_id ??= Auth::id();
+        });
     }
 }

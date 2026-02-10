@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Database\Factories\UOMFactory;
 
@@ -14,18 +15,8 @@ class UOM extends Model
 {
     use HasFactory, SoftDeletes;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'unit_of_measures';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'type',
         'name',
@@ -131,5 +122,14 @@ class UOM extends Model
     protected static function newFactory(): UOMFactory
     {
         return UOMFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($uom) {
+            $uom->creator_id ??= Auth::id();
+        });
     }
 }

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Database\Factories\BankFactory;
 
@@ -14,11 +15,6 @@ class Bank extends Model
 {
     use HasFactory, SoftDeletes;
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'code',
@@ -48,9 +44,6 @@ class Bank extends Model
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     protected static function boot()
     {
         parent::boot();

@@ -19,29 +19,25 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Project\Database\Factories\ProjectFactory;
 use Webkul\Security\Models\Scopes\UserPermissionScope;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 
 class Project extends Model implements Sortable
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SoftDeletes, SortableTrait;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope, SoftDeletes, SortableTrait;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'projects_projects';
+
+    public $sortable = [
+        'order_column_name'  => 'sort',
+        'sort_when_creating' => true,
+    ];
 
     public function getModelTitle(): string
     {
         return __('projects::models/project.title');
     }
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'tasks_label',
@@ -63,11 +59,6 @@ class Project extends Model implements Sortable
         'creator_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'start_date'              => 'date',
         'end_date'                => 'date',
@@ -106,14 +97,6 @@ class Project extends Model implements Sortable
         ];
     }
 
-    public $sortable = [
-        'order_column_name'  => 'sort',
-        'sort_when_creating' => true,
-    ];
-
-    /**
-     * Get the user's first name.
-     */
     protected function plannedDate(): Attribute
     {
         return Attribute::make(
@@ -185,15 +168,6 @@ class Project extends Model implements Sortable
         return $this->belongsToMany(Tag::class, 'projects_project_tag', 'project_id', 'tag_id');
     }
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($project) {
-            $project->creator_id = Auth::id();
-        });
-    }
-
     protected static function booted()
     {
         static::addGlobalScope(new UserPermissionScope('user'));
@@ -202,5 +176,14 @@ class Project extends Model implements Sortable
     protected static function newFactory(): ProjectFactory
     {
         return ProjectFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($project) {
+            $project->creator_id ??= Auth::id();
+        });
     }
 }

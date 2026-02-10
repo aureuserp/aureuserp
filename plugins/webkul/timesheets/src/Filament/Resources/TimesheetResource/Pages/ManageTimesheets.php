@@ -23,11 +23,6 @@ class ManageTimesheets extends ManageRecords
             CreateAction::make()
                 ->label(__('timesheets::filament/resources/timesheet/manage-timesheets.header-actions.create.label'))
                 ->icon('heroicon-o-plus-circle')
-                ->mutateDataUsing(function (array $data): array {
-                    $data['creator_id'] = Auth::id();
-
-                    return $data;
-                })
                 ->successNotification(
                     Notification::make()
                         ->success()

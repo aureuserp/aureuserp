@@ -2,6 +2,7 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Products\Resources;
 
+use BackedEnum;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
@@ -46,7 +47,7 @@ class PackageResource extends Resource
 {
     protected static ?string $model = Package::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cube';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-cube';
 
     protected static ?string $cluster = Products::class;
 

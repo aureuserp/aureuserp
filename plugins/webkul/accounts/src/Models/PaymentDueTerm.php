@@ -6,6 +6,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Webkul\Account\Database\Factories\PaymentDueTermFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 
 class PaymentDueTerm extends Model
@@ -29,7 +31,7 @@ class PaymentDueTerm extends Model
         return $this->belongsTo(PaymentTerm::class, 'payment_id');
     }
 
-    public function creator()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -57,6 +59,15 @@ class PaymentDueTerm extends Model
         }
 
         return $dueDate->copy()->addDays($this->nb_days);
+    }
+    
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($paymentDueTerm) {
+            $paymentDueTerm->creator_id ??= Auth::id();
+        });
     }
 
     protected static function newFactory(): PaymentDueTermFactory
