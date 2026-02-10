@@ -58,7 +58,7 @@ class AccountManager
         $this->isConfirmAllowedForMove($record);
 
         if ($record->reversedEntry?->state == MoveState::POSTED) {
-            $this->reconcileReversedMoves([$record->reversedEntry], [$record]);
+            $this->reconcileReversedMoves(collect([$record->reversedEntry]), [$record]);
 
             $tempNumbers = $record->lines
                 ->filter(
