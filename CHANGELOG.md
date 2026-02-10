@@ -25,6 +25,7 @@
 * #1001 [fixed] - 500 Internal Server Error When Creating Journal from Create Invoice (Sale Type)
 * #964 [fixed] - Purchases Plugin: RFQ Print Missing Info & No PO Print Action
 * #889 [fixed] - Currency Management Resource
+* #554 [fixed] - Resource Permission Scope (Individual, Group, Global) Not Working as Expected
 
 
 # 🚀 CHANGELOG — v1.3.0-BETA2
