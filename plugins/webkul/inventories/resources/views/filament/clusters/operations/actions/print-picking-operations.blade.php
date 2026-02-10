@@ -48,7 +48,9 @@
             margin: 25px 0;
             padding: 15px 0;
             border-bottom: 2px solid #1a4587;
-            display: inline-block;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             width: 100%;
         }
 
@@ -159,12 +161,14 @@
             
             <!-- Header Section -->
             <div class="header">
-                <div class="left-info">
-                    <div style="font-weight: bold; margin-bottom: 15px;">Warehouse Address</div>
-                    
-                    @if ($record->destinationLocation->warehouse->partnerAddress)
-                        <?php $address = $record->destinationLocation->warehouse->partnerAddress ?>
+                @php
+                    $address = $record->destinationLocation->warehouse?->partnerAddress ?? $record->sourceLocation->warehouse?->partnerAddress;
+                @endphp
 
+                @if ($address)
+                    <div class="left-info">
+                        <div style="font-weight: bold; margin-bottom: 15px;">Warehouse Address</div>
+                        
                         <div style="margin-top: 15px;">
                             <div>
                                 {{ $address->street1 }}
@@ -204,13 +208,14 @@
                                 </div>
                             @endif
                         </div>
-                    @endif
-                </div>
+                    </div>
+                @endif
 
-                <div class="right-info">
-                    <div style="font-weight: bold; margin-bottom: 15px;">Vendor Address</div>
                     
-                    @if($record->partner)
+                @if($record->partner)
+                    <div class="right-info">
+                        <div style="font-weight: bold; margin-bottom: 15px;">Vendor Address</div>
+                        
                         <div style="margin-top: 15px;">
                             <div>{{ $record->partner->name }}</div>
                             
@@ -252,8 +257,8 @@
                                 </div>
                             @endif
                         </div>
-                    @endif
-                </div>
+                    </div>
+                @endif
                 
                 <div class="clearfix"></div>
             </div>
@@ -262,7 +267,7 @@
             <div class="slip-title">
                 <span>Packing Slip #{{ $record->name }}</span>
                 
-                <div class="barcode-container" style="float: right;">
+                <div class="barcode-container">
                     {!! DNS1D::getBarcodeHTML($record->name, 'C128', 2, 44) !!}
                 </div>
             </div>
