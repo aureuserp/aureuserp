@@ -108,7 +108,7 @@ class Category extends Model
             $parent = static::find($productCategory->parent_id);
 
             if ($parent) {
-                $productCategory->parent_path = $parent->parent_path.$parent->id.'/';
+                $productCategory->parent_path = $parent->parent_path . $parent->id . '/';
             } else {
                 $productCategory->parent_path = '/';
                 $productCategory->parent_id = null;
@@ -157,8 +157,6 @@ class Category extends Model
             $authUser = Auth::user();
 
             $productCategory->creator_id ??= $authUser->id;
-
-            $productCategory->company_id ??= $authUser->default_company_id;
 
             static::handleProductCategoryData($productCategory);
         });
