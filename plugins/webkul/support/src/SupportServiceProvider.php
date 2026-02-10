@@ -91,7 +91,7 @@ class SupportServiceProvider extends PackageServiceProvider
 
     protected function registerHooks(): void
     {
-        $version = '1.3.0-BETA2';
+        $version = '1.3.0-BETA3';
 
         FilamentView::registerRenderHook(
             PanelsRenderHook::USER_MENU_PROFILE_BEFORE,
