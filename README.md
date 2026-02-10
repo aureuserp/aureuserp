@@ -382,6 +382,6 @@ Need help or want to connect with other AureusERP users?
 
 Made with ❤️ by [Webkul](https://webkul.com)
 
-[⬆ Back to Top](#-aureuserp)
+[⬆ Back to Top](#-table-of-contents)
 
 </div>
