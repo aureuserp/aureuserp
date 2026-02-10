@@ -48,7 +48,9 @@
             margin: 25px 0;
             padding: 15px 0;
             border-bottom: 2px solid #1a4587;
-            display: inline-block;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             width: 100%;
         }
 
@@ -265,7 +267,7 @@
             <div class="slip-title">
                 <span>Packing Slip #{{ $record->name }}</span>
                 
-                <div class="barcode-container" style="float: right;">
+                <div class="barcode-container">
                     {!! DNS1D::getBarcodeHTML($record->name, 'C128', 2, 44) !!}
                 </div>
             </div>
