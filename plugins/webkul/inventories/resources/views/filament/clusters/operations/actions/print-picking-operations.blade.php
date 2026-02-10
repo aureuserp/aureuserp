@@ -159,12 +159,14 @@
             
             <!-- Header Section -->
             <div class="header">
-                <div class="left-info">
-                    <div style="font-weight: bold; margin-bottom: 15px;">Warehouse Address</div>
-                    
-                    @if ($record->destinationLocation->warehouse->partnerAddress)
-                        <?php $address = $record->destinationLocation->warehouse->partnerAddress ?>
+                @php
+                    $address = $record->destinationLocation->warehouse?->partnerAddress ?? $record->sourceLocation->warehouse?->partnerAddress;
+                @endphp
 
+                @if ($address)
+                    <div class="left-info">
+                        <div style="font-weight: bold; margin-bottom: 15px;">Warehouse Address</div>
+                        
                         <div style="margin-top: 15px;">
                             <div>
                                 {{ $address->street1 }}
@@ -204,13 +206,14 @@
                                 </div>
                             @endif
                         </div>
-                    @endif
-                </div>
+                    </div>
+                @endif
 
-                <div class="right-info">
-                    <div style="font-weight: bold; margin-bottom: 15px;">Vendor Address</div>
                     
-                    @if($record->partner)
+                @if($record->partner)
+                    <div class="right-info">
+                        <div style="font-weight: bold; margin-bottom: 15px;">Vendor Address</div>
+                        
                         <div style="margin-top: 15px;">
                             <div>{{ $record->partner->name }}</div>
                             
@@ -252,8 +255,8 @@
                                 </div>
                             @endif
                         </div>
-                    @endif
-                </div>
+                    </div>
+                @endif
                 
                 <div class="clearfix"></div>
             </div>
