@@ -39,7 +39,7 @@
 9. [Contributing](#-contributing)
 10. [License](#-license)
 11. [Security](#-security)
-12. [Support](#-support)
+12. [Support & Community](#-support--community)
 
 ---
 
