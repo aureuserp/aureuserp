@@ -51,6 +51,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Webkul\Account\Enums\CommunicationStandard;
+use Webkul\Account\Enums\CommunicationType;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveState;
@@ -223,6 +225,15 @@ class InvoiceResource extends Resource
                                                     ->required()
                                                     ->label(__('accounts::filament/resources/invoice.form.section.general.fields.journal'))
                                                     ->createOptionForm(fn ($form) => JournalResource::form($form))
+                                                    ->createOptionAction(
+                                                        fn (Action $action, Get $get) => $action
+                                                            ->fillForm(fn () => [
+                                                                'type'  => JournalType::SALE,
+                                                                'invoice_reference_type'  => CommunicationType::INVOICE,
+                                                                'invoice_reference_model'  => CommunicationStandard::AUREUS,
+                                                                'company_id' => $get('company_id') ?? Auth::user()->default_company_id,
+                                                            ])
+                                                    )
                                                     ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL])),
 
                                                 Select::make('currency_id')
