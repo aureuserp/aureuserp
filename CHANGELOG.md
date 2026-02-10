@@ -21,6 +21,7 @@
 * [fixed] - Pay invoice/bill issue fixed
 * [fixed] - Fixed global search issues
 * [fixed] - Fix query to use tableView ID instead of view_key for fetching favorites
+* [fixed] - Fixed print Picking Operation slip issue in inventory plugin
 * #1002 [fixed] - Journal Shows ID Instead of Name When Created from Invoice (Purchase Type)
 * #1001 [fixed] - 500 Internal Server Error When Creating Journal from Create Invoice (Sale Type)
 * #964 [fixed] - Purchases Plugin: RFQ Print Missing Info & No PO Print Action
