@@ -1,3 +1,30 @@
+# 🚀 CHANGELOG — v1.3.0-BETA3
+
+### 🧩 Features
+
+* Added Two-Factor Authentication
+
+### ✨ Improvements
+
+* Upgraded to Filament v4.5
+* Added expand/collapse feature in accounting reporting
+* Now pages and widgets in roles are plugins based
+* Remove unnecessary actions from record pages
+* Pages and widgets under role form now will be appearing in plugin section
+* Reset active table view to default after deleting a table view
+* Updated color representation for SENT state in OrderState enums
+
+### 🐛 Fixes
+
+* [fixed] - Permission issues fixed
+* [fixed] - Fixed partner ranking issue if ranking column has null value
+* [fixed] - Pay invoice/bill issue fixed
+* [fixed] - Fixed global search issues
+* [fixed] - Fix query to use tableView ID instead of view_key for fetching favorites
+* #964 [fixed] - Purchases Plugin: RFQ Print Missing Info & No PO Print Action
+* #889 [fixed] - Currency Management Resource
+
+
 # 🚀 CHANGELOG — v1.3.0-BETA2
 
 ### 🧩 Features
