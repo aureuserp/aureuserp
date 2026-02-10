@@ -4,6 +4,8 @@ namespace Webkul\TimeOff\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\TimeOff\Enums\AccruedGainTime;
@@ -49,7 +51,7 @@ class LeaveAccrualPlan extends Model
         return $this->belongsTo(Company::class, 'company_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -64,9 +66,11 @@ class LeaveAccrualPlan extends Model
         parent::boot();
 
         static::creating(function ($leaveAccrualPlan) {
-            $leaveAccrualPlan->creator_id = filament()->auth()->id();
+            $authUser = Auth::user();
 
-            $leaveAccrualPlan->company_id ??= filament()->auth()->user()->default_company_id;
+            $leaveAccrualPlan->creator_id = $authUser->id;
+
+            $leaveAccrualPlan->company_id ??= $authUser->default_company_id;
         });
     }
 }

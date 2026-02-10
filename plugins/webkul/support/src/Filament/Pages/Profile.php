@@ -80,7 +80,7 @@ class Profile extends Page implements HasForms
                             ->maxSize(2048)
                             ->image()
                             ->imageEditor()
-                            ->imageEditorAspectRatios([
+                            ->imageEditorAspectRatioOptions([
                                 '1:1',
                             ])
                             ->columnSpanFull()

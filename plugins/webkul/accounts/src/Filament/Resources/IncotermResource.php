@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources;
 
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -26,7 +27,7 @@ class IncotermResource extends Resource
 {
     protected static ?string $model = Incoterm::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-globe-alt';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-globe-alt';
 
     protected static bool $shouldRegisterNavigation = false;
 
@@ -59,7 +60,7 @@ class IncotermResource extends Resource
                     ->label(__('accounts::filament/resources/incoterm.table.columns.name'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('accounts::filament/resources/incoterm.table.columns.created-by'))
                     ->searchable()
                     ->sortable(),

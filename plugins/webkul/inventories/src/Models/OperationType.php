@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Inventory\Database\Factories\OperationTypeFactory;
@@ -21,18 +22,8 @@ class OperationType extends Model implements Sortable
 {
     use HasFactory, SoftDeletes, SortableTrait;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_operation_types';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'type',
@@ -70,11 +61,6 @@ class OperationType extends Model implements Sortable
         'deleted_at',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'type'                               => Enums\OperationType::class,
         'reservation_method'                 => ReservationMethod::class,
@@ -144,5 +130,16 @@ class OperationType extends Model implements Sortable
     protected static function newFactory(): OperationTypeFactory
     {
         return OperationTypeFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($operationType) {
+            $operationType->creator_id ??= Auth::id();
+
+            $operationType->reservation_method = ReservationMethod::AT_CONFIRM;
+        });
     }
 }

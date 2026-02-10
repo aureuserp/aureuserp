@@ -4,6 +4,8 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Security\Models\User;
@@ -51,7 +53,7 @@ class FiscalPosition extends Model implements Sortable
         return $this->belongsTo(Country::class, 'country_group_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -75,5 +77,14 @@ class FiscalPosition extends Model implements Sortable
         return $mapping
             ? Account::find($mapping->account_destination_id)
             : $account;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($fiscalPosition) {
+            $fiscalPosition->creator_id ??= Auth::id();
+        });
     }
 }

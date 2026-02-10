@@ -5,6 +5,7 @@ namespace Webkul\Product\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Product\Database\Factories\PriceRuleItemFactory;
 use Webkul\Product\Enums\PriceRuleApplyTo;
 use Webkul\Product\Enums\PriceRuleBase;
@@ -17,18 +18,8 @@ class PriceRuleItem extends Model
 {
     use HasFactory;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'products_price_rule_items';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'apply_to',
         'display_apply_to',
@@ -53,11 +44,6 @@ class PriceRuleItem extends Model
         'creator_id',
     ];
 
-    /**
-     * Casts
-     *
-     * @var string
-     */
     protected $casts = [
         'starts_at' => 'datetime',
         'ends_at'   => 'datetime',
@@ -104,5 +90,14 @@ class PriceRuleItem extends Model
     protected static function newFactory(): PriceRuleItemFactory
     {
         return PriceRuleItemFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($priceRuleItem) {
+            $priceRuleItem->creator_id ??= Auth::id();
+        });
     }
 }

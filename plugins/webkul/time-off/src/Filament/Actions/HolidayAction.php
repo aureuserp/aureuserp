@@ -65,7 +65,7 @@ class HolidayAction extends Action
                 Placeholder::make('mandatory_holiday')
                     ->label(__('time-off::filament/actions/holiday-action.form.placeholders.mandatory-holiday'))
                     ->content(function () {
-                        $mandatoryHolidays = LeaveMandatoryDay::with('company', 'createdBy')->get();
+                        $mandatoryHolidays = LeaveMandatoryDay::with('company', 'creator')->get();
 
                         if ($mandatoryHolidays->isEmpty()) {
                             return new HtmlString('<p class="text-gray-500 dark:text-gray-400">No mandatory holidays found.</p>');

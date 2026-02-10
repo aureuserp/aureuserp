@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Security\Models\User;
@@ -43,7 +44,7 @@ class Account extends Model
         return $this->belongsTo(Currency::class);
     }
 
-    public function createdBy(): BelongsTo
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -134,5 +135,14 @@ class Account extends Model
         }
 
         return $query->pluck('account_id')->toArray();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($account) {
+            $account->creator_id ??= Auth::id();
+        });
     }
 }

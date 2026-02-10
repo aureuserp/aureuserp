@@ -130,7 +130,7 @@ class SkillTypeResource extends Resource
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.columns.status'))
                     ->sortable()
                     ->boolean(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -174,7 +174,7 @@ class SkillTypeResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('createdBy')
+                        RelationshipConstraint::make('creator')
                             ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.filters.created-by'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -199,7 +199,7 @@ class SkillTypeResource extends Resource
                 Group::make('color')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.groups.color'))
                     ->collapsible(),
-                Group::make('createdBy.name')
+                Group::make('creator.name')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type.table.groups.created-by'))
                     ->collapsible(),
                 Group::make('is_active')

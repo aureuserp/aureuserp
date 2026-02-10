@@ -5,6 +5,8 @@ namespace Webkul\Account\Models;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Security\Models\User;
@@ -33,7 +35,7 @@ class TaxPartition extends Model implements Sortable
         'sort_when_creating' => true,
     ];
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -105,5 +107,14 @@ class TaxPartition extends Model implements Sortable
         if ($negative && bccomp((string) $negative, '-100', 2) !== 0) {
             throw new Exception('Total negative factors must equal -100%.');
         }
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($taxPartition) {
+            $taxPartition->creator_id ??= Auth::id();
+        });
     }
 }

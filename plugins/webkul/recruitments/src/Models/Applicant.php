@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Employee\Models\Department;
@@ -149,7 +150,7 @@ class Applicant extends Model
         return $this->belongsTo(RefuseReason::class);
     }
 
-    public function createdBy(): BelongsTo
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -229,14 +230,64 @@ class Applicant extends Model
         return $employee;
     }
 
+    public function handleApplicationCreation(): void
+    {
+        $authUser = Auth::user();
+
+        $this->creator_id ??= $authUser->id;
+
+        $this->company_id ??= $authUser->default_company_id;
+    }
+
+    public function handleApplicationUpdation(): void
+    {
+        $original = $this->getRawOriginal();
+
+        if ($this->isDirty('recruiter_id')) {
+            $this->date_opened = now();
+        }
+
+        if ($this->isDirty('stage_id')) {
+            $this->date_last_stage_updated = now();
+
+            if (empty($original['stage_id'])) {
+                $this->notificationData = $this->getAttributes();
+            } else {
+                $this->last_stage_id = $original['stage_id'];
+            }
+        }
+
+        if ($this->relationLoaded('interviewer')) {
+            $oldInterviewers = collect(
+                $this->interviewer->pluck('id')
+            );
+
+            $newInterviewers = collect(
+                $this->recruitments_applicant_interviewers ?? []
+            );
+
+            if (
+                $oldInterviewers->isNotEmpty()
+                || $newInterviewers->isNotEmpty()
+            ) {
+                $this->interviewerChanges = [
+                    'old' => $oldInterviewers,
+                    'new' => $newInterviewers,
+                ];
+            }
+        }
+    }
+
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($applicant) {
-            $applicant->creator_id ??= filament()->auth()->id();
+            $applicant->handleApplicationCreation();
+        });
 
-            $applicant->company_id ??= filament()->auth()->user()->default_company_id;
+        static::updating(function ($applicant) {
+            $applicant->handleApplicationUpdation();
         });
     }
 }

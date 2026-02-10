@@ -24,7 +24,7 @@ class UtmStageSeeder extends Seeder
             [
                 'sort'       => 1,
                 'name'       => 'New',
-                'created_by' => $user?->id,
+                'creator_id' => $user?->id,
                 'created_at' => $now,
                 'updated_at' => $now,
             ],
@@ -32,7 +32,7 @@ class UtmStageSeeder extends Seeder
             [
                 'sort'       => 2,
                 'name'       => 'Schedule',
-                'created_by' => $user?->id,
+                'creator_id' => $user?->id,
                 'created_at' => $now,
                 'updated_at' => $now,
             ],
@@ -40,7 +40,7 @@ class UtmStageSeeder extends Seeder
             [
                 'sort'       => 3,
                 'name'       => 'Design',
-                'created_by' => $user?->id,
+                'creator_id' => $user?->id,
                 'created_at' => $now,
                 'updated_at' => $now,
             ],
@@ -48,7 +48,7 @@ class UtmStageSeeder extends Seeder
             [
                 'sort'       => 3,
                 'name'       => 'Sent',
-                'created_by' => $user?->id,
+                'creator_id' => $user?->id,
                 'created_at' => $now,
                 'updated_at' => $now,
             ],

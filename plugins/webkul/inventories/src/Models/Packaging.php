@@ -8,21 +8,13 @@ use Webkul\Product\Models\Packaging as BasePackaging;
 
 class Packaging extends BasePackaging
 {
-    /**
-     * Create a new Eloquent model instance.
-     *
-     * @return void
-     */
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
-        $this->mergeFillable([
-        ]);
+        $this->mergeFillable([]);
 
-        $this->mergeCasts([
-
-        ]);
+        $this->mergeCasts([]);
     }
 
     public function packageType(): BelongsTo

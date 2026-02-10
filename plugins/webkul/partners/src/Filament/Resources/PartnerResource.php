@@ -50,9 +50,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Webkul\Partner\Enums\AccountType;
 use Webkul\Partner\Models\Partner;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class PartnerResource extends Resource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = Partner::class;
 
     protected static bool $shouldRegisterNavigation = false;

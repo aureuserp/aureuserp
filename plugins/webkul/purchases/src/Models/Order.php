@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\Incoterm;
 use Webkul\Account\Models\Partner;
@@ -22,30 +23,16 @@ use Webkul\Purchase\Enums\OrderInvoiceStatus;
 use Webkul\Purchase\Enums\OrderReceiptStatus;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 
 class Order extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope;
 
-    public function getModelTitle(): string
-    {
-        return __('purchases::models/order.title');
-    }
-
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'purchases_orders';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'description',
@@ -84,11 +71,6 @@ class Order extends Model
         'operation_type_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'state'                    => OrderState::class,
         'invoice_status'           => OrderInvoiceStatus::class,
@@ -105,6 +87,11 @@ class Order extends Model
         'untaxed_amount'           => 'decimal:4',
     ];
 
+    public function getModelTitle(): string
+    {
+        return __('purchases::models/order.title');
+    }
+
     public function getLogAttributeLabels(): array
     {
         return [
@@ -119,9 +106,6 @@ class Order extends Model
         ];
     }
 
-    /**
-     * Checks if new invoice is allow or not
-     */
     public function getQtyToInvoiceAttribute()
     {
         return $this->lines->sum('qty_to_invoice');
@@ -197,9 +181,6 @@ class Order extends Model
         return $this->belongsToMany(Operation::class, 'purchases_order_operations', 'purchase_order_id', 'inventory_operation_id');
     }
 
-    /**
-     * Add a new message
-     */
     public function addMessage(array $data): Message
     {
         $message = new Message;
@@ -219,12 +200,17 @@ class Order extends Model
         return $message;
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     protected static function boot()
     {
         parent::boot();
+
+        static::creating(function ($order) {
+            $order->creator_id ??= Auth::id();
+
+            $order->calendar_start_at ??= $order->ordered_at;
+
+            $order->state ??= OrderState::DRAFT;
+        });
 
         static::saving(function ($order) {
             $order->updateName();
@@ -235,9 +221,6 @@ class Order extends Model
         });
     }
 
-    /**
-     * Update the full name without triggering additional events
-     */
     public function updateName()
     {
         $this->name = 'PO/'.$this->id;

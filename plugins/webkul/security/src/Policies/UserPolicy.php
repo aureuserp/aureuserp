@@ -4,10 +4,11 @@ namespace Webkul\Security\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasScopedPermissions;
 
 class UserPolicy
 {
-    use HandlesAuthorization;
+    use HandlesAuthorization, HasScopedPermissions;
 
     /**
      * Determine whether the user can view any models.
@@ -20,9 +21,13 @@ class UserPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user): bool
+    public function view(User $user, User $record): bool
     {
-        return $user->can('view_security_user');
+        if (! $user->can('view_security_user')) {
+            return false;
+        }
+
+        return $this->hasAccess($user, $record, 'creator');
     }
 
     /**
@@ -36,17 +41,25 @@ class UserPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user): bool
+    public function update(User $user, User $record): bool
     {
-        return $user->can('update_security_user');
+        if (! $user->can('update_security_user')) {
+            return false;
+        }
+
+        return $this->hasAccess($user, $record, 'creator');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user): bool
+    public function delete(User $user, User $record): bool
     {
-        return $user->can('delete_security_user');
+        if (! $user->can('delete_security_user')) {
+            return false;
+        }
+
+        return $this->hasAccess($user, $record, 'creator');
     }
 
     /**
@@ -60,9 +73,13 @@ class UserPolicy
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user): bool
+    public function forceDelete(User $user, User $record): bool
     {
-        return $user->can('force_delete_security_user');
+        if (! $user->can('force_delete_security_user')) {
+            return false;
+        }
+
+        return $this->hasAccess($user, $record, 'creator');
     }
 
     /**
@@ -76,9 +93,13 @@ class UserPolicy
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user): bool
+    public function restore(User $user, User $record): bool
     {
-        return $user->can('restore_security_user');
+        if (! $user->can('restore_security_user')) {
+            return false;
+        }
+
+        return $this->hasAccess($user, $record, 'creator');
     }
 
     /**

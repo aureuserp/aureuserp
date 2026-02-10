@@ -80,7 +80,7 @@ class DepartureReasonResource extends Resource
                     ->label(__('employees::filament/clusters/configurations/resources/departure-reason.table.columns.name'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('employees::filament/clusters/configurations/resources/departure-reason.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -113,7 +113,7 @@ class DepartureReasonResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('createdBy')
+                        RelationshipConstraint::make('creator')
                             ->label(__('employees::filament/clusters/configurations/resources/departure-reason.table.filters.created-by'))
                             ->icon('heroicon-o-user')
                             ->multiple()

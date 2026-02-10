@@ -8,11 +8,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Inventory\Database\Factories\WarehouseFactory;
+use Webkul\Inventory\Enums\CreateBackorder;
 use Webkul\Inventory\Enums\DeliveryStep;
+use Webkul\Inventory\Enums\GroupPropagation;
+use Webkul\Inventory\Enums\LocationType;
+use Webkul\Inventory\Enums\MoveType;
+use Webkul\Inventory\Enums\ProcureMethod;
 use Webkul\Inventory\Enums\ReceptionStep;
+use Webkul\Inventory\Enums\ReservationMethod;
+use Webkul\Inventory\Enums\RuleAction;
+use Webkul\Inventory\Enums\RuleAuto;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -21,18 +30,10 @@ class Warehouse extends Model implements Sortable
 {
     use HasFactory, SoftDeletes, SortableTrait;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_warehouses';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
+    protected array $routeIds = [];
+
     protected $fillable = [
         'name',
         'code',
@@ -63,11 +64,6 @@ class Warehouse extends Model implements Sortable
         'delivery_route_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'reception_steps' => ReceptionStep::class,
         'delivery_steps'  => DeliveryStep::class,
@@ -218,22 +214,630 @@ class Warehouse extends Model implements Sortable
         );
     }
 
-    /**
-     * Bootstrap any application services.
-     */
-    protected static function boot()
+    protected function handleWarehouseCreation(): void
     {
-        parent::boot();
+        $this->creator_id ??= Auth::id();
 
-        static::updated(function ($warehouse) {
-            if ($warehouse->wasChanged('code')) {
-                $warehouse->viewLocation->update(['name' => $warehouse->code]);
-            }
-        });
+        $this->company_id ??= Auth::user()->default_company_id;
+
+        $this->reception_steps ??= ReceptionStep::ONE_STEP;
+
+        $this->delivery_steps ??= DeliveryStep::ONE_STEP;
+
+        $this->createLocations();
+
+        $this->createOperationTypes();
+
+        $this->createRoutes();
+
+        $this->createRules();
+    }
+
+    protected function createLocations(): void
+    {
+        $this->view_location_id = Location::create([
+            'type'         => LocationType::VIEW,
+            'name'         => $this->code,
+            'is_scrap'     => false,
+            'is_replenish' => false,
+            'parent_id'    => 1,
+            'creator_id'   => $this->creator_id,
+            'company_id'   => $this->company_id,
+        ])->id;
+
+        $this->lot_stock_location_id = Location::create([
+            'type'         => LocationType::INTERNAL,
+            'name'         => 'Stock',
+            'barcode'      => $this->code.'STOCK',
+            'is_scrap'     => false,
+            'is_replenish' => true,
+            'parent_id'    => $this->view_location_id,
+            'creator_id'   => $this->creator_id,
+            'company_id'   => $this->company_id,
+        ])->id;
+
+        $this->input_stock_location_id = Location::create([
+            'type'         => LocationType::INTERNAL,
+            'name'         => 'Input',
+            'barcode'      => $this->code.'INPUT',
+            'is_scrap'     => false,
+            'is_replenish' => false,
+            'parent_id'    => $this->view_location_id,
+            'creator_id'   => $this->creator_id,
+            'company_id'   => $this->company_id,
+            'deleted_at'   => in_array($this->reception_steps, [ReceptionStep::TWO_STEPS, ReceptionStep::THREE_STEPS]) ? null : now(),
+        ])->id;
+
+        $this->qc_stock_location_id = Location::create([
+            'type'         => LocationType::INTERNAL,
+            'name'         => 'Quality Control',
+            'barcode'      => $this->code.'QUALITY',
+            'is_scrap'     => false,
+            'is_replenish' => false,
+            'parent_id'    => $this->view_location_id,
+            'creator_id'   => $this->creator_id,
+            'company_id'   => $this->company_id,
+            'deleted_at'   => $this->reception_steps === ReceptionStep::THREE_STEPS ? null : now(),
+        ])->id;
+
+        $this->output_stock_location_id = Location::create([
+            'type'         => LocationType::INTERNAL,
+            'name'         => 'Output',
+            'barcode'      => $this->code.'OUTPUT',
+            'is_scrap'     => false,
+            'is_replenish' => false,
+            'parent_id'    => $this->view_location_id,
+            'creator_id'   => $this->creator_id,
+            'company_id'   => $this->company_id,
+            'deleted_at'   => in_array($this->delivery_steps, [DeliveryStep::TWO_STEPS, DeliveryStep::THREE_STEPS]) ? null : now(),
+        ])->id;
+
+        $this->pack_stock_location_id = Location::create([
+            'type'         => LocationType::INTERNAL,
+            'name'         => 'Packing Zone',
+            'barcode'      => $this->code.'PACKING',
+            'is_scrap'     => false,
+            'is_replenish' => false,
+            'parent_id'    => $this->view_location_id,
+            'creator_id'   => $this->creator_id,
+            'company_id'   => $this->company_id,
+            'deleted_at'   => $this->delivery_steps === DeliveryStep::THREE_STEPS ? null : now(),
+        ])->id;
+    }
+
+    protected function createOperationTypes(): void
+    {
+        $supplierLocation = Location::where('type', LocationType::SUPPLIER)->first();
+
+        $customerLocation = Location::where('type', LocationType::CUSTOMER)->first();
+
+        $this->in_type_id = OperationType::create([
+            'sort'                    => 1,
+            'name'                    => 'Receipts',
+            'type'                    => \Webkul\Inventory\Enums\OperationType::INCOMING,
+            'sequence_code'           => 'IN',
+            'reservation_method'      => ReservationMethod::AT_CONFIRM,
+            'product_label_format'    => '2x7xprice',
+            'lot_label_format'        => '4x12_lots',
+            'package_label_to_print'  => 'pdf',
+            'barcode'                 => $this->code.'IN',
+            'create_backorder'        => CreateBackorder::ASK,
+            'move_type'               => MoveType::DIRECT,
+            'use_create_lots'         => true,
+            'use_existing_lots'       => true,
+            'print_label'             => false,
+            'show_operations'         => false,
+            'source_location_id'      => $supplierLocation->id,
+            'destination_location_id' => match ($this->reception_steps) {
+                ReceptionStep::ONE_STEP    => $this->lot_stock_location_id,
+                ReceptionStep::TWO_STEPS   => $this->input_stock_location_id,
+                ReceptionStep::THREE_STEPS => $this->input_stock_location_id,
+            },
+            'company_id'              => $this->company_id,
+            'creator_id'              => $this->creator_id,
+        ])->id;
+
+        $this->out_type_id = OperationType::create([
+            'sort'                    => 2,
+            'name'                    => 'Delivery Orders',
+            'type'                    => \Webkul\Inventory\Enums\OperationType::OUTGOING,
+            'sequence_code'           => 'OUT',
+            'reservation_method'      => ReservationMethod::AT_CONFIRM,
+            'product_label_format'    => '2x7xprice',
+            'lot_label_format'        => '4x12_lots',
+            'package_label_to_print'  => 'pdf',
+            'barcode'                 => $this->code.'OUT',
+            'create_backorder'        => CreateBackorder::ASK,
+            'move_type'               => MoveType::DIRECT,
+            'use_create_lots'         => true,
+            'use_existing_lots'       => true,
+            'print_label'             => true,
+            'show_operations'         => false,
+            'source_location_id'      => match ($this->reception_steps) {
+                ReceptionStep::ONE_STEP    => $this->lot_stock_location_id,
+                ReceptionStep::TWO_STEPS   => $this->output_stock_location_id,
+                ReceptionStep::THREE_STEPS => $this->output_stock_location_id,
+            },
+            'destination_location_id' => $customerLocation->id,
+            'company_id'              => $this->company_id,
+            'creator_id'              => $this->creator_id,
+        ])->id;
+
+        $this->pick_type_id = OperationType::create([
+            'sort'                    => 3,
+            'name'                    => 'Pick',
+            'type'                    => \Webkul\Inventory\Enums\OperationType::INTERNAL,
+            'sequence_code'           => 'PICK',
+            'reservation_method'      => ReservationMethod::AT_CONFIRM,
+            'product_label_format'    => '2x7xprice',
+            'lot_label_format'        => '4x12_lots',
+            'package_label_to_print'  => 'pdf',
+            'barcode'                 => $this->code.'PICK',
+            'create_backorder'        => CreateBackorder::ASK,
+            'move_type'               => MoveType::DIRECT,
+            'use_create_lots'         => true,
+            'use_existing_lots'       => true,
+            'print_label'             => false,
+            'show_operations'         => false,
+            'source_location_id'      => $this->lot_stock_location_id,
+            'destination_location_id' => match ($this->delivery_steps) {
+                DeliveryStep::ONE_STEP    => $this->pack_stock_location_id,
+                DeliveryStep::TWO_STEPS   => $this->output_stock_location_id,
+                DeliveryStep::THREE_STEPS => $this->pack_stock_location_id,
+            },
+            'company_id'              => $this->company_id,
+            'creator_id'              => $this->creator_id,
+            'deleted_at'              => $this->delivery_steps === DeliveryStep::ONE_STEP ? now() : null,
+        ])->id;
+
+        $this->pack_type_id = OperationType::create([
+            'sort'                    => 4,
+            'name'                    => 'Pack',
+            'type'                    => \Webkul\Inventory\Enums\OperationType::INTERNAL,
+            'sequence_code'           => 'PACK',
+            'reservation_method'      => ReservationMethod::AT_CONFIRM,
+            'product_label_format'    => '2x7xprice',
+            'lot_label_format'        => '4x12_lots',
+            'package_label_to_print'  => 'pdf',
+            'barcode'                 => $this->code.'PACK',
+            'create_backorder'        => CreateBackorder::ASK,
+            'move_type'               => MoveType::DIRECT,
+            'use_create_lots'         => false,
+            'use_existing_lots'       => true,
+            'print_label'             => false,
+            'show_operations'         => false,
+            'source_location_id'      => $this->pack_stock_location_id,
+            'destination_location_id' => $this->output_stock_location_id,
+            'company_id'              => $this->company_id,
+            'creator_id'              => $this->creator_id,
+            'deleted_at'              => $this->delivery_steps !== DeliveryStep::THREE_STEPS ? now() : null,
+        ])->id;
+
+        $this->qc_type_id = OperationType::create([
+            'sort'                    => 5,
+            'name'                    => 'Quality Control',
+            'type'                    => \Webkul\Inventory\Enums\OperationType::INTERNAL,
+            'sequence_code'           => 'QC',
+            'reservation_method'      => ReservationMethod::AT_CONFIRM,
+            'product_label_format'    => '2x7xprice',
+            'lot_label_format'        => '4x12_lots',
+            'package_label_to_print'  => 'pdf',
+            'barcode'                 => $this->code.'QC',
+            'create_backorder'        => CreateBackorder::ASK,
+            'move_type'               => MoveType::DIRECT,
+            'use_create_lots'         => false,
+            'use_existing_lots'       => true,
+            'print_label'             => false,
+            'show_operations'         => false,
+            'source_location_id'      => $this->input_stock_location_id,
+            'destination_location_id' => $this->qc_stock_location_id,
+            'company_id'              => $this->company_id,
+            'creator_id'              => $this->creator_id,
+            'deleted_at'              => $this->reception_steps !== ReceptionStep::THREE_STEPS ? now() : null,
+        ])->id;
+
+        $this->store_type_id = OperationType::create([
+            'sort'                    => 6,
+            'name'                    => 'Storage',
+            'type'                    => \Webkul\Inventory\Enums\OperationType::INTERNAL,
+            'sequence_code'           => 'STOR',
+            'reservation_method'      => ReservationMethod::AT_CONFIRM,
+            'product_label_format'    => '2x7xprice',
+            'lot_label_format'        => '4x12_lots',
+            'package_label_to_print'  => 'pdf',
+            'barcode'                 => $this->code.'STOR',
+            'create_backorder'        => CreateBackorder::ASK,
+            'move_type'               => MoveType::DIRECT,
+            'use_create_lots'         => false,
+            'use_existing_lots'       => true,
+            'print_label'             => false,
+            'show_operations'         => false,
+            'source_location_id'      => match ($this->reception_steps) {
+                ReceptionStep::ONE_STEP    => $this->input_stock_location_id,
+                ReceptionStep::TWO_STEPS   => $this->input_stock_location_id,
+                ReceptionStep::THREE_STEPS => $this->qc_stock_location_id,
+            },
+            'destination_location_id' => $this->lot_stock_location_id,
+            'company_id'              => $this->company_id,
+            'creator_id'              => $this->creator_id,
+            'deleted_at'              => in_array($this->reception_steps, [ReceptionStep::TWO_STEPS, ReceptionStep::THREE_STEPS]) ? null : now(),
+        ])->id;
+
+        $this->internal_type_id = OperationType::create([
+            'sort'                    => 7,
+            'name'                    => 'Internal Transfers',
+            'type'                    => \Webkul\Inventory\Enums\OperationType::INTERNAL,
+            'sequence_code'           => 'INT',
+            'reservation_method'      => ReservationMethod::AT_CONFIRM,
+            'product_label_format'    => '2x7xprice',
+            'lot_label_format'        => '4x12_lots',
+            'package_label_to_print'  => 'pdf',
+            'barcode'                 => $this->code.'INT',
+            'create_backorder'        => CreateBackorder::ASK,
+            'move_type'               => MoveType::DIRECT,
+            'use_create_lots'         => false,
+            'use_existing_lots'       => true,
+            'print_label'             => false,
+            'show_operations'         => false,
+            'source_location_id'      => $this->lot_stock_location_id,
+            'destination_location_id' => $this->lot_stock_location_id,
+            'company_id'              => $this->company_id,
+            'creator_id'              => $this->creator_id,
+            'deleted_at'              => app(\Webkul\Inventory\Settings\WarehouseSettings::class)->enable_locations ? null : now(),
+        ])->id;
+
+        $this->xdock_type_id = OperationType::create([
+            'sort'                    => 8,
+            'name'                    => 'Cross Dock',
+            'type'                    => \Webkul\Inventory\Enums\OperationType::INTERNAL,
+            'sequence_code'           => 'XD',
+            'reservation_method'      => ReservationMethod::AT_CONFIRM,
+            'product_label_format'    => '2x7xprice',
+            'lot_label_format'        => '4x12_lots',
+            'package_label_to_print'  => 'pdf',
+            'barcode'                 => $this->code.'XD',
+            'create_backorder'        => CreateBackorder::ASK,
+            'move_type'               => MoveType::DIRECT,
+            'use_create_lots'         => false,
+            'use_existing_lots'       => true,
+            'print_label'             => false,
+            'show_operations'         => false,
+            'source_location_id'      => $this->input_stock_location_id,
+            'destination_location_id' => $this->output_stock_location_id,
+            'company_id'              => $this->company_id,
+            'creator_id'              => $this->creator_id,
+            'deleted_at'              => in_array($this->reception_steps, [ReceptionStep::TWO_STEPS, ReceptionStep::THREE_STEPS]) &&
+                in_array($this->delivery_steps, [DeliveryStep::TWO_STEPS, DeliveryStep::THREE_STEPS]) ? null : now(),
+        ])->id;
+    }
+
+    protected function createRoutes(): void
+    {
+        $this->reception_route_id = Route::create([
+            'name' => match ($this->reception_steps) {
+                ReceptionStep::ONE_STEP    => $this->name.': Receive in 1 step (Stock)',
+                ReceptionStep::TWO_STEPS   => $this->name.': Receive in 2 steps (Input + Stock)',
+                ReceptionStep::THREE_STEPS => $this->name.': Receive in 3 steps (Input + Quality + Stock)',
+            },
+            'product_selectable'          => false,
+            'product_category_selectable' => true,
+            'warehouse_selectable'        => true,
+            'packaging_selectable'        => false,
+            'creator_id'                  => $this->creator_id,
+            'company_id'                  => $this->company_id,
+        ])->id;
+
+        $this->delivery_route_id = Route::create([
+            'name' => match ($this->delivery_steps) {
+                DeliveryStep::ONE_STEP    => $this->name.': Deliver in 1 step (Ship)',
+                DeliveryStep::TWO_STEPS   => $this->name.': Deliver in 2 steps (Pick + Ship)',
+                DeliveryStep::THREE_STEPS => $this->name.': Deliver in 3 steps (Pick + Pack + Ship)',
+            },
+            'product_selectable'          => false,
+            'product_category_selectable' => true,
+            'warehouse_selectable'        => true,
+            'packaging_selectable'        => false,
+            'creator_id'                  => $this->creator_id,
+            'company_id'                  => $this->company_id,
+        ])->id;
+
+        $this->crossdock_route_id = Route::create([
+            'name'                        => $this->name.': Cross-Dock',
+            'product_selectable'          => true,
+            'product_category_selectable' => true,
+            'warehouse_selectable'        => false,
+            'packaging_selectable'        => false,
+            'creator_id'                  => $this->creator_id,
+            'company_id'                  => $this->company_id,
+            'deleted_at'                  => in_array($this->reception_steps, [ReceptionStep::TWO_STEPS, ReceptionStep::THREE_STEPS]) &&
+                in_array($this->delivery_steps, [DeliveryStep::TWO_STEPS, DeliveryStep::THREE_STEPS]) ? null : now(),
+        ])->id;
+    }
+
+    protected function createRules(): void
+    {
+        $supplierLocation = Location::where('type', LocationType::SUPPLIER)->first();
+
+        $customerLocation = Location::where('type', LocationType::CUSTOMER)->first();
+
+        $this->routeIds[] = Rule::create([
+            'sort'                     => 1,
+            'name'                     => $this->code.': Vendors → Stock',
+            'route_sort'               => 9,
+            'group_propagation_option' => GroupPropagation::PROPAGATE,
+            'action'                   => RuleAction::PULL,
+            'procure_method'           => ProcureMethod::MAKE_TO_STOCK,
+            'auto'                     => RuleAuto::MANUAL,
+            'propagate_cancel'         => false,
+            'propagate_carrier'        => false,
+            'source_location_id'       => $supplierLocation->id,
+            'destination_location_id'  => $this->lot_stock_location_id,
+            'route_id'                 => $this->reception_route_id,
+            'operation_type_id'        => $this->in_type_id,
+            'creator_id'               => $this->creator_id,
+            'company_id'               => $this->company_id,
+            'deleted_at'               => now(),
+        ])->id;
+
+        $this->routeIds[] = Rule::create([
+            'sort'                      => 2,
+            'name'                      => $this->code.': Stock → Customers',
+            'route_sort'                => 10,
+            'group_propagation_option'  => GroupPropagation::PROPAGATE,
+            'action'                    => RuleAction::PULL,
+            'procure_method'            => ProcureMethod::MAKE_TO_STOCK,
+            'auto'                      => RuleAuto::MANUAL,
+            'propagate_cancel'          => false,
+            'propagate_carrier'         => true,
+            'source_location_id'        => $this->lot_stock_location_id,
+            'destination_location_id'   => $customerLocation->id,
+            'route_id'                  => $this->delivery_route_id,
+            'operation_type_id'         => $this->out_type_id,
+            'creator_id'                => $this->creator_id,
+            'company_id'                => $this->company_id,
+            'deleted_at'                => $this->delivery_steps === DeliveryStep::ONE_STEP ? null : now(),
+        ])->id;
+
+        $this->routeIds[] = Rule::create([
+            'sort'                     => 3,
+            'name'                     => $this->code.': Vendors → Customers',
+            'route_sort'               => 20,
+            'group_propagation_option' => GroupPropagation::PROPAGATE,
+            'action'                   => RuleAction::PULL,
+            'procure_method'           => ProcureMethod::MAKE_TO_STOCK,
+            'auto'                     => RuleAuto::MANUAL,
+            'propagate_cancel'         => false,
+            'propagate_carrier'        => false,
+            'source_location_id'       => $supplierLocation->id,
+            'destination_location_id'  => $customerLocation->id,
+            'route_id'                 => $this->crossdock_route_id,
+            'operation_type_id'        => $this->in_type_id,
+            'creator_id'               => $this->creator_id,
+            'company_id'               => $this->company_id,
+            'deleted_at'               => in_array($this->reception_steps, [ReceptionStep::TWO_STEPS, ReceptionStep::THREE_STEPS]) &&
+                in_array($this->delivery_steps, [DeliveryStep::TWO_STEPS, DeliveryStep::THREE_STEPS]) ? null : now(),
+        ])->id;
+
+        $this->routeIds[] = Rule::create([
+            'sort'                     => 4,
+            'name'                     => $this->code.': Input → Output',
+            'route_sort'               => 20,
+            'group_propagation_option' => GroupPropagation::PROPAGATE,
+            'action'                   => RuleAction::PUSH,
+            'procure_method'           => ProcureMethod::MAKE_TO_ORDER,
+            'auto'                     => RuleAuto::MANUAL,
+            'propagate_cancel'         => false,
+            'propagate_carrier'        => false,
+            'source_location_id'       => $this->input_stock_location_id,
+            'destination_location_id'  => $this->output_stock_location_id,
+            'route_id'                 => $this->crossdock_route_id,
+            'operation_type_id'        => $this->xdock_type_id,
+            'creator_id'               => $this->creator_id,
+            'company_id'               => $this->company_id,
+            'deleted_at'               => in_array($this->reception_steps, [ReceptionStep::TWO_STEPS, ReceptionStep::THREE_STEPS]) &&
+                in_array($this->delivery_steps, [DeliveryStep::TWO_STEPS, DeliveryStep::THREE_STEPS]) ? null : now(),
+        ])->id;
+
+        $this->routeIds[] = $this->mto_pull_id = Rule::create([
+            'sort'                     => 5,
+            'name'                     => $this->code.': Stock → Customers (MTO)',
+            'route_sort'               => 5,
+            'group_propagation_option' => GroupPropagation::PROPAGATE,
+            'action'                   => RuleAction::PULL,
+            'procure_method'           => ProcureMethod::MAKE_TO_ORDER,
+            'auto'                     => RuleAuto::MANUAL,
+            'propagate_cancel'         => false,
+            'propagate_carrier'        => true,
+            'source_location_id'       => $this->lot_stock_location_id,
+            'destination_location_id'  => $customerLocation->id,
+            'route_id'                 => 1,
+            'operation_type_id'        => $this->out_type_id,
+            'creator_id'               => $this->creator_id,
+            'company_id'               => $this->company_id,
+        ])->id;
+
+        $this->routeIds[] = Rule::create([
+            'sort'                     => 6,
+            'name'                     => $this->code.': Input → Quality Control',
+            'route_sort'               => 6,
+            'group_propagation_option' => GroupPropagation::PROPAGATE,
+            'action'                   => RuleAction::PUSH,
+            'procure_method'           => ProcureMethod::MAKE_TO_ORDER,
+            'auto'                     => RuleAuto::MANUAL,
+            'propagate_cancel'         => true,
+            'propagate_carrier'        => false,
+            'source_location_id'       => $this->input_stock_location_id,
+            'destination_location_id'  => $this->qc_stock_location_id,
+            'route_id'                 => $this->reception_route_id,
+            'operation_type_id'        => $this->qc_type_id,
+            'creator_id'               => $this->creator_id,
+            'company_id'               => $this->company_id,
+            'deleted_at'               => $this->reception_steps === ReceptionStep::THREE_STEPS ? null : now(),
+        ])->id;
+
+        $this->routeIds[] = Rule::create([
+            'sort'                     => 7,
+            'name'                     => $this->code.': Quality Control → Stock',
+            'route_sort'               => 7,
+            'group_propagation_option' => GroupPropagation::PROPAGATE,
+            'action'                   => RuleAction::PUSH,
+            'procure_method'           => ProcureMethod::MAKE_TO_ORDER,
+            'auto'                     => RuleAuto::MANUAL,
+            'propagate_cancel'         => false,
+            'propagate_carrier'        => false,
+            'source_location_id'       => $this->qc_stock_location_id,
+            'destination_location_id'  => $this->lot_stock_location_id,
+            'route_id'                 => $this->reception_route_id,
+            'operation_type_id'        => $this->store_type_id,
+            'creator_id'               => $this->creator_id,
+            'company_id'               => $this->company_id,
+            'deleted_at'               => $this->reception_steps === ReceptionStep::THREE_STEPS ? null : now(),
+        ])->id;
+
+        $this->routeIds[] = Rule::create([
+            'sort'                     => 8,
+            'name'                     => $this->code.': Stock → Customers',
+            'route_sort'               => 8,
+            'group_propagation_option' => GroupPropagation::PROPAGATE,
+            'action'                   => RuleAction::PULL,
+            'procure_method'           => ProcureMethod::MAKE_TO_STOCK,
+            'auto'                     => RuleAuto::MANUAL,
+            'propagate_cancel'         => false,
+            'propagate_carrier'        => true,
+            'source_location_id'       => $this->lot_stock_location_id,
+            'destination_location_id'  => $customerLocation->id,
+            'route_id'                 => $this->delivery_route_id,
+            'operation_type_id'        => $this->pick_type_id,
+            'creator_id'               => $this->creator_id,
+            'company_id'               => $this->company_id,
+            'deleted_at'               => $this->delivery_steps === DeliveryStep::ONE_STEP ? now() : null,
+        ])->id;
+
+        $this->routeIds[] = Rule::create([
+            'sort'                     => 9,
+            'name'                     => $this->code.': Packing Zone → Output',
+            'route_sort'               => 9,
+            'group_propagation_option' => GroupPropagation::PROPAGATE,
+            'action'                   => RuleAction::PUSH,
+            'procure_method'           => ProcureMethod::MAKE_TO_ORDER,
+            'auto'                     => RuleAuto::MANUAL,
+            'propagate_cancel'         => false,
+            'propagate_carrier'        => true,
+            'source_location_id'       => $this->pack_stock_location_id,
+            'destination_location_id'  => $this->output_stock_location_id,
+            'route_id'                 => $this->delivery_route_id,
+            'operation_type_id'        => $this->pack_type_id,
+            'creator_id'               => $this->creator_id,
+            'company_id'               => $this->company_id,
+            'deleted_at'               => $this->delivery_steps === DeliveryStep::THREE_STEPS ? null : now(),
+        ])->id;
+
+        $this->routeIds[] = Rule::create([
+            'sort'                     => 10,
+            'name'                     => $this->code.': Output → Customers',
+            'route_sort'               => 10,
+            'group_propagation_option' => GroupPropagation::PROPAGATE,
+            'action'                   => RuleAction::PUSH,
+            'procure_method'           => ProcureMethod::MAKE_TO_ORDER,
+            'auto'                     => RuleAuto::MANUAL,
+            'propagate_cancel'         => false,
+            'propagate_carrier'        => true,
+            'source_location_id'       => $this->output_stock_location_id,
+            'destination_location_id'  => $customerLocation->id,
+            'route_id'                 => $this->delivery_route_id,
+            'operation_type_id'        => $this->out_type_id,
+            'creator_id'               => $this->creator_id,
+            'company_id'               => $this->company_id,
+            'deleted_at'               => $this->delivery_steps === DeliveryStep::ONE_STEP ? now() : null,
+        ])->id;
+
+        $this->routeIds[] = Rule::create([
+            'sort'                     => 11,
+            'name'                     => $this->code.': Input → Stock',
+            'route_sort'               => 11,
+            'group_propagation_option' => GroupPropagation::PROPAGATE,
+            'action'                   => RuleAction::PUSH,
+            'procure_method'           => ProcureMethod::MAKE_TO_ORDER,
+            'auto'                     => RuleAuto::MANUAL,
+            'propagate_cancel'         => false,
+            'propagate_carrier'        => false,
+            'source_location_id'       => $this->input_stock_location_id,
+            'destination_location_id'  => $this->lot_stock_location_id,
+            'route_id'                 => $this->reception_route_id,
+            'operation_type_id'        => $this->store_type_id,
+            'creator_id'               => $this->creator_id,
+            'company_id'               => $this->company_id,
+            'deleted_at'               => $this->delivery_steps === ReceptionStep::TWO_STEPS ? null : now(),
+        ])->id;
+
+        $this->routeIds[] = Rule::create([
+            'sort'                     => 12,
+            'name'                     => $this->code.': False → Customers',
+            'route_sort'               => 12,
+            'group_propagation_option' => GroupPropagation::PROPAGATE,
+            'action'                   => RuleAction::BUY,
+            'procure_method'           => ProcureMethod::MAKE_TO_STOCK,
+            'auto'                     => RuleAuto::MANUAL,
+            'propagate_cancel'         => false,
+            'propagate_carrier'        => false,
+            'source_location_id'       => null,
+            'destination_location_id'  => $customerLocation->id,
+            'route_id'                 => $this->crossdock_route_id,
+            'operation_type_id'        => $this->in_type_id,
+            'creator_id'               => $this->creator_id,
+            'company_id'               => $this->company_id,
+            'deleted_at'               => in_array($this->reception_steps, [ReceptionStep::TWO_STEPS, ReceptionStep::THREE_STEPS]) &&
+                in_array($this->delivery_steps, [DeliveryStep::TWO_STEPS, DeliveryStep::THREE_STEPS]) ? null : now(),
+        ])->id;
     }
 
     protected static function newFactory(): WarehouseFactory
     {
         return WarehouseFactory::new();
+    }
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (Warehouse $warehouse) {
+            $warehouse->handleWarehouseCreation();
+        });
+
+        static::created(function (Warehouse $warehouse) {
+            Location::withTrashed()->whereIn('id', [
+                $warehouse->view_location_id,
+                $warehouse->lot_stock_location_id,
+                $warehouse->input_stock_location_id,
+                $warehouse->qc_stock_location_id,
+                $warehouse->output_stock_location_id,
+                $warehouse->pack_stock_location_id,
+            ])->update(['warehouse_id' => $warehouse->id]);
+
+            OperationType::withTrashed()->whereIn('id', [
+                $warehouse->in_type_id,
+                $warehouse->out_type_id,
+                $warehouse->pick_type_id,
+                $warehouse->pack_type_id,
+                $warehouse->qc_type_id,
+                $warehouse->store_type_id,
+                $warehouse->internal_type_id,
+                $warehouse->xdock_type_id,
+            ])->update(['warehouse_id' => $warehouse->id]);
+
+            $warehouse->routes()->sync([
+                $warehouse->reception_route_id,
+                $warehouse->delivery_route_id,
+                $warehouse->crossdock_route_id,
+            ]);
+
+            Rule::withTrashed()->whereIn('id', $warehouse->routeIds)->update(['warehouse_id' => $warehouse->id]);
+        });
+
+        static::updated(function (Warehouse $warehouse) {
+            if ($warehouse->wasChanged('code')) {
+                $warehouse->viewLocation->update(['name' => $warehouse->code]);
+            }
+        });
     }
 }

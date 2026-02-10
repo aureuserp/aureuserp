@@ -5,6 +5,7 @@ namespace Webkul\Inventory\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\MoveLineFactory;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Partner\Models\Partner;
@@ -16,18 +17,8 @@ class MoveLine extends Model
 {
     use HasFactory;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_move_lines';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'lot_name',
         'state',
@@ -52,11 +43,6 @@ class MoveLine extends Model
         'creator_id',
     ];
 
-    /**
-     * Table casts.
-     *
-     * @var array
-     */
     protected $casts = [
         'state'             => MoveState::class,
         'is_picked'         => 'boolean',
@@ -131,5 +117,14 @@ class MoveLine extends Model
     protected static function newFactory(): MoveLineFactory
     {
         return MoveLineFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($moveLine) {
+            $moveLine->creator_id ??= Auth::id();
+        });
     }
 }

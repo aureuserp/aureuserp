@@ -394,9 +394,9 @@ class InstallERP extends Command
             'partners_partners'           => 'creator_id',
             'unit_of_measure_categories'  => 'creator_id',
             'unit_of_measures'            => 'creator_id',
-            'utm_campaigns'               => 'created_by',
+            'utm_campaigns'               => 'creator_id',
             'utm_mediums'                 => 'creator_id',
-            'utm_stages'                  => 'created_by',
+            'utm_stages'                  => 'creator_id',
         ];
 
         collect($mappings)

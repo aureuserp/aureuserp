@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources;
 
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -91,7 +92,7 @@ class BillResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static bool $shouldRegisterNavigation = false;
 
@@ -244,11 +245,12 @@ class BillResource extends Resource
                                                     ->preload()
                                                     ->required()
                                                     ->label(__('accounts::filament/resources/bill.form.section.general.fields.journal'))
+                                                    ->disabled(fn ($record) => in_array($record?->state, [MoveState::POSTED, MoveState::CANCEL]))
                                                     ->createOptionForm(function ($form) {
                                                         $schema = JournalResource::form($form);
 
-                                                        // Find and disable the type field
                                                         $components = $schema->getComponents();
+
                                                         foreach ($components as $component) {
                                                             static::disableTypeField($component);
                                                         }

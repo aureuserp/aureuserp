@@ -9,6 +9,8 @@ class CreateActivityType extends BaseCreateActivityType
 {
     protected static string $resource = ActivityTypeResource::class;
 
+    protected static ?string $pluginName = 'time-off';
+
     public function getSubNavigation(): array
     {
         if (filled($cluster = static::getCluster())) {
@@ -17,6 +19,4 @@ class CreateActivityType extends BaseCreateActivityType
 
         return [];
     }
-
-    protected static ?string $pluginName = 'time-off';
 }

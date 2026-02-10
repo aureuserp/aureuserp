@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\LocationFactory;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Product\Enums\ProductRemoval;
@@ -17,18 +18,8 @@ class Location extends Model
 {
     use HasFactory, SoftDeletes;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_locations';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'position_x',
         'position_y',
@@ -54,11 +45,6 @@ class Location extends Model
         'deleted_at',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'type'                => LocationType::class,
         'removal_strategy'    => ProductRemoval::class,
@@ -119,31 +105,6 @@ class Location extends Model
         ]) || $this->is_scrap;
     }
 
-    /**
-     * Bootstrap any application services.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function ($category) {
-            $category->updateParentPath();
-
-            $category->updateFullName();
-        });
-
-        static::updated(function ($category) {
-            $category->updateChildrenParentPaths();
-
-            if ($category->wasChanged('full_name')) {
-                $category->updateChildrenFullNames();
-            }
-        });
-    }
-
-    /**
-     * Update the full name without triggering additional events
-     */
     public function updateFullName()
     {
         if ($this->type === LocationType::VIEW) {
@@ -155,9 +116,6 @@ class Location extends Model
         }
     }
 
-    /**
-     * Update the full name without triggering additional events
-     */
     public function updateParentPath()
     {
         if ($this->type === LocationType::VIEW) {
@@ -202,5 +160,50 @@ class Location extends Model
     protected static function newFactory(): LocationFactory
     {
         return LocationFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($category) {
+            $category->creator_id ??= Auth::id();
+
+            if ($category->parent_id) {
+                $parentLocation = Location::find($category->parent_id);
+                $category->warehouse_id = $parentLocation?->warehouse_id;
+            } else {
+                $category->warehouse_id = null;
+            }
+
+            if (! empty($category->cyclic_inventory_frequency)) {
+                $category->next_inventory_date = now()->addDays(
+                    (int) $category->cyclic_inventory_frequency
+                );
+            } else {
+                $category->next_inventory_date = null;
+            }
+
+            $category->updateParentPath();
+            $category->updateFullName();
+        });
+
+        static::saving(function ($category) {
+            if (! empty($category->cyclic_inventory_frequency)) {
+                $category->next_inventory_date = now()->addDays(
+                    (int) $category->cyclic_inventory_frequency
+                );
+            } else {
+                $category->next_inventory_date = null;
+            }
+        });
+
+        static::updated(function ($category) {
+            $category->updateChildrenParentPaths();
+
+            if ($category->wasChanged('full_name')) {
+                $category->updateChildrenFullNames();
+            }
+        });
     }
 }

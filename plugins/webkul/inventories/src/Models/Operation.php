@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
@@ -24,23 +25,8 @@ class Operation extends Model
 {
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_operations';
 
-    public function getModelTitle(): string
-    {
-        return __('inventories::models/operation.title');
-    }
-
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'origin',
@@ -67,11 +53,6 @@ class Operation extends Model
         'sale_order_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'state'              => OperationState::class,
         'move_type'          => MoveType::class,
@@ -83,6 +64,11 @@ class Operation extends Model
         'scheduled_at'       => 'datetime',
         'closed_at'          => 'datetime',
     ];
+
+    public function getModelTitle(): string
+    {
+        return __('inventories::models/operation.title');
+    }
 
     protected function getLogAttributeLabels(): array
     {
@@ -187,31 +173,6 @@ class Operation extends Model
         return $this->belongsTo(SaleOrder::class, 'sale_order_id');
     }
 
-    /**
-     * Bootstrap any application services.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function ($operation) {
-            $operation->updateName();
-        });
-
-        static::created(function ($operation) {
-            $operation->update(['name' => $operation->name]);
-        });
-
-        static::updated(function ($operation) {
-            if ($operation->wasChanged('operation_type_id')) {
-                $operation->updateChildrenNames();
-            }
-        });
-    }
-
-    /**
-     * Update the full name without triggering additional events
-     */
     public function updateName()
     {
         if (! $this->operationType->warehouse) {
@@ -235,5 +196,26 @@ class Operation extends Model
     protected static function newFactory(): OperationFactory
     {
         return OperationFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($operation) {
+            $operation->creator_id ??= Auth::id();
+
+            $operation->updateName();
+        });
+
+        static::created(function ($operation) {
+            $operation->update(['name' => $operation->name]);
+        });
+
+        static::updated(function ($operation) {
+            if ($operation->wasChanged('operation_type_id')) {
+                $operation->updateChildrenNames();
+            }
+        });
     }
 }

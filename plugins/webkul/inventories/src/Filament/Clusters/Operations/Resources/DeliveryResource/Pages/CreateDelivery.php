@@ -5,14 +5,14 @@ namespace Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResour
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Enums;
-use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource;
 use Webkul\Inventory\Models\OperationType;
 
 class CreateDelivery extends CreateRecord
 {
+    protected static string $resource = DeliveryResource::class;
+
     public function getSubNavigation(): array
     {
         if (filled($cluster = static::getCluster())) {
@@ -21,8 +21,6 @@ class CreateDelivery extends CreateRecord
 
         return [];
     }
-
-    protected static string $resource = DeliveryResource::class;
 
     public function getTitle(): string|Htmlable
     {
@@ -55,22 +53,5 @@ class CreateDelivery extends CreateRecord
         $this->data['destination_location_id'] = $operationType?->destination_location_id;
 
         $this->form->fill($this->data);
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $operationType = OperationType::find($data['operation_type_id']);
-
-        $data['company_id'] ??= $operationType->sourceLocation->company_id;
-
-        $data['source_location_id'] ??= $operationType->source_location_id;
-
-        $data['destination_location_id'] ??= $operationType->destination_location_id;
-
-        $data['state'] ??= OperationState::DRAFT;
-
-        $data['creator_id'] = Auth::id();
-
-        return $data;
     }
 }

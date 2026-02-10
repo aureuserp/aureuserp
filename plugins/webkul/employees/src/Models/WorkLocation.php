@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Database\Factories\WorkLocationFactory;
 use Webkul\Employee\Enums\WorkLocation as WorkLocationEnum;
 use Webkul\Field\Traits\HasCustomFields;
@@ -38,14 +39,11 @@ class WorkLocation extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function createdBy(): BelongsTo
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
 
-    /**
-     * Scope a query to only include active work locations.
-     */
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
@@ -56,13 +54,10 @@ class WorkLocation extends Model
         parent::boot();
 
         static::creating(function ($workLocation) {
-            $workLocation->creator_id = filament()->auth()->id();
+            $workLocation->creator_id ??= Auth::id();
         });
     }
 
-    /**
-     * Get the factory instance for the model.
-     */
     protected static function newFactory(): WorkLocationFactory
     {
         return WorkLocationFactory::new();

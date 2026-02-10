@@ -4,8 +4,6 @@ namespace Webkul\Inventory\Filament\Clusters\Configurations\Resources\OperationT
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\Auth;
-use Webkul\Inventory\Enums\ReservationMethod;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\OperationTypeResource;
 
 class CreateOperationType extends CreateRecord
@@ -32,14 +30,5 @@ class CreateOperationType extends CreateRecord
             ->success()
             ->title(__('inventories::filament/clusters/configurations/resources/operation-type/pages/create-operation-type.notification.title'))
             ->body(__('inventories::filament/clusters/configurations/resources/operation-type/pages/create-operation-type.notification.body'));
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['reservation_method'] = ReservationMethod::AT_CONFIRM;
-
-        $data['creator_id'] = Auth::id();
-
-        return $data;
     }
 }

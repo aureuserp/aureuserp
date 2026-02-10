@@ -182,7 +182,7 @@ class CalendarResource extends Resource
                     ->numeric()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('employees::filament/clusters/configurations/resources/calendar.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -270,7 +270,7 @@ class CalendarResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('createdBy')
+                        RelationshipConstraint::make('creator')
                             ->label('Created By')
                             ->icon('heroicon-o-user')
                             ->label(__('employees::filament/clusters/configurations/resources/calendar.table.filters.created-by'))

@@ -7,6 +7,8 @@ use Webkul\Inventory\Filament\Clusters\Products\Resources\LotResource;
 
 class CreateLot extends CreateRecord
 {
+    protected static string $resource = LotResource::class;
+
     public function getSubNavigation(): array
     {
         if (filled($cluster = static::getCluster())) {
@@ -15,6 +17,4 @@ class CreateLot extends CreateRecord
 
         return [];
     }
-
-    protected static string $resource = LotResource::class;
 }

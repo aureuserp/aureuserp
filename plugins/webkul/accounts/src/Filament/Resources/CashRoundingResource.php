@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources;
 
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -28,7 +29,7 @@ class CashRoundingResource extends Resource
 {
     protected static ?string $model = CashRounding::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-adjustments-horizontal';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-adjustments-horizontal';
 
     protected static bool $shouldRegisterNavigation = false;
 
@@ -109,7 +110,7 @@ class CashRoundingResource extends Resource
                     ->formatStateUsing(fn ($state) => RoundingMethod::options()[$state] ?? $state)
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('accounts::filament/resources/cash-rounding.table.columns.created-by'))
                     ->searchable()
                     ->sortable(),
@@ -124,7 +125,7 @@ class CashRoundingResource extends Resource
                 Tables\Grouping\Group::make('rounding_method')
                     ->label(__('accounts::filament/resources/cash-rounding.table.groups.rounding-method'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('createdBy.name')
+                Tables\Grouping\Group::make('creator.name')
                     ->label(__('accounts::filament/resources/cash-rounding.table.groups.created-by'))
                     ->collapsible(),
             ])

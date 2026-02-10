@@ -4,6 +4,8 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Security\Models\User;
@@ -19,7 +21,7 @@ class Reconcile extends Model implements Sortable
         'sort',
         'company_id',
         'past_months_limit',
-        'created_by',
+        'creator_id',
         'rule_type',
         'matching_order',
         'counter_part_type',
@@ -57,8 +59,17 @@ class Reconcile extends Model implements Sortable
         return $this->belongsTo(Company::class, 'company_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'creator_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($reconcile) {
+            $reconcile->creator_id ??= Auth::id();
+        });
     }
 }

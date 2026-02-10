@@ -2,6 +2,7 @@
 
 namespace Webkul\Support\Filament\Resources;
 
+use BackedEnum;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -51,7 +52,7 @@ class ActivityTypeResource extends Resource
 {
     protected static ?string $model = ActivityType::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?string $slug = 'settings/activity-types';
 

@@ -4,7 +4,9 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Enums\DelayType;
@@ -41,7 +43,7 @@ class PaymentTerm extends Model implements Sortable
         return $this->belongsTo(Company::class, 'company_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -165,6 +167,10 @@ class PaymentTerm extends Model implements Sortable
     protected static function boot()
     {
         parent::boot();
+
+        static::creating(function ($paymentTerm) {
+            $paymentTerm->creator_id ??= Auth::id();
+        });
 
         static::created(function ($paymentTerm) {
             $paymentTerm->dueTerms()->create([

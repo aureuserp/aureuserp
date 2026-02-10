@@ -70,7 +70,7 @@ class TagResource extends Resource
                     ->label(__('sales::filament/clusters/configurations/resources/tag.table.columns.name')),
                 ColorColumn::make('color')
                     ->label(__('sales::filament/clusters/configurations/resources/tag.table.columns.color')),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('sales::filament/clusters/configurations/resources/tag.table.columns.created-by')),
             ])
             ->recordActions([

@@ -4,23 +4,14 @@ namespace Webkul\Inventory\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\StorageCategoryCapacityFactory;
 use Webkul\Security\Models\User;
 
 class StorageCategoryCapacity extends Model
 {
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_storage_category_capacities';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'qty',
         'product_id',
@@ -52,5 +43,14 @@ class StorageCategoryCapacity extends Model
     protected static function newFactory(): StorageCategoryCapacityFactory
     {
         return StorageCategoryCapacityFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($storageCategoryCapacity) {
+            $storageCategoryCapacity->creator_id ??= Auth::id();
+        });
     }
 }

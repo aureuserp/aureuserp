@@ -4,6 +4,8 @@ namespace Webkul\Sale\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Account\Models\Journal;
@@ -41,7 +43,7 @@ class OrderTemplate extends Model implements Sortable
         return $this->belongsTo(Company::class, 'company_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -70,5 +72,14 @@ class OrderTemplate extends Model implements Sortable
         return $this
             ->hasMany(OrderTemplateProduct::class, 'order_template_id')
             ->where('display_type', OrderDisplayType::NOTE->value);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($orderTemplate) {
+            $orderTemplate->creator_id ??= Auth::id();
+        });
     }
 }

@@ -32,9 +32,6 @@ class SkillLevel extends Model
         return $this->hasMany(EmployeeSkill::class, 'skill_level_id');
     }
 
-    /**
-     * Get the factory instance for the model.
-     */
     protected static function newFactory(): SkillLevelFactory
     {
         return SkillLevelFactory::new();

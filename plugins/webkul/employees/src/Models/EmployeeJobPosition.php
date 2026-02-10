@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Employee\Database\Factories\EmployeeJobPositionFactory;
@@ -19,11 +20,6 @@ class EmployeeJobPosition extends Model implements Sortable
 
     protected $table = 'employees_job_positions';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'sort',
         'expected_employees',
@@ -49,7 +45,7 @@ class EmployeeJobPosition extends Model implements Sortable
         'sort_when_creating' => true,
     ];
 
-    public function createdBy(): BelongsTo
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -79,7 +75,7 @@ class EmployeeJobPosition extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($employeeJobPosition) {
-            $employeeJobPosition->creator_id = filament()->auth()->id();
+            $employeeJobPosition->creator_id ??= Auth::id();
         });
     }
 

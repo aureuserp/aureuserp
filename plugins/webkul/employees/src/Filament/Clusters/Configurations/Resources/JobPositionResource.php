@@ -199,7 +199,7 @@ class JobPositionResource extends Resource
                     ->sortable()
                     ->label(__('employees::filament/clusters/configurations/resources/job-position.table.columns.status'))
                     ->boolean(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('employees::filament/clusters/configurations/resources/job-position.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -297,7 +297,7 @@ class JobPositionResource extends Resource
                 Tables\Grouping\Group::make('employmentType.name')
                     ->label(__('employees::filament/clusters/configurations/resources/job-position.table.groups.employment-type'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('createdBy.name')
+                Tables\Grouping\Group::make('creator.name')
                     ->label(__('employees::filament/clusters/configurations/resources/job-position.table.groups.created-by'))
                     ->collapsible(),
                 Tables\Grouping\Group::make('created_at')
