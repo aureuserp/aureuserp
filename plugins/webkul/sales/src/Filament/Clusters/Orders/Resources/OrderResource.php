@@ -44,15 +44,6 @@ class OrderResource extends QuotationResource
         return QuotationResource::getGlobalSearchResultDetails($record);
     }
 
-    public static function form(Schema $schema): Schema
-    {
-        $query = parent::getEloquentQuery();
-
-        $query = static::getModel()::applyPermissionScope($query);
-
-        return $query->where('state', OrderState::SALE);
-    }
-
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
@@ -77,7 +68,10 @@ class OrderResource extends QuotationResource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
-            ->orderByDesc('id');
+        $query = parent::getEloquentQuery();
+
+        $query = static::getModel()::applyPermissionScope($query);
+
+        return $query->where('state', OrderState::SALE);
     }
 }
