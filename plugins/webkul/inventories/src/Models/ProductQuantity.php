@@ -121,7 +121,7 @@ class ProductQuantity extends Model
         parent::boot();
 
         static::creating(function ($productQuantity) {
-            $productQuantity->creator_id = Auth::id();
+            $productQuantity->creator_id ??= Auth::id();
         });
 
         static::saving(function ($productQuantity) {

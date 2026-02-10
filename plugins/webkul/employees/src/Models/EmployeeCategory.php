@@ -28,7 +28,7 @@ class EmployeeCategory extends Model
         parent::boot();
 
         static::creating(function ($employeeCategory) {
-            $employeeCategory->creator_id = Auth::id();
+            $employeeCategory->creator_id ??= Auth::id();
 
             $employeeCategory->color ??= random_color();
         });
