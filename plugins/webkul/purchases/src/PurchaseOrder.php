@@ -62,8 +62,6 @@ class PurchaseOrder
             ['message_id' => $message->id],
         );
 
-        Storage::delete($pdfPath);
-
         return $record;
     }
 
