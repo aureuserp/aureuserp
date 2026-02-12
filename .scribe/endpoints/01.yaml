@@ -89,7 +89,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1910,"name":"Ellis Sawayn","short_name":"Macy Dare","creator_id":21515,"created_at":"2026-02-12T10:23:55.000000Z","updated_at":"2026-02-12T10:23:55.000000Z"},{"id":1911,"name":"Retha White II","short_name":"Miss Holly Ward PhD","creator_id":21516,"created_at":"2026-02-12T10:23:55.000000Z","updated_at":"2026-02-12T10:23:55.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":2038,"name":"Morgan Hirthe","short_name":"Pearl Hauck Sr.","creator_id":23253,"created_at":"2026-02-12T10:55:13.000000Z","updated_at":"2026-02-12T10:55:13.000000Z"},{"id":2039,"name":"Carey Smitham","short_name":"Elenora Stokes","creator_id":23254,"created_at":"2026-02-12T10:55:13.000000Z","updated_at":"2026-02-12T10:55:13.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -160,7 +160,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1912,"name":"Ms. Audra Crooks II","short_name":"Aleen O''Kon","creator_id":21517,"created_at":"2026-02-12T10:23:55.000000Z","updated_at":"2026-02-12T10:23:55.000000Z"},"message":"Title created successfully."}'
+        content: '{"data":{"id":2040,"name":"Ms. Audra Crooks II","short_name":"Aleen O''Kon","creator_id":23255,"created_at":"2026-02-12T10:55:13.000000Z","updated_at":"2026-02-12T10:55:13.000000Z"},"message":"Title created successfully."}'
         headers: []
         description: ''
       -
@@ -237,7 +237,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1913,"name":"Morgan Hirthe","short_name":"Pearl Hauck Sr.","creator_id":21518,"created_at":"2026-02-12T10:23:55.000000Z","updated_at":"2026-02-12T10:23:55.000000Z"}}'
+        content: '{"data":{"id":2041,"name":"Morgan Hirthe","short_name":"Pearl Hauck Sr.","creator_id":23256,"created_at":"2026-02-12T10:55:13.000000Z","updated_at":"2026-02-12T10:55:13.000000Z"}}'
         headers: []
         description: ''
       -
@@ -327,7 +327,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1914,"name":"Ms. Audra Crooks II","short_name":"Aleen O''Kon","creator_id":21519,"created_at":"2026-02-12T10:23:55.000000Z","updated_at":"2026-02-12T10:23:55.000000Z"},"message":"Title updated successfully."}'
+        content: '{"data":{"id":2042,"name":"Ms. Audra Crooks II","short_name":"Aleen O''Kon","creator_id":23257,"created_at":"2026-02-12T10:55:13.000000Z","updated_at":"2026-02-12T10:55:13.000000Z"},"message":"Title updated successfully."}'
         headers: []
         description: ''
       -
@@ -520,7 +520,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":93,"name":"Morgan Hirthe","color":"#bd6da5","creator_id":21520,"created_at":"2026-02-12T10:23:55.000000Z","updated_at":"2026-02-12T10:23:55.000000Z"},{"id":94,"name":"Mr. Oswald Koch","color":"#f4c6dc","creator_id":21521,"created_at":"2026-02-12T10:23:55.000000Z","updated_at":"2026-02-12T10:23:55.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":103,"name":"Margarete Cummings","color":"#febb7d","creator_id":23258,"created_at":"2026-02-12T10:55:13.000000Z","updated_at":"2026-02-12T10:55:13.000000Z"},{"id":104,"name":"Ceasar Murray","color":"#716464","creator_id":23259,"created_at":"2026-02-12T10:55:13.000000Z","updated_at":"2026-02-12T10:55:13.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -591,7 +591,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":95,"name":"Ms. Audra Crooks II","color":"#b35e11","creator_id":21522,"created_at":"2026-02-12T10:23:55.000000Z","updated_at":"2026-02-12T10:23:55.000000Z"},"message":"Tag created successfully."}'
+        content: '{"data":{"id":105,"name":"Ms. Audra Crooks II","color":"#b35e11","creator_id":23260,"created_at":"2026-02-12T10:55:13.000000Z","updated_at":"2026-02-12T10:55:13.000000Z"},"message":"Tag created successfully."}'
         headers: []
         description: ''
       -
@@ -668,7 +668,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":96,"name":"Morgan Hirthe","color":"#bd6da5","creator_id":21523,"created_at":"2026-02-12T10:23:55.000000Z","updated_at":"2026-02-12T10:23:55.000000Z"}}'
+        content: '{"data":{"id":106,"name":"Morgan Hirthe","color":"#bd6da5","creator_id":23261,"created_at":"2026-02-12T10:55:13.000000Z","updated_at":"2026-02-12T10:55:13.000000Z"}}'
         headers: []
         description: ''
       -
@@ -758,7 +758,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":97,"name":"Ms. Audra Crooks II","color":"#b35e11","creator_id":21524,"created_at":"2026-02-12T10:23:55.000000Z","updated_at":"2026-02-12T10:23:55.000000Z"},"message":"Tag updated successfully."}'
+        content: '{"data":{"id":107,"name":"Ms. Audra Crooks II","color":"#b35e11","creator_id":23262,"created_at":"2026-02-12T10:55:13.000000Z","updated_at":"2026-02-12T10:55:13.000000Z"},"message":"Tag updated successfully."}'
         headers: []
         description: ''
       -
@@ -1081,7 +1081,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1905,"name":"Morgan Hirthe","description":"Qui commodi incidunt iure odit.","creator_id":21525,"created_at":"2026-02-12T10:23:55.000000Z","updated_at":"2026-02-12T10:23:55.000000Z"},{"id":1906,"name":"Mateo Wilderman","description":"Perspiciatis rem dolorem aut quis ut.","creator_id":21526,"created_at":"2026-02-12T10:23:55.000000Z","updated_at":"2026-02-12T10:23:55.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":2033,"name":"Morgan Hirthe","description":"Qui commodi incidunt iure odit.","creator_id":23263,"created_at":"2026-02-12T10:55:13.000000Z","updated_at":"2026-02-12T10:55:13.000000Z"},{"id":2034,"name":"Ms. Lacy Zemlak PhD","description":"Ex laudantium ut voluptates dicta incidunt aut.","creator_id":23264,"created_at":"2026-02-12T10:55:13.000000Z","updated_at":"2026-02-12T10:55:13.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -1152,7 +1152,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1907,"name":"Ms. Audra Crooks II","description":"Et fugiat sunt nihil accusantium.","creator_id":21527,"created_at":"2026-02-12T10:23:55.000000Z","updated_at":"2026-02-12T10:23:55.000000Z"},"message":"Industry created successfully."}'
+        content: '{"data":{"id":2035,"name":"Ms. Audra Crooks II","description":"Et fugiat sunt nihil accusantium.","creator_id":23265,"created_at":"2026-02-12T10:55:13.000000Z","updated_at":"2026-02-12T10:55:13.000000Z"},"message":"Industry created successfully."}'
         headers: []
         description: ''
       -
@@ -1229,7 +1229,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1908,"name":"Morgan Hirthe","description":"Qui commodi incidunt iure odit.","creator_id":21528,"created_at":"2026-02-12T10:23:55.000000Z","updated_at":"2026-02-12T10:23:55.000000Z"}}'
+        content: '{"data":{"id":2036,"name":"Morgan Hirthe","description":"Qui commodi incidunt iure odit.","creator_id":23266,"created_at":"2026-02-12T10:55:13.000000Z","updated_at":"2026-02-12T10:55:13.000000Z"}}'
         headers: []
         description: ''
       -
@@ -1319,7 +1319,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1909,"name":"Ms. Audra Crooks II","description":"Et fugiat sunt nihil accusantium.","creator_id":21529,"created_at":"2026-02-12T10:23:55.000000Z","updated_at":"2026-02-12T10:23:55.000000Z"},"message":"Industry updated successfully."}'
+        content: '{"data":{"id":2037,"name":"Ms. Audra Crooks II","description":"Et fugiat sunt nihil accusantium.","creator_id":23267,"created_at":"2026-02-12T10:55:13.000000Z","updated_at":"2026-02-12T10:55:13.000000Z"},"message":"Industry updated successfully."}'
         headers: []
         description: ''
       -
@@ -1755,7 +1755,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":28556,"account_type":"individual","sub_type":"partner","name":"Amara Dare","email":"pouros.kip@example.net","phone":"+1 (380) 865-8660","mobile":"(361) 916-3312","avatar":null,"avatar_url":null,"job_title":"Tire Builder","website":"http:\/\/howell.com\/voluptas-hic-ad-non-id-deserunt","tax_id":"8594380313","company_registry":"CR-33538740","reference":"unde","is_active":true,"color":"#ebd88a","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":1915,"company_id":5293,"industry_id":1910,"user_id":21531,"creator_id":21530,"created_at":"2026-02-12T10:23:55.000000Z","updated_at":"2026-02-12T10:23:55.000000Z","deleted_at":null,"country":null,"state":null},{"id":28562,"account_type":"individual","sub_type":"partner","name":"Reilly Hodkiewicz","email":"donald.nienow@example.org","phone":"(385) 940-7644","mobile":"714.971.1254","avatar":null,"avatar_url":null,"job_title":"Statement Clerk","website":"http:\/\/luettgen.com\/iste-eos-voluptates-enim-fuga-hic-ipsum.html","tax_id":"2345225260","company_registry":"CR-62131091","reference":"et","is_active":true,"color":"#e13cc7","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":1916,"company_id":5294,"industry_id":1911,"user_id":21535,"creator_id":21534,"created_at":"2026-02-12T10:23:55.000000Z","updated_at":"2026-02-12T10:23:55.000000Z","deleted_at":null,"country":null,"state":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":30780,"account_type":"individual","sub_type":"partner","name":"Cristina Aufderhar","email":"baron98@example.net","phone":"1-480-274-5554","mobile":"1-734-540-1763","avatar":null,"avatar_url":null,"job_title":"Petroleum Pump System Operator","website":"http:\/\/www.walter.org\/quod-delectus-fugiat-temporibus-voluptas","tax_id":"9354040491","company_registry":"CR-62803527","reference":"sunt","is_active":true,"color":"#73dc23","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":2043,"company_id":5661,"industry_id":2038,"user_id":23269,"creator_id":23268,"created_at":"2026-02-12T10:55:13.000000Z","updated_at":"2026-02-12T10:55:13.000000Z","deleted_at":null,"country":null,"state":null},{"id":30786,"account_type":"individual","sub_type":"partner","name":"Hollie Harvey","email":"abelardo65@example.net","phone":"478.308.3530","mobile":"1-314-326-6339","avatar":null,"avatar_url":null,"job_title":"Mathematical Scientist","website":"http:\/\/www.jakubowski.com\/iure-deserunt-et-nesciunt-nihil-perferendis-cum","tax_id":"0978936413","company_registry":"CR-97086575","reference":"deleniti","is_active":true,"color":"#e23c51","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":2044,"company_id":5662,"industry_id":2039,"user_id":23273,"creator_id":23272,"created_at":"2026-02-12T10:55:13.000000Z","updated_at":"2026-02-12T10:55:13.000000Z","deleted_at":null,"country":null,"state":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2080,7 +2080,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":28568,"account_type":"individual","sub_type":"partner","name":"Ms. Audra Crooks II","email":"gulgowski.asia@example.com","phone":"+1-626-249-0432","mobile":"1-989-272-7365","avatar":null,"avatar_url":null,"job_title":"Teacher","website":"http:\/\/tillman.com\/","tax_id":"4440147632","company_registry":"CR-48669606","reference":"consequatur","is_active":true,"color":"#d7f7e8","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":1917,"company_id":5295,"industry_id":1912,"user_id":21539,"creator_id":21538,"created_at":"2026-02-12T10:23:55.000000Z","updated_at":"2026-02-12T10:23:55.000000Z","deleted_at":null,"country":null,"state":null},"message":"Partner created successfully."}'
+        content: '{"data":{"id":30792,"account_type":"individual","sub_type":"partner","name":"Ms. Audra Crooks II","email":"amani.herman@example.com","phone":"657-290-2254","mobile":"(559) 334-5567","avatar":null,"avatar_url":null,"job_title":"Anesthesiologist","website":"http:\/\/www.mohr.com\/quos-omnis-quis-nobis-aut-quia-voluptatem.html","tax_id":"2510269415","company_registry":"CR-70322036","reference":"in","is_active":true,"color":"#d147d7","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":2045,"company_id":5663,"industry_id":2040,"user_id":23277,"creator_id":23276,"created_at":"2026-02-12T10:55:13.000000Z","updated_at":"2026-02-12T10:55:13.000000Z","deleted_at":null,"country":null,"state":null},"message":"Partner created successfully."}'
         headers: []
         description: ''
       -
@@ -2157,7 +2157,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":28574,"account_type":"individual","sub_type":"partner","name":"Morgan Hirthe","email":"marcelina.schroeder@example.com","phone":"1-573-643-6363","mobile":"410-825-7340","avatar":null,"avatar_url":null,"job_title":"Personnel Recruiter","website":"http:\/\/www.streich.com\/maxime-qui-rerum-sed-quasi-et-harum","tax_id":"3199438253","company_registry":"CR-11755267","reference":"ut","is_active":true,"color":"#cf7c5e","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":1918,"company_id":5296,"industry_id":1913,"user_id":21543,"creator_id":21542,"created_at":"2026-02-12T10:23:55.000000Z","updated_at":"2026-02-12T10:23:55.000000Z","deleted_at":null,"country":null,"state":null}}'
+        content: '{"data":{"id":30798,"account_type":"individual","sub_type":"partner","name":"Morgan Hirthe","email":"lewis.lubowitz@example.com","phone":"(559) 334-5567","mobile":"1-612-493-5069","avatar":null,"avatar_url":null,"job_title":"Vice President Of Marketing","website":"https:\/\/www.brekke.com\/maxime-praesentium-distinctio-consectetur-earum-quis-itaque","tax_id":"0272401204","company_registry":"CR-20350834","reference":"aut","is_active":true,"color":"#66eb36","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":2046,"company_id":5664,"industry_id":2041,"user_id":23281,"creator_id":23280,"created_at":"2026-02-12T10:55:13.000000Z","updated_at":"2026-02-12T10:55:13.000000Z","deleted_at":null,"country":null,"state":null}}'
         headers: []
         description: ''
       -
@@ -2501,7 +2501,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":28580,"account_type":"individual","sub_type":"partner","name":"Ms. Audra Crooks II","email":"idickens@example.org","phone":"1-989-272-7365","mobile":"870-215-1024","avatar":null,"avatar_url":null,"job_title":"Microbiologist","website":"http:\/\/www.dubuque.net\/quo-omnis-nostrum-aut-adipisci","tax_id":"9354509492","company_registry":"CR-04415490","reference":"laboriosam","is_active":true,"color":"#6b4062","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":1919,"company_id":5297,"industry_id":1914,"user_id":21547,"creator_id":21546,"created_at":"2026-02-12T10:23:56.000000Z","updated_at":"2026-02-12T10:23:56.000000Z","deleted_at":null,"country":null,"state":null},"message":"Partner updated successfully."}'
+        content: '{"data":{"id":30804,"account_type":"individual","sub_type":"partner","name":"Ms. Audra Crooks II","email":"lang.colby@example.com","phone":"386-638-0673","mobile":"1-423-474-5661","avatar":null,"avatar_url":null,"job_title":"Gaming Surveillance Officer","website":"http:\/\/daniel.info\/quis-itaque-assumenda-architecto-nihil-distinctio-molestiae-dolore","tax_id":"3876811266","company_registry":"CR-20315567","reference":"eos","is_active":true,"color":"#4bfda4","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":2047,"company_id":5665,"industry_id":2042,"user_id":23285,"creator_id":23284,"created_at":"2026-02-12T10:55:14.000000Z","updated_at":"2026-02-12T10:55:14.000000Z","deleted_at":null,"country":null,"state":null},"message":"Partner updated successfully."}'
         headers: []
         description: ''
       -
@@ -2885,7 +2885,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":28586,"sub_type":"partner","name":"Tony Olson","email":"kuhic.heloise@example.org","phone":"1-915-609-3169","mobile":"+1-434-358-0568","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"creator_id":21550,"created_at":"2026-02-12T10:23:56.000000Z","updated_at":"2026-02-12T10:23:56.000000Z","deleted_at":null,"country":null,"state":null},{"id":28592,"sub_type":"partner","name":"Joyce Dietrich Jr.","email":"renee.bartell@example.com","phone":"1-970-782-3066","mobile":"(860) 533-7042","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"creator_id":21554,"created_at":"2026-02-12T10:23:56.000000Z","updated_at":"2026-02-12T10:23:56.000000Z","deleted_at":null,"country":null,"state":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":30810,"sub_type":"partner","name":"Eryn Hartmann","email":"uoconnell@example.org","phone":"(940) 651-8352","mobile":"878-885-2824","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"creator_id":23288,"created_at":"2026-02-12T10:55:14.000000Z","updated_at":"2026-02-12T10:55:14.000000Z","deleted_at":null,"country":null,"state":null},{"id":30816,"sub_type":"partner","name":"Christa Fay","email":"romaine.kulas@example.org","phone":"309-408-8516","mobile":"+1-765-764-0578","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"creator_id":23292,"created_at":"2026-02-12T10:55:14.000000Z","updated_at":"2026-02-12T10:55:14.000000Z","deleted_at":null,"country":null,"state":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -3081,7 +3081,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":28598,"sub_type":"partner","name":"Ms. Audra Crooks II","email":"pfritsch@example.com","phone":"(585) 986-2203","mobile":"+16612295933","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"creator_id":21558,"created_at":"2026-02-12T10:23:56.000000Z","updated_at":"2026-02-12T10:23:56.000000Z","deleted_at":null,"country":null,"state":null},"message":"Address created successfully."}'
+        content: '{"data":{"id":30822,"sub_type":"partner","name":"Ms. Audra Crooks II","email":"jermaine20@example.org","phone":"+1-717-819-5567","mobile":"347.265.7743","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"creator_id":23296,"created_at":"2026-02-12T10:55:14.000000Z","updated_at":"2026-02-12T10:55:14.000000Z","deleted_at":null,"country":null,"state":null},"message":"Address created successfully."}'
         headers: []
         description: ''
       -
@@ -3170,7 +3170,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":28610,"sub_type":"partner","name":"Morgan Hirthe","email":"mcronin@example.org","phone":"(539) 299-2936","mobile":"+1-336-657-3920","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":28609,"creator_id":21562,"created_at":"2026-02-12T10:23:56.000000Z","updated_at":"2026-02-12T10:23:56.000000Z","deleted_at":null,"country":null,"state":null,"parent":{"id":28609,"account_type":"individual","sub_type":"partner","name":"Vivien Kiehn","email":"savanna98@example.org","phone":"667-898-1037","mobile":"+1-510-464-3532","avatar":null,"avatar_url":null,"job_title":"Webmaster","website":"https:\/\/olson.com\/perspiciatis-voluptatibus-iure-molestias-qui-et.html","tax_id":"6038426099","company_registry":"CR-34285507","reference":"quae","is_active":true,"color":"#9d6456","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":1924,"company_id":5302,"industry_id":1919,"user_id":21567,"creator_id":21566,"created_at":"2026-02-12T10:23:56.000000Z","updated_at":"2026-02-12T10:23:56.000000Z","deleted_at":null,"country":null,"state":null}}}'
+        content: '{"data":{"id":30834,"sub_type":"partner","name":"Morgan Hirthe","email":"celia82@example.com","phone":"(303) 334-2975","mobile":"(432) 326-2366","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":30833,"creator_id":23300,"created_at":"2026-02-12T10:55:14.000000Z","updated_at":"2026-02-12T10:55:14.000000Z","deleted_at":null,"country":null,"state":null,"parent":{"id":30833,"account_type":"individual","sub_type":"partner","name":"Brandy Pacocha","email":"torp.robbie@example.com","phone":"+14784345145","mobile":"+1.631.481.5076","avatar":null,"avatar_url":null,"job_title":"Rail Car Repairer","website":"http:\/\/www.ondricka.org\/nisi-vero-unde-id-iste","tax_id":"1474866294","company_registry":"CR-37565529","reference":"quod","is_active":true,"color":"#5c0756","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":2052,"company_id":5670,"industry_id":2047,"user_id":23305,"creator_id":23304,"created_at":"2026-02-12T10:55:14.000000Z","updated_at":"2026-02-12T10:55:14.000000Z","deleted_at":null,"country":null,"state":null}}}'
         headers: []
         description: ''
       -
@@ -3385,7 +3385,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":28622,"sub_type":"partner","name":"Ms. Audra Crooks II","email":"christian51@example.com","phone":"646-329-5127","mobile":"402-956-7824","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":28621,"creator_id":21570,"created_at":"2026-02-12T10:23:56.000000Z","updated_at":"2026-02-12T10:23:56.000000Z","deleted_at":null,"country":null,"state":null,"parent":{"id":28621,"account_type":"individual","sub_type":"partner","name":"Mrs. Anita Sanford","email":"pearl91@example.net","phone":"281-633-8490","mobile":"(629) 328-6240","avatar":null,"avatar_url":null,"job_title":"Receptionist and Information Clerk","website":"http:\/\/carroll.com\/","tax_id":"7642204884","company_registry":"CR-63252940","reference":"molestias","is_active":true,"color":"#653b82","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":1926,"company_id":5304,"industry_id":1921,"user_id":21575,"creator_id":21574,"created_at":"2026-02-12T10:23:56.000000Z","updated_at":"2026-02-12T10:23:56.000000Z","deleted_at":null,"country":null,"state":null}},"message":"Address updated successfully."}'
+        content: '{"data":{"id":30846,"sub_type":"partner","name":"Ms. Audra Crooks II","email":"juana.hamill@example.net","phone":"(303) 334-2975","mobile":"(432) 326-2366","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":30845,"creator_id":23308,"created_at":"2026-02-12T10:55:14.000000Z","updated_at":"2026-02-12T10:55:14.000000Z","deleted_at":null,"country":null,"state":null,"parent":{"id":30845,"account_type":"individual","sub_type":"partner","name":"Emile Farrell","email":"erdman.leann@example.com","phone":"+1-410-610-7747","mobile":"1-856-497-8814","avatar":null,"avatar_url":null,"job_title":"Parking Enforcement Worker","website":"https:\/\/www.deckow.info\/iste-dolor-id-atque-ut-quam","tax_id":"3865130947","company_registry":"CR-28100813","reference":"aperiam","is_active":true,"color":"#582081","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":2054,"company_id":5672,"industry_id":2049,"user_id":23313,"creator_id":23312,"created_at":"2026-02-12T10:55:14.000000Z","updated_at":"2026-02-12T10:55:14.000000Z","deleted_at":null,"country":null,"state":null}},"message":"Address updated successfully."}'
         headers: []
         description: ''
       -
@@ -3756,7 +3756,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":79,"account_number":"031881","account_holder_name":"Chanel Hammes","can_send_money":true,"bank_id":149,"created_at":"2026-02-12T10:23:56.000000Z","updated_at":"2026-02-12T10:23:56.000000Z"},{"id":80,"account_number":"0486080245145","account_holder_name":"Durward Adams","can_send_money":true,"bank_id":150,"created_at":"2026-02-12T10:23:56.000000Z","updated_at":"2026-02-12T10:23:56.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":89,"account_number":"031881","account_holder_name":"Lydia Tromp","can_send_money":true,"bank_id":171,"created_at":"2026-02-12T10:55:14.000000Z","updated_at":"2026-02-12T10:55:14.000000Z"},{"id":90,"account_number":"736826059391","account_holder_name":"Katlyn Bode","can_send_money":true,"bank_id":172,"created_at":"2026-02-12T10:55:14.000000Z","updated_at":"2026-02-12T10:55:14.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -3851,7 +3851,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":81,"account_number":"88002631600564","account_holder_name":"Lindsey Skiles","can_send_money":true,"bank_id":151,"created_at":"2026-02-12T10:23:56.000000Z","updated_at":"2026-02-12T10:23:56.000000Z"},"message":"Bank account created successfully."}'
+        content: '{"data":{"id":91,"account_number":"88002631600564","account_holder_name":"Francesco Reinger I","can_send_money":true,"bank_id":173,"created_at":"2026-02-12T10:55:14.000000Z","updated_at":"2026-02-12T10:55:14.000000Z"},"message":"Bank account created successfully."}'
         headers: []
         description: ''
       -
@@ -3940,7 +3940,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":82,"account_number":"031881","account_holder_name":"Lindsey Skiles","can_send_money":true,"bank_id":152,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z"}}'
+        content: '{"data":{"id":92,"account_number":"031881","account_holder_name":"Rafaela Mitchell","can_send_money":true,"bank_id":174,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}}'
         headers: []
         description: ''
       -
@@ -4054,7 +4054,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":83,"account_number":"88002631600564","account_holder_name":"Lane Daniel","can_send_money":true,"bank_id":153,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z"},"message":"Bank account updated successfully."}'
+        content: '{"data":{"id":93,"account_number":"88002631600564","account_holder_name":"Prof. Gerson Brakus","can_send_money":true,"bank_id":175,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"},"message":"Bank account updated successfully."}'
         headers: []
         description: ''
       -

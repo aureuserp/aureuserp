@@ -100,7 +100,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1506,"name":"Molly Towne","full_name":"Constantin Hettinger \/ Molly Towne","parent_path":"\/1505\/","parent_id":1505,"creator_id":21603,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","parent":{"id":1505,"name":"Constantin Hettinger","full_name":"Constantin Hettinger","parent_path":"\/","parent_id":null,"creator_id":21604,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z"}},{"id":1508,"name":"Sarah Borer","full_name":"Alessandro Donnelly \/ Sarah Borer","parent_path":"\/1507\/","parent_id":1507,"creator_id":21605,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","parent":{"id":1507,"name":"Alessandro Donnelly","full_name":"Alessandro Donnelly","parent_path":"\/","parent_id":null,"creator_id":21606,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1642,"name":"Giuseppe Pfannerstill DDS","full_name":"Brandt Feest \/ Giuseppe Pfannerstill DDS","parent_path":"\/1641\/","parent_id":1641,"creator_id":23341,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","parent":{"id":1641,"name":"Brandt Feest","full_name":"Brandt Feest","parent_path":"\/","parent_id":null,"creator_id":23342,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}},{"id":1644,"name":"Eveline Orn","full_name":"Rachel Block V \/ Eveline Orn","parent_path":"\/1643\/","parent_id":1643,"creator_id":23343,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","parent":{"id":1643,"name":"Rachel Block V","full_name":"Rachel Block V","parent_path":"\/","parent_id":null,"creator_id":23344,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -171,7 +171,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1510,"name":"Ms. Audra Crooks II","full_name":"Dr. Grayson Glover \/ Ms. Audra Crooks II","parent_path":"\/1509\/","parent_id":1509,"creator_id":21607,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","parent":{"id":1509,"name":"Dr. Grayson Glover","full_name":"Dr. Grayson Glover","parent_path":"\/","parent_id":null,"creator_id":21608,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z"}},"message":"Category created successfully."}'
+        content: '{"data":{"id":1646,"name":"Ms. Audra Crooks II","full_name":"Dr. Grayson Glover \/ Ms. Audra Crooks II","parent_path":"\/1645\/","parent_id":1645,"creator_id":23345,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","parent":{"id":1645,"name":"Dr. Grayson Glover","full_name":"Dr. Grayson Glover","parent_path":"\/","parent_id":null,"creator_id":23346,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}},"message":"Category created successfully."}'
         headers: []
         description: ''
       -
@@ -248,7 +248,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1512,"name":"Morgan Hirthe","full_name":"Mr. Jesse Daniel \/ Morgan Hirthe","parent_path":"\/1511\/","parent_id":1511,"creator_id":21609,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","parent":{"id":1511,"name":"Mr. Jesse Daniel","full_name":"Mr. Jesse Daniel","parent_path":"\/","parent_id":null,"creator_id":21610,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z"},"children":[{"id":1513,"name":"Miss Lora Pfannerstill DDS","full_name":"Mr. Jesse Daniel \/ Morgan Hirthe \/ Miss Lora Pfannerstill DDS","parent_path":"\/1511\/1512\/","parent_id":1512,"creator_id":21611,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z"}]}}'
+        content: '{"data":{"id":1648,"name":"Morgan Hirthe","full_name":"Meredith Stark \/ Morgan Hirthe","parent_path":"\/1647\/","parent_id":1647,"creator_id":23347,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","parent":{"id":1647,"name":"Meredith Stark","full_name":"Meredith Stark","parent_path":"\/","parent_id":null,"creator_id":23348,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"},"children":[{"id":1649,"name":"Suzanne Rodriguez","full_name":"Meredith Stark \/ Morgan Hirthe \/ Suzanne Rodriguez","parent_path":"\/1647\/1648\/","parent_id":1648,"creator_id":23349,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}]}}'
         headers: []
         description: ''
       -
@@ -338,7 +338,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1515,"name":"Ms. Audra Crooks II","full_name":"Akeem Hettinger \/ Ms. Audra Crooks II","parent_path":"\/1514\/","parent_id":1514,"creator_id":21612,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","parent":{"id":1514,"name":"Akeem Hettinger","full_name":"Akeem Hettinger","parent_path":"\/","parent_id":null,"creator_id":21613,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z"}},"message":"Category updated successfully."}'
+        content: '{"data":{"id":1651,"name":"Ms. Audra Crooks II","full_name":"Akeem Hettinger \/ Ms. Audra Crooks II","parent_path":"\/1650\/","parent_id":1650,"creator_id":23350,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","parent":{"id":1650,"name":"Akeem Hettinger","full_name":"Akeem Hettinger","parent_path":"\/","parent_id":null,"creator_id":23351,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}},"message":"Category updated successfully."}'
         headers: []
         description: ''
       -
@@ -534,7 +534,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":335,"name":"Morgan Hirthe","color":"#bd6da5","created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","deleted_at":null},{"id":336,"name":"May Stroman","color":"#4efe0f","created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":383,"name":"Morgan Hirthe","color":"#bd6da5","created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null},{"id":384,"name":"Vivien Kiehn","color":"#5fae4d","created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -605,7 +605,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":337,"name":"Ms. Audra Crooks II","color":"#b35e11","created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","deleted_at":null},"message":"Tag created successfully."}'
+        content: '{"data":{"id":385,"name":"Ms. Audra Crooks II","color":"#b35e11","created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null},"message":"Tag created successfully."}'
         headers: []
         description: ''
       -
@@ -682,7 +682,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":338,"name":"Morgan Hirthe","color":"#bd6da5","created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","deleted_at":null}}'
+        content: '{"data":{"id":386,"name":"Morgan Hirthe","color":"#bd6da5","created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null}}'
         headers: []
         description: ''
       -
@@ -772,7 +772,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":339,"name":"Ms. Audra Crooks II","color":"#b35e11","created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","deleted_at":null},"message":"Tag updated successfully."}'
+        content: '{"data":{"id":387,"name":"Ms. Audra Crooks II","color":"#b35e11","created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null},"message":"Tag updated successfully."}'
         headers: []
         description: ''
       -
@@ -908,7 +908,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":340,"name":"Morgan Hirthe","color":"#bd6da5","created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","deleted_at":null},"message":"Tag restored successfully."}'
+        content: '{"data":{"id":388,"name":"Morgan Hirthe","color":"#bd6da5","created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null},"message":"Tag restored successfully."}'
         headers: []
         description: ''
       -
@@ -1110,7 +1110,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":613,"name":"Claudia Smith","type":"radio","sort":1,"creator_id":21620,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","deleted_at":null,"options":[{"id":150,"name":"May Wiegand","color":null,"extra_price":"4.3700","sort":1,"attribute_id":613,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z"}]},{"id":614,"name":"Pierre Hyatt","type":"radio","sort":2,"creator_id":21622,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","deleted_at":null,"options":[{"id":151,"name":"Rex Stokes","color":null,"extra_price":"52.6900","sort":2,"attribute_id":614,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z"}]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":687,"name":"Tyshawn Leuschke I","type":"radio","sort":1,"creator_id":23358,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null,"options":[{"id":172,"name":"Lydia Lebsack","color":null,"extra_price":"3.7900","sort":1,"attribute_id":687,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}]},{"id":688,"name":"Joshuah Torp DDS","type":"radio","sort":2,"creator_id":23360,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null,"options":[{"id":173,"name":"Karianne Dooley","color":null,"extra_price":"48.4600","sort":2,"attribute_id":688,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -1196,7 +1196,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":615,"name":"Ms. Audra Crooks II","type":"radio","sort":1,"creator_id":21624,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","deleted_at":null,"options":[{"id":152,"name":"Kaitlin Pagac","color":null,"extra_price":"8.2200","sort":1,"attribute_id":615,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z"}]},"message":"Attribute created successfully."}'
+        content: '{"data":{"id":689,"name":"Ms. Audra Crooks II","type":"radio","sort":1,"creator_id":23362,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null,"options":[{"id":174,"name":"Marjorie Bogisich DDS","color":null,"extra_price":"44.6600","sort":1,"attribute_id":689,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}]},"message":"Attribute created successfully."}'
         headers: []
         description: ''
       -
@@ -1273,7 +1273,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":616,"name":"Morgan Hirthe","type":"radio","sort":1,"creator_id":21626,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","deleted_at":null,"options":[{"id":153,"name":"Meredith Stark","color":null,"extra_price":"56.4100","sort":1,"attribute_id":616,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z"}]}}'
+        content: '{"data":{"id":690,"name":"Morgan Hirthe","type":"radio","sort":1,"creator_id":23364,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null,"options":[{"id":175,"name":"Gertrude Pacocha","color":null,"extra_price":"14.5800","sort":1,"attribute_id":690,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}]}}'
         headers: []
         description: ''
       -
@@ -1378,7 +1378,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":617,"name":"Ms. Audra Crooks II","type":"radio","sort":1,"creator_id":21628,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","deleted_at":null,"options":[{"id":154,"name":"Samara Ledner","color":null,"extra_price":"22.4300","sort":1,"attribute_id":617,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z"}]},"message":"Attribute updated successfully."}'
+        content: '{"data":{"id":691,"name":"Ms. Audra Crooks II","type":"radio","sort":1,"creator_id":23366,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null,"options":[{"id":176,"name":"Prof. Gerson Brakus","color":null,"extra_price":"75.2800","sort":1,"attribute_id":691,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}]},"message":"Attribute updated successfully."}'
         headers: []
         description: ''
       -
@@ -1514,7 +1514,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":618,"name":"Morgan Hirthe","type":"radio","sort":1,"creator_id":21630,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","deleted_at":null,"options":[{"id":155,"name":"Hipolito Murazik","color":null,"extra_price":"96.0800","sort":1,"attribute_id":618,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z"}]},"message":"Attribute restored successfully."}'
+        content: '{"data":{"id":692,"name":"Morgan Hirthe","type":"radio","sort":1,"creator_id":23368,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null,"options":[{"id":177,"name":"Electa Reilly MD","color":null,"extra_price":"19.6500","sort":1,"attribute_id":692,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}]},"message":"Attribute restored successfully."}'
         headers: []
         description: ''
       -
@@ -1702,7 +1702,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":156,"name":"Morgan Hirthe","color":null,"extra_price":"60.5300","sort":1,"attribute_id":619,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","attribute":{"id":619,"name":"Reynold Nolan","type":"radio","sort":1,"creator_id":21633,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","deleted_at":null}},{"id":157,"name":"Sadye Hermann","color":null,"extra_price":"59.4300","sort":2,"attribute_id":620,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","attribute":{"id":620,"name":"Vallie Ondricka MD","type":"radio","sort":2,"creator_id":21635,"created_at":"2026-02-12T10:23:57.000000Z","updated_at":"2026-02-12T10:23:57.000000Z","deleted_at":null}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":178,"name":"Morgan Hirthe","color":null,"extra_price":"60.5300","sort":1,"attribute_id":693,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","attribute":{"id":693,"name":"Sadye Hermann","type":"radio","sort":1,"creator_id":23371,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}},{"id":179,"name":"Vallie Ondricka MD","color":null,"extra_price":"69.8600","sort":2,"attribute_id":694,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","attribute":{"id":694,"name":"Prof. Cora Romaguera Jr.","type":"radio","sort":2,"creator_id":23373,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -1809,7 +1809,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":158,"name":"Ms. Audra Crooks II","color":null,"extra_price":"54.2700","sort":1,"attribute_id":621,"created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z","attribute":{"id":621,"name":"Miss Lilian Jacobson MD","type":"radio","sort":1,"creator_id":21637,"created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z","deleted_at":null}},"message":"Attribute option created successfully."}'
+        content: '{"data":{"id":180,"name":"Ms. Audra Crooks II","color":null,"extra_price":"54.2700","sort":1,"attribute_id":695,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","attribute":{"id":695,"name":"Yasmin Altenwerth Jr.","type":"radio","sort":1,"creator_id":23375,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}},"message":"Attribute option created successfully."}'
         headers: []
         description: ''
       -
@@ -1898,7 +1898,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":159,"name":"Morgan Hirthe","color":null,"extra_price":"60.5300","sort":1,"attribute_id":622,"created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z","attribute":{"id":622,"name":"Gertrude Pacocha","type":"radio","sort":1,"creator_id":21639,"created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z","deleted_at":null}}}'
+        content: '{"data":{"id":181,"name":"Morgan Hirthe","color":null,"extra_price":"60.5300","sort":1,"attribute_id":696,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","attribute":{"id":696,"name":"Robbie Stehr","type":"radio","sort":1,"creator_id":23377,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}}}'
         headers: []
         description: ''
       -
@@ -2024,7 +2024,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":160,"name":"Ms. Audra Crooks II","color":null,"extra_price":"54.2700","sort":1,"attribute_id":623,"created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z","attribute":{"id":623,"name":"Prof. Gerson Brakus","type":"radio","sort":1,"creator_id":21641,"created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z","deleted_at":null}},"message":"Attribute option updated successfully."}'
+        content: '{"data":{"id":182,"name":"Ms. Audra Crooks II","color":null,"extra_price":"54.2700","sort":1,"attribute_id":697,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","attribute":{"id":697,"name":"Javonte Shields III","type":"radio","sort":1,"creator_id":23379,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}},"message":"Attribute option updated successfully."}'
         headers: []
         description: ''
       -
@@ -2269,7 +2269,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":958,"type":"goods","name":"Jefferey Friesen","service_tracking":"none","reference":null,"barcode":"1594997064644","price":17.09,"cost":61.91,"volume":60.12,"weight":37.68,"description":"Culpa quasi non culpa veritatis.","description_purchase":"Fugiat voluptatem ad impedit est.","description_sale":"In est sunt similique iure ut vel laudantium eos.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1924,"uom_po_id":1925,"category_id":1516,"creator_id":null,"company_id":5310,"created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z","deleted_at":null,"category":{"id":1516,"name":"Unique Larkin III","full_name":"Unique Larkin III","parent_path":"\/","parent_id":null,"creator_id":21647,"created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z"},"tags":[{"id":341,"name":"Claudine O''Kon","color":"#55f4ce","created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z","deleted_at":null}]},{"id":959,"type":"goods","name":"Prof. Lucas Connelly","service_tracking":"none","reference":null,"barcode":"4312904683118","price":59.17,"cost":47.14,"volume":35.33,"weight":1.54,"description":"Est nulla qui ut nihil quisquam.","description_purchase":"Velit praesentium quia nostrum tempora.","description_sale":"Soluta nam facere ut ad.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":1926,"uom_po_id":1927,"category_id":1517,"creator_id":null,"company_id":5311,"created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z","deleted_at":null,"category":{"id":1517,"name":"Miss Lacy Treutel DVM","full_name":"Miss Lacy Treutel DVM","parent_path":"\/","parent_id":null,"creator_id":21654,"created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z"},"tags":[{"id":342,"name":"Mrs. Luna Pacocha","color":"#024d50","created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z","deleted_at":null}]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1072,"type":"goods","name":"Erich Morar DVM","service_tracking":"none","reference":null,"barcode":"9718877602005","price":8.2,"cost":82.66,"volume":15.86,"weight":0.19,"description":"Laborum sit incidunt deserunt molestiae magni.","description_purchase":"Voluptatem possimus totam et omnis nobis repellat.","description_sale":"Dolorem vitae inventore consequatur officia.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2180,"uom_po_id":2181,"category_id":1652,"creator_id":null,"company_id":5678,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null,"category":{"id":1652,"name":"Mrs. Ines Paucek PhD","full_name":"Mrs. Ines Paucek PhD","parent_path":"\/","parent_id":null,"creator_id":23385,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z"},"tags":[{"id":389,"name":"Herta King","color":"#ff85db","created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}]},{"id":1073,"type":"goods","name":"Prof. Henderson Strosin DDS","service_tracking":"none","reference":null,"barcode":"5740073599333","price":32.86,"cost":26.31,"volume":38.09,"weight":17.2,"description":"Quia temporibus aut enim inventore pariatur.","description_purchase":"Voluptatem ducimus id qui in voluptas quisquam rerum.","description_sale":"Blanditiis repellat sed est deleniti ullam velit neque.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":2182,"uom_po_id":2183,"category_id":1653,"creator_id":null,"company_id":5679,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null,"category":{"id":1653,"name":"Liana D''Amore","full_name":"Liana D''Amore","parent_path":"\/","parent_id":null,"creator_id":23392,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z"},"tags":[{"id":390,"name":"Ms. Josianne Becker Jr.","color":"#f9b8da","created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2574,7 +2574,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":960,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1928,"uom_po_id":1929,"category_id":1518,"creator_id":null,"company_id":5312,"created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z","deleted_at":null,"category":{"id":1518,"name":"Mr. Donato Skiles","full_name":"Mr. Donato Skiles","parent_path":"\/","parent_id":null,"creator_id":21661,"created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z"},"tags":[{"id":343,"name":"Isobel Hackett","color":"#5c912e","created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z","deleted_at":null}]},"message":"Product created successfully."}'
+        content: '{"data":{"id":1074,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2184,"uom_po_id":2185,"category_id":1654,"creator_id":null,"company_id":5680,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null,"category":{"id":1654,"name":"Connie Emmerich","full_name":"Connie Emmerich","parent_path":"\/","parent_id":null,"creator_id":23399,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z"},"tags":[{"id":391,"name":"Domingo Schultz","color":"#7e045f","created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}]},"message":"Product created successfully."}'
         headers: []
         description: ''
       -
@@ -2651,7 +2651,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":961,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1930,"uom_po_id":1931,"category_id":1519,"creator_id":null,"company_id":5313,"created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z","deleted_at":null,"category":{"id":1519,"name":"Nya Hilpert","full_name":"Nya Hilpert","parent_path":"\/","parent_id":null,"creator_id":21668,"created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z"},"tags":[{"id":344,"name":"Amely Hane","color":"#f956bd","created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z","deleted_at":null}]}}'
+        content: '{"data":{"id":1075,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2186,"uom_po_id":2187,"category_id":1655,"creator_id":null,"company_id":5681,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null,"category":{"id":1655,"name":"Cloyd Franecki","full_name":"Cloyd Franecki","parent_path":"\/","parent_id":null,"creator_id":23406,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z"},"tags":[{"id":392,"name":"Miss Otilia Russel","color":"#1dfc5e","created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}]}}'
         headers: []
         description: ''
       -
@@ -2975,7 +2975,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":962,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1932,"uom_po_id":1933,"category_id":1520,"creator_id":null,"company_id":5314,"created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z","deleted_at":null,"category":{"id":1520,"name":"Heather Breitenberg Jr.","full_name":"Heather Breitenberg Jr.","parent_path":"\/","parent_id":null,"creator_id":21675,"created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z"},"tags":[{"id":345,"name":"Heaven Tromp","color":"#3fac88","created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z","deleted_at":null}]},"message":"Product updated successfully."}'
+        content: '{"data":{"id":1076,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2188,"uom_po_id":2189,"category_id":1656,"creator_id":null,"company_id":5682,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null,"category":{"id":1656,"name":"Jonathan Jaskolski","full_name":"Jonathan Jaskolski","parent_path":"\/","parent_id":null,"creator_id":23413,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z"},"tags":[{"id":393,"name":"Melvin Parisian","color":"#537d54","created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}]},"message":"Product updated successfully."}'
         headers: []
         description: ''
       -
@@ -3111,7 +3111,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":963,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1934,"uom_po_id":1935,"category_id":1521,"creator_id":null,"company_id":5315,"created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z","deleted_at":null,"category":{"id":1521,"name":"Salma Balistreri","full_name":"Salma Balistreri","parent_path":"\/","parent_id":null,"creator_id":21682,"created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z"},"tags":[{"id":346,"name":"Annie Thiel","color":"#59fcab","created_at":"2026-02-12T10:23:58.000000Z","updated_at":"2026-02-12T10:23:58.000000Z","deleted_at":null}]},"message":"Product restored successfully."}'
+        content: '{"data":{"id":1077,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2190,"uom_po_id":2191,"category_id":1657,"creator_id":null,"company_id":5683,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","deleted_at":null,"category":{"id":1657,"name":"Melvin Parisian","full_name":"Melvin Parisian","parent_path":"\/","parent_id":null,"creator_id":23420,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z"},"tags":[{"id":394,"name":"Sienna Davis","color":"#af6f31","created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","deleted_at":null}]},"message":"Product restored successfully."}'
         headers: []
         description: ''
       -
@@ -3299,7 +3299,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":336,"sort":2,"product_id":964,"attribute_id":624,"creator_id":21690,"created_at":"2026-02-12T10:23:59.000000Z","updated_at":"2026-02-12T10:23:59.000000Z","attribute":{"id":624,"name":"Otilia Russel","type":"radio","sort":1,"creator_id":21691,"created_at":"2026-02-12T10:23:59.000000Z","updated_at":"2026-02-12T10:23:59.000000Z","deleted_at":null}},{"id":337,"sort":3,"product_id":965,"attribute_id":625,"creator_id":21698,"created_at":"2026-02-12T10:23:59.000000Z","updated_at":"2026-02-12T10:23:59.000000Z","attribute":{"id":625,"name":"Zella Dicki","type":"radio","sort":2,"creator_id":21699,"created_at":"2026-02-12T10:23:59.000000Z","updated_at":"2026-02-12T10:23:59.000000Z","deleted_at":null}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":388,"sort":2,"product_id":1078,"attribute_id":698,"creator_id":23428,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","attribute":{"id":698,"name":"Burnice Reilly","type":"radio","sort":1,"creator_id":23429,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","deleted_at":null}},{"id":389,"sort":3,"product_id":1079,"attribute_id":699,"creator_id":23436,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","attribute":{"id":699,"name":"Prof. Franco Rippin DVM","type":"radio","sort":2,"creator_id":23437,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","deleted_at":null}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -3396,7 +3396,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":338,"sort":2,"product_id":966,"attribute_id":626,"creator_id":21706,"created_at":"2026-02-12T10:23:59.000000Z","updated_at":"2026-02-12T10:23:59.000000Z","attribute":{"id":626,"name":"Saul Kovacek","type":"radio","sort":1,"creator_id":21707,"created_at":"2026-02-12T10:23:59.000000Z","updated_at":"2026-02-12T10:23:59.000000Z","deleted_at":null}},"message":"Product attribute created successfully."}'
+        content: '{"data":{"id":390,"sort":2,"product_id":1080,"attribute_id":700,"creator_id":23444,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","attribute":{"id":700,"name":"Blaise Rice","type":"radio","sort":1,"creator_id":23445,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","deleted_at":null}},"message":"Product attribute created successfully."}'
         headers: []
         description: ''
       -
@@ -3485,7 +3485,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":339,"sort":2,"product_id":967,"attribute_id":627,"creator_id":21714,"created_at":"2026-02-12T10:23:59.000000Z","updated_at":"2026-02-12T10:23:59.000000Z","attribute":{"id":627,"name":"Mara Jenkins","type":"radio","sort":1,"creator_id":21715,"created_at":"2026-02-12T10:23:59.000000Z","updated_at":"2026-02-12T10:23:59.000000Z","deleted_at":null}}}'
+        content: '{"data":{"id":391,"sort":2,"product_id":1081,"attribute_id":701,"creator_id":23452,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","attribute":{"id":701,"name":"Connie Leffler","type":"radio","sort":1,"creator_id":23453,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","deleted_at":null}}}'
         headers: []
         description: ''
       -
@@ -3601,7 +3601,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":340,"sort":2,"product_id":968,"attribute_id":628,"creator_id":21722,"created_at":"2026-02-12T10:23:59.000000Z","updated_at":"2026-02-12T10:23:59.000000Z","attribute":{"id":628,"name":"Sienna Davis","type":"radio","sort":1,"creator_id":21723,"created_at":"2026-02-12T10:23:59.000000Z","updated_at":"2026-02-12T10:23:59.000000Z","deleted_at":null}},"message":"Product attribute updated successfully."}'
+        content: '{"data":{"id":392,"sort":2,"product_id":1082,"attribute_id":702,"creator_id":23460,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","attribute":{"id":702,"name":"Prof. Destini Marvin","type":"radio","sort":1,"creator_id":23461,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","deleted_at":null}},"message":"Product attribute updated successfully."}'
         headers: []
         description: ''
       -
@@ -3858,7 +3858,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":969,"type":"goods","name":"Miss Zula Ernser Sr.","service_tracking":"none","reference":null,"barcode":"5576710768653","price":24.95,"cost":11.74,"volume":83.57,"weight":85.63,"description":"Eum ipsam sit sunt voluptatem.","description_purchase":"Asperiores voluptates rerum quos voluptates aut aliquid.","description_sale":"Veniam excepturi voluptas aut ducimus qui assumenda.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1946,"uom_po_id":1947,"category_id":1527,"creator_id":null,"company_id":5321,"created_at":"2026-02-12T10:23:59.000000Z","updated_at":"2026-02-12T10:23:59.000000Z","deleted_at":null},{"id":970,"type":"goods","name":"Josephine Paucek","service_tracking":"none","reference":null,"barcode":"3833876200437","price":25.92,"cost":80.65,"volume":10.39,"weight":88.6,"description":"Provident et voluptatibus consequuntur quo eveniet.","description_purchase":"Vitae rem unde maiores veniam quisquam molestiae itaque.","description_sale":"Ex velit a debitis nam repellendus et.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":1948,"uom_po_id":1949,"category_id":1528,"creator_id":null,"company_id":5322,"created_at":"2026-02-12T10:23:59.000000Z","updated_at":"2026-02-12T10:23:59.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1083,"type":"goods","name":"Devyn Fahey","service_tracking":"none","reference":null,"barcode":"0705238259564","price":90.23,"cost":4.83,"volume":58.64,"weight":8.65,"description":"Dignissimos nihil deserunt placeat quis eum aut commodi.","description_purchase":"Maiores natus harum distinctio natus aspernatur eos illo.","description_sale":"Voluptatem molestiae quae dolor veritatis possimus.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2202,"uom_po_id":2203,"category_id":1663,"creator_id":null,"company_id":5689,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","deleted_at":null},{"id":1084,"type":"goods","name":"Ms. Ottilie Heaney","service_tracking":"none","reference":null,"barcode":"1752072753795","price":44.45,"cost":77.78,"volume":88.23,"weight":21.34,"description":"Eius libero fugiat cumque voluptatem odit.","description_purchase":"Voluptas ipsum dignissimos nihil totam quaerat dolorem magnam.","description_sale":"Quae error assumenda maiores dolores magnam minus.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":2204,"uom_po_id":2205,"category_id":1664,"creator_id":null,"company_id":5690,"created_at":"2026-02-12T10:55:18.000000Z","updated_at":"2026-02-12T10:55:18.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -3917,7 +3917,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":[{"id":971,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1950,"uom_po_id":1951,"category_id":1529,"creator_id":null,"company_id":5323,"created_at":"2026-02-12T10:24:00.000000Z","updated_at":"2026-02-12T10:24:00.000000Z","deleted_at":null},{"id":972,"type":"goods","name":"Mabelle Paucek","service_tracking":"none","reference":null,"barcode":"7931938428358","price":24.59,"cost":5.05,"volume":82.59,"weight":56.88,"description":"Nostrum non eum in magni officiis.","description_purchase":"Alias incidunt corrupti eveniet aspernatur.","description_sale":"Et fugit vel ut minus.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":1952,"uom_po_id":1953,"category_id":1530,"creator_id":null,"company_id":5324,"created_at":"2026-02-12T10:24:00.000000Z","updated_at":"2026-02-12T10:24:00.000000Z","deleted_at":null}],"message":"Product variants synced successfully."}'
+        content: '{"data":[{"id":1085,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2206,"uom_po_id":2207,"category_id":1665,"creator_id":null,"company_id":5691,"created_at":"2026-02-12T10:55:18.000000Z","updated_at":"2026-02-12T10:55:18.000000Z","deleted_at":null},{"id":1086,"type":"goods","name":"Miss Casandra Wolf","service_tracking":"none","reference":null,"barcode":"1987377801845","price":17.3,"cost":5.72,"volume":98.57,"weight":75.12,"description":"Ab magnam sit et eveniet.","description_purchase":"Sed voluptas dolorem similique quo iusto sequi quos magnam.","description_sale":"Qui reiciendis labore velit mollitia eaque exercitationem.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":2208,"uom_po_id":2209,"category_id":1666,"creator_id":null,"company_id":5692,"created_at":"2026-02-12T10:55:18.000000Z","updated_at":"2026-02-12T10:55:18.000000Z","deleted_at":null}],"message":"Product variants synced successfully."}'
         headers: []
         description: ''
       -
@@ -4000,7 +4000,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":973,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1954,"uom_po_id":1955,"category_id":1531,"creator_id":null,"company_id":5325,"created_at":"2026-02-12T10:24:00.000000Z","updated_at":"2026-02-12T10:24:00.000000Z","deleted_at":null}}'
+        content: '{"data":{"id":1087,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2210,"uom_po_id":2211,"category_id":1667,"creator_id":null,"company_id":5693,"created_at":"2026-02-12T10:55:18.000000Z","updated_at":"2026-02-12T10:55:18.000000Z","deleted_at":null}}'
         headers: []
         description: ''
       -
@@ -4336,7 +4336,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":974,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1956,"uom_po_id":1957,"category_id":1532,"creator_id":null,"company_id":5326,"created_at":"2026-02-12T10:24:00.000000Z","updated_at":"2026-02-12T10:24:00.000000Z","deleted_at":null},"message":"Product variant updated successfully."}'
+        content: '{"data":{"id":1088,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2212,"uom_po_id":2213,"category_id":1668,"creator_id":null,"company_id":5694,"created_at":"2026-02-12T10:55:18.000000Z","updated_at":"2026-02-12T10:55:18.000000Z","deleted_at":null},"message":"Product variant updated successfully."}'
         headers: []
         description: ''
       -
@@ -4496,7 +4496,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":975,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":1958,"uom_po_id":1959,"category_id":1533,"creator_id":null,"company_id":5327,"created_at":"2026-02-12T10:24:00.000000Z","updated_at":"2026-02-12T10:24:00.000000Z","deleted_at":null},"message":"Product variant restored successfully."}'
+        content: '{"data":{"id":1089,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2214,"uom_po_id":2215,"category_id":1669,"creator_id":null,"company_id":5695,"created_at":"2026-02-12T10:55:18.000000Z","updated_at":"2026-02-12T10:55:18.000000Z","deleted_at":null},"message":"Product variant restored successfully."}'
         headers: []
         description: ''
       -
@@ -4695,7 +4695,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":39,"name":"Morgan Hirthe","barcode":null,"qty":"1.0000","sort":2,"product_id":976,"creator_id":21786,"created_at":"2026-02-12T10:24:00.000000Z","updated_at":"2026-02-12T10:24:00.000000Z"},{"id":40,"name":"Skylar Deckow MD","barcode":null,"qty":"1.0000","sort":3,"product_id":977,"creator_id":21793,"created_at":"2026-02-12T10:24:00.000000Z","updated_at":"2026-02-12T10:24:00.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":49,"name":"Morgan Hirthe","barcode":null,"qty":"1.0000","sort":2,"product_id":1090,"creator_id":23524,"created_at":"2026-02-12T10:55:18.000000Z","updated_at":"2026-02-12T10:55:18.000000Z"},{"id":50,"name":"Dr. Fred Cartwright Jr.","barcode":null,"qty":"1.0000","sort":3,"product_id":1091,"creator_id":23531,"created_at":"2026-02-12T10:55:19.000000Z","updated_at":"2026-02-12T10:55:19.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -4814,7 +4814,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":41,"name":"Ms. Audra Crooks II","barcode":null,"qty":"1.0000","sort":2,"product_id":978,"creator_id":21800,"created_at":"2026-02-12T10:24:01.000000Z","updated_at":"2026-02-12T10:24:01.000000Z"},"message":"Packaging created successfully."}'
+        content: '{"data":{"id":51,"name":"Ms. Audra Crooks II","barcode":null,"qty":"1.0000","sort":2,"product_id":1092,"creator_id":23538,"created_at":"2026-02-12T10:55:19.000000Z","updated_at":"2026-02-12T10:55:19.000000Z"},"message":"Packaging created successfully."}'
         headers: []
         description: ''
       -
@@ -4891,7 +4891,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":42,"name":"Morgan Hirthe","barcode":null,"qty":"1.0000","sort":2,"product_id":979,"creator_id":21807,"created_at":"2026-02-12T10:24:01.000000Z","updated_at":"2026-02-12T10:24:01.000000Z"}}'
+        content: '{"data":{"id":52,"name":"Morgan Hirthe","barcode":null,"qty":"1.0000","sort":2,"product_id":1093,"creator_id":23545,"created_at":"2026-02-12T10:55:19.000000Z","updated_at":"2026-02-12T10:55:19.000000Z"}}'
         headers: []
         description: ''
       -
@@ -5029,7 +5029,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":43,"name":"Ms. Audra Crooks II","barcode":null,"qty":"1.0000","sort":2,"product_id":980,"creator_id":21814,"created_at":"2026-02-12T10:24:01.000000Z","updated_at":"2026-02-12T10:24:01.000000Z"},"message":"Packaging updated successfully."}'
+        content: '{"data":{"id":53,"name":"Ms. Audra Crooks II","barcode":null,"qty":"1.0000","sort":2,"product_id":1094,"creator_id":23552,"created_at":"2026-02-12T10:55:19.000000Z","updated_at":"2026-02-12T10:55:19.000000Z"},"message":"Packaging updated successfully."}'
         headers: []
         description: ''
       -

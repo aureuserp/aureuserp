@@ -2,9 +2,9 @@
 
 namespace Webkul\Accounting\Models;
 
-use Webkul\Account\Models\Partner as BasePartner;
+use Webkul\Account\Models\Customer as BaseCustomer;
 
-class Customer extends BasePartner
+class Customer extends BaseCustomer
 {
     //
 }
