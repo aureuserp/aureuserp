@@ -4,6 +4,7 @@ namespace Webkul\Chatter\Filament\Actions\Chatter;
 
 use Exception;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
@@ -15,9 +16,9 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 use Webkul\Security\Models\User;
-use Webkul\Support\Models\ActivityPlan;
 use Webkul\Support\Models\ActivityType;
 
 class ActivityAction extends Action
@@ -131,7 +132,7 @@ class ActivityAction extends Action
             })
             ->action(function (array $data, ?Model $record = null) {
                 try {
-                    $user = filament()->auth()->user();
+                    $user = Filament::auth()->user() ?? Auth::user();
 
                     $data['assigned_to'] = $data['assigned_to'] ?? $user->id;
 

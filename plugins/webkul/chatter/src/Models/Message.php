@@ -2,8 +2,10 @@
 
 namespace Webkul\Chatter\Models;
 
+use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\ActivityType;
@@ -73,7 +75,7 @@ class Message extends Model
     {
         parent::boot();
 
-        $user = filament()->auth()->user();
+        $user = Filament::auth()->user() ?? Auth::user();
 
         if ($user) {
             static::creating(function ($data) use ($user) {
