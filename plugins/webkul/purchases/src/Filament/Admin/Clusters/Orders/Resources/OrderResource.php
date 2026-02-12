@@ -1180,6 +1180,10 @@ class OrderResource extends Resource
 
         $set('product_packaging_qty', $packaging['packaging_qty'] ?? null);
 
+        $priceUnit = static::calculateUnitPrice($get);
+
+        $set('price_unit', round($priceUnit, 2));
+
         self::calculateLineTotals($set, $get);
     }
 
