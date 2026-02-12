@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Auth;
 use Webkul\Partner\Database\Factories\BankAccountFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Bank;
-use Illuminate\Support\Facades\Auth;
 
 class BankAccount extends Model
 {

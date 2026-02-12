@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Product\Database\Factories\PackagingFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -63,14 +62,5 @@ class Packaging extends Model implements Sortable
     protected static function newFactory(): PackagingFactory
     {
         return PackagingFactory::new();
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($packaging) {
-            $packaging->creator_id ??= Auth::id();
-        });
     }
 }

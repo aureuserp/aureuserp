@@ -297,13 +297,4 @@ class Product extends Model implements Sortable
     {
         return ProductFactory::new();
     }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($product) {
-            $product->creator_id ??= Auth::id();
-        });
-    }
 }
