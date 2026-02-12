@@ -19,8 +19,8 @@ class ManageIncoterms extends ListRecords
                 ->successNotification(
                     Notification::make()
                         ->success()
-                        ->title(__('accounts::filament/resources/inco-term/pages/manage-incoterms.header-actions.notification.title'))
-                        ->body(__('accounts::filament/resources/inco-term/pages/manage-incoterms.header-actions.notification.body'))
+                        ->title(__('accounts::filament/resources/incoterm/pages/manage-incoterms.header-actions.notification.title'))
+                        ->body(__('accounts::filament/resources/incoterm/pages/manage-incoterms.header-actions.notification.body'))
                 ),
         ];
     }
