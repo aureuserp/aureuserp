@@ -138,52 +138,44 @@ class PluginResource extends Resource
                         ->modalDescription(fn ($record) => __('plugin-manager::filament/resources/plugin.actions.install.description', ['name' => $record->name]))
                         ->modalSubmitActionLabel(__('plugin-manager::filament/resources/plugin.actions.install.submit'))
                         ->action(function ($record) {
-                            try {
-                                // Find PHP CLI path dynamically
-                                $phpPath = trim(shell_exec('which php 2>/dev/null'));
-                                if (! $phpPath) {
-                                    $phpPath = PHP_BINARY;
-                                    // If PHP_BINARY contains fpm, try to find cli
-                                    if (strpos($phpPath, 'fpm') !== false) {
-                                        $phpPath = str_replace('fpm', '', $phpPath);
-                                        if (! file_exists($phpPath)) {
-                                            // Try common paths
-                                            $commonPaths = [
-                                                '/usr/local/bin/php',
-                                                '/usr/bin/php',
-                                                '/opt/homebrew/bin/php',
-                                                '/Users/'.get_current_user().'/Library/Application Support/Herd/bin/php',
-                                            ];
-                                            foreach ($commonPaths as $path) {
-                                                if (file_exists($path)) {
-                                                    $phpPath = $path;
-                                                    break;
-                                                }
-                                            }
-                                            if (! $phpPath) {
-                                                $phpPath = 'php'; // last resort, hope PATH works
-                                            }
-                                        }
-                                    }
-                                }
-                                $php = escapeshellarg($phpPath);
-                                $artisan = escapeshellarg(base_path('artisan'));
-                                $commandName = "{$record->name}:install";
+                            DB::beginTransaction();
 
-                                $cmd = "$php $artisan $commandName 2>&1";
+                            try {
+                                $phpPath = self::getPhpExecutablePath();
+
+                                $php = escapeshellarg($phpPath);
+
+                                $artisan = escapeshellarg(base_path('artisan'));
+
+                                $commandName = escapeshellarg("{$record->name}:install");
+
+                                $cmd = "timeout 300 $php $artisan $commandName 2>&1";
 
                                 $output = [];
+
                                 $exitCode = 0;
+
                                 exec($cmd, $output, $exitCode);
 
+                                if ($exitCode === 124) {
+                                    throw new RuntimeException('Installation timed out after 5 minutes.');
+                                }
+
                                 if ($exitCode !== 0) {
+                                    $errorOutput = implode(PHP_EOL, array_slice($output, -10));
+
                                     throw new RuntimeException(
-                                        "Installation command failed with exit code {$exitCode}. ".
-                                        'Output: '.implode(PHP_EOL, $output)
+                                        "Installation failed with exit code {$exitCode}.".
+                                            ($errorOutput ? " Last output: {$errorOutput}" : '')
                                     );
                                 }
 
-                                $record->update(['is_installed' => true, 'is_active' => true]);
+                                $record->update([
+                                    'is_installed' => true,
+                                    'is_active'    => true,
+                                ]);
+
+                                DB::commit();
 
                                 Notification::make()
                                     ->title(__('plugin-manager::filament/resources/plugin.notifications.installed.title'))
@@ -191,6 +183,14 @@ class PluginResource extends Resource
                                     ->success()
                                     ->send();
                             } catch (Throwable $e) {
+                                DB::rollBack();
+
+                                logger()->error('Plugin installation failed', [
+                                    'plugin' => $record->name,
+                                    'error'  => $e->getMessage(),
+                                    'trace'  => $e->getTraceAsString(),
+                                ]);
+
                                 Notification::make()
                                     ->title(__('plugin-manager::filament/resources/plugin.notifications.installed-failed.title'))
                                     ->body($e->getMessage())
@@ -213,9 +213,10 @@ class PluginResource extends Resource
                             $dependents = $record->getDependentsFromConfig();
 
                             $packages = collect([$record->name => $record->package])
-                                ->merge($dependents
-                                    ? collect($dependents)->mapWithKeys(fn ($dep) => [$dep => Plugin::where('name', $dep)->first()?->package])
-                                    : []
+                                ->merge(
+                                    $dependents
+                                        ? collect($dependents)->mapWithKeys(fn ($dep) => [$dep => Plugin::where('name', $dep)->first()?->package])
+                                        : []
                                 );
 
                             $tables = $packages
@@ -409,5 +410,42 @@ class PluginResource extends Resource
         return [
             'index' => ListPlugins::route('/'),
         ];
+    }
+
+    protected static function getPhpExecutablePath(): string
+    {
+        $phpPath = trim(shell_exec('which php 2>/dev/null') ?: '');
+
+        if (
+            $phpPath
+            && file_exists($phpPath)
+        ) {
+            return $phpPath;
+        }
+
+        $phpPath = PHP_BINARY;
+
+        if (strpos($phpPath, 'fpm') !== false) {
+            $phpPath = str_replace('fpm', '', $phpPath);
+        }
+
+        if (file_exists($phpPath)) {
+            return $phpPath;
+        }
+
+        $commonPaths = [
+            '/usr/local/bin/php',
+            '/usr/bin/php',
+            '/opt/homebrew/bin/php',
+            '/Users/'.get_current_user().'/Library/Application Support/Herd/bin/php',
+        ];
+
+        foreach ($commonPaths as $path) {
+            if (file_exists($path)) {
+                return $path;
+            }
+        }
+
+        return 'php';
     }
 }
