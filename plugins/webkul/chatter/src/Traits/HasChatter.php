@@ -4,9 +4,11 @@ namespace Webkul\Chatter\Traits;
 
 use Carbon\Carbon;
 use Exception;
+use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Webkul\Chatter\Models\Attachment;
 use Webkul\Chatter\Models\Follower;
@@ -145,7 +147,7 @@ trait HasChatter
     {
         $message = new Message;
 
-        $user = filament()->auth()->user();
+        $user = Filament::auth()->user() ?? Auth::user();
 
         $message->fill(array_merge([
             'creator_id'    => $user->id,
@@ -349,7 +351,7 @@ trait HasChatter
                         'original_file_name' => basename($filePath),
                         'mime_type'          => mime_content_type($storagePath = storage_path('app/public/'.$filePath)) ?: 'application/octet-stream',
                         'file_size'          => filesize($storagePath) ?: 0,
-                        'creator_id'         => filament()->auth()->user()->id,
+                        'creator_id'         => Filament::auth()->id() ?? Auth::id(),
                         ...$additionalData,
                     ])
                     ->filter()
