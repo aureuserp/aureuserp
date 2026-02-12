@@ -138,31 +138,52 @@ class PluginResource extends Resource
                         ->modalDescription(fn ($record) => __('plugin-manager::filament/resources/plugin.actions.install.description', ['name' => $record->name]))
                         ->modalSubmitActionLabel(__('plugin-manager::filament/resources/plugin.actions.install.submit'))
                         ->action(function ($record) {
+                            DB::beginTransaction();
+
                             try {
-                                $phpBinary = PHP_BINARY;
+                                $missingDeps = self::validatePluginDependencies($record);
 
-                                if (str_contains($phpBinary, 'php-fpm')) {
-                                    $phpBinary = 'php';
-                                }
-
-                                $php = escapeshellarg($phpBinary);
-                                $artisan = escapeshellarg(base_path('artisan'));
-                                $commandName = "{$record->name}:install";
-
-                                $cmd = "$php $artisan $commandName 2>&1";
-
-                                $output = [];
-                                $exitCode = 0;
-                                exec($cmd, $output, $exitCode);
-
-                                if ($exitCode !== 0) {
+                                if (! empty($missingDeps)) {
                                     throw new RuntimeException(
-                                        "Installation command failed with exit code {$exitCode}. ".
-                                            'Output: '.implode(PHP_EOL, $output)
+                                        'Missing required dependencies: '.implode(', ', $missingDeps)
                                     );
                                 }
 
-                                $record->update(['is_installed' => true, 'is_active' => true]);
+                                if (! $record->package) {
+                                    throw new RuntimeException('Plugin package configuration not found.');
+                                }
+
+                                $phpPath = self::getPhpExecutablePath();
+                                $php = escapeshellarg($phpPath);
+                                $artisan = escapeshellarg(base_path('artisan'));
+                                $commandName = escapeshellarg("{$record->name}:install");
+
+                                $cmd = "timeout 300 $php $artisan $commandName 2>&1";
+
+                                $output = [];
+                                $exitCode = 0;
+
+                                exec($cmd, $output, $exitCode);
+
+                                if ($exitCode === 124) {
+                                    throw new RuntimeException('Installation timed out after 5 minutes.');
+                                }
+
+                                if ($exitCode !== 0) {
+                                    $errorOutput = implode(PHP_EOL, array_slice($output, -10));
+
+                                    throw new RuntimeException(
+                                        "Installation failed with exit code {$exitCode}.".
+                                            ($errorOutput ? " Last output: {$errorOutput}" : '')
+                                    );
+                                }
+
+                                $record->update([
+                                    'is_installed' => true,
+                                    'is_active'    => true,
+                                ]);
+
+                                DB::commit();
 
                                 Notification::make()
                                     ->title(__('plugin-manager::filament/resources/plugin.notifications.installed.title'))
@@ -170,6 +191,14 @@ class PluginResource extends Resource
                                     ->success()
                                     ->send();
                             } catch (Throwable $e) {
+                                DB::rollBack();
+
+                                logger()->error('Plugin installation failed', [
+                                    'plugin' => $record->name,
+                                    'error'  => $e->getMessage(),
+                                    'trace'  => $e->getTraceAsString(),
+                                ]);
+
                                 Notification::make()
                                     ->title(__('plugin-manager::filament/resources/plugin.notifications.installed-failed.title'))
                                     ->body($e->getMessage())
@@ -389,5 +418,62 @@ class PluginResource extends Resource
         return [
             'index' => ListPlugins::route('/'),
         ];
+    }
+
+    protected static function getPhpExecutablePath(): string
+    {
+        $phpPath = trim(shell_exec('which php 2>/dev/null') ?: '');
+
+        if (
+            $phpPath
+            && file_exists($phpPath)
+        ) {
+            return $phpPath;
+        }
+
+        $phpPath = PHP_BINARY;
+
+        if (strpos($phpPath, 'fpm') !== false) {
+            $phpPath = str_replace('fpm', '', $phpPath);
+        }
+
+        if (file_exists($phpPath)) {
+            return $phpPath;
+        }
+
+        $commonPaths = [
+            '/usr/local/bin/php',
+            '/usr/bin/php',
+            '/opt/homebrew/bin/php',
+            '/Users/'.get_current_user().'/Library/Application Support/Herd/bin/php',
+        ];
+
+        foreach ($commonPaths as $path) {
+            if (file_exists($path)) {
+                return $path;
+            }
+        }
+
+        return 'php';
+    }
+
+    protected static function validatePluginDependencies($record): array
+    {
+        $missingDependencies = [];
+
+        $dependencies = $record->getDependenciesFromConfig();
+
+        foreach ($dependencies as $dependency) {
+            $dependencyPlugin = Plugin::where('name', $dependency)->first();
+
+            if (
+                ! $dependencyPlugin
+                || ! $dependencyPlugin->is_installed
+            ) {
+                $missingDependencies[] = $dependency;
+            }
+        }
+
+        return $missingDependencies;
     }
 }
