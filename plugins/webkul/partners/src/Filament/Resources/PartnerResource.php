@@ -106,7 +106,7 @@ class PartnerResource extends Resource
                                             ->required()
                                             ->maxLength(255)
                                             ->columnSpan(2)
-                                            ->placeholder(fn (Get $get): string => $get('account_type') === AccountType::INDIVIDUAL ? 'Jhon Doe' : 'ACME Corp')
+                                            ->placeholder(fn (Get $get): string => $get('account_type') === AccountType::INDIVIDUAL ? 'John Doe' : 'ACME Corp')
                                             ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;']),
                                         Select::make('parent_id')
                                             ->label(__('partners::filament/resources/partner.form.sections.general.fields.company'))
