@@ -154,13 +154,17 @@ class PluginResource extends Resource
                                 }
 
                                 $phpPath = self::getPhpExecutablePath();
+
                                 $php = escapeshellarg($phpPath);
+
                                 $artisan = escapeshellarg(base_path('artisan'));
+
                                 $commandName = escapeshellarg("{$record->name}:install");
 
                                 $cmd = "timeout 300 $php $artisan $commandName 2>&1";
 
                                 $output = [];
+
                                 $exitCode = 0;
 
                                 exec($cmd, $output, $exitCode);

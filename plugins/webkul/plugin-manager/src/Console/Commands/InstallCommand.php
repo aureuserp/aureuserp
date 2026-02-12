@@ -446,6 +446,7 @@ class InstallCommand extends Command
 
             if ($exitCode !== 0) {
                 $errorOutput = implode(PHP_EOL, array_slice($output, -5));
+
                 throw new RuntimeException("Failed to generate admin panel permissions. Error: {$errorOutput}");
             }
 
