@@ -141,18 +141,6 @@ class PluginResource extends Resource
                             DB::beginTransaction();
 
                             try {
-                                $missingDeps = self::validatePluginDependencies($record);
-
-                                if (! empty($missingDeps)) {
-                                    throw new RuntimeException(
-                                        'Missing required dependencies: '.implode(', ', $missingDeps)
-                                    );
-                                }
-
-                                if (! $record->package) {
-                                    throw new RuntimeException('Plugin package configuration not found.');
-                                }
-
                                 $phpPath = self::getPhpExecutablePath();
 
                                 $php = escapeshellarg($phpPath);
@@ -459,25 +447,5 @@ class PluginResource extends Resource
         }
 
         return 'php';
-    }
-
-    protected static function validatePluginDependencies($record): array
-    {
-        $missingDependencies = [];
-
-        $dependencies = $record->getDependenciesFromConfig();
-
-        foreach ($dependencies as $dependency) {
-            $dependencyPlugin = Plugin::where('name', $dependency)->first();
-
-            if (
-                ! $dependencyPlugin
-                || ! $dependencyPlugin->is_installed
-            ) {
-                $missingDependencies[] = $dependency;
-            }
-        }
-
-        return $missingDependencies;
     }
 }
