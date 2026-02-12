@@ -621,6 +621,10 @@ class AccountManager
 
         foreach ($existingLines as $keyStr => $line) {
             if (! $neededMapping->has($keyStr)) {
+                $line->matchedDebits()->delete();
+
+                $line->matchedCredits()->delete();
+
                 $line->delete();
 
                 $existingLines->forget($keyStr);
