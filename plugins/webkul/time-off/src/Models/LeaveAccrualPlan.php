@@ -70,7 +70,7 @@ class LeaveAccrualPlan extends Model
 
             $leaveAccrualPlan->creator_id = $authUser->id;
 
-            $leaveAccrualPlan->company_id ??= $authUser->default_company_id;
+            $leaveAccrualPlan->company_id ??= $authUser?->default_company_id;
         });
     }
 }

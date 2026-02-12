@@ -185,7 +185,7 @@ class Task extends Model implements Sortable
 
             $task->creator_id ??= $authUser->id;
 
-            $task->company_id ??= $authUser->default_company_id;
+            $task->company_id ??= $authUser?->default_company_id;
         });
 
         static::updated(function ($task) {

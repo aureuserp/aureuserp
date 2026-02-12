@@ -236,7 +236,7 @@ class Applicant extends Model
 
         $this->creator_id ??= $authUser->id;
 
-        $this->company_id ??= $authUser->default_company_id;
+        $this->company_id ??= $authUser?->default_company_id;
     }
 
     public function handleApplicationUpdation(): void

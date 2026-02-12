@@ -225,7 +225,7 @@ class Order extends Model
 
         $this->creator_id ??= $authUser->id;
         $this->user_id ??= $authUser->id;
-        $this->company_id ??= $authUser->default_company_id;
+        $this->company_id ??= $authUser?->default_company_id;
 
         $this->state ??= OrderState::DRAFT;
 

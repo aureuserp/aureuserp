@@ -81,8 +81,6 @@ class Category extends Model
 
             $category->creator_id ??= $authUser->id;
 
-            $category->company_id ??= $authUser->default_company_id;
-
             static::handleProductCategoryData($category);
         });
 

@@ -48,7 +48,7 @@ class LeaveMandatoryDay extends Model
 
             $leaveMandatoryDay->creator_id ??= $authUser->id;
 
-            $leaveMandatoryDay->company_id ??= $authUser->default_company_id;
+            $leaveMandatoryDay->company_id ??= $authUser?->default_company_id;
         });
     }
 }

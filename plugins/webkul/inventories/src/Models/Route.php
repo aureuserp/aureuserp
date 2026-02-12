@@ -96,7 +96,7 @@ class Route extends Model implements Sortable
 
             $route->creator_id ??= $authUser->id;
 
-            $route->company_id ??= $authUser->default_company_id;
+            $route->company_id ??= $authUser?->default_company_id;
         });
     }
 }
