@@ -351,7 +351,7 @@ trait HasChatter
                         'original_file_name' => basename($filePath),
                         'mime_type'          => mime_content_type($storagePath = storage_path('app/public/'.$filePath)) ?: 'application/octet-stream',
                         'file_size'          => filesize($storagePath) ?: 0,
-                        'creator_id'         => Filament::auth()->user()->id ?? Auth::id(),
+                        'creator_id'         => Filament::auth()->id() ?? Auth::id(),
                         ...$additionalData,
                     ])
                     ->filter()

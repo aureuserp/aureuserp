@@ -130,7 +130,7 @@ class MessageAction extends Action
                 try {
                     $data['name'] = $record->name;
 
-                    $message = $record->addMessage($data, Filament::auth()->user()->id ?? Auth::id());
+                    $message = $record->addMessage($data, Filament::auth()->id() ?? Auth::id());
 
                     if (! empty($data['attachments'])) {
                         $record->addAttachments(
