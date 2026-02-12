@@ -139,7 +139,13 @@ class PluginResource extends Resource
                         ->modalSubmitActionLabel(__('plugin-manager::filament/resources/plugin.actions.install.submit'))
                         ->action(function ($record) {
                             try {
-                                $php = escapeshellarg(PHP_BINARY);
+                                $phpBinary = PHP_BINARY;
+
+                                if (str_contains($phpBinary, 'php-fpm')) {
+                                    $phpBinary = 'php';
+                                }
+
+                                $php = escapeshellarg($phpBinary);
                                 $artisan = escapeshellarg(base_path('artisan'));
                                 $commandName = "{$record->name}:install";
 
@@ -152,7 +158,7 @@ class PluginResource extends Resource
                                 if ($exitCode !== 0) {
                                     throw new RuntimeException(
                                         "Installation command failed with exit code {$exitCode}. ".
-                                        'Output: '.implode(PHP_EOL, $output)
+                                            'Output: '.implode(PHP_EOL, $output)
                                     );
                                 }
 
@@ -186,9 +192,10 @@ class PluginResource extends Resource
                             $dependents = $record->getDependentsFromConfig();
 
                             $packages = collect([$record->name => $record->package])
-                                ->merge($dependents
-                                    ? collect($dependents)->mapWithKeys(fn ($dep) => [$dep => Plugin::where('name', $dep)->first()?->package])
-                                    : []
+                                ->merge(
+                                    $dependents
+                                        ? collect($dependents)->mapWithKeys(fn ($dep) => [$dep => Plugin::where('name', $dep)->first()?->package])
+                                        : []
                                 );
 
                             $tables = $packages
