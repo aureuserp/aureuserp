@@ -6,8 +6,10 @@ use Closure;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use RuntimeException;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Throwable;
 use Webkul\PluginManager\Models\Plugin;
 use Webkul\PluginManager\Package;
 
@@ -427,22 +429,78 @@ class InstallCommand extends Command
     {
         $this->info('⚙️ Refreshing access controls for the admin panel...');
 
-        $php = escapeshellarg(PHP_BINARY);
+        try {
+            $phpPath = $this->getPhpExecutablePath();
 
-        $artisan = escapeshellarg(base_path('artisan'));
+            $php = escapeshellarg($phpPath);
 
-        $cmd = "$php $artisan shield:generate --all --option=permissions --panel=admin";
+            $artisan = escapeshellarg(base_path('artisan'));
 
-        exec($cmd, $output, $exitCode);
+            $cmd = "timeout 60 $php $artisan shield:generate --all --option=permissions --panel=admin 2>&1";
 
-        if ($exitCode !== 0) {
-            $this->error('Failed to generate admin panel permissions. Command output: '.implode(PHP_EOL, $output));
+            exec($cmd, $output, $exitCode);
+
+            if ($exitCode === 124) {
+                throw new RuntimeException('Permission generation timed out after 60 seconds.');
+            }
+
+            if ($exitCode !== 0) {
+                $errorOutput = implode(PHP_EOL, array_slice($output, -5));
+                throw new RuntimeException("Failed to generate admin panel permissions. Error: {$errorOutput}");
+            }
+
+            $role = Role::first();
+
+            if (! $role) {
+                $this->warn('⚠️  No role found to sync permissions.');
+
+                return;
+            }
+
+            $permissions = Permission::query()->pluck('id')->all();
+
+            $role->permissions()->sync($permissions);
+
+            $this->info('✅ Admin panel permissions refreshed successfully.');
+        } catch (Throwable $e) {
+            $this->warn("⚠️  Permission refresh failed: {$e->getMessage()}");
+        }
+    }
+
+    protected function getPhpExecutablePath(): string
+    {
+        $phpPath = trim(shell_exec('which php 2>/dev/null') ?: '');
+
+        if (
+            $phpPath
+            && file_exists($phpPath)
+        ) {
+            return $phpPath;
         }
 
-        $role = Role::first();
+        $phpPath = PHP_BINARY;
 
-        $permissions = Permission::query()->pluck('id')->all();
+        if (strpos($phpPath, 'fpm') !== false) {
+            $phpPath = str_replace('fpm', '', $phpPath);
+        }
 
-        $role?->permissions()->sync($permissions);
+        if (file_exists($phpPath)) {
+            return $phpPath;
+        }
+
+        $commonPaths = [
+            '/usr/local/bin/php',
+            '/usr/bin/php',
+            '/opt/homebrew/bin/php',
+            '/Users/'.get_current_user().'/Library/Application Support/Herd/bin/php',
+        ];
+
+        foreach ($commonPaths as $path) {
+            if (file_exists($path)) {
+                return $path;
+            }
+        }
+
+        return 'php';
     }
 }
