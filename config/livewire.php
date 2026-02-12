@@ -69,48 +69,6 @@ return [
             'file',
             'mimes:jpg,jpeg,png,gif,bmp,svg,webp,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,csv,zip,mp4,mov,avi,wmv,mp3,m4a,wav,mpga,wma',
             'mimetypes:image/*,video/*,audio/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain,text/csv,application/zip',
-            function ($attribute, $value, $fail) {
-                $blockedExtensions = [
-                    'php',
-                    'phtml',
-                    'php3',
-                    'php4',
-                    'php5',
-                    'php7',
-                    'phps',
-                    'pht',
-                    'exe',
-                    'bat',
-                    'cmd',
-                    'com',
-                    'pif',
-                    'scr',
-                    'vbs',
-                    'js',
-                    'jse',
-                    'ws',
-                    'wsf',
-                    'wsh',
-                    'ps1',
-                    'psm1',
-                    'sh',
-                    'bash',
-                    'zsh',
-                    'app',
-                    'deb',
-                    'rpm',
-                    'dmg',
-                    'pkg',
-                    'apk',
-                    'jar',
-                ];
-
-                $extension = strtolower($value->getClientOriginalExtension());
-
-                if (in_array($extension, $blockedExtensions)) {
-                    $fail('Executable files are not allowed.');
-                }
-            },
         ],
         'directory' => null,   // Example: 'tmp'                      | Default: 'livewire-tmp'
         'middleware' => null,  // Example: 'throttle:5,1'             | Default: 'throttle:60,1'
