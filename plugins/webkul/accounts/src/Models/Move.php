@@ -416,14 +416,16 @@ class Move extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($move) {
-            $move->computeCurrencyId();
-
             $move->creator_id ??= Auth::id();
+
+            $move->computeCurrencyId();
 
             $move->date ??= now();
         });
 
         static::saving(function ($move) {
+            $move->creator_id ??= Auth::id();
+
             $move->computeCurrencyId();
 
             $move->computePartnerDisplayInfo();

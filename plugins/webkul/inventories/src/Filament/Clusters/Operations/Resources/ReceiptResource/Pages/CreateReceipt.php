@@ -16,6 +16,8 @@ class CreateReceipt extends CreateRecord
 {
     use HasRepeaterColumnManager;
 
+    protected static string $resource = ReceiptResource::class;
+
     public function getSubNavigation(): array
     {
         if (filled($cluster = static::getCluster())) {
@@ -24,8 +26,6 @@ class CreateReceipt extends CreateRecord
 
         return [];
     }
-
-    protected static string $resource = ReceiptResource::class;
 
     public function getTitle(): string|Htmlable
     {

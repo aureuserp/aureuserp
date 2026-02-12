@@ -204,7 +204,9 @@ class Operation extends Model
 
         static::creating(function ($operation) {
             $operation->creator_id ??= Auth::id();
+        });
 
+        static::saving(function ($operation) {
             $operation->updateName();
         });
 

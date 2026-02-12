@@ -2,6 +2,7 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources;
 
+use BackedEnum;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -30,7 +31,7 @@ class ReceiptResource extends Resource
 {
     protected static ?string $model = Receipt::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-down-tray';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-down-tray';
 
     protected static ?int $navigationSort = 1;
 
