@@ -185,7 +185,7 @@ class Order extends Model
     {
         $message = new Message;
 
-        $user = filament()->auth()->user();
+        $user = Auth::user();
 
         $message->fill(array_merge([
             'creator_id'       => $user?->id,

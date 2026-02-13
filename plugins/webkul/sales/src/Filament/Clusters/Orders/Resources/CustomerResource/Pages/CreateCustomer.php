@@ -3,7 +3,7 @@
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages;
 
 use Illuminate\Contracts\Support\Htmlable;
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\CustomerResource\Pages\CreateCustomer as BaseCreateCustomer;
+use Webkul\Invoice\Filament\Clusters\Customers\Resources\CustomerResource\Pages\CreateCustomer as BaseCreateCustomer;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource;
 
 class CreateCustomer extends BaseCreateCustomer

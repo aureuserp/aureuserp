@@ -51,7 +51,7 @@ class Partner extends BasePartner
 
     public function propertyAccountPosition()
     {
-        return $this->belongsTo(Account::class, 'property_account_position_id');
+        return $this->belongsTo(FiscalPosition::class, 'property_account_position_id');
     }
 
     public function propertyPaymentTerm()

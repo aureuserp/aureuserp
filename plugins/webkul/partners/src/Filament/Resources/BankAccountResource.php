@@ -205,6 +205,7 @@ class BankAccountResource extends Resource
                                 ->body(__('partners::filament/resources/bank-account.table.bulk-actions.force-delete.notification.body')),
                         ),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 }

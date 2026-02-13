@@ -74,7 +74,7 @@ class LeaveType extends Model implements Sortable
 
             $leaveType->creator_id = $authUser->id;
 
-            $leaveType->company_id ??= $authUser->default_company_id;
+            $leaveType->company_id ??= $authUser?->default_company_id;
         });
     }
 }

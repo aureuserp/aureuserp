@@ -140,7 +140,7 @@ class Candidate extends Model
 
             $candidate->creator_id ??= $authUser->id;
 
-            $candidate->company_id ??= $authUser->default_company_id;
+            $candidate->company_id ??= $authUser?->default_company_id;
         });
 
         static::saved(function (self $candidate) {

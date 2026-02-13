@@ -3,6 +3,7 @@
 namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Webkul\Account\Database\Factories\TaxGroupFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
@@ -54,5 +55,10 @@ class TaxGroup extends Model implements Sortable
         static::creating(function ($taxGroup) {
             $taxGroup->creator_id ??= Auth::id();
         });
+    }
+
+    protected static function newFactory(): TaxGroupFactory
+    {
+        return TaxGroupFactory::new();
     }
 }

@@ -86,11 +86,15 @@ class RoleResource extends RolesRoleResource
                                     ->required()
                                     ->maxLength(255),
 
-                                TextInput::make('guard_name')
+                                Select::make('guard_name')
                                     ->label(__('filament-shield::filament-shield.field.guard_name'))
-                                    ->default(Utils::getFilamentAuthGuard())
-                                    ->nullable()
-                                    ->maxLength(255),
+                                    ->native(false)
+                                    ->selectablePlaceholder(false)
+                                    ->options([
+                                        'web' => __('security::filament/resources/role.form.fields.web'),
+                                        'sanctum' => __('security::filament/resources/role.form.fields.sanctum'),
+                                    ])
+                                    ->default(Utils::getFilamentAuthGuard()),
 
                                 Select::make(config('permission.column_names.team_foreign_key'))
                                     ->label(__('filament-shield::filament-shield.field.team'))

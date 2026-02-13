@@ -4,7 +4,7 @@ namespace Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages;
 
 use Filament\Actions\CreateAction;
 use Illuminate\Contracts\Support\Htmlable;
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\CustomerResource\Pages\ListCustomers as BaseListCustomers;
+use Webkul\Invoice\Filament\Clusters\Customers\Resources\CustomerResource\Pages\ListCustomers as BaseListCustomers;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource;
 
 class ListCustomers extends BaseListCustomers

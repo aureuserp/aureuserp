@@ -19,13 +19,7 @@ class Industry extends Model
     protected $fillable = [
         'name',
         'description',
-        'is_active',
-        'can_send_money',
         'creator_id',
-    ];
-
-    protected $casts = [
-        'is_active' => 'boolean',
     ];
 
     public function creator(): BelongsTo

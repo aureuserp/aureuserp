@@ -9,8 +9,8 @@ use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Models\Move;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\PaymentResource;
+use Webkul\Accounting\Filament\Clusters\Customers\Resources\InvoiceResource;
+use Webkul\Accounting\Filament\Clusters\Customers\Resources\PaymentResource;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource;
 
 class JournalChartWidget extends Component

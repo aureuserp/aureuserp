@@ -2,9 +2,10 @@
 
 namespace Webkul\Account\Models;
 
-use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Webkul\Account\Database\Factories\TaxPartitionFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
@@ -68,21 +69,29 @@ class TaxPartition extends Model implements Sortable
             ->get();
 
         if ($invoices->count() !== $refunds->count()) {
-            throw new Exception('Invoice and refund distributions must have the same number of lines for this tax.');
+            throw ValidationException::withMessages([
+                'invoice_repartition_lines' => 'Invoice and refund distributions must have the same number of lines for this tax.',
+            ]);
         }
 
         if (
             $invoices->where('repartition_type', 'base')->count() !== 1 ||
             $refunds->where('repartition_type', 'base')->count() !== 1
         ) {
-            throw new Exception('Each must contain exactly one BASE repartition line.');
+            throw ValidationException::withMessages([
+                'invoice_repartition_lines' => 'Invoice must contain exactly one BASE repartition line.',
+                'refund_repartition_lines'  => 'Refund must contain exactly one BASE repartition line.',
+            ]);
         }
 
         if (
             $invoices->where('repartition_type', 'tax')->isEmpty() ||
             $refunds->where('repartition_type', 'tax')->isEmpty()
         ) {
-            throw new Exception('Each must contain at least one TAX repartition line.');
+            throw ValidationException::withMessages([
+                'invoice_repartition_lines' => 'Invoice must contain at least one TAX repartition line.',
+                'refund_repartition_lines'  => 'Refund must contain at least one TAX repartition line.',
+            ]);
         }
 
         foreach ($invoices as $index => $invoiceLine) {
@@ -93,7 +102,9 @@ class TaxPartition extends Model implements Sortable
                 $invoiceLine->repartition_type !== $refundLine->repartition_type ||
                 (float) $invoiceLine->factor_percent !== (float) $refundLine->factor_percent
             ) {
-                throw new Exception('Invoice and refund repartition lines must match in type and percentage order.');
+                throw ValidationException::withMessages([
+                    'invoice_repartition_lines' => 'Invoice and refund repartition lines must match in type and percentage order.',
+                ]);
             }
         }
 
@@ -101,11 +112,15 @@ class TaxPartition extends Model implements Sortable
         $negative = $invoices->where('factor_percent', '<', 0)->sum('factor_percent');
 
         if (bccomp((string) $positive, '100', 2) !== 0) {
-            throw new Exception('Total positive factors must equal 100%.');
+            throw ValidationException::withMessages([
+                'invoice_repartition_lines' => 'Total positive factors must equal 100%.',
+            ]);
         }
 
         if ($negative && bccomp((string) $negative, '-100', 2) !== 0) {
-            throw new Exception('Total negative factors must equal -100%.');
+            throw ValidationException::withMessages([
+                'invoice_repartition_lines' => 'Total negative factors must equal -100%.',
+            ]);
         }
     }
 
@@ -116,5 +131,10 @@ class TaxPartition extends Model implements Sortable
         static::creating(function ($taxPartition) {
             $taxPartition->creator_id ??= Auth::id();
         });
+    }
+
+    protected static function newFactory(): TaxPartitionFactory
+    {
+        return TaxPartitionFactory::new();
     }
 }

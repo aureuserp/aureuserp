@@ -36,9 +36,9 @@ class BankFactory extends Factory
             'street2'    => fake()->streetAddress(),
             'city'       => fake()->city(),
             'zip'        => fake()->postcode(),
-            'state_id'   => State::factory(),
-            'country_id' => Country::factory(),
-            'creator_id' => User::factory(),
+            'state_id'   => State::inRandomOrder()->first()?->id ?? State::factory(),
+            'country_id' => Country::inRandomOrder()->first()?->id ?? Country::factory(),
+            'creator_id' => User::inRandomOrder()->first()?->id ?? User::factory(),
         ];
     }
 }

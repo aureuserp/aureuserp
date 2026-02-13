@@ -281,7 +281,7 @@ class Payment extends Model
 
     public function computeCreator()
     {
-        $this->creator_id = filament()->auth()->id();
+        $this->creator_id = Auth::id();
     }
 
     public function computePartnerType()

@@ -27,11 +27,6 @@ class Tag extends Model
         return $this->belongsTo(User::class);
     }
 
-    protected static function newFactory(): TagFactory
-    {
-        return TagFactory::new();
-    }
-
     protected static function boot()
     {
         parent::boot();
@@ -39,5 +34,10 @@ class Tag extends Model
         static::creating(function ($tag) {
             $tag->creator_id ??= Auth::id();
         });
+    }
+
+    protected static function newFactory(): TagFactory
+    {
+        return TagFactory::new();
     }
 }

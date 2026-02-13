@@ -9,10 +9,10 @@ use Webkul\Invoice\Filament\Clusters\Configuration\Resources\ProductCategoryReso
 use Webkul\Invoice\Filament\Clusters\Configuration\Resources\TaxGroupResource;
 use Webkul\Invoice\Filament\Clusters\Configuration\Resources\TaxResource;
 use Webkul\Invoice\Filament\Clusters\Customer;
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\CreditNoteResource;
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\CustomerResource;
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\InvoiceResource;
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\PaymentResource;
+use Webkul\Invoice\Filament\Clusters\Customers\Resources\CreditNoteResource;
+use Webkul\Invoice\Filament\Clusters\Customers\Resources\CustomerResource;
+use Webkul\Invoice\Filament\Clusters\Customers\Resources\InvoiceResource;
+use Webkul\Invoice\Filament\Clusters\Customers\Resources\PaymentResource;
 use Webkul\Invoice\Filament\Clusters\Vendors;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\ProductResource;

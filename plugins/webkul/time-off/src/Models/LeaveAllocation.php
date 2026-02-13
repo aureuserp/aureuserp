@@ -149,7 +149,7 @@ class LeaveAllocation extends Model
 
             $leaveAllocation->creator_id = $authUser->id;
 
-            $leaveAllocation->employee_company_id ??= $authUser->default_company_id;
+            $leaveAllocation->employee_company_id ??= $authUser?->default_company_id;
         });
     }
 }

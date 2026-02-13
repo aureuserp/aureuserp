@@ -49,7 +49,7 @@ class CalendarLeaves extends Model
 
             $calendarLeave->creator_id ??= $authUser->id;
 
-            $calendarLeave->company_id ??= $authUser->default_company_id;
+            $calendarLeave->company_id ??= $authUser?->default_company_id;
         });
     }
 }

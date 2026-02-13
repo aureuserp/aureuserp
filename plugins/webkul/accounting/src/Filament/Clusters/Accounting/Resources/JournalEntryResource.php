@@ -64,8 +64,8 @@ use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResourc
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource\Pages\EditJournalEntry;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource\Pages\ListJournalEntries;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource\Pages\ViewJournalEntry;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\PaymentResource\Pages\ViewPayment as CustomerViewPayment;
+use Webkul\Accounting\Filament\Clusters\Customers\Resources\InvoiceResource;
+use Webkul\Accounting\Filament\Clusters\Customers\Resources\PaymentResource\Pages\ViewPayment as CustomerViewPayment;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource\Pages\ViewPayment as VendorViewPayment;
 use Webkul\Accounting\Filament\Exports\JournalEntryExporter;

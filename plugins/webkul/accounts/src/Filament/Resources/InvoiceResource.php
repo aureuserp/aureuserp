@@ -69,7 +69,7 @@ use Webkul\Account\Filament\Resources\InvoiceResource\Pages\ListInvoices;
 use Webkul\Account\Filament\Resources\InvoiceResource\Pages\ViewInvoice;
 use Webkul\Account\Livewire\InvoiceSummary;
 use Webkul\Account\Models\CashRounding;
-use Webkul\Account\Models\Move as AccountMove;
+use Webkul\Account\Models\Invoice;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Product;
@@ -91,7 +91,7 @@ class InvoiceResource extends Resource
 {
     use HasResourcePermissionQuery;
 
-    protected static ?string $model = AccountMove::class;
+    protected static ?string $model = Invoice::class;
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -1377,7 +1377,7 @@ class InvoiceResource extends Resource
             'display_type' => DisplayType::PRODUCT,
         ]);
 
-        $mockMove = new AccountMove([
+        $mockMove = new Invoice([
             'move_type'   => $get('../../move_type'),
             'currency_id' => $currencyId,
             'company_id'  => $companyId,
@@ -1436,7 +1436,7 @@ class InvoiceResource extends Resource
 
         $cashRoundingId = $get('invoice_cash_rounding_id');
 
-        $mockMove = new AccountMove([
+        $mockMove = new Invoice([
             'move_type'                => $get('move_type'),
             'currency_id'              => $currency->id,
             'company_id'               => $company->id,

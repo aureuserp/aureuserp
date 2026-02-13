@@ -20,11 +20,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Webkul\Partner\Enums\AccountType;
 use Webkul\Partner\Enums\AddressType;
 use Webkul\Partner\Filament\Resources\PartnerResource\Pages\ManageAddresses;
-use Webkul\Partner\Models\Partner;
+use Webkul\Partner\Models\Address;
 
 class AddressResource extends Resource
 {
-    protected static ?string $model = Partner::class;
+    protected static ?string $model = Address::class;
 
     protected static bool $shouldRegisterNavigation = false;
 

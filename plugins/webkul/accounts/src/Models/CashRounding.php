@@ -3,6 +3,7 @@
 namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Webkul\Account\Database\Factories\CashRoundingFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
@@ -61,5 +62,10 @@ class CashRounding extends Model
         static::creating(function ($cashRounding) {
             $cashRounding->creator_id ??= Auth::id();
         });
+    }
+
+    protected static function newFactory()
+    {
+        return CashRoundingFactory::new();
     }
 }

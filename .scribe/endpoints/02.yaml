@@ -1,0 +1,5125 @@
+name: 'Product API Management'
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: admin/api/v1/products/categories
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Categories
+      subgroupDescription: 'Manage product categories'
+      title: 'List categories'
+      description: 'Retrieve a paginated list of categories with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, children, creator'
+        required: false
+        example: 'parent,children'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[name]':
+        custom: []
+        name: 'filter[name]'
+        description: 'Filter by category name (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[parent_id]':
+        custom: []
+        name: 'filter[parent_id]'
+        description: 'Comma-separated list of parent IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: name
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'parent,children'
+      sort: name
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1642,"name":"Giuseppe Pfannerstill DDS","full_name":"Brandt Feest \/ Giuseppe Pfannerstill DDS","parent_path":"\/1641\/","parent_id":1641,"creator_id":23341,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","parent":{"id":1641,"name":"Brandt Feest","full_name":"Brandt Feest","parent_path":"\/","parent_id":null,"creator_id":23342,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}},{"id":1644,"name":"Eveline Orn","full_name":"Rachel Block V \/ Eveline Orn","parent_path":"\/1643\/","parent_id":1643,"creator_id":23343,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","parent":{"id":1643,"name":"Rachel Block V","full_name":"Rachel Block V","parent_path":"\/","parent_id":null,"creator_id":23344,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: admin/api/v1/products/categories
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Categories
+      subgroupDescription: 'Manage product categories'
+      title: 'Create category'
+      description: 'Create a new product category'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Category name (max 255 characters). Must not be greater than 255 characters.'
+        required: true
+        example: Electronics
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      parent_id:
+        custom: []
+        name: parent_id
+        description: 'Parent category ID for nested categories. The <code>id</code> of an existing record in the products_categories table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: Electronics
+      parent_id: 1
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":1646,"name":"Ms. Audra Crooks II","full_name":"Dr. Grayson Glover \/ Ms. Audra Crooks II","parent_path":"\/1645\/","parent_id":1645,"creator_id":23345,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","parent":{"id":1645,"name":"Dr. Grayson Glover","full_name":"Dr. Grayson Glover","parent_path":"\/","parent_id":null,"creator_id":23346,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}},"message":"Category created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/products/categories/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Categories
+      subgroupDescription: 'Manage product categories'
+      title: 'Show category'
+      description: 'Retrieve a specific category by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The category ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, children, creator'
+        required: false
+        example: 'parent,children'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'parent,children'
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1648,"name":"Morgan Hirthe","full_name":"Meredith Stark \/ Morgan Hirthe","parent_path":"\/1647\/","parent_id":1647,"creator_id":23347,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","parent":{"id":1647,"name":"Meredith Stark","full_name":"Meredith Stark","parent_path":"\/","parent_id":null,"creator_id":23348,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"},"children":[{"id":1649,"name":"Suzanne Rodriguez","full_name":"Meredith Stark \/ Morgan Hirthe \/ Suzanne Rodriguez","parent_path":"\/1647\/1648\/","parent_id":1648,"creator_id":23349,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}]}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Category not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/products/categories/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Categories
+      subgroupDescription: 'Manage product categories'
+      title: 'Update category'
+      description: 'Update an existing category'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The category ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Category name (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: Electronics
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      parent_id:
+        custom: []
+        name: parent_id
+        description: 'Parent category ID for nested categories. The <code>id</code> of an existing record in the products_categories table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: Electronics
+      parent_id: 1
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1651,"name":"Ms. Audra Crooks II","full_name":"Akeem Hettinger \/ Ms. Audra Crooks II","parent_path":"\/1650\/","parent_id":1650,"creator_id":23350,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","parent":{"id":1650,"name":"Akeem Hettinger","full_name":"Akeem Hettinger","parent_path":"\/","parent_id":null,"creator_id":23351,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}},"message":"Category updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Category not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must be a string."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/products/categories/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Categories
+      subgroupDescription: 'Manage product categories'
+      title: 'Delete category'
+      description: 'Delete a category'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The category ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Category deleted successfully."}'
+        headers: []
+        description: 'Category deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Category not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: admin/api/v1/products/tags
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Tags
+      subgroupDescription: 'Manage product tags'
+      title: 'List tags'
+      description: 'Retrieve a paginated list of tags with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator'
+        required: false
+        example: creator
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[name]':
+        custom: []
+        name: 'filter[name]'
+        description: 'Filter by tag name (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[trashed]':
+        custom: []
+        name: 'filter[trashed]'
+        description: 'Filter by trashed status: "with" (include trashed), "only" (only trashed), or any other value for non-trashed only'
+        required: false
+        example: with
+        type: string
+        enumValues:
+          - with
+          - only
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: name
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: creator
+      'filter[trashed]': with
+      sort: name
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":383,"name":"Morgan Hirthe","color":"#bd6da5","created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null},{"id":384,"name":"Vivien Kiehn","color":"#5fae4d","created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: admin/api/v1/products/tags
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Tags
+      subgroupDescription: 'Manage product tags'
+      title: 'Create tag'
+      description: 'Create a new product tag'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Tag name (max 255 characters). Must not be greater than 255 characters.'
+        required: true
+        example: Featured
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      color:
+        custom: []
+        name: color
+        description: 'Tag color in hex format (max 7 characters). Must not be greater than 7 characters.'
+        required: false
+        example: '#FF5733'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: Featured
+      color: '#FF5733'
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":385,"name":"Ms. Audra Crooks II","color":"#b35e11","created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null},"message":"Tag created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/products/tags/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Tags
+      subgroupDescription: 'Manage product tags'
+      title: 'Show tag'
+      description: 'Retrieve a specific tag by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The tag ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator'
+        required: false
+        example: creator
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: creator
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":386,"name":"Morgan Hirthe","color":"#bd6da5","created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Tag not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/products/tags/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Tags
+      subgroupDescription: 'Manage product tags'
+      title: 'Update tag'
+      description: 'Update an existing tag'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The tag ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Tag name (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: Featured
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      color:
+        custom: []
+        name: color
+        description: 'Tag color in hex format (max 7 characters). Must not be greater than 7 characters.'
+        required: false
+        example: '#FF5733'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: Featured
+      color: '#FF5733'
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":387,"name":"Ms. Audra Crooks II","color":"#b35e11","created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null},"message":"Tag updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Tag not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must be a string."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/products/tags/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Tags
+      subgroupDescription: 'Manage product tags'
+      title: 'Delete tag'
+      description: 'Soft delete a tag'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The tag ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Tag deleted successfully."}'
+        headers: []
+        description: 'Tag deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Tag not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/products/tags/{id}/restore'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Tags
+      subgroupDescription: 'Manage product tags'
+      title: 'Restore tag'
+      description: 'Restore a soft-deleted tag'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The tag ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":388,"name":"Morgan Hirthe","color":"#bd6da5","created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null},"message":"Tag restored successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Tag not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/products/tags/{id}/force'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Tags
+      subgroupDescription: 'Manage product tags'
+      title: 'Force delete tag'
+      description: 'Permanently delete a tag (cannot be restored)'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The tag ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Tag permanently deleted."}'
+        headers: []
+        description: 'Tag permanently deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Tag not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: admin/api/v1/products/attributes
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Attributes
+      subgroupDescription: 'Manage product attributes'
+      title: 'List attributes'
+      description: 'Retrieve a paginated list of attributes with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> options, creator'
+        required: false
+        example: options
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[name]':
+        custom: []
+        name: 'filter[name]'
+        description: 'Filter by attribute name (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[type]':
+        custom: []
+        name: 'filter[type]'
+        description: 'Filter by attribute type'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - radio
+          - select
+          - color
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[trashed]':
+        custom: []
+        name: 'filter[trashed]'
+        description: 'Filter by trashed status: "with" (include trashed), "only" (only trashed), or any other value for non-trashed only'
+        required: false
+        example: with
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: sort
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: options
+      'filter[trashed]': with
+      sort: sort
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":687,"name":"Tyshawn Leuschke I","type":"radio","sort":1,"creator_id":23358,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null,"options":[{"id":172,"name":"Lydia Lebsack","color":null,"extra_price":"3.7900","sort":1,"attribute_id":687,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}]},{"id":688,"name":"Joshuah Torp DDS","type":"radio","sort":2,"creator_id":23360,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null,"options":[{"id":173,"name":"Karianne Dooley","color":null,"extra_price":"48.4600","sort":2,"attribute_id":688,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: admin/api/v1/products/attributes
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Attributes
+      subgroupDescription: 'Manage product attributes'
+      title: 'Create attribute'
+      description: 'Create a new product attribute'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Attribute name (max 255 characters). Must not be greater than 255 characters.'
+        required: true
+        example: Size
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      type:
+        custom: []
+        name: type
+        description: 'Attribute type: radio, select, or color.'
+        required: true
+        example: select
+        type: string
+        enumValues:
+          - radio
+          - select
+          - color
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort order (minimum 0). Must be at least 0.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: Size
+      type: select
+      sort: 1
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":689,"name":"Ms. Audra Crooks II","type":"radio","sort":1,"creator_id":23362,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null,"options":[{"id":174,"name":"Marjorie Bogisich DDS","color":null,"extra_price":"44.6600","sort":1,"attribute_id":689,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}]},"message":"Attribute created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."], "type": ["The type field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/products/attributes/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Attributes
+      subgroupDescription: 'Manage product attributes'
+      title: 'Show attribute'
+      description: 'Retrieve a specific attribute by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The attribute ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> options, creator'
+        required: false
+        example: options
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: options
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":690,"name":"Morgan Hirthe","type":"radio","sort":1,"creator_id":23364,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null,"options":[{"id":175,"name":"Gertrude Pacocha","color":null,"extra_price":"14.5800","sort":1,"attribute_id":690,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}]}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Attribute not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/products/attributes/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Attributes
+      subgroupDescription: 'Manage product attributes'
+      title: 'Update attribute'
+      description: 'Update an existing attribute'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The attribute ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Attribute name (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: Size
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      type:
+        custom: []
+        name: type
+        description: 'Attribute type: radio, select, or color.'
+        required: false
+        example: select
+        type: string
+        enumValues:
+          - radio
+          - select
+          - color
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort order (minimum 0). Must be at least 0.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: Size
+      type: select
+      sort: 1
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":691,"name":"Ms. Audra Crooks II","type":"radio","sort":1,"creator_id":23366,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null,"options":[{"id":176,"name":"Prof. Gerson Brakus","color":null,"extra_price":"75.2800","sort":1,"attribute_id":691,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}]},"message":"Attribute updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Attribute not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must be a string."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/products/attributes/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Attributes
+      subgroupDescription: 'Manage product attributes'
+      title: 'Delete attribute'
+      description: 'Soft delete an attribute'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The attribute ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Attribute deleted successfully."}'
+        headers: []
+        description: 'Attribute deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Attribute not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/products/attributes/{id}/restore'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Attributes
+      subgroupDescription: 'Manage product attributes'
+      title: 'Restore attribute'
+      description: 'Restore a soft-deleted attribute'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The attribute ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":692,"name":"Morgan Hirthe","type":"radio","sort":1,"creator_id":23368,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z","deleted_at":null,"options":[{"id":177,"name":"Electa Reilly MD","color":null,"extra_price":"19.6500","sort":1,"attribute_id":692,"created_at":"2026-02-12T10:55:15.000000Z","updated_at":"2026-02-12T10:55:15.000000Z"}]},"message":"Attribute restored successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Attribute not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/products/attributes/{id}/force'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Attributes
+      subgroupDescription: 'Manage product attributes'
+      title: 'Force delete attribute'
+      description: 'Permanently delete an attribute (cannot be restored)'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The attribute ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Attribute permanently deleted."}'
+        headers: []
+        description: 'Attribute permanently deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Attribute not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/products/attributes/{attribute_id}/options'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: 'Attribute Options'
+      subgroupDescription: 'Manage attribute options'
+      title: 'List attribute options'
+      description: 'Retrieve a paginated list of attribute options for a specific attribute with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      attribute_id:
+        custom: []
+        name: attribute_id
+        description: 'The attribute ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      attribute_id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator'
+        required: false
+        example: attribute
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[name]':
+        custom: []
+        name: 'filter[name]'
+        description: 'Filter by option name (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: sort
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: attribute
+      sort: sort
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":178,"name":"Morgan Hirthe","color":null,"extra_price":"60.5300","sort":1,"attribute_id":693,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","attribute":{"id":693,"name":"Sadye Hermann","type":"radio","sort":1,"creator_id":23371,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}},{"id":179,"name":"Vallie Ondricka MD","color":null,"extra_price":"69.8600","sort":2,"attribute_id":694,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","attribute":{"id":694,"name":"Prof. Cora Romaguera Jr.","type":"radio","sort":2,"creator_id":23373,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/products/attributes/{attribute_id}/options'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: 'Attribute Options'
+      subgroupDescription: 'Manage attribute options'
+      title: 'Create attribute option'
+      description: 'Create a new option for a specific attribute'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      attribute_id:
+        custom: []
+        name: attribute_id
+        description: 'The attribute ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      attribute_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Option name (max 255 characters). Must not be greater than 255 characters.'
+        required: true
+        example: Large
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      color:
+        custom: []
+        name: color
+        description: 'Option color in hex format (max 7 characters). Must not be greater than 7 characters.'
+        required: false
+        example: '#FF5733'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      extra_price:
+        custom: []
+        name: extra_price
+        description: 'Additional price for this option (minimum 0). Must be at least 0.'
+        required: false
+        example: 10.5
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort order (minimum 0). Must be at least 0.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: Large
+      color: '#FF5733'
+      extra_price: 10.5
+      sort: 1
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":180,"name":"Ms. Audra Crooks II","color":null,"extra_price":"54.2700","sort":1,"attribute_id":695,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","attribute":{"id":695,"name":"Yasmin Altenwerth Jr.","type":"radio","sort":1,"creator_id":23375,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}},"message":"Attribute option created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/products/attributes/{attribute_id}/options/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: 'Attribute Options'
+      subgroupDescription: 'Manage attribute options'
+      title: 'Show attribute option'
+      description: 'Retrieve a specific attribute option by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      attribute_id:
+        custom: []
+        name: attribute_id
+        description: 'The attribute ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The attribute option ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      attribute_id: 1
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator'
+        required: false
+        example: attribute
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: attribute
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":181,"name":"Morgan Hirthe","color":null,"extra_price":"60.5300","sort":1,"attribute_id":696,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","attribute":{"id":696,"name":"Robbie Stehr","type":"radio","sort":1,"creator_id":23377,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Attribute option not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/products/attributes/{attribute_id}/options/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: 'Attribute Options'
+      subgroupDescription: 'Manage attribute options'
+      title: 'Update attribute option'
+      description: 'Update an existing attribute option'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      attribute_id:
+        custom: []
+        name: attribute_id
+        description: 'The attribute ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The attribute option ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      attribute_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Option name (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: Large
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      color:
+        custom: []
+        name: color
+        description: 'Option color in hex format (max 7 characters). Must not be greater than 7 characters.'
+        required: false
+        example: '#FF5733'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      extra_price:
+        custom: []
+        name: extra_price
+        description: 'Additional price for this option (minimum 0). Must be at least 0.'
+        required: false
+        example: 10.5
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort order (minimum 0). Must be at least 0.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: Large
+      color: '#FF5733'
+      extra_price: 10.5
+      sort: 1
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":182,"name":"Ms. Audra Crooks II","color":null,"extra_price":"54.2700","sort":1,"attribute_id":697,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","attribute":{"id":697,"name":"Javonte Shields III","type":"radio","sort":1,"creator_id":23379,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}},"message":"Attribute option updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Attribute option not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must be a string."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/products/attributes/{attribute_id}/options/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: 'Attribute Options'
+      subgroupDescription: 'Manage attribute options'
+      title: 'Delete attribute option'
+      description: 'Delete an attribute option'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      attribute_id:
+        custom: []
+        name: attribute_id
+        description: 'The attribute ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The attribute option ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      attribute_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Attribute option deleted successfully."}'
+        headers: []
+        description: 'Attribute option deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Attribute option not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: admin/api/v1/products/products
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Products
+      subgroupDescription: 'Manage products'
+      title: 'List products'
+      description: 'Retrieve a paginated list of products with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, variants, uom, uomPO, category, tags, attributes, attribute_values, company, creator'
+        required: false
+        example: 'category,tags'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[type]':
+        custom: []
+        name: 'filter[type]'
+        description: 'Filter by product type'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - goods
+          - service
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[enable_sales]':
+        custom: []
+        name: 'filter[enable_sales]'
+        description: 'Filter by sales enabled'
+        required: false
+        example: 'true'
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[enable_purchase]':
+        custom: []
+        name: 'filter[enable_purchase]'
+        description: 'Filter by purchase enabled'
+        required: false
+        example: 'false'
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[category_id]':
+        custom: []
+        name: 'filter[category_id]'
+        description: 'Comma-separated list of category IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[trashed]':
+        custom: []
+        name: 'filter[trashed]'
+        description: 'Filter by trashed status: "with" (include trashed), "only" (only trashed), or any other value for non-trashed only'
+        required: false
+        example: with
+        type: string
+        enumValues:
+          - with
+          - only
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: '-created_at'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'category,tags'
+      'filter[enable_sales]': 'true'
+      'filter[enable_purchase]': 'false'
+      'filter[trashed]': with
+      sort: '-created_at'
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1072,"type":"goods","name":"Erich Morar DVM","service_tracking":"none","reference":null,"barcode":"9718877602005","price":8.2,"cost":82.66,"volume":15.86,"weight":0.19,"description":"Laborum sit incidunt deserunt molestiae magni.","description_purchase":"Voluptatem possimus totam et omnis nobis repellat.","description_sale":"Dolorem vitae inventore consequatur officia.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2180,"uom_po_id":2181,"category_id":1652,"creator_id":null,"company_id":5678,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null,"category":{"id":1652,"name":"Mrs. Ines Paucek PhD","full_name":"Mrs. Ines Paucek PhD","parent_path":"\/","parent_id":null,"creator_id":23385,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z"},"tags":[{"id":389,"name":"Herta King","color":"#ff85db","created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}]},{"id":1073,"type":"goods","name":"Prof. Henderson Strosin DDS","service_tracking":"none","reference":null,"barcode":"5740073599333","price":32.86,"cost":26.31,"volume":38.09,"weight":17.2,"description":"Quia temporibus aut enim inventore pariatur.","description_purchase":"Voluptatem ducimus id qui in voluptas quisquam rerum.","description_sale":"Blanditiis repellat sed est deleniti ullam velit neque.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":2182,"uom_po_id":2183,"category_id":1653,"creator_id":null,"company_id":5679,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null,"category":{"id":1653,"name":"Liana D''Amore","full_name":"Liana D''Amore","parent_path":"\/","parent_id":null,"creator_id":23392,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z"},"tags":[{"id":390,"name":"Ms. Josianne Becker Jr.","color":"#f9b8da","created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: admin/api/v1/products/products
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Products
+      subgroupDescription: 'Manage products'
+      title: 'Create product'
+      description: 'Create a new product'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      type:
+        custom: []
+        name: type
+        description: 'Product type: goods, service, consu (consumable).'
+        required: true
+        example: goods
+        type: string
+        enumValues:
+          - goods
+          - service
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      name:
+        custom: []
+        name: name
+        description: 'Product name (max 255 characters). Must not be greater than 255 characters.'
+        required: true
+        example: 'Laptop Computer'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      service_tracking:
+        custom: []
+        name: service_tracking
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      reference:
+        custom: []
+        name: reference
+        description: 'Internal reference code (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: PROD-001
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      barcode:
+        custom: []
+        name: barcode
+        description: 'Product barcode (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: '1234567890'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      price:
+        custom: []
+        name: price
+        description: 'Sales price (minimum 0). Must be at least 0.'
+        required: true
+        example: 999.99
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      cost:
+        custom: []
+        name: cost
+        description: 'Product cost (minimum 0). Must be at least 0.'
+        required: false
+        example: 750.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      volume:
+        custom: []
+        name: volume
+        description: 'Product volume (min 0, max 99999999999). Must be at least 0. Must not be greater than 99999999999.'
+        required: false
+        example: 0.5
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      weight:
+        custom: []
+        name: weight
+        description: 'Product weight (min 0, max 99999999999). Must be at least 0. Must not be greater than 99999999999.'
+        required: false
+        example: 2.5
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description:
+        custom: []
+        name: description
+        description: 'Product description.'
+        required: false
+        example: 'High-performance laptop with latest specifications.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description_purchase:
+        custom: []
+        name: description_purchase
+        description: 'Purchase description.'
+        required: false
+        example: 'Enterprise laptop for business use.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description_sale:
+        custom: []
+        name: description_sale
+        description: 'Sales description.'
+        required: false
+        example: 'Perfect for professionals and power users.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      enable_sales:
+        custom: []
+        name: enable_sales
+        description: 'Whether this product can be sold.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      enable_purchase:
+        custom: []
+        name: enable_purchase
+        description: 'Whether this product can be purchased.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      is_favorite:
+        custom: []
+        name: is_favorite
+        description: 'Mark this product as favorite.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      images:
+        custom: []
+        name: images
+        description: ''
+        required: false
+        example:
+          - architecto
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      uom_id:
+        custom: []
+        name: uom_id
+        description: 'Unit of measure ID.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      uom_po_id:
+        custom: []
+        name: uom_po_id
+        description: 'Purchase unit of measure ID.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      category_id:
+        custom: []
+        name: category_id
+        description: 'Product category ID. The <code>id</code> of an existing record in the products_categories table.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID this product belongs to.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      tags:
+        custom: []
+        name: tags
+        description: 'The <code>id</code> of an existing record in the products_tags table.'
+        required: false
+        example:
+          - 16
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      type: goods
+      name: 'Laptop Computer'
+      service_tracking: b
+      reference: PROD-001
+      barcode: '1234567890'
+      price: 999.99
+      cost: 750.0
+      volume: 0.5
+      weight: 2.5
+      description: 'High-performance laptop with latest specifications.'
+      description_purchase: 'Enterprise laptop for business use.'
+      description_sale: 'Perfect for professionals and power users.'
+      enable_sales: false
+      enable_purchase: false
+      is_favorite: false
+      images:
+        - architecto
+      uom_id: 1
+      uom_po_id: 1
+      category_id: 1
+      company_id: 1
+      tags:
+        - 16
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":1074,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2184,"uom_po_id":2185,"category_id":1654,"creator_id":null,"company_id":5680,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null,"category":{"id":1654,"name":"Connie Emmerich","full_name":"Connie Emmerich","parent_path":"\/","parent_id":null,"creator_id":23399,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z"},"tags":[{"id":391,"name":"Domingo Schultz","color":"#7e045f","created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}]},"message":"Product created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."], "type": ["The type field is required."], "category_id": ["The category id field is required."], "price": ["The price field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/products/products/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Products
+      subgroupDescription: 'Manage products'
+      title: 'Show product'
+      description: 'Retrieve a specific product by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, variants, uom, uomPO, category, attributes, attribute_values, tags, company, creator'
+        required: false
+        example: 'category,tags'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'category,tags'
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1075,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2186,"uom_po_id":2187,"category_id":1655,"creator_id":null,"company_id":5681,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null,"category":{"id":1655,"name":"Cloyd Franecki","full_name":"Cloyd Franecki","parent_path":"\/","parent_id":null,"creator_id":23406,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z"},"tags":[{"id":392,"name":"Miss Otilia Russel","color":"#1dfc5e","created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}]}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/products/products/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Products
+      subgroupDescription: 'Manage products'
+      title: 'Update product'
+      description: 'Update an existing product'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      type:
+        custom: []
+        name: type
+        description: 'Product type: goods, service, consu (consumable).'
+        required: false
+        example: goods
+        type: string
+        enumValues:
+          - goods
+          - service
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      name:
+        custom: []
+        name: name
+        description: 'Product name (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: 'Laptop Computer'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      service_tracking:
+        custom: []
+        name: service_tracking
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      reference:
+        custom: []
+        name: reference
+        description: 'Internal reference code (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: PROD-001
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      barcode:
+        custom: []
+        name: barcode
+        description: 'Product barcode (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: '1234567890'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      price:
+        custom: []
+        name: price
+        description: 'Sales price (minimum 0). Must be at least 0.'
+        required: false
+        example: 999.99
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      cost:
+        custom: []
+        name: cost
+        description: 'Product cost (minimum 0). Must be at least 0.'
+        required: false
+        example: 750.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      volume:
+        custom: []
+        name: volume
+        description: 'Product volume (min 0, max 99999999999). Must be at least 0. Must not be greater than 99999999999.'
+        required: false
+        example: 0.5
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      weight:
+        custom: []
+        name: weight
+        description: 'Product weight (min 0, max 99999999999). Must be at least 0. Must not be greater than 99999999999.'
+        required: false
+        example: 2.5
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description:
+        custom: []
+        name: description
+        description: 'Product description.'
+        required: false
+        example: 'High-performance laptop with latest specifications.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description_purchase:
+        custom: []
+        name: description_purchase
+        description: 'Purchase description.'
+        required: false
+        example: 'Enterprise laptop for business use.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description_sale:
+        custom: []
+        name: description_sale
+        description: 'Sales description.'
+        required: false
+        example: 'Perfect for professionals and power users.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      enable_sales:
+        custom: []
+        name: enable_sales
+        description: 'Whether this product can be sold.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      enable_purchase:
+        custom: []
+        name: enable_purchase
+        description: 'Whether this product can be purchased.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      is_favorite:
+        custom: []
+        name: is_favorite
+        description: 'Mark this product as favorite.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      images:
+        custom: []
+        name: images
+        description: ''
+        required: false
+        example:
+          - architecto
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      uom_id:
+        custom: []
+        name: uom_id
+        description: 'Unit of measure ID.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      uom_po_id:
+        custom: []
+        name: uom_po_id
+        description: 'Purchase unit of measure ID.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      category_id:
+        custom: []
+        name: category_id
+        description: 'Product category ID. The <code>id</code> of an existing record in the products_categories table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID this product belongs to.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      tags:
+        custom: []
+        name: tags
+        description: 'The <code>id</code> of an existing record in the products_tags table.'
+        required: false
+        example:
+          - 16
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      type: goods
+      name: 'Laptop Computer'
+      service_tracking: b
+      reference: PROD-001
+      barcode: '1234567890'
+      price: 999.99
+      cost: 750.0
+      volume: 0.5
+      weight: 2.5
+      description: 'High-performance laptop with latest specifications.'
+      description_purchase: 'Enterprise laptop for business use.'
+      description_sale: 'Perfect for professionals and power users.'
+      enable_sales: false
+      enable_purchase: false
+      is_favorite: false
+      images:
+        - architecto
+      uom_id: 1
+      uom_po_id: 1
+      category_id: 1
+      company_id: 1
+      tags:
+        - 16
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1076,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2188,"uom_po_id":2189,"category_id":1656,"creator_id":null,"company_id":5682,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null,"category":{"id":1656,"name":"Jonathan Jaskolski","full_name":"Jonathan Jaskolski","parent_path":"\/","parent_id":null,"creator_id":23413,"created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z"},"tags":[{"id":393,"name":"Melvin Parisian","color":"#537d54","created_at":"2026-02-12T10:55:16.000000Z","updated_at":"2026-02-12T10:55:16.000000Z","deleted_at":null}]},"message":"Product updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must be a string."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/products/products/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Products
+      subgroupDescription: 'Manage products'
+      title: 'Delete product'
+      description: 'Soft delete a product'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Product deleted successfully."}'
+        headers: []
+        description: 'Product deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/products/products/{id}/restore'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Products
+      subgroupDescription: 'Manage products'
+      title: 'Restore product'
+      description: 'Restore a soft-deleted product'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1077,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2190,"uom_po_id":2191,"category_id":1657,"creator_id":null,"company_id":5683,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","deleted_at":null,"category":{"id":1657,"name":"Melvin Parisian","full_name":"Melvin Parisian","parent_path":"\/","parent_id":null,"creator_id":23420,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z"},"tags":[{"id":394,"name":"Sienna Davis","color":"#af6f31","created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","deleted_at":null}]},"message":"Product restored successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/products/products/{id}/force'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Products
+      subgroupDescription: 'Manage products'
+      title: 'Force delete product'
+      description: 'Permanently delete a product (cannot be restored)'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Product permanently deleted."}'
+        headers: []
+        description: 'Product permanently deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/products/products/{product_id}/attributes'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: 'Product Attributes'
+      subgroupDescription: 'Manage product attributes'
+      title: 'List product attributes'
+      description: 'Retrieve a paginated list of attributes for a specific product'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> attribute, values, creator, values.attributeOption'
+        required: false
+        example: 'attribute,values'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[attribute_id]':
+        custom: []
+        name: 'filter[attribute_id]'
+        description: 'Comma-separated list of attribute IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: sort
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'attribute,values'
+      sort: sort
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":388,"sort":2,"product_id":1078,"attribute_id":698,"creator_id":23428,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","attribute":{"id":698,"name":"Burnice Reilly","type":"radio","sort":1,"creator_id":23429,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","deleted_at":null}},{"id":389,"sort":3,"product_id":1079,"attribute_id":699,"creator_id":23436,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","attribute":{"id":699,"name":"Prof. Franco Rippin DVM","type":"radio","sort":2,"creator_id":23437,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","deleted_at":null}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/products/products/{product_id}/attributes'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: 'Product Attributes'
+      subgroupDescription: 'Manage product attributes'
+      title: 'Create product attribute'
+      description: 'Create a new attribute for a specific product'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      attribute_id:
+        custom: []
+        name: attribute_id
+        description: 'The ID of the attribute to link to this product. The <code>id</code> of an existing record in the products_attributes table.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort order (minimum 0). Must be at least 0.'
+        required: false
+        example: 0
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      options:
+        custom: []
+        name: options
+        description: 'The <code>id</code> of an existing record in the products_attribute_options table.'
+        required: false
+        example:
+          - 16
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      attribute_id: 1
+      sort: 0
+      options:
+        - 16
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":390,"sort":2,"product_id":1080,"attribute_id":700,"creator_id":23444,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","attribute":{"id":700,"name":"Blaise Rice","type":"radio","sort":1,"creator_id":23445,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","deleted_at":null}},"message":"Product attribute created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"attribute_id": ["The attribute id field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/products/products/{product_id}/attributes/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: 'Product Attributes'
+      subgroupDescription: 'Manage product attributes'
+      title: 'Show product attribute'
+      description: 'Retrieve a specific product attribute by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The product attribute ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> attribute, values, creator, values.attributeOption'
+        required: false
+        example: 'attribute,values'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'attribute,values'
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":391,"sort":2,"product_id":1081,"attribute_id":701,"creator_id":23452,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","attribute":{"id":701,"name":"Connie Leffler","type":"radio","sort":1,"creator_id":23453,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","deleted_at":null}}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product attribute not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/products/products/{product_id}/attributes/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: 'Product Attributes'
+      subgroupDescription: 'Manage product attributes'
+      title: 'Update product attribute'
+      description: 'Update an existing product attribute'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The product attribute ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      attribute_id:
+        custom: []
+        name: attribute_id
+        description: 'The ID of the attribute to link to this product. The <code>id</code> of an existing record in the products_attributes table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort order (minimum 0). Must be at least 0.'
+        required: false
+        example: 0
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      options:
+        custom: []
+        name: options
+        description: 'The <code>id</code> of an existing record in the products_attribute_options table.'
+        required: false
+        example:
+          - 16
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      attribute_id: 1
+      sort: 0
+      options:
+        - 16
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":392,"sort":2,"product_id":1082,"attribute_id":702,"creator_id":23460,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","attribute":{"id":702,"name":"Prof. Destini Marvin","type":"radio","sort":1,"creator_id":23461,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","deleted_at":null}},"message":"Product attribute updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product attribute not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"attribute_id": ["The attribute id must be an integer."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/products/products/{product_id}/attributes/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: 'Product Attributes'
+      subgroupDescription: 'Manage product attributes'
+      title: 'Delete product attribute'
+      description: 'Delete a product attribute'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The product attribute ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Product attribute deleted successfully."}'
+        headers: []
+        description: 'Product attribute deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product attribute not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/products/products/{product_id}/variants'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: 'Product Variants'
+      subgroupDescription: 'Manage product variants'
+      title: 'List product variants'
+      description: 'Retrieve a paginated list of variants for a specific product'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, uom, uomPO, category, tags, attributes, attribute_values, company, creator'
+        required: false
+        example: attributes
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[type]':
+        custom: []
+        name: 'filter[type]'
+        description: 'Filter by product type'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - goods
+          - service
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[enable_sales]':
+        custom: []
+        name: 'filter[enable_sales]'
+        description: 'Filter by sales enabled'
+        required: false
+        example: 'true'
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[enable_purchase]':
+        custom: []
+        name: 'filter[enable_purchase]'
+        description: 'Filter by purchase enabled'
+        required: false
+        example: 'false'
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[category_id]':
+        custom: []
+        name: 'filter[category_id]'
+        description: 'Comma-separated list of category IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[trashed]':
+        custom: []
+        name: 'filter[trashed]'
+        description: 'Filter by trashed status: "with" (include trashed), "only" (only trashed), or any other value for non-trashed only'
+        required: false
+        example: with
+        type: string
+        enumValues:
+          - with
+          - only
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: '-created_at'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: attributes
+      'filter[enable_sales]': 'true'
+      'filter[enable_purchase]': 'false'
+      'filter[trashed]': with
+      sort: '-created_at'
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1083,"type":"goods","name":"Devyn Fahey","service_tracking":"none","reference":null,"barcode":"0705238259564","price":90.23,"cost":4.83,"volume":58.64,"weight":8.65,"description":"Dignissimos nihil deserunt placeat quis eum aut commodi.","description_purchase":"Maiores natus harum distinctio natus aspernatur eos illo.","description_sale":"Voluptatem molestiae quae dolor veritatis possimus.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2202,"uom_po_id":2203,"category_id":1663,"creator_id":null,"company_id":5689,"created_at":"2026-02-12T10:55:17.000000Z","updated_at":"2026-02-12T10:55:17.000000Z","deleted_at":null},{"id":1084,"type":"goods","name":"Ms. Ottilie Heaney","service_tracking":"none","reference":null,"barcode":"1752072753795","price":44.45,"cost":77.78,"volume":88.23,"weight":21.34,"description":"Eius libero fugiat cumque voluptatem odit.","description_purchase":"Voluptas ipsum dignissimos nihil totam quaerat dolorem magnam.","description_sale":"Quae error assumenda maiores dolores magnam minus.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":2204,"uom_po_id":2205,"category_id":1664,"creator_id":null,"company_id":5690,"created_at":"2026-02-12T10:55:18.000000Z","updated_at":"2026-02-12T10:55:18.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/products/products/{product_id}/variants'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: 'Product Variants'
+      subgroupDescription: 'Manage product variants'
+      title: 'Sync product variants'
+      description: 'Sync variants for a specific product based on attributes'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":[{"id":1085,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2206,"uom_po_id":2207,"category_id":1665,"creator_id":null,"company_id":5691,"created_at":"2026-02-12T10:55:18.000000Z","updated_at":"2026-02-12T10:55:18.000000Z","deleted_at":null},{"id":1086,"type":"goods","name":"Miss Casandra Wolf","service_tracking":"none","reference":null,"barcode":"1987377801845","price":17.3,"cost":5.72,"volume":98.57,"weight":75.12,"description":"Ab magnam sit et eveniet.","description_purchase":"Sed voluptas dolorem similique quo iusto sequi quos magnam.","description_sale":"Qui reiciendis labore velit mollitia eaque exercitationem.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":2208,"uom_po_id":2209,"category_id":1666,"creator_id":null,"company_id":5692,"created_at":"2026-02-12T10:55:18.000000Z","updated_at":"2026-02-12T10:55:18.000000Z","deleted_at":null}],"message":"Product variants synced successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/products/products/{product_id}/variants/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: 'Product Variants'
+      subgroupDescription: 'Manage product variants'
+      title: 'Show product variant'
+      description: 'Retrieve a specific product variant by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The variant ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, uom, uomPO, category, tags, attributes, attribute_values, company, creator'
+        required: false
+        example: attributes
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: attributes
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1087,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2210,"uom_po_id":2211,"category_id":1667,"creator_id":null,"company_id":5693,"created_at":"2026-02-12T10:55:18.000000Z","updated_at":"2026-02-12T10:55:18.000000Z","deleted_at":null}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product variant not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/products/products/{product_id}/variants/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: 'Product Variants'
+      subgroupDescription: 'Manage product variants'
+      title: 'Update product variant'
+      description: 'Update an existing product variant'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The variant ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      type:
+        custom: []
+        name: type
+        description: 'Product type: goods, service, consu (consumable).'
+        required: false
+        example: goods
+        type: string
+        enumValues:
+          - goods
+          - service
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      name:
+        custom: []
+        name: name
+        description: 'Product name (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: 'Laptop Computer'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      service_tracking:
+        custom: []
+        name: service_tracking
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      reference:
+        custom: []
+        name: reference
+        description: 'Internal reference code (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: PROD-001
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      barcode:
+        custom: []
+        name: barcode
+        description: 'Product barcode (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: '1234567890'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      price:
+        custom: []
+        name: price
+        description: 'Sales price (minimum 0). Must be at least 0.'
+        required: false
+        example: 999.99
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      cost:
+        custom: []
+        name: cost
+        description: 'Product cost (minimum 0). Must be at least 0.'
+        required: false
+        example: 750.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      volume:
+        custom: []
+        name: volume
+        description: 'Product volume (min 0, max 99999999999). Must be at least 0. Must not be greater than 99999999999.'
+        required: false
+        example: 0.5
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      weight:
+        custom: []
+        name: weight
+        description: 'Product weight (min 0, max 99999999999). Must be at least 0. Must not be greater than 99999999999.'
+        required: false
+        example: 2.5
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description:
+        custom: []
+        name: description
+        description: 'Product description.'
+        required: false
+        example: 'High-performance laptop with latest specifications.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description_purchase:
+        custom: []
+        name: description_purchase
+        description: 'Purchase description.'
+        required: false
+        example: 'Enterprise laptop for business use.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description_sale:
+        custom: []
+        name: description_sale
+        description: 'Sales description.'
+        required: false
+        example: 'Perfect for professionals and power users.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      enable_sales:
+        custom: []
+        name: enable_sales
+        description: 'Whether this product can be sold.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      enable_purchase:
+        custom: []
+        name: enable_purchase
+        description: 'Whether this product can be purchased.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      is_favorite:
+        custom: []
+        name: is_favorite
+        description: 'Mark this product as favorite.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      images:
+        custom: []
+        name: images
+        description: ''
+        required: false
+        example:
+          - architecto
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      uom_id:
+        custom: []
+        name: uom_id
+        description: 'Unit of measure ID.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      uom_po_id:
+        custom: []
+        name: uom_po_id
+        description: 'Purchase unit of measure ID.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      category_id:
+        custom: []
+        name: category_id
+        description: 'Product category ID. The <code>id</code> of an existing record in the products_categories table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID this product belongs to.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      tags:
+        custom: []
+        name: tags
+        description: 'The <code>id</code> of an existing record in the products_tags table.'
+        required: false
+        example:
+          - 16
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      type: goods
+      name: 'Laptop Computer'
+      service_tracking: b
+      reference: PROD-001
+      barcode: '1234567890'
+      price: 999.99
+      cost: 750.0
+      volume: 0.5
+      weight: 2.5
+      description: 'High-performance laptop with latest specifications.'
+      description_purchase: 'Enterprise laptop for business use.'
+      description_sale: 'Perfect for professionals and power users.'
+      enable_sales: false
+      enable_purchase: false
+      is_favorite: false
+      images:
+        - architecto
+      uom_id: 1
+      uom_po_id: 1
+      category_id: 1
+      company_id: 1
+      tags:
+        - 16
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1088,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2212,"uom_po_id":2213,"category_id":1668,"creator_id":null,"company_id":5694,"created_at":"2026-02-12T10:55:18.000000Z","updated_at":"2026-02-12T10:55:18.000000Z","deleted_at":null},"message":"Product variant updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product variant not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must be a string."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/products/products/{product_id}/variants/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: 'Product Variants'
+      subgroupDescription: 'Manage product variants'
+      title: 'Delete product variant'
+      description: 'Soft delete a product variant'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The variant ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Product variant deleted successfully."}'
+        headers: []
+        description: 'Product variant deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product variant not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/products/products/{product_id}/variants/{id}/restore'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: 'Product Variants'
+      subgroupDescription: 'Manage product variants'
+      title: 'Restore product variant'
+      description: 'Restore a soft-deleted product variant'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The variant ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1089,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":6,"parent_id":null,"uom_id":2214,"uom_po_id":2215,"category_id":1669,"creator_id":null,"company_id":5695,"created_at":"2026-02-12T10:55:18.000000Z","updated_at":"2026-02-12T10:55:18.000000Z","deleted_at":null},"message":"Product variant restored successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product variant not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/products/products/{product_id}/variants/{id}/force'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: 'Product Variants'
+      subgroupDescription: 'Manage product variants'
+      title: 'Force delete product variant'
+      description: 'Permanently delete a product variant (cannot be restored)'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The variant ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Product variant permanently deleted."}'
+        headers: []
+        description: 'Product variant permanently deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product variant not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: admin/api/v1/products/packagings
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Packaging
+      subgroupDescription: 'Manage product packaging'
+      title: 'List packagings'
+      description: 'Retrieve a paginated list of packagings with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> product, creator, company'
+        required: false
+        example: 'product,creator'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[name]':
+        custom: []
+        name: 'filter[name]'
+        description: 'Filter by packaging name (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[product_id]':
+        custom: []
+        name: 'filter[product_id]'
+        description: 'Comma-separated list of product IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: sort
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'product,creator'
+      sort: sort
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":49,"name":"Morgan Hirthe","barcode":null,"qty":"1.0000","sort":2,"product_id":1090,"creator_id":23524,"created_at":"2026-02-12T10:55:18.000000Z","updated_at":"2026-02-12T10:55:18.000000Z"},{"id":50,"name":"Dr. Fred Cartwright Jr.","barcode":null,"qty":"1.0000","sort":3,"product_id":1091,"creator_id":23531,"created_at":"2026-02-12T10:55:19.000000Z","updated_at":"2026-02-12T10:55:19.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: admin/api/v1/products/packagings
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Packaging
+      subgroupDescription: 'Manage product packaging'
+      title: 'Create packaging'
+      description: 'Create a new product packaging'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Packaging name (max 255 characters). Must not be greater than 255 characters.'
+        required: true
+        example: 'Box of 12'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      barcode:
+        custom: []
+        name: barcode
+        description: 'Packaging barcode (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: '5901234123457'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      qty:
+        custom: []
+        name: qty
+        description: 'Quantity per package (minimum 0). Must be at least 0.'
+        required: true
+        example: 12.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort order.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      product_id:
+        custom: []
+        name: product_id
+        description: 'Product ID that this packaging belongs to. The <code>id</code> of an existing record in the products_products table.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID associated with this packaging. The <code>id</code> of an existing record in the companies table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: 'Box of 12'
+      barcode: '5901234123457'
+      qty: 12.0
+      sort: 1
+      product_id: 1
+      company_id: 1
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":51,"name":"Ms. Audra Crooks II","barcode":null,"qty":"1.0000","sort":2,"product_id":1092,"creator_id":23538,"created_at":"2026-02-12T10:55:19.000000Z","updated_at":"2026-02-12T10:55:19.000000Z"},"message":"Packaging created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/products/packagings/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Packaging
+      subgroupDescription: 'Manage product packaging'
+      title: 'Show packaging'
+      description: 'Retrieve a specific packaging by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The packaging ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> product, creator, company'
+        required: false
+        example: 'product,creator'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'product,creator'
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":52,"name":"Morgan Hirthe","barcode":null,"qty":"1.0000","sort":2,"product_id":1093,"creator_id":23545,"created_at":"2026-02-12T10:55:19.000000Z","updated_at":"2026-02-12T10:55:19.000000Z"}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Packaging not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/products/packagings/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Packaging
+      subgroupDescription: 'Manage product packaging'
+      title: 'Update packaging'
+      description: 'Update an existing packaging'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The packaging ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Packaging name (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: 'Box of 12'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      barcode:
+        custom: []
+        name: barcode
+        description: 'Packaging barcode (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: '5901234123457'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      qty:
+        custom: []
+        name: qty
+        description: 'Quantity per package (minimum 0). Must be at least 0.'
+        required: false
+        example: 12.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort order.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      product_id:
+        custom: []
+        name: product_id
+        description: 'Product ID that this packaging belongs to. The <code>id</code> of an existing record in the products_products table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID associated with this packaging. The <code>id</code> of an existing record in the companies table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: 'Box of 12'
+      barcode: '5901234123457'
+      qty: 12.0
+      sort: 1
+      product_id: 1
+      company_id: 1
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":53,"name":"Ms. Audra Crooks II","barcode":null,"qty":"1.0000","sort":2,"product_id":1094,"creator_id":23552,"created_at":"2026-02-12T10:55:19.000000Z","updated_at":"2026-02-12T10:55:19.000000Z"},"message":"Packaging updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Packaging not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must be a string."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/products/packagings/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product API Management'
+      groupDescription: ''
+      subgroup: Packaging
+      subgroupDescription: 'Manage product packaging'
+      title: 'Delete packaging'
+      description: 'Delete a packaging'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The packaging ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Packaging deleted successfully."}'
+        headers: []
+        description: 'Packaging deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Packaging not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null

@@ -161,7 +161,7 @@ class Leave extends Model
 
             $leave->creator_id = $authUser->id;
 
-            $leave->company_id ??= $authUser->default_company_id;
+            $leave->company_id ??= $authUser?->default_company_id;
         });
     }
 }

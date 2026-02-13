@@ -10,11 +10,11 @@ use Webkul\Account\Filament\Resources\CreditNoteResource\Pages\CreateCreditNote;
 use Webkul\Account\Filament\Resources\CreditNoteResource\Pages\EditCreditNote;
 use Webkul\Account\Filament\Resources\CreditNoteResource\Pages\ListCreditNotes;
 use Webkul\Account\Filament\Resources\CreditNoteResource\Pages\ViewCreditNote;
-use Webkul\Account\Models\Move as AccountMove;
+use Webkul\Account\Models\CreditNote;
 
 class CreditNoteResource extends InvoiceResource
 {
-    protected static ?string $model = AccountMove::class;
+    protected static ?string $model = CreditNote::class;
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-credit-card';
 

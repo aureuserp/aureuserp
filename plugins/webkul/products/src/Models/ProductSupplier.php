@@ -79,7 +79,7 @@ class ProductSupplier extends Model implements Sortable
 
             $productSupplier->creator_id ??= $authUser->id;
 
-            $productSupplier->company_id ??= $authUser->default_company_id;
+            $productSupplier->company_id ??= $authUser?->default_company_id;
         });
     }
 }

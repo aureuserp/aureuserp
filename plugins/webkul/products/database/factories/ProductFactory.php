@@ -7,6 +7,7 @@ use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Models\Category;
 use Webkul\Product\Models\Product;
 use Webkul\Security\Models\User;
+use Webkul\Support\Models\UOM;
 use Webkul\Support\Models\Company;
 
 /**
@@ -42,6 +43,8 @@ class ProductFactory extends Factory
             'enable_sales'         => true,
             'sort'                 => fake()->randomNumber(),
             'category_id'          => Category::factory(),
+            'uom_id'               => UOM::factory(),
+            'uom_po_id'            => UOM::factory(),
             'creator_id'           => User::factory(),
             'company_id'           => Company::factory(),
         ];

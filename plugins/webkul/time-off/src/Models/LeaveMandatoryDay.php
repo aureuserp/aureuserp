@@ -46,9 +46,9 @@ class LeaveMandatoryDay extends Model
         static::creating(function ($leaveMandatoryDay) {
             $authUser = Auth::user();
 
-            $leaveMandatoryDay->creator_id = $authUser->id;
+            $leaveMandatoryDay->creator_id ??= $authUser->id;
 
-            $leaveMandatoryDay->company_id ??= $authUser->default_company_id;
+            $leaveMandatoryDay->company_id ??= $authUser?->default_company_id;
         });
     }
 }

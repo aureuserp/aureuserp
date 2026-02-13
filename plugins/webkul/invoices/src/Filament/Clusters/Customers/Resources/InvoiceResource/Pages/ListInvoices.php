@@ -1,0 +1,11 @@
+<?php
+
+namespace Webkul\Invoice\Filament\Clusters\Customers\Resources\InvoiceResource\Pages;
+
+use Webkul\Account\Filament\Resources\InvoiceResource\Pages\ListInvoices as BaseListInvoices;
+use Webkul\Invoice\Filament\Clusters\Customers\Resources\InvoiceResource;
+
+class ListInvoices extends BaseListInvoices
+{
+    protected static string $resource = InvoiceResource::class;
+}

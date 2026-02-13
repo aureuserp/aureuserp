@@ -28,6 +28,7 @@ class SupportServiceProvider extends PackageServiceProvider
             ->isCore()
             ->hasViews()
             ->hasTranslations()
+            ->hasRoutes(['api'])
             ->hasMigrations([
                 '2024_11_05_105102_create_plugins_table',
                 '2024_11_05_105112_create_plugin_dependencies_table',

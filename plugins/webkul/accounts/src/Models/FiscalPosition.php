@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Account\Database\Factories\FiscalPositionFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
@@ -78,7 +79,7 @@ class FiscalPosition extends Model implements Sortable
             ? Account::find($mapping->account_destination_id)
             : $account;
     }
-
+    
     protected static function boot()
     {
         parent::boot();
@@ -86,5 +87,10 @@ class FiscalPosition extends Model implements Sortable
         static::creating(function ($fiscalPosition) {
             $fiscalPosition->creator_id ??= Auth::id();
         });
+    }
+
+    protected static function newFactory()
+    {
+        return FiscalPositionFactory::new();
     }
 }

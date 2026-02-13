@@ -2,6 +2,8 @@
 
 namespace Webkul\Support\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Webkul\Support\Database\Factories\CurrencyFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
@@ -9,6 +11,8 @@ use InvalidArgumentException;
 
 class Currency extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'name',
         'symbol',
@@ -127,5 +131,10 @@ class Currency extends Model
     protected function isInteger($value)
     {
         return is_numeric($value) && floatval($value) == intval($value);
+    }
+
+    protected static function newFactory()
+    {
+        return CurrencyFactory::new();
     }
 }

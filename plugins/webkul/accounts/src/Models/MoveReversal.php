@@ -58,7 +58,7 @@ class MoveReversal extends Model
 
             $moveReversal->creator_id ??= $authUser->id;
 
-            $moveReversal->company_id ??= $authUser->default_company_id;
+            $moveReversal->company_id ??= $authUser?->default_company_id;
         });
     }
 }

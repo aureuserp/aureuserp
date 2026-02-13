@@ -59,6 +59,8 @@ class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasAp
         return 'id';
     }
 
+    protected $guard_name = ['web', 'sanctum'];
+
     public function canAccessPanel(Panel $panel): bool
     {
         return true;
@@ -132,7 +134,7 @@ class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasAp
             'creator_id' => Auth::user()->id ?? $user->id,
             'user_id'    => $user->id,
             'sub_type'   => 'partner',
-            ...Arr::except($user->toArray(), ['id']),
+            ...Arr::except($user->toArray(), ['id', 'partner_id']),
         ]);
 
         $user->partner_id = $partner->id;
@@ -147,7 +149,7 @@ class User extends BaseUser implements FilamentUser, HasAppAuthentication, HasAp
                 'creator_id' => Auth::user()->id ?? $user->id,
                 'user_id'    => $user->id,
                 'sub_type'   => 'partner',
-                ...Arr::except($user->toArray(), ['id']),
+                ...Arr::except($user->toArray(), ['id', 'partner_id']),
             ]
         );
 

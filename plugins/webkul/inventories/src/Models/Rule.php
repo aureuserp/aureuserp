@@ -123,7 +123,7 @@ class Rule extends Model implements Sortable
 
             $rule->creator_id ??= $authUser->id;
 
-            $rule->company_id ??= $authUser->default_company_id;
+            $rule->company_id ??= $authUser?->default_company_id;
         });
     }
 }

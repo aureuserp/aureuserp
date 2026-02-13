@@ -62,7 +62,7 @@ class PackageType extends Model implements Sortable
 
             $packageType->creator_id ??= $authUser->id;
 
-            $packageType->company_id ??= $authUser->default_company_id;
+            $packageType->company_id ??= $authUser?->default_company_id;
         });
     }
 }

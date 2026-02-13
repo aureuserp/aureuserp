@@ -68,21 +68,46 @@ class Category extends Model
         return $this->hasMany(PriceRuleItem::class);
     }
 
-    protected static function validateNoRecursion($productCategory)
+    protected static function boot()
     {
-        if (! $productCategory->parent_id) {
+        parent::boot();
+
+        static::creating(function ($category) {
+            if (! static::validateNoRecursion($category)) {
+                throw new InvalidArgumentException('Circular reference detected in product category hierarchy');
+            }
+
+            $authUser = Auth::user();
+
+            $category->creator_id ??= $authUser->id;
+
+            static::handleProductCategoryData($category);
+        });
+
+        static::updating(function ($category) {
+            if (! static::validateNoRecursion($category)) {
+                throw new InvalidArgumentException('Circular reference detected in product category hierarchy');
+            }
+
+            static::handleProductCategoryData($category);
+        });
+    }
+
+    protected static function validateNoRecursion($category)
+    {
+        if (! $category->parent_id) {
             return true;
         }
 
         if (
-            $productCategory->exists
-            && $productCategory->id == $productCategory->parent_id
+            $category->exists
+            && $category->id == $category->parent_id
         ) {
             return false;
         }
 
-        $visitedIds = [$productCategory->exists ? $productCategory->id : -1];
-        $currentParentId = $productCategory->parent_id;
+        $visitedIds = [$category->exists ? $category->id : -1];
+        $currentParentId = $category->parent_id;
 
         while ($currentParentId) {
             if (in_array($currentParentId, $visitedIds)) {
@@ -102,36 +127,36 @@ class Category extends Model
         return true;
     }
 
-    protected static function handleProductCategoryData($productCategory)
+    protected static function handleProductCategoryData($category)
     {
-        if ($productCategory->parent_id) {
-            $parent = static::find($productCategory->parent_id);
+        if ($category->parent_id) {
+            $parent = static::find($category->parent_id);
 
             if ($parent) {
-                $productCategory->parent_path = $parent->parent_path . $parent->id . '/';
+                $category->parent_path = $parent->parent_path.$parent->id.'/';
             } else {
-                $productCategory->parent_path = '/';
-                $productCategory->parent_id = null;
+                $category->parent_path = '/';
+                $category->parent_id = null;
             }
         } else {
-            $productCategory->parent_path = '/';
+            $category->parent_path = '/';
         }
 
-        $productCategory->full_name = static::getCompleteName($productCategory);
+        $category->full_name = static::getCompleteName($category);
     }
 
-    protected static function getCompleteName($productCategory)
+    protected static function getCompleteName($category)
     {
         $names = [];
-        $names[] = $productCategory->name;
+        $names[] = $category->name;
 
-        $currentProductCategory = $productCategory;
+        $currentCategory = $category;
 
-        while ($currentProductCategory->parent_id) {
-            $currentProductCategory = static::find($currentProductCategory->parent_id);
+        while ($currentCategory->parent_id) {
+            $currentCategory = static::find($currentCategory->parent_id);
 
-            if ($currentProductCategory) {
-                array_unshift($names, $currentProductCategory->name);
+            if ($currentCategory) {
+                array_unshift($names, $currentCategory->name);
             } else {
                 break;
             }
@@ -143,30 +168,5 @@ class Category extends Model
     protected static function newFactory(): CategoryFactory
     {
         return CategoryFactory::new();
-    }
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($productCategory) {
-            if (! static::validateNoRecursion($productCategory)) {
-                throw new InvalidArgumentException('Circular reference detected in product category hierarchy');
-            }
-
-            $authUser = Auth::user();
-
-            $productCategory->creator_id ??= $authUser->id;
-
-            static::handleProductCategoryData($productCategory);
-        });
-
-        static::updating(function ($productCategory) {
-            if (! static::validateNoRecursion($productCategory)) {
-                throw new InvalidArgumentException('Circular reference detected in product category hierarchy');
-            }
-
-            static::handleProductCategoryData($productCategory);
-        });
     }
 }
