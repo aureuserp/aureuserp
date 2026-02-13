@@ -9,7 +9,7 @@ use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\InvoiceResource\Actions as BaseActions;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalEntryResource;
-use Webkul\Accounting\Filament\Clusters\Customer\Resources\InvoiceResource;
+use Webkul\Accounting\Filament\Clusters\Customers\Resources\InvoiceResource;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\BillResource;
 use Webkul\Chatter\Filament\Actions as ChatterActions;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
