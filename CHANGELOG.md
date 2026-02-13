@@ -22,12 +22,22 @@
 * [fixed] - Fixed global search issues
 * [fixed] - Fix query to use tableView ID instead of view_key for fetching favorites
 * [fixed] - Fixed print Picking Operation slip issue in inventory plugin
-* #1002 [fixed] - Journal Shows ID Instead of Name When Created from Invoice (Purchase Type)
-* #1001 [fixed] - 500 Internal Server Error When Creating Journal from Create Invoice (Sale Type)
-* #964 [fixed] - Purchases Plugin: RFQ Print Missing Info & No PO Print Action
-* #889 [fixed] - Currency Management Resource
-* #554 [fixed] - Resource Permission Scope (Individual, Group, Global) Not Working as Expected
+* [fixed] - Fix the GUI installation plugins with php binary
+* [fixed] - Fix the chatter causer profile and user related issue
+* [fixed] - Fix the purhcase order pdf download forbidden issue
+* [fixed] - Fix the config serialization issue
+* [fixed] - Fixed vendor price list issue when updating the qty
+* [fixed] - Fix missing translation of incoterm
+* [fixed] - Fix the issue of reference name not showing proper refernce number
+* [fixed] - Fixed credit/refund reset to draft issue
+* [fixed] - Fix the name on null while creating the journal.
 
+* #554 [fixed] - Resource Permission Scope (Individual, Group, Global) Not Working as Expected
+* #889 [fixed] - Currency Management Resource
+* #964 [fixed] - Purchases Plugin: RFQ Print Missing Info & No PO Print Action
+* #1001 [fixed] - 500 Internal Server Error When Creating Journal from Create Invoice (Sale Type)
+* #1002 [fixed] - Journal Shows ID Instead of Name When Created from Invoice (Purchase Type)
+* #1026 [fixed] - Unable to view or download RFQ – 403 Error from Chatter
 
 # 🚀 CHANGELOG — v1.3.0-BETA2
 

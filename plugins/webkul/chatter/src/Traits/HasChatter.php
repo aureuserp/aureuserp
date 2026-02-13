@@ -4,10 +4,10 @@ namespace Webkul\Chatter\Traits;
 
 use Carbon\Carbon;
 use Exception;
+use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Storage;
 use Webkul\Chatter\Models\Attachment;

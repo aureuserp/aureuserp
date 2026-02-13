@@ -4,10 +4,10 @@ namespace Webkul\Chatter\Traits;
 
 use BackedEnum;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use Filament\Facades\Filament;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 trait HasLogActivity
 {

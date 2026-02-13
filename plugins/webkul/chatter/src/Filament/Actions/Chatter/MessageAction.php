@@ -3,6 +3,7 @@
 namespace Webkul\Chatter\Filament\Actions\Chatter;
 
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Illuminate\Support\Facades\Auth;
@@ -129,7 +130,7 @@ class MessageAction extends Action
                 try {
                     $data['name'] = $record->name;
 
-                    $message = $record->addMessage($data, Auth::id());
+                    $message = $record->addMessage($data, Filament::auth()->id() ?? Auth::id());
 
                     if (! empty($data['attachments'])) {
                         $record->addAttachments(
