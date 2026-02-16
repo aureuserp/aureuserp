@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Webkul\Account\Http\Controllers\API\V1\AccountController;
 use Webkul\Account\Http\Controllers\API\V1\CashRoundingController;
+use Webkul\Account\Http\Controllers\API\V1\CategoryController;
 use Webkul\Account\Http\Controllers\API\V1\CustomerController;
 use Webkul\Account\Http\Controllers\API\V1\FiscalPositionController;
 use Webkul\Account\Http\Controllers\API\V1\IncotermController;
@@ -17,6 +18,10 @@ use Webkul\Account\Http\Controllers\API\V1\VendorController;
 
 // Protected routes (require authentication)
 Route::name('admin.api.v1.accounts.')->prefix('admin/api/v1/accounts')->middleware(['auth:sanctum'])->group(function () {
+    Route::softDeletableApiResource('customers', CustomerController::class);
+
+    Route::softDeletableApiResource('vendors', VendorController::class);
+
     Route::softDeletableApiResource('payment-terms', PaymentTermController::class);
 
     Route::apiResource('payment-terms.due-terms', PaymentDueTermController::class);
@@ -35,11 +40,9 @@ Route::name('admin.api.v1.accounts.')->prefix('admin/api/v1/accounts')->middlewa
 
     Route::apiResource('taxes', TaxController::class);
 
+    Route::apiResource('categories', CategoryController::class);
+
     Route::softDeletableApiResource('products', ProductController::class);
 
     Route::softDeletableApiResource('products.variants', ProductVariantController::class);
-
-    Route::softDeletableApiResource('customers', CustomerController::class);
-
-    Route::softDeletableApiResource('vendors', VendorController::class);
 });
