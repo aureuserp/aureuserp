@@ -86,6 +86,7 @@ class AccountServiceProvider extends PackageServiceProvider
                 '2025_12_09_103848_alter_accounts_payment_method_lines_table',
                 '2025_12_16_074557_add_journal_id_in_accounts_accounts_move_reversals_table',
                 '2026_01_15_060822_backfill_customer_and_supplier_rank_in_partners_table',
+                '2026_02_16_063000_alter_partners_partners_table',
             ])
             ->runsMigrations()
             ->hasSettings([

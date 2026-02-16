@@ -17,23 +17,14 @@ class CustomerRequest extends BasePartnerRequest
 
         // Add account-specific validation rules
         $additionalRules = [
-            'message_bounce'                              => ['nullable', 'integer'],
-            'customer_rank'                               => ['nullable', 'integer'],
-            'invoice_warning'                             => ['nullable', 'string'],
             'autopost_bills'                              => ['nullable', 'boolean'],
-            'credit_limit'                                => ['nullable', 'numeric'],
             'ignore_abnormal_invoice_date'                => ['nullable', 'boolean'],
             'ignore_abnormal_invoice_amount'              => ['nullable', 'numeric'],
             'invoice_sending_method'                      => ['nullable', 'string', 'max:255'],
             'invoice_edi_format_store'                    => ['nullable', 'string', 'max:255'],
-            'trust'                                       => ['nullable', 'string', 'max:255'],
-            'invoice_warn_msg'                            => ['nullable', 'string'],
-            'debit_limit'                                 => ['nullable', 'numeric'],
             'peppol_endpoint'                             => ['nullable', 'string', 'max:255'],
             'peppol_eas'                                  => ['nullable', 'string', 'max:255'],
-            'sale_warn'                                   => ['nullable', 'string'],
             'comment'                                     => ['nullable', 'string'],
-            'sale_warn_msg'                               => ['nullable', 'string'],
             'property_account_payable_id'                 => ['nullable', 'integer', 'exists:accounts_accounts,id'],
             'property_account_receivable_id'              => ['nullable', 'integer', 'exists:accounts_accounts,id'],
             'property_account_position_id'                => ['nullable', 'integer', 'exists:accounts_fiscal_positions,id'],
@@ -56,25 +47,9 @@ class CustomerRequest extends BasePartnerRequest
         $params = parent::bodyParameters();
 
         $additionalParams = [
-            'message_bounce' => [
-                'description' => 'Message bounce count',
-                'example'     => 0,
-            ],
-            'customer_rank' => [
-                'description' => 'Customer rank/priority',
-                'example'     => 1,
-            ],
-            'invoice_warning' => [
-                'description' => 'Invoice warning message',
-                'example'     => 'Check credit limit',
-            ],
             'autopost_bills' => [
                 'description' => 'Auto-post bills flag',
                 'example'     => false,
-            ],
-            'credit_limit' => [
-                'description' => 'Credit limit amount',
-                'example'     => 10000.00,
             ],
             'ignore_abnormal_invoice_date' => [
                 'description' => 'Ignore abnormal invoice date flag',
@@ -92,18 +67,6 @@ class CustomerRequest extends BasePartnerRequest
                 'description' => 'Invoice EDI format store',
                 'example'     => null,
             ],
-            'trust' => [
-                'description' => 'Trust level',
-                'example'     => 'normal',
-            ],
-            'invoice_warn_msg' => [
-                'description' => 'Invoice warning message',
-                'example'     => null,
-            ],
-            'debit_limit' => [
-                'description' => 'Debit limit amount',
-                'example'     => 5000.00,
-            ],
             'peppol_endpoint' => [
                 'description' => 'PEPPOL endpoint',
                 'example'     => null,
@@ -112,16 +75,8 @@ class CustomerRequest extends BasePartnerRequest
                 'description' => 'PEPPOL EAS',
                 'example'     => null,
             ],
-            'sale_warn' => [
-                'description' => 'Sales warning',
-                'example'     => null,
-            ],
             'comment' => [
                 'description' => 'Additional comments',
-                'example'     => null,
-            ],
-            'sale_warn_msg' => [
-                'description' => 'Sales warning message',
                 'example'     => null,
             ],
             'property_account_payable_id' => [
