@@ -221,7 +221,7 @@ trait HasTableViews
         ] != $tableViews[$this->activeTableView]->getRecord()->filters;
     }
 
-    protected function modifyQueryWithActiveTab(Builder $query): Builder
+    protected function modifyQueryWithActiveTab(Builder $query, bool $isResolvingRecord = false): Builder
     {
         if (blank(filled($this->activeTableView))) {
             return $query;
