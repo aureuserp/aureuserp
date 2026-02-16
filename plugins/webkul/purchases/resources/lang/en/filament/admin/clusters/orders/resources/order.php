@@ -68,7 +68,7 @@ return [
                         'delete-action' => [
                             'error' => [
                                 'title' => 'Cannot Delete Product',
-                                'body'  => 'Products cannot be deleted from a confirmed purchase order. Please cancel the order first if you need to make changes.',
+                                'body'  => 'Products cannot be deleted from a confirmed purchase order.',
                             ],
                         ],
                     ],
