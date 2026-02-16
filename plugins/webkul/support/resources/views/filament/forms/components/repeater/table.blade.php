@@ -49,7 +49,7 @@
         }}
     >
         @if (count($items))
-            <table class="fi-absolute-positioning-context overflow-hidden">
+            <table class="fi-absolute-positioning-context">
                 <thead>
                     <tr>
                         @if (
@@ -91,7 +91,7 @@
                             || $isCloneable 
                             || $isDeletable
                         )
-                            <th class="text-center align-middle fi-fo-table-repeater-empty-header-cell" style="width: 75px">
+                            <th class="fi-fo-table-repeater-empty-header-cell text-center align-middle" style="width: 75px">
                                 @if ($hasColumnManagerDropdown)
                                     <x-filament::dropdown
                                         shift
@@ -99,7 +99,7 @@
                                         :max-height="$getColumnManagerMaxHeight()"
                                         :width="$getColumnManagerWidth()"
                                         :wire:key="$this->getId() . '.table.column-manager.' . $statePath"
-                                        class="inline-block fi-ta-col-manager-dropdown"
+                                        class="fi-ta-col-manager-dropdown inline-block"
                                     >
                                         <x-slot name="trigger">
                                             {{ $columnManagerTriggerAction }}
