@@ -16,6 +16,7 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
+use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Http\Requests\InvoiceRequest;
 use Webkul\Account\Http\Resources\V1\InvoiceResource;
 use Webkul\Account\Models\Invoice;
@@ -26,7 +27,7 @@ use Webkul\Account\Models\Invoice;
 class InvoiceController extends Controller
 {
     #[Endpoint('List invoices', 'Retrieve a paginated list of customer invoices with filtering and sorting')]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, currency, journal, company, invoicePaymentTerm, fiscalPosition, invoiceUser, partnerShipping, partnerBank, invoiceIncoterm, invoiceCashRounding, paymentMethodLine, campaign, source, medium, creator, invoiceLines, invoiceLines.product, invoiceLines.uom, invoiceLines.taxes', required: false, example: 'partner,invoiceLines.product')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, currency, journal, company, invoicePaymentTerm, fiscalPosition, invoiceUser, partnerShipping, partnerBank, invoiceIncoterm, invoiceCashRounding, paymentMethodLine, campaign, source, medium, creator, invoiceLines, invoiceLines.product, invoiceLines.uom, invoiceLines.taxes, invoiceLines.account, invoiceLines.currency, invoiceLines.companyCurrency, invoiceLines.partner, invoiceLines.creator, invoiceLines.journal, invoiceLines.company, invoiceLines.groupTax, invoiceLines.taxGroup, invoiceLines.payment, invoiceLines.taxRepartitionLine', required: false, example: 'partner,invoiceLines.product')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[name]', 'string', 'Filter by invoice number (partial match)', required: false, example: 'No-example')]
     #[QueryParam('filter[partner_id]', 'string', 'Comma-separated list of partner IDs to filter by', required: false, example: 'No-example')]
@@ -74,6 +75,17 @@ class InvoiceController extends Controller
                 'invoiceLines.product',
                 'invoiceLines.uom',
                 'invoiceLines.taxes',
+                'invoiceLines.account',
+                'invoiceLines.currency',
+                'invoiceLines.companyCurrency',
+                'invoiceLines.partner',
+                'invoiceLines.creator',
+                'invoiceLines.journal',
+                'invoiceLines.company',
+                'invoiceLines.groupTax',
+                'invoiceLines.taxGroup',
+                'invoiceLines.payment',
+                'invoiceLines.taxRepartitionLine',
             ])
             ->paginate();
 
@@ -110,6 +122,8 @@ class InvoiceController extends Controller
                 }
             }
 
+            $invoice = AccountFacade::computeAccountMove($invoice);
+
             $invoice->load(['invoiceLines.product', 'invoiceLines.uom', 'invoiceLines.taxes']);
 
             return (new InvoiceResource($invoice))
@@ -121,7 +135,7 @@ class InvoiceController extends Controller
 
     #[Endpoint('Show invoice', 'Retrieve a specific invoice by its ID')]
     #[UrlParam('id', 'integer', 'The invoice ID', required: true, example: 1)]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, currency, journal, company, invoicePaymentTerm, fiscalPosition, invoiceUser, partnerShipping, partnerBank, invoiceIncoterm, invoiceCashRounding, paymentMethodLine, campaign, source, medium, creator, invoiceLines, invoiceLines.product, invoiceLines.uom, invoiceLines.taxes', required: false, example: 'partner,invoiceLines')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, currency, journal, company, invoicePaymentTerm, fiscalPosition, invoiceUser, partnerShipping, partnerBank, invoiceIncoterm, invoiceCashRounding, paymentMethodLine, campaign, source, medium, creator, invoiceLines, invoiceLines.product, invoiceLines.uom, invoiceLines.taxes, invoiceLines.account, invoiceLines.currency, invoiceLines.companyCurrency, invoiceLines.partner, invoiceLines.creator, invoiceLines.journal, invoiceLines.company, invoiceLines.groupTax, invoiceLines.taxGroup, invoiceLines.payment, invoiceLines.taxRepartitionLine', required: false, example: 'partner,invoiceLines')]
     #[ResponseFromApiResource(InvoiceResource::class, Invoice::class)]
     #[Response(status: 404, description: 'Invoice not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
@@ -149,6 +163,17 @@ class InvoiceController extends Controller
                 'invoiceLines.product',
                 'invoiceLines.uom',
                 'invoiceLines.taxes',
+                'invoiceLines.account',
+                'invoiceLines.currency',
+                'invoiceLines.companyCurrency',
+                'invoiceLines.partner',
+                'invoiceLines.creator',
+                'invoiceLines.journal',
+                'invoiceLines.company',
+                'invoiceLines.groupTax',
+                'invoiceLines.taxGroup',
+                'invoiceLines.payment',
+                'invoiceLines.taxRepartitionLine',
             ])
             ->firstOrFail();
 
@@ -186,6 +211,8 @@ class InvoiceController extends Controller
             if ($invoiceLines !== null) {
                 $this->syncInvoiceLines($invoice, $invoiceLines);
             }
+
+            $invoice = AccountFacade::computeAccountMove($invoice);
 
             $invoice->load(['invoiceLines.product', 'invoiceLines.uom', 'invoiceLines.taxes']);
 

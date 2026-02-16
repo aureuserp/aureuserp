@@ -16,9 +16,10 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Webkul\Account\Enums\MoveState;
 use Webkul\Account\Enums\MoveType;
+use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Http\Requests\RefundRequest;
 use Webkul\Account\Http\Resources\V1\RefundResource;
-use Webkul\Account\Models\Move;
+use Webkul\Account\Models\Refund;
 
 #[Group('Account API Management')]
 #[Subgroup('Refunds', 'Manage customer refunds')]
@@ -26,7 +27,7 @@ use Webkul\Account\Models\Move;
 class RefundController extends Controller
 {
     #[Endpoint('List refunds', 'Retrieve a paginated list of customer refunds with filtering and sorting')]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, currency, journal, company, invoicePaymentTerm, fiscalPosition, invoiceUser, partnerShipping, partnerBank, invoiceIncoterm, invoiceCashRounding, paymentMethodLine, campaign, source, medium, creator, invoiceLines, invoiceLines.product, invoiceLines.uom, invoiceLines.taxes', required: false, example: 'partner,invoiceLines.product')]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, currency, journal, company, invoicePaymentTerm, fiscalPosition, invoiceUser, partnerShipping, partnerBank, invoiceIncoterm, invoiceCashRounding, paymentMethodLine, campaign, source, medium, creator, invoiceLines, invoiceLines.product, invoiceLines.uom, invoiceLines.taxes, invoiceLines.account, invoiceLines.currency, invoiceLines.companyCurrency, invoiceLines.partner, invoiceLines.creator, invoiceLines.journal, invoiceLines.company, invoiceLines.groupTax, invoiceLines.taxGroup, invoiceLines.payment, invoiceLines.taxRepartitionLine', required: false, example: 'partner,invoiceLines.product')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[name]', 'string', 'Filter by refund number (partial match)', required: false, example: 'No-example')]
     #[QueryParam('filter[partner_id]', 'string', 'Comma-separated list of partner IDs to filter by', required: false, example: 'No-example')]
@@ -34,13 +35,13 @@ class RefundController extends Controller
     #[QueryParam('filter[payment_state]', 'string', 'Filter by payment state', required: false, example: 'No-example')]
     #[QueryParam('sort', 'string', 'Sort field', example: 'invoice_date')]
     #[QueryParam('page', 'int', 'Page number', example: 1)]
-    #[ResponseFromApiResource(RefundResource::class, Move::class, collection: true, paginate: 10)]
+    #[ResponseFromApiResource(RefundResource::class, Refund::class, collection: true, paginate: 10)]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index()
     {
-        Gate::authorize('viewAny', Move::class);
+        Gate::authorize('viewAny', Refund::class);
 
-        $refunds = QueryBuilder::for(Move::class)
+        $refunds = QueryBuilder::for(Refund::class)
             ->where('move_type', MoveType::OUT_REFUND)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
@@ -74,6 +75,17 @@ class RefundController extends Controller
                 'invoiceLines.product',
                 'invoiceLines.uom',
                 'invoiceLines.taxes',
+                'invoiceLines.account',
+                'invoiceLines.currency',
+                'invoiceLines.companyCurrency',
+                'invoiceLines.partner',
+                'invoiceLines.creator',
+                'invoiceLines.journal',
+                'invoiceLines.company',
+                'invoiceLines.groupTax',
+                'invoiceLines.taxGroup',
+                'invoiceLines.payment',
+                'invoiceLines.taxRepartitionLine',
             ])
             ->paginate();
 
@@ -81,12 +93,12 @@ class RefundController extends Controller
     }
 
     #[Endpoint('Create refund', 'Create a new customer refund')]
-    #[ResponseFromApiResource(RefundResource::class, Move::class, status: 201, additional: ['message' => 'Refund created successfully.'])]
+    #[ResponseFromApiResource(RefundResource::class, Refund::class, status: 201, additional: ['message' => 'Refund created successfully.'])]
     #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"partner_id": ["The partner id field is required."]}}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function store(RefundRequest $request)
     {
-        Gate::authorize('create', Move::class);
+        Gate::authorize('create', Refund::class);
 
         $data = $request->validated();
 
@@ -97,7 +109,7 @@ class RefundController extends Controller
             $data['move_type'] = MoveType::OUT_REFUND;
             $data['state'] = MoveState::DRAFT;
 
-            $refund = Move::create($data);
+            $refund = Refund::create($data);
 
             foreach ($invoiceLines as $lineData) {
                 $taxes = $lineData['taxes'] ?? [];
@@ -110,6 +122,8 @@ class RefundController extends Controller
                 }
             }
 
+            $refund = AccountFacade::computeAccountMove($refund);
+
             $refund->load(['invoiceLines.product', 'invoiceLines.uom', 'invoiceLines.taxes']);
 
             return (new RefundResource($refund))
@@ -121,13 +135,13 @@ class RefundController extends Controller
 
     #[Endpoint('Show refund', 'Retrieve a specific refund by its ID')]
     #[UrlParam('id', 'integer', 'The refund ID', required: true, example: 1)]
-    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, currency, journal, company, invoicePaymentTerm, fiscalPosition, invoiceUser, partnerShipping, partnerBank, invoiceIncoterm, invoiceCashRounding, paymentMethodLine, campaign, source, medium, creator, invoiceLines, invoiceLines.product, invoiceLines.uom, invoiceLines.taxes', required: false, example: 'partner,invoiceLines')]
-    #[ResponseFromApiResource(RefundResource::class, Move::class)]
+    #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, currency, journal, company, invoicePaymentTerm, fiscalPosition, invoiceUser, partnerShipping, partnerBank, invoiceIncoterm, invoiceCashRounding, paymentMethodLine, campaign, source, medium, creator, invoiceLines, invoiceLines.product, invoiceLines.uom, invoiceLines.taxes, invoiceLines.account, invoiceLines.currency, invoiceLines.companyCurrency, invoiceLines.partner, invoiceLines.creator, invoiceLines.journal, invoiceLines.company, invoiceLines.groupTax, invoiceLines.taxGroup, invoiceLines.payment, invoiceLines.taxRepartitionLine', required: false, example: 'partner,invoiceLines')]
+    #[ResponseFromApiResource(RefundResource::class, Refund::class)]
     #[Response(status: 404, description: 'Refund not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function show(string $id)
     {
-        $refund = QueryBuilder::for(Move::where('id', $id)->where('move_type', MoveType::OUT_REFUND))
+        $refund = QueryBuilder::for(Refund::where('id', $id)->where('move_type', MoveType::OUT_REFUND))
             ->allowedIncludes([
                 'partner',
                 'currency',
@@ -149,6 +163,17 @@ class RefundController extends Controller
                 'invoiceLines.product',
                 'invoiceLines.uom',
                 'invoiceLines.taxes',
+                'invoiceLines.account',
+                'invoiceLines.currency',
+                'invoiceLines.companyCurrency',
+                'invoiceLines.partner',
+                'invoiceLines.creator',
+                'invoiceLines.journal',
+                'invoiceLines.company',
+                'invoiceLines.groupTax',
+                'invoiceLines.taxGroup',
+                'invoiceLines.payment',
+                'invoiceLines.taxRepartitionLine',
             ])
             ->firstOrFail();
 
@@ -159,13 +184,13 @@ class RefundController extends Controller
 
     #[Endpoint('Update refund', 'Update an existing refund')]
     #[UrlParam('id', 'integer', 'The refund ID', required: true, example: 1)]
-    #[ResponseFromApiResource(RefundResource::class, Move::class, additional: ['message' => 'Refund updated successfully.'])]
+    #[ResponseFromApiResource(RefundResource::class, Refund::class, additional: ['message' => 'Refund updated successfully.'])]
     #[Response(status: 404, description: 'Refund not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"state": ["Cannot update a posted refund."]}}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function update(RefundRequest $request, string $id)
     {
-        $refund = Move::where('move_type', MoveType::OUT_REFUND)->findOrFail($id);
+        $refund = Refund::where('move_type', MoveType::OUT_REFUND)->findOrFail($id);
 
         Gate::authorize('update', $refund);
 
@@ -187,6 +212,8 @@ class RefundController extends Controller
                 $this->syncInvoiceLines($refund, $invoiceLines);
             }
 
+            $refund = AccountFacade::computeAccountMove($refund);
+
             $refund->load(['invoiceLines.product', 'invoiceLines.uom', 'invoiceLines.taxes']);
 
             return (new RefundResource($refund))
@@ -202,7 +229,7 @@ class RefundController extends Controller
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $id)
     {
-        $refund = Move::where('move_type', MoveType::OUT_REFUND)->findOrFail($id);
+        $refund = Refund::where('move_type', MoveType::OUT_REFUND)->findOrFail($id);
 
         Gate::authorize('delete', $refund);
 
@@ -222,7 +249,7 @@ class RefundController extends Controller
     /**
      * Sync invoice lines with ID-based approach
      */
-    protected function syncInvoiceLines(Move $refund, array $linesData): void
+    protected function syncInvoiceLines(Refund $refund, array $linesData): void
     {
         $submittedIds = collect($linesData)
             ->pluck('id')

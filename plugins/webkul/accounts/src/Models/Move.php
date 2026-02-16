@@ -418,15 +418,25 @@ class Move extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($move) {
-            $move->creator_id ??= Auth::id();
+            $move->computeCreatorId();
+
+            $move->computeCompanyId();
 
             $move->computeCurrencyId();
 
             $move->date ??= now();
         });
 
+        static::created(function ($move) {
+            $move->computeName();
+
+            $move->saveQuietly();
+        });
+
         static::saving(function ($move) {
-            $move->creator_id ??= Auth::id();
+            $move->computeCreatorId();
+
+            $move->computeCompanyId();
 
             $move->computeCurrencyId();
 
@@ -438,14 +448,30 @@ class Move extends Model implements Sortable
 
             $move->computeJournalId();
 
-            $move->computeName();
-
             $move->computeInvoiceCurrencyRate();
 
             $move->computeInvoiceDateDue();
 
             $move->computePaymentState();
         });
+    }
+
+    public function computeCreatorId()
+    {
+        if ($this->creator_id) {
+            return;
+        }
+
+        $this->creator_id ??= Auth::id();
+    }
+
+    public function computeCompanyId()
+    {
+        if ($this->company_id) {
+            return;
+        }
+
+        $this->company_id ??= Auth::user()->default_company_id;
     }
 
     public function computeName()

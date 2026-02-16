@@ -3,6 +3,7 @@
 namespace Webkul\Account\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Webkul\Account\Models\Product;
 
 class InvoiceRequest extends FormRequest
 {
@@ -22,38 +23,34 @@ class InvoiceRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'partner_id'                          => 'required|integer|exists:partners_partners,id',
-            'currency_id'                         => 'required|integer|exists:currencies,id',
-            'journal_id'                          => 'required|integer|exists:accounts_journals,id',
-            'invoice_date'                        => 'required|date',
-            // Either invoice_date_due OR invoice_payment_term_id is required, but not both
-            'invoice_date_due'                    => 'nullable|date|prohibited_if:invoice_payment_term_id,*',
-            'invoice_payment_term_id'             => 'nullable|integer|exists:accounts_payment_terms,id|prohibited_if:invoice_date_due,*',
-            'fiscal_position_id'                  => 'nullable|integer|exists:accounts_fiscal_positions,id',
-            'invoice_user_id'                     => 'nullable|integer|exists:users,id',
-            'partner_bank_id'                     => 'nullable|integer|exists:partners_bank_accounts,id',
-            'invoice_incoterm_id'                 => 'nullable|integer|exists:accounts_incoterms,id',
-            'invoice_cash_rounding_id'            => 'nullable|integer|exists:accounts_cash_roundings,id',
-            'preferred_payment_method_line_id'    => 'nullable|integer|exists:accounts_payment_method_lines,id',
-            'reference'                           => 'nullable|string|max:255',
-            'payment_reference'                   => 'nullable|string|max:255',
-            'narration'                           => 'nullable|string',
-            'incoterm_location'                   => 'nullable|string|max:255',
-            'delivery_date'                       => 'nullable|date',
-            'invoice_lines'                       => 'required|array|min:1',
-            'invoice_lines.*.product_id'          => 'required|integer|exists:products_products,id',
-            'invoice_lines.*.name'                => 'required|string',
-            'invoice_lines.*.quantity'            => 'required|numeric|min:0.0001',
-            'invoice_lines.*.uom_id'              => 'required|integer|exists:uoms,id',
-            'invoice_lines.*.price_unit'          => 'required|numeric',
-            'invoice_lines.*.discount'            => 'nullable|numeric|min:0|max:100',
-            'invoice_lines.*.taxes'               => 'nullable|array',
-            'invoice_lines.*.taxes.*'             => 'integer|exists:accounts_taxes,id',
-            'invoice_lines.*.id'                  => 'nullable|integer|exists:accounts_account_move_lines,id',
+            'partner_id'                       => 'required|integer|exists:partners_partners,id',
+            'currency_id'                      => 'required|integer|exists:currencies,id',
+            'journal_id'                       => 'required|integer|exists:accounts_journals,id',
+            'invoice_date'                     => 'required|date',
+            'invoice_date_due'                 => 'nullable|date|prohibited_if:invoice_payment_term_id,*',
+            'invoice_payment_term_id'          => 'nullable|integer|exists:accounts_payment_terms,id|prohibited_if:invoice_date_due,*',
+            'fiscal_position_id'               => 'nullable|integer|exists:accounts_fiscal_positions,id',
+            'invoice_user_id'                  => 'nullable|integer|exists:users,id',
+            'partner_bank_id'                  => 'nullable|integer|exists:partners_bank_accounts,id',
+            'invoice_incoterm_id'              => 'nullable|integer|exists:accounts_incoterms,id',
+            'invoice_cash_rounding_id'         => 'nullable|integer|exists:accounts_cash_roundings,id',
+            'preferred_payment_method_line_id' => 'nullable|integer|exists:accounts_payment_method_lines,id',
+            'reference'                        => 'nullable|string|max:255',
+            'payment_reference'                => 'nullable|string|max:255',
+            'narration'                        => 'nullable|string',
+            'incoterm_location'                => 'nullable|string|max:255',
+            'delivery_date'                    => 'nullable|date',
+            'invoice_lines'                    => 'required|array|min:1',
+            'invoice_lines.*.product_id'       => 'required|integer|exists:products_products,id',
+            'invoice_lines.*.quantity'         => 'required|numeric|min:0.0001',
+            'invoice_lines.*.uom_id'           => 'required|integer|exists:unit_of_measures,id',
+            'invoice_lines.*.price_unit'       => 'required|numeric',
+            'invoice_lines.*.discount'         => 'nullable|numeric|min:0|max:100',
+            'invoice_lines.*.taxes'            => 'nullable|array',
+            'invoice_lines.*.taxes.*'          => 'integer|exists:accounts_taxes,id',
+            'invoice_lines.*.id'               => 'nullable|integer|exists:accounts_account_move_lines,id',
         ];
 
-        // On update, make fields optional except invoice_lines
-        // But maintain the mutual exclusivity between invoice_date_due and invoice_payment_term_id
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
             foreach ($rules as $key => $rule) {
                 if (! str_starts_with($key, 'invoice_lines')) {
@@ -73,7 +70,6 @@ class InvoiceRequest extends FormRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
-            // Ensure at least one of invoice_date_due or invoice_payment_term_id is provided
             if (! $this->input('invoice_date_due') && ! $this->input('invoice_payment_term_id')) {
                 $validator->errors()->add(
                     'invoice_date_due',
@@ -83,6 +79,29 @@ class InvoiceRequest extends FormRequest
                     'invoice_payment_term_id',
                     'Either invoice due date or payment term must be provided.'
                 );
+            }
+
+            $invoiceLines = $this->input('invoice_lines', []);
+            $productIds = collect($invoiceLines)->pluck('product_id')->filter()->unique();
+
+            if ($productIds->isNotEmpty()) {
+                $configurableProducts = Product::whereIn('id', $productIds)
+                    ->where('is_configurable', true)
+                    ->get(['id', 'name'])
+                    ->keyBy('id');
+
+                if ($configurableProducts->isNotEmpty()) {
+                    foreach ($invoiceLines as $index => $line) {
+                        if (isset($line['product_id']) && isset($configurableProducts[$line['product_id']])) {
+                            $product = $configurableProducts[$line['product_id']];
+
+                            $validator->errors()->add(
+                                "invoice_lines.{$index}.product_id",
+                                "The product '{$product->name}' is configurable and cannot be used in invoices. Please select a product variant instead."
+                            );
+                        }
+                    }
+                }
             }
         });
     }
