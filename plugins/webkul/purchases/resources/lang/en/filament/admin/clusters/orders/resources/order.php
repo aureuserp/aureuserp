@@ -64,20 +64,25 @@ return [
                             'unit-price'          => 'Unit Price',
                             'amount'              => 'Amount',
                         ],
+
+                        'delete-action' => [
+                            'error' => [
+                                'title' => 'Cannot Delete Product',
+                                'body'  => 'Products cannot be deleted from a confirmed purchase order. Please cancel the order first if you need to make changes.',
+                            ],
+                        ],
                     ],
 
                     'section' => [
                         'title' => 'Add Section',
 
-                        'fields' => [
-                        ],
+                        'fields' => [],
                     ],
 
                     'note' => [
                         'title' => 'Add Note',
 
-                        'fields' => [
-                        ],
+                        'fields' => [],
                     ],
                 ],
             ],

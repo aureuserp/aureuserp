@@ -841,6 +841,20 @@ class OrderResource extends Resource
             ->deleteAction(function (Action $action) {
                 $action->requiresConfirmation();
 
+                $action->before(function (Action $action, $livewire) {
+                    if ($livewire->getRecord()->state === OrderState::PURCHASE) {
+                        Notification::make()
+                            ->danger()
+                            ->title(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.delete-action.error.title'))
+                            ->body(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.delete-action.error.body'))
+                            ->send();
+
+                        $action->cancel();
+
+                        return;
+                    }
+                });
+
                 $action->after(function (Get $get, $livewire) {
                     $totals = self::calculateOrderTotals($get, $livewire);
 
