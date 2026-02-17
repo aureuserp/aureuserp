@@ -22,36 +22,36 @@ use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Facades\Account as AccountFacade;
-use Webkul\Account\Http\Requests\InvoiceRequest;
+use Webkul\Account\Http\Requests\BillRequest;
 use Webkul\Account\Http\Requests\MovePaymentRequest;
 use Webkul\Account\Http\Resources\V1\MoveResource;
-use Webkul\Account\Models\Invoice;
+use Webkul\Account\Models\Bill;
 use Webkul\Account\Models\MoveReversal;
 use Webkul\Account\Models\PaymentRegister;
 use Webkul\Accounting\Models\Journal;
 
 #[Group('Account API Management')]
-#[Subgroup('Invoices', 'Manage customer invoices')]
+#[Subgroup('Bills', 'Manage vendor bills')]
 #[Authenticated]
-class InvoiceController extends Controller
+class BillController extends Controller
 {
-    #[Endpoint('List invoices', 'Retrieve a paginated list of customer invoices with filtering and sorting')]
+    #[Endpoint('List bills', 'Retrieve a paginated list of vendor bills with filtering and sorting')]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, currency, journal, company, invoicePaymentTerm, fiscalPosition, invoiceUser, partnerShipping, partnerBank, invoiceIncoterm, invoiceCashRounding, paymentMethodLine, campaign, source, medium, creator, invoiceLines, invoiceLines.product, invoiceLines.uom, invoiceLines.taxes, invoiceLines.account, invoiceLines.currency, invoiceLines.companyCurrency, invoiceLines.partner, invoiceLines.creator, invoiceLines.journal, invoiceLines.company, invoiceLines.groupTax, invoiceLines.taxGroup, invoiceLines.payment, invoiceLines.taxRepartitionLine', required: false, example: 'partner,invoiceLines.product')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: 'No-example')]
-    #[QueryParam('filter[name]', 'string', 'Filter by invoice number (partial match)', required: false, example: 'No-example')]
+    #[QueryParam('filter[name]', 'string', 'Filter by bill number (partial match)', required: false, example: 'No-example')]
     #[QueryParam('filter[partner_id]', 'string', 'Comma-separated list of partner IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[state]', 'string', 'Filter by state (draft, posted, cancel)', required: false, example: 'No-example')]
     #[QueryParam('filter[payment_state]', 'string', 'Filter by payment state', required: false, example: 'No-example')]
     #[QueryParam('sort', 'string', 'Sort field', example: 'invoice_date')]
     #[QueryParam('page', 'int', 'Page number', example: 1)]
-    #[ResponseFromApiResource(MoveResource::class, Invoice::class, collection: true, paginate: 10)]
+    #[ResponseFromApiResource(MoveResource::class, Bill::class, collection: true, paginate: 10)]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function index()
     {
-        Gate::authorize('viewAny', Invoice::class);
+        Gate::authorize('viewAny', Bill::class);
 
-        $invoices = QueryBuilder::for(Invoice::class)
-            ->where('move_type', MoveType::OUT_INVOICE)
+        $invoices = QueryBuilder::for(Bill::class)
+            ->where('move_type', MoveType::IN_INVOICE)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
@@ -101,13 +101,13 @@ class InvoiceController extends Controller
         return MoveResource::collection($invoices);
     }
 
-    #[Endpoint('Create invoice', 'Create a new customer invoice')]
-    #[ResponseFromApiResource(MoveResource::class, Invoice::class, status: 201, additional: ['message' => 'Invoice created successfully.'])]
+    #[Endpoint('Create bill', 'Create a new vendor bill')]
+    #[ResponseFromApiResource(MoveResource::class, Bill::class, status: 201, additional: ['message' => 'Bill created successfully.'])]
     #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"partner_id": ["The partner id field is required."]}}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
-    public function store(InvoiceRequest $request)
+    public function store(BillRequest $request)
     {
-        Gate::authorize('create', Invoice::class);
+        Gate::authorize('create', Bill::class);
 
         $data = $request->validated();
 
@@ -115,10 +115,10 @@ class InvoiceController extends Controller
             $invoiceLines = $data['invoice_lines'];
             unset($data['invoice_lines']);
 
-            $data['move_type'] = MoveType::OUT_INVOICE;
+            $data["move_type"] = MoveType::IN_INVOICE;
             $data['state'] = MoveState::DRAFT;
 
-            $invoice = Invoice::create($data);
+            $invoice = Bill::create($data);
 
             foreach ($invoiceLines as $lineData) {
                 $taxes = $lineData['taxes'] ?? [];
@@ -136,21 +136,21 @@ class InvoiceController extends Controller
             $invoice->load(['invoiceLines.product', 'invoiceLines.uom', 'invoiceLines.taxes']);
 
             return (new MoveResource($invoice))
-                ->additional(['message' => 'Invoice created successfully.'])
+                ->additional(['message' => 'Bill created successfully.'])
                 ->response()
                 ->setStatusCode(201);
         });
     }
 
-    #[Endpoint('Show invoice', 'Retrieve a specific invoice by its ID')]
-    #[UrlParam('id', 'integer', 'The invoice ID', required: true, example: 1)]
+    #[Endpoint('Show bill', 'Retrieve a specific bill by its ID')]
+    #[UrlParam('id', 'integer', 'The bill ID', required: true, example: 1)]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, currency, journal, company, invoicePaymentTerm, fiscalPosition, invoiceUser, partnerShipping, partnerBank, invoiceIncoterm, invoiceCashRounding, paymentMethodLine, campaign, source, medium, creator, invoiceLines, invoiceLines.product, invoiceLines.uom, invoiceLines.taxes, invoiceLines.account, invoiceLines.currency, invoiceLines.companyCurrency, invoiceLines.partner, invoiceLines.creator, invoiceLines.journal, invoiceLines.company, invoiceLines.groupTax, invoiceLines.taxGroup, invoiceLines.payment, invoiceLines.taxRepartitionLine', required: false, example: 'partner,invoiceLines')]
-    #[ResponseFromApiResource(MoveResource::class, Invoice::class)]
-    #[Response(status: 404, description: 'Invoice not found', content: '{"message": "Resource not found."}')]
+    #[ResponseFromApiResource(MoveResource::class, Bill::class)]
+    #[Response(status: 404, description: 'Bill not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function show(string $id)
     {
-        $invoice = QueryBuilder::for(Invoice::where('id', $id)->where('move_type', MoveType::OUT_INVOICE))
+        $invoice = QueryBuilder::for(Bill::where('id', $id)->where('move_type', MoveType::IN_INVOICE))
             ->allowedIncludes([
                 'partner',
                 'currency',
@@ -191,21 +191,21 @@ class InvoiceController extends Controller
         return new MoveResource($invoice);
     }
 
-    #[Endpoint('Update invoice', 'Update an existing invoice')]
-    #[UrlParam('id', 'integer', 'The invoice ID', required: true, example: 1)]
-    #[ResponseFromApiResource(MoveResource::class, Invoice::class, additional: ['message' => 'Invoice updated successfully.'])]
-    #[Response(status: 404, description: 'Invoice not found', content: '{"message": "Resource not found."}')]
-    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"state": ["Cannot update a posted invoice."]}}')]
+    #[Endpoint('Update bill', 'Update an existing bill')]
+    #[UrlParam('id', 'integer', 'The bill ID', required: true, example: 1)]
+    #[ResponseFromApiResource(MoveResource::class, Bill::class, additional: ['message' => 'Bill updated successfully.'])]
+    #[Response(status: 404, description: 'Bill not found', content: '{"message": "Resource not found."}')]
+    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"state": ["Cannot update a posted bill."]}}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
-    public function update(InvoiceRequest $request, string $id)
+    public function update(BillRequest $request, string $id)
     {
-        $invoice = Invoice::where('move_type', MoveType::OUT_INVOICE)->findOrFail($id);
+        $invoice = Bill::where('move_type', MoveType::IN_INVOICE)->findOrFail($id);
 
         Gate::authorize('update', $invoice);
 
         if ($invoice->state === MoveState::POSTED) {
             return response()->json([
-                'message' => 'Cannot update a posted invoice.',
+                'message' => 'Cannot update a posted bill.',
             ], 422);
         }
 
@@ -226,50 +226,49 @@ class InvoiceController extends Controller
             $invoice->load(['invoiceLines.product', 'invoiceLines.uom', 'invoiceLines.taxes']);
 
             return (new MoveResource($invoice))
-                ->additional(['message' => 'Invoice updated successfully.']);
+                ->additional(['message' => 'Bill updated successfully.']);
         });
     }
 
-    #[Endpoint('Delete invoice', 'Delete an invoice (only draft invoices)')]
-    #[UrlParam('id', 'integer', 'The invoice ID', required: true, example: 1)]
-    #[Response(status: 200, description: 'Invoice deleted', content: '{"message": "Invoice deleted successfully."}')]
-    #[Response(status: 404, description: 'Invoice not found', content: '{"message": "Resource not found."}')]
-    #[Response(status: 422, description: 'Cannot delete', content: '{"message": "Cannot delete a posted invoice."}')]
+    #[Endpoint('Delete bill', 'Delete a bill (only draft bills)')]
+    #[UrlParam('id', 'integer', 'The bill ID', required: true, example: 1)]
+    #[Response(status: 200, description: 'Bill deleted', content: '{"message": "Bill deleted successfully."}')]
+    #[Response(status: 404, description: 'Bill not found', content: '{"message": "Resource not found."}')]
+    #[Response(status: 422, description: 'Cannot delete', content: '{"message": "Cannot delete a posted bill."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $id)
     {
-        $invoice = Invoice::where('move_type', MoveType::OUT_INVOICE)->findOrFail($id);
+        $invoice = Bill::where('move_type', MoveType::IN_INVOICE)->findOrFail($id);
 
         Gate::authorize('delete', $invoice);
 
         if ($invoice->state !== MoveState::DRAFT) {
             return response()->json([
-                'message' => 'Cannot delete a posted or cancelled invoice.',
+                'message' => 'Cannot delete a posted or cancelled bill.',
             ], 422);
         }
 
         $invoice->delete();
 
         return response()->json([
-            'message' => 'Invoice deleted successfully.',
+            'message' => 'Bill deleted successfully.',
         ]);
     }
 
-    #[Endpoint('Confirm invoice', 'Confirm a draft invoice and move it to posted state')]
-    #[UrlParam('id', 'integer', 'The invoice ID', required: true, example: 1)]
-    #[ResponseFromApiResource(MoveResource::class, Invoice::class, additional: ['message' => 'Invoice confirmed successfully.'])]
-    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only draft invoices can be confirmed."}')]
-    #[Response(status: 404, description: 'Invoice not found', content: '{"message": "Resource not found."}')]
-    #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
+    #[Endpoint('Confirm bill', 'Confirm a draft bill and move it to posted state')]
+    #[UrlParam('id', 'integer', 'The bill ID', required: true, example: 1)]
+    #[ResponseFromApiResource(MoveResource::class, Bill::class, additional: ['message' => 'Bill confirmed successfully.'])]
+    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only draft bills can be confirmed."}')]
+    #[Response(status: 404, description: 'Bill not found', content: '{"message": "Resource not found."}')]
     public function confirm(string $id)
     {
-        $invoice = Invoice::where('move_type', MoveType::OUT_INVOICE)->findOrFail($id);
+        $invoice = Bill::where('move_type', MoveType::IN_INVOICE)->findOrFail($id);
 
         Gate::authorize('update', $invoice);
 
         if ($invoice->state !== MoveState::DRAFT) {
             return response()->json([
-                'message' => 'Only draft invoices can be confirmed.',
+                'message' => 'Only draft bills can be confirmed.',
             ], 422);
         }
 
@@ -284,42 +283,42 @@ class InvoiceController extends Controller
         }
 
         return (new MoveResource($invoice->refresh()))
-            ->additional(['message' => 'Invoice confirmed successfully.']);
+            ->additional(['message' => 'Bill confirmed successfully.']);
     }
 
-    #[Endpoint('Cancel invoice', 'Cancel a draft invoice')]
-    #[UrlParam('id', 'integer', 'The invoice ID', required: true, example: 1)]
-    #[ResponseFromApiResource(MoveResource::class, Invoice::class, additional: ['message' => 'Invoice cancelled successfully.'])]
-    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only draft invoices can be cancelled."}')]
-    #[Response(status: 404, description: 'Invoice not found', content: '{"message": "Resource not found."}')]
+    #[Endpoint('Cancel bill', 'Cancel a draft bill')]
+    #[UrlParam('id', 'integer', 'The bill ID', required: true, example: 1)]
+    #[ResponseFromApiResource(MoveResource::class, Bill::class, additional: ['message' => 'Bill cancelled successfully.'])]
+    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only draft bills can be cancelled."}')]
+    #[Response(status: 404, description: 'Bill not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function cancel(string $id)
     {
-        $invoice = Invoice::where('move_type', MoveType::OUT_INVOICE)->findOrFail($id);
+        $invoice = Bill::where('move_type', MoveType::IN_INVOICE)->findOrFail($id);
 
         Gate::authorize('update', $invoice);
 
         if ($invoice->state !== MoveState::DRAFT) {
             return response()->json([
-                'message' => 'Only draft invoices can be cancelled.',
+                'message' => 'Only draft bills can be cancelled.',
             ], 422);
         }
 
         $invoice = AccountFacade::cancelMove($invoice);
 
         return (new MoveResource($invoice->refresh()))
-            ->additional(['message' => 'Invoice cancelled successfully.']);
+            ->additional(['message' => 'Bill cancelled successfully.']);
     }
 
-    #[Endpoint('Pay invoice', 'Register payment for a posted invoice')]
-    #[UrlParam('id', 'integer', 'The invoice ID', required: true, example: 1)]
-    #[ResponseFromApiResource(MoveResource::class, Invoice::class, additional: ['message' => 'Invoice payment registered successfully.'])]
-    #[Response(status: 422, description: 'Invalid payment state', content: '{"message": "Only posted invoices with pending payment can be paid."}')]
-    #[Response(status: 404, description: 'Invoice not found', content: '{"message": "Resource not found."}')]
+    #[Endpoint('Pay bill', 'Register payment for a posted bill')]
+    #[UrlParam('id', 'integer', 'The bill ID', required: true, example: 1)]
+    #[ResponseFromApiResource(MoveResource::class, Bill::class, additional: ['message' => 'Bill payment registered successfully.'])]
+    #[Response(status: 422, description: 'Invalid payment state', content: '{"message": "Only posted bills with pending payment can be paid."}')]
+    #[Response(status: 404, description: 'Bill not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function pay(MovePaymentRequest $request, string $id)
     {
-        $invoice = Invoice::where('move_type', MoveType::OUT_INVOICE)->findOrFail($id);
+        $invoice = Bill::where('move_type', MoveType::IN_INVOICE)->findOrFail($id);
 
         Gate::authorize('update', $invoice);
 
@@ -328,7 +327,7 @@ class InvoiceController extends Controller
             || ! in_array($invoice->payment_state, [PaymentState::NOT_PAID, PaymentState::PARTIAL, PaymentState::IN_PAYMENT], true)
         ) {
             return response()->json([
-                'message' => 'Only posted invoices with pending payment can be paid.',
+                'message' => 'Only posted bills with pending payment can be paid.',
             ], 422);
         }
 
@@ -339,7 +338,7 @@ class InvoiceController extends Controller
 
         if (empty($lineIds)) {
             return response()->json([
-                'message' => 'No outstanding invoice payment lines found.',
+                'message' => 'No outstanding bill payment lines found.',
             ], 422);
         }
 
@@ -378,24 +377,24 @@ class InvoiceController extends Controller
         }
 
         return (new MoveResource($invoice->refresh()))
-            ->additional(['message' => 'Invoice payment registered successfully.']);
+            ->additional(['message' => 'Bill payment registered successfully.']);
     }
 
-    #[Endpoint('Reverse invoice', 'Create a credit note by reversing a posted invoice')]
-    #[UrlParam('id', 'integer', 'The invoice ID', required: true, example: 1)]
-    #[ResponseFromApiResource(MoveResource::class, Invoice::class, additional: ['message' => 'Invoice reversed successfully.'])]
-    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only posted invoices can be reversed."}')]
-    #[Response(status: 404, description: 'Invoice not found', content: '{"message": "Resource not found."}')]
+    #[Endpoint('Reverse bill', 'Create a vendor refund by reversing a posted bill')]
+    #[UrlParam('id', 'integer', 'The bill ID', required: true, example: 1)]
+    #[ResponseFromApiResource(MoveResource::class, Bill::class, additional: ['message' => 'Bill reversed successfully.'])]
+    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only posted bills can be reversed."}')]
+    #[Response(status: 404, description: 'Bill not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function reverse(Request $request, string $id)
     {
-        $invoice = Invoice::where('move_type', MoveType::OUT_INVOICE)->findOrFail($id);
+        $invoice = Bill::where('move_type', MoveType::IN_INVOICE)->findOrFail($id);
 
         Gate::authorize('update', $invoice);
 
         if ($invoice->state !== MoveState::POSTED) {
             return response()->json([
-                'message' => 'Only posted invoices can be reversed.',
+                'message' => 'Only posted bills can be reversed.',
             ], 422);
         }
 
@@ -440,24 +439,24 @@ class InvoiceController extends Controller
         });
 
         return (new MoveResource($reversed->refresh()))
-            ->additional(['message' => 'Invoice reversed successfully.']);
+            ->additional(['message' => 'Bill reversed successfully.']);
     }
 
-    #[Endpoint('Reset invoice to draft', 'Reset a posted or cancelled invoice to draft')]
-    #[UrlParam('id', 'integer', 'The invoice ID', required: true, example: 1)]
-    #[ResponseFromApiResource(MoveResource::class, Invoice::class, additional: ['message' => 'Invoice reset to draft successfully.'])]
-    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only posted or cancelled invoices can be reset to draft."}')]
-    #[Response(status: 404, description: 'Invoice not found', content: '{"message": "Resource not found."}')]
+    #[Endpoint('Reset bill to draft', 'Reset a posted or cancelled bill to draft')]
+    #[UrlParam('id', 'integer', 'The bill ID', required: true, example: 1)]
+    #[ResponseFromApiResource(MoveResource::class, Bill::class, additional: ['message' => 'Bill reset to draft successfully.'])]
+    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only posted or cancelled bills can be reset to draft."}')]
+    #[Response(status: 404, description: 'Bill not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function resetToDraft(string $id)
     {
-        $invoice = Invoice::where('move_type', MoveType::OUT_INVOICE)->findOrFail($id);
+        $invoice = Bill::where('move_type', MoveType::IN_INVOICE)->findOrFail($id);
 
         Gate::authorize('update', $invoice);
 
         if (! in_array($invoice->state, [MoveState::POSTED, MoveState::CANCEL], true)) {
             return response()->json([
-                'message' => 'Only posted or cancelled invoices can be reset to draft.',
+                'message' => 'Only posted or cancelled bills can be reset to draft.',
             ], 422);
         }
 
@@ -470,34 +469,34 @@ class InvoiceController extends Controller
         }
 
         return (new MoveResource($invoice->refresh()))
-            ->additional(['message' => 'Invoice reset to draft successfully.']);
+            ->additional(['message' => 'Bill reset to draft successfully.']);
     }
 
-    #[Endpoint('Set invoice as checked', 'Mark an invoice as checked')]
-    #[UrlParam('id', 'integer', 'The invoice ID', required: true, example: 1)]
-    #[ResponseFromApiResource(MoveResource::class, Invoice::class, additional: ['message' => 'Invoice marked as checked successfully.'])]
-    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only non-draft and unchecked invoices can be marked as checked."}')]
-    #[Response(status: 404, description: 'Invoice not found', content: '{"message": "Resource not found."}')]
+    #[Endpoint('Set bill as checked', 'Mark a bill as checked')]
+    #[UrlParam('id', 'integer', 'The bill ID', required: true, example: 1)]
+    #[ResponseFromApiResource(MoveResource::class, Bill::class, additional: ['message' => 'Bill marked as checked successfully.'])]
+    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only non-draft and unchecked bills can be marked as checked."}')]
+    #[Response(status: 404, description: 'Bill not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function setAsChecked(string $id)
     {
-        $invoice = Invoice::where('move_type', MoveType::OUT_INVOICE)->findOrFail($id);
+        $invoice = Bill::where('move_type', MoveType::IN_INVOICE)->findOrFail($id);
 
         Gate::authorize('update', $invoice);
 
         if ($invoice->state === MoveState::DRAFT || $invoice->checked) {
             return response()->json([
-                'message' => 'Only non-draft and unchecked invoices can be marked as checked.',
+                'message' => 'Only non-draft and unchecked bills can be marked as checked.',
             ], 422);
         }
 
         $invoice = AccountFacade::setAsCheckedMove($invoice);
 
         return (new MoveResource($invoice->refresh()))
-            ->additional(['message' => 'Invoice marked as checked successfully.']);
+            ->additional(['message' => 'Bill marked as checked successfully.']);
     }
 
-    protected function preparePaymentData(Invoice $invoice, array $data): array
+    protected function preparePaymentData(Bill $invoice, array $data): array
     {
         $paymentRegister = new PaymentRegister;
         $paymentRegister->lines = $invoice->lines;
@@ -540,7 +539,7 @@ class InvoiceController extends Controller
     /**
      * Sync invoice lines with ID-based approach
      */
-    protected function syncInvoiceLines(Invoice $invoice, array $linesData): void
+    protected function syncInvoiceLines(Bill $invoice, array $linesData): void
     {
         $submittedIds = collect($linesData)
             ->pluck('id')

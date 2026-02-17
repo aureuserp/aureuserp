@@ -21,21 +21,21 @@ use Webkul\Account\Enums\PaymentState;
 use Webkul\Account\Enums\PaymentType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Http\Requests\MovePaymentRequest;
-use Webkul\Account\Http\Requests\BillRequest;
+use Webkul\Account\Http\Requests\InvoiceRequest;
 use Webkul\Account\Http\Resources\V1\MoveResource;
 use Webkul\Account\Models\PaymentRegister;
 use Webkul\Account\Models\Refund;
 use Webkul\Accounting\Models\Journal;
 
 #[Group('Account API Management')]
-#[Subgroup('Refunds', 'Manage vendor refunds')]
+#[Subgroup('Credit Notes', 'Manage customer credit notes')]
 #[Authenticated]
-class RefundController extends Controller
+class CreditNoteController extends Controller
 {
-    #[Endpoint('List refunds', 'Retrieve a paginated list of vendor refunds with filtering and sorting')]
+    #[Endpoint('List credit notes', 'Retrieve a paginated list of customer credit notes with filtering and sorting')]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, currency, journal, company, invoicePaymentTerm, fiscalPosition, invoiceUser, partnerShipping, partnerBank, invoiceIncoterm, invoiceCashRounding, paymentMethodLine, campaign, source, medium, creator, invoiceLines, invoiceLines.product, invoiceLines.uom, invoiceLines.taxes, invoiceLines.account, invoiceLines.currency, invoiceLines.companyCurrency, invoiceLines.partner, invoiceLines.creator, invoiceLines.journal, invoiceLines.company, invoiceLines.groupTax, invoiceLines.taxGroup, invoiceLines.payment, invoiceLines.taxRepartitionLine', required: false, example: 'partner,invoiceLines.product')]
     #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false, example: 'No-example')]
-    #[QueryParam('filter[name]', 'string', 'Filter by refund number (partial match)', required: false, example: 'No-example')]
+    #[QueryParam('filter[name]', 'string', 'Filter by credit note number (partial match)', required: false, example: 'No-example')]
     #[QueryParam('filter[partner_id]', 'string', 'Comma-separated list of partner IDs to filter by', required: false, example: 'No-example')]
     #[QueryParam('filter[state]', 'string', 'Filter by state (draft, posted, cancel)', required: false, example: 'No-example')]
     #[QueryParam('filter[payment_state]', 'string', 'Filter by payment state', required: false, example: 'No-example')]
@@ -48,7 +48,7 @@ class RefundController extends Controller
         Gate::authorize('viewAny', Refund::class);
 
         $refunds = QueryBuilder::for(Refund::class)
-            ->where('move_type', MoveType::IN_REFUND)
+            ->where('move_type', MoveType::OUT_REFUND)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
                 AllowedFilter::partial('name'),
@@ -98,11 +98,11 @@ class RefundController extends Controller
         return MoveResource::collection($refunds);
     }
 
-    #[Endpoint('Create refund', 'Create a new vendor refund')]
-    #[ResponseFromApiResource(MoveResource::class, Refund::class, status: 201, additional: ['message' => 'Refund created successfully.'])]
+    #[Endpoint('Create credit note', 'Create a new customer credit note')]
+    #[ResponseFromApiResource(MoveResource::class, Refund::class, status: 201, additional: ['message' => 'Credit note created successfully.'])]
     #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"partner_id": ["The partner id field is required."]}}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
-    public function store(BillRequest $request)
+    public function store(InvoiceRequest $request)
     {
         Gate::authorize('create', Refund::class);
 
@@ -112,7 +112,7 @@ class RefundController extends Controller
             $invoiceLines = $data['invoice_lines'];
             unset($data['invoice_lines']);
 
-            $data["move_type"] = MoveType::IN_REFUND;
+            $data['move_type'] = MoveType::OUT_REFUND;
             $data['state'] = MoveState::DRAFT;
 
             $refund = Refund::create($data);
@@ -133,21 +133,21 @@ class RefundController extends Controller
             $refund->load(['invoiceLines.product', 'invoiceLines.uom', 'invoiceLines.taxes']);
 
             return (new MoveResource($refund))
-                ->additional(['message' => 'Refund created successfully.'])
+                ->additional(['message' => 'Credit note created successfully.'])
                 ->response()
                 ->setStatusCode(201);
         });
     }
 
-    #[Endpoint('Show refund', 'Retrieve a specific refund by its ID')]
-    #[UrlParam('id', 'integer', 'The refund ID', required: true, example: 1)]
+    #[Endpoint('Show credit note', 'Retrieve a specific credit note by its ID')]
+    #[UrlParam('id', 'integer', 'The credit note ID', required: true, example: 1)]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, currency, journal, company, invoicePaymentTerm, fiscalPosition, invoiceUser, partnerShipping, partnerBank, invoiceIncoterm, invoiceCashRounding, paymentMethodLine, campaign, source, medium, creator, invoiceLines, invoiceLines.product, invoiceLines.uom, invoiceLines.taxes, invoiceLines.account, invoiceLines.currency, invoiceLines.companyCurrency, invoiceLines.partner, invoiceLines.creator, invoiceLines.journal, invoiceLines.company, invoiceLines.groupTax, invoiceLines.taxGroup, invoiceLines.payment, invoiceLines.taxRepartitionLine', required: false, example: 'partner,invoiceLines')]
     #[ResponseFromApiResource(MoveResource::class, Refund::class)]
-    #[Response(status: 404, description: 'Refund not found', content: '{"message": "Resource not found."}')]
+    #[Response(status: 404, description: 'Credit note not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function show(string $id)
     {
-        $refund = QueryBuilder::for(Refund::where('id', $id)->where('move_type', MoveType::IN_REFUND))
+        $refund = QueryBuilder::for(Refund::where('id', $id)->where('move_type', MoveType::OUT_REFUND))
             ->allowedIncludes([
                 'partner',
                 'currency',
@@ -188,21 +188,21 @@ class RefundController extends Controller
         return new MoveResource($refund);
     }
 
-    #[Endpoint('Update refund', 'Update an existing refund')]
-    #[UrlParam('id', 'integer', 'The refund ID', required: true, example: 1)]
-    #[ResponseFromApiResource(MoveResource::class, Refund::class, additional: ['message' => 'Refund updated successfully.'])]
-    #[Response(status: 404, description: 'Refund not found', content: '{"message": "Resource not found."}')]
-    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"state": ["Cannot update a posted refund."]}}')]
+    #[Endpoint('Update credit note', 'Update an existing credit note')]
+    #[UrlParam('id', 'integer', 'The credit note ID', required: true, example: 1)]
+    #[ResponseFromApiResource(MoveResource::class, Refund::class, additional: ['message' => 'Credit note updated successfully.'])]
+    #[Response(status: 404, description: 'Credit note not found', content: '{"message": "Resource not found."}')]
+    #[Response(status: 422, description: 'Validation error', content: '{"message": "The given data was invalid.", "errors": {"state": ["Cannot update a posted credit note."]}}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
-    public function update(BillRequest $request, string $id)
+    public function update(InvoiceRequest $request, string $id)
     {
-        $refund = Refund::where('move_type', MoveType::IN_REFUND)->findOrFail($id);
+        $refund = Refund::where('move_type', MoveType::OUT_REFUND)->findOrFail($id);
 
         Gate::authorize('update', $refund);
 
         if ($refund->state === MoveState::POSTED) {
             return response()->json([
-                'message' => 'Cannot update a posted refund.',
+                'message' => 'Cannot update a posted credit note.',
             ], 422);
         }
 
@@ -223,50 +223,50 @@ class RefundController extends Controller
             $refund->load(['invoiceLines.product', 'invoiceLines.uom', 'invoiceLines.taxes']);
 
             return (new MoveResource($refund))
-                ->additional(['message' => 'Refund updated successfully.']);
+                ->additional(['message' => 'Credit note updated successfully.']);
         });
     }
 
-    #[Endpoint('Delete refund', 'Delete a refund (only draft refunds)')]
-    #[UrlParam('id', 'integer', 'The refund ID', required: true, example: 1)]
-    #[Response(status: 200, description: 'Refund deleted', content: '{"message": "Refund deleted successfully."}')]
-    #[Response(status: 404, description: 'Refund not found', content: '{"message": "Resource not found."}')]
-    #[Response(status: 422, description: 'Cannot delete', content: '{"message": "Cannot delete a posted refund."}')]
+    #[Endpoint('Delete credit note', 'Delete a credit note (only draft credit notes)')]
+    #[UrlParam('id', 'integer', 'The credit note ID', required: true, example: 1)]
+    #[Response(status: 200, description: 'Credit note deleted', content: '{"message": "Credit note deleted successfully."}')]
+    #[Response(status: 404, description: 'Credit note not found', content: '{"message": "Resource not found."}')]
+    #[Response(status: 422, description: 'Cannot delete', content: '{"message": "Cannot delete a posted credit note."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function destroy(string $id)
     {
-        $refund = Refund::where('move_type', MoveType::IN_REFUND)->findOrFail($id);
+        $refund = Refund::where('move_type', MoveType::OUT_REFUND)->findOrFail($id);
 
         Gate::authorize('delete', $refund);
 
         if ($refund->state !== MoveState::DRAFT) {
             return response()->json([
-                'message' => 'Cannot delete a posted or cancelled refund.',
+                'message' => 'Cannot delete a posted or cancelled credit note.',
             ], 422);
         }
 
         $refund->delete();
 
         return response()->json([
-            'message' => 'Refund deleted successfully.',
+            'message' => 'Credit note deleted successfully.',
         ]);
     }
 
-    #[Endpoint('Confirm refund', 'Confirm a draft refund and move it to posted state')]
-    #[UrlParam('id', 'integer', 'The refund ID', required: true, example: 1)]
-    #[ResponseFromApiResource(MoveResource::class, Refund::class, additional: ['message' => 'Refund confirmed successfully.'])]
-    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only draft refunds can be confirmed."}')]
-    #[Response(status: 404, description: 'Refund not found', content: '{"message": "Resource not found."}')]
+    #[Endpoint('Confirm credit note', 'Confirm a draft credit note and move it to posted state')]
+    #[UrlParam('id', 'integer', 'The credit note ID', required: true, example: 1)]
+    #[ResponseFromApiResource(MoveResource::class, Refund::class, additional: ['message' => 'Credit note confirmed successfully.'])]
+    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only draft credit notes can be confirmed."}')]
+    #[Response(status: 404, description: 'Credit note not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function confirm(string $id)
     {
-        $refund = Refund::where('move_type', MoveType::IN_REFUND)->findOrFail($id);
+        $refund = Refund::where('move_type', MoveType::OUT_REFUND)->findOrFail($id);
 
         Gate::authorize('update', $refund);
 
         if ($refund->state !== MoveState::DRAFT) {
             return response()->json([
-                'message' => 'Only draft refunds can be confirmed.',
+                'message' => 'Only draft credit notes can be confirmed.',
             ], 422);
         }
 
@@ -281,42 +281,42 @@ class RefundController extends Controller
         }
 
         return (new MoveResource($refund->refresh()))
-            ->additional(['message' => 'Refund confirmed successfully.']);
+            ->additional(['message' => 'Credit note confirmed successfully.']);
     }
 
-    #[Endpoint('Cancel refund', 'Cancel a draft refund')]
-    #[UrlParam('id', 'integer', 'The refund ID', required: true, example: 1)]
-    #[ResponseFromApiResource(MoveResource::class, Refund::class, additional: ['message' => 'Refund cancelled successfully.'])]
-    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only draft refunds can be cancelled."}')]
-    #[Response(status: 404, description: 'Refund not found', content: '{"message": "Resource not found."}')]
+    #[Endpoint('Cancel credit note', 'Cancel a draft credit note')]
+    #[UrlParam('id', 'integer', 'The credit note ID', required: true, example: 1)]
+    #[ResponseFromApiResource(MoveResource::class, Refund::class, additional: ['message' => 'Credit note cancelled successfully.'])]
+    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only draft credit notes can be cancelled."}')]
+    #[Response(status: 404, description: 'Credit note not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function cancel(string $id)
     {
-        $refund = Refund::where('move_type', MoveType::IN_REFUND)->findOrFail($id);
+        $refund = Refund::where('move_type', MoveType::OUT_REFUND)->findOrFail($id);
 
         Gate::authorize('update', $refund);
 
         if ($refund->state !== MoveState::DRAFT) {
             return response()->json([
-                'message' => 'Only draft refunds can be cancelled.',
+                'message' => 'Only draft credit notes can be cancelled.',
             ], 422);
         }
 
         $refund = AccountFacade::cancelMove($refund);
 
         return (new MoveResource($refund->refresh()))
-            ->additional(['message' => 'Refund cancelled successfully.']);
+            ->additional(['message' => 'Credit note cancelled successfully.']);
     }
 
-    #[Endpoint('Pay refund', 'Register payment for a posted refund')]
-    #[UrlParam('id', 'integer', 'The refund ID', required: true, example: 1)]
-    #[ResponseFromApiResource(MoveResource::class, Refund::class, additional: ['message' => 'Refund payment registered successfully.'])]
-    #[Response(status: 422, description: 'Invalid payment state', content: '{"message": "Only posted refunds with pending payment can be paid."}')]
-    #[Response(status: 404, description: 'Refund not found', content: '{"message": "Resource not found."}')]
+    #[Endpoint('Pay credit note', 'Register payment for a posted credit note')]
+    #[UrlParam('id', 'integer', 'The credit note ID', required: true, example: 1)]
+    #[ResponseFromApiResource(MoveResource::class, Refund::class, additional: ['message' => 'Credit note payment registered successfully.'])]
+    #[Response(status: 422, description: 'Invalid payment state', content: '{"message": "Only posted credit notes with pending payment can be paid."}')]
+    #[Response(status: 404, description: 'Credit note not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function pay(MovePaymentRequest $request, string $id)
     {
-        $refund = Refund::where('move_type', MoveType::IN_REFUND)->findOrFail($id);
+        $refund = Refund::where('move_type', MoveType::OUT_REFUND)->findOrFail($id);
 
         Gate::authorize('update', $refund);
 
@@ -325,7 +325,7 @@ class RefundController extends Controller
             || ! in_array($refund->payment_state, [PaymentState::NOT_PAID, PaymentState::PARTIAL, PaymentState::IN_PAYMENT], true)
         ) {
             return response()->json([
-                'message' => 'Only posted refunds with pending payment can be paid.',
+                'message' => 'Only posted credit notes with pending payment can be paid.',
             ], 422);
         }
 
@@ -336,7 +336,7 @@ class RefundController extends Controller
 
         if (empty($lineIds)) {
             return response()->json([
-                'message' => 'No outstanding refund payment lines found.',
+                'message' => 'No outstanding credit note payment lines found.',
             ], 422);
         }
 
@@ -375,24 +375,24 @@ class RefundController extends Controller
         }
 
         return (new MoveResource($refund->refresh()))
-            ->additional(['message' => 'Refund payment registered successfully.']);
+            ->additional(['message' => 'Credit note payment registered successfully.']);
     }
 
-    #[Endpoint('Reset refund to draft', 'Reset a posted or cancelled refund to draft')]
-    #[UrlParam('id', 'integer', 'The refund ID', required: true, example: 1)]
-    #[ResponseFromApiResource(MoveResource::class, Refund::class, additional: ['message' => 'Refund reset to draft successfully.'])]
-    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only posted or cancelled refunds can be reset to draft."}')]
-    #[Response(status: 404, description: 'Refund not found', content: '{"message": "Resource not found."}')]
+    #[Endpoint('Reset credit note to draft', 'Reset a posted or cancelled credit note to draft')]
+    #[UrlParam('id', 'integer', 'The credit note ID', required: true, example: 1)]
+    #[ResponseFromApiResource(MoveResource::class, Refund::class, additional: ['message' => 'Credit note reset to draft successfully.'])]
+    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only posted or cancelled credit notes can be reset to draft."}')]
+    #[Response(status: 404, description: 'Credit note not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function resetToDraft(string $id)
     {
-        $refund = Refund::where('move_type', MoveType::IN_REFUND)->findOrFail($id);
+        $refund = Refund::where('move_type', MoveType::OUT_REFUND)->findOrFail($id);
 
         Gate::authorize('update', $refund);
 
         if (! in_array($refund->state, [MoveState::POSTED, MoveState::CANCEL], true)) {
             return response()->json([
-                'message' => 'Only posted or cancelled refunds can be reset to draft.',
+                'message' => 'Only posted or cancelled credit notes can be reset to draft.',
             ], 422);
         }
 
@@ -405,31 +405,31 @@ class RefundController extends Controller
         }
 
         return (new MoveResource($refund->refresh()))
-            ->additional(['message' => 'Refund reset to draft successfully.']);
+            ->additional(['message' => 'Credit note reset to draft successfully.']);
     }
 
-    #[Endpoint('Set refund as checked', 'Mark a refund as checked')]
-    #[UrlParam('id', 'integer', 'The refund ID', required: true, example: 1)]
-    #[ResponseFromApiResource(MoveResource::class, Refund::class, additional: ['message' => 'Refund marked as checked successfully.'])]
-    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only non-draft and unchecked refunds can be marked as checked."}')]
-    #[Response(status: 404, description: 'Refund not found', content: '{"message": "Resource not found."}')]
+    #[Endpoint('Set credit note as checked', 'Mark a credit note as checked')]
+    #[UrlParam('id', 'integer', 'The credit note ID', required: true, example: 1)]
+    #[ResponseFromApiResource(MoveResource::class, Refund::class, additional: ['message' => 'Credit note marked as checked successfully.'])]
+    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only non-draft and unchecked credit notes can be marked as checked."}')]
+    #[Response(status: 404, description: 'Credit note not found', content: '{"message": "Resource not found."}')]
     #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
     public function setAsChecked(string $id)
     {
-        $refund = Refund::where('move_type', MoveType::IN_REFUND)->findOrFail($id);
+        $refund = Refund::where('move_type', MoveType::OUT_REFUND)->findOrFail($id);
 
         Gate::authorize('update', $refund);
 
         if ($refund->state === MoveState::DRAFT || $refund->checked) {
             return response()->json([
-                'message' => 'Only non-draft and unchecked refunds can be marked as checked.',
+                'message' => 'Only non-draft and unchecked credit notes can be marked as checked.',
             ], 422);
         }
 
         $refund = AccountFacade::setAsCheckedMove($refund);
 
         return (new MoveResource($refund->refresh()))
-            ->additional(['message' => 'Refund marked as checked successfully.']);
+            ->additional(['message' => 'Credit note marked as checked successfully.']);
     }
 
     protected function preparePaymentData(Refund $refund, array $data): array
