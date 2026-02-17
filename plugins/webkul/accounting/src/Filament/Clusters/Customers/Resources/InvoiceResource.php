@@ -2,7 +2,9 @@
 
 namespace Webkul\Accounting\Filament\Clusters\Customers\Resources;
 
+use Filament\Actions\Action;
 use Filament\Resources\Pages\Page;
+use Filament\Schemas\Components\Utilities\Get;
 use Webkul\Account\Filament\Resources\InvoiceResource as BaseInvoiceResource;
 use Webkul\Accounting\Filament\Clusters\Customers;
 use Webkul\Accounting\Filament\Clusters\Customers\Resources\InvoiceResource\Pages\CreateInvoice;
@@ -12,9 +14,13 @@ use Webkul\Accounting\Filament\Clusters\Customers\Resources\InvoiceResource\Page
 use Webkul\Accounting\Filament\Clusters\Customers\Resources\InvoiceResource\Pages\ViewInvoice;
 use Webkul\Accounting\Livewire\InvoiceSummary;
 use Webkul\Accounting\Models\Invoice;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
+use Webkul\Support\Filament\Forms\Components\Repeater;
 
 class InvoiceResource extends BaseInvoiceResource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = Invoice::class;
 
     protected static bool $shouldRegisterNavigation = true;
@@ -40,14 +46,19 @@ class InvoiceResource extends BaseInvoiceResource
         return InvoiceSummary::class;
     }
 
-    public static function getGloballySearchableAttributes(): array
+    public static function getProductRepeater(): Repeater
     {
-        return [
-            'name',
-            'invoice_partner_display_name',
-            'invoice_date',
-            'invoice_date_due',
-        ];
+        return parent::getProductRepeater()
+            ->extraItemActions([
+                Action::make('openProduct')
+                    ->tooltip('Open product')
+                    ->icon('heroicon-m-arrow-top-right-on-square')
+                    ->url(fn (array $arguments, Get $get): ?string => ProductResource::getUrl('edit', [
+                        'record' => $get("products.{$arguments['item']}.product_id"),
+                    ]))
+                    ->openUrlInNewTab()
+                    ->visible(fn (array $arguments, Get $get): bool => filled($get("products.{$arguments['item']}.product_id"))),
+            ]);
     }
 
     public static function getRecordSubNavigation(Page $page): array
