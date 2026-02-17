@@ -405,7 +405,7 @@ class PurchaseOrder
         return $pdfPath;
     }
 
-    public function syncInventoryReceipt(Order $record): void
+    protected function syncInventoryReceipt(Order $record): void
     {
         if (! in_array($record->state, [PurchaseEnums\OrderState::PURCHASE, PurchaseEnums\OrderState::DONE])) {
             return;
