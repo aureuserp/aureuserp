@@ -48,17 +48,19 @@ class Packaging extends Model implements Sortable
         return $this->belongsTo(User::class);
     }
 
-    protected static function newFactory(): PackagingFactory
-    {
-        return PackagingFactory::new();
-    }
-
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($packaging) {
             $packaging->creator_id ??= Auth::id();
+
+            $packaging->company_id ??= Auth::user()?->default_company_id;
         });
+    }
+
+    protected static function newFactory(): PackagingFactory
+    {
+        return PackagingFactory::new();
     }
 }

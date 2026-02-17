@@ -2,7 +2,7 @@
 
 use Webkul\Accounting\Filament\Clusters\Accounting;
 use Webkul\Accounting\Filament\Clusters\Configuration;
-use Webkul\Accounting\Filament\Clusters\Customer;
+use Webkul\Accounting\Filament\Clusters\Customers;
 use Webkul\Accounting\Filament\Clusters\Vendors;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\PaymentResource;
 use Webkul\Accounting\Filament\Clusters\Vendors\Resources\ProductResource;
@@ -20,7 +20,7 @@ return [
     'pages' => [
         'exclude' => [
             Vendors::class,
-            Customer::class,
+            Customers::class,
             Accounting::class,
             Configuration::class,
         ],

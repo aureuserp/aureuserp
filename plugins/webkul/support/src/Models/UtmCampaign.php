@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
+use Webkul\Support\Database\Factories\UtmCampaignFactory;
 
 class UtmCampaign extends Model
 {
@@ -53,5 +54,10 @@ class UtmCampaign extends Model
         static::creating(function ($utmCampaign) {
             $utmCampaign->creator_id ??= Auth::id();
         });
+    }
+
+    protected static function newFactory()
+    {
+        return UtmCampaignFactory::new();
     }
 }

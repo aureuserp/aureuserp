@@ -8,6 +8,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationGroup;
+use Illuminate\Support\Facades\Auth;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -49,7 +50,7 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->userMenuItems([
                 'profile' => Action::make('profile')
-                    ->label(fn () => filament()->auth()->user()?->name)
+                    ->label(fn () => Auth::user()?->name)
                     ->url(fn (): string => Profile::getUrl()),
             ])
             ->navigationGroups([

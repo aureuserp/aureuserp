@@ -55,9 +55,6 @@ class OrderResource extends Resource
                     ->sortable()
                     ->money(fn (Order $record) => $record->currency->code),
             ])
-            ->filters([
-                //
-            ])
             ->recordActions([
                 ViewAction::make(),
             ])

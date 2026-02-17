@@ -7,7 +7,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Filament\Resources\CategoryResource;
 use Webkul\Product\Filament\Resources\ProductResource;
@@ -50,11 +49,6 @@ class ManageProducts extends ManageRelatedRecords
                             'uom_po_id'   => $uom_id,
                             'category_id' => $this->getOwnerRecord()->id,
                         ];
-                    })
-                    ->mutateDataUsing(function (array $data): array {
-                        $data['creator_id'] = Auth::id();
-
-                        return $data;
                     })
                     ->successNotification(
                         Notification::make()

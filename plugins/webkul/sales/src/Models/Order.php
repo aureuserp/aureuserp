@@ -19,6 +19,7 @@ use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Partner\Models\Partner;
+use Webkul\Sale\Database\Factories\OrderFactory;
 use Webkul\Sale\Enums\InvoiceStatus;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Security\Models\User;
@@ -224,7 +225,7 @@ class Order extends Model
 
         $this->creator_id ??= $authUser->id;
         $this->user_id ??= $authUser->id;
-        $this->company_id ??= $authUser->default_company_id;
+        $this->company_id ??= $authUser?->default_company_id;
 
         $this->state ??= OrderState::DRAFT;
 
@@ -252,5 +253,10 @@ class Order extends Model
         static::created(function ($order) {
             $order->update(['name' => $order->name]);
         });
+    }
+
+    protected static function newFactory(): OrderFactory
+    {
+        return OrderFactory::new();
     }
 }

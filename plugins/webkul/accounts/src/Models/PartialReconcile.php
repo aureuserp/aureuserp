@@ -57,6 +57,12 @@ class PartialReconcile extends Model
 
     public function creator(): BelongsTo
     {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function computeCreatedBy()
+    {
+        $this->created_by = Auth::user()->id ?? null;
         return $this->belongsTo(User::class, 'creator_id');
     }
 

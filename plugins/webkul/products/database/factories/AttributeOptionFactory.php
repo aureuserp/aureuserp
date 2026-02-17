@@ -28,7 +28,6 @@ class AttributeOptionFactory extends Factory
     {
         return [
             'name'         => fake()->name(),
-            'full_name'    => fake()->name(),
             'sort'         => fake()->randomNumber(),
             'extra_price'  => fake()->randomFloat(2, 0, 100),
             'attribute_id' => Attribute::factory(),

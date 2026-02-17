@@ -5,8 +5,8 @@ namespace Webkul\Recruitment\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Employee\Models\Department;
@@ -236,7 +236,7 @@ class Applicant extends Model
 
         $this->creator_id ??= $authUser->id;
 
-        $this->company_id ??= $authUser->default_company_id;
+        $this->company_id ??= $authUser?->default_company_id;
     }
 
     public function handleApplicationUpdation(): void

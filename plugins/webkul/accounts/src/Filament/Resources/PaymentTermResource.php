@@ -374,7 +374,8 @@ class PaymentTermResource extends Resource
                                 ->body(__('accounts::filament/resources/payment-term.table.bulk-actions.force-restore.notification.body'))
                         ),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function infolist(Schema $schema): Schema

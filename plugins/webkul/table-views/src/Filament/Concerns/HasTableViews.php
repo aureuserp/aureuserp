@@ -8,6 +8,7 @@ use Filament\Actions\ActionGroup;
 use Filament\Support\Concerns\EvaluatesClosures;
 use Filament\Support\Enums\Width;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Url;
 use Webkul\TableViews\Filament\Actions\CreateViewAction;
 use Webkul\TableViews\Filament\Actions\EditViewAction;
@@ -127,7 +128,7 @@ trait HasTableViews
     {
         return TableViewModel::where('filterable_type', static::class)
             ->where(function ($query) {
-                $query->where('user_id', filament()->auth()->id())
+                $query->where('user_id', Auth::id())
                     ->orWhere('is_public', true);
             })
             ->get()
@@ -279,7 +280,7 @@ trait HasTableViews
     {
         return CreateViewAction::make('createTableView')
             ->mutateDataUsing(function (array $data): array {
-                $data['user_id'] = filament()->auth()->id();
+                $data['user_id'] = Auth::id();
 
                 $data['filterable_type'] = static::class;
 
@@ -344,7 +345,7 @@ trait HasTableViews
                         'view_type'       => $arguments['view_type'],
                         'view_key'        => $arguments['view_key'],
                         'filterable_type' => static::class,
-                        'user_id'         => filament()->auth()->id(),
+                        'user_id'         => Auth::id(),
                     ],
                     [
                         'is_favorite' => true,
@@ -367,7 +368,7 @@ trait HasTableViews
                         'view_type'       => $arguments['view_type'],
                         'view_key'        => $arguments['view_key'],
                         'filterable_type' => static::class,
-                        'user_id'         => filament()->auth()->id(),
+                        'user_id'         => Auth::id(),
                     ],
                     [
                         'is_favorite' => false,

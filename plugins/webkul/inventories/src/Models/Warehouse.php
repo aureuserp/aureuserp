@@ -218,7 +218,7 @@ class Warehouse extends Model implements Sortable
     {
         $this->creator_id ??= Auth::id();
 
-        $this->company_id ??= Auth::user()->default_company_id;
+        $this->company_id ??= Auth::user()?->default_company_id;
 
         $this->reception_steps ??= ReceptionStep::ONE_STEP;
 

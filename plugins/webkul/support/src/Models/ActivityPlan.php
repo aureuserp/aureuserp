@@ -58,7 +58,7 @@ class ActivityPlan extends Model
 
             $activityPlan->creator_id ??= $authUser->id;
 
-            $activityPlan->company_id ??= $authUser->default_company_id;
+            $activityPlan->company_id ??= $authUser?->default_company_id;
         });
     }
 }

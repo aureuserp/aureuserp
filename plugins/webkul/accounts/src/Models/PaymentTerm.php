@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Account\Database\Factories\PaymentTermFactory;
 use Webkul\Account\Enums\DelayType;
 use Webkul\Account\Enums\DueTermValue;
 use Webkul\Security\Models\User;
@@ -182,5 +183,10 @@ class PaymentTerm extends Model implements Sortable
                 'payment_id'      => $paymentTerm->id,
             ]);
         });
+    }
+
+    protected static function newFactory(): PaymentTermFactory
+    {
+        return PaymentTermFactory::new();
     }
 }

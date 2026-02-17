@@ -2,7 +2,7 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages;
 
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\CustomerResource\Pages\ManageAddresses as BaseManageAddresses;
+use Webkul\Invoice\Filament\Clusters\Customers\Resources\CustomerResource\Pages\ManageAddresses as BaseManageAddresses;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 

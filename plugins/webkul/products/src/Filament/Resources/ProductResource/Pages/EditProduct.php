@@ -87,13 +87,4 @@ class EditProduct extends EditRecord
                 ),
         ];
     }
-
-    protected function afterSave(): void
-    {
-        $this->getRecord()->variants->each(function ($variant) {
-            $variant->update([
-                'is_storable' => $this->getRecord()->is_storable,
-            ]);
-        });
-    }
 }

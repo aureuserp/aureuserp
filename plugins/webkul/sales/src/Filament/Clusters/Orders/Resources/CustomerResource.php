@@ -5,7 +5,7 @@ namespace Webkul\Sale\Filament\Clusters\Orders\Resources;
 use BackedEnum;
 use Filament\Resources\Pages\Page;
 use Filament\Tables\Table;
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\CustomerResource as BaseCustomerResource;
+use Webkul\Invoice\Filament\Clusters\Customers\Resources\CustomerResource as BaseCustomerResource;
 use Webkul\Sale\Filament\Clusters\Orders;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages\CreateCustomer;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\CustomerResource\Pages\EditCustomer;

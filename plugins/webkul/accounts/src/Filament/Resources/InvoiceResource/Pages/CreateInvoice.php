@@ -9,6 +9,7 @@ use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Filament\Resources\InvoiceResource;
 use Webkul\Account\Models\Journal;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 
 class CreateInvoice extends CreateRecord
@@ -44,7 +45,7 @@ class CreateInvoice extends CreateRecord
         parent::mount();
 
         $journal = Journal::where('type', JournalType::SALE)
-            ->where('company_id', filament()->auth()->user()->default_company_id)
+            ->where('company_id', Auth::user()->default_company_id)
             ->first();
 
         $this->data['move_type'] ??= MoveType::OUT_INVOICE->value;

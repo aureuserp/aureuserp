@@ -30,11 +30,10 @@ class CompanyFactory extends Factory
             'email'                 => $this->faker->unique()->companyEmail(),
             'phone'                 => $this->faker->phoneNumber(),
             'mobile'                => $this->faker->e164PhoneNumber(),
-            'logo'                  => $this->faker->imageUrl(200, 200, 'business', true, 'company logo'),
+            'website'               => $this->faker->url(),
             'color'                 => $this->faker->hexColor(),
             'is_active'             => $this->faker->boolean(),
             'founded_date'          => $this->faker->date('Y-m-d', '-10 years'),
-            'user_id'               => 1,
             'currency_id'           => $this->faker->randomElement([1, 2, 3]),
         ];
     }

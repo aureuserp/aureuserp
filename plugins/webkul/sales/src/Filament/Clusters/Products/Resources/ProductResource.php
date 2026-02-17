@@ -5,7 +5,7 @@ namespace Webkul\Sale\Filament\Clusters\Products\Resources;
 use Filament\Resources\Pages\Page;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Table;
-use Webkul\Invoice\Filament\Clusters\Customer\Resources\ProductResource as BaseProductResource;
+use Webkul\Invoice\Filament\Clusters\Customers\Resources\ProductResource as BaseProductResource;
 use Webkul\Sale\Filament\Clusters\Products;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\CreateProduct;
 use Webkul\Sale\Filament\Clusters\Products\Resources\ProductResource\Pages\EditProduct;

@@ -9,11 +9,11 @@ use Webkul\Account\Filament\Resources\RefundResource\Pages\CreateRefund;
 use Webkul\Account\Filament\Resources\RefundResource\Pages\EditRefund;
 use Webkul\Account\Filament\Resources\RefundResource\Pages\ListRefunds;
 use Webkul\Account\Filament\Resources\RefundResource\Pages\ViewRefund;
-use Webkul\Account\Models\Move as AccountMove;
+use Webkul\Account\Models\Refund;
 
 class RefundResource extends BillResource
 {
-    protected static ?string $model = AccountMove::class;
+    protected static ?string $model = Refund::class;
 
     protected static bool $shouldRegisterNavigation = false;
 

@@ -2,9 +2,9 @@
 
 namespace Webkul\Accounting\Models;
 
-use Webkul\Account\Models\Partner as BasePartner;
+use Webkul\Account\Models\Vendor as BaseVendor;
 
-class Vendor extends BasePartner
+class Vendor extends BaseVendor
 {
     //
 }

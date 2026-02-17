@@ -2,13 +2,14 @@
 
 namespace Webkul\Account\Models;
 
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Account\Database\Factories\MoveFactory;
 use Webkul\Account\Enums\AccountType;
 use Webkul\Account\Enums\DisplayType;
 use Webkul\Account\Enums\JournalType;
@@ -20,6 +21,8 @@ use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\BankAccount;
+use Webkul\Partner\Models\Partner;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
@@ -415,15 +418,25 @@ class Move extends Model implements Sortable
         parent::boot();
 
         static::creating(function ($move) {
-            $move->creator_id ??= Auth::id();
+            $move->computeCreatorId();
+
+            $move->computeCompanyId();
 
             $move->computeCurrencyId();
 
             $move->date ??= now();
         });
 
+        static::created(function ($move) {
+            $move->computeName();
+
+            $move->saveQuietly();
+        });
+
         static::saving(function ($move) {
-            $move->creator_id ??= Auth::id();
+            $move->computeCreatorId();
+
+            $move->computeCompanyId();
 
             $move->computeCurrencyId();
 
@@ -435,14 +448,30 @@ class Move extends Model implements Sortable
 
             $move->computeJournalId();
 
-            $move->computeName();
-
             $move->computeInvoiceCurrencyRate();
 
             $move->computeInvoiceDateDue();
 
             $move->computePaymentState();
         });
+    }
+
+    public function computeCreatorId()
+    {
+        if ($this->creator_id) {
+            return;
+        }
+
+        $this->creator_id ??= Auth::id();
+    }
+
+    public function computeCompanyId()
+    {
+        if ($this->company_id) {
+            return;
+        }
+
+        $this->company_id ??= Auth::user()->default_company_id;
     }
 
     public function computeName()
@@ -1032,5 +1061,12 @@ class Move extends Model implements Sortable
         }
 
         return $partialValuesList;
+    }
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory(): Factory
+    {
+        return MoveFactory::new();
     }
 }

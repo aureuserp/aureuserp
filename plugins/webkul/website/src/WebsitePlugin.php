@@ -9,6 +9,7 @@ use Filament\Panel;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Collection;
 use Webkul\PluginManager\Package;
+use Filament\Facades\Filament;
 use Webkul\Website\Filament\Admin\Clusters\Settings\Pages\ManageContacts;
 use Webkul\Website\Filament\Customer\Auth\Login;
 use Webkul\Website\Filament\Customer\Auth\PasswordReset\RequestPasswordReset;
@@ -121,11 +122,11 @@ class WebsitePlugin implements Plugin
             NavigationItem::make('Login')
                 ->label(fn () => __('website::filament/app.navigation.top.login'))
                 ->url(filament()->getLoginUrl())
-                ->visible(! filament()->auth()->check()),
+                ->visible(! Filament::auth()->check()),
             NavigationItem::make('Register')
                 ->label(fn () => __('website::filament/app.navigation.top.register'))
                 ->url(filament()->getRegistrationUrl())
-                ->visible(! filament()->auth()->check()),
+                ->visible(! Filament::auth()->check()),
         ]);
     }
 

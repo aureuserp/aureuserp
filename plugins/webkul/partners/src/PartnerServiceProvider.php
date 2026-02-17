@@ -15,6 +15,7 @@ class PartnerServiceProvider extends PackageServiceProvider
         $package->name(static::$name)
             ->isCore()
             ->hasTranslations()
+            ->hasRoutes(['api'])
             ->hasMigrations([
                 '2024_12_11_101127_create_partners_industries_table',
                 '2024_12_11_101127_create_partners_titles_table',

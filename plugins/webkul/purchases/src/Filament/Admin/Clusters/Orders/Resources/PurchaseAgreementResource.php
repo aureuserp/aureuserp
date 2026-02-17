@@ -18,6 +18,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Illuminate\Support\Facades\Auth;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
@@ -214,7 +215,7 @@ class PurchaseAgreementResource extends Resource
                                     ->searchable()
                                     ->required()
                                     ->preload()
-                                    ->default(filament()->auth()?->user()?->default_company_id)
+                                    ->default(Auth::user()->default_company_id)
                                     ->disabled(fn ($record): bool => $record && $record?->state != RequisitionState::DRAFT),
                             ]),
                     ])

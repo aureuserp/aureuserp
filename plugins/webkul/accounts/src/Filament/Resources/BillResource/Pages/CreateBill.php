@@ -7,6 +7,7 @@ use Filament\Resources\Pages\CreateRecord;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Facades\Account as AccountFacade;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Filament\Resources\BillResource;
 use Webkul\Account\Models\Journal;
 use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
@@ -44,7 +45,7 @@ class CreateBill extends CreateRecord
         parent::mount();
 
         $journal = Journal::where('type', JournalType::PURCHASE)
-            ->where('company_id', filament()->auth()->user()->default_company_id)
+            ->where('company_id', Auth::user()->default_company_id)
             ->first();
 
         $this->data['move_type'] ??= MoveType::IN_INVOICE->value;
