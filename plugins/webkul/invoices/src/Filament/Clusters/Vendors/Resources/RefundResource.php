@@ -2,11 +2,7 @@
 
 namespace Webkul\Invoice\Filament\Clusters\Vendors\Resources;
 
-use Filament\Actions\Action;
-use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
-use Filament\Schemas\Components\Utilities\Get;
-use Illuminate\Database\Eloquent\Model;
 use Webkul\Account\Filament\Resources\RefundResource as BaseRefundResource;
 use Webkul\Invoice\Filament\Clusters\Vendors;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\CreateRefund;
@@ -17,7 +13,6 @@ use Webkul\Invoice\Filament\Clusters\Vendors\Resources\RefundResource\Pages\View
 use Webkul\Invoice\Livewire\InvoiceSummary;
 use Webkul\Invoice\Models\Refund;
 use Webkul\Security\Traits\HasResourcePermissionQuery;
-use Webkul\Support\Filament\Forms\Components\Repeater;
 
 class RefundResource extends BaseRefundResource
 {
@@ -29,9 +24,9 @@ class RefundResource extends BaseRefundResource
 
     protected static bool $shouldRegisterNavigation = true;
 
-    protected static ?string $cluster = Vendors::class;
+    protected static bool $isGloballySearchable = true;
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?string $cluster = Vendors::class;
 
     public static function getNavigationGroup(): ?string
     {
@@ -48,18 +43,6 @@ class RefundResource extends BaseRefundResource
         return __('invoices::filament/clusters/vendors/resources/refund.navigation.title');
     }
 
-    public static function getGloballySearchableAttributes(): array
-    {
-        return ['name', 'partner.name'];
-    }
-
-    public static function getGlobalSearchResultDetails(Model $record): array
-    {
-        return [
-            __('invoices::filament/clusters/vendors/resources/refund.global-search.vendor') => $record->partner?->name ?? '—',
-        ];
-    }
-
     public static function getSummaryComponent()
     {
         return InvoiceSummary::class;
@@ -72,25 +55,6 @@ class RefundResource extends BaseRefundResource
             EditRefund::class,
             ManagePayments::class,
         ]);
-    }
-
-    public static function getProductRepeater(): Repeater
-    {
-        return parent::getProductRepeater()
-            ->extraItemActions([
-                Action::make('openProduct')
-                    ->tooltip('Open product')
-                    ->icon('heroicon-m-arrow-top-right-on-square')
-                    ->url(
-                        fn (array $arguments, Get $get): ?string => ProductResource::getUrl('edit', [
-                            'record' => $get("products.{$arguments['item']}.product_id"),
-                        ])
-                    )
-                    ->openUrlInNewTab()
-                    ->visible(
-                        fn (array $arguments, Get $get): bool => filled($get("products.{$arguments['item']}.product_id"))
-                    ),
-            ]);
     }
 
     public static function getPages(): array
