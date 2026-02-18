@@ -2,11 +2,13 @@
 
 namespace Webkul\Account\Filament\Resources\InvoiceResource\Actions;
 
+use Exception;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
@@ -37,25 +39,33 @@ class PayAction extends Action
             ->label(__('accounts::filament/resources/invoice/actions/pay-action.title'))
             ->color('success')
             ->schema(function (Schema $schema) {
-                $paymentRegister = (new PaymentRegister);
+                try {
+                    $paymentRegister = (new PaymentRegister);
 
-                $paymentRegister->lines = $this->getRecord()->lines;
-                $paymentRegister->company = $this->getRecord()->company;
-                $paymentRegister->currency = $this->getRecord()->currency;
-                $paymentRegister->currency_id = $this->getRecord()->currency_id;
-                $paymentRegister->payment_type = $this->getRecord()->isInbound(true)
-                    ? PaymentType::RECEIVE
-                    : PaymentType::SEND;
-                $paymentRegister->computeBatches();
-                $paymentRegister->computeAvailableJournalIds();
-                $paymentRegister->journal_id = $paymentRegister->available_journal_ids[0] ?? null;
-                $paymentRegister->journal = Journal::find($paymentRegister->journal_id);
+                    $paymentRegister->lines = $this->getRecord()->lines;
+                    $paymentRegister->company = $this->getRecord()->company;
+                    $paymentRegister->currency = $this->getRecord()->currency;
+                    $paymentRegister->currency_id = $this->getRecord()->currency_id;
+                    $paymentRegister->payment_type = $this->getRecord()->isInbound(true)
+                        ? PaymentType::RECEIVE
+                        : PaymentType::SEND;
+                    $paymentRegister->computeBatches();
+                    $paymentRegister->computeAvailableJournalIds();
+                    $paymentRegister->journal_id = $paymentRegister->available_journal_ids[0] ?? null;
+                    $paymentRegister->journal = Journal::find($paymentRegister->journal_id);
 
-                $paymentRegister->computePaymentMethodLineId();
+                    $paymentRegister->computePaymentMethodLineId();
 
-                $amountsToPay = $paymentRegister->getTotalAmountsToPay($paymentRegister->batches);
-                $paymentRegister->amount = $amountsToPay['amount_by_default'];
-                $paymentRegister->computeInstallmentsMode();
+                    $amountsToPay = $paymentRegister->getTotalAmountsToPay($paymentRegister->batches);
+                    $paymentRegister->amount = $amountsToPay['amount_by_default'];
+                    $paymentRegister->computeInstallmentsMode();
+                } catch (Exception $e) {
+                    Notification::make()
+                        ->title(__('accounts::filament/resources/invoice/actions/pay-action.notifications.payment-failed.title'))
+                        ->body($e->getMessage())
+                        ->danger()
+                        ->send();
+                }
 
                 return $schema->components([
                     Group::make()
