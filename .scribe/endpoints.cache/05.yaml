@@ -1223,7 +1223,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":297,"name":"Mr. Stan Kassulke Jr.","code":"WGOWOXJF","email":"julio.padberg@example.com","phone":"+1.321.364.1520","street1":"302 Rachelle Fort Suite 367","street2":"81116 Maxie Vista","city":"West Alvenachester","zip":"44851","creator_id":9717,"created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z","deleted_at":null,"state":{"id":1436,"name":"Uri","code":"UR","country_id":43,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":72,"name":"Falkland Islands","code":"FK","phone_code":"500","state_required":false,"zip_required":true,"currency_id":78,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},{"id":298,"name":"Jackie Kuhic MD","code":"KDBQNKBR","email":"dbecker@example.com","phone":"+1 (662) 899-9892","street1":"97136 Elsie Drive","street2":"89400 Devan Light Apt. 911","city":"Brennamouth","zip":"80003","creator_id":9717,"created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z","deleted_at":null,"state":{"id":1436,"name":"Uri","code":"UR","country_id":43,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":72,"name":"Falkland Islands","code":"FK","phone_code":"500","state_required":false,"zip_required":true,"currency_id":78,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"Bank of California","code":"BOC0001","email":"bankocalifornia@ca.com","phone":"2122211211121","street1":"Wallmart Steet Complex","street2":"First Floor","city":"California","zip":"90006","creator_id":1,"created_at":"2025-04-10T10:47:58.000000Z","updated_at":"2025-04-10T10:47:58.000000Z","deleted_at":null,"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},{"id":1,"name":"Bank of California","code":"BOC0001","email":"bankocalifornia@ca.com","phone":"2122211211121","street1":"Wallmart Steet Complex","street2":"First Floor","city":"California","zip":"90006","creator_id":1,"created_at":"2025-04-10T10:47:58.000000Z","updated_at":"2025-04-10T10:47:58.000000Z","deleted_at":null,"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -1390,7 +1390,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":299,"name":"Ms. Audra Crooks II","code":"YUWPWL36UBQ","email":"gideon43@example.net","phone":"+1 (585) 853-4919","street1":"902 Rohan Corner Suite 261","street2":"499 Woodrow Shores Suite 381","city":"Sanfordville","zip":"09202-5688","creator_id":9717,"created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z","deleted_at":null,"state":{"id":1436,"name":"Uri","code":"UR","country_id":43,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":72,"name":"Falkland Islands","code":"FK","phone_code":"500","state_required":false,"zip_required":true,"currency_id":78,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Bank created successfully."}'
+        content: '{"data":{"id":1,"name":"Bank of California","code":"BOC0001","email":"bankocalifornia@ca.com","phone":"2122211211121","street1":"Wallmart Steet Complex","street2":"First Floor","city":"California","zip":"90006","creator_id":1,"created_at":"2025-04-10T10:47:58.000000Z","updated_at":"2025-04-10T10:47:58.000000Z","deleted_at":null,"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Bank created successfully."}'
         headers: []
         description: ''
       -
@@ -1467,7 +1467,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":300,"name":"Morgan Hirthe","code":"DZSNRWVE","email":"lindgren.otha@example.net","phone":"+1-878-421-4011","street1":"65657 McDermott Tunnel","street2":"2288 Greenfelder Island","city":"Sanfordville","zip":"09202-5688","creator_id":9717,"created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z","deleted_at":null,"state":{"id":1436,"name":"Uri","code":"UR","country_id":43,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":72,"name":"Falkland Islands","code":"FK","phone_code":"500","state_required":false,"zip_required":true,"currency_id":78,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}}'
+        content: '{"data":{"id":1,"name":"Bank of California","code":"BOC0001","email":"bankocalifornia@ca.com","phone":"2122211211121","street1":"Wallmart Steet Complex","street2":"First Floor","city":"California","zip":"90006","creator_id":1,"created_at":"2025-04-10T10:47:58.000000Z","updated_at":"2025-04-10T10:47:58.000000Z","deleted_at":null,"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}}'
         headers: []
         description: ''
       -
@@ -1653,7 +1653,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":301,"name":"Ms. Audra Crooks II","code":"YUWPWL36UBQ","email":"thayes@example.net","phone":"+13152151261","street1":"499 Woodrow Shores Suite 381","street2":"8370 Frank Manors Suite 428","city":"New Lee","zip":"19334-4961","creator_id":9717,"created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z","deleted_at":null,"state":{"id":1436,"name":"Uri","code":"UR","country_id":43,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":72,"name":"Falkland Islands","code":"FK","phone_code":"500","state_required":false,"zip_required":true,"currency_id":78,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Bank updated successfully."}'
+        content: '{"data":{"id":1,"name":"Bank of California","code":"BOC0001","email":"bankocalifornia@ca.com","phone":"2122211211121","street1":"Wallmart Steet Complex","street2":"First Floor","city":"California","zip":"90006","creator_id":1,"created_at":"2025-04-10T10:47:58.000000Z","updated_at":"2025-04-10T10:47:58.000000Z","deleted_at":null,"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Bank updated successfully."}'
         headers: []
         description: ''
       -
@@ -1789,7 +1789,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":302,"name":"Morgan Hirthe","code":"DZSNRWVE","email":"kmonahan@example.com","phone":"1-541-712-1706","street1":"989 Davis Overpass","street2":"57103 Millie Locks Apt. 301","city":"Wunschshire","zip":"19334-4961","creator_id":9717,"created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z","deleted_at":null,"state":{"id":1436,"name":"Uri","code":"UR","country_id":43,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":72,"name":"Falkland Islands","code":"FK","phone_code":"500","state_required":false,"zip_required":true,"currency_id":78,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Bank restored successfully."}'
+        content: '{"data":{"id":1,"name":"Bank of California","code":"BOC0001","email":"bankocalifornia@ca.com","phone":"2122211211121","street1":"Wallmart Steet Complex","street2":"First Floor","city":"California","zip":"90006","creator_id":1,"created_at":"2025-04-10T10:47:58.000000Z","updated_at":"2025-04-10T10:47:58.000000Z","deleted_at":null,"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"message":"Bank restored successfully."}'
         headers: []
         description: ''
       -
@@ -1998,7 +1998,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1728,"name":"Liechtenstein","code":"ME","phone_code":"339","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z"},{"id":1729,"name":"Netherlands Antilles","code":"CR","phone_code":"481","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"Andorra","code":"AD","phone_code":"376","state_required":false,"zip_required":true,"currency_id":125,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},{"id":1,"name":"Andorra","code":"AD","phone_code":"376","state_required":false,"zip_required":true,"currency_id":125,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2069,7 +2069,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1730,"name":"Pakistan","code":"PN","phone_code":"556","state_required":false,"zip_required":false,"currency_id":null,"created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z"}}'
+        content: '{"data":{"id":1,"name":"Andorra","code":"AD","phone_code":"376","state_required":false,"zip_required":true,"currency_id":125,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}'
         headers: []
         description: ''
       -
@@ -2202,7 +2202,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":2176,"name":"Mississippi","code":"AZ","country_id":1731,"created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z"},{"id":2177,"name":"Kentucky","code":"ME","country_id":1732,"created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"Australian Capital Territory","code":"ACT","country_id":13,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},{"id":1,"name":"Australian Capital Territory","code":"ACT","country_id":13,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2285,7 +2285,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":2178,"name":"Arkansas","code":"CT","country_id":1733,"created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z"},"message":"State created successfully."}'
+        content: '{"data":{"id":1,"name":"Australian Capital Territory","code":"ACT","country_id":13,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"message":"State created successfully."}'
         headers: []
         description: ''
       -
@@ -2362,7 +2362,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":2179,"name":"Pennsylvania","code":"MO","country_id":1734,"created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z"}}'
+        content: '{"data":{"id":1,"name":"Australian Capital Territory","code":"ACT","country_id":13,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}}'
         headers: []
         description: ''
       -
@@ -2464,7 +2464,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":2180,"name":"Indiana","code":"RI","country_id":1735,"created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z"},"message":"State updated successfully."}'
+        content: '{"data":{"id":1,"name":"Australian Capital Territory","code":"ACT","country_id":13,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"message":"State updated successfully."}'
         headers: []
         description: ''
       -
@@ -2646,7 +2646,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":3867,"name":"reiciendis sequi","created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z"},{"id":3868,"name":"ut modi","created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"},{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2705,7 +2705,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":3869,"name":"architecto eius","created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z"},"message":"UOM category created successfully."}'
+        content: '{"data":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"},"message":"UOM category created successfully."}'
         headers: []
         description: ''
       -
@@ -2782,7 +2782,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":3870,"name":"aut adipisci","created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z"}}'
+        content: '{"data":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}}'
         headers: []
         description: ''
       -
@@ -2860,7 +2860,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":3871,"name":"architecto eius","created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z"},"message":"UOM category updated successfully."}'
+        content: '{"data":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"},"message":"UOM category updated successfully."}'
         headers: []
         description: ''
       -
@@ -3076,7 +3076,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":3660,"type":"smaller","name":"aut","factor":"9.7400","rounding":"0.0000","category_id":3872,"creator_id":34270,"created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z","deleted_at":null,"category":{"id":3872,"name":"explicabo reiciendis","created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z"}},{"id":3661,"type":"smaller","name":"aut","factor":"2.2300","rounding":"0.0000","category_id":3873,"creator_id":34272,"created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z","deleted_at":null,"category":{"id":3873,"name":"veniam repellendus","created_at":"2026-02-17T13:41:37.000000Z","updated_at":"2026-02-17T13:41:37.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"type":"reference","name":"Units","factor":"1.0000","rounding":"0.0100","category_id":1,"creator_id":null,"created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z","deleted_at":null,"category":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}},{"id":1,"type":"reference","name":"Units","factor":"1.0000","rounding":"0.0100","category_id":1,"creator_id":null,"created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z","deleted_at":null,"category":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -3198,7 +3198,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":3662,"type":"smaller","name":"architecto","factor":"9.9500","rounding":"0.0000","category_id":3874,"creator_id":34274,"created_at":"2026-02-17T13:41:38.000000Z","updated_at":"2026-02-17T13:41:38.000000Z","deleted_at":null,"category":{"id":3874,"name":"possimus numquam","created_at":"2026-02-17T13:41:38.000000Z","updated_at":"2026-02-17T13:41:38.000000Z"}},"message":"UOM created successfully."}'
+        content: '{"data":{"id":1,"type":"reference","name":"Units","factor":"1.0000","rounding":"0.0100","category_id":1,"creator_id":null,"created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z","deleted_at":null,"category":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}},"message":"UOM created successfully."}'
         headers: []
         description: ''
       -
@@ -3287,7 +3287,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":3663,"type":"smaller","name":"aut","factor":"9.7400","rounding":"0.0000","category_id":3875,"creator_id":34276,"created_at":"2026-02-17T13:41:38.000000Z","updated_at":"2026-02-17T13:41:38.000000Z","deleted_at":null,"category":{"id":3875,"name":"id incidunt","created_at":"2026-02-17T13:41:38.000000Z","updated_at":"2026-02-17T13:41:38.000000Z"}}}'
+        content: '{"data":{"id":1,"type":"reference","name":"Units","factor":"1.0000","rounding":"0.0100","category_id":1,"creator_id":null,"created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z","deleted_at":null,"category":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}}}'
         headers: []
         description: ''
       -
@@ -3428,7 +3428,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":3664,"type":"smaller","name":"architecto","factor":"9.9500","rounding":"0.0000","category_id":3876,"creator_id":34278,"created_at":"2026-02-17T13:41:38.000000Z","updated_at":"2026-02-17T13:41:38.000000Z","deleted_at":null,"category":{"id":3876,"name":"harum aut","created_at":"2026-02-17T13:41:38.000000Z","updated_at":"2026-02-17T13:41:38.000000Z"}},"message":"UOM updated successfully."}'
+        content: '{"data":{"id":1,"type":"reference","name":"Units","factor":"1.0000","rounding":"0.0100","category_id":1,"creator_id":null,"created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z","deleted_at":null,"category":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}},"message":"UOM updated successfully."}'
         headers: []
         description: ''
       -
@@ -3588,7 +3588,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":3665,"type":"smaller","name":"aut","factor":"9.7400","rounding":"0.0000","category_id":3877,"creator_id":34280,"created_at":"2026-02-17T13:41:38.000000Z","updated_at":"2026-02-17T13:41:38.000000Z","deleted_at":null,"category":{"id":3877,"name":"voluptas voluptatem","created_at":"2026-02-17T13:41:38.000000Z","updated_at":"2026-02-17T13:41:38.000000Z"}},"message":"UOM restored successfully."}'
+        content: '{"data":{"id":1,"type":"reference","name":"Units","factor":"1.0000","rounding":"0.0100","category_id":1,"creator_id":null,"created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z","deleted_at":null,"category":{"id":1,"name":"Unit","created_at":"2025-04-07T12:34:35.000000Z","updated_at":"2025-04-07T12:34:35.000000Z"}},"message":"UOM restored successfully."}'
         headers: []
         description: ''
       -

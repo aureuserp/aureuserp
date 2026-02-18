@@ -102,7 +102,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":2435,"name":"Dr. Presley Zboncak V","full_name":"Lilyan Haag \/ Dr. Presley Zboncak V","parent_path":"\/2434\/","parent_id":2434,"creator_id":33793,"created_at":"2026-02-17T13:41:24.000000Z","updated_at":"2026-02-17T13:41:24.000000Z","parent":{"id":2434,"name":"Lilyan Haag","full_name":"Lilyan Haag","parent_path":"\/","parent_id":null,"creator_id":33794,"created_at":"2026-02-17T13:41:24.000000Z","updated_at":"2026-02-17T13:41:24.000000Z"}},{"id":2437,"name":"Charlie Marquardt","full_name":"Briana Macejkovic \/ Charlie Marquardt","parent_path":"\/2436\/","parent_id":2436,"creator_id":33795,"created_at":"2026-02-17T13:41:24.000000Z","updated_at":"2026-02-17T13:41:24.000000Z","parent":{"id":2436,"name":"Briana Macejkovic","full_name":"Briana Macejkovic","parent_path":"\/","parent_id":null,"creator_id":33796,"created_at":"2026-02-17T13:41:24.000000Z","updated_at":"2026-02-17T13:41:24.000000Z"}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"All","full_name":"All","parent_path":"\/","parent_id":null,"creator_id":1,"created_at":"2025-01-28T10:49:51.000000Z","updated_at":"2025-01-28T10:49:51.000000Z","parent":null},{"id":1,"name":"All","full_name":"All","parent_path":"\/","parent_id":null,"creator_id":1,"created_at":"2025-01-28T10:49:51.000000Z","updated_at":"2025-01-28T10:49:51.000000Z","parent":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -173,7 +173,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":2439,"name":"Ms. Audra Crooks II","full_name":"Hank Batz \/ Ms. Audra Crooks II","parent_path":"\/2438\/","parent_id":2438,"creator_id":33797,"created_at":"2026-02-17T13:41:24.000000Z","updated_at":"2026-02-17T13:41:24.000000Z","parent":{"id":2438,"name":"Hank Batz","full_name":"Hank Batz","parent_path":"\/","parent_id":null,"creator_id":33798,"created_at":"2026-02-17T13:41:24.000000Z","updated_at":"2026-02-17T13:41:24.000000Z"}},"message":"Category created successfully."}'
+        content: '{"data":{"id":1,"name":"All","full_name":"All","parent_path":"\/","parent_id":null,"creator_id":1,"created_at":"2025-01-28T10:49:51.000000Z","updated_at":"2025-01-28T10:49:51.000000Z","parent":null},"message":"Category created successfully."}'
         headers: []
         description: ''
       -
@@ -250,7 +250,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":2441,"name":"Morgan Hirthe","full_name":"Dr. Fred Cartwright Jr. \/ Morgan Hirthe","parent_path":"\/2440\/","parent_id":2440,"creator_id":33799,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","parent":{"id":2440,"name":"Dr. Fred Cartwright Jr.","full_name":"Dr. Fred Cartwright Jr.","parent_path":"\/","parent_id":null,"creator_id":33800,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z"},"children":[{"id":2442,"name":"Ariel Lebsack","full_name":"Dr. Fred Cartwright Jr. \/ Morgan Hirthe \/ Ariel Lebsack","parent_path":"\/2440\/2441\/","parent_id":2441,"creator_id":33801,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z"}]}}'
+        content: '{"data":{"id":1,"name":"All","full_name":"All","parent_path":"\/","parent_id":null,"creator_id":1,"created_at":"2025-01-28T10:49:51.000000Z","updated_at":"2025-01-28T10:49:51.000000Z","parent":null,"children":[{"id":2,"name":"Consumable","full_name":"All \/ Consumable","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-01-28T10:50:15.000000Z","updated_at":"2025-01-28T10:50:15.000000Z"},{"id":3,"name":"Expenses","full_name":"All \/ Expenses","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-01-28T10:55:42.000000Z","updated_at":"2025-01-28T10:55:42.000000Z"},{"id":4,"name":"Home Construction","full_name":"All \/ Home Construction","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-01-28T10:55:56.000000Z","updated_at":"2025-01-28T10:56:43.000000Z"},{"id":5,"name":"Internal","full_name":"All \/ Internal","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-01-28T10:56:07.000000Z","updated_at":"2025-01-28T10:56:27.000000Z"},{"id":6,"name":"Saleable","full_name":"All \/ Saleable","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-01-28T10:56:55.000000Z","updated_at":"2025-01-28T10:56:55.000000Z"},{"id":11,"name":"Electronic''s Devices","full_name":"All \/ Electronic''s Devices","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-04-08T03:34:44.000000Z","updated_at":"2025-04-08T03:34:44.000000Z"}]}}'
         headers: []
         description: ''
       -
@@ -340,7 +340,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":2444,"name":"Ms. Audra Crooks II","full_name":"Prof. Carrie Kuhn \/ Ms. Audra Crooks II","parent_path":"\/2443\/","parent_id":2443,"creator_id":33802,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","parent":{"id":2443,"name":"Prof. Carrie Kuhn","full_name":"Prof. Carrie Kuhn","parent_path":"\/","parent_id":null,"creator_id":33803,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z"}},"message":"Category updated successfully."}'
+        content: '{"data":{"id":1,"name":"All","full_name":"All","parent_path":"\/","parent_id":null,"creator_id":1,"created_at":"2025-01-28T10:49:51.000000Z","updated_at":"2025-01-28T10:49:51.000000Z","parent":null},"message":"Category updated successfully."}'
         headers: []
         description: ''
       -
@@ -536,7 +536,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":647,"name":"Morgan Hirthe","color":"#bd6da5","created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","deleted_at":null},{"id":648,"name":"Calista Weber","color":"#c63de7","created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"Sales","color":null,"created_at":"2025-09-25T05:28:25.000000Z","updated_at":"2026-02-02T13:57:29.000000Z","deleted_at":null},{"id":1,"name":"Sales","color":null,"created_at":"2025-09-25T05:28:25.000000Z","updated_at":"2026-02-02T13:57:29.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -607,7 +607,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":649,"name":"Ms. Audra Crooks II","color":"#b35e11","created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","deleted_at":null},"message":"Tag created successfully."}'
+        content: '{"data":{"id":1,"name":"Sales","color":null,"created_at":"2025-09-25T05:28:25.000000Z","updated_at":"2026-02-02T13:57:29.000000Z","deleted_at":null},"message":"Tag created successfully."}'
         headers: []
         description: ''
       -
@@ -684,7 +684,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":650,"name":"Morgan Hirthe","color":"#bd6da5","created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","deleted_at":null}}'
+        content: '{"data":{"id":1,"name":"Sales","color":null,"created_at":"2025-09-25T05:28:25.000000Z","updated_at":"2026-02-02T13:57:29.000000Z","deleted_at":null}}'
         headers: []
         description: ''
       -
@@ -774,7 +774,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":651,"name":"Ms. Audra Crooks II","color":"#b35e11","created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","deleted_at":null},"message":"Tag updated successfully."}'
+        content: '{"data":{"id":1,"name":"Sales","color":null,"created_at":"2025-09-25T05:28:25.000000Z","updated_at":"2026-02-02T13:57:29.000000Z","deleted_at":null},"message":"Tag updated successfully."}'
         headers: []
         description: ''
       -
@@ -910,7 +910,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":652,"name":"Morgan Hirthe","color":"#bd6da5","created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","deleted_at":null},"message":"Tag restored successfully."}'
+        content: '{"data":{"id":1,"name":"Sales","color":null,"created_at":"2025-09-25T05:28:25.000000Z","updated_at":"2026-02-02T13:57:29.000000Z","deleted_at":null},"message":"Tag restored successfully."}'
         headers: []
         description: ''
       -
@@ -1112,7 +1112,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1094,"name":"Waylon Will","type":"radio","sort":1,"creator_id":33810,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","deleted_at":null,"options":[{"id":293,"name":"Ines Buckridge","color":null,"extra_price":"41.4500","sort":1,"attribute_id":1094,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z"}]},{"id":1095,"name":"Prof. Joey Adams","type":"radio","sort":2,"creator_id":33812,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","deleted_at":null,"options":[{"id":294,"name":"Jamir Corkery MD","color":null,"extra_price":"19.0200","sort":2,"attribute_id":1095,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z"}]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"Size","type":"select","sort":null,"creator_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z","deleted_at":null,"options":[{"id":1,"name":"Small","color":null,"extra_price":"10.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"},{"id":2,"name":"Medium","color":null,"extra_price":"20.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"},{"id":3,"name":"Large","color":null,"extra_price":"30.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"},{"id":4,"name":"Extra Large","color":null,"extra_price":"40.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"}]},{"id":1,"name":"Size","type":"select","sort":null,"creator_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z","deleted_at":null,"options":[{"id":1,"name":"Small","color":null,"extra_price":"10.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"},{"id":2,"name":"Medium","color":null,"extra_price":"20.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"},{"id":3,"name":"Large","color":null,"extra_price":"30.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"},{"id":4,"name":"Extra Large","color":null,"extra_price":"40.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"}]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -1198,7 +1198,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1096,"name":"Ms. Audra Crooks II","type":"radio","sort":1,"creator_id":33814,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","deleted_at":null,"options":[{"id":295,"name":"Julie Aufderhar","color":null,"extra_price":"88.1100","sort":1,"attribute_id":1096,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z"}]},"message":"Attribute created successfully."}'
+        content: '{"data":{"id":1,"name":"Size","type":"select","sort":null,"creator_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z","deleted_at":null,"options":[{"id":1,"name":"Small","color":null,"extra_price":"10.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"},{"id":2,"name":"Medium","color":null,"extra_price":"20.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"},{"id":3,"name":"Large","color":null,"extra_price":"30.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"},{"id":4,"name":"Extra Large","color":null,"extra_price":"40.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"}]},"message":"Attribute created successfully."}'
         headers: []
         description: ''
       -
@@ -1275,7 +1275,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1097,"name":"Morgan Hirthe","type":"radio","sort":1,"creator_id":33816,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","deleted_at":null,"options":[{"id":296,"name":"Prof. Jasmin Schneider DDS","color":null,"extra_price":"10.9200","sort":1,"attribute_id":1097,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z"}]}}'
+        content: '{"data":{"id":1,"name":"Size","type":"select","sort":null,"creator_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z","deleted_at":null,"options":[{"id":1,"name":"Small","color":null,"extra_price":"10.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"},{"id":2,"name":"Medium","color":null,"extra_price":"20.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"},{"id":3,"name":"Large","color":null,"extra_price":"30.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"},{"id":4,"name":"Extra Large","color":null,"extra_price":"40.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"}]}}'
         headers: []
         description: ''
       -
@@ -1380,7 +1380,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1098,"name":"Ms. Audra Crooks II","type":"radio","sort":1,"creator_id":33818,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","deleted_at":null,"options":[{"id":297,"name":"Lorna Wintheiser Sr.","color":null,"extra_price":"36.1400","sort":1,"attribute_id":1098,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z"}]},"message":"Attribute updated successfully."}'
+        content: '{"data":{"id":1,"name":"Size","type":"select","sort":null,"creator_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z","deleted_at":null,"options":[{"id":1,"name":"Small","color":null,"extra_price":"10.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"},{"id":2,"name":"Medium","color":null,"extra_price":"20.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"},{"id":3,"name":"Large","color":null,"extra_price":"30.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"},{"id":4,"name":"Extra Large","color":null,"extra_price":"40.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"}]},"message":"Attribute updated successfully."}'
         headers: []
         description: ''
       -
@@ -1516,7 +1516,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1099,"name":"Morgan Hirthe","type":"radio","sort":1,"creator_id":33820,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","deleted_at":null,"options":[{"id":298,"name":"Arely Windler V","color":null,"extra_price":"93.7200","sort":1,"attribute_id":1099,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z"}]},"message":"Attribute restored successfully."}'
+        content: '{"data":{"id":1,"name":"Size","type":"select","sort":null,"creator_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z","deleted_at":null,"options":[{"id":1,"name":"Small","color":null,"extra_price":"10.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"},{"id":2,"name":"Medium","color":null,"extra_price":"20.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"},{"id":3,"name":"Large","color":null,"extra_price":"30.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"},{"id":4,"name":"Extra Large","color":null,"extra_price":"40.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z"}]},"message":"Attribute restored successfully."}'
         headers: []
         description: ''
       -
@@ -1704,7 +1704,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":299,"name":"Morgan Hirthe","color":null,"extra_price":"60.5300","sort":1,"attribute_id":1100,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","attribute":{"id":1100,"name":"Kenny Ziemann","type":"radio","sort":1,"creator_id":33823,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","deleted_at":null}},{"id":300,"name":"Hermina Smitham","color":null,"extra_price":"62.2700","sort":2,"attribute_id":1101,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","attribute":{"id":1101,"name":"Celestino Hermiston","type":"radio","sort":2,"creator_id":33825,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","deleted_at":null}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"Small","color":null,"extra_price":"10.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z","attribute":{"id":1,"name":"Size","type":"select","sort":null,"creator_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z","deleted_at":null}},{"id":1,"name":"Small","color":null,"extra_price":"10.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z","attribute":{"id":1,"name":"Size","type":"select","sort":null,"creator_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z","deleted_at":null}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -1811,7 +1811,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":301,"name":"Ms. Audra Crooks II","color":null,"extra_price":"54.2700","sort":1,"attribute_id":1102,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","attribute":{"id":1102,"name":"Dr. Margarita Satterfield","type":"radio","sort":1,"creator_id":33827,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","deleted_at":null}},"message":"Attribute option created successfully."}'
+        content: '{"data":{"id":1,"name":"Small","color":null,"extra_price":"10.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z","attribute":{"id":1,"name":"Size","type":"select","sort":null,"creator_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z","deleted_at":null}},"message":"Attribute option created successfully."}'
         headers: []
         description: ''
       -
@@ -1900,7 +1900,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":302,"name":"Morgan Hirthe","color":null,"extra_price":"60.5300","sort":1,"attribute_id":1103,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","attribute":{"id":1103,"name":"Valentine Schowalter","type":"radio","sort":1,"creator_id":33829,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","deleted_at":null}}}'
+        content: '{"data":{"id":1,"name":"Small","color":null,"extra_price":"10.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z","attribute":{"id":1,"name":"Size","type":"select","sort":null,"creator_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z","deleted_at":null}}}'
         headers: []
         description: ''
       -
@@ -2026,7 +2026,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":303,"name":"Ms. Audra Crooks II","color":null,"extra_price":"54.2700","sort":1,"attribute_id":1104,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","attribute":{"id":1104,"name":"Dr. Filomena Yundt","type":"radio","sort":1,"creator_id":33831,"created_at":"2026-02-17T13:41:25.000000Z","updated_at":"2026-02-17T13:41:25.000000Z","deleted_at":null}},"message":"Attribute option updated successfully."}'
+        content: '{"data":{"id":1,"name":"Small","color":null,"extra_price":"10.0000","sort":null,"attribute_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z","attribute":{"id":1,"name":"Size","type":"select","sort":null,"creator_id":1,"created_at":"2025-04-08T03:29:17.000000Z","updated_at":"2025-04-08T03:29:17.000000Z","deleted_at":null}},"message":"Attribute option updated successfully."}'
         headers: []
         description: ''
       -
@@ -2271,7 +2271,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1700,"type":"goods","name":"Hank Wuckert","service_tracking":"none","reference":null,"barcode":"7762125320434","price":79.07,"cost":50.88,"volume":6.15,"weight":60.96,"description":"Rerum cum mollitia possimus pariatur.","description_purchase":"Repellat rerum molestias quia.","description_sale":"Eum fugiat ipsum qui nesciunt enim.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3588,"uom_po_id":3589,"category_id":2445,"creator_id":null,"company_id":8034,"created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z","deleted_at":null,"category":{"id":2445,"name":"Miss Sunny Legros IV","full_name":"Miss Sunny Legros IV","parent_path":"\/","parent_id":null,"creator_id":33837,"created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z"},"tags":[{"id":653,"name":"Mrs. Amalia Breitenberg","color":"#0fc7f3","created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z","deleted_at":null}]},{"id":1701,"type":"goods","name":"Darrick Quigley","service_tracking":"none","reference":null,"barcode":"6306959227975","price":16.45,"cost":45,"volume":82.87,"weight":22.51,"description":"Cumque est ea et aliquid dolorem.","description_purchase":"Consequuntur voluptatibus eveniet sint eaque sit.","description_sale":"Sit sit impedit sequi error ullam.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":8,"parent_id":null,"uom_id":3590,"uom_po_id":3591,"category_id":2446,"creator_id":null,"company_id":8035,"created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z","deleted_at":null,"category":{"id":2446,"name":"Prof. Tre Little I","full_name":"Prof. Tre Little I","parent_path":"\/","parent_id":null,"creator_id":33844,"created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z"},"tags":[{"id":654,"name":"Layne Strosin","color":"#8a0493","created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z","deleted_at":null}]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"category":{"id":11,"name":"Electronic''s Devices","full_name":"All \/ Electronic''s Devices","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-04-08T03:34:44.000000Z","updated_at":"2025-04-08T03:34:44.000000Z"},"tags":[]},{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"category":{"id":11,"name":"Electronic''s Devices","full_name":"All \/ Electronic''s Devices","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-04-08T03:34:44.000000Z","updated_at":"2025-04-08T03:34:44.000000Z"},"tags":[]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2576,7 +2576,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":1702,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3592,"uom_po_id":3593,"category_id":2447,"creator_id":null,"company_id":8036,"created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z","deleted_at":null,"category":{"id":2447,"name":"Napoleon Rogahn","full_name":"Napoleon Rogahn","parent_path":"\/","parent_id":null,"creator_id":33851,"created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z"},"tags":[{"id":655,"name":"Conner Christiansen","color":"#8e90ef","created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z","deleted_at":null}]},"message":"Product created successfully."}'
+        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"category":{"id":11,"name":"Electronic''s Devices","full_name":"All \/ Electronic''s Devices","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-04-08T03:34:44.000000Z","updated_at":"2025-04-08T03:34:44.000000Z"},"tags":[]},"message":"Product created successfully."}'
         headers: []
         description: ''
       -
@@ -2653,7 +2653,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1703,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3594,"uom_po_id":3595,"category_id":2448,"creator_id":null,"company_id":8037,"created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z","deleted_at":null,"category":{"id":2448,"name":"Duane Quitzon","full_name":"Duane Quitzon","parent_path":"\/","parent_id":null,"creator_id":33858,"created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z"},"tags":[{"id":656,"name":"Ezekiel Walsh","color":"#d85d58","created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z","deleted_at":null}]}}'
+        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"category":{"id":11,"name":"Electronic''s Devices","full_name":"All \/ Electronic''s Devices","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-04-08T03:34:44.000000Z","updated_at":"2025-04-08T03:34:44.000000Z"},"tags":[]}}'
         headers: []
         description: ''
       -
@@ -2977,7 +2977,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1704,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3596,"uom_po_id":3597,"category_id":2449,"creator_id":null,"company_id":8038,"created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z","deleted_at":null,"category":{"id":2449,"name":"Jordon Ratke","full_name":"Jordon Ratke","parent_path":"\/","parent_id":null,"creator_id":33865,"created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z"},"tags":[{"id":657,"name":"Angus Kuhn","color":"#58cea5","created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z","deleted_at":null}]},"message":"Product updated successfully."}'
+        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"category":{"id":11,"name":"Electronic''s Devices","full_name":"All \/ Electronic''s Devices","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-04-08T03:34:44.000000Z","updated_at":"2025-04-08T03:34:44.000000Z"},"tags":[]},"message":"Product updated successfully."}'
         headers: []
         description: ''
       -
@@ -3113,7 +3113,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1705,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3598,"uom_po_id":3599,"category_id":2450,"creator_id":null,"company_id":8039,"created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z","deleted_at":null,"category":{"id":2450,"name":"Keith Conn","full_name":"Keith Conn","parent_path":"\/","parent_id":null,"creator_id":33872,"created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z"},"tags":[{"id":658,"name":"Jerrod Wolff","color":"#296010","created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z","deleted_at":null}]},"message":"Product restored successfully."}'
+        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null,"category":{"id":11,"name":"Electronic''s Devices","full_name":"All \/ Electronic''s Devices","parent_path":"\/1\/","parent_id":1,"creator_id":1,"created_at":"2025-04-08T03:34:44.000000Z","updated_at":"2025-04-08T03:34:44.000000Z"},"tags":[]},"message":"Product restored successfully."}'
         headers: []
         description: ''
       -
@@ -3301,7 +3301,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":674,"sort":2,"product_id":1706,"attribute_id":1105,"creator_id":33880,"created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z","attribute":{"id":1105,"name":"Brenda Johnston","type":"radio","sort":1,"creator_id":33881,"created_at":"2026-02-17T13:41:26.000000Z","updated_at":"2026-02-17T13:41:26.000000Z","deleted_at":null}},{"id":675,"sort":3,"product_id":1707,"attribute_id":1106,"creator_id":33888,"created_at":"2026-02-17T13:41:27.000000Z","updated_at":"2026-02-17T13:41:27.000000Z","attribute":{"id":1106,"name":"Dr. Micheal Douglas","type":"radio","sort":2,"creator_id":33889,"created_at":"2026-02-17T13:41:27.000000Z","updated_at":"2026-02-17T13:41:27.000000Z","deleted_at":null}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"sort":null,"product_id":1,"attribute_id":3,"creator_id":1,"created_at":"2025-04-08T03:49:27.000000Z","updated_at":"2025-04-08T03:49:27.000000Z","attribute":{"id":3,"name":"Lense Type","type":"radio","sort":null,"creator_id":1,"created_at":"2025-04-08T03:33:22.000000Z","updated_at":"2025-04-08T03:33:22.000000Z","deleted_at":null}},{"id":1,"sort":null,"product_id":1,"attribute_id":3,"creator_id":1,"created_at":"2025-04-08T03:49:27.000000Z","updated_at":"2025-04-08T03:49:27.000000Z","attribute":{"id":3,"name":"Lense Type","type":"radio","sort":null,"creator_id":1,"created_at":"2025-04-08T03:33:22.000000Z","updated_at":"2025-04-08T03:33:22.000000Z","deleted_at":null}}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -3398,7 +3398,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":676,"sort":2,"product_id":1708,"attribute_id":1107,"creator_id":33896,"created_at":"2026-02-17T13:41:27.000000Z","updated_at":"2026-02-17T13:41:27.000000Z","attribute":{"id":1107,"name":"Karolann Keebler","type":"radio","sort":1,"creator_id":33897,"created_at":"2026-02-17T13:41:27.000000Z","updated_at":"2026-02-17T13:41:27.000000Z","deleted_at":null}},"message":"Product attribute created successfully."}'
+        content: '{"data":{"id":1,"sort":null,"product_id":1,"attribute_id":3,"creator_id":1,"created_at":"2025-04-08T03:49:27.000000Z","updated_at":"2025-04-08T03:49:27.000000Z","attribute":{"id":3,"name":"Lense Type","type":"radio","sort":null,"creator_id":1,"created_at":"2025-04-08T03:33:22.000000Z","updated_at":"2025-04-08T03:33:22.000000Z","deleted_at":null}},"message":"Product attribute created successfully."}'
         headers: []
         description: ''
       -
@@ -3487,7 +3487,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":677,"sort":2,"product_id":1709,"attribute_id":1108,"creator_id":33904,"created_at":"2026-02-17T13:41:27.000000Z","updated_at":"2026-02-17T13:41:27.000000Z","attribute":{"id":1108,"name":"Elda Casper","type":"radio","sort":1,"creator_id":33905,"created_at":"2026-02-17T13:41:27.000000Z","updated_at":"2026-02-17T13:41:27.000000Z","deleted_at":null}}}'
+        content: '{"data":{"id":1,"sort":null,"product_id":1,"attribute_id":3,"creator_id":1,"created_at":"2025-04-08T03:49:27.000000Z","updated_at":"2025-04-08T03:49:27.000000Z","attribute":{"id":3,"name":"Lense Type","type":"radio","sort":null,"creator_id":1,"created_at":"2025-04-08T03:33:22.000000Z","updated_at":"2025-04-08T03:33:22.000000Z","deleted_at":null}}}'
         headers: []
         description: ''
       -
@@ -3603,7 +3603,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":678,"sort":2,"product_id":1710,"attribute_id":1109,"creator_id":33912,"created_at":"2026-02-17T13:41:27.000000Z","updated_at":"2026-02-17T13:41:27.000000Z","attribute":{"id":1109,"name":"Dr. Noel Halvorson","type":"radio","sort":1,"creator_id":33913,"created_at":"2026-02-17T13:41:27.000000Z","updated_at":"2026-02-17T13:41:27.000000Z","deleted_at":null}},"message":"Product attribute updated successfully."}'
+        content: '{"data":{"id":1,"sort":null,"product_id":1,"attribute_id":3,"creator_id":1,"created_at":"2025-04-08T03:49:27.000000Z","updated_at":"2025-04-08T03:49:27.000000Z","attribute":{"id":3,"name":"Lense Type","type":"radio","sort":null,"creator_id":1,"created_at":"2025-04-08T03:33:22.000000Z","updated_at":"2025-04-08T03:33:22.000000Z","deleted_at":null}},"message":"Product attribute updated successfully."}'
         headers: []
         description: ''
       -
@@ -3860,7 +3860,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":1711,"type":"goods","name":"Shania Mann DDS","service_tracking":"none","reference":null,"barcode":"6380661731074","price":20.95,"cost":6.27,"volume":15.46,"weight":38.05,"description":"Eius at nihil consectetur.","description_purchase":"Beatae vero nesciunt quos tempore alias ullam blanditiis.","description_sale":"Sint vel maxime consequatur ut aut explicabo fuga.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3610,"uom_po_id":3611,"category_id":2456,"creator_id":null,"company_id":8045,"created_at":"2026-02-17T13:41:27.000000Z","updated_at":"2026-02-17T13:41:27.000000Z","deleted_at":null},{"id":1712,"type":"goods","name":"Miss Alexane Gerhold","service_tracking":"none","reference":null,"barcode":"0053182821376","price":93.67,"cost":67.87,"volume":59.31,"weight":78.16,"description":"Expedita autem nemo enim omnis.","description_purchase":"Sint provident quisquam amet.","description_sale":"Reiciendis eos quidem nesciunt iure.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":8,"parent_id":null,"uom_id":3612,"uom_po_id":3613,"category_id":2457,"creator_id":null,"company_id":8046,"created_at":"2026-02-17T13:41:28.000000Z","updated_at":"2026-02-17T13:41:28.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null},{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -3919,7 +3919,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":[{"id":1713,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3614,"uom_po_id":3615,"category_id":2458,"creator_id":null,"company_id":8047,"created_at":"2026-02-17T13:41:28.000000Z","updated_at":"2026-02-17T13:41:28.000000Z","deleted_at":null},{"id":1714,"type":"goods","name":"Bettye Christiansen","service_tracking":"none","reference":null,"barcode":"5341733157315","price":92.02,"cost":93.6,"volume":44.76,"weight":96.07,"description":"Animi vero corporis voluptatem voluptas dolore.","description_purchase":"Amet amet ut perferendis id.","description_sale":"Non nesciunt est repellat recusandae nam.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":8,"parent_id":null,"uom_id":3616,"uom_po_id":3617,"category_id":2459,"creator_id":null,"company_id":8048,"created_at":"2026-02-17T13:41:28.000000Z","updated_at":"2026-02-17T13:41:28.000000Z","deleted_at":null}],"message":"Product variants synced successfully."}'
+        content: '{"data":[{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null},{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null}],"message":"Product variants synced successfully."}'
         headers: []
         description: ''
       -
@@ -4002,7 +4002,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1715,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3618,"uom_po_id":3619,"category_id":2460,"creator_id":null,"company_id":8049,"created_at":"2026-02-17T13:41:28.000000Z","updated_at":"2026-02-17T13:41:28.000000Z","deleted_at":null}}'
+        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null}}'
         headers: []
         description: ''
       -
@@ -4338,7 +4338,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1716,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3620,"uom_po_id":3621,"category_id":2461,"creator_id":null,"company_id":8050,"created_at":"2026-02-17T13:41:28.000000Z","updated_at":"2026-02-17T13:41:28.000000Z","deleted_at":null},"message":"Product variant updated successfully."}'
+        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null},"message":"Product variant updated successfully."}'
         headers: []
         description: ''
       -
@@ -4498,7 +4498,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":1717,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3622,"uom_po_id":3623,"category_id":2462,"creator_id":null,"company_id":8051,"created_at":"2026-02-17T13:41:28.000000Z","updated_at":"2026-02-17T13:41:28.000000Z","deleted_at":null},"message":"Product variant restored successfully."}'
+        content: '{"data":{"id":1,"type":"goods","name":"Big Vision 4K Action Camera","service_tracking":"none","reference":"Action-01","barcode":"BV4K-0001","price":150,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":true,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":null,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:37:55.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null},"message":"Product variant restored successfully."}'
         headers: []
         description: ''
       -
@@ -4697,7 +4697,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":104,"name":"Morgan Hirthe","barcode":null,"qty":"1.0000","sort":2,"product_id":1718,"creator_id":33976,"created_at":"2026-02-17T13:41:29.000000Z","updated_at":"2026-02-17T13:41:29.000000Z"},{"id":105,"name":"Dr. Millie Langworth","barcode":null,"qty":"1.0000","sort":3,"product_id":1719,"creator_id":33983,"created_at":"2026-02-17T13:41:29.000000Z","updated_at":"2026-02-17T13:41:29.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"Box","barcode":"BOX-01","qty":"10.0000","sort":null,"product_id":10,"creator_id":1,"created_at":"2025-04-10T08:44:18.000000Z","updated_at":"2025-04-10T08:44:18.000000Z"},{"id":1,"name":"Box","barcode":"BOX-01","qty":"10.0000","sort":null,"product_id":10,"creator_id":1,"created_at":"2025-04-10T08:44:18.000000Z","updated_at":"2025-04-10T08:44:18.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -4816,7 +4816,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":106,"name":"Ms. Audra Crooks II","barcode":null,"qty":"1.0000","sort":2,"product_id":1720,"creator_id":33990,"created_at":"2026-02-17T13:41:29.000000Z","updated_at":"2026-02-17T13:41:29.000000Z"},"message":"Packaging created successfully."}'
+        content: '{"data":{"id":1,"name":"Box","barcode":"BOX-01","qty":"10.0000","sort":null,"product_id":10,"creator_id":1,"created_at":"2025-04-10T08:44:18.000000Z","updated_at":"2025-04-10T08:44:18.000000Z"},"message":"Packaging created successfully."}'
         headers: []
         description: ''
       -
@@ -4893,7 +4893,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":107,"name":"Morgan Hirthe","barcode":null,"qty":"1.0000","sort":2,"product_id":1721,"creator_id":33997,"created_at":"2026-02-17T13:41:29.000000Z","updated_at":"2026-02-17T13:41:29.000000Z"}}'
+        content: '{"data":{"id":1,"name":"Box","barcode":"BOX-01","qty":"10.0000","sort":null,"product_id":10,"creator_id":1,"created_at":"2025-04-10T08:44:18.000000Z","updated_at":"2025-04-10T08:44:18.000000Z"}}'
         headers: []
         description: ''
       -
@@ -5031,7 +5031,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":108,"name":"Ms. Audra Crooks II","barcode":null,"qty":"1.0000","sort":2,"product_id":1722,"creator_id":34004,"created_at":"2026-02-17T13:41:29.000000Z","updated_at":"2026-02-17T13:41:29.000000Z"},"message":"Packaging updated successfully."}'
+        content: '{"data":{"id":1,"name":"Box","barcode":"BOX-01","qty":"10.0000","sort":null,"product_id":10,"creator_id":1,"created_at":"2025-04-10T08:44:18.000000Z","updated_at":"2025-04-10T08:44:18.000000Z"},"message":"Packaging updated successfully."}'
         headers: []
         description: ''
       -
