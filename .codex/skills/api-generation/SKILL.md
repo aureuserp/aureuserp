@@ -30,7 +30,10 @@ Follow this workflow to generate APIs that match shared AureusERP plugin convent
 - Use `Gate::authorize(...)` in each endpoint.
 - Use `Spatie\QueryBuilder\QueryBuilder` with explicit `allowedFilters`, `allowedSorts`, and `allowedIncludes`.
 - Return API resources for CRUD responses; return JSON `{ "message": "..." }` for delete/force-delete success responses.
-- In `FormRequest`, use `sometimes|required` behavior for update (`PUT`/`PATCH`) and include `bodyParameters()` for documentation.
+- In `FormRequest`, follow existing plugin request style (e.g. `InvoiceRequest`): define base `required` rules first, then convert top-level required fields to `sometimes|required` for update (`PUT`/`PATCH`) via a transformation loop. Do not use ad-hoc per-field update toggles when a plugin baseline exists.
+- In `FormRequest`, only expose writable payload fields from the corresponding Filament form workflow. Do not accept or document system-calculated, readonly, hidden, or lifecycle-managed columns.
+- For nested line arrays, mirror the same writable-only rule: include only user-editable fields; never validate/document computed totals, margins, status fields, or server-derived linkage columns unless explicitly editable in Filament.
+- Include `bodyParameters()` for documentation and keep examples restricted to writable fields only.
 - In `JsonResource`, include scalar IDs/timestamps and conditional relations via `whenLoaded(...)`.
 
 ## Reference files

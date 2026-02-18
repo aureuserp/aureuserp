@@ -74,11 +74,14 @@ Namespace:
 
 Rules conventions:
 - Keep `authorize()` as `true`; enforce permissions in controller policies.
-- For updates (`PUT/PATCH`), convert required fields to `sometimes|required`.
+- For updates (`PUT/PATCH`), use the project baseline pattern from existing requests (for example `plugins/webkul/accounts/src/Http/Requests/InvoiceRequest.php`): declare base `required` rules first, then transform top-level required rules to `sometimes|required` in one update block.
+- Do not expose system-calculated or lifecycle-managed fields in request rules. Build request payloads from user-editable Filament form inputs only.
+- For nested line arrays, validate only editable line fields; exclude computed totals/margins/status fields and any server-derived linkage fields unless explicitly editable.
 - Use explicit table names in `exists:<table>,id`.
 
 Documentation conventions:
 - Implement `bodyParameters()` with concise descriptions and realistic examples.
+- Keep `bodyParameters()` strictly aligned with writable request fields (no computed/system fields in docs).
 
 ## 4) Resource conventions
 
