@@ -2,6 +2,7 @@
 
 namespace Webkul\Project\Http\Resources\V1;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Webkul\Partner\Http\Resources\V1\PartnerResource;
 use Webkul\Security\Http\Resources\V1\UserResource;
@@ -9,7 +10,7 @@ use Webkul\Support\Http\Resources\V1\CompanyResource;
 
 class TaskResource extends JsonResource
 {
-    public function toArray($request): array
+    public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
@@ -42,12 +43,14 @@ class TaskResource extends JsonResource
             'deleted_at' => $this->deleted_at,
             'stage' => new TaskStageResource($this->whenLoaded('stage')),
             'project' => new ProjectResource($this->whenLoaded('project')),
+            'milestone' => new MilestoneResource($this->whenLoaded('milestone')),
             'partner' => new PartnerResource($this->whenLoaded('partner')),
             'parent' => new TaskResource($this->whenLoaded('parent')),
             'company' => new CompanyResource($this->whenLoaded('company')),
             'creator' => new UserResource($this->whenLoaded('creator')),
             'subTasks' => TaskResource::collection($this->whenLoaded('subTasks')),
             'users' => UserResource::collection($this->whenLoaded('users')),
+            'tags' => TagResource::collection($this->whenLoaded('tags')),
         ];
     }
 }

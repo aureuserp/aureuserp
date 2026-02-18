@@ -48,7 +48,7 @@ class TaskFactory extends Factory
             'total_hours_spent'   => 0,
             'overtime'            => 0,
             'progress'            => 0,
-            'parent_id'           => Task::factory(),
+            'parent_id'           => null,
             'project_id'          => Project::factory(),
             'stage_id'            => TaskStage::factory(),
             'partner_id'          => Partner::factory(),
