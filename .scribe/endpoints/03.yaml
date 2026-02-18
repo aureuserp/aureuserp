@@ -1,0 +1,2987 @@
+name: 'Sales API Management'
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: admin/api/v1/sales/products
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Products
+      subgroupDescription: 'Manage products'
+      title: 'List products'
+      description: 'Retrieve a paginated list of products with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, variants, uom, uomPO, category, tags, attributes, attribute_values, company, creator, propertyAccountIncome, propertyAccountExpense'
+        required: false
+        example: 'category,tags'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[type]':
+        custom: []
+        name: 'filter[type]'
+        description: 'Filter by product type'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - goods
+          - service
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[enable_sales]':
+        custom: []
+        name: 'filter[enable_sales]'
+        description: 'Filter by sales enabled'
+        required: false
+        example: 'true'
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[enable_purchase]':
+        custom: []
+        name: 'filter[enable_purchase]'
+        description: 'Filter by purchase enabled'
+        required: false
+        example: 'false'
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[category_id]':
+        custom: []
+        name: 'filter[category_id]'
+        description: 'Comma-separated list of category IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[trashed]':
+        custom: []
+        name: 'filter[trashed]'
+        description: 'Filter by trashed status: "with" (include trashed), "only" (only trashed), or any other value for non-trashed only'
+        required: false
+        example: with
+        type: string
+        enumValues:
+          - with
+          - only
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: '-created_at'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'category,tags'
+      'filter[enable_sales]': 'true'
+      'filter[enable_purchase]': 'false'
+      'filter[trashed]': with
+      sort: '-created_at'
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1609,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3378,"uom_po_id":3379,"category_id":2322,"creator_id":null,"company_id":7472,"created_at":"2026-02-16T11:56:12.000000Z","updated_at":"2026-02-16T11:56:12.000000Z","deleted_at":null,"category":{"id":2322,"name":"Connor Bins","full_name":"Connor Bins","parent_path":"\/","parent_id":null,"creator_id":31679,"created_at":"2026-02-16T11:56:12.000000Z","updated_at":"2026-02-16T11:56:12.000000Z"},"tags":[{"id":611,"name":"Katrina McGlynn","color":"#dab530","created_at":"2026-02-16T11:56:12.000000Z","updated_at":"2026-02-16T11:56:12.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},{"id":1610,"type":"goods","name":"Dr. Zander Veum","service_tracking":"none","reference":null,"barcode":"2069400513198","price":92.89,"cost":73.97,"volume":70.73,"weight":5.47,"description":"Exercitationem omnis aliquam velit sapiente in nulla reiciendis.","description_purchase":"Molestiae porro et iusto enim doloribus.","description_sale":"Maxime corrupti voluptatum et tempore minus eveniet.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":8,"parent_id":null,"uom_id":3380,"uom_po_id":3381,"category_id":2323,"creator_id":null,"company_id":7473,"created_at":"2026-02-16T11:56:12.000000Z","updated_at":"2026-02-16T11:56:12.000000Z","deleted_at":null,"category":{"id":2323,"name":"Dr. Kaela Macejkovic","full_name":"Dr. Kaela Macejkovic","parent_path":"\/","parent_id":null,"creator_id":31686,"created_at":"2026-02-16T11:56:12.000000Z","updated_at":"2026-02-16T11:56:12.000000Z"},"tags":[{"id":612,"name":"Kenya Dibbert","color":"#c47183","created_at":"2026-02-16T11:56:12.000000Z","updated_at":"2026-02-16T11:56:12.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: admin/api/v1/sales/products
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Products
+      subgroupDescription: 'Manage products'
+      title: 'Create product'
+      description: 'Create a new product'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      type:
+        custom: []
+        name: type
+        description: 'Product type: goods, service, consu (consumable).'
+        required: true
+        example: goods
+        type: string
+        enumValues:
+          - goods
+          - service
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      name:
+        custom: []
+        name: name
+        description: 'Product name (max 255 characters). Must not be greater than 255 characters.'
+        required: true
+        example: 'Laptop Computer'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      service_tracking:
+        custom: []
+        name: service_tracking
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      reference:
+        custom: []
+        name: reference
+        description: 'Internal reference code (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: PROD-001
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      barcode:
+        custom: []
+        name: barcode
+        description: 'Product barcode (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: '1234567890'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      price:
+        custom: []
+        name: price
+        description: 'Sales price (minimum 0). Must be at least 0.'
+        required: true
+        example: 999.99
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      cost:
+        custom: []
+        name: cost
+        description: 'Product cost (minimum 0). Must be at least 0.'
+        required: false
+        example: 750.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      volume:
+        custom: []
+        name: volume
+        description: 'Product volume (min 0, max 99999999999). Must be at least 0. Must not be greater than 99999999999.'
+        required: false
+        example: 0.5
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      weight:
+        custom: []
+        name: weight
+        description: 'Product weight (min 0, max 99999999999). Must be at least 0. Must not be greater than 99999999999.'
+        required: false
+        example: 2.5
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description:
+        custom: []
+        name: description
+        description: 'Product description.'
+        required: false
+        example: 'High-performance laptop with latest specifications.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description_purchase:
+        custom: []
+        name: description_purchase
+        description: 'Purchase description.'
+        required: false
+        example: 'Enterprise laptop for business use.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description_sale:
+        custom: []
+        name: description_sale
+        description: 'Sales description.'
+        required: false
+        example: 'Perfect for professionals and power users.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      enable_sales:
+        custom: []
+        name: enable_sales
+        description: 'Whether this product can be sold.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      enable_purchase:
+        custom: []
+        name: enable_purchase
+        description: 'Whether this product can be purchased.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      is_favorite:
+        custom: []
+        name: is_favorite
+        description: 'Mark this product as favorite.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      images:
+        custom: []
+        name: images
+        description: ''
+        required: false
+        example:
+          - architecto
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      uom_id:
+        custom: []
+        name: uom_id
+        description: 'Unit of measure ID.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      uom_po_id:
+        custom: []
+        name: uom_po_id
+        description: 'Purchase unit of measure ID.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      category_id:
+        custom: []
+        name: category_id
+        description: 'Product category ID. The <code>id</code> of an existing record in the products_categories table.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID this product belongs to.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      tags:
+        custom: []
+        name: tags
+        description: 'The <code>id</code> of an existing record in the products_tags table.'
+        required: false
+        example:
+          - 16
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      property_account_income_id:
+        custom: []
+        name: property_account_income_id
+        description: 'Income account ID for this product. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      property_account_expense_id:
+        custom: []
+        name: property_account_expense_id
+        description: 'Expense account ID for this product. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      image:
+        custom: []
+        name: image
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      service_type:
+        custom: []
+        name: service_type
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      sale_line_warn:
+        custom: []
+        name: sale_line_warn
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      expense_policy:
+        custom: []
+        name: expense_policy
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      invoice_policy:
+        custom: []
+        name: invoice_policy
+        description: 'Invoice policy: "order" (invoice on order) or "delivery" (invoice on delivery).'
+        required: false
+        example: order
+        type: string
+        enumValues:
+          - order
+          - delivery
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      sale_line_warn_msg:
+        custom: []
+        name: sale_line_warn_msg
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      sales_ok:
+        custom: []
+        name: sales_ok
+        description: 'Whether this product can be sold.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      purchase_ok:
+        custom: []
+        name: purchase_ok
+        description: 'Whether this product can be purchased.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      type: goods
+      name: 'Laptop Computer'
+      service_tracking: b
+      reference: PROD-001
+      barcode: '1234567890'
+      price: 999.99
+      cost: 750.0
+      volume: 0.5
+      weight: 2.5
+      description: 'High-performance laptop with latest specifications.'
+      description_purchase: 'Enterprise laptop for business use.'
+      description_sale: 'Perfect for professionals and power users.'
+      enable_sales: false
+      enable_purchase: false
+      is_favorite: false
+      images:
+        - architecto
+      uom_id: 1
+      uom_po_id: 1
+      category_id: 1
+      company_id: 1
+      tags:
+        - 16
+      property_account_income_id: 1
+      property_account_expense_id: 2
+      image: architecto
+      service_type: architecto
+      sale_line_warn: architecto
+      expense_policy: architecto
+      invoice_policy: order
+      sale_line_warn_msg: architecto
+      sales_ok: false
+      purchase_ok: false
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":1611,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3382,"uom_po_id":3383,"category_id":2324,"creator_id":null,"company_id":7474,"created_at":"2026-02-16T11:56:13.000000Z","updated_at":"2026-02-16T11:56:13.000000Z","deleted_at":null,"category":{"id":2324,"name":"Katrina McGlynn","full_name":"Katrina McGlynn","parent_path":"\/","parent_id":null,"creator_id":31693,"created_at":"2026-02-16T11:56:13.000000Z","updated_at":"2026-02-16T11:56:13.000000Z"},"tags":[{"id":613,"name":"Mr. Glennie Huel MD","color":"#2a8dbf","created_at":"2026-02-16T11:56:13.000000Z","updated_at":"2026-02-16T11:56:13.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."], "type": ["The type field is required."], "category_id": ["The category id field is required."], "price": ["The price field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/sales/products/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Products
+      subgroupDescription: 'Manage products'
+      title: 'Show product'
+      description: 'Retrieve a specific product by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, variants, uom, uomPO, category, attributes, attribute_values, tags, company, creator, propertyAccountIncome, propertyAccountExpense'
+        required: false
+        example: 'category,tags'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'category,tags'
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1612,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3384,"uom_po_id":3385,"category_id":2325,"creator_id":null,"company_id":7475,"created_at":"2026-02-16T11:56:13.000000Z","updated_at":"2026-02-16T11:56:13.000000Z","deleted_at":null,"category":{"id":2325,"name":"Gloria Christiansen","full_name":"Gloria Christiansen","parent_path":"\/","parent_id":null,"creator_id":31700,"created_at":"2026-02-16T11:56:13.000000Z","updated_at":"2026-02-16T11:56:13.000000Z"},"tags":[{"id":614,"name":"Dr. Margarita Satterfield","color":"#23f5f4","created_at":"2026-02-16T11:56:13.000000Z","updated_at":"2026-02-16T11:56:13.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/sales/products/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Products
+      subgroupDescription: 'Manage products'
+      title: 'Update product'
+      description: 'Update an existing product'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      type:
+        custom: []
+        name: type
+        description: 'Product type: goods, service, consu (consumable).'
+        required: false
+        example: goods
+        type: string
+        enumValues:
+          - goods
+          - service
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      name:
+        custom: []
+        name: name
+        description: 'Product name (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: 'Laptop Computer'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      service_tracking:
+        custom: []
+        name: service_tracking
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      reference:
+        custom: []
+        name: reference
+        description: 'Internal reference code (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: PROD-001
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      barcode:
+        custom: []
+        name: barcode
+        description: 'Product barcode (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: '1234567890'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      price:
+        custom: []
+        name: price
+        description: 'Sales price (minimum 0). Must be at least 0.'
+        required: false
+        example: 999.99
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      cost:
+        custom: []
+        name: cost
+        description: 'Product cost (minimum 0). Must be at least 0.'
+        required: false
+        example: 750.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      volume:
+        custom: []
+        name: volume
+        description: 'Product volume (min 0, max 99999999999). Must be at least 0. Must not be greater than 99999999999.'
+        required: false
+        example: 0.5
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      weight:
+        custom: []
+        name: weight
+        description: 'Product weight (min 0, max 99999999999). Must be at least 0. Must not be greater than 99999999999.'
+        required: false
+        example: 2.5
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description:
+        custom: []
+        name: description
+        description: 'Product description.'
+        required: false
+        example: 'High-performance laptop with latest specifications.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description_purchase:
+        custom: []
+        name: description_purchase
+        description: 'Purchase description.'
+        required: false
+        example: 'Enterprise laptop for business use.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description_sale:
+        custom: []
+        name: description_sale
+        description: 'Sales description.'
+        required: false
+        example: 'Perfect for professionals and power users.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      enable_sales:
+        custom: []
+        name: enable_sales
+        description: 'Whether this product can be sold.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      enable_purchase:
+        custom: []
+        name: enable_purchase
+        description: 'Whether this product can be purchased.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      is_favorite:
+        custom: []
+        name: is_favorite
+        description: 'Mark this product as favorite.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      images:
+        custom: []
+        name: images
+        description: ''
+        required: false
+        example:
+          - architecto
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      uom_id:
+        custom: []
+        name: uom_id
+        description: 'Unit of measure ID.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      uom_po_id:
+        custom: []
+        name: uom_po_id
+        description: 'Purchase unit of measure ID.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      category_id:
+        custom: []
+        name: category_id
+        description: 'Product category ID. The <code>id</code> of an existing record in the products_categories table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID this product belongs to.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      tags:
+        custom: []
+        name: tags
+        description: 'The <code>id</code> of an existing record in the products_tags table.'
+        required: false
+        example:
+          - 16
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      property_account_income_id:
+        custom: []
+        name: property_account_income_id
+        description: 'Income account ID for this product. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      property_account_expense_id:
+        custom: []
+        name: property_account_expense_id
+        description: 'Expense account ID for this product. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      image:
+        custom: []
+        name: image
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      service_type:
+        custom: []
+        name: service_type
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      sale_line_warn:
+        custom: []
+        name: sale_line_warn
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      expense_policy:
+        custom: []
+        name: expense_policy
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      invoice_policy:
+        custom: []
+        name: invoice_policy
+        description: 'Invoice policy: "order" (invoice on order) or "delivery" (invoice on delivery).'
+        required: false
+        example: order
+        type: string
+        enumValues:
+          - order
+          - delivery
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      sale_line_warn_msg:
+        custom: []
+        name: sale_line_warn_msg
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      sales_ok:
+        custom: []
+        name: sales_ok
+        description: 'Whether this product can be sold.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      purchase_ok:
+        custom: []
+        name: purchase_ok
+        description: 'Whether this product can be purchased.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      type: goods
+      name: 'Laptop Computer'
+      service_tracking: b
+      reference: PROD-001
+      barcode: '1234567890'
+      price: 999.99
+      cost: 750.0
+      volume: 0.5
+      weight: 2.5
+      description: 'High-performance laptop with latest specifications.'
+      description_purchase: 'Enterprise laptop for business use.'
+      description_sale: 'Perfect for professionals and power users.'
+      enable_sales: false
+      enable_purchase: false
+      is_favorite: false
+      images:
+        - architecto
+      uom_id: 1
+      uom_po_id: 1
+      category_id: 1
+      company_id: 1
+      tags:
+        - 16
+      property_account_income_id: 1
+      property_account_expense_id: 2
+      image: architecto
+      service_type: architecto
+      sale_line_warn: architecto
+      expense_policy: architecto
+      invoice_policy: order
+      sale_line_warn_msg: architecto
+      sales_ok: false
+      purchase_ok: false
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1613,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3386,"uom_po_id":3387,"category_id":2326,"creator_id":null,"company_id":7476,"created_at":"2026-02-16T11:56:13.000000Z","updated_at":"2026-02-16T11:56:13.000000Z","deleted_at":null,"category":{"id":2326,"name":"Miss Elsa Bednar DDS","full_name":"Miss Elsa Bednar DDS","parent_path":"\/","parent_id":null,"creator_id":31707,"created_at":"2026-02-16T11:56:13.000000Z","updated_at":"2026-02-16T11:56:13.000000Z"},"tags":[{"id":615,"name":"Prof. Dewayne Heathcote IV","color":"#e283db","created_at":"2026-02-16T11:56:13.000000Z","updated_at":"2026-02-16T11:56:13.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must be a string."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/sales/products/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Products
+      subgroupDescription: 'Manage products'
+      title: 'Delete product'
+      description: 'Soft delete a product'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Product deleted successfully."}'
+        headers: []
+        description: 'Product deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/sales/products/{id}/restore'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Products
+      subgroupDescription: 'Manage products'
+      title: 'Restore product'
+      description: 'Restore a soft-deleted product'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1614,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3388,"uom_po_id":3389,"category_id":2327,"creator_id":null,"company_id":7477,"created_at":"2026-02-16T11:56:13.000000Z","updated_at":"2026-02-16T11:56:13.000000Z","deleted_at":null,"category":{"id":2327,"name":"Adolfo Carter III","full_name":"Adolfo Carter III","parent_path":"\/","parent_id":null,"creator_id":31714,"created_at":"2026-02-16T11:56:13.000000Z","updated_at":"2026-02-16T11:56:13.000000Z"},"tags":[{"id":616,"name":"Mrs. Cassidy Hodkiewicz","color":"#edaa52","created_at":"2026-02-16T11:56:13.000000Z","updated_at":"2026-02-16T11:56:13.000000Z","deleted_at":null}],"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product restored successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/sales/products/{id}/force'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Products
+      subgroupDescription: 'Manage products'
+      title: 'Force delete product'
+      description: 'Permanently delete a product (cannot be restored)'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Product permanently deleted."}'
+        headers: []
+        description: 'Product permanently deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/sales/products/{product_id}/variants'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: 'Product variants'
+      subgroupDescription: 'Manage product variants'
+      title: 'List product variants'
+      description: 'Retrieve a paginated list of variants for a specific product'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, uom, uomPO, category, tags, attributes, attribute_values, company, creator, propertyAccountIncome, propertyAccountExpense'
+        required: false
+        example: attributes
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[type]':
+        custom: []
+        name: 'filter[type]'
+        description: 'Filter by product type'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - goods
+          - service
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[enable_sales]':
+        custom: []
+        name: 'filter[enable_sales]'
+        description: 'Filter by sales enabled'
+        required: false
+        example: 'true'
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[enable_purchase]':
+        custom: []
+        name: 'filter[enable_purchase]'
+        description: 'Filter by purchase enabled'
+        required: false
+        example: 'false'
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[category_id]':
+        custom: []
+        name: 'filter[category_id]'
+        description: 'Comma-separated list of category IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[trashed]':
+        custom: []
+        name: 'filter[trashed]'
+        description: 'Filter by trashed status: "with" (include trashed), "only" (only trashed), or any other value for non-trashed only'
+        required: false
+        example: with
+        type: string
+        enumValues:
+          - with
+          - only
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: '-created_at'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: attributes
+      'filter[enable_sales]': 'true'
+      'filter[enable_purchase]': 'false'
+      'filter[trashed]': with
+      sort: '-created_at'
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1615,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3390,"uom_po_id":3391,"category_id":2328,"creator_id":null,"company_id":7478,"created_at":"2026-02-16T11:56:13.000000Z","updated_at":"2026-02-16T11:56:13.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},{"id":1616,"type":"goods","name":"Thurman Wuckert","service_tracking":"none","reference":null,"barcode":"5821579778481","price":25.41,"cost":6.71,"volume":82.8,"weight":38.47,"description":"Enim doloribus rerum maxime corrupti.","description_purchase":"Et tempore minus eveniet veniam dignissimos dolorem dolor.","description_sale":"Sequi voluptatem possimus quis ab et.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":8,"parent_id":null,"uom_id":3392,"uom_po_id":3393,"category_id":2329,"creator_id":null,"company_id":7479,"created_at":"2026-02-16T11:56:13.000000Z","updated_at":"2026-02-16T11:56:13.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/sales/products/{product_id}/variants'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: 'Product variants'
+      subgroupDescription: 'Manage product variants'
+      title: 'Sync product variants'
+      description: 'Sync variants for a specific product based on attributes'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":[{"id":1617,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3394,"uom_po_id":3395,"category_id":2330,"creator_id":null,"company_id":7480,"created_at":"2026-02-16T11:56:13.000000Z","updated_at":"2026-02-16T11:56:13.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},{"id":1618,"type":"goods","name":"Dr. Deion Collins Jr.","service_tracking":"none","reference":null,"barcode":"1712990034826","price":66.86,"cost":44.76,"volume":23.41,"weight":52.25,"description":"Accusamus commodi et qui ipsa itaque autem mollitia.","description_purchase":"Dolore ut et et illo porro accusantium ut.","description_sale":"Dolor molestiae non ut earum accusantium iste nostrum aut.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":8,"parent_id":null,"uom_id":3396,"uom_po_id":3397,"category_id":2331,"creator_id":null,"company_id":7481,"created_at":"2026-02-16T11:56:14.000000Z","updated_at":"2026-02-16T11:56:14.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}],"message":"Product variants synced successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/sales/products/{product_id}/variants/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: 'Product variants'
+      subgroupDescription: 'Manage product variants'
+      title: 'Show product variant'
+      description: 'Retrieve a specific product variant by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The variant ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> parent, uom, uomPO, category, tags, attributes, attribute_values, company, creator, propertyAccountIncome, propertyAccountExpense'
+        required: false
+        example: attributes
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: attributes
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1619,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3398,"uom_po_id":3399,"category_id":2332,"creator_id":null,"company_id":7482,"created_at":"2026-02-16T11:56:14.000000Z","updated_at":"2026-02-16T11:56:14.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product variant not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/sales/products/{product_id}/variants/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: 'Product variants'
+      subgroupDescription: 'Manage product variants'
+      title: 'Update product variant'
+      description: 'Update an existing product variant'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The variant ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      type:
+        custom: []
+        name: type
+        description: 'Product type: goods, service, consu (consumable).'
+        required: false
+        example: goods
+        type: string
+        enumValues:
+          - goods
+          - service
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      name:
+        custom: []
+        name: name
+        description: 'Product name (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: 'Laptop Computer'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      service_tracking:
+        custom: []
+        name: service_tracking
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      reference:
+        custom: []
+        name: reference
+        description: 'Internal reference code (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: PROD-001
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      barcode:
+        custom: []
+        name: barcode
+        description: 'Product barcode (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: '1234567890'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      price:
+        custom: []
+        name: price
+        description: 'Sales price (minimum 0). Must be at least 0.'
+        required: false
+        example: 999.99
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      cost:
+        custom: []
+        name: cost
+        description: 'Product cost (minimum 0). Must be at least 0.'
+        required: false
+        example: 750.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      volume:
+        custom: []
+        name: volume
+        description: 'Product volume (min 0, max 99999999999). Must be at least 0. Must not be greater than 99999999999.'
+        required: false
+        example: 0.5
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      weight:
+        custom: []
+        name: weight
+        description: 'Product weight (min 0, max 99999999999). Must be at least 0. Must not be greater than 99999999999.'
+        required: false
+        example: 2.5
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description:
+        custom: []
+        name: description
+        description: 'Product description.'
+        required: false
+        example: 'High-performance laptop with latest specifications.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description_purchase:
+        custom: []
+        name: description_purchase
+        description: 'Purchase description.'
+        required: false
+        example: 'Enterprise laptop for business use.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      description_sale:
+        custom: []
+        name: description_sale
+        description: 'Sales description.'
+        required: false
+        example: 'Perfect for professionals and power users.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      enable_sales:
+        custom: []
+        name: enable_sales
+        description: 'Whether this product can be sold.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      enable_purchase:
+        custom: []
+        name: enable_purchase
+        description: 'Whether this product can be purchased.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      is_favorite:
+        custom: []
+        name: is_favorite
+        description: 'Mark this product as favorite.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      images:
+        custom: []
+        name: images
+        description: ''
+        required: false
+        example:
+          - architecto
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      uom_id:
+        custom: []
+        name: uom_id
+        description: 'Unit of measure ID.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      uom_po_id:
+        custom: []
+        name: uom_po_id
+        description: 'Purchase unit of measure ID.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      category_id:
+        custom: []
+        name: category_id
+        description: 'Product category ID. The <code>id</code> of an existing record in the products_categories table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID this product belongs to.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      tags:
+        custom: []
+        name: tags
+        description: 'The <code>id</code> of an existing record in the products_tags table.'
+        required: false
+        example:
+          - 16
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      property_account_income_id:
+        custom: []
+        name: property_account_income_id
+        description: 'Income account ID for this product. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      property_account_expense_id:
+        custom: []
+        name: property_account_expense_id
+        description: 'Expense account ID for this product. The <code>id</code> of an existing record in the accounts_accounts table.'
+        required: false
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      image:
+        custom: []
+        name: image
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      service_type:
+        custom: []
+        name: service_type
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      sale_line_warn:
+        custom: []
+        name: sale_line_warn
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      expense_policy:
+        custom: []
+        name: expense_policy
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      invoice_policy:
+        custom: []
+        name: invoice_policy
+        description: 'Invoice policy: "order" (invoice on order) or "delivery" (invoice on delivery).'
+        required: false
+        example: order
+        type: string
+        enumValues:
+          - order
+          - delivery
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      sale_line_warn_msg:
+        custom: []
+        name: sale_line_warn_msg
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      sales_ok:
+        custom: []
+        name: sales_ok
+        description: 'Whether this product can be sold.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      purchase_ok:
+        custom: []
+        name: purchase_ok
+        description: 'Whether this product can be purchased.'
+        required: false
+        example: false
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      type: goods
+      name: 'Laptop Computer'
+      service_tracking: b
+      reference: PROD-001
+      barcode: '1234567890'
+      price: 999.99
+      cost: 750.0
+      volume: 0.5
+      weight: 2.5
+      description: 'High-performance laptop with latest specifications.'
+      description_purchase: 'Enterprise laptop for business use.'
+      description_sale: 'Perfect for professionals and power users.'
+      enable_sales: false
+      enable_purchase: false
+      is_favorite: false
+      images:
+        - architecto
+      uom_id: 1
+      uom_po_id: 1
+      category_id: 1
+      company_id: 1
+      tags:
+        - 16
+      property_account_income_id: 1
+      property_account_expense_id: 2
+      image: architecto
+      service_type: architecto
+      sale_line_warn: architecto
+      expense_policy: architecto
+      invoice_policy: order
+      sale_line_warn_msg: architecto
+      sales_ok: false
+      purchase_ok: false
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1620,"type":"goods","name":"Ms. Elisabeth Okuneva","service_tracking":"none","reference":null,"barcode":"6290005644321","price":54.27,"cost":56,"volume":72.13,"weight":54.52,"description":"Mollitia modi deserunt aut ab provident perspiciatis quo.","description_purchase":"Nostrum aut adipisci quidem nostrum.","description_sale":"Commodi incidunt iure odit.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3400,"uom_po_id":3401,"category_id":2333,"creator_id":null,"company_id":7483,"created_at":"2026-02-16T11:56:14.000000Z","updated_at":"2026-02-16T11:56:14.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product variant updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product variant not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must be a string."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/sales/products/{product_id}/variants/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: 'Product variants'
+      subgroupDescription: 'Manage product variants'
+      title: 'Delete product variant'
+      description: 'Soft delete a product variant'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The variant ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Product variant deleted successfully."}'
+        headers: []
+        description: 'Product variant deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product variant not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/sales/products/{product_id}/variants/{id}/restore'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: 'Product variants'
+      subgroupDescription: 'Manage product variants'
+      title: 'Restore product variant'
+      description: 'Restore a soft-deleted product variant'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The variant ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1621,"type":"goods","name":"Morgan Hirthe","service_tracking":"none","reference":null,"barcode":"4217004328818","price":60.53,"cost":74.05,"volume":19.65,"weight":12.24,"description":"Et modi ipsum nostrum omnis autem et consequatur.","description_purchase":"Dolores enim non facere tempora.","description_sale":"Voluptatem laboriosam praesentium quis adipisci.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3402,"uom_po_id":3403,"category_id":2334,"creator_id":null,"company_id":7484,"created_at":"2026-02-16T11:56:14.000000Z","updated_at":"2026-02-16T11:56:14.000000Z","deleted_at":null,"property_account_income_id":null,"property_account_expense_id":null,"image":null,"service_type":null,"sale_line_warn":null,"expense_policy":null,"invoice_policy":null,"sale_line_warn_msg":null,"sales_ok":1,"purchase_ok":1},"message":"Product variant restored successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product variant not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/sales/products/{product_id}/variants/{id}/force'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: 'Product variants'
+      subgroupDescription: 'Manage product variants'
+      title: 'Force delete product variant'
+      description: 'Permanently delete a product variant (cannot be restored)'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      product_id:
+        custom: []
+        name: product_id
+        description: 'The product ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The variant ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      product_id: 1
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Product variant permanently deleted."}'
+        headers: []
+        description: 'Product variant permanently deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Product variant not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: admin/api/v1/sales/orders
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Do stuff with orders'
+      title: 'List orders'
+      description: 'Retrieve a paginated list of orders with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, partnerInvoice, partnerShipping, user, team, company, currency, paymentTerm, fiscalPosition, journal, campaign, utmSource, medium, warehouse, lines, lines.product, lines.linkedSaleOrderSale, lines.uom, lines.productPackaging, lines.currency, lines.orderPartner, lines.salesman, lines.warehouse, lines.route, lines.company'
+        required: false
+        example: 'partner,lines'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[state]':
+        custom: []
+        name: 'filter[state]'
+        description: 'Filter by state'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - draft
+          - sent
+          - sale
+          - cancel
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[partner_id]':
+        custom: []
+        name: 'filter[partner_id]'
+        description: 'Comma-separated list of partner IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: '-created_at'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'partner,lines'
+      sort: '-created_at'
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":329,"name":"SO\/329","state":"draft","invoice_status":"to_invoice","client_order_ref":"PO-1881","origin":"SO-4902","reference":null,"date_order":"2026-02-13","validity_date":null,"commitment_date":null,"currency_rate":1,"amount_untaxed":119.7035,"amount_tax":17.9555,"amount_total":137.659,"locked":false,"require_signature":false,"require_payment":false,"signed_by":null,"signed_on":null,"prepayment_percent":0,"note":"Ipsum nostrum omnis autem et consequatur aut dolores enim. Facere tempora ex voluptatem laboriosam. Quis adipisci molestias fugit deleniti distinctio eum.","access_token":"d03cceb8-0e59-3c26-8133-808072ac8a4c","partner_id":41714,"partner_invoice_id":41700,"partner_shipping_id":41706,"user_id":31780,"team_id":null,"company_id":7485,"currency_id":2703,"payment_term_id":null,"fiscal_position_id":null,"journal_id":null,"campaign_id":null,"utm_source_id":null,"medium_id":null,"warehouse_id":null,"created_at":"2026-02-16T11:56:14+00:00","updated_at":"2026-02-16T11:56:14+00:00","deleted_at":null,"partner":{"id":41714,"account_type":"individual","sub_type":"partner","name":"Prof. Lula Rowe","email":"marion41@example.org","phone":"1-364-765-3364","mobile":"+1-623-908-9538","avatar":null,"avatar_url":null,"job_title":"Log Grader and Scaler","website":"http:\/\/casper.org\/sint-qui-et-ducimus","tax_id":"0263888812","company_registry":"CR-46209281","reference":"iusto","is_active":true,"color":"#c65c6c","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":2678,"company_id":7488,"industry_id":2673,"user_id":31783,"creator_id":31782,"created_at":"2026-02-16T11:56:14.000000Z","updated_at":"2026-02-16T11:56:14.000000Z","deleted_at":null,"country":null,"state":null},"lines":[{"id":121,"sort":9,"name":"Et enim non.","display_type":null,"product_uom_qty":39.09,"product_qty":39.09,"qty_delivered":0,"qty_invoiced":0,"qty_to_invoice":39.09,"product_packaging_qty":0,"price_unit":481.7057,"technical_price_unit":481.7057,"discount":0,"price_subtotal":18829.8758,"price_tax":2824.4814,"price_total":21654.3572,"price_reduce_taxexcl":481.7057,"price_reduce_taxinc":553.9616,"purchase_price":289.0234,"margin":7531.9503,"margin_percent":40,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":18829.8758,"state":"draft","invoice_status":null,"qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":28,"analytic_distribution":null,"order_id":329,"product_id":1622,"linked_sale_order_sale_id":null,"product_uom_id":3406,"product_packaging_id":null,"currency_id":2704,"order_partner_id":41721,"salesman_id":31790,"warehouse_id":null,"route_id":null,"company_id":7489,"created_at":"2026-02-16T11:56:15+00:00","updated_at":"2026-02-16T11:56:15+00:00"}]},{"id":330,"name":"SO\/330","state":"draft","invoice_status":"to_invoice","client_order_ref":null,"origin":null,"reference":null,"date_order":"2026-01-23","validity_date":"2026-03-15","commitment_date":null,"currency_rate":1,"amount_untaxed":9972.889,"amount_tax":1495.9334,"amount_total":11468.8224,"locked":false,"require_signature":false,"require_payment":false,"signed_by":null,"signed_on":null,"prepayment_percent":0,"note":null,"access_token":"3412c780-9638-3629-9ca3-ca734e4a1c1b","partner_id":41753,"partner_invoice_id":41739,"partner_shipping_id":41745,"user_id":31808,"team_id":null,"company_id":7492,"currency_id":2705,"payment_term_id":null,"fiscal_position_id":null,"journal_id":null,"campaign_id":null,"utm_source_id":null,"medium_id":null,"warehouse_id":null,"created_at":"2026-02-16T11:56:15+00:00","updated_at":"2026-02-16T11:56:15+00:00","deleted_at":null,"partner":{"id":41753,"account_type":"individual","sub_type":"partner","name":"Aliza Zieme","email":"kulas.eric@example.net","phone":"(434) 988-8976","mobile":"1-678-504-5915","avatar":null,"avatar_url":null,"job_title":"Operating Engineer","website":"http:\/\/www.ernser.com\/at-molestiae-voluptatem-laborum-voluptas","tax_id":"6809365192","company_registry":"CR-01977473","reference":"fugit","is_active":true,"color":"#e36d93","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":2682,"company_id":7495,"industry_id":2677,"user_id":31811,"creator_id":31810,"created_at":"2026-02-16T11:56:15.000000Z","updated_at":"2026-02-16T11:56:15.000000Z","deleted_at":null,"country":null,"state":null},"lines":[{"id":122,"sort":10,"name":"Enim aliquam at voluptatem.","display_type":null,"product_uom_qty":18.51,"product_qty":18.51,"qty_delivered":0,"qty_invoiced":0,"qty_to_invoice":18.51,"product_packaging_qty":0,"price_unit":361.1245,"technical_price_unit":361.1245,"discount":0,"price_subtotal":6684.4145,"price_tax":1002.6622,"price_total":7687.0767,"price_reduce_taxexcl":361.1245,"price_reduce_taxinc":415.2932,"purchase_price":216.6747,"margin":2673.7658,"margin_percent":40,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":6684.4145,"state":"draft","invoice_status":null,"qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":10,"analytic_distribution":null,"order_id":330,"product_id":1623,"linked_sale_order_sale_id":null,"product_uom_id":3409,"product_packaging_id":null,"currency_id":2706,"order_partner_id":41760,"salesman_id":31818,"warehouse_id":null,"route_id":null,"company_id":7496,"created_at":"2026-02-16T11:56:15+00:00","updated_at":"2026-02-16T11:56:15+00:00"}]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: admin/api/v1/sales/orders
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Do stuff with orders'
+      title: 'Create order'
+      description: 'Create a new order'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'The name of the order'
+        required: true
+        example: SO001
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      partner_id:
+        custom: []
+        name: partner_id
+        description: 'The ID of the partner'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      message:
+        custom: []
+        name: message
+        description: 'Additional message or notes'
+        required: false
+        example: 'Customer requested expedited shipping'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      name: SO001
+      partner_id: 1
+      message: 'Customer requested expedited shipping'
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":331,"name":"SO\/331","state":"draft","invoice_status":"to_invoice","client_order_ref":"PO-1881","origin":"SO-4902","reference":null,"date_order":"2026-02-13","validity_date":null,"commitment_date":null,"currency_rate":1,"amount_untaxed":119.7035,"amount_tax":17.9555,"amount_total":137.659,"locked":false,"require_signature":false,"require_payment":false,"signed_by":null,"signed_on":null,"prepayment_percent":0,"note":"Ipsum nostrum omnis autem et consequatur aut dolores enim. Facere tempora ex voluptatem laboriosam. Quis adipisci molestias fugit deleniti distinctio eum.","access_token":"d03cceb8-0e59-3c26-8133-808072ac8a4c","partner_id":41792,"partner_invoice_id":41778,"partner_shipping_id":41784,"user_id":31836,"team_id":null,"company_id":7499,"currency_id":2707,"payment_term_id":null,"fiscal_position_id":null,"journal_id":null,"campaign_id":null,"utm_source_id":null,"medium_id":null,"warehouse_id":null,"created_at":"2026-02-16T11:56:15+00:00","updated_at":"2026-02-16T11:56:15+00:00","deleted_at":null,"partner":{"id":41792,"account_type":"individual","sub_type":"partner","name":"Dr. Marion Quigley I","email":"mosciski.marianna@example.org","phone":"+1-619-824-3315","mobile":"+13477246439","avatar":null,"avatar_url":null,"job_title":"Geologist","website":"http:\/\/www.hand.biz\/perspiciatis-qui-molestiae-magnam-at","tax_id":"3787078615","company_registry":"CR-22252523","reference":"incidunt","is_active":true,"color":"#28f87e","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":2686,"company_id":7502,"industry_id":2681,"user_id":31839,"creator_id":31838,"created_at":"2026-02-16T11:56:15.000000Z","updated_at":"2026-02-16T11:56:15.000000Z","deleted_at":null,"country":null,"state":null},"lines":[{"id":123,"sort":9,"name":"Consequuntur est rerum molestias.","display_type":null,"product_uom_qty":44.93,"product_qty":44.93,"qty_delivered":0,"qty_invoiced":0,"qty_to_invoice":44.93,"product_packaging_qty":0,"price_unit":345.1703,"technical_price_unit":345.1703,"discount":0,"price_subtotal":15508.5016,"price_tax":2326.2752,"price_total":17834.7768,"price_reduce_taxexcl":345.1703,"price_reduce_taxinc":396.9458,"purchase_price":207.1022,"margin":6203.4006,"margin_percent":40,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":15508.5016,"state":"draft","invoice_status":null,"qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":24,"analytic_distribution":null,"order_id":331,"product_id":1624,"linked_sale_order_sale_id":null,"product_uom_id":3412,"product_packaging_id":null,"currency_id":2708,"order_partner_id":41799,"salesman_id":31846,"warehouse_id":null,"route_id":null,"company_id":7503,"created_at":"2026-02-16T11:56:16+00:00","updated_at":"2026-02-16T11:56:16+00:00"}]},"message":"Order created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."], "partner_id": ["The partner id field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/sales/orders/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Do stuff with orders'
+      title: 'Show order'
+      description: 'Retrieve a specific order by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, partnerInvoice, partnerShipping, user, team, company, currency, paymentTerm, fiscalPosition, journal, campaign, utmSource, medium, warehouse, lines, lines.product, lines.linkedSaleOrderSale, lines.uom, lines.productPackaging, lines.currency, lines.orderPartner, lines.salesman, lines.warehouse, lines.route, lines.company'
+        required: false
+        example: 'partner,lines'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'partner,lines'
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":332,"name":"SO\/332","state":"draft","invoice_status":"to_invoice","client_order_ref":"PO-1881","origin":"SO-4902","reference":null,"date_order":"2026-02-13","validity_date":null,"commitment_date":null,"currency_rate":1,"amount_untaxed":119.7035,"amount_tax":17.9555,"amount_total":137.659,"locked":false,"require_signature":false,"require_payment":false,"signed_by":null,"signed_on":null,"prepayment_percent":0,"note":"Ipsum nostrum omnis autem et consequatur aut dolores enim. Facere tempora ex voluptatem laboriosam. Quis adipisci molestias fugit deleniti distinctio eum.","access_token":"d03cceb8-0e59-3c26-8133-808072ac8a4c","partner_id":41831,"partner_invoice_id":41817,"partner_shipping_id":41823,"user_id":31864,"team_id":null,"company_id":7506,"currency_id":2709,"payment_term_id":null,"fiscal_position_id":null,"journal_id":null,"campaign_id":null,"utm_source_id":null,"medium_id":null,"warehouse_id":null,"created_at":"2026-02-16T11:56:16+00:00","updated_at":"2026-02-16T11:56:16+00:00","deleted_at":null,"partner":{"id":41831,"account_type":"individual","sub_type":"partner","name":"Adele Mraz DDS","email":"dwest@example.org","phone":"737.688.0266","mobile":"(928) 356-3482","avatar":null,"avatar_url":null,"job_title":"System Administrator","website":"http:\/\/www.rohan.com\/ducimus-dignissimos-molestiae-vel-et-ut","tax_id":"9601959924","company_registry":"CR-34173315","reference":"aliquid","is_active":true,"color":"#00eecf","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":2690,"company_id":7509,"industry_id":2685,"user_id":31867,"creator_id":31866,"created_at":"2026-02-16T11:56:16.000000Z","updated_at":"2026-02-16T11:56:16.000000Z","deleted_at":null,"country":null,"state":null},"lines":[{"id":124,"sort":9,"name":"Autem sapiente ut.","display_type":null,"product_uom_qty":21.12,"product_qty":21.12,"qty_delivered":0,"qty_invoiced":0,"qty_to_invoice":21.12,"product_packaging_qty":0,"price_unit":21.676,"technical_price_unit":21.676,"discount":0,"price_subtotal":457.7971,"price_tax":68.6696,"price_total":526.4667,"price_reduce_taxexcl":21.676,"price_reduce_taxinc":24.9274,"purchase_price":13.0056,"margin":183.1188,"margin_percent":40,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":457.7971,"state":"draft","invoice_status":null,"qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":3,"analytic_distribution":null,"order_id":332,"product_id":1625,"linked_sale_order_sale_id":null,"product_uom_id":3415,"product_packaging_id":null,"currency_id":2710,"order_partner_id":41838,"salesman_id":31874,"warehouse_id":null,"route_id":null,"company_id":7510,"created_at":"2026-02-16T11:56:16+00:00","updated_at":"2026-02-16T11:56:16+00:00"}]}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/sales/orders/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Do stuff with orders'
+      title: 'Update order'
+      description: 'Update an existing order'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, partnerInvoice, partnerShipping, user, team, company, currency, paymentTerm, fiscalPosition, journal, campaign, utmSource, medium, warehouse, lines, lines.product, lines.linkedSaleOrderSale, lines.uom, lines.productPackaging, lines.currency, lines.orderPartner, lines.salesman, lines.warehouse, lines.route, lines.company'
+        required: false
+        example: 'partner,lines'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'partner,lines'
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'The name of the order'
+        required: false
+        example: SO001
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      partner_id:
+        custom: []
+        name: partner_id
+        description: 'The ID of the partner'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      message:
+        custom: []
+        name: message
+        description: 'Additional message or notes'
+        required: false
+        example: 'Customer requested expedited shipping'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      name: SO001
+      partner_id: 1
+      message: 'Customer requested expedited shipping'
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":333,"name":"SO\/333","state":"draft","invoice_status":"to_invoice","client_order_ref":"PO-1881","origin":"SO-4902","reference":null,"date_order":"2026-02-13","validity_date":null,"commitment_date":null,"currency_rate":1,"amount_untaxed":119.7035,"amount_tax":17.9555,"amount_total":137.659,"locked":false,"require_signature":false,"require_payment":false,"signed_by":null,"signed_on":null,"prepayment_percent":0,"note":"Ipsum nostrum omnis autem et consequatur aut dolores enim. Facere tempora ex voluptatem laboriosam. Quis adipisci molestias fugit deleniti distinctio eum.","access_token":"d03cceb8-0e59-3c26-8133-808072ac8a4c","partner_id":41870,"partner_invoice_id":41856,"partner_shipping_id":41862,"user_id":31892,"team_id":null,"company_id":7513,"currency_id":2711,"payment_term_id":null,"fiscal_position_id":null,"journal_id":null,"campaign_id":null,"utm_source_id":null,"medium_id":null,"warehouse_id":null,"created_at":"2026-02-16T11:56:16+00:00","updated_at":"2026-02-16T11:56:16+00:00","deleted_at":null,"partner":{"id":41870,"account_type":"individual","sub_type":"partner","name":"Danial Wintheiser","email":"pkutch@example.com","phone":"1-551-662-5106","mobile":"283.285.0034","avatar":null,"avatar_url":null,"job_title":"Teller","website":"http:\/\/www.wiza.net\/deserunt-non-nesciunt-est-repellat-recusandae-nam-ut.html","tax_id":"6443652609","company_registry":"CR-89837779","reference":"omnis","is_active":true,"color":"#5a8811","street1":null,"street2":null,"city":null,"zip":null,"country_id":null,"state_id":null,"parent_id":null,"title_id":2694,"company_id":7516,"industry_id":2689,"user_id":31895,"creator_id":31894,"created_at":"2026-02-16T11:56:16.000000Z","updated_at":"2026-02-16T11:56:16.000000Z","deleted_at":null,"country":null,"state":null},"lines":[{"id":125,"sort":9,"name":"Non omnis ea sit et.","display_type":null,"product_uom_qty":56.28,"product_qty":56.28,"qty_delivered":0,"qty_invoiced":0,"qty_to_invoice":56.28,"product_packaging_qty":0,"price_unit":634.1917,"technical_price_unit":634.1917,"discount":0,"price_subtotal":35692.3089,"price_tax":5353.8463,"price_total":41046.1552,"price_reduce_taxexcl":634.1917,"price_reduce_taxinc":729.3205,"purchase_price":380.515,"margin":14276.9236,"margin_percent":40,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":35692.3089,"state":"draft","invoice_status":null,"qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":8,"analytic_distribution":null,"order_id":333,"product_id":1626,"linked_sale_order_sale_id":null,"product_uom_id":3418,"product_packaging_id":null,"currency_id":2712,"order_partner_id":41877,"salesman_id":31902,"warehouse_id":null,"route_id":null,"company_id":7517,"created_at":"2026-02-16T11:56:17+00:00","updated_at":"2026-02-16T11:56:17+00:00"}]},"message":"Order updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Order not found."}'
+        headers: []
+        description: 'Order not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must be a string."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/sales/orders/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Do stuff with orders'
+      title: 'Delete order'
+      description: 'Delete an existing order'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Order has been deleted successfully."}'
+        headers: []
+        description: 'Order deleted successfully'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Order not found."}'
+        headers: []
+        description: 'Order not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/sales/orders/{order_id}/lines'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: 'Order Lines'
+      subgroupDescription: 'Manage order line items'
+      title: 'List order lines'
+      description: 'Retrieve a paginated list of line items for a specific order'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      order_id:
+        custom: []
+        name: order_id
+        description: 'The order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      order_id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> product, linkedSaleOrderSale, uom, productPackaging, currency, orderPartner, salesman, warehouse, route, company, order'
+        required: false
+        example: product
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[product_id]':
+        custom: []
+        name: 'filter[product_id]'
+        description: 'Comma-separated list of product IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: sort
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: product
+      sort: sort
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":126,"sort":9,"name":"Qui commodi incidunt.","display_type":null,"product_uom_qty":1.2,"product_qty":1.2,"qty_delivered":0,"qty_invoiced":0,"qty_to_invoice":1.2,"product_packaging_qty":0,"price_unit":973.9302,"technical_price_unit":973.9302,"discount":0,"price_subtotal":1168.7162,"price_tax":175.3074,"price_total":1344.0237,"price_reduce_taxexcl":973.9302,"price_reduce_taxinc":1120.0197,"purchase_price":584.3581,"margin":467.4865,"margin_percent":40,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1168.7162,"state":"draft","invoice_status":null,"qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":13,"analytic_distribution":null,"order_id":334,"product_id":1627,"linked_sale_order_sale_id":null,"product_uom_id":3419,"product_packaging_id":null,"currency_id":2714,"order_partner_id":41916,"salesman_id":31930,"warehouse_id":null,"route_id":null,"company_id":7524,"created_at":"2026-02-16T11:56:17+00:00","updated_at":"2026-02-16T11:56:17+00:00","product":{"id":1627,"type":"goods","name":"Ola Zieme","service_tracking":"none","reference":null,"barcode":"9819840096439","price":91.87,"cost":91.02,"volume":3.31,"weight":26.03,"description":"Temporibus aliquam quos sequi itaque.","description_purchase":"Vel et suscipit in molestiae odit numquam.","description_sale":"Quia et aut labore.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3420,"uom_po_id":3421,"category_id":2340,"creator_id":null,"company_id":7526,"created_at":"2026-02-16T11:56:17.000000Z","updated_at":"2026-02-16T11:56:17.000000Z","deleted_at":null}},{"id":127,"sort":10,"name":"Distinctio nihil maiores.","display_type":null,"product_uom_qty":57.56,"product_qty":57.56,"qty_delivered":0,"qty_invoiced":0,"qty_to_invoice":57.56,"product_packaging_qty":0,"price_unit":991.3556,"technical_price_unit":991.3556,"discount":0,"price_subtotal":57062.4283,"price_tax":8559.3643,"price_total":65621.7926,"price_reduce_taxexcl":991.3556,"price_reduce_taxinc":1140.0589,"purchase_price":594.8134,"margin":22824.9713,"margin_percent":40,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":57062.4283,"state":"draft","invoice_status":null,"qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":5,"analytic_distribution":null,"order_id":335,"product_id":1628,"linked_sale_order_sale_id":null,"product_uom_id":3422,"product_packaging_id":null,"currency_id":2716,"order_partner_id":41955,"salesman_id":31958,"warehouse_id":null,"route_id":null,"company_id":7531,"created_at":"2026-02-16T11:56:17+00:00","updated_at":"2026-02-16T11:56:17+00:00","product":{"id":1628,"type":"goods","name":"Izabella Lockman","service_tracking":"none","reference":null,"barcode":"9626239053535","price":34.02,"cost":49.35,"volume":43.68,"weight":59.55,"description":"Ipsa corrupti neque et quae dolorem voluptas molestiae maxime.","description_purchase":"A ab corrupti error fugit.","description_sale":"Eum ut fugiat fuga.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":8,"parent_id":null,"uom_id":3423,"uom_po_id":3424,"category_id":2341,"creator_id":null,"company_id":7533,"created_at":"2026-02-16T11:56:17.000000Z","updated_at":"2026-02-16T11:56:17.000000Z","deleted_at":null}}]}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/sales/orders/{order_id}/lines/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: 'Order Lines'
+      subgroupDescription: 'Manage order line items'
+      title: 'Show order line'
+      description: 'Retrieve a specific line item from an order'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      order_id:
+        custom: []
+        name: order_id
+        description: 'The order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The order line ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      order_id: 1
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> product, linkedSaleOrderSale, uom, productPackaging, currency, orderPartner, salesman, warehouse, route, company, order'
+        required: false
+        example: product
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: product
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":128,"sort":9,"name":"Qui commodi incidunt.","display_type":null,"product_uom_qty":1.2,"product_qty":1.2,"qty_delivered":0,"qty_invoiced":0,"qty_to_invoice":1.2,"product_packaging_qty":0,"price_unit":973.9302,"technical_price_unit":973.9302,"discount":0,"price_subtotal":1168.7162,"price_tax":175.3074,"price_total":1344.0237,"price_reduce_taxexcl":973.9302,"price_reduce_taxinc":1120.0197,"purchase_price":584.3581,"margin":467.4865,"margin_percent":40,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1168.7162,"state":"draft","invoice_status":null,"qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":13,"analytic_distribution":null,"order_id":336,"product_id":1629,"linked_sale_order_sale_id":null,"product_uom_id":3425,"product_packaging_id":null,"currency_id":2718,"order_partner_id":41994,"salesman_id":31986,"warehouse_id":null,"route_id":null,"company_id":7538,"created_at":"2026-02-16T11:56:18+00:00","updated_at":"2026-02-16T11:56:18+00:00","product":{"id":1629,"type":"goods","name":"Charity Lehner","service_tracking":"none","reference":null,"barcode":"7295137747932","price":32.05,"cost":73.05,"volume":85.65,"weight":34.66,"description":"Facere ut doloribus cumque earum enim ratione quisquam.","description_purchase":"Voluptas reprehenderit sint repudiandae sit sint.","description_sale":"Ullam expedita necessitatibus quia quia.","enable_sales":true,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":null,"sort":7,"parent_id":null,"uom_id":3426,"uom_po_id":3427,"category_id":2342,"creator_id":null,"company_id":7540,"created_at":"2026-02-16T11:56:18.000000Z","updated_at":"2026-02-16T11:56:18.000000Z","deleted_at":null}}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Order not found."}'
+        headers: []
+        description: 'Order not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null

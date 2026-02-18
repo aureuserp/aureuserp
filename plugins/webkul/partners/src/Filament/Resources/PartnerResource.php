@@ -14,7 +14,6 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -49,15 +48,34 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Partner\Enums\AccountType;
 use Webkul\Partner\Models\Partner;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class PartnerResource extends Resource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = Partner::class;
 
     protected static bool $shouldRegisterNavigation = false;
+
+    protected static bool $isGloballySearchable = false;
+
+    protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'email', 'phone'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('partners::filament/resources/partner.global-search.email') => $record->email ?? '—',
+            __('partners::filament/resources/partner.global-search.phone') => $record->phone ?? '—',
+        ];
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -88,7 +106,7 @@ class PartnerResource extends Resource
                                             ->required()
                                             ->maxLength(255)
                                             ->columnSpan(2)
-                                            ->placeholder(fn (Get $get): string => $get('account_type') === AccountType::INDIVIDUAL ? 'Jhon Doe' : 'ACME Corp')
+                                            ->placeholder(fn (Get $get): string => $get('account_type') === AccountType::INDIVIDUAL ? 'John Doe' : 'ACME Corp')
                                             ->extraInputAttributes(['style' => 'font-size: 1.5rem;height: 3rem;']),
                                         Select::make('parent_id')
                                             ->label(__('partners::filament/resources/partner.form.sections.general.fields.company'))
@@ -187,8 +205,6 @@ class PartnerResource extends Resource
                                             ->required()
                                             ->maxLength(255)
                                             ->unique('partners_titles'),
-                                        Hidden::make('creator_id')
-                                            ->default(Auth::user()->id),
                                     ]),
                                 Select::make('tags')
                                     ->label(__('partners::filament/resources/partner.form.sections.general.fields.tags'))
@@ -534,7 +550,6 @@ class PartnerResource extends Resource
                                 ->body(__('partners::filament/resources/partner.table.actions.force-delete.notification.error.body'))
                                 ->send();
                             $action->cancel();
-
                         }
                     })
                     ->successNotification(
@@ -571,7 +586,6 @@ class PartnerResource extends Resource
                                     ->body(__('partners::filament/resources/partner.table.bulk-actions.force-delete.notification.error.body'))
                                     ->send();
                                 $action->cancel();
-
                             }
                         })
                         ->successNotification(

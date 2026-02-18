@@ -4,6 +4,8 @@ namespace Webkul\Employee\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Employee\Database\Factories\DepartureReasonFactory;
@@ -28,7 +30,7 @@ class DepartureReason extends Model implements Sortable
         'sort_when_creating' => true,
     ];
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -38,9 +40,17 @@ class DepartureReason extends Model implements Sortable
         return $this->hasMany(Employee::class);
     }
 
-    /**
-     * Get the factory instance for the model.
-     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($calendar) {
+            $calendar->creator_id ??= Auth::id();
+
+            $calendar->reason_code = crc32($calendar->name) % 100000;
+        });
+    }
+
     protected static function newFactory(): DepartureReasonFactory
     {
         return DepartureReasonFactory::new();

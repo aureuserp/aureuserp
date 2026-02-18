@@ -2,6 +2,7 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Management\Resources;
 
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -25,7 +26,9 @@ use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Webkul\Field\Filament\Forms\Components\ProgressStepper;
+use Illuminate\Database\Eloquent\Model;
+use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\TimeOff\Enums\AllocationType;
 use Webkul\TimeOff\Enums\State;
 use Webkul\TimeOff\Filament\Clusters\Management;
@@ -39,11 +42,13 @@ class AllocationResource extends Resource
 {
     protected static ?string $model = LeaveAllocation::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
 
     protected static ?string $cluster = Management::class;
 
     protected static ?int $navigationSort = 2;
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function getModelLabel(): string
     {
@@ -55,13 +60,26 @@ class AllocationResource extends Resource
         return __('time-off::filament/clusters/management/resources/allocation.navigation.title');
     }
 
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['employee.name', 'holidayStatus.name'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('time-off::filament/clusters/management/resources/allocation.global-search.employee')      => $record->employee?->name ?? '—',
+            __('time-off::filament/clusters/management/resources/allocation.global-search.time-off-type') => $record->holidayStatus?->name ?? '—',
+        ];
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
                 Grid::make()
                     ->schema([
-                        ProgressStepper::make('state')
+                        FormProgressStepper::make('state')
                             ->hiddenLabel()
                             ->inline()
                             ->options(function ($record) {
@@ -157,12 +175,12 @@ class AllocationResource extends Resource
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('allocation_type')
-                    ->formatStateUsing(fn($state) => $state->getLabel())
+                    ->formatStateUsing(fn ($state) => $state->getLabel())
                     ->label(__('time-off::filament/clusters/management/resources/allocation.table.columns.allocation-type'))
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('state')
-                    ->formatStateUsing(fn($state) => State::options()[$state])
+                    ->formatStateUsing(fn ($state) => State::options()[$state])
                     ->label(__('time-off::filament/clusters/management/resources/allocation.table.columns.status'))
                     ->badge()
                     ->sortable()
@@ -199,7 +217,7 @@ class AllocationResource extends Resource
                     Action::make('approve')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
-                        ->hidden(fn($record) => $record->state === State::VALIDATE_TWO->value)
+                        ->hidden(fn ($record) => $record->state === State::VALIDATE_TWO->value)
                         ->action(function ($record) {
                             if ($record->state === State::VALIDATE_ONE->value) {
                                 $record->update(['state' => State::VALIDATE_TWO->value]);
@@ -222,7 +240,7 @@ class AllocationResource extends Resource
                         }),
                     Action::make('refuse')
                         ->icon('heroicon-o-x-circle')
-                        ->hidden(fn($record) => $record->state === State::REFUSE->value)
+                        ->hidden(fn ($record) => $record->state === State::REFUSE->value)
                         ->color('danger')
                         ->action(function ($record) {
                             $record->update(['state' => State::REFUSE->value]);
@@ -257,6 +275,24 @@ class AllocationResource extends Resource
                     ->schema([
                         Group::make()
                             ->schema([
+                                InfolistProgressStepper::make('state')
+                                    ->hiddenLabel()
+                                    ->inline()
+                                    ->options(function ($record) {
+                                        $onlyStates = [
+                                            State::CONFIRM->value,
+                                            State::VALIDATE_TWO->value,
+                                        ];
+
+                                        if ($record->state === State::REFUSE->value) {
+                                            $onlyStates[] = State::REFUSE->value;
+                                        }
+
+                                        return collect(State::options())->only($onlyStates)->toArray();
+                                    })
+                                    ->default(State::CONFIRM->value)
+                                    ->columnSpan('full'),
+
                                 Section::make(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.allocation-details.title'))
                                     ->schema([
                                         TextEntry::make('name')
@@ -270,7 +306,7 @@ class AllocationResource extends Resource
                                         TextEntry::make('allocation_type')
                                             ->placeholder('—')
                                             ->icon('heroicon-o-queue-list')
-                                            ->formatStateUsing(fn($state) => $state->getLabel())
+                                            ->formatStateUsing(fn ($state) => $state->getLabel())
                                             ->label(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.allocation-details.entries.allocation-type')),
                                     ])->columns(2),
                                 Section::make(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.validity-period.title'))
@@ -298,7 +334,7 @@ class AllocationResource extends Resource
                                     TextEntry::make('state')
                                         ->placeholder('—')
                                         ->icon('heroicon-o-flag')
-                                        ->formatStateUsing(fn($state) => State::options()[$state])
+                                        ->formatStateUsing(fn ($state) => State::options()[$state])
                                         ->label(__('time-off::filament/clusters/management/resources/allocation.infolist.sections.allocation-status.entries.state')),
                                 ]),
                         ])->columnSpan(1),

@@ -9,10 +9,9 @@ return [
     ],
 
     'global-search' => [
-        'number'           => 'Number',
-        'customer'         => 'Customer',
-        'invoice-date'     => 'Invoice Date',
-        'invoice-due-date' => 'Invoice Due Date',
+        'vendor'   => 'Vendor',
+        'date'     => 'Date',
+        'due-date' => 'Due Date',
     ],
 
     'form' => [
@@ -29,6 +28,8 @@ return [
                     'recipient-bank'    => 'Recipient Bank',
                     'due-date'          => 'Due Date',
                     'payment-term'      => 'Payment Term',
+                    'journal'           => 'Journal',
+                    'currency'          => 'Currency',
                 ],
             ],
         ],
@@ -67,30 +68,22 @@ return [
 
             'other-information' => [
                 'title'    => 'Other Information',
+
                 'fieldset' => [
                     'accounting' => [
                         'title' => 'Accounting',
 
                         'fields' => [
-                            'incoterm'          => 'Incoterm',
-                            'incoterm-location' => 'Incoterm Location',
-                        ],
-                    ],
-
-                    'secured' => [
-                        'title'  => 'Secured',
-                        'fields' => [
-                            'payment-method' => 'Payment Method',
-                            'auto-post'      => 'Auto Post',
-                            'checked'        => 'Checked',
-                        ],
-                    ],
-
-                    'additional-information' => [
-                        'title'  => 'Additional Information',
-                        'fields' => [
-                            'company'  => 'Company',
-                            'currency' => 'Currency',
+                            'company'                 => 'Company',
+                            'incoterm'                => 'Incoterm',
+                            'incoterm-location'       => 'Incoterm Location',
+                            'payment-method'          => 'Payment Method',
+                            'fiscal-position'         => 'Fiscal Position',
+                            'fiscal-position-tooltip' => 'Fiscal positions are used to adapt taxes and accounts based on the customer location.',
+                            'cash-rounding'           => 'Cash Rounding Method',
+                            'cash-rounding-tooltip'   => 'Specifies the smallest cash-payable unit of the currency.',
+                            'auto-post'               => 'Auto Post',
+                            'checked'                 => 'Checked',
                         ],
                     ],
                 ],
@@ -102,10 +95,101 @@ return [
         ],
     ],
 
+    'table' => [
+        'total'   => 'Total',
+        'columns' => [
+            'number'           => 'Number',
+            'state'            => 'State',
+            'customer'         => 'Customer',
+            'bill-date'        => 'Bill Date',
+            'checked'          => 'Checked',
+            'accounting-date'  => 'Accounting',
+            'due-date'         => 'Due Date',
+            'source-document'  => 'Source Document',
+            'reference'        => 'Reference',
+            'sales-person'     => 'Sales Person',
+            'tax-excluded'     => 'Tax Excluded',
+            'tax'              => 'Tax',
+            'total'            => 'Total',
+            'amount-due'       => 'Amount Due',
+            'bill-currency'    => 'Bill Currency',
+        ],
+
+        'summarizers' => [
+            'total' => 'Total',
+        ],
+
+        'groups' => [
+            'name'                         => 'Name',
+            'bill-partner-display-name'    => 'Bill Partner Display Name',
+            'bill-date'                    => 'Bill Date',
+            'checked'                      => 'Checked',
+            'date'                         => 'Date',
+            'bill-due-date'                => 'Bill Due Date',
+            'bill-origin'                  => 'Bill Origin',
+            'sales-person'                 => 'Sales Person',
+            'currency'                     => 'Currency',
+            'created-at'                   => 'Created At',
+            'updated-at'                   => 'Updated At',
+        ],
+
+        'filters' => [
+            'number'                    => 'Number',
+            'bill-partner-display-name' => 'Bill Partner Display Name',
+            'bill-date'                 => 'Bill Date',
+            'bill-due-date'             => 'Bill Due Date',
+            'bill-origin'               => 'Bill Origin',
+            'reference'                 => 'Reference',
+            'payment-reference'         => 'Payment Reference',
+            'narration'                 => 'Narration',
+            'partner'                   => 'Partner',
+            'journal'                   => 'Journal',
+            'fiscal-position'           => 'Fiscal Position',
+            'currency'                  => 'Currency',
+            'company'                   => 'Company',
+            'date'                      => 'Accounting Date',
+            'delivery-date'             => 'Delivery Date',
+            'amount-untaxed'            => 'Untaxed Amount',
+            'amount-tax'                => 'Tax Amount',
+            'amount-total'              => 'Total Amount',
+            'amount-residual'           => 'Amount Due',
+            'checked'                   => 'Checked',
+            'posted-before'             => 'Posted Before',
+            'is-move-sent'              => 'Sent',
+            'created-at'                => 'Created At',
+            'updated-at'                => 'Updated At',
+        ],
+
+        'actions' => [
+            'delete' => [
+                'notification' => [
+                    'title' => 'Payment deleted',
+                    'body'  => 'The payment has been deleted successfully.',
+                ],
+            ],
+        ],
+
+        'bulk-actions' => [
+            'delete' => [
+                'notification' => [
+                    'title' => 'Payments deleted',
+                    'body'  => 'The payments has been deleted successfully.',
+                ],
+            ],
+        ],
+
+        'toolbar-actions' => [
+            'export' => [
+                'label' => 'Export',
+            ],
+        ],
+    ],
+
     'infolist' => [
         'section' => [
             'general' => [
                 'title'   => 'General',
+
                 'entries' => [
                     'vendor-invoice'    => 'Vendor Invoice',
                     'vendor'            => 'Vendor',
@@ -116,6 +200,8 @@ return [
                     'recipient-bank'    => 'Recipient Bank',
                     'due-date'          => 'Due Date',
                     'payment-term'      => 'Payment Term',
+                    'journal'           => 'Journal',
+                    'currency'          => 'Currency',
                 ],
             ],
         ],
@@ -149,25 +235,14 @@ return [
                         'title' => 'Accounting',
 
                         'entries' => [
+                            'company'           => 'Company',
                             'incoterm'          => 'Incoterm',
                             'incoterm-location' => 'Incoterm Location',
-                        ],
-                    ],
-
-                    'secured' => [
-                        'title'   => 'Secured',
-                        'entries' => [
-                            'payment-method' => 'Payment Method',
-                            'auto-post'      => 'Auto Post',
-                            'checked'        => 'Checked',
-                        ],
-                    ],
-
-                    'additional-information' => [
-                        'title'   => 'Additional Information',
-                        'entries' => [
-                            'company'  => 'Company',
-                            'currency' => 'Currency',
+                            'payment-method'    => 'Payment Method',
+                            'checked'           => 'Checked',
+                            'fiscal-position'   => 'Fiscal Position',
+                            'cash-rounding'     => 'Cash Rounding Method',
+                            'checked'           => 'Checked',
                         ],
                     ],
                 ],
@@ -175,6 +250,23 @@ return [
 
             'term-and-conditions' => [
                 'title' => 'Term & Conditions',
+            ],
+
+            'journal-items' => [
+                'title' => 'Journal Items',
+
+                'repeater' => [
+                    'entries' => [
+                        'account'  => 'Account',
+                        'partner'  => 'Partner',
+                        'label'    => 'Label',
+                        'due-date' => 'Due Date',
+                        'currency' => 'Currency',
+                        'taxes'    => 'Taxes',
+                        'debit'    => 'Debit',
+                        'credit'   => 'Credit',
+                    ],
+                ],
             ],
         ],
     ],

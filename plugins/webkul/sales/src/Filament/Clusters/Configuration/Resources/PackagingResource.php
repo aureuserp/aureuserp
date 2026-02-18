@@ -3,10 +3,10 @@
 namespace Webkul\Sale\Filament\Clusters\Configuration\Resources;
 
 use Webkul\Product\Filament\Resources\PackagingResource as BasePackagingResource;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Sale\Filament\Clusters\Configuration;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\PackagingResource\Pages\ManagePackagings;
 use Webkul\Sale\Models\Packaging;
-use Webkul\Sale\Settings\ProductSettings;
 
 class PackagingResource extends BasePackagingResource
 {
@@ -15,6 +15,8 @@ class PackagingResource extends BasePackagingResource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-gift';
 
     protected static bool $shouldRegisterNavigation = true;
+
+    protected static ?int $navigationSort = 5;
 
     protected static ?string $cluster = Configuration::class;
 

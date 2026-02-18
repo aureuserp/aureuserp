@@ -7,6 +7,13 @@ return [
         'title' => 'Candidates',
     ],
 
+    'global-search' => [
+        'email-from' => 'Email From',
+        'phone'      => 'Phone',
+        'company'    => 'Company',
+        'degree'     => 'Degree',
+    ],
+
     'form' => [
         'sections' => [
             'basic-information' => [

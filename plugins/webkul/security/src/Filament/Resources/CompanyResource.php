@@ -47,16 +47,19 @@ use Webkul\Security\Filament\Resources\CompanyResource\Pages\ListCompanies;
 use Webkul\Security\Filament\Resources\CompanyResource\Pages\ViewCompany;
 use Webkul\Security\Filament\Resources\CompanyResource\RelationManagers\BranchesRelationManager;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 
 class CompanyResource extends Resource
 {
-    use HasCustomFields;
+    use HasCustomFields, HasResourcePermissionQuery;
 
     protected static ?string $model = Company::class;
 
     protected static ?int $navigationSort = 2;
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function getNavigationLabel(): string
     {
@@ -76,7 +79,6 @@ class CompanyResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            __('security::filament/resources/company.global-search.name')  => $record->name ?? '—',
             __('security::filament/resources/company.global-search.email') => $record->email ?? '—',
         ];
     }
@@ -176,7 +178,11 @@ class CompanyResource extends Resource
                                 Section::make(__('security::filament/resources/company.form.sections.additional-information.title'))
                                     ->schema([
                                         Select::make('currency_id')
-                                            ->relationship('currency', 'full_name')
+                                            ->relationship(
+                                                'currency',
+                                                'full_name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                            )
                                             ->label(__('security::filament/resources/company.form.sections.additional-information.fields.default-currency'))
                                             ->searchable()
                                             ->required()
@@ -314,6 +320,11 @@ class CompanyResource extends Resource
                     ->sortable()
                     ->label(__('security::filament/resources/company.table.columns.status'))
                     ->boolean(),
+                TextColumn::make('creator.name')
+                    ->label(__('security::filament/resources/company.table.columns.created-by'))
+                    ->sortable()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label(__('security::filament/resources/company.table.columns.created-at'))
                     ->dateTime()
@@ -348,6 +359,9 @@ class CompanyResource extends Resource
                 Tables\Grouping\Group::make('currency_id')
                     ->label(__('security::filament/resources/company.table.groups.currency'))
                     ->collapsible(),
+                Tables\Grouping\Group::make('creator.name')
+                    ->label(__('security::filament/resources/company.table.groups.created-by'))
+                    ->collapsible(),
                 Tables\Grouping\Group::make('created_at')
                     ->label(__('security::filament/resources/company.table.groups.created-at'))
                     ->collapsible(),
@@ -357,7 +371,7 @@ class CompanyResource extends Resource
                     ->collapsible(),
             ])
             ->filters(static::mergeCustomTableFilters([
-                Tables\Filters\SelectFilter::make('is_active')
+                SelectFilter::make('is_active')
                     ->label(__('security::filament/resources/company.table.filters.status'))
                     ->options(CompanyStatus::options()),
                 SelectFilter::make('country_id')

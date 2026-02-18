@@ -9,8 +9,8 @@ use Filament\Tables\Table;
 use Livewire\Livewire;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\DeliveryResource;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
+use Webkul\PluginManager\Package;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
-use Webkul\Support\Package;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageDeliveries extends ManageRelatedRecords
@@ -47,7 +47,7 @@ class ManageDeliveries extends ManageRelatedRecords
     public function table(Table $table): Table
     {
         return OperationResource::table($table)
-            ->actions([
+            ->recordActions([
                 ViewAction::make()
                     ->url(fn ($record) => DeliveryResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(false),

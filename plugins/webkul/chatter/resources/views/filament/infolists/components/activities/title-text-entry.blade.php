@@ -5,7 +5,7 @@
     <div class="flex items-start gap-3">
         <x-filament-panels::avatar.user
             size="md"
-            :user="$getRecord()->user"
+            :user="$getRecord()->causer"
             class="cursor-pointer"
         />
 

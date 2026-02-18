@@ -17,7 +17,7 @@
                         </span>
 
                         <div class="mt-1 text-sm font-semibold text-gray-900 dark:text-gray-100">
-                            {!! $record->subject !!}
+                            {!! str($record->subject)->sanitizeHtml() !!}
                         </div>
                     </div>
                 @endif
@@ -25,7 +25,7 @@
                 {{-- Body --}}
                 @if ($record->body)
                     <div class="text-sm leading-6 text-gray-700 dark:text-white overflow-x-hidden max-w-full break-words [&_a]:text-primary-600 dark:[&_a]:text-primary-400 [&_a:hover]:underline [&_ul]:list-disc [&_ul]:ms-5 [&_ol]:list-decimal [&_ol]:ms-5">
-                        {!! $record->body !!}
+                        {!! str($record->body)->sanitizeHtml() !!}
                     </div>
                 @endif
 
@@ -49,9 +49,15 @@
                                         'mp3', 'wav', 'ogg' => 'heroicon-o-musical-note',
                                         default => 'heroicon-o-document',
                                     };
+                                    $isNote = $record->type === 'note';
                                 @endphp
 
-                                <div class="flex items-center gap-3 px-3 py-3 w-full rounded-xl border bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700">
+                                <div @class([
+                                    'flex items-center gap-3 px-3 py-3 w-full rounded-xl',
+                                    'bg-amber-100 dark:bg-amber-800' => $isNote,
+                                    'bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700' => ! $isNote,
+                                ])>
+
                                     {{-- File Preview / Icon --}}
                                     <div class="relative overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 flex-shrink-0">
                                         @if ($isImage)
@@ -116,7 +122,7 @@
         @case('notification')
             @if ($record->body)
                 <div class="font-inter text-base text-gray-900 dark:text-gray-100 max-w-full">
-                    {!! $record->body !!}
+                    {!! str($record->body)->sanitizeHtml() !!}
                 </div>
             @endif
 
@@ -127,7 +133,7 @@
             )
                 <div class="mt-3 overflow-hidden rounded-xl shadow-sm ring-1 ring-black/5 bg-white/70 dark:bg-gray-900/60 dark:ring-white/5">
                     <div class="divide-y divide-gray-200 dark:divide-gray-800">
-                        <div class="max-w-2xl mx-auto bg-gray-50/80 dark:bg-gray-950 rounded-lg p-3 space-y-1">
+                        <div class="max-w-2xl mx-auto bg-gray-50/80 dark:bg-gray-950 rounded-lg p-3 space-y-2">
                             @foreach($changes as $field => $change)
                                 @if(is_array($change))
                                     @php
@@ -161,7 +167,10 @@
                                             @endisset
 
                                             @if(isset($change['old_value']) && isset($change['new_value']))
-                                                <span class="text-gray-700 mx-1">→</span>
+                                                 <x-filament::icon
+                                                    icon="heroicon-o-arrow-long-right"
+                                                    class="inline mx-1 text-gray-400 dark:text-gray-500"
+                                                />
                                             @endif
 
                                             @isset($change['new_value'])

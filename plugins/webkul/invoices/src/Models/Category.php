@@ -2,9 +2,10 @@
 
 namespace Webkul\Invoice\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Webkul\Account\Models\Category as BaseCategory;
 use Webkul\Chatter\Traits\HasChatter;
-use Webkul\Product\Models\Category as BaseCategory;
 use Webkul\Security\Models\User;
 
 class Category extends BaseCategory
@@ -23,7 +24,7 @@ class Category extends BaseCategory
         parent::__construct($attributes);
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }

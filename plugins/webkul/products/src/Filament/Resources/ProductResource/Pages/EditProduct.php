@@ -36,7 +36,7 @@ class EditProduct extends EditRecord
     {
         return [
             ChatterAction::make()
-                ->setResource(static::$resource),
+                ->resource(static::$resource),
             Action::make('print')
                 ->label(__('products::filament/resources/product/pages/edit-product.header-actions.print.label'))
                 ->color('gray')
@@ -86,14 +86,5 @@ class EditProduct extends EditRecord
                         ->body(__('products::filament/resources/product/pages/edit-product.header-actions.delete.notification.body')),
                 ),
         ];
-    }
-
-    protected function afterSave(): void
-    {
-        $this->getRecord()->variants->each(function ($variant) {
-            $variant->update([
-                'is_storable' => $this->getRecord()->is_storable,
-            ]);
-        });
     }
 }

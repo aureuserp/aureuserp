@@ -15,7 +15,7 @@ class ActivityTypePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_activity::type');
+        return $user->can('view_any_support_activity::type');
     }
 
     /**
@@ -23,7 +23,7 @@ class ActivityTypePolicy
      */
     public function view(User $user, ActivityType $activityType): bool
     {
-        return $user->can('view_activity::type');
+        return $user->can('view_support_activity::type');
     }
 
     /**
@@ -31,7 +31,7 @@ class ActivityTypePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_activity::type');
+        return $user->can('create_support_activity::type');
     }
 
     /**
@@ -39,7 +39,7 @@ class ActivityTypePolicy
      */
     public function update(User $user, ActivityType $activityType): bool
     {
-        return $user->can('update_activity::type');
+        return $user->can('update_support_activity::type');
     }
 
     /**
@@ -47,7 +47,7 @@ class ActivityTypePolicy
      */
     public function delete(User $user, ActivityType $activityType): bool
     {
-        return $user->can('delete_activity::type');
+        return $user->can('delete_support_activity::type');
     }
 
     /**
@@ -55,7 +55,7 @@ class ActivityTypePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_activity::type');
+        return $user->can('delete_any_support_activity::type');
     }
 
     /**
@@ -63,7 +63,7 @@ class ActivityTypePolicy
      */
     public function forceDelete(User $user, ActivityType $activityType): bool
     {
-        return $user->can('force_delete_activity::type');
+        return $user->can('force_delete_support_activity::type');
     }
 
     /**
@@ -71,7 +71,7 @@ class ActivityTypePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_activity::type');
+        return $user->can('force_delete_any_support_activity::type');
     }
 
     /**
@@ -79,7 +79,7 @@ class ActivityTypePolicy
      */
     public function restore(User $user, ActivityType $activityType): bool
     {
-        return $user->can('restore_activity::type');
+        return $user->can('restore_support_activity::type');
     }
 
     /**
@@ -87,7 +87,7 @@ class ActivityTypePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_activity::type');
+        return $user->can('restore_any_support_activity::type');
     }
 
     /**
@@ -95,6 +95,6 @@ class ActivityTypePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_activity::type');
+        return $user->can('reorder_support_activity::type');
     }
 }

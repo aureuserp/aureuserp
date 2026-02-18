@@ -8,8 +8,8 @@ use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Tables\Table;
 use Livewire\Livewire;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\OperationResource;
+use Webkul\PluginManager\Package;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
-use Webkul\Support\Package;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ManageReceipts extends ManageRelatedRecords

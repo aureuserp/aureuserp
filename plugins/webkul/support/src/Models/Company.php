@@ -14,17 +14,13 @@ use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Database\Factories\CompanyFactory;
 
 class Company extends Model implements Sortable
 {
-    use HasChatter, HasCustomFields, HasFactory, SoftDeletes, SortableTrait;
+    use HasChatter, HasCustomFields, HasFactory, HasPermissionScope, SoftDeletes, SortableTrait;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'sort',
         'name',
@@ -66,57 +62,36 @@ class Company extends Model implements Sortable
         return $this->belongsTo(State::class);
     }
 
-    /**
-     * Get the creator of the company
-     */
-    public function createdBy(): BelongsTo
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
 
-    /**
-     * Get the parent company
-     */
     public function parent(): BelongsTo
     {
         return $this->belongsTo(Company::class, 'parent_id');
     }
 
-    /**
-     * Get the branches (child companies)
-     */
     public function branches(): HasMany
     {
         return $this->hasMany(Company::class, 'parent_id');
     }
 
-    /**
-     * Scope a query to only include parent companies
-     */
     public function scopeParents($query)
     {
         return $query->whereNull('parent_id');
     }
 
-    /**
-     * Check if company is a branch
-     */
     public function isBranch(): bool
     {
         return ! is_null($this->parent_id);
     }
 
-    /**
-     * Check if company is a parent
-     */
     public function isParent(): bool
     {
         return is_null($this->parent_id);
     }
 
-    /**
-     * Get the currency associated with the company.
-     */
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class);
@@ -127,9 +102,31 @@ class Company extends Model implements Sortable
         return $this->belongsTo(Partner::class, 'partner_id');
     }
 
-    /**
-     * Scope a query to only include active companies.
-     */
+    protected function getOwnerColumn(): string
+    {
+        return 'creator_id';
+    }
+
+    public function parents()
+    {
+        $parents = collect();
+
+        $current = $this->parent;
+
+        while ($current) {
+            $parents->push($current);
+
+            $current = $current->parent;
+        }
+
+        return $parents;
+    }
+
+    public function getParentsAttribute()
+    {
+        return $this->parents();
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
@@ -140,14 +137,13 @@ class Company extends Model implements Sortable
         return CompanyFactory::new();
     }
 
-    /**
-     * Bootstrap the model and its traits.
-     */
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($company) {
+            $company->creator_id ??= Auth::id();
+
             if (! $company->partner_id) {
                 $partner = Partner::create([
                     'creator_id'       => $company->creator_id ?? Auth::id(),
@@ -178,8 +174,8 @@ class Company extends Model implements Sortable
             Partner::updateOrCreate(
                 [
                     'id' => $company->partner_id,
-                ], [
-                    'creator_id'       => $company->creator_id ?? Auth::id(),
+                ],
+                [
                     'sub_type'         => 'company',
                     'company_registry' => $company->registration_number,
                     'name'             => $company->name,

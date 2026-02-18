@@ -27,6 +27,8 @@ class TagResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tag';
 
+    protected static ?int $navigationSort = 6;
+
     protected static ?string $cluster = Configuration::class;
 
     public static function getModelLabel(): string
@@ -68,7 +70,7 @@ class TagResource extends Resource
                     ->label(__('sales::filament/clusters/configurations/resources/tag.table.columns.name')),
                 ColorColumn::make('color')
                     ->label(__('sales::filament/clusters/configurations/resources/tag.table.columns.color')),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('sales::filament/clusters/configurations/resources/tag.table.columns.created-by')),
             ])
             ->recordActions([

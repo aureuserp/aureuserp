@@ -2,6 +2,7 @@
 
 namespace Webkul\TimeOff\Filament\Clusters\Reporting\Resources;
 
+use BackedEnum;
 use Filament\Tables\Table;
 use Webkul\TimeOff\Filament\Clusters\Management\Resources\TimeOffResource as BaseByEmployeeResource;
 use Webkul\TimeOff\Filament\Clusters\Reporting;
@@ -11,12 +12,11 @@ use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Page
 use Webkul\TimeOff\Filament\Clusters\Reporting\Resources\ByEmployeeResource\Pages\ViewByEmployee;
 use Webkul\TimeOff\Models\Leave;
 
-
 class ByEmployeeResource extends BaseByEmployeeResource
 {
     protected static ?string $model = Leave::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
     protected static ?string $cluster = Reporting::class;
 

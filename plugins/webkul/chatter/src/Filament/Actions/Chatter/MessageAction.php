@@ -2,10 +2,11 @@
 
 namespace Webkul\Chatter\Filament\Actions\Chatter;
 
-use Exception;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -14,6 +15,7 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Throwable;
 use Webkul\Chatter\Mail\MessageMail;
 use Webkul\Support\Services\EmailService;
 
@@ -89,6 +91,7 @@ class MessageAction extends Action
                         ->columnSpan('full')
                         ->alignRight(),
                 ]),
+
                 TextInput::make('subject')
                     ->placeholder(__('chatter::filament/resources/actions/chatter/message-action.setup.form.fields.subject'))
                     ->live()
@@ -127,7 +130,7 @@ class MessageAction extends Action
                 try {
                     $data['name'] = $record->name;
 
-                    $message = $record->addMessage($data, filament()->auth()->id());
+                    $message = $record->addMessage($data, Filament::auth()->id() ?? Auth::id());
 
                     if (! empty($data['attachments'])) {
                         $record->addAttachments(
@@ -143,8 +146,9 @@ class MessageAction extends Action
                         ->title(__('chatter::filament/resources/actions/chatter/message-action.setup.actions.notification.success.title'))
                         ->body(__('chatter::filament/resources/actions/chatter/message-action.setup.actions.notification.success.body'))
                         ->send();
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     report($e);
+
                     Notification::make()
                         ->danger()
                         ->title(__('chatter::filament/resources/actions/chatter/message-action.setup.actions.notification.error.title'))
@@ -170,7 +174,7 @@ class MessageAction extends Action
     private function notifyFollower(mixed $record, mixed $message): void
     {
         foreach ($record->followers as $follower) {
-            if ($follower?->partner) {
+            if ($follower?->partner?->email) {
                 app(EmailService::class)->send(
                     mailClass: MessageMail::class,
                     view: $this->getMessageMailView(),

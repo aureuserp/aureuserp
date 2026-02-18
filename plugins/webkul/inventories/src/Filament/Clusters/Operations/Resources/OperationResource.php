@@ -34,7 +34,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Field\Filament\Forms\Components\ProgressStepper;
+use InvalidArgumentException;
+use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Enums;
 use Webkul\Inventory\Enums\LocationType;
@@ -54,11 +56,11 @@ use Webkul\Inventory\Models\Packaging;
 use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Models\ProductQuantity;
 use Webkul\Inventory\Settings\OperationSettings;
-use Webkul\Inventory\Settings\ProductSettings;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Partner\Filament\Resources\PartnerResource;
 use Webkul\Product\Enums\ProductType;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
@@ -74,11 +76,25 @@ class OperationResource extends Resource
 
     protected static bool $shouldRegisterNavigation = false;
 
+    protected static bool $isGloballySearchable = false;
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'partner.name'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('inventories::filament/clusters/operations/resources/operation.global-search.partner') => $record->partner?->name ?? '—',
+        ];
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                ProgressStepper::make('state')
+                FormProgressStepper::make('state')
                     ->hiddenLabel()
                     ->inline()
                     ->options(OperationState::options())
@@ -451,12 +467,20 @@ class OperationResource extends Resource
     {
         return $schema
             ->components([
-                Section::make()
-                    ->schema([
-                        TextEntry::make('state')
-                            ->badge(),
-                    ])
-                    ->compact(),
+                InfolistProgressStepper::make('state')
+                    ->hiddenLabel()
+                    ->inline()
+                    ->options(OperationState::options())
+                    ->options(function ($record) {
+                        $options = OperationState::options();
+
+                        if ($record->state !== OperationState::CANCELED) {
+                            unset($options[OperationState::CANCELED->value]);
+                        }
+
+                        return $options;
+                    })
+                    ->default(OperationState::DRAFT),
 
                 Section::make(__('inventories::filament/clusters/operations/resources/operation.infolist.sections.general.title'))
                     ->schema([
@@ -501,22 +525,22 @@ class OperationResource extends Resource
                                         InfolistTableColumn::make('finalLocation.full_name')
                                             ->alignStart()
                                             ->width(150)
-                                            ->toggleable()
+                                            ->toggleable(isToggledHiddenByDefault: true)
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.final-location')),
                                         InfolistTableColumn::make('description_picking')
                                             ->alignStart()
                                             ->width(150)
-                                            ->toggleable()
+                                            ->toggleable(isToggledHiddenByDefault: true)
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.description')),
                                         InfolistTableColumn::make('scheduled_at')
                                             ->alignStart()
                                             ->width(150)
-                                            ->toggleable()
+                                            ->toggleable(isToggledHiddenByDefault: true)
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.scheduled-at')),
                                         InfolistTableColumn::make('deadline')
                                             ->alignStart()
                                             ->width(150)
-                                            ->toggleable()
+                                            ->toggleable(isToggledHiddenByDefault: true)
                                             ->label(__('inventories::filament/clusters/operations/resources/operation.infolist.tabs.operations.entries.deadline')),
                                         InfolistTableColumn::make('productPackaging.name')
                                             ->alignStart()
@@ -755,7 +779,11 @@ class OperationResource extends Resource
                     ->disabled(fn ($record): bool => in_array($record?->state, [MoveState::DONE, MoveState::CANCELED])),
                 Select::make('product_packaging_id')
                     ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.packaging'))
-                    ->relationship('productPackaging', 'name')
+                    ->relationship(
+                        'productPackaging',
+                        'name',
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('product_id', $get('product_id')),
+                    )
                     ->searchable()
                     ->preload()
                     ->visible(static::getProductSettings()->enable_packagings)
@@ -862,7 +890,7 @@ class OperationResource extends Resource
         $move = $record instanceof Move ? $record : $record->move;
 
         if (! $move instanceof Move) {
-            throw new \InvalidArgumentException('Expected Move model or model with move relationship, got '.get_class($record));
+            throw new InvalidArgumentException('Expected Move model or model with move relationship, got '.get_class($record));
         }
 
         $columns = 2;
@@ -1024,7 +1052,7 @@ class OperationResource extends Resource
                             ->afterStateUpdated(function (Set $set) {
                                 $set('result_package_id', null);
                             })
-                            ->disabled(fn (): bool => in_array($move->state, [Enums\MoveState::DONE, Enums\MoveState::CANCELED])),
+                            ->disabled(fn (): bool => in_array($move->state, [MoveState::DONE, MoveState::CANCELED])),
                         Select::make('result_package_id')
                             ->label(__('inventories::filament/clusters/operations/resources/operation.form.tabs.operations.fields.lines.fields.package'))
                             ->relationship(

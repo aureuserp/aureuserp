@@ -2,29 +2,36 @@
 
 namespace Webkul\Sale\Filament\Clusters\Settings\Pages;
 
+use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms;
 use Filament\Forms\Components\Toggle;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Schema;
-use Webkul\Sale\Settings\ProductSettings;
+use UnitEnum;
+use Webkul\Product\Settings\ProductSettings;
 use Webkul\Support\Filament\Clusters\Settings;
 
 class ManageProducts extends SettingsPage
 {
     use HasPageShield;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cube';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-cube';
 
     protected static ?string $slug = 'sale/manage-products';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Sales';
+    protected static string|UnitEnum|null $navigationGroup = 'Sales';
 
     protected static ?int $navigationSort = 1;
 
     protected static string $settings = ProductSettings::class;
 
     protected static ?string $cluster = Settings::class;
+
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_sale_manage_products';
+    }
 
     public function getBreadcrumbs(): array
     {

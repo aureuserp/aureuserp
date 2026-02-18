@@ -33,7 +33,6 @@ use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Filament\Clusters\Configurations;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\EditActivityPlan;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\ActivityPlanResource\Pages\ListActivityPlans;
@@ -115,7 +114,7 @@ class ActivityPlanResource extends Resource
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan.table.columns.status'))
                     ->sortable()
                     ->boolean(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -188,7 +187,7 @@ class ActivityPlanResource extends Resource
                 Group::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan.table.groups.name'))
                     ->collapsible(),
-                Group::make('createdBy.name')
+                Group::make('creator.name')
                     ->label(__('employees::filament/clusters/configurations/resources/activity-plan.table.groups.created-by'))
                     ->collapsible(),
                 Group::make('is_active')
@@ -258,13 +257,7 @@ class ActivityPlanResource extends Resource
                 CreateAction::make()
                     ->icon('heroicon-o-plus-circle')
                     ->mutateDataUsing(function (array $data): array {
-                        $user = Auth::user();
-
                         $data['plugin'] = 'employees';
-
-                        $data['creator_id'] = $user->id;
-
-                        $data['company_id'] ??= $user->defaultCompany?->id;
 
                         return $data;
                     })

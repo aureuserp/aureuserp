@@ -80,7 +80,7 @@ class RefuseReasonResource extends Resource
                     ->label(__('recruitments::filament/clusters/configurations/resources/refuse-reason.table.columns.template'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/refuse-reason.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

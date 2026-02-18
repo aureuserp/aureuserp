@@ -16,7 +16,7 @@ class QuotationPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_quotation');
+        return $user->can('view_any_purchase_quotation');
     }
 
     /**
@@ -24,7 +24,7 @@ class QuotationPolicy
      */
     public function view(User $user, Quotation $quotation): bool
     {
-        return $user->can('view_quotation');
+        return $user->can('view_purchase_quotation');
     }
 
     /**
@@ -32,7 +32,7 @@ class QuotationPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_quotation');
+        return $user->can('create_purchase_quotation');
     }
 
     /**
@@ -40,7 +40,7 @@ class QuotationPolicy
      */
     public function update(User $user, Quotation $quotation): bool
     {
-        if (! $user->can('update_quotation')) {
+        if (! $user->can('update_purchase_quotation')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class QuotationPolicy
      */
     public function delete(User $user, Quotation $quotation): bool
     {
-        if (! $user->can('delete_quotation')) {
+        if (! $user->can('delete_purchase_quotation')) {
             return false;
         }
 
@@ -64,6 +64,6 @@ class QuotationPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_quotation');
+        return $user->can('delete_any_purchase_quotation');
     }
 }

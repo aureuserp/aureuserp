@@ -4,7 +4,6 @@ namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources\LeaveTypeRes
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\Auth;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\LeaveTypeResource;
 
 class CreateLeaveType extends CreateRecord
@@ -31,16 +30,5 @@ class CreateLeaveType extends CreateRecord
             ->success()
             ->title(__('time-off::filament/clusters/configurations/resources/leave-type/pages/create-leave-type.notification.title'))
             ->body(__('time-off::filament/clusters/configurations/resources/leave-type/pages/create-leave-type.notification.body'));
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $user = Auth::user();
-
-        $data['company_id'] = $user->default_company_id;
-
-        $data['creator_id'] = $user?->id;
-
-        return $data;
     }
 }

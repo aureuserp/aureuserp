@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\PackageFactory;
 use Webkul\Inventory\Enums\PackageUse;
 use Webkul\Security\Models\User;
@@ -16,18 +17,8 @@ class Package extends Model
 {
     use HasFactory;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_packages';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'package_use',
@@ -38,11 +29,6 @@ class Package extends Model
         'creator_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'package_use' => PackageUse::class,
         'pack_date'   => 'date',
@@ -105,5 +91,18 @@ class Package extends Model
     protected static function newFactory(): PackageFactory
     {
         return PackageFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($package) {
+            $authUser = Auth::user();
+
+            $package->creator_id ??= $authUser?->id;
+
+            $package->company_id ??= $authUser?->default_company_id;
+        });
     }
 }

@@ -4,19 +4,22 @@ namespace Webkul\Chatter\Traits;
 
 use BackedEnum;
 use Exception;
+use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 trait HasLogActivity
 {
+    abstract public function getModelTitle();
+
     /**
      * Boot the trait
      */
     public static function bootHasLogActivity()
     {
         static::created(fn (Model $model) => $model->logModelActivity('created'));
-        static::updated(fn (Model $model) => $model->logModelActivity('updated'));
+        static::updated(fn (Model $model) => ! $model->wasRecentlyCreated ? $model->logModelActivity('updated') : null);
 
         if (method_exists(static::class, 'bootSoftDeletes')) {
             static::deleted(function (Model $model) {
@@ -37,7 +40,7 @@ trait HasLogActivity
      */
     public function logModelActivity(string $event): ?Model
     {
-        $user = filament()->auth()->user();
+        $user = Filament::auth()->user() ?? Auth::user();
 
         try {
             $changes = $this->determineChanges($event);
@@ -52,8 +55,8 @@ trait HasLogActivity
                 'body'         => $this->generateActivityDescription($event),
                 'subject_type' => $this->getMorphClass(),
                 'subject_id'   => $this->getKey(),
-                'causer_type'  => $user->getMorphClass(),
-                'causer_id'    => $user->id,
+                'causer_type'  => $user?->getMorphClass(),
+                'causer_id'    => $user?->id,
                 'event'        => $event,
                 'properties'   => $changes,
             ]);
@@ -72,7 +75,11 @@ trait HasLogActivity
     {
         $normalized = [];
 
-        foreach (property_exists($this, 'logAttributes') ? $this->logAttributes : [] as $key => $value) {
+        $attributes = method_exists($this, 'getLogAttributeLabels')
+            ? $this->getLogAttributeLabels()
+            : [];
+
+        foreach ($attributes as $key => $value) {
             if (is_int($key)) {
                 $normalized[$value] = $value;
             } else {
@@ -249,7 +256,8 @@ trait HasLogActivity
 
                     if ($oldValue !== $newValue) {
                         $changes[$key] = [
-                            'type'      => is_null($oldValue) ? 'added' : 'modified',                            'old_value' => $oldValue,
+                            'type'      => is_null($oldValue) ? 'added' : 'modified',
+                            'old_value' => $oldValue,
                             'new_value' => $newValue,
                         ];
                     }
@@ -348,7 +356,7 @@ trait HasLogActivity
      */
     protected function generateActivityDescription(string $event): string
     {
-        $modelName = Str::headline(class_basename(static::class));
+        $modelName = $this->getModelTitle();
 
         return match ($event) {
             'created'      => __('chatter::traits/has-log-activity.activity-log-failed.events.created', [

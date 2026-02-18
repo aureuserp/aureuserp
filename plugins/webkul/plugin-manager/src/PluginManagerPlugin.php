@@ -4,7 +4,6 @@ namespace Webkul\PluginManager;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
-use ReflectionClass;
 
 class PluginManagerPlugin implements Plugin
 {
@@ -22,22 +21,28 @@ class PluginManagerPlugin implements Plugin
     {
         $panel
             ->when($panel->getId() == 'admin', function (Panel $panel) {
-                $panel->discoverResources(in: $this->getPluginBasePath('/Filament/Resources'), for: 'Webkul\\PluginManager\\Filament\\Resources')
-                    ->discoverPages(in: $this->getPluginBasePath('/Filament/Pages'), for: 'Webkul\\PluginManager\\Filament\\Pages')
-                    ->discoverClusters(in: $this->getPluginBasePath('/Filament/Clusters'), for: 'Webkul\\PluginManager\\Filament\\Clusters')
-                    ->discoverWidgets(in: $this->getPluginBasePath('/Filament/Widgets'), for: 'Webkul\\PluginManager\\Filament\\Widgets');
+                $panel
+                    ->discoverResources(
+                        in: __DIR__.'/Filament/Resources',
+                        for: 'Webkul\\PluginManager\\Filament\\Resources'
+                    )
+                    ->discoverPages(
+                        in: __DIR__.'/Filament/Pages',
+                        for: 'Webkul\\PluginManager\\Filament\\Pages'
+                    )
+                    ->discoverClusters(
+                        in: __DIR__.'/Filament/Clusters',
+                        for: 'Webkul\\PluginManager\\Filament\\Clusters'
+                    )
+                    ->discoverWidgets(
+                        in: __DIR__.'/Filament/Widgets',
+                        for: 'Webkul\\PluginManager\\Filament\\Widgets'
+                    );
             });
     }
 
     public function boot(Panel $panel): void
     {
         //
-    }
-
-    protected function getPluginBasePath($path = null): string
-    {
-        $reflector = new ReflectionClass(get_class($this));
-
-        return dirname($reflector->getFileName()).($path ?? '');
     }
 }

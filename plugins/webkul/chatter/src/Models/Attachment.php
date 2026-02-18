@@ -3,6 +3,8 @@
 namespace Webkul\Chatter\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -30,7 +32,7 @@ class Attachment extends Model
         return $this->morphTo();
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -53,6 +55,10 @@ class Attachment extends Model
     public static function boot()
     {
         parent::boot();
+
+        static::creating(function ($attachment) {
+            $attachment->creator_id ??= Auth::id();
+        });
 
         static::deleted(function ($attachment) {
             $filePath = $attachment->file_path;

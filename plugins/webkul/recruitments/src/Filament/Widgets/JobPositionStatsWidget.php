@@ -16,6 +16,11 @@ class JobPositionStatsWidget extends BaseWidget
 
     protected ?string $pollingInterval = '15s';
 
+    protected static function getPagePermission(): ?string
+    {
+        return 'widget_recruitment_job_position_stats_widget';
+    }
+
     protected function getHeading(): ?string
     {
         return __('recruitments::filament/widgets/job-position.heading.title');

@@ -122,9 +122,11 @@ class FollowerAction extends Action
                 ]);
             })
             ->action(function (Model $record, array $data) {
+                $partner = null;
+                $missingEmailPartners = [];
 
                 try {
-                    collect($data['partners'] ?? [])->each(function ($partnerId) use ($record, $data) {
+                    collect($data['partners'] ?? [])->each(function ($partnerId) use ($record, $data, &$missingEmailPartners, &$partner) {
                         $partner = Partner::findOrFail($partnerId);
 
                         $record->addFollower($partner);
@@ -133,21 +135,40 @@ class FollowerAction extends Action
                             ! empty($data['notify'])
                             && $data['notify']
                         ) {
-                            $this->notifyFollower($record, $partner, $data);
+                            if (empty($partner->email)) {
+                                $missingEmailPartners[] = $partner->name;
+                            } else {
+                                $this->notifyFollower($record, $partner, $data);
+                            }
                         }
 
-                        // Refresh relation to show immediately in the modal
+                        // Refresh relation
                         try {
                             $record->unsetRelation('followers');
-                        } catch (\Throwable $e) {
+                        } catch (Throwable $e) {
                         }
+                    });
 
+                    if (count($missingEmailPartners)) {
+                        $count = count($missingEmailPartners);
+                        $key = $count > 1 ? 'multiple' : 'single';
+
+                        Notification::make()
+                            ->warning()
+                            ->title(__('chatter::filament/resources/actions/chatter/follower-action.setup.actions.notification.partial_message.title'))
+                            ->body(__('chatter::filament/resources/actions/chatter/follower-action.setup.actions.notification.partial_message.'.$key, [
+                                'count' => $count,
+                                'names' => implode(', ', $missingEmailPartners),
+                            ])
+                            )
+                            ->send();
+                    } else {
                         Notification::make()
                             ->success()
                             ->title(__('chatter::filament/resources/actions/chatter/follower-action.setup.actions.notification.success.title'))
-                            ->body(__('chatter::filament/resources/actions/chatter/follower-action.setup.actions.notification.success.body', ['partner' => $partner->name]))
+                            ->body(__('chatter::filament/resources/actions/chatter/follower-action.setup.actions.notification.success.body'))
                             ->send();
-                    });
+                    }
                 } catch (Throwable $e) {
                     info('Error adding followers', [
                         'error' => $e->getMessage(),

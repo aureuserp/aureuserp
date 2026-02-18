@@ -10,7 +10,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Webkul\\TimeOff\\Providers\\TimeOffServiceProvider"
+                "Webkul\\TimeOff\\TimeOffServiceProvider"
             ],
             "aliases": {}
         }

@@ -8,7 +8,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
@@ -23,7 +22,6 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Oper
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Filament\Clusters\Configurations;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\EmploymentTypeResource\Pages\ListEmploymentTypes;
 use Webkul\Employee\Models\EmploymentType;
@@ -55,8 +53,6 @@ class EmploymentTypeResource extends Resource
     {
         return $schema
             ->components([
-                Hidden::make('creator_id')
-                    ->default(Auth::user()->id),
                 TextInput::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/employment-type.form.fields.name'))
                     ->required()
@@ -94,7 +90,7 @@ class EmploymentTypeResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->label(__('employees::filament/clusters/configurations/resources/employment-type.table.columns.country')),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('employees::filament/clusters/configurations/resources/employment-type.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -127,7 +123,7 @@ class EmploymentTypeResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('createdBy')
+                        RelationshipConstraint::make('creator')
                             ->label(__('employees::filament/clusters/configurations/resources/employment-type.table.filters.created-by'))
                             ->icon('heroicon-o-user')
                             ->multiple()
@@ -154,7 +150,7 @@ class EmploymentTypeResource extends Resource
                 Group::make('country.name')
                     ->label(__('employees::filament/clusters/configurations/resources/employment-type.table.groups.country'))
                     ->collapsible(),
-                Group::make('createdBy.name')
+                Group::make('creator.name')
                     ->label(__('employees::filament/clusters/configurations/resources/employment-type.table.groups.created-by'))
                     ->collapsible(),
                 Group::make('created_at')

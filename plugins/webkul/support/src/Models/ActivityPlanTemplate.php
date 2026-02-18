@@ -5,6 +5,7 @@ namespace Webkul\Support\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Security\Models\User;
@@ -34,9 +35,6 @@ class ActivityPlanTemplate extends Model implements Sortable
         'sort_when_creating' => true,
     ];
 
-    /**
-     * Relationships
-     */
     public function activityPlan(): BelongsTo
     {
         return $this->belongsTo(ActivityPlan::class, 'plan_id');
@@ -52,7 +50,7 @@ class ActivityPlanTemplate extends Model implements Sortable
         return $this->belongsTo(User::class, 'responsible_id');
     }
 
-    public function createdBy(): BelongsTo
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -60,5 +58,14 @@ class ActivityPlanTemplate extends Model implements Sortable
     public function assignedUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($activityPlanTemplate) {
+            $activityPlanTemplate->creator_id ??= Auth::id();
+        });
     }
 }

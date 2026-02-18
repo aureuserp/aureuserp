@@ -4,8 +4,8 @@ namespace Webkul\Sale;
 
 use Exception;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Webkul\Account\Enums as AccountEnums;
+use Webkul\Account\Enums\InvoicePolicy;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Facades\Tax;
 use Webkul\Account\Models\Move as AccountMove;
@@ -17,8 +17,8 @@ use Webkul\Inventory\Models\Operation as InventoryOperation;
 use Webkul\Inventory\Models\Product as InventoryProduct;
 use Webkul\Inventory\Models\Rule;
 use Webkul\Inventory\Models\Warehouse;
-use Webkul\Invoice\Enums as InvoiceEnums;
 use Webkul\Partner\Models\Partner;
+use Webkul\PluginManager\Package;
 use Webkul\Sale\Enums\AdvancedPayment;
 use Webkul\Sale\Enums\InvoiceStatus;
 use Webkul\Sale\Enums\OrderDeliveryStatus;
@@ -31,7 +31,6 @@ use Webkul\Sale\Models\Order;
 use Webkul\Sale\Models\OrderLine;
 use Webkul\Sale\Settings\InvoiceSettings;
 use Webkul\Sale\Settings\QuotationAndOrderSettings;
-use Webkul\Support\Package;
 use Webkul\Support\Services\EmailService;
 
 class SaleManager
@@ -108,24 +107,22 @@ class SaleManager
 
     public function createInvoice(Order $record, array $data = [])
     {
-        DB::transaction(function () use ($record, $data) {
-            if ($data['advance_payment_method'] == AdvancedPayment::DELIVERED->value) {
-                $this->createAccountMove($record);
-            }
+        if ($data['advance_payment_method'] == AdvancedPayment::DELIVERED->value) {
+            $this->createAccountMove($record);
+        }
 
-            $advancedPaymentInvoice = AdvancedPaymentInvoice::create([
-                ...$data,
-                'currency_id'          => $record->currency_id,
-                'company_id'           => $record->company_id,
-                'creator_id'           => Auth::id(),
-                'deduct_down_payments' => true,
-                'consolidated_billing' => true,
-            ]);
+        $advancedPaymentInvoice = AdvancedPaymentInvoice::create([
+            ...$data,
+            'currency_id'          => $record->currency_id,
+            'company_id'           => $record->company_id,
+            'creator_id'           => Auth::id(),
+            'deduct_down_payments' => true,
+            'consolidated_billing' => true,
+        ]);
 
-            $advancedPaymentInvoice->orders()->attach($record->id);
+        $advancedPaymentInvoice->orders()->attach($record->id);
 
-            return $this->computeSaleOrder($record);
-        });
+        return $this->computeSaleOrder($record);
     }
 
     /**
@@ -198,9 +195,9 @@ class SaleManager
 
         $line->technical_price_unit = $line->price_unit;
 
-        $line->price_reduce_taxexcl = $line->price_unit - ($line->price_unit * ($line->discount / 100));
+        $line->price_reduce_taxexcl = $line->product_uom_qty ? round($line->price_subtotal / $line->product_uom_qty, 4) : 0.0;
 
-        $line->price_reduce_taxinc = round($line->price_reduce_taxexcl + ($line->price_reduce_taxexcl * ($line->taxes->sum('amount') / 100)), 2); // Todo:: This calculation is wrong
+        $line->price_reduce_taxinc = $line->product_uom_qty ? round($line->price_total / $line->product_uom_qty, 4) : 0.0;
 
         $line->state = $line->order->state;
 
@@ -348,10 +345,14 @@ class SaleManager
 
     public function computeOrderLineDeliveryMethod(OrderLine $line): OrderLine
     {
+        if ($line->qty_delivered_method) {
+            return $line;
+        }
+
         if ($line->is_expense) {
             $line->qty_delivered_method = 'analytic';
         } else {
-            $line->qty_delivered_method = 'stock_move';
+            $line->qty_delivered_method ??= 'stock_move';
         }
 
         return $line;
@@ -365,14 +366,14 @@ class SaleManager
             return $line;
         }
 
-        $policy = $line->product?->invoice_policy ?? $this->invoiceSettings->invoice_policy->value;
+        $policy = $line->product?->invoice_policy ?? $line->product?->parent?->invoice_policy ?? $this->invoiceSettings->invoice_policy->value;
 
         if (
             $line->is_downpayment
             && $line->untaxed_amount_to_invoice == 0
         ) {
             $line->invoice_status = InvoiceStatus::INVOICED;
-        } elseif ($policy === InvoiceEnums\InvoicePolicy::ORDER->value) {
+        } elseif ($policy === InvoicePolicy::ORDER->value) {
             if ($line->qty_invoiced >= $line->product_uom_qty) {
                 $line->invoice_status = InvoiceStatus::INVOICED;
             } elseif ($line->qty_delivered > $line->product_uom_qty) {
@@ -380,7 +381,7 @@ class SaleManager
             } else {
                 $line->invoice_status = InvoiceStatus::TO_INVOICE;
             }
-        } elseif ($policy === InvoiceEnums\InvoicePolicy::DELIVERY->value) {
+        } elseif ($policy === InvoicePolicy::DELIVERY->value) {
             if ($line->qty_invoiced >= $line->product_uom_qty) {
                 $line->invoice_status = InvoiceStatus::INVOICED;
             } elseif ($line->qty_to_invoice != 0 || $line->qty_delivered == $line->product_uom_qty) {
@@ -391,6 +392,7 @@ class SaleManager
         } else {
             $line->invoice_status = InvoiceStatus::NO;
         }
+
         return $line;
     }
 
@@ -404,7 +406,7 @@ class SaleManager
 
         $priceSubtotal = 0;
 
-        if ($line->product->invoice_policy === InvoiceEnums\InvoicePolicy::DELIVERY->value) {
+        if ($line->product->invoice_policy === InvoicePolicy::DELIVERY->value) {
             $uomQtyToConsider = $line->qty_delivered;
         } else {
             $uomQtyToConsider = $line->product_uom_qty;
@@ -489,7 +491,7 @@ class SaleManager
 
                 $sent[] = $partner->name;
 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $failed[$partner->name] = 'Email service error: '.$e->getMessage();
             }
         }
@@ -622,7 +624,7 @@ class SaleManager
         $productInvoicePolicy = $orderLine->product?->invoice_policy;
         $invoiceSetting = $this->invoiceSettings->invoice_policy->value;
 
-        $quantity = ($productInvoicePolicy ?? $invoiceSetting) === InvoiceEnums\InvoicePolicy::ORDER->value
+        $quantity = ($productInvoicePolicy ?? $invoiceSetting) === InvoicePolicy::ORDER->value
             ? $orderLine->product_uom_qty
             : $orderLine->qty_to_invoice;
 

@@ -19,24 +19,25 @@ use Webkul\Partner\Models\Partner;
 use Webkul\Project\Database\Factories\ProjectFactory;
 use Webkul\Security\Models\Scopes\UserPermissionScope;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 
 class Project extends Model implements Sortable
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SoftDeletes, SortableTrait;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope, SoftDeletes, SortableTrait;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'projects_projects';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
+    public $sortable = [
+        'order_column_name'  => 'sort',
+        'sort_when_creating' => true,
+    ];
+
+    public function getModelTitle(): string
+    {
+        return __('projects::models/project.title');
+    }
+
     protected $fillable = [
         'name',
         'tasks_label',
@@ -58,11 +59,6 @@ class Project extends Model implements Sortable
         'creator_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'start_date'              => 'date',
         'end_date'                => 'date',
@@ -77,35 +73,30 @@ class Project extends Model implements Sortable
         'allow_task_dependencies' => 'boolean',
     ];
 
-    protected array $logAttributes = [
-        'name',
-        'tasks_label',
-        'description',
-        'visibility',
-        'color',
-        'sort',
-        'start_date',
-        'end_date',
-        'allocated_hours',
-        'allow_timesheets',
-        'allow_milestones',
-        'allow_task_dependencies',
-        'is_active',
-        'stage.name'   => 'Stage',
-        'partner.name' => 'Customer',
-        'company.name' => 'Company',
-        'user.name'    => 'Project Manager',
-        'creator.name' => 'Creator',
-    ];
+    protected function getLogAttributeLabels(): array
+    {
+        return [
+            'name'                    => __('projects::models/project.log-attributes.name'),
+            'tasks_label'             => __('projects::models/project.log-attributes.tasks_label'),
+            'description'             => __('projects::models/project.log-attributes.description'),
+            'visibility'              => __('projects::models/project.log-attributes.visibility'),
+            'color'                   => __('projects::models/project.log-attributes.color'),
+            'sort'                    => __('projects::models/project.log-attributes.sort'),
+            'start_date'              => __('projects::models/project.log-attributes.start_date'),
+            'end_date'                => __('projects::models/project.log-attributes.end_date'),
+            'allocated_hours'         => __('projects::models/project.log-attributes.allocated_hours'),
+            'allow_timesheets'        => __('projects::models/project.log-attributes.allow_timesheets'),
+            'allow_milestones'        => __('projects::models/project.log-attributes.allow_milestones'),
+            'allow_task_dependencies' => __('projects::models/project.log-attributes.allow_task_dependencies'),
+            'is_active'               => __('projects::models/project.log-attributes.is_active'),
+            'stage.name'              => __('projects::models/project.log-attributes.stage'),
+            'partner.name'            => __('projects::models/project.log-attributes.partner'),
+            'company.name'            => __('projects::models/project.log-attributes.company'),
+            'user.name'               => __('projects::models/project.log-attributes.user'),
+            'creator.name'            => __('projects::models/project.log-attributes.creator'),
+        ];
+    }
 
-    public $sortable = [
-        'order_column_name'  => 'sort',
-        'sort_when_creating' => true,
-    ];
-
-    /**
-     * Get the user's first name.
-     */
     protected function plannedDate(): Attribute
     {
         return Attribute::make(
@@ -185,5 +176,14 @@ class Project extends Model implements Sortable
     protected static function newFactory(): ProjectFactory
     {
         return ProjectFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($project) {
+            $project->creator_id ??= Auth::id();
+        });
     }
 }

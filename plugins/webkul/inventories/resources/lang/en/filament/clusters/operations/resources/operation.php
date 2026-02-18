@@ -6,6 +6,11 @@ return [
         'group' => 'Inventory',
     ],
 
+    'global-search' => [
+        'partner' => 'Partner',
+        'origin'  => 'Origin',
+    ],
+
     'form' => [
         'sections' => [
             'general' => [

@@ -2,14 +2,15 @@
 
 namespace Webkul\Inventory;
 
+use Filament\Panel;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Webkul\Inventory\Facades\Inventory as InventoryFacade;
-use Webkul\Support\Console\Commands\InstallCommand;
-use Webkul\Support\Console\Commands\UninstallCommand;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Webkul\PluginManager\Console\Commands\InstallCommand;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class InventoryServiceProvider extends PackageServiceProvider
 {
@@ -67,7 +68,6 @@ class InventoryServiceProvider extends PackageServiceProvider
             ->runsMigrations()
             ->hasSettings([
                 '2025_01_17_094021_create_inventories_operation_settings',
-                '2025_01_17_094022_create_inventories_product_settings',
                 '2025_01_17_094023_create_inventories_traceability_settings',
                 '2025_01_17_094024_create_inventories_warehouse_settings',
                 '2025_01_17_094051_create_inventories_logistic_settings',
@@ -117,6 +117,10 @@ class InventoryServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(InventoryPlugin::make());
+        });
+
         $loader = AliasLoader::getInstance();
 
         $loader->alias('inventory', InventoryFacade::class);

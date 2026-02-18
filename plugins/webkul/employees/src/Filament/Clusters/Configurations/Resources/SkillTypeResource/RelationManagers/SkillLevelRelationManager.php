@@ -12,7 +12,6 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\IconEntry;
@@ -25,7 +24,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Support\Filament\Tables as CustomTables;
 use Webkul\Support\Filament\Tables\Infolists\ProgressBarEntry;
 
@@ -42,8 +40,6 @@ class SkillLevelRelationManager extends RelationManager
                 TextInput::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/levels.form.name'))
                     ->required(),
-                Hidden::make('creator_id')
-                    ->default(Auth::user()->id),
                 TextInput::make('level')
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/levels.form.level'))
                     ->numeric()
@@ -66,10 +62,10 @@ class SkillLevelRelationManager extends RelationManager
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/levels.table.columns.level'))
                     ->getStateUsing(fn ($record) => $record->level)
                     ->color(fn ($record): string => match (true) {
-                        $record->level === 100                      => 'success',
-                        $record->level >= 50 && $record->level < 80 => 'warning',
-                        $record->level < 20                         => 'danger',
-                        default                                     => 'info',
+                        $record->level >= 80 => 'success',
+                        $record->level >= 50 => 'warning',
+                        $record->level >= 20 => 'info',
+                        default              => 'danger',
                     }),
                 IconColumn::make('default_level')
                     ->sortable()
@@ -185,10 +181,10 @@ class SkillLevelRelationManager extends RelationManager
                     ->label(__('employees::filament/clusters/configurations/resources/skill-type/relation-managers/levels.infolist.entries.level'))
                     ->getStateUsing(fn ($record) => $record->level)
                     ->color(fn ($record): string => match (true) {
-                        $record->level === 100                      => 'success',
-                        $record->level >= 50 && $record->level < 80 => 'warning',
-                        $record->level < 20                         => 'danger',
-                        default                                     => 'info',
+                        $record->level >= 80 => 'success',
+                        $record->level >= 50 => 'warning',
+                        $record->level >= 20 => 'info',
+                        default              => 'danger',
                     }),
                 IconEntry::make('default_level')
                     ->boolean()

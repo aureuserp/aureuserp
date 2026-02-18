@@ -7,9 +7,6 @@ use Webkul\Analytic\Models\Record;
 
 class Timesheet extends Record
 {
-    /**
-     * Bootstrap any application services.
-     */
     protected static function boot()
     {
         parent::boot();

@@ -2,8 +2,8 @@
 
 namespace Webkul\Project\Filament\Widgets;
 
-use Exception;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
+use Exception;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
 use Illuminate\Contracts\Support\Htmlable;
@@ -20,6 +20,11 @@ class TaskByStateChart extends ChartWidget
     protected ?string $maxHeight = '250px';
 
     protected static ?int $sort = 1;
+
+    protected static function getPagePermission(): ?string
+    {
+        return 'widget_project_task_by_state_chart';
+    }
 
     public function getHeading(): string|Htmlable|null
     {
@@ -93,20 +98,22 @@ class TaskByStateChart extends ChartWidget
             try {
                 $startDateCarbon = Carbon::parse($startDate)->startOfDay();
                 $query->where('created_at', '>=', $startDateCarbon);
-            } catch (Exception) {}
+            } catch (Exception) {
+            }
         }
 
         if (! empty($endDate)) {
             try {
                 $endDateCarbon = Carbon::parse($endDate)->endOfDay();
                 $query->where('created_at', '<=', $endDateCarbon);
-            } catch (Exception) {}
+            } catch (Exception) {
+            }
         }
 
         if (empty($startDate) && empty($endDate)) {
             $query->whereBetween('created_at', [
                 now()->subMonth()->startOfDay(),
-                now()->endOfDay()
+                now()->endOfDay(),
             ]);
         }
     }

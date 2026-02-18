@@ -7,7 +7,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Project\Filament\Clusters\Configurations\Resources\MilestoneResource;
 use Webkul\Project\Filament\Resources\ProjectResource;
 
@@ -54,11 +53,6 @@ class ManageMilestones extends ManageRelatedRecords
                 CreateAction::make()
                     ->label(__('projects::filament/resources/project/pages/manage-milestones.table.header-actions.create.label'))
                     ->icon('heroicon-o-plus-circle')
-                    ->mutateDataUsing(function (array $data): array {
-                        $data['creator_id'] = Auth::id();
-
-                        return $data;
-                    })
                     ->successNotification(
                         Notification::make()
                             ->success()

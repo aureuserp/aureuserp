@@ -16,7 +16,7 @@ class TaskPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_task');
+        return $user->can('view_any_project_task');
     }
 
     /**
@@ -24,7 +24,7 @@ class TaskPolicy
      */
     public function view(User $user, Task $task): bool
     {
-        return $user->can('view_task');
+        return $user->can('view_project_task');
     }
 
     /**
@@ -32,7 +32,7 @@ class TaskPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_task');
+        return $user->can('create_project_task');
     }
 
     /**
@@ -40,7 +40,7 @@ class TaskPolicy
      */
     public function update(User $user, Task $task): bool
     {
-        if (! $user->can('update_task')) {
+        if (! $user->can('update_project_task')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task): bool
     {
-        if (! $user->can('delete_task')) {
+        if (! $user->can('delete_project_task')) {
             return false;
         }
 
@@ -64,7 +64,7 @@ class TaskPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_task');
+        return $user->can('delete_any_project_task');
     }
 
     /**
@@ -72,7 +72,7 @@ class TaskPolicy
      */
     public function forceDelete(User $user, Task $task): bool
     {
-        if (! $user->can('force_delete_task')) {
+        if (! $user->can('force_delete_project_task')) {
             return false;
         }
 
@@ -84,7 +84,7 @@ class TaskPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_task');
+        return $user->can('force_delete_any_project_task');
     }
 
     /**
@@ -92,7 +92,7 @@ class TaskPolicy
      */
     public function restore(User $user, Task $task): bool
     {
-        if (! $user->can('restore_task')) {
+        if (! $user->can('restore_project_task')) {
             return false;
         }
 
@@ -104,7 +104,7 @@ class TaskPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_task');
+        return $user->can('restore_any_project_task');
     }
 
     /**
@@ -112,6 +112,6 @@ class TaskPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_task');
+        return $user->can('reorder_project_task');
     }
 }

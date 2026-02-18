@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Product\Database\Factories\AttributeFactory;
@@ -17,18 +18,8 @@ class Attribute extends Model implements Sortable
 {
     use HasFactory, SoftDeletes, SortableTrait;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'products_attributes';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'type',
@@ -36,11 +27,6 @@ class Attribute extends Model implements Sortable
         'creator_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'type' => AttributeType::class,
     ];
@@ -63,5 +49,14 @@ class Attribute extends Model implements Sortable
     protected static function newFactory(): AttributeFactory
     {
         return AttributeFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($attribute) {
+            $attribute->creator_id ??= Auth::id();
+        });
     }
 }

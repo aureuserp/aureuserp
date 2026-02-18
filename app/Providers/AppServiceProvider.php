@@ -7,7 +7,15 @@ use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\ServiceProvider;
+use Webkul\Security\Models\User;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Routing\Router;
+use Illuminate\Routing\PendingResourceRegistration;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(Authenticatable::class, User::class);
     }
 
     /**
@@ -29,6 +37,39 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Router::macro('softDeletableApiResource', function ($name, $controller, array $options = []) {
+            $this->apiResource($name, $controller, $options);
+
+            $segments = explode('.', $name);
+
+            $path = collect($segments)
+                ->map(function ($segment, $index) use ($segments) {
+                    if ($index === 0) {
+                        return $segment;
+                    }
+
+                    $parentParam = str_replace('-', '_', str($segments[$index - 1])->singular()->toString()) . '_id';
+
+                    return "{{$parentParam}}/{$segment}";
+                })
+                ->implode('/');
+
+            $this->post("{$path}/{id}/restore", [$controller, 'restore'])
+                ->name("{$name}.restore");
+
+            $this->delete("{$path}/{id}/force", [$controller, 'forceDestroy'])
+                ->name("{$name}.force-destroy");
+        });
+
+        Fieldset::configureUsing(fn(Fieldset $fieldset) => $fieldset
+            ->columnSpanFull());
+
+        Grid::configureUsing(fn(Grid $grid) => $grid
+            ->columnSpanFull());
+
+        Section::configureUsing(fn(Section $section) => $section
+            ->columnSpanFull());
+
         // Configure Language Switch for Admin Panel
         LanguageSwitch::configureUsing(function (LanguageSwitch $switch) {
             $switch
@@ -49,7 +90,7 @@ class AppServiceProvider extends ServiceProvider
             $locale = app()->getLocale();
             $isRtl = in_array($locale, $this->rtlLocales);
             $direction = $isRtl ? 'rtl' : 'ltr';
-            
+
             $view->with([
                 'isRtl' => $isRtl,
                 'direction' => $direction,
@@ -70,13 +111,13 @@ class AppServiceProvider extends ServiceProvider
         // Add RTL script to Filament panels
         FilamentView::registerRenderHook(
             PanelsRenderHook::BODY_START,
-            fn () => new HtmlString($this->getRtlScript()),
+            fn() => new HtmlString($this->getRtlScript()),
         );
 
         // Add RTL CSS to Filament panels
         FilamentView::registerRenderHook(
             PanelsRenderHook::HEAD_END,
-            fn () => new HtmlString($this->getRtlStyles()),
+            fn() => new HtmlString($this->getRtlStyles()),
         );
     }
 
@@ -87,7 +128,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $direction = in_array(app()->getLocale(), $this->rtlLocales) ? 'rtl' : 'ltr';
         $locale = app()->getLocale();
-        
+
         return <<<HTML
         <script>
             document.documentElement.dir = '{$direction}';

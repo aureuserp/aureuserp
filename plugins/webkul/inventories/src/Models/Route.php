@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Inventory\Database\Factories\RouteFactory;
@@ -18,18 +19,8 @@ class Route extends Model implements Sortable
 {
     use HasFactory, SoftDeletes, SortableTrait;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_routes';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'sort',
         'name',
@@ -44,11 +35,6 @@ class Route extends Model implements Sortable
         'deleted_at',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'product_selectable'          => 'boolean',
         'product_category_selectable' => 'boolean',
@@ -99,5 +85,18 @@ class Route extends Model implements Sortable
     protected static function newFactory(): RouteFactory
     {
         return RouteFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($route) {
+            $authUser = Auth::user();
+
+            $route->creator_id ??= $authUser->id;
+
+            $route->company_id ??= $authUser?->default_company_id;
+        });
     }
 }

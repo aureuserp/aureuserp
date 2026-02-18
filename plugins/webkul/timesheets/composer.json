@@ -10,7 +10,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Webkul\\Timesheet\\Providers\\TimesheetServiceProvider"
+                "Webkul\\Timesheet\\TimesheetServiceProvider"
             ],
             "aliases": {}
         }

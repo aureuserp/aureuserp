@@ -6,7 +6,6 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 use Webkul\Partner\Models\Bank;
 use Webkul\Security\Models\User;
 
-
 class BankPolicy
 {
     use HandlesAuthorization;
@@ -16,7 +15,7 @@ class BankPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_bank');
+        return $user->can('view_any_partner_bank');
     }
 
     /**
@@ -24,7 +23,7 @@ class BankPolicy
      */
     public function view(User $user, Bank $bank): bool
     {
-        return $user->can('view_bank');
+        return $user->can('view_partner_bank');
     }
 
     /**
@@ -32,7 +31,7 @@ class BankPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_bank');
+        return $user->can('create_partner_bank');
     }
 
     /**
@@ -40,7 +39,7 @@ class BankPolicy
      */
     public function update(User $user, Bank $bank): bool
     {
-        return $user->can('update_bank');
+        return $user->can('update_partner_bank');
     }
 
     /**
@@ -48,7 +47,7 @@ class BankPolicy
      */
     public function delete(User $user, Bank $bank): bool
     {
-        return $user->can('delete_bank');
+        return $user->can('delete_partner_bank');
     }
 
     /**
@@ -56,7 +55,7 @@ class BankPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_bank');
+        return $user->can('delete_any_partner_bank');
     }
 
     /**
@@ -64,7 +63,7 @@ class BankPolicy
      */
     public function forceDelete(User $user, Bank $bank): bool
     {
-        return $user->can('force_delete_bank');
+        return $user->can('force_delete_partner_bank');
     }
 
     /**
@@ -72,7 +71,7 @@ class BankPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_bank');
+        return $user->can('force_delete_any_partner_bank');
     }
 
     /**
@@ -80,7 +79,7 @@ class BankPolicy
      */
     public function restore(User $user, Bank $bank): bool
     {
-        return $user->can('restore_bank');
+        return $user->can('restore_partner_bank');
     }
 
     /**
@@ -88,6 +87,6 @@ class BankPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_bank');
+        return $user->can('restore_any_partner_bank');
     }
 }

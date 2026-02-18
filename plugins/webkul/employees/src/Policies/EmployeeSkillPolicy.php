@@ -15,7 +15,7 @@ class EmployeeSkillPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_employee::skill');
+        return $user->can('view_any_employee_employee::skill');
     }
 
     /**
@@ -23,6 +23,6 @@ class EmployeeSkillPolicy
      */
     public function view(User $user, EmployeeSkill $employeeSkill): bool
     {
-        return $user->can('view_employee::skill');
+        return $user->can('view_employee_employee::skill');
     }
 }

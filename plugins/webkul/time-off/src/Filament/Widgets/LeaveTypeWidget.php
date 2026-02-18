@@ -2,15 +2,16 @@
 
 namespace Webkul\TimeOff\Filament\Widgets;
 
-use Carbon\Carbon;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
+use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Contracts\Support\Htmlable;
 use Webkul\TimeOff\Models\Leave;
 
 class LeaveTypeWidget extends ChartWidget
 {
-     use HasWidgetShield;
+    use HasWidgetShield;
+
     public function getHeading(): string|Htmlable|null
     {
         return __('time-off::filament/widgets/leave-type-widget.heading.title');
@@ -21,6 +22,11 @@ class LeaveTypeWidget extends ChartWidget
     protected int|string|array $columnSpan = 'full';
 
     protected ?string $maxHeight = '400px';
+
+    protected static function getPagePermission(): ?string
+    {
+        return 'widget_time_off_leave_type_widget';
+    }
 
     protected function getData(): array
     {

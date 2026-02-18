@@ -74,7 +74,7 @@ class JobPositionResource extends Resource
             __('recruitments::filament/clusters/configurations/resources/job-position.global-search.department')      => $record->department?->name ?? '—',
             __('recruitments::filament/clusters/configurations/resources/job-position.global-search.employment-type') => $record->employmentType?->name ?? '—',
             __('recruitments::filament/clusters/configurations/resources/job-position.global-search.company')         => $record->company?->name ?? '—',
-            __('recruitments::filament/clusters/configurations/resources/job-position.global-search.created-by')      => $record->createdBy?->name ?? '—',
+            __('recruitments::filament/clusters/configurations/resources/job-position.global-search.created-by')      => $record->creator?->name ?? '—',
         ];
     }
 
@@ -280,7 +280,7 @@ class JobPositionResource extends Resource
                     ->sortable()
                     ->label(__('recruitments::filament/clusters/configurations/resources/job-position.table.columns.status'))
                     ->boolean(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/job-position.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -378,7 +378,7 @@ class JobPositionResource extends Resource
                 Tables\Grouping\Group::make('employmentType.name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/job-position.table.groups.employment-type'))
                     ->collapsible(),
-                Tables\Grouping\Group::make('createdBy.name')
+                Tables\Grouping\Group::make('creator.name')
                     ->label(__('recruitments::filament/clusters/configurations/resources/job-position.table.groups.created-by'))
                     ->collapsible(),
                 Tables\Grouping\Group::make('created_at')

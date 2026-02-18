@@ -3,12 +3,12 @@
     use Filament\Actions\ActionGroup;
     use Filament\Support\Enums\Alignment;
     use Illuminate\View\ComponentAttributeBag;
+    use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 
     $items = $getItems();
 
     $addAction = $getAction($getAddActionName());
     $addActionAlignment = $getAddActionAlignment();
-    $addBetweenAction = $getAction($getAddBetweenActionName());
     $cloneAction = $getAction($getCloneActionName());
     $deleteAction = $getAction($getDeleteActionName());
     $moveDownAction = $getAction($getMoveDownActionName());
@@ -31,6 +31,7 @@
     $hasColumnManagerDropdown = $hasColumnManager();
     $columnManagerApplyAction = $getColumnManagerApplyAction();
     $columnManagerTriggerAction = $getColumnManagerTriggerAction();
+    $hasSummary = $hasAnySummarizers();
 @endphp
 
 <x-dynamic-component
@@ -90,7 +91,7 @@
                             || $isCloneable 
                             || $isDeletable
                         )
-                            <th class="text-center align-middle fi-fo-table-repeater-empty-header-cell" style="width: 75px">
+                            <th class="fi-fo-table-repeater-empty-header-cell text-center align-middle" style="width: 75px">
                                 @if ($hasColumnManagerDropdown)
                                     <x-filament::dropdown
                                         shift
@@ -98,7 +99,7 @@
                                         :max-height="$getColumnManagerMaxHeight()"
                                         :width="$getColumnManagerWidth()"
                                         :wire:key="$this->getId() . '.table.column-manager.' . $statePath"
-                                        class="inline-block fi-ta-col-manager-dropdown"
+                                        class="fi-ta-col-manager-dropdown inline-block"
                                     >
                                         <x-slot name="trigger">
                                             {{ $columnManagerTriggerAction }}
@@ -263,6 +264,43 @@
                         </tr>
                     @endforeach
                 </tbody>
+
+                @if ($hasSummary)
+                    <tfoot class="fi-ta-row fi-ta-summary-row fi-striped">
+                        <tr>
+                            @if (
+                                (count($items) > 1) 
+                                && (
+                                    $isReorderableWithButtons 
+                                    || $isReorderableWithDragAndDrop
+                                )
+                            )
+                                <td class="fi-ta-cell px-3 py-3"></td>
+                            @endif
+
+                            @foreach ($tableColumns as $tableColumn)
+                                <td
+                                    @class([
+                                        'fi-ta-cell px-3 py-3 font-semibold',
+                                        (($columnAlignment = $tableColumn->getAlignment()) instanceof Alignment) ? ('fi-align-' . $columnAlignment->value) : $columnAlignment,
+                                    ])
+                                >
+                                    @if ($tableColumn->hasSummarizer())
+                                        {{ $getSummaryForColumn($tableColumn->getName()) }}
+                                    @endif
+                                </td>
+                            @endforeach
+
+                            @if (
+                                count($extraItemActions) 
+                                || $isCloneable 
+                                || $isDeletable
+                            )
+                                <td class="fi-ta-cell px-3 py-3"></td>
+                            @endif
+                        </tr>
+                    </tfoot>
+                @endif
             </table>
         @endif
     </div>

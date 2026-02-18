@@ -2,6 +2,7 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources;
 
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -17,6 +18,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Illuminate\Support\Facades\Auth;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
@@ -44,7 +46,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Arr;
-use Webkul\Field\Filament\Forms\Components\ProgressStepper;
+use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Models\Product;
@@ -69,7 +72,7 @@ class PurchaseAgreementResource extends Resource
 
     protected static ?string $model = Requisition::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-check';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-check';
 
     protected static bool $shouldRegisterNavigation = true;
 
@@ -79,7 +82,25 @@ class PurchaseAgreementResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'partner.name'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('purchases::filament/admin/clusters/orders/resources/purchase-agreement.global-search.vendor') => $record->partner?->name ?? '—',
+            __('purchases::filament/admin/clusters/orders/resources/purchase-agreement.global-search.type')   => $record->type?->getLabel() ?? '—',
+        ];
+    }
+
     public static function getNavigationLabel(): string
+    {
+        return __('purchases::filament/admin/clusters/orders/resources/purchase-agreement.navigation.title');
+    }
+
+    public static function getModelLabel(): string
     {
         return __('purchases::filament/admin/clusters/orders/resources/purchase-agreement.navigation.title');
     }
@@ -97,7 +118,7 @@ class PurchaseAgreementResource extends Resource
     {
         return $schema
             ->components([
-                ProgressStepper::make('state')
+                FormProgressStepper::make('state')
                     ->hiddenLabel()
                     ->inline()
                     ->options(RequisitionState::options())
@@ -112,7 +133,7 @@ class PurchaseAgreementResource extends Resource
                                     ->relationship(
                                         'partner',
                                         'name',
-                                        fn (Builder $query) => $query->withTrashed()->where('sub_type', 'supplier')
+                                        fn (Builder $query) => $query->withTrashed()
                                     )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
                                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
@@ -137,7 +158,11 @@ class PurchaseAgreementResource extends Resource
                                     ->live(),
                                 Select::make('currency_id')
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.form.sections.general.fields.currency'))
-                                    ->relationship('currency', 'name')
+                                    ->relationship(
+                                        'currency',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                    )
                                     ->required()
                                     ->searchable()
                                     ->preload(),
@@ -190,7 +215,7 @@ class PurchaseAgreementResource extends Resource
                                     ->searchable()
                                     ->required()
                                     ->preload()
-                                    ->default(filament()->auth()?->user()?->default_company_id)
+                                    ->default(Auth::user()->default_company_id)
                                     ->disabled(fn ($record): bool => $record && $record?->state != RequisitionState::DRAFT),
                             ]),
                     ])
@@ -534,12 +559,11 @@ class PurchaseAgreementResource extends Resource
     {
         return $schema
             ->components([
-                Section::make()
-                    ->schema([
-                        TextEntry::make('state')
-                            ->badge(),
-                    ])
-                    ->compact(),
+                InfolistProgressStepper::make('state')
+                    ->hiddenLabel()
+                    ->inline()
+                    ->options(RequisitionState::options())
+                    ->default(RequisitionState::DRAFT),
 
                 Section::make(__('purchases::filament/admin/clusters/orders/resources/purchase-agreement.infolist.sections.general.title'))
                     ->icon('heroicon-o-document-text')

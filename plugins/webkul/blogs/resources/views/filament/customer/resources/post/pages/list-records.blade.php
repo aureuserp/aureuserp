@@ -21,7 +21,7 @@
                         </div>
 
                         <p class="mt-2 text-gray-500">
-                            {!! \Illuminate\Support\Str::limit($record->sub_title ?? $record->content, 150, $end='...') !!}
+                            {!! \Illuminate\Support\Str::limit(str($record->sub_title ?? $record->content)->sanitizeHtml(), 150, $end='...') !!}
                         </p>
 
                         @if ($record->tags->count())

@@ -11,7 +11,7 @@ use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Filament\Admin\Clusters\Orders\Resources\OrderResource;
 use Webkul\Purchase\Models\Order;
-use Webkul\Support\Concerns\HasRepeatableEntryColumnManager;
+use Webkul\Support\Filament\Concerns\HasRepeatableEntryColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class ViewOrder extends ViewRecord
@@ -39,8 +39,8 @@ class ViewOrder extends ViewRecord
     {
         return [
             ChatterAction::make()
-                ->record(\Webkul\Purchase\Models\Order::find($this->getRecord()->id))
-                ->setResource(static::$resource),
+                ->record(Order::find($this->getRecord()->id))
+                ->resource(static::$resource),
             DeleteAction::make()
                 ->hidden(fn () => $this->getRecord()->state == OrderState::DONE)
                 ->action(function (DeleteAction $action, Order $record) {

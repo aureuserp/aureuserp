@@ -23,10 +23,15 @@ use Webkul\Security\Models\User;
 
 class Dashboard extends BaseDashboard
 {
-     use HasPageShield;
     use BaseDashboard\Concerns\HasFiltersForm;
+    use HasPageShield;
 
     protected static string $routePath = 'project';
+
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_project_dashboard';
+    }
 
     public static function getNavigationLabel(): string
     {
@@ -47,57 +52,57 @@ class Dashboard extends BaseDashboard
     {
         return $schema
             ->components([
-               
-                        Section::make()
-                            ->columns([
-                                'default' => 1,
-                                'sm'      => 2,
-                                'md'      => 3,
-                                'xl'      => 6,
-                            ])
 
-                            ->schema([
-                                Select::make('selectedProjects')
-                                    ->label(__('projects::filament/pages/dashboard.filters-form.project'))
-                                    ->multiple()
-                                    ->searchable()
-                                    ->preload()
-                                    ->options(fn () => Project::pluck('name', 'id'))
-                                    ->reactive(),
-                                Select::make('selectedAssignees')
-                                    ->label(__('projects::filament/pages/dashboard.filters-form.assignees'))
-                                    ->multiple()
-                                    ->searchable()
-                                    ->preload()
-                                    ->options(fn () => User::pluck('name', 'id'))
-                                    ->reactive(),
-                                Select::make('selectedTags')
-                                    ->label(__('projects::filament/pages/dashboard.filters-form.tags'))
-                                    ->multiple()
-                                    ->searchable()
-                                    ->preload()
-                                    ->options(fn () => Tag::pluck('name', 'id'))
-                                    ->reactive(),
-                                Select::make('selectedPartners')
-                                    ->label(__('projects::filament/pages/dashboard.filters-form.customer'))
-                                    ->multiple()
-                                    ->searchable()
-                                    ->preload()
-                                    ->options(fn () => Partner::pluck('name', 'id'))
-                                    ->reactive(),
-                                DatePicker::make('startDate')
-                                    ->label(__('projects::filament/pages/dashboard.filters-form.start-date'))
-                                    ->maxDate(fn (Get $get) => $get('endDate') ?: now())
-                                    ->default(now()->subMonth()->format('Y-m-d'))
-                                    ->native(false),
-                                DatePicker::make('endDate')
-                                    ->label(__('projects::filament/pages/dashboard.filters-form.end-date'))
-                                    ->minDate(fn (Get $get) => $get('startDate') ?: now())
-                                    ->maxDate(now())
-                                    ->default(now())
-                                    ->native(false),
-                            ])->columnSpanFull(),
-                    
+                Section::make()
+                    ->columns([
+                        'default' => 1,
+                        'sm'      => 2,
+                        'md'      => 3,
+                        'xl'      => 6,
+                    ])
+
+                    ->schema([
+                        Select::make('selectedProjects')
+                            ->label(__('projects::filament/pages/dashboard.filters-form.project'))
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->options(fn () => Project::pluck('name', 'id'))
+                            ->reactive(),
+                        Select::make('selectedAssignees')
+                            ->label(__('projects::filament/pages/dashboard.filters-form.assignees'))
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->options(fn () => User::pluck('name', 'id'))
+                            ->reactive(),
+                        Select::make('selectedTags')
+                            ->label(__('projects::filament/pages/dashboard.filters-form.tags'))
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->options(fn () => Tag::pluck('name', 'id'))
+                            ->reactive(),
+                        Select::make('selectedPartners')
+                            ->label(__('projects::filament/pages/dashboard.filters-form.customer'))
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->options(fn () => Partner::pluck('name', 'id'))
+                            ->reactive(),
+                        DatePicker::make('startDate')
+                            ->label(__('projects::filament/pages/dashboard.filters-form.start-date'))
+                            ->maxDate(fn (Get $get) => $get('endDate') ?: now())
+                            ->default(now()->subMonth()->format('Y-m-d'))
+                            ->native(false),
+                        DatePicker::make('endDate')
+                            ->label(__('projects::filament/pages/dashboard.filters-form.end-date'))
+                            ->minDate(fn (Get $get) => $get('startDate') ?: now())
+                            ->maxDate(now())
+                            ->default(now())
+                            ->native(false),
+                    ])->columnSpanFull(),
+
             ]);
     }
 

@@ -4,7 +4,9 @@ namespace Webkul\Sale\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Chatter\Traits\HasChatter;
@@ -18,6 +20,11 @@ class Team extends Model implements Sortable
     use HasChatter, HasFactory, HasLogActivity, SoftDeletes, SortableTrait;
 
     protected $table = 'sales_teams';
+
+    public function getModelTitle(): string
+    {
+        return __('sales::models/team.title');
+    }
 
     protected $fillable = [
         'sort',
@@ -35,14 +42,17 @@ class Team extends Model implements Sortable
         'sort_when_creating' => true,
     ];
 
-    protected array $logAttributes = [
-        'name',
-        'company.name'    => 'Company',
-        'user.name'       => 'Team Leader',
-        'creator.name'    => 'Creator',
-        'is_active'       => 'Status',
-        'invoiced_target' => 'Invoiced Target',
-    ];
+    public function getLogAttributeLabels(): array
+    {
+        return [
+            'name'               => __('sales::models/team.log-attributes.name'),
+            'company.name'       => __('sales::models/team.log-attributes.company'),
+            'user.name'          => __('sales::models/team.log-attributes.team_leader'),
+            'creator.name'       => __('sales::models/team.log-attributes.creator'),
+            'is_active'          => __('sales::models/team.log-attributes.status'),
+            'invoiced_target'    => __('sales::models/team.log-attributes.invoiced_target'),
+        ];
+    }
 
     public function company()
     {
@@ -54,7 +64,7 @@ class Team extends Model implements Sortable
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -67,5 +77,14 @@ class Team extends Model implements Sortable
     protected static function newFactory(): TeamFactory
     {
         return TeamFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($team) {
+            $team->creator_id ??= Auth::id();
+        });
     }
 }

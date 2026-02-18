@@ -4,6 +4,7 @@ namespace Webkul\Support\Filament\Pages;
 
 use Exception;
 use Filament\Actions\Action;
+use Filament\Auth\MultiFactor\Contracts\MultiFactorAuthenticationProvider;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
@@ -11,7 +12,9 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -45,14 +48,24 @@ class Profile extends Page implements HasForms
     {
         return [
             'editProfileForm',
-            'editPasswordForm',
         ];
+    }
+
+    protected function getSchemas(): array
+    {
+        $schemas = [];
+
+        if (Filament::hasMultiFactorAuthentication()) {
+            $schemas[] = 'multiFactorAuthenticationSchema';
+        }
+
+        return $schemas;
     }
 
     public function editProfileForm(Schema $schema): Schema
     {
         return $schema
-            ->schema([
+            ->components([
                 Section::make(__('support::filament/pages/profile.information_section'))
                     ->description(__('support::filament/pages/profile.information_description'))
                     ->icon('heroicon-o-user')
@@ -67,7 +80,7 @@ class Profile extends Page implements HasForms
                             ->maxSize(2048)
                             ->image()
                             ->imageEditor()
-                            ->imageEditorAspectRatios([
+                            ->imageEditorAspectRatioOptions([
                                 '1:1',
                             ])
                             ->columnSpanFull()
@@ -113,7 +126,7 @@ class Profile extends Page implements HasForms
     public function editPasswordForm(Schema $schema): Schema
     {
         return $schema
-            ->schema([
+            ->components([
                 Section::make(__('support::filament/pages/profile.password.section'))
                     ->description(__('support::filament/pages/profile.password.description'))
                     ->icon('heroicon-o-lock-closed')
@@ -238,13 +251,13 @@ class Profile extends Page implements HasForms
                 ->success()
                 ->duration(3000)
                 ->send();
-                
+
             if (request()->hasSession()) {
                 request()->session()->invalidate();
                 request()->session()->regenerateToken();
             }
 
-            return redirect()->to(filament()->getCurrentPanel()->getLoginUrl());
+            return redirect()->to(filament()->getCurrentOrDefaultPanel()->getLoginUrl());
         } catch (ValidationException $e) {
             throw $e;
         } catch (Exception $e) {
@@ -331,10 +344,118 @@ class Profile extends Page implements HasForms
         ];
     }
 
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('updatePassword')
+                ->label(__('support::filament/pages/profile.password.section'))
+                ->icon('heroicon-o-lock-closed')
+                ->color('warning')
+                ->modalHeading(__('support::filament/pages/profile.password.section'))
+                ->modalDescription(__('support::filament/pages/profile.password.description'))
+                ->modalIcon('heroicon-o-lock-closed')
+                ->modalSubmitActionLabel(__('support::filament/pages/profile.password.section'))
+                ->fillForm([
+                    'current_password'      => '',
+                    'password'              => '',
+                    'password_confirmation' => '',
+                ])
+                ->schema([
+                    TextInput::make('current_password')
+                        ->label(__('support::filament/pages/profile.password.current'))
+                        ->password()
+                        ->revealable()
+                        ->required()
+                        ->autocomplete('current-password')
+                        ->validationAttribute(__('support::filament/pages/profile.password.current'))
+                        ->currentPassword()
+                        ->helperText(__('support::filament/pages/profile.password.current-helper')),
+
+                    TextInput::make('password')
+                        ->label(__('support::filament/pages/profile.password.new'))
+                        ->password()
+                        ->revealable()
+                        ->required()
+                        ->rule(Password::default()->min(6))
+                        ->autocomplete('new-password')
+                        ->validationAttribute(__('support::filament/pages/profile.password.new'))
+                        ->live(debounce: 500)
+                        ->confirmed()
+                        ->helperText(__('support::filament/pages/profile.password.helper'))
+                        ->different('current_password')
+                        ->dehydrateStateUsing(fn ($state): ?string => $state ? Hash::make($state) : null),
+
+                    TextInput::make('password_confirmation')
+                        ->label(__('support::filament/pages/profile.password.confirm'))
+                        ->password()
+                        ->revealable()
+                        ->required()
+                        ->dehydrated(false)
+                        ->autocomplete('new-password')
+                        ->validationAttribute(__('support::filament/pages/profile.password.confirm'))
+                        ->same('password'),
+                ])
+                ->action(function (Action $action, array $data): void {
+                    try {
+                        $user = $this->getUser();
+
+                        if (Hash::check($data['password'], $user->password)) {
+                            throw ValidationException::withMessages([
+                                'data.password' => [__('support::filament/pages/profile.password.errors.same-as-current')],
+                            ]);
+                        }
+
+                        $user->password = $data['password'];
+                        $user->save();
+
+                        Notification::make()
+                            ->title(__('support::filament/pages/profile.password.notification.success.title'))
+                            ->body(__('support::filament/pages/profile.password.notification.success.body'))
+                            ->success()
+                            ->duration(3000)
+                            ->send();
+
+                        if (request()->hasSession()) {
+                            request()->session()->invalidate();
+                            request()->session()->regenerateToken();
+                        }
+
+                        $action->cancel();
+
+                        redirect()->to(filament()->getCurrentOrDefaultPanel()->getLoginUrl());
+                    } catch (ValidationException $e) {
+                        throw $e;
+                    } catch (Exception $e) {
+                        Notification::make()
+                            ->title(__('support::filament/pages/profile.password.notification.error.title'))
+                            ->body(__('support::filament/pages/profile.password.notification.error.body'))
+                            ->danger()
+                            ->duration(5000)
+                            ->send();
+                    }
+                }),
+        ];
+    }
+
     protected function getViewData(): array
     {
         return [
             'user' => $this->getUser(),
         ];
+    }
+
+    public function multiFactorAuthenticationSchema(Schema $schema): Schema
+    {
+        $user = Filament::auth()->user();
+
+        return $schema
+            ->components([
+                Section::make(__('filament-panels::auth/pages/edit-profile.multi_factor_authentication.label'))
+                    ->schema(collect(Filament::getMultiFactorAuthenticationProviders())
+                        ->sort(fn (MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): int => $multiFactorAuthenticationProvider->isEnabled($user) ? 0 : 1)
+                        ->map(fn (MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): Component => Group::make($multiFactorAuthenticationProvider->getManagementSchemaComponents())
+                            ->statePath($multiFactorAuthenticationProvider->getId()))
+                        ->all()),
+            ]);
     }
 }

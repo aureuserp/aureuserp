@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'global-search' => [
+        'vendor'    => 'Vendor',
+        'reference' => 'Reference',
+        'amount'    => 'Amount',
+    ],
+
     'form' => [
         'sections' => [
             'general' => [
@@ -113,7 +119,6 @@ return [
             'status'           => 'Status',
             'billing-status'   => 'Billing Status',
             'currency'         => 'Currency',
-            'billing-status'   => 'Billing Status',
         ],
 
         'groups' => [

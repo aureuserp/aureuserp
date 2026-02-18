@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Product\Database\Factories\PriceRuleFactory;
@@ -18,18 +19,8 @@ class PriceRule extends Model implements Sortable
 {
     use HasFactory, SoftDeletes, SortableTrait;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'products_price_rules';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'sort',
@@ -66,5 +57,14 @@ class PriceRule extends Model implements Sortable
     protected static function newFactory(): PriceRuleFactory
     {
         return PriceRuleFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($priceRule) {
+            $priceRule->creator_id ??= Auth::id();
+        });
     }
 }

@@ -39,7 +39,7 @@ class PrintRFQAction extends Action
 
                 return response()->streamDownload(function () use ($pdf) {
                     echo $pdf->output();
-                }, 'Purchase Order-'.str_replace('/', '_', $record->name).'.pdf');
+                }, 'Request for Quotation-'.str_replace('/', '_', $record->name).'.pdf');
             })
             ->color(fn (): string => $this->getRecord()->state === OrderState::DRAFT ? 'primary' : 'gray')
             ->visible(fn () => in_array($this->getRecord()->state, [

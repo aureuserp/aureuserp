@@ -6,7 +6,6 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 use Webkul\Partner\Models\Title;
 use Webkul\Security\Models\User;
 
-
 class TitlePolicy
 {
     use HandlesAuthorization;
@@ -16,7 +15,7 @@ class TitlePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_title');
+        return $user->can('view_any_partner_title');
     }
 
     /**
@@ -24,7 +23,7 @@ class TitlePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_title');
+        return $user->can('create_partner_title');
     }
 
     /**
@@ -32,7 +31,7 @@ class TitlePolicy
      */
     public function update(User $user, Title $title): bool
     {
-        return $user->can('update_title');
+        return $user->can('update_partner_title');
     }
 
     /**
@@ -40,7 +39,7 @@ class TitlePolicy
      */
     public function delete(User $user, Title $title): bool
     {
-        return $user->can('delete_title');
+        return $user->can('delete_partner_title');
     }
 
     /**
@@ -48,6 +47,6 @@ class TitlePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_title');
+        return $user->can('delete_any_partner_title');
     }
 }

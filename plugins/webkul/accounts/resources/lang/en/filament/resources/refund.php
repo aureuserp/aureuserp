@@ -8,13 +8,6 @@ return [
         'group' => 'Invoices',
     ],
 
-    'global-search' => [
-        'number'           => 'Number',
-        'customer'         => 'Customer',
-        'invoice-date'     => 'Invoice Date',
-        'invoice-due-date' => 'Invoice Due Date',
-    ],
-
     'form' => [
         'section' => [
             'general' => [

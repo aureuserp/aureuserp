@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources;
 
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -30,9 +31,13 @@ class TaxGroupResource extends Resource
 {
     protected static ?string $model = TaxGroup::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-group';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-group';
 
     protected static bool $shouldRegisterNavigation = false;
+
+    protected static bool $isGloballySearchable = false;
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema
     {
@@ -71,7 +76,7 @@ class TaxGroupResource extends Resource
                 TextColumn::make('country.name')
                     ->label(__('accounts::filament/resources/tax-group.table.columns.country'))
                     ->sortable(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('accounts::filament/resources/tax-group.table.columns.created-by'))
                     ->sortable(),
                 TextColumn::make('name')
@@ -101,7 +106,7 @@ class TaxGroupResource extends Resource
                 Group::make('country.name')
                     ->label(__('accounts::filament/resources/tax-group.table.groups.country'))
                     ->collapsible(),
-                Group::make('createdBy.name')
+                Group::make('creator.name')
                     ->label(__('accounts::filament/resources/tax-group.table.groups.created-by'))
                     ->collapsible(),
                 Group::make('created_at')

@@ -3,9 +3,12 @@
 namespace Webkul\Product\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Webkul\Product\Models\ProductCombination;
 
 class ProductCombinationFactory extends Factory
 {
+    protected $model = ProductCombination::class;
+
     /**
      * Define the model's default state.
      *

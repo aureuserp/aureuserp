@@ -17,6 +17,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
+use Webkul\Account\Filament\Resources\ProductResource as BaseProductResource;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Inventory\Enums\MoveState;
 use Webkul\Inventory\Enums\ProductTracking;
@@ -33,7 +34,6 @@ use Webkul\Inventory\Models\Move;
 use Webkul\Inventory\Models\Product;
 use Webkul\Inventory\Settings\TraceabilitySettings;
 use Webkul\Product\Enums\ProductType;
-use Webkul\Product\Filament\Resources\ProductResource as BaseProductResource;
 
 class ProductResource extends BaseProductResource
 {
@@ -48,6 +48,8 @@ class ProductResource extends BaseProductResource
     protected static ?string $cluster = Products::class;
 
     protected static ?int $navigationSort = 1;
+
+    protected static bool $isGloballySearchable = true;
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -64,7 +66,7 @@ class ProductResource extends BaseProductResource
 
         $firstGroupChildComponents = $components[0]->getDefaultChildComponents();
 
-        $firstGroupChildComponents[2] = Section::make(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.title'))
+        $firstGroupChildComponents[3] = Section::make(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.title'))
             ->schema([
                 Fieldset::make(__('inventories::filament/clusters/products/resources/product.form.sections.inventory.fieldsets.tracking.title'))
                     ->schema([

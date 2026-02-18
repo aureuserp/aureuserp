@@ -4,7 +4,6 @@ namespace Webkul\Account\Filament\Resources\CashRoundingResource\Pages;
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Filament\Resources\CashRoundingResource;
 
 class CreateCashRounding extends CreateRecord
@@ -16,18 +15,20 @@ class CreateCashRounding extends CreateRecord
         return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
+    }
+
     protected function getCreatedNotification(): ?Notification
     {
         return Notification::make()
             ->success()
             ->title(__('accounts::filament/resources/cash-rounding/pages/create-cash-rounding.notification.title'))
             ->body(__('accounts::filament/resources/cash-rounding/pages/create-cash-rounding.notification.body'));
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['creator_id'] = Auth::user()->id;
-
-        return $data;
     }
 }

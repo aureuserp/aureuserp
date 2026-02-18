@@ -75,11 +75,15 @@ class EditUser extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $partner = $this->record->partner;
+        $partner = $this->record?->partner;
+
+        if (! $partner) {
+            return $data;
+        }
 
         return [
             ...$data,
-            ...$partner ? $partner->toArray() : [],
+            ...$partner->toArray(),
         ];
     }
 }

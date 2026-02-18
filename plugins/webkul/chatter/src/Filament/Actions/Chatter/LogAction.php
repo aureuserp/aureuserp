@@ -4,10 +4,12 @@ namespace Webkul\Chatter\Filament\Actions\Chatter;
 
 use Exception;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
+use Illuminate\Support\Facades\Auth;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Group;
@@ -96,7 +98,7 @@ class LogAction extends Action
             )
             ->action(function (array $data, ?Model $record = null) {
                 try {
-                    $user = filament()->auth()->user();
+                    $user = Filament::auth()->user() ?? Auth::user();
 
                     $data['name'] = $record->name;
                     $data['causer_type'] = $user->getMorphClass();

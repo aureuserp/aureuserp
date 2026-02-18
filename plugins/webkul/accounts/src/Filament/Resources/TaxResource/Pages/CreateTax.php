@@ -2,8 +2,8 @@
 
 namespace Webkul\Account\Filament\Resources\TaxResource\Pages;
 
+use Exception;
 use Filament\Notifications\Notification;
-use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Filament\Resources\TaxResource;
@@ -12,9 +12,13 @@ class CreateTax extends CreateRecord
 {
     protected static string $resource = TaxResource::class;
 
-    public static function getSubNavigationPosition(): SubNavigationPosition
+    public function getSubNavigation(): array
     {
-        return SubNavigationPosition::Top;
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
     }
 
     protected function getRedirectUrl(): string
@@ -38,5 +42,24 @@ class CreateTax extends CreateRecord
         $data['creator_id'] = $user->id;
 
         return $data;
+    }
+
+    protected function beforeCreate(): void
+    {
+        $data = $this->data;
+        try {
+            TaxResource::validateRepartitionData(
+                $data['invoiceRepartitionLines'] ?? [],
+                $data['refundRepartitionLines'] ?? []
+            );
+        } catch (Exception $e) {
+            Notification::make()
+                ->danger()
+                ->title('Invalid Repartition Lines')
+                ->body($e->getMessage())
+                ->send();
+
+            $this->halt();
+        }
     }
 }

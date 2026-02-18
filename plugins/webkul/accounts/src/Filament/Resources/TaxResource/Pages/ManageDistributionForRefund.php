@@ -14,7 +14,7 @@ class ManageDistributionForRefund extends ManageRelatedRecords
 
     protected static string $resource = TaxResource::class;
 
-    protected static string $relationship = 'distributionForRefund';
+    protected static string $relationship = 'refundRepartitionLines';
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document';
 

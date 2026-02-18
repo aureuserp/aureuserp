@@ -2,10 +2,12 @@
 
 namespace Webkul\Sale\Filament\Clusters\Settings\Pages;
 
+use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Forms\Components\Toggle;
 use Filament\Pages\SettingsPage;
 use Filament\Schemas\Schema;
+use UnitEnum;
 use Webkul\Sale\Settings\PriceSettings;
 use Webkul\Support\Filament\Clusters\Settings;
 
@@ -13,17 +15,22 @@ class ManagePricing extends SettingsPage
 {
     use HasPageShield;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-currency-dollar';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-currency-dollar';
 
     protected static ?string $slug = 'sale/manage-pricing';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Sales';
+    protected static string|UnitEnum|null $navigationGroup = 'Sales';
 
     protected static ?int $navigationSort = 2;
 
     protected static string $settings = PriceSettings::class;
 
     protected static ?string $cluster = Settings::class;
+
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_sale_manage_pricing';
+    }
 
     public function getBreadcrumbs(): array
     {

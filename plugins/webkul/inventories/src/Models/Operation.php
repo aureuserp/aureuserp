@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Field\Traits\HasCustomFields;
@@ -24,18 +25,8 @@ class Operation extends Model
 {
     use HasChatter, HasCustomFields, HasFactory, HasLogActivity;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_operations';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'origin',
@@ -62,11 +53,6 @@ class Operation extends Model
         'sale_order_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'state'              => OperationState::class,
         'move_type'          => MoveType::class,
@@ -79,30 +65,38 @@ class Operation extends Model
         'closed_at'          => 'datetime',
     ];
 
-    protected array $logAttributes = [
-        'name',
-        'origin',
-        'move_type',
-        'state',
-        'is_favorite',
-        'description',
-        'has_deadline_issue',
-        'is_printed',
-        'is_locked',
-        'deadline',
-        'scheduled_at',
-        'closed_at',
-        'user.name'                     => 'User',
-        'owner.name'                    => 'Owner',
-        'operationType.name'            => 'Operation Type',
-        'sourceLocation.full_name'      => 'Source Location',
-        'destinationLocation.full_name' => 'Destination Location',
-        'backOrder.name'                => 'Back Order',
-        'return.name'                   => 'Return',
-        'partner.name'                  => 'Partner',
-        'company.name'                  => 'Company',
-        'creator.name'                  => 'Creator',
-    ];
+    public function getModelTitle(): string
+    {
+        return __('inventories::models/operation.title');
+    }
+
+    protected function getLogAttributeLabels(): array
+    {
+        return [
+            'name'                          => __('inventories::models/operation.log-attributes.name'),
+            'origin'                        => __('inventories::models/operation.log-attributes.origin'),
+            'move_type'                     => __('inventories::models/operation.log-attributes.move_type'),
+            'state'                         => __('inventories::models/operation.log-attributes.state'),
+            'is_favorite'                   => __('inventories::models/operation.log-attributes.is_favorite'),
+            'description'                   => __('inventories::models/operation.log-attributes.description'),
+            'has_deadline_issue'            => __('inventories::models/operation.log-attributes.has_deadline_issue'),
+            'is_printed'                    => __('inventories::models/operation.log-attributes.is_printed'),
+            'is_locked'                     => __('inventories::models/operation.log-attributes.is_locked'),
+            'deadline'                      => __('inventories::models/operation.log-attributes.deadline'),
+            'scheduled_at'                  => __('inventories::models/operation.log-attributes.scheduled_at'),
+            'closed_at'                     => __('inventories::models/operation.log-attributes.closed_at'),
+            'user.name'                     => __('inventories::models/operation.log-attributes.user'),
+            'owner.name'                    => __('inventories::models/operation.log-attributes.owner'),
+            'operationType.name'            => __('inventories::models/operation.log-attributes.operation-type'),
+            'sourceLocation.full_name'      => __('inventories::models/operation.log-attributes.source-location'),
+            'destinationLocation.full_name' => __('inventories::models/operation.log-attributes.destination-location'),
+            'backOrder.name'                => __('inventories::models/operation.log-attributes.back-order'),
+            'return.name'                   => __('inventories::models/operation.log-attributes.return'),
+            'partner.name'                  => __('inventories::models/operation.log-attributes.partner'),
+            'company.name'                  => __('inventories::models/operation.log-attributes.company'),
+            'creator.name'                  => __('inventories::models/operation.log-attributes.creator'),
+        ];
+    }
 
     public function user(): BelongsTo
     {
@@ -179,31 +173,6 @@ class Operation extends Model
         return $this->belongsTo(SaleOrder::class, 'sale_order_id');
     }
 
-    /**
-     * Bootstrap any application services.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function ($operation) {
-            $operation->updateName();
-        });
-
-        static::created(function ($operation) {
-            $operation->update(['name' => $operation->name]);
-        });
-
-        static::updated(function ($operation) {
-            if ($operation->wasChanged('operation_type_id')) {
-                $operation->updateChildrenNames();
-            }
-        });
-    }
-
-    /**
-     * Update the full name without triggering additional events
-     */
     public function updateName()
     {
         if (! $this->operationType->warehouse) {
@@ -227,5 +196,28 @@ class Operation extends Model
     protected static function newFactory(): OperationFactory
     {
         return OperationFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($operation) {
+            $operation->creator_id ??= Auth::id();
+        });
+
+        static::saving(function ($operation) {
+            $operation->updateName();
+        });
+
+        static::created(function ($operation) {
+            $operation->update(['name' => $operation->name]);
+        });
+
+        static::updated(function ($operation) {
+            if ($operation->wasChanged('operation_type_id')) {
+                $operation->updateChildrenNames();
+            }
+        });
     }
 }

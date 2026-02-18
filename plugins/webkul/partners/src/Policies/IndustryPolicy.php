@@ -6,7 +6,6 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 use Webkul\Partner\Models\Industry;
 use Webkul\Security\Models\User;
 
-
 class IndustryPolicy
 {
     use HandlesAuthorization;
@@ -16,7 +15,7 @@ class IndustryPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_industry');
+        return $user->can('view_any_partner_industry');
     }
 
     /**
@@ -24,7 +23,7 @@ class IndustryPolicy
      */
     public function view(User $user, Industry $industry): bool
     {
-        return $user->can('view_industry');
+        return $user->can('view_partner_industry');
     }
 
     /**
@@ -32,7 +31,7 @@ class IndustryPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_industry');
+        return $user->can('create_partner_industry');
     }
 
     /**
@@ -40,7 +39,7 @@ class IndustryPolicy
      */
     public function update(User $user, Industry $industry): bool
     {
-        return $user->can('update_industry');
+        return $user->can('update_partner_industry');
     }
 
     /**
@@ -48,7 +47,7 @@ class IndustryPolicy
      */
     public function delete(User $user, Industry $industry): bool
     {
-        return $user->can('delete_industry');
+        return $user->can('delete_partner_industry');
     }
 
     /**
@@ -56,7 +55,7 @@ class IndustryPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_industry');
+        return $user->can('delete_any_partner_industry');
     }
 
     /**
@@ -64,7 +63,7 @@ class IndustryPolicy
      */
     public function forceDelete(User $user, Industry $industry): bool
     {
-        return $user->can('force_delete_industry');
+        return $user->can('force_delete_partner_industry');
     }
 
     /**
@@ -72,7 +71,7 @@ class IndustryPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_industry');
+        return $user->can('force_delete_any_partner_industry');
     }
 
     /**
@@ -80,7 +79,7 @@ class IndustryPolicy
      */
     public function restore(User $user, Industry $industry): bool
     {
-        return $user->can('restore_industry');
+        return $user->can('restore_partner_industry');
     }
 
     /**
@@ -88,7 +87,6 @@ class IndustryPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_industry');
+        return $user->can('restore_any_partner_industry');
     }
-
 }

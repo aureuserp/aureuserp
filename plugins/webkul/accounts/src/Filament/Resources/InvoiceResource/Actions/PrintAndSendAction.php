@@ -9,7 +9,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 use Webkul\Account\Enums\MoveState;
-use Webkul\Account\Facades\Account;
+use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Models\Move;
 use Webkul\Account\Models\Partner;
 use Webkul\Support\Traits\PDFHandler;
@@ -37,9 +37,13 @@ class PrintAndSendAction extends Action
             });
 
         $this->beforeFormFilled(function (Move $record, Action $action) {
+            $money = function ($amount, $currency) {
+                return money($amount, $currency);
+            };
+
             $description = "
                     <p>Dear {$record->partner->name},</p>
-                    <p>Your invoice <strong>{$record->name}</strong> from <strong>{$record->company->name}</strong> for <strong>{$record->currency->symbol} {$record->amount_total}</strong> is now available. Kindly arrange payment at your earliest convenience.</p>
+                    <p>Your invoice <strong>{$record->name}</strong> from <strong>{$record->company->name}</strong> for <strong>{$money($record->amount_total, $record->currency->name)}</strong> is now available. Kindly arrange payment at your earliest convenience.</p>
                     <p>When making the payment, please reference <strong>{$record->name}</strong> for account <strong>".($record->partnerBank->bank->name ?? 'N/A').'</strong>.</p>
                     <p>If you have any questions, feel free to reach out.</p>
                     <p><strong>Best regards,</strong><br>Administrator</p>
@@ -86,7 +90,7 @@ class PrintAndSendAction extends Action
         $this->modalSubmitActionLabel(__('accounts::filament/resources/invoice/actions/print-and-send.modal.action.submit.title'));
         $this->modalIcon('heroicon-m-paper-airplane');
         $this->icon('heroicon-o-envelope');
-        $this->action(fn (Move $record, array $data) => Account::printAndSend($record, $data));
+        $this->action(fn (Move $record, array $data) => AccountFacade::printAndSendMove($record, $data));
         $this->modalSubmitAction(function ($action) {
             $action->label(__('accounts::filament/resources/invoice/actions/print-and-send.modal.action.submit.title'));
             $action->icon('heroicon-m-paper-airplane');

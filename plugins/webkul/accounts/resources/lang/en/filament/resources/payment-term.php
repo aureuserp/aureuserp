@@ -13,6 +13,24 @@ return [
                 'status'               => 'Status',
             ],
         ],
+
+        'tabs' => [
+            'due-terms' => [
+                'title' => 'Due Terms',
+
+                'repeater' => [
+                    'due-terms' => [
+                        'fields' => [
+                            'value'                  => 'Value',
+                            'due'                    => 'Due',
+                            'delay-type'             => 'Delay Type',
+                            'days-on-the-next-month' => 'Days on the next month',
+                            'days'                   => 'Days',
+                        ],
+                    ],
+                ],
+            ],
+        ],
     ],
 
     'table' => [
@@ -50,8 +68,15 @@ return [
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Payment Term force deleted',
-                    'body'  => 'The payment term has been force deleted successfully.',
+                    'success' => [
+                        'title' => 'Payment Term force deleted',
+                        'body'  => 'The payment term has been force deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Payment Term force deletion failed',
+                        'body'  => 'The payment term could not be force deleted because it is associated journal entries.',
+                    ],
                 ],
             ],
         ],
@@ -73,8 +98,15 @@ return [
 
             'force-delete' => [
                 'notification' => [
-                    'title' => 'Payment Terms force deleted',
-                    'body'  => 'The payment Terms has been force deleted successfully.',
+                    'success' => [
+                        'title' => 'Payment Terms force deleted',
+                        'body'  => 'The payment Terms has been force deleted successfully.',
+                    ],
+
+                    'error' => [
+                        'title' => 'Payment Terms force deletion failed',
+                        'body'  => 'The payment terms could not be force deleted because they have associated journal entries.',
+                    ],
                 ],
             ],
         ],
@@ -91,6 +123,24 @@ return [
                 'reduced-tax'          => 'Reduced tax',
                 'note'                 => 'Note',
                 'status'               => 'Status',
+            ],
+        ],
+
+        'tabs' => [
+            'due-terms' => [
+                'title' => 'Due Terms',
+
+                'repeater' => [
+                    'due-terms' => [
+                        'entries' => [
+                            'value'                  => 'Value',
+                            'due'                    => 'Due',
+                            'delay-type'             => 'Delay Type',
+                            'days-on-the-next-month' => 'Days on the next month',
+                            'days'                   => 'Days',
+                        ],
+                    ],
+                ],
             ],
         ],
     ],

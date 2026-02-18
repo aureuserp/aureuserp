@@ -27,11 +27,11 @@ class UserPermissionScope implements Scope
     {
         $user = Auth::user();
 
-        if ($user->resource_permission === PermissionType::GLOBAL->value) {
+        if ($user->resource_permission === PermissionType::GLOBAL) {
             return;
         }
 
-        if ($user->resource_permission === PermissionType::INDIVIDUAL->value) {
+        if ($user->resource_permission === PermissionType::INDIVIDUAL) {
             $builder->whereHas($this->ownerRelation, function ($q) use ($user) {
                 $q->where('users.id', $user->id);
             });
@@ -41,7 +41,7 @@ class UserPermissionScope implements Scope
             });
         }
 
-        if ($user->resource_permission === PermissionType::GROUP->value) {
+        if ($user->resource_permission === PermissionType::GROUP) {
             $teamIds = $user->teams()->pluck('id');
 
             $builder->whereHas("$this->ownerRelation.teams", function ($q) use ($teamIds) {

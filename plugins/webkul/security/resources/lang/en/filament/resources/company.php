@@ -9,7 +9,6 @@ return [
     ],
 
     'global-search' => [
-        'name'  => 'Name',
         'email' => 'Email',
     ],
 
@@ -89,16 +88,17 @@ return [
 
     'table' => [
         'columns' => [
-            'logo'                 => 'Logo',
-            'company-name'         => 'Company Name',
-            'branches'             => 'Branches',
-            'email'                => 'Email',
-            'city'                 => 'City',
-            'country'              => 'Country',
-            'currency'             => 'Currency',
-            'status'               => 'Status',
-            'created-at'           => 'Created At',
-            'updated-at'           => 'Updated At',
+            'logo'         => 'Logo',
+            'company-name' => 'Company Name',
+            'branches'     => 'Branches',
+            'email'        => 'Email',
+            'city'         => 'City',
+            'country'      => 'Country',
+            'currency'     => 'Currency',
+            'created-by'   => 'Created By',
+            'status'       => 'Status',
+            'created-at'   => 'Created At',
+            'updated-at'   => 'Updated At',
         ],
 
         'groups' => [
@@ -109,6 +109,7 @@ return [
             'email'        => 'Email',
             'phone'        => 'Phone',
             'currency'     => 'Currency',
+            'created-by'   => 'Created By',
             'created-at'   => 'Created At',
             'updated-at'   => 'Updated At',
         ],

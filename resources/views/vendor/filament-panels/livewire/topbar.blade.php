@@ -48,10 +48,10 @@
                         />
                     </x-slot>
 
-                    <div class="grid grid-cols-3 gap-1 p-4" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+                    <div class="grid grid-cols-3 gap-1 overflow-y-auto p-4" style="max-height: 80vh; grid-template-columns: repeat(3, minmax(0, 1fr));">
                         @foreach ($navigation as $group)
                             @php
-                                $itemUrl = $group->getItems()->first()->getUrl();
+                                $itemUrl = $group->getItems()->first()->getUrl();   
                             @endphp
                             <div
                                 @class([

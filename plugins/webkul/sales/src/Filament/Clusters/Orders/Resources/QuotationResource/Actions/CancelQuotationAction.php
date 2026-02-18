@@ -11,7 +11,7 @@ use Filament\Schemas\Schema;
 use Livewire\Component;
 use Webkul\Partner\Models\Partner;
 use Webkul\Sale\Enums\OrderState;
-use Webkul\Sale\Facades\SaleOrder;
+use Webkul\Sale\Facades\SaleOrder as SaleManagerFacade;
 use Webkul\Sale\Models\Order;
 
 class CancelQuotationAction extends Action
@@ -33,14 +33,16 @@ class CancelQuotationAction extends Action
             ->modalDescription(__('sales::filament/clusters/orders/resources/quotation/actions/cancel-quotation.modal.description'))
             ->action(function (Order $record, array $data, array $arguments, Component $livewire) {
                 if ($arguments['cancel'] ?? false) {
-                    SaleOrder::cancelSaleOrder($record);
+                    SaleManagerFacade::cancelSaleOrder($record);
+
                     Notification::make()
                         ->success()
                         ->title(__('sales::filament/clusters/orders/resources/quotation/actions/cancel-quotation.footer-actions.cancel.notification.cancelled.title'))
                         ->body(__('sales::filament/clusters/orders/resources/quotation/actions/cancel-quotation.footer-actions.cancel.notification.cancelled.body'))
                         ->send();
                 } else {
-                    SaleOrder::cancelSaleOrder($record, $data ?? []);
+                    SaleManagerFacade::cancelSaleOrder($record, $data ?? []);
+
                     Notification::make()
                         ->success()
                         ->title(__('sales::filament/clusters/orders/resources/quotation/actions/cancel-quotation.footer-actions.send-and-cancel.notification.cancelled.title'))

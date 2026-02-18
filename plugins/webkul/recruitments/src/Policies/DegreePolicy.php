@@ -15,7 +15,7 @@ class DegreePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_degree');
+        return $user->can('view_any_recruitment_degree');
     }
 
     /**
@@ -23,7 +23,7 @@ class DegreePolicy
      */
     public function view(User $user, Degree $degree): bool
     {
-        return $user->can('view_degree');
+        return $user->can('view_recruitment_degree');
     }
 
     /**
@@ -31,7 +31,7 @@ class DegreePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_degree');
+        return $user->can('create_recruitment_degree');
     }
 
     /**
@@ -39,7 +39,7 @@ class DegreePolicy
      */
     public function update(User $user, Degree $degree): bool
     {
-        return $user->can('update_degree');
+        return $user->can('update_recruitment_degree');
     }
 
     /**
@@ -47,7 +47,7 @@ class DegreePolicy
      */
     public function delete(User $user, Degree $degree): bool
     {
-        return $user->can('delete_degree');
+        return $user->can('delete_recruitment_degree');
     }
 
     /**
@@ -55,7 +55,7 @@ class DegreePolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_degree');
+        return $user->can('delete_any_recruitment_degree');
     }
 
     /**
@@ -63,6 +63,6 @@ class DegreePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_degree');
+        return $user->can('reorder_recruitment_degree');
     }
 }

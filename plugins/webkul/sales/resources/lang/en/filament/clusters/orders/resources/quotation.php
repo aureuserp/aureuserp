@@ -7,6 +7,12 @@ return [
         'title' => 'Quotations',
     ],
 
+    'global-search' => [
+        'customer'  => 'Customer',
+        'reference' => 'Reference',
+        'amount'    => 'Amount',
+    ],
+
     'form' => [
         'section' => [
             'general' => [
@@ -37,8 +43,8 @@ return [
                             'quantity'            => 'Quantity',
                             'uom'                 => 'UOM',
                             'lead-time'           => 'Lead Time',
-                            'qty-delivered'       => 'Quantity Delivered',
-                            'qty-invoiced'        => 'Quantity Invoiced',
+                            'qty-delivered'       => 'Delivered',
+                            'qty-invoiced'        => 'Invoiced',
                             'packaging-qty'       => 'Packaging Quantity',
                             'packaging'           => 'Packaging',
                             'unit-price'          => 'Unit Price',

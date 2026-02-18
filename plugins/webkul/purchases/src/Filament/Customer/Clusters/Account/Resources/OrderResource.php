@@ -55,9 +55,6 @@ class OrderResource extends Resource
                     ->sortable()
                     ->money(fn (Order $record) => $record->currency->code),
             ])
-            ->filters([
-                //
-            ])
             ->recordActions([
                 ViewAction::make(),
             ])
@@ -255,25 +252,26 @@ class OrderResource extends Resource
                                 Group::make()
                                     ->extraAttributes(['class' => 'mt-8'])
                                     ->schema([
-                                        TextEntry::make('name')
-                                            ->hiddenLabel()
-                                            ->size('text-2xl')
-                                            ->weight(FontWeight::Bold)
-                                            ->formatStateUsing(function (Order $record) {
-                                                return __('purchases::filament/customer/clusters/account/resources/order.infolist.general.entries.communication-history');
-                                            }),
+                                        // TextEntry::make('name')
+                                        //     ->hiddenLabel()
+                                        //     ->size('text-2xl')
+                                        //     ->weight(FontWeight::Bold)
+                                        //     ->formatStateUsing(function (Order $record) {
+                                        //         return __('purchases::filament/customer/clusters/account/resources/order.infolist.general.entries.communication-history');
+                                        //     }),
 
                                         Livewire::make('chatter-panel', function (Order $record) {
                                             $record = Order::findOrFail($record->id);
 
                                             return [
-                                                'record'             => $record,
-                                                'showMessageAction'  => true,
-                                                'showActivityAction' => false,
-                                                'showFollowerAction' => false,
-                                                'showLogAction'      => false,
-                                                'showFileAction'     => false,
-                                                'filters'            => [
+                                                'record'                  => $record,
+                                                'resourceClass'           => static::class,
+                                                'isLogActionVisible'      => false,
+                                                'isActivityActionVisible' => false,
+                                                'isFollowerActionVisible' => false,
+                                                'isFileActionVisible'     => false,
+                                                'inModal'                 => false,
+                                                'filters'                 => [
                                                     'type' => [
                                                         'comment',
                                                     ],

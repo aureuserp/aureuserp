@@ -2,10 +2,8 @@
 
 namespace Webkul\Sale\Filament\Clusters\ToInvoice\Resources;
 
+use BackedEnum;
 use Filament\Resources\Pages\Page;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Webkul\Sale\Enums\InvoiceStatus;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\QuotationResource;
@@ -13,13 +11,13 @@ use Webkul\Sale\Filament\Clusters\ToInvoice;
 use Webkul\Sale\Filament\Clusters\ToInvoice\Resources\OrderToInvoiceResource\Pages\EditOrderToInvoice;
 use Webkul\Sale\Filament\Clusters\ToInvoice\Resources\OrderToInvoiceResource\Pages\ListOrderToInvoices;
 use Webkul\Sale\Filament\Clusters\ToInvoice\Resources\OrderToInvoiceResource\Pages\ViewOrderToInvoice;
-use Webkul\Sale\Models\Order;
+use Webkul\Sale\Models\OrderToInvoice as Order;
 
-class OrderToInvoiceResource extends Resource
+class OrderToInvoiceResource extends QuotationResource
 {
     protected static ?string $model = Order::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-arrow-down';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-arrow-down';
 
     protected static ?string $cluster = ToInvoice::class;
 
@@ -33,22 +31,15 @@ class OrderToInvoiceResource extends Resource
         return __('sales::filament/clusters/to-invoice/resources/order-to-invoice.navigation.title');
     }
 
-    public static function form(Schema $schema): Schema
+    public static function getEloquentQuery(): Builder
     {
-        return QuotationResource::form($schema);
-    }
+        $query = parent::getEloquentQuery();
 
-    public static function table(Table $table): Table
-    {
-        return QuotationResource::table($table)
-            ->modifyQueryUsing(function ($query) {
-                $query->where('invoice_status', InvoiceStatus::TO_INVOICE);
-            });
-    }
+        $query = static::getModel()::applyPermissionScope($query);
 
-    public static function infolist(Schema $schema): Schema
-    {
-        return QuotationResource::infolist($schema);
+        return $query
+            ->where('invoice_status', InvoiceStatus::TO_INVOICE)
+            ->orderByDesc('id');
     }
 
     public static function getRecordSubNavigation(Page $page): array
@@ -66,11 +57,5 @@ class OrderToInvoiceResource extends Resource
             'view'  => ViewOrderToInvoice::route('/{record}'),
             'edit'  => EditOrderToInvoice::route('/{record}/edit'),
         ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->orderByDesc('id');
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Blog\Database\Factories\PostFactory;
 use Webkul\Security\Models\User;
 
@@ -15,18 +16,8 @@ class Post extends Model
 {
     use HasFactory, SoftDeletes;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'blogs_posts';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'title',
         'sub_title',
@@ -46,21 +37,11 @@ class Post extends Model
         'last_editor_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'is_published' => 'boolean',
         'published_at' => 'datetime',
     ];
 
-    /**
-     * Get image url for the product image.
-     *
-     * @return string
-     */
     public function getImageUrlAttribute()
     {
         if (! $this->image) {
@@ -102,6 +83,19 @@ class Post extends Model
     public function lastEditor(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($post) {
+            $authId = Auth::id();
+
+            $post->author_id ??= $authId;
+
+            $post->creator_id ??= $authId;
+        });
     }
 
     protected static function newFactory(): PostFactory

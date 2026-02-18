@@ -14,7 +14,7 @@ use Filament\Resources\Pages\EditRecord;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Chatter\Filament\Actions as ChatterActions;
+use Webkul\Chatter\Filament\Actions\ChatterAction;
 use Webkul\Employee\Filament\Resources\EmployeeResource;
 use Webkul\Recruitment\Enums\ApplicationStatus;
 use Webkul\Recruitment\Enums\RecruitmentState;
@@ -112,8 +112,8 @@ class EditApplicant extends EditRecord
 
                     return redirect(EmployeeResource::getUrl('view', ['record' => $employee]));
                 }),
-            ChatterActions\ChatterAction::make()
-                ->setResource(static::$resource),
+            ChatterAction::make()
+                ->resource(static::$resource),
             Action::make('createEmployee')
                 ->label(__('recruitments::filament/clusters/applications/resources/applicant/pages/edit-applicant.create-employee'))
                 ->hidden(fn ($record) => $record->application_status->value == ApplicationStatus::HIRED->value || $record->candidate->employee_id)
@@ -206,38 +206,6 @@ class EditApplicant extends EditRecord
                         ->send();
                 }),
         ];
-    }
-
-    protected function mutateFormDataBeforeSave(array $data): array
-    {
-        $record = $this->record->load('interviewer');
-        $oldData = $record->getRawOriginal();
-
-        if (isset($data['recruiter_id']) && $data['recruiter_id'] !== $oldData['recruiter_id']) {
-            $data['date_opened'] = now();
-        }
-
-        if (isset($data['stage_id']) && empty($oldData['stage_id'])) {
-            $data['date_last_stage_updated'] = now();
-            $this->notificationData = $data;
-        } elseif (isset($data['stage_id']) && $data['stage_id'] !== $oldData['stage_id']) {
-            $data['date_last_stage_updated'] = now();
-            $data['last_stage_id'] = $oldData['stage_id'];
-        }
-
-        if (isset($data['recruitments_applicant_interviewers']) && is_array($data['recruitments_applicant_interviewers'])) {
-            $oldInterviewers = collect($record->interviewer->pluck('id'));
-            $newInterviewers = collect($data['recruitments_applicant_interviewers']);
-
-            if (! $oldInterviewers->isEmpty() || ! $newInterviewers->isEmpty()) {
-                $this->interviewerChanges = [
-                    'old' => $oldInterviewers,
-                    'new' => $newInterviewers,
-                ];
-            }
-        }
-
-        return $data;
     }
 
     protected function afterSave(): void

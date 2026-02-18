@@ -46,44 +46,61 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Facades\Tax as TaxFacade;
-use Webkul\Account\Filament\Resources\IncoTermResource;
+use Webkul\Account\Filament\Resources\IncotermResource;
 use Webkul\Account\Models\Partner;
-use Webkul\Field\Filament\Forms\Components\ProgressStepper;
+use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
+use Webkul\PluginManager\Package;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Models\Packaging;
 use Webkul\Purchase\Enums\OrderState;
 use Webkul\Purchase\Enums\QtyReceivedMethod;
 use Webkul\Purchase\Filament\Admin\Clusters\Products\Resources\ProductResource;
-use Webkul\Purchase\Livewire\Summary;
+use Webkul\Purchase\Livewire\OrderSummary;
 use Webkul\Purchase\Models\Order;
 use Webkul\Purchase\Models\Product;
 use Webkul\Purchase\Models\Requisition;
 use Webkul\Purchase\Settings\OrderSettings;
 use Webkul\Purchase\Settings\ProductSettings;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
 use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
 use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UOM;
-use Webkul\Support\Package;
 
 class OrderResource extends Resource
 {
-    use HasCustomFields;
+    use HasCustomFields, HasResourcePermissionQuery;
 
     protected static ?string $model = Order::class;
 
     protected static bool $shouldRegisterNavigation = false;
 
+    protected static bool $isGloballySearchable = false;
+
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'partner.name'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('purchases::filament/admin/clusters/orders/resources/order.global-search.vendor') => $record->partner?->name ?? '—',
+            __('purchases::filament/admin/clusters/orders/resources/order.global-search.amount') => money($record->total_amount, $record->currency?->name) ?? '—',
+        ];
+    }
 
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                ProgressStepper::make('state')
+                FormProgressStepper::make('state')
                     ->hiddenLabel()
                     ->inline()
                     ->options(function ($record) {
@@ -110,10 +127,7 @@ class OrderResource extends Resource
                                     ->relationship(
                                         'partner',
                                         'name',
-                                        modifyQueryUsing: fn (Builder $query) => $query
-                                            ->withTrashed()
-                                            ->where('sub_type', 'supplier')
-                                            ->orderBy('id')
+                                        modifyQueryUsing: fn (Builder $query) => $query->orderBy('id')->withTrashed()
                                     )
                                     ->getOptionLabelFromRecordUsing(function ($record): string {
                                         return $record->name.($record->trashed() ? ' (Deleted)' : '');
@@ -196,7 +210,7 @@ class OrderResource extends Resource
                                                 'price_unit'  => $line->price_unit,
                                                 'planned_at'  => now(),
                                                 'taxes'       => $product->productTaxes->pluck('id')->toArray(),
-                                                'discount'    => 0
+                                                'discount'    => 0,
                                             ];
                                         }
                                         $set('products', $products);
@@ -208,7 +222,11 @@ class OrderResource extends Resource
                                     ->live(),
                                 Select::make('currency_id')
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.sections.general.fields.currency'))
-                                    ->relationship('currency', 'name')
+                                    ->relationship(
+                                        'currency',
+                                        'name',
+                                        modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                    )
                                     ->required()
                                     ->searchable()
                                     ->preload()
@@ -248,14 +266,19 @@ class OrderResource extends Resource
                         Tab::make(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.title'))
                             ->schema([
                                 static::getProductRepeater(),
-                                Livewire::make(Summary::class, function (Get $get) {
+                                Livewire::make(OrderSummary::class, function (Get $get, $livewire) {
+                                    $totals = self::calculateOrderTotals($get, $livewire);
+
                                     return [
-                                        'currency' => Currency::find($get('currency_id')),
-                                        'products' => $get('products'),
+                                        'currency'   => Currency::find($get('currency_id')),
+                                        'subtotal'   => $totals['subtotal'],
+                                        'totalTax'   => $totals['totalTax'],
+                                        'grandTotal' => $totals['grandTotal'],
                                     ];
                                 })
-                                    ->live()
-                                    ->reactive(),
+                                    ->key('orderSummary')
+                                    ->reactive()
+                                    ->visible(fn (Get $get) => $get('currency_id') && ! empty($get('products'))),
                             ]),
 
                         Tab::make(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.additional.title'))
@@ -293,7 +316,7 @@ class OrderResource extends Resource
                                             ->relationship('incoterm', 'name')
                                             ->searchable()
                                             ->preload()
-                                            ->createOptionForm(fn (Schema $schema) => IncoTermResource::form($schema))
+                                            ->createOptionForm(fn (Schema $schema) => IncotermResource::form($schema))
                                             ->hintIcon('heroicon-o-question-mark-circle', tooltip: __('purchases::filament/admin/clusters/orders/resources/order.form.tabs.additional.fields.incoterm-tooltip'))
                                             ->disabled(fn ($record): bool => $record && ! in_array($record?->state, [OrderState::DRAFT, OrderState::SENT, OrderState::PURCHASE])),
                                         TextInput::make('reference')
@@ -387,13 +410,13 @@ class OrderResource extends Resource
                     ->sortable()
                     ->money(fn (Order $record) => $record->currency?->name)
                     ->toggleable(),
-                TextColumn::make('invoice_status')
-                    ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.columns.billing-status'))
+                TextColumn::make('state')
+                    ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.columns.status'))
                     ->sortable()
                     ->badge()
                     ->toggleable(),
-                TextColumn::make('state')
-                    ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.columns.status'))
+                TextColumn::make('invoice_status')
+                    ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.columns.billing-status'))
                     ->sortable()
                     ->badge()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -556,12 +579,23 @@ class OrderResource extends Resource
     {
         return $schema
             ->components([
-                Section::make()
-                    ->schema([
-                        TextEntry::make('state')
-                            ->badge(),
-                    ])
-                    ->compact(),
+                InfolistProgressStepper::make('state')
+                    ->hiddenLabel()
+                    ->inline()
+                    ->options(function ($record) {
+                        $options = OrderState::options();
+
+                        if ($record->state !== OrderState::CANCELED) {
+                            unset($options[OrderState::CANCELED->value]);
+                        }
+
+                        if ($record->state !== OrderState::DONE) {
+                            unset($options[OrderState::DONE->value]);
+                        }
+
+                        return $options;
+                    })
+                    ->default(OrderState::DRAFT),
 
                 Section::make(__('purchases::filament/admin/clusters/orders/resources/order.infolist.sections.general.title'))
                     ->schema([
@@ -574,6 +608,7 @@ class OrderResource extends Resource
                                     ->weight('bold')
                                     ->size(TextSize::Large),
                             ])->columns(2),
+
                         Grid::make(2)
                             ->schema([
                                 Group::make([
@@ -624,7 +659,7 @@ class OrderResource extends Resource
                                     ->columnManager()
                                     ->columnManagerColumns(2)
                                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.title'))
-                                    ->table([
+                                    ->table(fn ($record) => [
                                         InfolistTableColumn::make('name')
                                             ->alignStart()
                                             ->toggleable()
@@ -632,7 +667,7 @@ class OrderResource extends Resource
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.product')),
                                         InfolistTableColumn::make('planned_at')
                                             ->alignStart()
-                                            ->width(150)
+                                            ->width(100)
                                             ->toggleable()
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.expected-arrival')),
                                         InfolistTableColumn::make('product_qty')
@@ -644,17 +679,17 @@ class OrderResource extends Resource
                                             ->alignStart()
                                             ->width(100)
                                             ->toggleable()
-                                            ->visible(fn ($record): bool => in_array($record?->order->state, [OrderState::PURCHASE, OrderState::DONE]))
+                                            ->visible(fn (): bool => in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE]))
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.received')),
                                         InfolistTableColumn::make('qty_invoiced')
                                             ->alignStart()
                                             ->width(100)
                                             ->toggleable()
-                                            ->visible(fn ($record): bool => in_array($record?->order->state, [OrderState::PURCHASE, OrderState::DONE]))
+                                            ->visible(fn (): bool => in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE]))
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.billed')),
                                         InfolistTableColumn::make('uom')
                                             ->alignStart()
-                                            ->width(150)
+                                            ->width(100)
                                             ->toggleable()
                                             ->visible(static::getProductSettings()->enable_uom)
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.unit')),
@@ -666,7 +701,7 @@ class OrderResource extends Resource
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.packaging-qty')),
                                         InfolistTableColumn::make('productPackaging')
                                             ->alignStart()
-                                            ->width(200)
+                                            ->width(150)
                                             ->toggleable()
                                             ->visible(static::getProductSettings()->enable_packagings)
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.packaging')),
@@ -677,12 +712,12 @@ class OrderResource extends Resource
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.unit-price')),
                                         InfolistTableColumn::make('taxes')
                                             ->alignStart()
-                                            ->width(150)
+                                            ->width(100)
                                             ->toggleable()
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.taxes')),
                                         InfolistTableColumn::make('discount')
                                             ->alignStart()
-                                            ->width(120)
+                                            ->width(100)
                                             ->toggleable()
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.discount-percentage')),
                                         InfolistTableColumn::make('price_subtotal')
@@ -726,22 +761,26 @@ class OrderResource extends Resource
                                             ->label(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.products.repeater.products.entries.amount'))
                                             ->money(fn ($record) => $record->order->currency->code),
                                     ]),
-                                Group::make([
-                                    TextEntry::make('untaxed_amount')
-                                        ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.columns.untaxed-amount'))
-                                        ->money(fn (Order $record) => $record->currency?->name),
-                                    TextEntry::make('tax_amount')
-                                        ->label('Tax Amount')
-                                        ->money(fn (Order $record) => $record->currency?->name),
-                                    TextEntry::make('total_amount')
-                                        ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.columns.total-amount'))
-                                        ->money(fn (Order $record) => $record->currency?->name),
-                                    TextEntry::make('invoice_status')
-                                        ->label(__('purchases::filament/admin/clusters/orders/resources/order.table.columns.billing-status'))
-                                        ->badge(),
-                                ])
-                                    ->columnSpanFull()
-                                    ->columns(4),
+
+                                Livewire::make(OrderSummary::class, function ($record) {
+                                    $subtotal = 0;
+                                    $totalTax = 0;
+                                    $grandTotal = 0;
+
+                                    foreach ($record->lines as $line) {
+                                        $subtotal += floatval($line->price_subtotal ?? 0);
+                                        $totalTax += floatval($line->price_tax ?? 0);
+                                        $grandTotal += floatval($line->price_total ?? 0);
+                                    }
+
+                                    return [
+                                        'currency'         => $record->currency,
+                                        'subtotal'         => round($subtotal, 2),
+                                        'totalTax'         => round($totalTax, 2),
+                                        'grandTotal'       => round($grandTotal, 2),
+                                    ];
+                                })
+                                    ->key('order-summary-view'),
                             ]),
 
                         Tab::make(__('purchases::filament/admin/clusters/orders/resources/order.infolist.tabs.additional.title'))
@@ -799,38 +838,52 @@ class OrderResource extends Resource
             ->collapsible()
             ->defaultItems(0)
             ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
-            ->deleteAction(fn (Action $action) => $action->requiresConfirmation())
+            ->deleteAction(function (Action $action) {
+                $action->requiresConfirmation();
+
+                $action->after(function (Get $get, $livewire) {
+                    $totals = self::calculateOrderTotals($get, $livewire);
+
+                    $livewire->dispatch('itemUpdated', $totals);
+                });
+            })
             ->deletable(fn ($record): bool => ! in_array($record?->state, [OrderState::DONE, OrderState::CANCELED]))
             ->addable(fn ($record): bool => ! in_array($record?->state, [OrderState::DONE, OrderState::CANCELED]))
             ->columnManagerColumns(2)
             ->table(fn ($record) => [
                 TableColumn::make('product_id')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.product'))
-                    ->width(300)
+                    ->width(250)
                     ->markAsRequired(),
                 TableColumn::make('planned_at')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.expected-arrival'))
-                    ->width(250)
+                    ->width(150)
                     ->markAsRequired()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TableColumn::make('product_qty')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.quantity'))
-                    ->width(150)
+                    ->width(100)
                     ->markAsRequired(),
                 TableColumn::make('qty_received')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.received'))
-                    ->width(150)
+                    ->width(100)
                     ->markAsRequired()
-                    ->visible(fn ($record): bool => in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE]))
+                    ->visible(fn (): bool => Package::isPluginInstalled('inventories') && in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE]))
+                    ->toggleable(),
+                TableColumn::make('qty_received_manual')
+                    ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.received'))
+                    ->width(100)
+                    ->markAsRequired()
+                    ->visible(fn (): bool => ! Package::isPluginInstalled('inventories') && in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE]))
                     ->toggleable(),
                 TableColumn::make('qty_invoiced')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.billed'))
-                    ->width(150)
-                    ->visible(fn ($record): bool => in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE]))
+                    ->width(100)
+                    ->visible(fn (): bool => in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE]))
                     ->toggleable(),
                 TableColumn::make('uom_id')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.unit'))
-                    ->width(150)
+                    ->width(100)
                     ->markAsRequired()
                     ->visible(static::getProductSettings()->enable_uom)
                     ->toggleable(),
@@ -841,26 +894,26 @@ class OrderResource extends Resource
                     ->toggleable(),
                 TableColumn::make('product_packaging_id')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.packaging'))
-                    ->width(250)
+                    ->width(150)
                     ->visible(static::getProductSettings()->enable_packagings)
                     ->toggleable(),
                 TableColumn::make('price_unit')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.unit-price'))
-                    ->width(150)
+                    ->width(100)
                     ->markAsRequired(),
                 TableColumn::make('taxes')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.taxes'))
-                    ->width(250)
+                    ->width(150)
                     ->toggleable(),
                 TableColumn::make('discount')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.discount-percentage'))
-                    ->width(150)
+                    ->width(100)
                     ->toggleable(isToggledHiddenByDefault: true),
                 TableColumn::make('price_subtotal')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.columns.amount'))
-                    ->width(150),
+                    ->width(100),
             ])
-            ->schema([
+            ->schema(fn ($record) => [
                 Select::make('product_id')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.product'))
                     ->relationship(
@@ -880,6 +933,7 @@ class OrderResource extends Resource
                         }
 
                         $repeater = $component->getParentRepeater();
+
                         if (! $repeater) {
                             return false;
                         }
@@ -899,7 +953,7 @@ class OrderResource extends Resource
                         static::afterProductUpdated($set, $get);
                     })
                     ->required()
-                    ->disabled(fn ($record): bool => in_array($record?->order->state, [OrderState::SENT, OrderState::PURCHASE, OrderState::DONE, OrderState::CANCELED])),
+                    ->disabled(fn (): bool => in_array($record?->state, [OrderState::SENT, OrderState::PURCHASE, OrderState::DONE, OrderState::CANCELED])),
                 DateTimePicker::make('planned_at')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.expected-arrival'))
                     ->native(false)
@@ -916,7 +970,7 @@ class OrderResource extends Resource
                     ->afterStateUpdated(function (?string $state, Set $set) {
                         $set('../../planned_at', $state);
                     })
-                    ->disabled(fn ($record): bool => in_array($record?->order->state, [OrderState::DONE, OrderState::CANCELED])),
+                    ->disabled(fn (): bool => in_array($record?->state, [OrderState::DONE, OrderState::CANCELED])),
                 TextInput::make('product_qty')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.quantity'))
                     ->required()
@@ -927,21 +981,29 @@ class OrderResource extends Resource
                     ->afterStateUpdated(function (Set $set, Get $get) {
                         static::afterProductQtyUpdated($set, $get);
                     })
-                    ->disabled(fn ($record): bool => in_array($record?->order->state, [OrderState::DONE, OrderState::CANCELED])),
+                    ->disabled(fn (): bool => in_array($record?->state, [OrderState::DONE, OrderState::CANCELED])),
                 TextInput::make('qty_received')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.received'))
                     ->required()
                     ->default(0)
                     ->numeric()
                     ->maxValue(99999999999)
-                    ->visible(fn ($record): bool => in_array($record?->order->state, [OrderState::PURCHASE, OrderState::DONE]))
+                    ->visible(fn (): bool => Package::isPluginInstalled('inventories') && in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE]))
+                    ->disabled(fn ($record): bool => in_array($record?->order->state, [OrderState::DONE, OrderState::CANCELED]) || $record?->qty_received_method == QtyReceivedMethod::STOCK_MOVE),
+                TextInput::make('qty_received_manual')
+                    ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.received'))
+                    ->required()
+                    ->default(0)
+                    ->numeric()
+                    ->maxValue(99999999999)
+                    ->visible(fn ($record): bool => ! Package::isPluginInstalled('inventories') && in_array($record?->order->state, [OrderState::PURCHASE, OrderState::DONE]))
                     ->disabled(fn ($record): bool => in_array($record?->order->state, [OrderState::DONE, OrderState::CANCELED]) || $record?->qty_received_method == QtyReceivedMethod::STOCK_MOVE),
                 TextInput::make('qty_invoiced')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.billed'))
                     ->default(0)
                     ->numeric()
                     ->maxValue(99999999999)
-                    ->visible(fn ($record): bool => in_array($record?->order->state, [OrderState::PURCHASE, OrderState::DONE]))
+                    ->visible(fn (): bool => in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE]))
                     ->disabled(),
                 Select::make('uom_id')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.unit'))
@@ -957,7 +1019,7 @@ class OrderResource extends Resource
                         static::afterUOMUpdated($set, $get);
                     })
                     ->visible(static::getProductSettings()->enable_uom)
-                    ->disabled(fn ($record): bool => in_array($record?->order->state, [OrderState::PURCHASE, OrderState::DONE, OrderState::CANCELED])),
+                    ->disabled(fn (): bool => in_array($record?->state, [OrderState::PURCHASE, OrderState::DONE, OrderState::CANCELED])),
                 TextInput::make('product_packaging_qty')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.packaging-qty'))
                     ->live(onBlur: true)
@@ -967,12 +1029,13 @@ class OrderResource extends Resource
                         static::afterProductPackagingQtyUpdated($set, $get);
                     })
                     ->visible(static::getProductSettings()->enable_packagings)
-                    ->disabled(fn ($record): bool => in_array($record?->order->state, [OrderState::DONE, OrderState::CANCELED])),
+                    ->disabled(fn (): bool => in_array($record?->state, [OrderState::DONE, OrderState::CANCELED])),
                 Select::make('product_packaging_id')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.packaging'))
                     ->relationship(
                         'productPackaging',
                         'name',
+                        modifyQueryUsing: fn (Builder $query, Get $get) => $query->where('product_id', $get('product_id')),
                     )
                     ->searchable()
                     ->preload()
@@ -981,7 +1044,7 @@ class OrderResource extends Resource
                         static::afterProductPackagingUpdated($set, $get);
                     })
                     ->visible(static::getProductSettings()->enable_packagings)
-                    ->disabled(fn ($record): bool => in_array($record?->order->state, [OrderState::DONE, OrderState::CANCELED])),
+                    ->disabled(fn (): bool => in_array($record?->state, [OrderState::DONE, OrderState::CANCELED])),
                 TextInput::make('price_unit')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.unit-price'))
                     ->numeric()
@@ -993,15 +1056,13 @@ class OrderResource extends Resource
                     ->afterStateUpdated(function (Set $set, Get $get) {
                         self::calculateLineTotals($set, $get);
                     })
-                    ->disabled(fn ($record): bool => in_array($record?->order->state, [OrderState::DONE, OrderState::CANCELED])),
+                    ->disabled(fn (): bool => in_array($record?->state, [OrderState::DONE, OrderState::CANCELED])),
                 Select::make('taxes')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.taxes'))
                     ->relationship(
                         'taxes',
                         'name',
-                        function (Builder $query) {
-                            return $query->where('type_tax_use', TypeTaxUse::PURCHASE->value);
-                        },
+                        modifyQueryUsing: fn (Builder $query) => $query->where('type_tax_use', TypeTaxUse::PURCHASE),
                     )
                     ->searchable()
                     ->multiple()
@@ -1010,7 +1071,7 @@ class OrderResource extends Resource
                         self::calculateLineTotals($set, $get);
                     })
                     ->live()
-                    ->disabled(fn ($record): bool => in_array($record?->order->state, [OrderState::DONE, OrderState::CANCELED])),
+                    ->disabled(fn (): bool => in_array($record?->state, [OrderState::DONE, OrderState::CANCELED])),
                 TextInput::make('discount')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.discount-percentage'))
                     ->numeric()
@@ -1021,12 +1082,12 @@ class OrderResource extends Resource
                     ->afterStateUpdated(function (Set $set, Get $get) {
                         self::calculateLineTotals($set, $get);
                     })
-                    ->disabled(fn ($record): bool => in_array($record?->order->state, [OrderState::DONE, OrderState::CANCELED])),
+                    ->disabled(fn (): bool => in_array($record?->state, [OrderState::DONE, OrderState::CANCELED])),
                 TextInput::make('price_subtotal')
                     ->label(__('purchases::filament/admin/clusters/orders/resources/order.form.tabs.products.repeater.products.fields.amount'))
                     ->default(0)
                     ->readOnly()
-                    ->disabled(fn ($record): bool => in_array($record?->order->state, [OrderState::DONE, OrderState::CANCELED])),
+                    ->disabled(fn (): bool => in_array($record?->state, [OrderState::DONE, OrderState::CANCELED])),
                 Hidden::make('product_uom_qty')
                     ->default(0),
                 Hidden::make('price_tax')
@@ -1068,7 +1129,8 @@ class OrderResource extends Resource
 
                         return ProductResource::getUrl('edit', ['record' => $productId]);
                     }, shouldOpenInNewTab: true)
-                    ->hidden(fn (array $arguments, Get $get): bool => empty($get("products.{$arguments['item']}.product_id"))
+                    ->hidden(
+                        fn (array $arguments, Get $get): bool => empty($get("products.{$arguments['item']}.product_id"))
                     ),
             ]);
     }
@@ -1117,6 +1179,10 @@ class OrderResource extends Resource
         $set('product_packaging_id', $packaging['packaging_id'] ?? null);
 
         $set('product_packaging_qty', $packaging['packaging_qty'] ?? null);
+
+        $priceUnit = static::calculateUnitPrice($get);
+
+        $set('price_unit', round($priceUnit, 2));
 
         self::calculateLineTotals($set, $get);
     }
@@ -1225,9 +1291,9 @@ class OrderResource extends Resource
             return $vendorPrice;
         }
 
-        $uom = Uom::find($get('uom_id'));
+        $uomQty = Uom::find($get('uom_id'))->computeQuantity(1, $product->uom, true, 'HALF-UP');
 
-        return (float) ($vendorPrice / $uom->factor);
+        return (float) ($vendorPrice * $uomQty);
     }
 
     private static function getBestPackaging($productId, $quantity)
@@ -1287,6 +1353,47 @@ class OrderResource extends Resource
         $set($prefix.'price_tax', $taxAmount);
 
         $set($prefix.'price_total', $subTotal + $taxAmount);
+    }
+
+    private static function calculateOrderTotals(Get $get, $livewire): array
+    {
+        $defaultTotals = [
+            'subtotal'         => 0,
+            'totalTax'         => 0,
+            'grandTotal'       => 0,
+        ];
+
+        $products = $get('products') ?? [];
+
+        if (empty($products)) {
+            $livewire->dispatch('itemUpdated', $defaultTotals);
+
+            return $defaultTotals;
+        }
+
+        $subtotal = 0;
+        $totalTax = 0;
+        $grandTotal = 0;
+
+        foreach ($products as $product) {
+            if (empty($product['product_id'])) {
+                continue;
+            }
+
+            $subtotal += floatval($product['price_subtotal'] ?? 0);
+            $totalTax += floatval($product['price_tax'] ?? 0);
+            $grandTotal += floatval($product['price_total'] ?? 0);
+        }
+
+        $totals = [
+            'subtotal'         => round($subtotal, 2),
+            'totalTax'         => round($totalTax, 2),
+            'grandTotal'       => round($grandTotal, 2),
+        ];
+
+        $livewire->dispatch('itemUpdated', $totals);
+
+        return $totals;
     }
 
     public static function getOrderSettings(): OrderSettings

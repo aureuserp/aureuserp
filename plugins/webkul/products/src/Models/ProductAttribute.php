@@ -2,30 +2,23 @@
 
 namespace Webkul\Product\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Product\Database\Factories\ProductAttributeFactory;
 use Webkul\Security\Models\User;
 
 class ProductAttribute extends Model implements Sortable
 {
-    use SortableTrait;
+    use HasFactory, SortableTrait;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'products_product_attributes';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'sort',
         'product_id',
@@ -67,8 +60,17 @@ class ProductAttribute extends Model implements Sortable
     {
         parent::boot();
 
+        static::creating(function ($attribute) {
+            $attribute->creator_id ??= Auth::id();
+        });
+
         static::deleting(function ($attribute) {
             $attribute->product->variants()->forceDelete();
         });
+    }
+
+    protected static function newFactory(): ProductAttributeFactory
+    {
+        return ProductAttributeFactory::new();
     }
 }

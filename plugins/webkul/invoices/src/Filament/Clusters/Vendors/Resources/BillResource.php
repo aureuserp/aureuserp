@@ -10,17 +10,24 @@ use Webkul\Invoice\Filament\Clusters\Vendors;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource\Pages\CreateBill;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource\Pages\EditBill;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource\Pages\ListBills;
+use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource\Pages\ManagePayments;
 use Webkul\Invoice\Filament\Clusters\Vendors\Resources\BillResource\Pages\ViewBill;
+use Webkul\Invoice\Livewire\InvoiceSummary;
 use Webkul\Invoice\Models\Bill;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 use Webkul\Support\Filament\Forms\Components\Repeater;
 
 class BillResource extends BaseBillResource
 {
+    use HasResourcePermissionQuery;
+
     protected static ?string $model = Bill::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-credit-card';
 
     protected static bool $shouldRegisterNavigation = true;
+
+    protected static bool $isGloballySearchable = true;
 
     protected static ?int $navigationSort = 1;
 
@@ -41,11 +48,17 @@ class BillResource extends BaseBillResource
         return __('invoices::filament/clusters/vendors/resources/bill.navigation.title');
     }
 
+    public static function getSummaryComponent()
+    {
+        return InvoiceSummary::class;
+    }
+
     public static function getRecordSubNavigation(Page $page): array
     {
         return $page->generateNavigationItems([
             ViewBill::class,
             EditBill::class,
+            ManagePayments::class,
         ]);
     }
 
@@ -56,12 +69,14 @@ class BillResource extends BaseBillResource
                 Action::make('openProduct')
                     ->tooltip('Open product')
                     ->icon('heroicon-m-arrow-top-right-on-square')
-                    ->url(fn (array $arguments, Get $get): ?string => ProductResource::getUrl('edit', [
-                        'record' => $get("products.{$arguments['item']}.product_id"),
-                    ])
+                    ->url(
+                        fn (array $arguments, Get $get): ?string => ProductResource::getUrl('edit', [
+                            'record' => $get("products.{$arguments['item']}.product_id"),
+                        ])
                     )
                     ->openUrlInNewTab()
-                    ->visible(fn (array $arguments, Get $get): bool => filled($get("products.{$arguments['item']}.product_id"))
+                    ->visible(
+                        fn (array $arguments, Get $get): bool => filled($get("products.{$arguments['item']}.product_id"))
                     ),
             ]);
     }
@@ -69,10 +84,11 @@ class BillResource extends BaseBillResource
     public static function getPages(): array
     {
         return [
-            'index'  => ListBills::route('/'),
-            'create' => CreateBill::route('/create'),
-            'edit'   => EditBill::route('/{record}/edit'),
-            'view'   => ViewBill::route('/{record}'),
+            'index'    => ListBills::route('/'),
+            'create'   => CreateBill::route('/create'),
+            'edit'     => EditBill::route('/{record}/edit'),
+            'view'     => ViewBill::route('/{record}'),
+            'payments' => ManagePayments::route('/{record}/payments'),
         ];
     }
 }

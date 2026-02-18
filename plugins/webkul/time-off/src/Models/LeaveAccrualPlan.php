@@ -3,7 +3,9 @@
 namespace Webkul\TimeOff\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\TimeOff\Enums\AccruedGainTime;
@@ -49,7 +51,7 @@ class LeaveAccrualPlan extends Model
         return $this->belongsTo(Company::class, 'company_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -57,5 +59,18 @@ class LeaveAccrualPlan extends Model
     public function leaveAccrualLevels()
     {
         return $this->hasMany(LeaveAccrualLevel::class, 'accrual_plan_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($leaveAccrualPlan) {
+            $authUser = Auth::user();
+
+            $leaveAccrualPlan->creator_id = $authUser->id;
+
+            $leaveAccrualPlan->company_id ??= $authUser?->default_company_id;
+        });
     }
 }

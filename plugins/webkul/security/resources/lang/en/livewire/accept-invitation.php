@@ -15,7 +15,7 @@ return [
 
         'login' => [
             'before' => 'or',
-            'label' => 'sign in to your account',
+            'label'  => 'sign in to your account',
         ],
 
     ],
@@ -31,7 +31,7 @@ return [
         ],
 
         'password' => [
-            'label' => 'Password',
+            'label'                => 'Password',
             'validation_attribute' => 'password',
         ],
 
@@ -53,7 +53,7 @@ return [
 
         'throttled' => [
             'title' => 'Too many registration attempts',
-            'body' => 'Please try again in :seconds seconds.',
+            'body'  => 'Please try again in :seconds seconds.',
         ],
 
     ],

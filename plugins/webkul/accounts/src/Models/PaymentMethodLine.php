@@ -4,8 +4,11 @@ namespace Webkul\Account\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Accounting\Models\Journal;
 use Webkul\Security\Models\User;
 
 class PaymentMethodLine extends Model implements Sortable
@@ -28,7 +31,7 @@ class PaymentMethodLine extends Model implements Sortable
         'sort_when_creating' => true,
     ];
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -46,5 +49,36 @@ class PaymentMethodLine extends Model implements Sortable
     public function journal()
     {
         return $this->belongsTo(Journal::class);
+    }
+
+    public function defaultAccount()
+    {
+        return $this->hasOneThrough(
+            Account::class,
+            Journal::class,
+            'id',
+            'id',
+            'journal_id',
+            'default_account_id'
+        );
+    }
+
+    public function getCodeAttribute()
+    {
+        return $this->paymentMethod->code;
+    }
+
+    public function computeName()
+    {
+        $this->name = $this->paymentMethod->name;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($paymentMethodLine) {
+            $paymentMethodLine->creator_id ??= Auth::id();
+        });
     }
 }

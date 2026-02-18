@@ -5,12 +5,12 @@
 
 <div {{ $attributes->merge($getExtraAttributes())->class('flex flex-col gap-2') }}>
     @if ($record->body)
-        <div class="text-sm leading-6 text-gray-700">
-            {!! $record->body !!}
+        <div class="text-sm leading-6 text-gray-700 dark:text-white overflow-x-hidden max-w-full break-words [&_a]:text-primary-600 dark:[&_a]:text-primary-400 [&_a:hover]:underline [&_ul]:list-disc [&_ul]:ms-5 [&_ol]:list-decimal [&_ol]:ms-5">
+            {!! str($record->body)->sanitizeHtml() !!}
         </div>
     @endif
 
-    <div class="rounded-xl p-3 shadow-sm ring-1 ring-gray-200 overflow-x-hidden bg-gray-50/80 dark:bg-gray-950 dark:ring-gray-800 space-y-1">
+    <div class="rounded-xl p-3 shadow-sm ring-1 ring-gray-200 overflow-x-hidden bg-gray-50/80 dark:bg-gray-800/50 dark:ring-gray-800 space-y-1">
         <div class="grid grid-cols-3 gap-6">
 
             {{-- Activity Type --}}
@@ -33,7 +33,7 @@
                         @lang('chatter::views/filament/infolists/components/activities/content-text-entry.assigned-to')
                     </span>
 
-                    <div class="flex items-center gap-2 px-2 py-1 bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-lg">
+                    <div class="flex items-center gap-2 px-2 py-1 bg-gray-50 dark:bg-gray-900 rounded-lg">
                         <x-filament-panels::avatar.user
                             size="sm"
                             :user="$record->assignedTo"
@@ -93,7 +93,7 @@
 
             {{-- Summary --}}
             @if ($record->summary)
-                <div class="flex flex-col gap-2.5">
+                <div class="flex flex-col gap-2.5 col-span-full">
                     <span class="text-xs font-semibold tracking-wider text-gray-900 dark:text-gray-400">
                         @lang('chatter::views/filament/infolists/components/activities/content-text-entry.summary')
                     </span>

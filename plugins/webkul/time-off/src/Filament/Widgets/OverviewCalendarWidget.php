@@ -22,10 +22,15 @@ use Webkul\TimeOff\Traits\TimeOffHelper;
 
 class OverviewCalendarWidget extends FullCalendarWidget
 {
+    use HasWidgetShield;
     use TimeOffHelper;
 
-     use HasWidgetShield;
     public Model|string|null $model = Leave::class;
+
+    protected static function getPagePermission(): ?string
+    {
+        return 'widget_time_off_overview_calendar_widget';
+    }
 
     public function getHeading(): string|Htmlable|null
     {

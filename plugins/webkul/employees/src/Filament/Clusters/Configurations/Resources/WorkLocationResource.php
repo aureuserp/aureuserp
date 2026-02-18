@@ -11,7 +11,6 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -31,7 +30,6 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Enums\WorkLocation as WorkLocationEnum;
 use Webkul\Employee\Filament\Clusters\Configurations;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\WorkLocationResource\Pages\ListWorkLocations;
@@ -68,9 +66,6 @@ class WorkLocationResource extends Resource
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.form.name'))
                     ->required()
                     ->maxLength(255),
-                Hidden::make('creator_id')
-                    ->required()
-                    ->default(Auth::user()->id),
                 ToggleButtons::make('location_type')
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.form.location-type'))
                     ->inline()
@@ -118,7 +113,7 @@ class WorkLocationResource extends Resource
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.table.columns.location-number'))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -142,7 +137,7 @@ class WorkLocationResource extends Resource
                 Group::make('name')
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.table.groups.name'))
                     ->collapsible(),
-                Group::make('createdBy.name')
+                Group::make('creator.name')
                     ->label(__('employees::filament/clusters/configurations/resources/work-location.table.groups.created-by'))
                     ->collapsible(),
                 Group::make('location_type')
@@ -188,7 +183,7 @@ class WorkLocationResource extends Resource
                                     ->multiple()
                                     ->preload(),
                             ),
-                        RelationshipConstraint::make('createdBy')
+                        RelationshipConstraint::make('creator')
                             ->label(__('employees::filament/clusters/configurations/resources/work-location.table.filters.created-by'))
                             ->icon('heroicon-o-user')
                             ->multiple()

@@ -47,9 +47,4 @@ class EditCalendar extends EditRecord
                 ),
         ];
     }
-
-    protected function mutateFormDataBeforeSave(array $data): array
-    {
-        return $data;
-    }
 }

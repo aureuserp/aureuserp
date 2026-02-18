@@ -16,11 +16,13 @@ class TaxGroupResource extends BaseTaxGroupResource
 
     protected static bool $shouldRegisterNavigation = true;
 
+    protected static ?int $navigationSort = 7;
+
     protected static ?string $cluster = Configuration::class;
 
     public static function getModelLabel(): string
     {
-        return __('invoices::filament/clusters/configurations/resources/tax-group.title');
+        return __('invoices::filament/clusters/configurations/resources/tax-group.model-label');
     }
 
     public static function getNavigationLabel(): string

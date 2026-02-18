@@ -43,7 +43,7 @@ return new class extends Migration
     {
         Schema::table('accounts_account_moves', function (Blueprint $table) {
             $table->string('state')->default(null)->comment('State')->change();
-            $table->string('payment_state')->default(null)->nullable()->comment('Payment State');
+            $table->string('payment_state')->default(null)->nullable()->comment('Payment State')->change();
 
             $table->boolean('is_storno')->nullable()->default(null)->change();
             $table->boolean('always_tax_exigible')->nullable()->default(null)->change();

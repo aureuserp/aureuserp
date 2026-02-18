@@ -8,6 +8,12 @@ return [
         'group' => 'Invoices',
     ],
 
+    'global-search' => [
+        'partner' => 'Partner',
+        'amount'  => 'Amount',
+        'date'    => 'Date',
+    ],
+
     'form' => [
         'sections' => [
             'fields' => [
@@ -15,46 +21,48 @@ return [
                 'memo'                  => 'Memo',
                 'date'                  => 'Date',
                 'amount'                => 'Amount',
+                'currency'              => 'Currency',
                 'payment-method'        => 'Payment Method',
                 'customer'              => 'Customer',
+                'vendor'                => 'Vendor',
                 'journal'               => 'Journal',
                 'customer-bank-account' => 'Customer Bank Account',
+                'vendor-bank-account'   => 'Vendor Bank Account',
             ],
         ],
     ],
 
     'table' => [
         'columns' => [
-            'name'                             => 'Name',
-            'company'                          => 'Company',
-            'bank-account-holder'              => 'Bank Account Holder',
-            'paired-internal-transfer-payment' => 'Paired Internal Transfer Payment',
-            'payment-method-line'              => 'Payment Method Line',
-            'payment-method'                   => 'Payment Method',
-            'currency'                         => 'Currency',
-            'partner'                          => 'Partner',
-            'outstanding-amount'               => 'Outstanding Amount',
-            'destination-account'              => 'Destination Account',
-            'created-by'                       => 'Created By',
-            'payment-transaction'              => 'Payment Transaction',
+            'name'            => 'Name',
+            'date'            => 'Date',
+            'journal'         => 'Journal',
+            'payment-method'  => 'Payment Method',
+            'partner'         => 'Partner',
+            'amount-currency' => 'Amount (Currency)',
+            'amount'          => 'Amount',
+            'state'           => 'State',
+            'company'         => 'Company',
+            'currency'        => 'Currency',
+            'created-by'      => 'Created By',
         ],
 
         'groups' => [
             'name'                             => 'Name',
             'company'                          => 'Company',
+            'journal'                          => 'Journal',
             'partner'                          => 'Partner',
             'payment-method-line'              => 'Payment Method Line',
             'payment-method'                   => 'Payment Method',
             'partner-bank-account'             => 'Partner Bank Account',
-            'paired-internal-transfer-payment' => 'Paired Internal Transfer Payment',
             'created-at'                       => 'Created At',
             'updated-at'                       => 'Updated At',
         ],
 
         'filters' => [
             'company'                          => 'Company',
+            'journal'                          => 'Journal',
             'customer-bank-account'            => 'Customer Bank Account',
-            'paired-internal-transfer-payment' => 'Paired Internal Transfer Payment',
             'payment-method'                   => 'Payment Method',
             'currency'                         => 'Currency',
             'partner'                          => 'Partner',
@@ -80,6 +88,12 @@ return [
                 ],
             ],
         ],
+
+        'toolbar-actions' => [
+            'export' => [
+                'label' => 'Export',
+            ],
+        ],
     ],
 
     'infolist' => [
@@ -88,26 +102,16 @@ return [
                 'title'   => 'Payment Information',
                 'entries' => [
                     'state'                 => 'State',
+                    'vendor'                => 'Vendor',
+                    'customer'              => 'Customer',
                     'payment-type'          => 'Payment Type',
                     'journal'               => 'Journal',
                     'customer-bank-account' => 'Customer Bank Account',
-                    'customer'              => 'Customer',
-                ],
-            ],
-
-            'payment-details' => [
-                'title'   => 'Payment Details',
-                'entries' => [
-                    'amount' => 'Amount',
-                    'date'   => 'Date',
-                    'memo'   => 'Memo',
-                ],
-            ],
-
-            'payment-method' => [
-                'title'   => 'Payment Method',
-                'entries' => [
-                    'payment-method' => 'Payment Method',
+                    'vendor-bank-account'   => 'Vendor Bank Account',
+                    'amount'                => 'Amount',
+                    'payment-method'        => 'Payment Method',
+                    'date'                  => 'Date',
+                    'memo'                  => 'Memo',
                 ],
             ],
         ],

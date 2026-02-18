@@ -2,6 +2,7 @@
 
 namespace Webkul\Purchase\Filament\Admin\Clusters\Configurations\Resources;
 
+use BackedEnum;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -39,7 +40,7 @@ class VendorPriceResource extends Resource
 {
     protected static ?string $model = ProductSupplier::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-archive-box';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-archive-box';
 
     protected static ?int $navigationSort = 10;
 
@@ -60,10 +61,7 @@ class VendorPriceResource extends Resource
                             ->schema([
                                 Select::make('partner_id')
                                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.general.fields.vendor'))
-                                    ->relationship(
-                                        'partner',
-                                        'name',
-                                    )
+                                    ->relationship('partner', 'name')
                                     ->searchable()
                                     ->required()
                                     ->preload(),
@@ -118,7 +116,11 @@ class VendorPriceResource extends Resource
                                             ->default(0),
                                         Select::make('currency_id')
                                             ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.form.sections.prices.fields.currency'))
-                                            ->relationship('currency', 'name')
+                                            ->relationship(
+                                                'currency',
+                                                'name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                            )
                                             ->required()
                                             ->searchable()
                                             ->default(Auth::user()->defaultCompany?->currency_id)
@@ -224,7 +226,7 @@ class VendorPriceResource extends Resource
             ->filters([
                 SelectFilter::make('partner_id')
                     ->label(__('purchases::filament/admin/clusters/configurations/resources/vendor-price.table.filters.vendor'))
-                    ->relationship('partner', 'name', fn ($query) => $query->where('sub_type', 'supplier'))
+                    ->relationship('partner', 'name')
                     ->searchable()
                     ->preload()
                     ->multiple(),

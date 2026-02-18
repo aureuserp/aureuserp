@@ -5,6 +5,7 @@ namespace Webkul\Account\Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Webkul\Account\Enums\PaymentType;
 
 class PaymentMethodSeeder extends Seeder
 {
@@ -23,18 +24,18 @@ class PaymentMethodSeeder extends Seeder
             [
                 'id'           => 1,
                 'code'         => 'manual',
-                'payment_type' => 'inbound',
+                'payment_type' => PaymentType::RECEIVE,
                 'name'         => 'Manual Payment',
-                'created_by'   => $user?->id,
+                'creator_id'   => $user?->id,
                 'created_at'   => $now,
                 'updated_at'   => $now,
             ],
             [
                 'id'           => 2,
                 'code'         => 'manual',
-                'payment_type' => 'outbound',
+                'payment_type' => PaymentType::SEND,
                 'name'         => 'Manual Payment',
-                'created_by'   => $user?->id,
+                'creator_id'   => $user?->id,
                 'created_at'   => $now,
                 'updated_at'   => $now,
             ],

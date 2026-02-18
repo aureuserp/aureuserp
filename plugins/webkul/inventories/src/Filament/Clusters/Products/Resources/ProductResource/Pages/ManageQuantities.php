@@ -191,7 +191,7 @@ class ManageQuantities extends ManageRelatedRecords
                         $action
                             ->mutateDataUsing(function (array $data) {
                                 $data['company_id'] = $this->getOwnerRecord()->company_id;
-                                $data['creator_id'] = filament()->auth()->user()->id;
+                                $data['creator_id'] = Auth::id();
 
                                 return $data;
                             })

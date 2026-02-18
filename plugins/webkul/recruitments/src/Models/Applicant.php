@@ -5,6 +5,7 @@ namespace Webkul\Recruitment\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
@@ -22,6 +23,11 @@ class Applicant extends Model
     use HasApplicationStatus, HasChatter, HasLogActivity, SoftDeletes;
 
     protected $table = 'recruitments_applicants';
+
+    public function getModelTitle(): string
+    {
+        return __('recruitments::models/applicant.title');
+    }
 
     protected $fillable = [
         'source_id',
@@ -144,7 +150,7 @@ class Applicant extends Model
         return $this->belongsTo(RefuseReason::class);
     }
 
-    public function createdBy(): BelongsTo
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -222,5 +228,66 @@ class Applicant extends Model
         ]);
 
         return $employee;
+    }
+
+    public function handleApplicationCreation(): void
+    {
+        $authUser = Auth::user();
+
+        $this->creator_id ??= $authUser->id;
+
+        $this->company_id ??= $authUser?->default_company_id;
+    }
+
+    public function handleApplicationUpdation(): void
+    {
+        $original = $this->getRawOriginal();
+
+        if ($this->isDirty('recruiter_id')) {
+            $this->date_opened = now();
+        }
+
+        if ($this->isDirty('stage_id')) {
+            $this->date_last_stage_updated = now();
+
+            if (empty($original['stage_id'])) {
+                $this->notificationData = $this->getAttributes();
+            } else {
+                $this->last_stage_id = $original['stage_id'];
+            }
+        }
+
+        if ($this->relationLoaded('interviewer')) {
+            $oldInterviewers = collect(
+                $this->interviewer->pluck('id')
+            );
+
+            $newInterviewers = collect(
+                $this->recruitments_applicant_interviewers ?? []
+            );
+
+            if (
+                $oldInterviewers->isNotEmpty()
+                || $newInterviewers->isNotEmpty()
+            ) {
+                $this->interviewerChanges = [
+                    'old' => $oldInterviewers,
+                    'new' => $newInterviewers,
+                ];
+            }
+        }
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($applicant) {
+            $applicant->handleApplicationCreation();
+        });
+
+        static::updating(function ($applicant) {
+            $applicant->handleApplicationUpdation();
+        });
     }
 }

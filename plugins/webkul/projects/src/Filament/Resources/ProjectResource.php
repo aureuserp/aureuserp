@@ -46,7 +46,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
-use Webkul\Field\Filament\Forms\Components\ProgressStepper;
+use Webkul\Field\Filament\Forms\Components\ProgressStepper as FormProgressStepper;
+use Webkul\Field\Filament\Infolists\Components\ProgressStepper as InfolistProgressStepper;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 use Webkul\Partner\Filament\Resources\PartnerResource;
 use Webkul\Project\Enums\ProjectVisibility;
@@ -65,16 +66,17 @@ use Webkul\Project\Settings\TaskSettings;
 use Webkul\Project\Settings\TimeSettings;
 use Webkul\Security\Filament\Resources\CompanyResource;
 use Webkul\Security\Filament\Resources\UserResource;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 
 class ProjectResource extends Resource
 {
-    use HasCustomFields;
+    use HasCustomFields, HasResourcePermissionQuery;
 
     protected static ?string $model = Project::class;
 
     protected static ?string $slug = 'project/projects';
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -107,7 +109,7 @@ class ProjectResource extends Resource
             ->components([
                 Group::make()
                     ->schema([
-                        ProgressStepper::make('stage_id')
+                        FormProgressStepper::make('stage_id')
                             ->hiddenLabel()
                             ->inline()
                             ->required()
@@ -174,6 +176,7 @@ class ProjectResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->label(__('projects::filament/resources/project.form.sections.additional.fields.company'))
+                                    ->default(fn () => Auth::user()->default_company_id)
                                     ->createOptionForm(fn (Schema $schema) => CompanyResource::form($schema)),
                             ]))
                             ->columns(2),
@@ -498,6 +501,13 @@ class ProjectResource extends Resource
             ->components([
                 Group::make()
                     ->schema([
+                        InfolistProgressStepper::make('stage_id')
+                            ->hiddenLabel()
+                            ->inline()
+                            ->visible(static::getTaskSettings()->enable_project_stages)
+                            ->options(fn () => ProjectStage::orderBy('sort')->get()->mapWithKeys(fn ($stage) => [$stage->id => $stage->name])->toArray())
+                            ->default(ProjectStage::first()?->id),
+
                         Section::make(__('projects::filament/resources/project.infolist.sections.general.title'))
                             ->schema([
                                 TextEntry::make('name')
@@ -647,12 +657,12 @@ class ProjectResource extends Resource
             ->columns(3);
     }
 
-    static public function getTaskSettings(): TaskSettings
+    public static function getTaskSettings(): TaskSettings
     {
         return once(fn () => app(TaskSettings::class));
     }
 
-    static public function getTimeSettings(): TimeSettings
+    public static function getTimeSettings(): TimeSettings
     {
         return once(fn () => app(TimeSettings::class));
     }

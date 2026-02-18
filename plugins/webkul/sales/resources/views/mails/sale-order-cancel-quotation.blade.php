@@ -1,6 +1,6 @@
 <x-support::emails.layout>
     <div class="notification">
-        {!! $payload['description'] !!}
+        {!! str($payload['description'])->sanitizeHtml() !!}
     </div>
 
     @isset($payload['from']['company'])

@@ -16,7 +16,7 @@ class ReceiptPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_receipt');
+        return $user->can('view_any_inventory_receipt');
     }
 
     /**
@@ -24,7 +24,7 @@ class ReceiptPolicy
      */
     public function view(User $user, Receipt $receipt): bool
     {
-        return $user->can('view_receipt');
+        return $user->can('view_inventory_receipt');
     }
 
     /**
@@ -32,7 +32,7 @@ class ReceiptPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_receipt');
+        return $user->can('create_inventory_receipt');
     }
 
     /**
@@ -40,7 +40,7 @@ class ReceiptPolicy
      */
     public function update(User $user, Receipt $receipt): bool
     {
-        if (! $user->can('update_receipt')) {
+        if (! $user->can('update_inventory_receipt')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class ReceiptPolicy
      */
     public function delete(User $user, Receipt $receipt): bool
     {
-        if (! $user->can('delete_receipt')) {
+        if (! $user->can('delete_inventory_receipt')) {
             return false;
         }
 
@@ -64,6 +64,6 @@ class ReceiptPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_receipt');
+        return $user->can('delete_any_inventory_receipt');
     }
 }

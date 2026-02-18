@@ -26,7 +26,6 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Security\Models\User;
 use Webkul\Support\Enums\ActivityDelayInterval;
 use Webkul\Support\Enums\ActivityDelayUnit;
@@ -159,7 +158,7 @@ class ActivityTemplateRelationManager extends RelationManager
                     ->label(__('sales::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.columns.delay-from'))
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('sales::filament/clusters/configurations/resources/activity-plan/relation-managers/activity-template.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -201,12 +200,6 @@ class ActivityTemplateRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->mutateDataUsing(function (array $data): array {
-                        return [
-                            ...$data,
-                            'creator_id' => Auth::user()->id,
-                        ];
-                    })
                     ->icon('heroicon-o-plus-circle')
                     ->successNotification(
                         Notification::make()
@@ -220,12 +213,6 @@ class ActivityTemplateRelationManager extends RelationManager
                     ViewAction::make(),
                     EditAction::make()
                         ->modalWidth(Width::FitContent)
-                        ->mutateDataUsing(function (array $data): array {
-                            return [
-                                ...$data,
-                                'creator_id' => Auth::user()->id,
-                            ];
-                        })
                         ->successNotification(
                             Notification::make()
                                 ->success()
@@ -310,6 +297,6 @@ class ActivityTemplateRelationManager extends RelationManager
                         ])->columnSpan(1),
                     ]),
             ])
-                ->columns(1);
+            ->columns(1);
     }
 }

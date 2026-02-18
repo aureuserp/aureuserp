@@ -12,7 +12,7 @@ use Webkul\Inventory\Enums\OperationState;
 use Webkul\Inventory\Filament\Clusters\Operations\Actions as OperationActions;
 use Webkul\Inventory\Filament\Clusters\Operations\Resources\ReceiptResource;
 use Webkul\Inventory\Models\Receipt;
-use Webkul\Support\Concerns\HasRepeaterColumnManager;
+use Webkul\Support\Filament\Concerns\HasRepeaterColumnManager;
 use Webkul\Support\Traits\HasRecordNavigationTabs;
 
 class EditReceipt extends EditRecord
@@ -38,7 +38,7 @@ class EditReceipt extends EditRecord
     {
         return [
             ChatterAction::make()
-                ->setResource(static::$resource),
+                ->resource(static::$resource),
             OperationActions\TodoAction::make(),
             OperationActions\ValidateAction::make(),
             OperationActions\CancelAction::make(),

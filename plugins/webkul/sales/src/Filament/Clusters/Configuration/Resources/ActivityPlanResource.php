@@ -31,7 +31,6 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Sale\Filament\Clusters\Configuration;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityPlanResource\Pages\EditActivityPlan;
 use Webkul\Sale\Filament\Clusters\Configuration\Resources\ActivityPlanResource\Pages\ListActivityPlans;
@@ -45,6 +44,8 @@ class ActivityPlanResource extends Resource
     protected static ?string $model = ActivityPlan::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
+
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $cluster = Configuration::class;
 
@@ -105,7 +106,7 @@ class ActivityPlanResource extends Resource
                     ->label(__('sales::filament/clusters/configurations/resources/activity-plan.table.columns.status'))
                     ->sortable()
                     ->boolean(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('sales::filament/clusters/configurations/resources/activity-plan.table.columns.created-by'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -178,7 +179,7 @@ class ActivityPlanResource extends Resource
                 Group::make('name')
                     ->label(__('sales::filament/clusters/configurations/resources/activity-plan.table.groups.name'))
                     ->collapsible(),
-                Group::make('createdBy.name')
+                Group::make('creator.name')
                     ->label(__('sales::filament/clusters/configurations/resources/activity-plan.table.groups.created-by'))
                     ->collapsible(),
                 Group::make('is_active')
@@ -248,13 +249,7 @@ class ActivityPlanResource extends Resource
                 CreateAction::make()
                     ->icon('heroicon-o-plus-circle')
                     ->mutateDataUsing(function (array $data): array {
-                        $user = Auth::user();
-
                         $data['plugin'] = 'sales';
-
-                        $data['creator_id'] = $user->id;
-
-                        $data['company_id'] ??= $user->defaultCompany?->id;
 
                         return $data;
                     })

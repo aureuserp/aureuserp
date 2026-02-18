@@ -10,7 +10,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Webkul\\FullCalendar\\Providers\\FullCalendarServiceProvider"
+                "Webkul\\FullCalendar\\FullCalendarServiceProvider"
             ],
             "aliases": {}
         }

@@ -4,25 +4,17 @@ namespace Webkul\Inventory\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Webkul\Product\Models\Category as BaseCategory;
+use Webkul\Account\Models\Category as BaseCategory;
 
 class Category extends BaseCategory
 {
-    /**
-     * Create a new Eloquent model instance.
-     *
-     * @return void
-     */
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
 
-        $this->mergeFillable([
-        ]);
+        $this->mergeFillable([]);
 
-        $this->mergeCasts([
-
-        ]);
+        $this->mergeCasts([]);
     }
 
     public function routes(): BelongsToMany

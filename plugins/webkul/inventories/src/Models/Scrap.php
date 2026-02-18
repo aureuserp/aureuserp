@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Chatter\Traits\HasChatter;
 use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Inventory\Database\Factories\ScrapFactory;
@@ -21,18 +22,8 @@ class Scrap extends Model
 {
     use HasChatter, HasFactory, HasLogActivity;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_scraps';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'origin',
@@ -52,34 +43,38 @@ class Scrap extends Model
         'creator_id',
     ];
 
-    protected array $logAttributes = [
-        'name',
-        'origin',
-        'state',
-        'qty',
-        'should_replenish',
-        'closed_at',
-        'product.name'                  => 'Product',
-        'uom.name'                      => 'UOM',
-        'lot.name'                      => 'Lot',
-        'package.name'                  => 'Package',
-        'partner.name'                  => 'Partner',
-        'operation.name'                => 'Operation',
-        'sourceLocation.full_name'      => 'Source Location',
-        'destinationLocation.full_name' => 'Destination Location',
-        'company.name'                  => 'Company',
-        'creator.name'                  => 'Creator',
-    ];
+    public function getModelTitle(): string
+    {
+        return __('inventories::models/scrap.title');
+    }
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
+    protected function getLogAttributeLabels(): array
+    {
+        return [
+            'name'                                      => __('inventories::models/scrap.log-attributes.name'),
+            'origin'                                    => __('inventories::models/scrap.log-attributes.origin'),
+            'state'                                     => __('inventories::models/scrap.log-attributes.state'),
+            'qty'                                       => __('inventories::models/scrap.log-attributes.qty'),
+            'should_replenish'                          => __('inventories::models/scrap.log-attributes.should_replenish'),
+            'closed_at'                                 => __('inventories::models/scrap.log-attributes.closed_at'),
+            'product.name'                              => __('inventories::models/scrap.log-attributes.product'),
+            'uom.name'                                  => __('inventories::models/scrap.log-attributes.uom'),
+            'lot.name'                                  => __('inventories::models/scrap.log-attributes.lot'),
+            'package.name'                              => __('inventories::models/scrap.log-attributes.package'),
+            'partner.name'                              => __('inventories::models/scrap.log-attributes.partner'),
+            'operation.name'                            => __('inventories::models/scrap.log-attributes.operation'),
+            'sourceLocation.full_name'                  => __('inventories::models/scrap.log-attributes.source-location'),
+            'destinationLocation.full_name'             => __('inventories::models/scrap.log-attributes.destination-location'),
+            'company.name'                              => __('inventories::models/scrap.log-attributes.company'),
+            'creator.name'                              => __('inventories::models/scrap.log-attributes.creator'),
+        ];
+    }
+
     protected $casts = [
         'state'            => ScrapState::class,
         'should_replenish' => 'boolean',
         'closed_at'        => 'datetime',
+        'qty'              => 'decimal:4',
     ];
 
     public function product(): BelongsTo
@@ -147,21 +142,6 @@ class Scrap extends Model
         return $this->hasManyThrough(MoveLine::class, Move::class);
     }
 
-    /**
-     * Bootstrap any application services.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function ($scrap) {
-            $scrap->updateName();
-        });
-    }
-
-    /**
-     * Update the full name without triggering additional events
-     */
     public function updateName()
     {
         $this->name = 'SP/'.$this->id;
@@ -170,5 +150,18 @@ class Scrap extends Model
     protected static function newFactory(): ScrapFactory
     {
         return ScrapFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($scrap) {
+            $scrap->creator_id ??= Auth::id();
+        });
+
+        static::saving(function ($scrap) {
+            $scrap->updateName();
+        });
     }
 }

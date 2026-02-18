@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\OrderPointFactory;
 use Webkul\Inventory\Enums\OrderPointTrigger;
 use Webkul\Security\Models\User;
@@ -15,18 +16,8 @@ class OrderPoint extends Model
 {
     use HasFactory, SoftDeletes;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_order_points';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'trigger',
@@ -44,11 +35,6 @@ class OrderPoint extends Model
         'creator_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'trigger' => OrderPointTrigger::class,
     ];
@@ -86,5 +72,14 @@ class OrderPoint extends Model
     protected static function newFactory(): OrderPointFactory
     {
         return OrderPointFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($orderPoint) {
+            $orderPoint->creator_id ??= Auth::id();
+        });
     }
 }

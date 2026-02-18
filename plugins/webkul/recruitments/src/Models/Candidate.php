@@ -3,6 +3,7 @@
 namespace Webkul\Recruitment\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +19,11 @@ class Candidate extends Model
     use HasChatter, HasLogActivity, SoftDeletes;
 
     protected $table = 'recruitments_candidates';
+
+    public function getModelTitle(): string
+    {
+        return __('recruitments::models/candidate.title');
+    }
 
     protected $fillable = [
         'message_bounced',
@@ -38,26 +44,30 @@ class Candidate extends Model
         'is_active',
     ];
 
-    protected array $logAttributes = [
-        'company.name'     => 'Company',
-        'partner.name'     => 'Contact',
-        'degree.name'      => 'Degree',
-        'user.name'        => 'Manager',
-        'employee.name'    => 'Employee',
-        'creator.name'     => 'Created By',
-        'phone_sanitized'  => 'Phone',
-        'email_normalized' => 'Email',
-        'email_cc'         => 'Email CC',
-        'name'             => 'Candidate Name',
-        'email_from'       => 'Email From',
-        'phone',
-        'linkedin_profile',
-        'availability_date',
-        'is_active' => 'Status',
-    ];
+    public function getLogAttributeLabels(): array
+    {
+        return [
+            'company.name'      => __('recruitments::models/candidate.log-attributes.company'),
+            'partner.name'      => __('recruitments::models/candidate.log-attributes.contact'),
+            'degree.name'       => __('recruitments::models/candidate.log-attributes.degree'),
+            'user.name'         => __('recruitments::models/candidate.log-attributes.manager'),
+            'employee.name'     => __('recruitments::models/candidate.log-attributes.employee'),
+            'creator.name'      => __('recruitments::models/candidate.log-attributes.creator'),
+            'phone_sanitized'   => __('recruitments::models/candidate.log-attributes.phone'),
+            'email_normalized'  => __('recruitments::models/candidate.log-attributes.email'),
+            'email_cc'          => __('recruitments::models/candidate.log-attributes.email_cc'),
+            'name'              => __('recruitments::models/candidate.log-attributes.name'),
+            'email_from'        => __('recruitments::models/candidate.log-attributes.email_from'),
+            'phone'             => __('recruitments::models/candidate.log-attributes.phone_raw'),
+            'linkedin_profile'  => __('recruitments::models/candidate.log-attributes.linkedin_profile'),
+            'availability_date' => __('recruitments::models/candidate.log-attributes.availability_date'),
+            'is_active'         => __('recruitments::models/candidate.log-attributes.is_active'),
+        ];
+    }
 
     protected $casts = [
         'candidate_properties' => 'array',
+        'is_active'            => 'boolean',
     ];
 
     public function company()
@@ -85,7 +95,7 @@ class Candidate extends Model
         return $this->belongsTo(Employee::class, 'employee_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
@@ -121,12 +131,17 @@ class Candidate extends Model
         return $employee;
     }
 
-    /**
-     * Bootstrap the model and its traits.
-     */
     protected static function boot()
     {
         parent::boot();
+
+        static::creating(function ($candidate) {
+            $authUser = Auth::user();
+
+            $candidate->creator_id ??= $authUser->id;
+
+            $candidate->company_id ??= $authUser?->default_company_id;
+        });
 
         static::saved(function (self $candidate) {
             if (! $candidate->partner_id) {
@@ -137,9 +152,6 @@ class Candidate extends Model
         });
     }
 
-    /**
-     * Handle the creation of a partner.
-     */
     private function handlePartnerCreation(self $candidate)
     {
         $partner = $candidate->partner()->create([
@@ -155,9 +167,6 @@ class Candidate extends Model
         $candidate->save();
     }
 
-    /**
-     * Handle the updation of a partner.
-     */
     private function handlePartnerUpdation(self $candidate)
     {
         $partner = Partner::updateOrCreate(

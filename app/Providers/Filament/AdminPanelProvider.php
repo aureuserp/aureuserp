@@ -9,10 +9,12 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationGroup;
+use Illuminate\Support\Facades\Auth;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Support\Enums\Width;
+use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -21,7 +23,7 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Webkul\Support\Filament\Pages\Profile;
-use Webkul\Support\PluginManager;
+use Webkul\Support\GlobalSearchProvider;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -46,10 +48,11 @@ class AdminPanelProvider extends PanelProvider
             ->unsavedChangesAlerts()
             ->topNavigation()
             ->maxContentWidth(Width::Full)
+            ->databaseNotifications()
             ->userMenuItems([
                 'profile' => Action::make('profile')
-                    ->label(fn () => filament()->auth()->user()?->name)
-                    ->url(fn (): string => Profile::getUrl()),
+                    ->label(fn() => Auth::user()?->name)
+                    ->url(fn(): string => Profile::getUrl()),
             ])
             ->navigationGroups([
                 NavigationGroup::make()
@@ -67,6 +70,9 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make()
                     ->label(__('admin.navigation.invoice'))
                     ->icon('icon-invoices'),
+                NavigationGroup::make()
+                    ->label(__('admin.navigation.accounting'))
+                    ->icon('icon-accounting'),
                 NavigationGroup::make()
                     ->label(__('admin.navigation.inventory'))
                     ->icon('icon-inventories'),
@@ -111,8 +117,8 @@ class AdminPanelProvider extends PanelProvider
                         'default' => 1,
                         'sm'      => 2,
                     ]),
-                PluginManager::make(),
             ])
+            ->globalSearch(provider: GlobalSearchProvider::class)
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -127,6 +133,10 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+            ])
+            ->multiFactorAuthentication([
+                AppAuthentication::make()
+                    ->recoverable(),
             ]);
     }
 }

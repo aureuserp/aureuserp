@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
@@ -46,14 +47,20 @@ class Skill extends Model implements Sortable
         return $this->hasMany(EmployeeSkill::class, 'skill_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
 
-    /**
-     * Get the factory instance for the model.
-     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($skill) {
+            $skill->creator_id ??= Auth::id();
+        });
+    }
+
     protected static function newFactory(): SkillFactory
     {
         return SkillFactory::new();

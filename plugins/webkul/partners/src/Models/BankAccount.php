@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Partner\Database\Factories\BankAccountFactory;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Bank;
@@ -14,18 +15,8 @@ class BankAccount extends Model
 {
     use HasFactory, SoftDeletes;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'partners_bank_accounts';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'account_number',
         'account_holder_name',
@@ -36,11 +27,6 @@ class BankAccount extends Model
         'bank_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'is_active'      => 'boolean',
         'can_send_money' => 'boolean',
@@ -61,14 +47,13 @@ class BankAccount extends Model
         return $this->belongsTo(User::class, 'creator_id');
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($bankAccount) {
+            $bankAccount->creator_id ??= Auth::id();
+
             $bankAccount->account_holder_name = $bankAccount->partner->name;
         });
 

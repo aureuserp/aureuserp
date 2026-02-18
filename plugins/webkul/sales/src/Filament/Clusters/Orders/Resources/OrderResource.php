@@ -2,30 +2,25 @@
 
 namespace Webkul\Sale\Filament\Clusters\Orders\Resources;
 
+use BackedEnum;
 use Filament\Resources\Pages\Page;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Webkul\Sale\Enums\OrderState;
-use Webkul\Sale\Filament\Clusters\Orders;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\CreateOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\EditOrder;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ListOrders;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ManageDeliveries;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ManageInvoices;
 use Webkul\Sale\Filament\Clusters\Orders\Resources\OrderResource\Pages\ViewOrder;
-use Webkul\Sale\Models\Order;
+use Webkul\Security\Traits\HasResourcePermissionQuery;
 
-class OrderResource extends Resource
+class OrderResource extends QuotationResource
 {
-    protected static ?string $model = Order::class;
+    use HasResourcePermissionQuery;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
-
-    protected static ?string $recordTitleAttribute = 'name';
-
-    protected static ?string $cluster = Orders::class;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
     protected static ?int $navigationSort = 2;
 
@@ -39,22 +34,14 @@ class OrderResource extends Resource
         return __('sales::filament/clusters/orders/resources/order.navigation.title');
     }
 
-    public static function form(Schema $schema): Schema
+    public static function getGloballySearchableAttributes(): array
     {
-        return QuotationResource::form($schema);
+        return QuotationResource::getGloballySearchableAttributes();
     }
 
-    public static function table(Table $table): Table
+    public static function getGlobalSearchResultDetails(Model $record): array
     {
-        return QuotationResource::table($table)
-            ->modifyQueryUsing(function ($query) {
-                $query->where('state', OrderState::SALE);
-            });
-    }
-
-    public static function infolist(Schema $schema): Schema
-    {
-        return QuotationResource::infolist($schema);
+        return QuotationResource::getGlobalSearchResultDetails($record);
     }
 
     public static function getRecordSubNavigation(Page $page): array
@@ -81,7 +68,10 @@ class OrderResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
-            ->orderByDesc('id');
+        $query = parent::getEloquentQuery();
+
+        $query = static::getModel()::applyPermissionScope($query);
+
+        return $query->where('state', OrderState::SALE);
     }
 }

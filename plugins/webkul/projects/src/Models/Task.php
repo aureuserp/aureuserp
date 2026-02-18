@@ -3,6 +3,7 @@
 namespace Webkul\Project\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -18,24 +19,20 @@ use Webkul\Project\Database\Factories\TaskFactory;
 use Webkul\Project\Enums\TaskState;
 use Webkul\Security\Models\Scopes\UserPermissionScope;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 
 class Task extends Model implements Sortable
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SoftDeletes, SortableTrait;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope, SoftDeletes, SortableTrait;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'projects_tasks';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
+    public function getModelTitle(): string
+    {
+        return __('projects::models/task.title');
+    }
+
     protected $fillable = [
         'title',
         'description',
@@ -63,11 +60,6 @@ class Task extends Model implements Sortable
         'creator_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'is_active'           => 'boolean',
         'deadline'            => 'datetime',
@@ -84,24 +76,27 @@ class Task extends Model implements Sortable
         'state'               => TaskState::class,
     ];
 
-    protected array $logAttributes = [
-        'title',
-        'description',
-        'color',
-        'priority',
-        'state',
-        'sort',
-        'is_active',
-        'is_recurring',
-        'deadline',
-        'allocated_hours',
-        'stage.name'   => 'Stage',
-        'project.name' => 'Project',
-        'partner.name' => 'Partner',
-        'parent.title' => 'Parent',
-        'company.name' => 'Company',
-        'creator.name' => 'Creator',
-    ];
+    protected function getLogAttributeLabels(): array
+    {
+        return [
+            'title'             => __('projects::models/task.log-attributes.title'),
+            'description'       => __('projects::models/task.log-attributes.description'),
+            'color'             => __('projects::models/task.log-attributes.color'),
+            'priority'          => __('projects::models/task.log-attributes.priority'),
+            'state'             => __('projects::models/task.log-attributes.state'),
+            'sort'              => __('projects::models/task.log-attributes.sort'),
+            'is_active'         => __('projects::models/task.log-attributes.is_active'),
+            'is_recurring'      => __('projects::models/task.log-attributes.is_recurring'),
+            'deadline'          => __('projects::models/task.log-attributes.deadline'),
+            'allocated_hours'   => __('projects::models/task.log-attributes.allocated_hours'),
+            'stage.name'        => __('projects::models/task.log-attributes.stage'),
+            'project.name'      => __('projects::models/task.log-attributes.project'),
+            'partner.name'      => __('projects::models/task.log-attributes.partner'),
+            'parent.title'      => __('projects::models/task.log-attributes.parent'),
+            'company.name'      => __('projects::models/task.log-attributes.company'),
+            'creator.name'      => __('projects::models/task.log-attributes.creator'),
+        ];
+    }
 
     public string $recordTitleAttribute = 'title';
 
@@ -109,6 +104,17 @@ class Task extends Model implements Sortable
         'order_column_name'  => 'sort',
         'sort_when_creating' => true,
     ];
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        $this->setPivotTable('projects_task_users');
+
+        $this->setPivotForeignKey('task_id');
+
+        $this->setPivotRelatedKey('user_id');
+    }
 
     public function parent(): BelongsTo
     {
@@ -170,12 +176,17 @@ class Task extends Model implements Sortable
         static::addGlobalScope(new UserPermissionScope('users'));
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     protected static function boot()
     {
         parent::boot();
+
+        static::creating(function ($task) {
+            $authUser = Auth::user();
+
+            $task->creator_id ??= $authUser->id;
+
+            $task->company_id ??= $authUser?->default_company_id;
+        });
 
         static::updated(function ($task) {
             $task->timesheets()->update([

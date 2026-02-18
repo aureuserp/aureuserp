@@ -4,6 +4,7 @@ namespace Webkul\Account\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Webkul\Account\Enums\AmountType;
 use Webkul\Account\Enums\TypeTaxUse;
 use Webkul\Account\Models\TaxGroup;
 use Webkul\Security\Models\User;
@@ -29,9 +30,9 @@ class TaxSeeder extends Seeder
                 'cash_basis_transition_account_id' => null,
                 'country_id'                       => 233,
                 'creator_id'                       => $user?->id,
-                'type_tax_use'                     => TypeTaxUse::SALE->value,
+                'type_tax_use'                     => TypeTaxUse::SALE,
                 'tax_scope'                        => null,
-                'amount_type'                      => 'percent',
+                'amount_type'                      => AmountType::PERCENT,
                 'price_include_override'           => null,
                 'tax_exigibility'                  => 'on_invoice',
                 'name'                             => '15 %',
@@ -46,17 +47,16 @@ class TaxSeeder extends Seeder
                 'created_at'                       => now(),
                 'updated_at'                       => now(),
                 'formula'                          => 'price_unit * 0.10',
-            ],
-            [
+            ], [
                 'company_id'                       => $company?->id,
                 'sort'                             => 1,
                 'tax_group_id'                     => $taxGroup?->id,
                 'cash_basis_transition_account_id' => null,
                 'country_id'                       => 233,
                 'creator_id'                       => $user?->id,
-                'type_tax_use'                     => TypeTaxUse::PURCHASE->value,
+                'type_tax_use'                     => TypeTaxUse::PURCHASE,
                 'tax_scope'                        => null,
-                'amount_type'                      => 'percent',
+                'amount_type'                      => AmountType::PERCENT,
                 'price_include_override'           => null,
                 'tax_exigibility'                  => 'on_invoice',
                 'name'                             => '15 %',

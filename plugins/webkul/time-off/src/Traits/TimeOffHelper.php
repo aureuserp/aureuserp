@@ -27,13 +27,13 @@ trait TimeOffHelper
     public function mutateTimeOffData(array $data, ?int $excludeRecordId = null, ?Action $action = null): array
     {
         $this->updateEmployeeAndCompanyData($data);
+
         $this->calculateBusinessDaysAndNumbers($data);
 
         $this->handleLeaveOverlap($data, $excludeRecordId, $action);
 
         $this->handleLeaveAllocation($data, $action);
 
-        $data['creator_id'] = Auth::user()->id;
         $data['state'] = State::CONFIRM->value;
         $data['date_from'] = $data['request_date_from'] ?? null;
         $data['date_to'] = $data['request_date_to'] ?? null;
@@ -217,14 +217,10 @@ trait TimeOffHelper
         ];
     }
 
-    /**
-     * Overlap check
-     *
-     * @throws \Exception
-     */
     private function handleLeaveOverlap(array &$data, ?int $excludeRecordId = null, ?Action $action = null): void
     {
         $employee = Employee::find($data['employee_id']);
+
         if (! $employee) {
             Notification::make()
                 ->danger()
@@ -263,24 +259,22 @@ trait TimeOffHelper
         }
     }
 
-    /**
-     * Leave allocation check
-     *
-     * @throws \Exception
-     */
     private function handleLeaveAllocation(array &$data, ?Action $action = null): void
     {
         $employee = Employee::find($data['employee_id']);
+
         if (! $employee) {
             return;
         }
 
         $leaveTypeId = $data['holiday_status_id'] ?? null;
+
         if (! $leaveTypeId) {
             return;
         }
 
         $leaveType = LeaveType::find($leaveTypeId);
+
         if (! $leaveType || ! $leaveType->requires_allocation) {
             return;
         }
@@ -300,7 +294,7 @@ trait TimeOffHelper
         $totalTaken = Leave::where('employee_id', $employee->id)
             ->where('holiday_status_id', $leaveTypeId)
             ->where('state', '!=', State::REFUSE->value)
-            ->where(fn ($q) => true)  
+            ->where(fn ($q) => true)
             ->sum('number_of_days');
 
         $availableBalance = round($totalAllocated - $totalTaken, 1);
@@ -337,37 +331,32 @@ trait TimeOffHelper
         }
     }
 
-    /**
-     * Compute business days between two Carbon dates
-     */
     private function calculateBusinessDays(Carbon $start, Carbon $end): int
     {
         $days = 0;
+
         $current = $start->copy();
+
         while ($current->lte($end)) {
             if (! $current->isWeekend()) {
                 $days++;
             }
+
             $current->addDay();
         }
 
         return $days;
     }
 
-    /**
-     * Compute total days inclusive
-     */
     private function calculateTotalDays(Carbon $start, Carbon $end): int
     {
         return $start->diffInDays($end) + 1;
     }
 
-    /**
-     * Check overlapping leave
-     */
     private function checkForOverlappingLeave(int $employeeId, string $startDate, ?string $endDate, ?int $excludeRecordId = null): bool
     {
         $start = Carbon::parse($startDate);
+
         $end = $endDate ? Carbon::parse($endDate) : $start;
 
         $query = Leave::where('employee_id', $employeeId)
@@ -414,9 +403,6 @@ trait TimeOffHelper
         $set('duration_info', $duration);
     }
 
-    /**
-     * Calculate and set duration-related values in the given data array.
-     */
     private function calculateBusinessDaysAndNumbers(array &$data): void
     {
         $info = $this->getDurationInfo($data);

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Inventory\Database\Factories\RuleFactory;
@@ -21,18 +22,8 @@ class Rule extends Model implements Sortable
 {
     use HasFactory, SoftDeletes, SortableTrait;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_rules';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'sort',
         'name',
@@ -58,11 +49,6 @@ class Rule extends Model implements Sortable
         'deleted_at',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'action'                   => RuleAction::class,
         'group_propagation_option' => GroupPropagation::class,
@@ -126,5 +112,18 @@ class Rule extends Model implements Sortable
     protected static function newFactory(): RuleFactory
     {
         return RuleFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($rule) {
+            $authUser = Auth::user();
+
+            $rule->creator_id ??= $authUser->id;
+
+            $rule->company_id ??= $authUser?->default_company_id;
+        });
     }
 }

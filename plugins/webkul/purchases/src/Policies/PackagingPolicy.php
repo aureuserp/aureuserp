@@ -15,7 +15,7 @@ class PackagingPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_packaging');
+        return $user->can('view_any_purchase_packaging');
     }
 
     /**
@@ -23,7 +23,7 @@ class PackagingPolicy
      */
     public function view(User $user, Packaging $packaging): bool
     {
-        return $user->can('view_packaging');
+        return $user->can('view_purchase_packaging');
     }
 
     /**
@@ -31,7 +31,7 @@ class PackagingPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_packaging');
+        return $user->can('create_purchase_packaging');
     }
 
     /**
@@ -39,7 +39,7 @@ class PackagingPolicy
      */
     public function update(User $user, Packaging $packaging): bool
     {
-        return $user->can('update_packaging');
+        return $user->can('update_purchase_packaging');
     }
 
     /**
@@ -47,7 +47,7 @@ class PackagingPolicy
      */
     public function delete(User $user, Packaging $packaging): bool
     {
-        return $user->can('delete_packaging');
+        return $user->can('delete_purchase_packaging');
     }
 
     /**
@@ -55,7 +55,6 @@ class PackagingPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_packaging');
+        return $user->can('delete_any_purchase_packaging');
     }
-
 }

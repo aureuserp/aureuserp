@@ -90,8 +90,6 @@ class ActivityTypePolicy
         return $user->can('restore_any_recruitment_activity::type');
     }
 
-   
-
     /**
      * Determine whether the user can reorder.
      */

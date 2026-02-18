@@ -23,6 +23,8 @@ class PurchaseOrderResource extends OrderResource
 
     protected static bool $shouldRegisterNavigation = true;
 
+    protected static bool $isGloballySearchable = true;
+
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?int $navigationSort = 2;

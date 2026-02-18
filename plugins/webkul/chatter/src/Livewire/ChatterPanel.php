@@ -9,12 +9,12 @@ use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Concerns\InteractsWithInfolists;
 use Filament\Infolists\Contracts\HasInfolists;
 use Filament\Notifications\Notification;
@@ -29,9 +29,12 @@ use Illuminate\Support\HtmlString;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Throwable;
+use Webkul\Chatter\Filament\Actions\Chatter\ActivityAction;
 use Webkul\Chatter\Filament\Actions\Chatter\FileAction;
 use Webkul\Chatter\Filament\Actions\Chatter\FiltersAction;
 use Webkul\Chatter\Filament\Actions\Chatter\FollowerAction;
+use Webkul\Chatter\Filament\Actions\Chatter\LogAction;
+use Webkul\Chatter\Filament\Actions\Chatter\MessageAction;
 use Webkul\Chatter\Filament\Infolists\Components\Activities\ActivitiesRepeatableEntry;
 use Webkul\Chatter\Filament\Infolists\Components\Activities\ContentTextEntry as ActivityContentTextEntry;
 use Webkul\Chatter\Filament\Infolists\Components\Activities\TitleTextEntry as ActivityTitleTextEntry;
@@ -52,11 +55,23 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
 
     public string $resourceClass = '';
 
-    public mixed $followerViewMailPath = null;
+    public Collection $activityPlans;
+
+    public mixed $messageMailViewPath = null;
+
+    public mixed $followerMailViewPath = null;
+
+    public bool $isMessageActionVisible;
+
+    public bool $isLogActionVisible;
+
+    public bool $isActivityActionVisible;
+
+    public bool $isFileActionVisible;
 
     public bool $isFollowerActionVisible;
 
-    public bool $isFileActionVisible;
+    public bool $inModal;
 
     public array $filters;
 
@@ -82,23 +97,121 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
 
     public function mount(
         Model $record,
-        string $resourceClass = '',
-        string|Closure|null $followerViewMailPath = null,
-        bool $isFollowerActionVisible = true,
-        bool $isFileActionVisible = true,
+        string $resourceClass,
+        Collection $activityPlans,
         array $filters = [],
+        string|Closure|null $messageMailViewPath = null,
+        string|Closure|null $followerMailViewPath = null,
+        bool $isMessageActionVisible = true,
+        bool $isLogActionVisible = true,
+        bool $isActivityActionVisible = true,
+        bool $isFileActionVisible = true,
+        bool $isFollowerActionVisible = true,
+        bool $inModal = true,
     ): void {
         $this->record = $record;
 
-        $this->followerViewMailPath = $followerViewMailPath;
-
         $this->resourceClass = $resourceClass;
 
-        $this->isFollowerActionVisible = $isFollowerActionVisible;
+        $this->activityPlans = $this->normalizeActivityPlans($activityPlans);
+
+        $this->filters = $filters;
+
+        $this->messageMailViewPath = $messageMailViewPath;
+
+        $this->followerMailViewPath = $followerMailViewPath;
+
+        $this->isMessageActionVisible = $isMessageActionVisible;
+
+        $this->isLogActionVisible = $isLogActionVisible;
+
+        $this->isActivityActionVisible = $isActivityActionVisible;
 
         $this->isFileActionVisible = $isFileActionVisible;
 
-        $this->filters = $filters;
+        $this->isFollowerActionVisible = $isFollowerActionVisible;
+
+        $this->inModal = $inModal;
+    }
+
+    public function messageAction(): MessageAction
+    {
+        return MessageAction::make('message')
+            ->visible($this->isMessageActionVisible)
+            ->setMessageMailView($this->messageMailViewPath)
+            ->setResource($this->resourceClass)
+            ->record($this->record)
+            ->size('sm')
+            ->slideOver(false);
+    }
+
+    public function logAction(): LogAction
+    {
+        return LogAction::make('log')
+            ->visible($this->isLogActionVisible)
+            ->record($this->record)
+            ->size('sm')
+            ->slideOver(false);
+    }
+
+    public function activityAction(): ActivityAction
+    {
+        return ActivityAction::make('activity')
+            ->visible($this->isActivityActionVisible)
+            ->setActivityPlans($this->activityPlans)
+            ->record($this->record)
+            ->size('sm')
+            ->slideOver(false);
+    }
+
+    public function fileAction(): FileAction
+    {
+        return FileAction::make('file')
+            ->visible($this->isFileActionVisible)
+            ->hiddenLabel()
+            ->record($this->record);
+    }
+
+    public function followerAction(): FollowerAction
+    {
+        return FollowerAction::make('follower')
+            ->visible($this->isFollowerActionVisible)
+            ->setFollowerMailView($this->followerMailViewPath)
+            ->setResource($this->resourceClass)
+            ->record($this->record);
+    }
+
+    public function removeFollower($partnerId)
+    {
+        $partner = Partner::findOrFail($partnerId);
+
+        $this->record->removeFollower($partner);
+
+        try {
+            $this->record->unsetRelation('followers');
+        } catch (Throwable $e) {
+        }
+
+        $this->dispatch('chatter.refresh');
+    }
+
+    public function filtersAction(): FiltersAction
+    {
+        return FiltersAction::make('filters')
+            ->visible(fn () => $this->tab === 'messages');
+    }
+
+    protected function normalizeActivityPlans(mixed $activityPlans): Collection
+    {
+        if ($activityPlans instanceof Collection) {
+            return $activityPlans;
+        }
+
+        if (is_array($activityPlans)) {
+            return collect($activityPlans);
+        }
+
+        return collect();
     }
 
     public function getTotalMessages(): int
@@ -202,12 +315,6 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
     public function canViewAllActivities(): bool
     {
         return true;
-    }
-
-    public function filtersAction(): FiltersAction
-    {
-        return FiltersAction::make('filters')
-            ->visible(fn () => $this->tab === 'messages');
     }
 
     private function getDateRangeLabel(): string
@@ -318,37 +425,6 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
         return $priorityB <=> $priorityA;
     }
 
-    public function fileAction(): FileAction
-    {
-        return FileAction::make('file')
-            ->visible($this->isFileActionVisible)
-            ->hiddenLabel()
-            ->record($this->record);
-    }
-
-    public function followerAction(): FollowerAction
-    {
-        return FollowerAction::make('follower')
-            ->visible($this->isFollowerActionVisible)
-            ->setFollowerMailView($this->followerViewMailPath)
-            ->setResource($this->resourceClass)
-            ->record($this->record);
-    }
-
-    public function removeFollower($partnerId)
-    {
-        $partner = Partner::findOrFail($partnerId);
-
-        $this->record->removeFollower($partner);
-
-        try {
-            $this->record->unsetRelation('followers');
-        } catch (Throwable $e) {
-        }
-
-        $this->dispatch('chatter.refresh');
-    }
-
     public function refreshMessages(): void
     {
         $this->record->refresh();
@@ -383,7 +459,7 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
                     ->label(__('chatter::livewire/chatter-panel.mark-as-done.footer-actions.label'))
                     ->modalIcon('heroicon-o-arrow-uturn-right')
                     ->action(function (array $data) use ($arguments) {
-                        $this->processMessage($arguments['id'], $data['feedback'] ?? null);
+                        $this->processMessage($arguments['id'], $this->mountedActions[0]['data']['feedback'] ?? null);
 
                         $this->replaceMountedAction('activity');
 
@@ -393,13 +469,18 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
                             ->body(__('chatter::livewire/chatter-panel.mark-as-done.footer-actions.actions.notification.mark-as-done.body'))
                             ->send();
                     })
-                    ->cancelParentActions(),
+                    ->cancelParentActions()
+                    ->after(function ($livewire) {
+                        if (method_exists($livewire, 'dispatch')) {
+                            $livewire->dispatch('chatter.refresh');
+                        }
+                    }),
                 Action::make('done')
                     ->icon('heroicon-o-check-circle')
                     ->label('Done')
                     ->modalIcon('heroicon-o-check-circle')
                     ->action(function (array $data) use ($arguments) {
-                        $this->processMessage($arguments['id'], $data['feedback'] ?? null);
+                        $this->processMessage($arguments['id'], $this->mountedActions[0]['data']['feedback'] ?? null);
 
                         Notification::make()
                             ->success()
@@ -407,7 +488,12 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
                             ->body(__('chatter::livewire/chatter-panel.mark-as-done.footer-actions.actions.notification.mark-as-done.body'))
                             ->send();
                     })
-                    ->cancelParentActions(),
+                    ->cancelParentActions()
+                    ->after(function ($livewire) {
+                        if (method_exists($livewire, 'dispatch')) {
+                            $livewire->dispatch('chatter.refresh');
+                        }
+                    }),
             ]);
     }
 
@@ -426,7 +512,7 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
                 $message->summary ? $message->summary : null,
                 $message->body ? __('chatter::livewire/chatter-panel.process-message.original-note', ['body' => $message->body]) : null,
                 $feedback ? __('chatter::livewire/chatter-panel.process-message.feedback', ['feedback' => $feedback]) : null,
-            ])->filter()->implode(''),
+            ])->filter()->implode(' '),
         ]);
 
         $message->delete();
@@ -439,8 +525,8 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
             ->modalIcon('heroicon-o-pencil-square')
             ->color('primary')
             ->label(__('chatter::livewire/chatter-panel.edit-activity.title'))
-            ->mountUsing(function (Schema $schema, $livewire) {
-                $activityId = $livewire->mountedActionsArguments[0]['id'];
+            ->mountUsing(function (Schema $schema, $arguments) {
+                $activityId = $arguments['id'] ?? null;
                 $record = Message::find($activityId);
 
                 $schema->fill([
@@ -463,6 +549,7 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
                                         ->label(__('chatter::livewire/chatter-panel.edit-activity.form.fields.activity-plan'))
                                         ->options($this->activityPlans)
                                         ->searchable()
+                                        ->hidden($this->activityPlans->isEmpty())
                                         ->preload()
                                         ->live(),
                                     DatePicker::make('date_deadline')
@@ -475,9 +562,9 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
 
                             Group::make()
                                 ->schema([
-                                    Placeholder::make('plan_summary')
+                                    TextEntry::make('plan_summary')
                                         ->label(__('chatter::livewire/chatter-panel.edit-activity.form.fields.plan-summary'))
-                                        ->content(function (Get $get) {
+                                        ->state(function (Get $get) {
                                             if (! $get('activity_plan_id')) {
                                                 return null;
                                             }
@@ -533,8 +620,8 @@ class ChatterPanel extends Component implements HasActions, HasForms, HasInfolis
                         ]),
                 ]);
             })
-            ->action(function (array $data, $livewire) {
-                $activityId = $livewire->mountedActionsArguments[0]['id'];
+            ->action(function (array $data, $arguments) {
+                $activityId = $arguments['id'] ?? null;
 
                 $record = Message::find($activityId);
 

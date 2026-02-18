@@ -5,6 +5,7 @@ namespace Webkul\Inventory\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Inventory\Database\Factories\PackageTypeFactory;
@@ -15,18 +16,8 @@ class PackageType extends Model implements Sortable
 {
     use HasFactory, SortableTrait;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_package_types';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'sort',
@@ -60,5 +51,18 @@ class PackageType extends Model implements Sortable
     protected static function newFactory(): PackageTypeFactory
     {
         return PackageTypeFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($packageType) {
+            $authUser = Auth::user();
+
+            $packageType->creator_id ??= $authUser->id;
+
+            $packageType->company_id ??= $authUser?->default_company_id;
+        });
     }
 }

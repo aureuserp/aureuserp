@@ -7,6 +7,7 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -17,26 +18,17 @@ use Webkul\Chatter\Traits\HasLogActivity;
 use Webkul\Partner\Database\Factories\PartnerFactory;
 use Webkul\Partner\Enums\AccountType;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
 use Webkul\Support\Models\State;
 
 class Partner extends Authenticatable implements FilamentUser
 {
-    use HasChatter, HasFactory, HasLogActivity, Notifiable, SoftDeletes;
+    use HasChatter, HasFactory, HasLogActivity, HasPermissionScope, Notifiable, SoftDeletes;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'partners_partners';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'account_type',
         'sub_type',
@@ -65,29 +57,26 @@ class Partner extends Authenticatable implements FilamentUser
         'industry_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'account_type' => AccountType::class,
         'is_active'    => 'boolean',
     ];
 
-    /**
-     * Determine if the user can access the Filament panel.
-     */
+    public function getModelTitle(): string
+    {
+        return 'Partner';
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         return true;
     }
 
-    /**
-     * Get image url for the product image.
-     *
-     * @return string
-     */
+    protected function getOwnerColumn(): string
+    {
+        return 'creator_id';
+    }
+
     public function getAvatarUrlAttribute()
     {
         if (! $this->avatar) {
@@ -151,7 +140,7 @@ class Partner extends Authenticatable implements FilamentUser
 
     public function bankAccounts(): HasMany
     {
-        return $this->hasMany(BankAccount::class);
+        return $this->hasMany(BankAccount::class, 'partner_id');
     }
 
     public function tags(): BelongsToMany
@@ -162,5 +151,14 @@ class Partner extends Authenticatable implements FilamentUser
     protected static function newFactory(): PartnerFactory
     {
         return PartnerFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($partner) {
+            $partner->creator_id ??= Auth::id();
+        });
     }
 }

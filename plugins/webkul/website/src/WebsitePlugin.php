@@ -8,8 +8,9 @@ use Filament\Navigation\NavigationItem;
 use Filament\Panel;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Collection;
-use ReflectionClass;
-use Webkul\Support\Package;
+use Webkul\PluginManager\Package;
+use Filament\Facades\Filament;
+use Webkul\Website\Filament\Admin\Clusters\Settings\Pages\ManageContacts;
 use Webkul\Website\Filament\Customer\Auth\Login;
 use Webkul\Website\Filament\Customer\Auth\PasswordReset\RequestPasswordReset;
 use Webkul\Website\Filament\Customer\Auth\PasswordReset\ResetPassword;
@@ -43,10 +44,22 @@ class WebsitePlugin implements Plugin
                     ->login(Login::class)
                     ->registration(Register::class)
                     ->passwordReset(RequestPasswordReset::class, ResetPassword::class)
-                    ->discoverResources(in: $this->getPluginBasePath('/Filament/Customer/Resources'), for: 'Webkul\\Website\\Filament\\Customer\\Resources')
-                    ->discoverPages(in: $this->getPluginBasePath('/Filament/Customer/Pages'), for: 'Webkul\\Website\\Filament\\Customer\\Pages')
-                    ->discoverClusters(in: $this->getPluginBasePath('/Filament/Customer/Clusters'), for: 'Webkul\\Website\\Filament\\Customer\\Clusters')
-                    ->discoverClusters(in: $this->getPluginBasePath('/Filament/Customer/Widgets'), for: 'Webkul\\Website\\Filament\\Customer\\Widgets')
+                    ->discoverResources(
+                        in: __DIR__.'/Filament/Customer/Resources',
+                        for: 'Webkul\\Website\\Filament\\Customer\\Resources'
+                    )
+                    ->discoverPages(
+                        in: __DIR__.'/Filament/Customer/Pages',
+                        for: 'Webkul\\Website\\Filament\\Customer\\Pages'
+                    )
+                    ->discoverClusters(
+                        in: __DIR__.'/Filament/Customer/Clusters',
+                        for: 'Webkul\\Website\\Filament\\Customer\\Clusters'
+                    )
+                    ->discoverClusters(
+                        in: __DIR__.'/Filament/Customer/Widgets',
+                        for: 'Webkul\\Website\\Filament\\Customer\\Widgets'
+                    )
                     ->userMenuItems([
                         'my_account' => Action::make('my_account')->label(fn () => __('website::filament/app.navigation.account.label'))
                             ->url(fn (): string => Account::getUrl())
@@ -71,10 +84,30 @@ class WebsitePlugin implements Plugin
             })
             ->when($panel->getId() == 'admin', function (Panel $panel) {
                 $panel
-                    ->discoverResources(in: $this->getPluginBasePath('/Filament/Admin/Resources'), for: 'Webkul\\Website\\Filament\\Admin\\Resources')
-                    ->discoverPages(in: $this->getPluginBasePath('/Filament/Admin/Pages'), for: 'Webkul\\Website\\Filament\\Admin\\Pages')
-                    ->discoverClusters(in: $this->getPluginBasePath('/Filament/Admin/Clusters'), for: 'Webkul\\Website\\Filament\\Admin\\Clusters')
-                    ->discoverClusters(in: $this->getPluginBasePath('/Filament/Admin/Widgets'), for: 'Webkul\\Website\\Filament\\Admin\\Widgets');
+                    ->discoverResources(
+                        in: __DIR__.'/Filament/Admin/Resources',
+                        for: 'Webkul\\Website\\Filament\\Admin\\Resources'
+                    )
+                    ->discoverPages(
+                        in: __DIR__.'/Filament/Admin/Pages',
+                        for: 'Webkul\\Website\\Filament\\Admin\\Pages'
+                    )
+                    ->discoverClusters(
+                        in: __DIR__.'/Filament/Admin/Clusters',
+                        for: 'Webkul\\Website\\Filament\\Admin\\Clusters'
+                    )
+                    ->discoverClusters(
+                        in: __DIR__.'/Filament/Admin/Widgets',
+                        for: 'Webkul\\Website\\Filament\\Admin\\Widgets'
+                    )
+                    ->navigationItems([
+                        NavigationItem::make('settings')
+                            ->label(fn () => __('website::filament/app.navigation.settings.label'))
+                            ->url(fn () => ManageContacts::getUrl())
+                            ->group(fn () => __('website::filament/app.navigation.settings.group'))
+                            ->sort(5)
+                            ->visible(fn () => ManageContacts::canAccess()),
+                    ]);
             });
     }
 
@@ -83,24 +116,17 @@ class WebsitePlugin implements Plugin
         //
     }
 
-    protected function getPluginBasePath($path = null): string
-    {
-        $reflector = new ReflectionClass(get_class($this));
-
-        return dirname($reflector->getFileName()).($path ?? '');
-    }
-
     protected function getTopNavigationItems(): Collection
     {
         return new Collection([
             NavigationItem::make('Login')
                 ->label(fn () => __('website::filament/app.navigation.top.login'))
                 ->url(filament()->getLoginUrl())
-                ->visible(! filament()->auth()->check()),
+                ->visible(! Filament::auth()->check()),
             NavigationItem::make('Register')
                 ->label(fn () => __('website::filament/app.navigation.top.register'))
                 ->url(filament()->getRegistrationUrl())
-                ->visible(! filament()->auth()->check()),
+                ->visible(! Filament::auth()->check()),
         ]);
     }
 

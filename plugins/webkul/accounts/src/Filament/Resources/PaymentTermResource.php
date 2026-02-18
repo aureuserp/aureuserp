@@ -2,6 +2,7 @@
 
 namespace Webkul\Account\Filament\Resources;
 
+use Carbon\Carbon;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -25,12 +26,18 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\HtmlString;
+use Webkul\Account\Enums\DelayType;
+use Webkul\Account\Enums\DueTermValue;
 use Webkul\Account\Enums\EarlyPayDiscount;
 use Webkul\Account\Filament\Resources\PaymentTermResource\Pages\CreatePaymentTerm;
 use Webkul\Account\Filament\Resources\PaymentTermResource\Pages\EditPaymentTerm;
@@ -39,6 +46,10 @@ use Webkul\Account\Filament\Resources\PaymentTermResource\Pages\ManagePaymentDue
 use Webkul\Account\Filament\Resources\PaymentTermResource\Pages\ViewPaymentTerm;
 use Webkul\Account\Filament\Resources\PaymentTermResource\RelationManagers\PaymentDueTermRelationManager;
 use Webkul\Account\Models\PaymentTerm;
+use Webkul\Support\Filament\Forms\Components\Repeater;
+use Webkul\Support\Filament\Forms\Components\Repeater\TableColumn;
+use Webkul\Support\Filament\Infolists\Components\RepeatableEntry;
+use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn as InfolistTableColumn;
 
 class PaymentTermResource extends Resource
 {
@@ -46,9 +57,13 @@ class PaymentTermResource extends Resource
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-currency-dollar';
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
+    protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Start;
 
     protected static bool $shouldRegisterNavigation = false;
+
+    protected static bool $isGloballySearchable = false;
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema
     {
@@ -66,6 +81,7 @@ class PaymentTermResource extends Resource
                                     ->columnSpan(1),
                             ])->columns(2),
                         Group::make()
+                            ->hidden()
                             ->schema([
                                 Toggle::make('early_discount')
                                     ->live()
@@ -100,6 +116,126 @@ class PaymentTermResource extends Resource
                             ])->columns(2),
                         RichEditor::make('note')
                             ->label(__('accounts::filament/resources/payment-term.form.sections.fields.note')),
+                    ]),
+                Tabs::make()
+                    ->schema([
+                        Tab::make(__('accounts::filament/resources/payment-term.form.tabs.due-terms.title'))
+                            ->icon('heroicon-o-list-bullet')
+                            ->schema([
+                                Group::make()
+                                    ->schema([
+                                        // LEFT COLUMN: Repeater
+                                        Repeater::make('dueTerms')
+                                            ->hiddenLabel()
+                                            ->relationship('dueTerms')
+                                            ->compact()
+                                            ->reactive()
+                                            ->addActionLabel(__('Add Due Term'))
+                                            ->table([
+                                                TableColumn::make('value')
+                                                    ->label(__('accounts::filament/resources/payment-term.form.tabs.due-terms.repeater.due-terms.fields.value'))
+                                                    ->width(150),
+                                                TableColumn::make('value_amount')
+                                                    ->label(__('accounts::filament/resources/payment-term.form.tabs.due-terms.repeater.due-terms.fields.due'))
+                                                    ->width(100),
+                                                TableColumn::make('delay_type')
+                                                    ->label(__('accounts::filament/resources/payment-term.form.tabs.due-terms.repeater.due-terms.fields.delay-type'))
+                                                    ->width(150),
+                                                TableColumn::make('days_next_month')
+                                                    ->label(__('accounts::filament/resources/payment-term.form.tabs.due-terms.repeater.due-terms.fields.days-on-the-next-month'))
+                                                    ->width(100)
+                                                    ->toggleable(isToggledHiddenByDefault: true),
+                                                TableColumn::make('nb_days')
+                                                    ->label(__('accounts::filament/resources/payment-term.form.tabs.due-terms.repeater.due-terms.fields.days'))
+                                                    ->width(80),
+                                            ])
+                                            ->schema([
+                                                Select::make('value')
+                                                    ->options(DueTermValue::class)
+                                                    ->native(false)
+                                                    ->required(),
+
+                                                TextInput::make('value_amount')
+                                                    ->numeric()
+                                                    ->required()
+                                                    ->default(0)
+                                                    ->minValue(0)
+                                                    ->maxValue(100),
+
+                                                Select::make('delay_type')
+                                                    ->options(DelayType::class)
+                                                    ->native(false)
+                                                    ->required(),
+
+                                                TextInput::make('days_next_month')
+                                                    ->default(10)
+                                                    ->numeric(),
+
+                                                TextInput::make('nb_days')
+                                                    ->default(0)
+                                                    ->numeric(),
+                                            ])->columnSpan(1), // LEFT COLUMN
+
+                                        // RIGHT COLUMN: Preview & toggle
+                                        Group::make()
+                                            ->schema([
+                                                TextEntry::make('payment_term_preview')
+                                                    ->state(function (Get $get) {
+                                                        $dueTerms = $get('dueTerms') ?? [];
+                                                        $total = 1000;
+                                                        $start = Carbon::now();
+
+                                                        $html = '';
+                                                        $html .= '<div style="margin-bottom:0.75rem;font-size:0.9rem;color:#6b7280;">Example: '.number_format($total, 2).' on '.$start->format('m/d/Y').'</div>';
+
+                                                        if (empty($dueTerms)) {
+                                                            $html .= '<div style="padding:1rem;background:#f3f4f6;border-radius:4px;color:#374151;">'.__('No due terms defined to preview').'</div>';
+
+                                                            return new HtmlString($html);
+                                                        }
+
+                                                        // compute whether values are percentages (sum <= 100) or absolute
+                                                        $sum = 0;
+                                                        foreach ($dueTerms as $dt) {
+                                                            $sum += isset($dt['value_amount']) ? floatval($dt['value_amount']) : 0;
+                                                        }
+
+                                                        $isPercent = $sum <= 100 && $sum > 0;
+
+                                                        $html .= '<div class="rounded-md bg-gray-100 p-4 text-gray-800 dark:bg-gray-800 dark:text-white">';
+
+                                                        $html .= '<div style="margin-bottom:0.5rem;font-weight:600;">Payment terms preview</div>';
+
+                                                        $i = 1;
+                                                        foreach ($dueTerms as $term) {
+                                                            $valueAmount = isset($term['value_amount']) ? floatval($term['value_amount']) : 0;
+                                                            if ($isPercent) {
+                                                                $amt = round($total * ($valueAmount / 100), 2);
+                                                            } else {
+                                                                $amt = round($valueAmount, 2);
+                                                            }
+
+                                                            $days = 0;
+                                                            if (isset($term['nb_days']) && intval($term['nb_days']) >= 0) {
+                                                                $days = intval($term['nb_days']);
+                                                            } elseif (isset($term['days_next_month']) && intval($term['days_next_month']) > 0) {
+                                                                $days = intval($term['days_next_month']);
+                                                            }
+
+                                                            $dueDate = $start->copy()->addDays($days)->format('m/d/Y');
+
+                                                            $html .= '<div style="margin-bottom:0.5rem;"><strong>'.$i.'#</strong> Installment of <strong>$'.number_format($amt, 2).'</strong> due on '.$dueDate.'</div>';
+                                                            $i++;
+                                                        }
+
+                                                        $html .= '</div>';
+
+                                                        return new HtmlString($html);
+                                                    }),
+                                            ])->columnSpan(1), // RIGHT COLUMN
+                                    ])
+                                    ->columns(2),
+                            ]),
                     ]),
             ])->columns(1);
     }
@@ -169,11 +305,28 @@ class PaymentTermResource extends Resource
                             ->body(__('accounts::filament/resources/payment-term.table.actions.delete.notification.body'))
                     ),
                 ForceDeleteAction::make()
+                    ->action(function (PaymentTerm $record, ForceDeleteAction $action) {
+                        if ($record->moves()->count() > 0) {
+                            $action->failure();
+
+                            return;
+                        }
+
+                        $record->forceDelete();
+
+                        $action->success();
+                    })
+                    ->failureNotification(
+                        Notification::make()
+                            ->danger()
+                            ->title(__('accounts::filament/resources/payment-term.table.actions.force-delete.notification.error.title'))
+                            ->body(__('accounts::filament/resources/payment-term.table.actions.force-delete.notification.error.body'))
+                    )
                     ->successNotification(
                         Notification::make()
                             ->success()
-                            ->title(__('accounts::filament/resources/payment-term.table.actions.force-delete.notification.title'))
-                            ->body(__('accounts::filament/resources/payment-term.table.actions.force-delete.notification.body'))
+                            ->title(__('accounts::filament/resources/payment-term.table.actions.force-delete.notification.success.title'))
+                            ->body(__('accounts::filament/resources/payment-term.table.actions.force-delete.notification.success.body'))
                     ),
             ])
             ->toolbarActions([
@@ -186,11 +339,32 @@ class PaymentTermResource extends Resource
                                 ->body(__('accounts::filament/resources/payment-term.table.bulk-actions.delete.notification.body'))
                         ),
                     ForceDeleteBulkAction::make()
+                        ->action(function (Collection $records, ForceDeleteBulkAction $action) {
+                            $hasMoves = $records->contains(function ($record) {
+                                return $record->moves()->exists();
+                            });
+
+                            if ($hasMoves) {
+                                $action->failure();
+
+                                return;
+                            }
+
+                            $records->each(fn (Model $record) => $record->forceDelete());
+
+                            $action->success();
+                        })
+                        ->failureNotification(
+                            Notification::make()
+                                ->danger()
+                                ->title(__('accounts::filament/resources/payment-term.table.bulk-actions.force-delete.notification.error.title'))
+                                ->body(__('accounts::filament/resources/payment-term.table.bulk-actions.force-delete.notification.error.body'))
+                        )
                         ->successNotification(
                             Notification::make()
                                 ->success()
-                                ->title(__('accounts::filament/resources/payment-term.table.bulk-actions.force-delete.notification.title'))
-                                ->body(__('accounts::filament/resources/payment-term.table.bulk-actions.force-delete.notification.body'))
+                                ->title(__('accounts::filament/resources/payment-term.table.bulk-actions.force-delete.notification.success.title'))
+                                ->body(__('accounts::filament/resources/payment-term.table.bulk-actions.force-delete.notification.success.body'))
                         ),
                     RestoreBulkAction::make()
                         ->successNotification(
@@ -200,7 +374,8 @@ class PaymentTermResource extends Resource
                                 ->body(__('accounts::filament/resources/payment-term.table.bulk-actions.force-restore.notification.body'))
                         ),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function infolist(Schema $schema): Schema
@@ -216,9 +391,11 @@ class PaymentTermResource extends Resource
                                     ->icon('heroicon-o-briefcase')
                                     ->placeholder('—'),
                                 IconEntry::make('early_discount')
+                                    ->hidden()
                                     ->label(__('accounts::filament/resources/payment-term.infolist.sections.entries.early-discount'))
                                     ->boolean(),
                                 Group::make()
+                                    ->visible(fn (Get $get) => $get('early_discount'))
                                     ->schema([
                                         TextEntry::make('discount_percentage')
                                             ->suffix('%')
@@ -231,6 +408,7 @@ class PaymentTermResource extends Resource
                                             ->placeholder('—'),
                                     ])->columns(2),
                                 TextEntry::make('early_pay_discount')
+                                    ->visible(fn (Get $get) => $get('early_discount'))
                                     ->label(__('accounts::filament/resources/payment-term.infolist.sections.entries.reduced-tax'))
                                     ->placeholder('—'),
                                 TextEntry::make('note')
@@ -238,6 +416,108 @@ class PaymentTermResource extends Resource
                                     ->columnSpanFull()
                                     ->formatStateUsing(fn ($state) => new HtmlString($state))
                                     ->placeholder('—'),
+                            ]),
+                    ]),
+                Tabs::make()
+                    ->tabs([
+                        Tab::make(__('accounts::filament/resources/payment-term.infolist.tabs.due-terms.title'))
+                            ->icon('heroicon-o-list-bullet')
+                            ->schema([
+                                RepeatableEntry::make('dueTerms')
+                                    ->hiddenLabel()
+                                    ->live()
+                                    ->table([
+                                        InfolistTableColumn::make('value')
+                                            ->alignCenter()
+                                            ->label(__('accounts::filament/resources/payment-term.infolist.tabs.due-terms.repeater.due-terms.entries.value')),
+
+                                        InfolistTableColumn::make('value_amount')
+                                            ->alignCenter()
+                                            ->label(__('accounts::filament/resources/payment-term.infolist.tabs.due-terms.repeater.due-terms.entries.due')),
+
+                                        InfolistTableColumn::make('delay_type')
+                                            ->alignCenter()
+                                            ->label(__('accounts::filament/resources/payment-term.infolist.tabs.due-terms.repeater.due-terms.entries.delay-type')),
+
+                                        InfolistTableColumn::make('days_next_month')
+                                            ->alignCenter()
+                                            ->label(__('accounts::filament/resources/payment-term.infolist.tabs.due-terms.repeater.due-terms.entries.days-on-the-next-month')),
+
+                                        InfolistTableColumn::make('nb_days')
+                                            ->alignCenter()
+                                            ->label(__('accounts::filament/resources/payment-term.infolist.tabs.due-terms.repeater.due-terms.entries.days')),
+                                    ])
+                                    ->schema([
+                                        TextEntry::make('value')
+                                            ->placeholder('-')
+                                            ->formatStateUsing(fn ($state) => DueTermValue::options()[$state] ?? $state),
+
+                                        TextEntry::make('value_amount')
+                                            ->placeholder('-'),
+
+                                        TextEntry::make('delay_type')
+                                            ->placeholder('-')
+                                            ->formatStateUsing(fn ($state) => DelayType::options()[$state] ?? $state),
+
+                                        TextEntry::make('days_next_month')
+                                            ->placeholder('-'),
+
+                                        TextEntry::make('nb_days')
+                                            ->placeholder('-'),
+                                    ]),
+                                TextEntry::make('payment_term_preview')
+                                    ->state(function (Get $get) {
+                                        $dueTerms = $get('dueTerms') ?? [];
+                                        $total = 1000;
+                                        $start = Carbon::now();
+
+                                        $html = '';
+                                        $html .= '<div style="margin-bottom:0.75rem;font-size:0.9rem;color:#6b7280;">Example: '.number_format($total, 2).' on '.$start->format('m/d/Y').'</div>';
+
+                                        if (empty($dueTerms)) {
+                                            $html .= '<div style="padding:1rem;background:#f3f4f6;border-radius:4px;color:#374151;">'.__('No due terms defined to preview').'</div>';
+
+                                            return new HtmlString($html);
+                                        }
+
+                                        // compute whether values are percentages (sum <= 100) or absolute
+                                        $sum = 0;
+                                        foreach ($dueTerms as $dt) {
+                                            $sum += isset($dt['value_amount']) ? floatval($dt['value_amount']) : 0;
+                                        }
+
+                                        $isPercent = $sum <= 100 && $sum > 0;
+
+                                        $html .= '<div class="rounded-md bg-gray-100 p-4 text-gray-800 dark:bg-gray-800 dark:text-white">';
+
+                                        $html .= '<div style="margin-bottom:0.5rem;font-weight:600;">Payment terms preview</div>';
+
+                                        $i = 1;
+                                        foreach ($dueTerms as $term) {
+                                            $valueAmount = isset($term['value_amount']) ? floatval($term['value_amount']) : 0;
+                                            if ($isPercent) {
+                                                $amt = round($total * ($valueAmount / 100), 2);
+                                            } else {
+                                                $amt = round($valueAmount, 2);
+                                            }
+
+                                            $days = 0;
+                                            if (isset($term['nb_days']) && intval($term['nb_days']) >= 0) {
+                                                $days = intval($term['nb_days']);
+                                            } elseif (isset($term['days_next_month']) && intval($term['days_next_month']) > 0) {
+                                                $days = intval($term['days_next_month']);
+                                            }
+
+                                            $dueDate = $start->copy()->addDays($days)->format('m/d/Y');
+
+                                            $html .= '<div style="margin-bottom:0.5rem;"><strong>'.$i.'#</strong> Installment of <strong>$'.number_format($amt, 2).'</strong> due on '.$dueDate.'</div>';
+                                            $i++;
+                                        }
+
+                                        $html .= '</div>';
+
+                                        return new HtmlString($html);
+                                    }),
                             ]),
                     ]),
             ])->columns(1);
@@ -252,17 +532,17 @@ class PaymentTermResource extends Resource
         ]);
     }
 
-    public static function getRelations(): array
-    {
-        $relations = [
-            RelationGroup::make('due_terms', [
-                PaymentDueTermRelationManager::class,
-            ])
-                ->icon('heroicon-o-banknotes'),
-        ];
+    // public static function getRelations(): array
+    // {
+    //     $relations = [
+    //         RelationGroup::make('due_terms', [
+    //             PaymentDueTermRelationManager::class,
+    //         ])
+    //             ->icon('heroicon-o-banknotes'),
+    //     ];
 
-        return $relations;
-    }
+    //     return $relations;
+    // }
 
     public static function getPages(): array
     {

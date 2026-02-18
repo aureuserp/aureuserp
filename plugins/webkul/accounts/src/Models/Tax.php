@@ -2,13 +2,19 @@
 
 namespace Webkul\Account\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Webkul\Account\Database\Factories\TaxFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
+use Webkul\Account\Enums\AmountType;
 use Webkul\Account\Enums\DocumentType;
-use Webkul\Account\Enums\RepartitionType;
+use Webkul\Account\Enums\TaxIncludeOverride;
+use Webkul\Account\Enums\TypeTaxUse;
+use Webkul\Account\Settings\TaxesSettings;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Country;
@@ -42,6 +48,12 @@ class Tax extends Model implements Sortable
         'analytic',
     ];
 
+    protected $casts = [
+        'amount_type'            => AmountType::class,
+        'type_tax_use'           => TypeTaxUse::class,
+        'price_include_override' => TaxIncludeOverride::class,
+    ];
+
     public $sortable = [
         'order_column_name'  => 'sort',
         'sort_when_creating' => true,
@@ -67,19 +79,77 @@ class Tax extends Model implements Sortable
         return $this->belongsTo(Country::class, 'country_id');
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
 
-    public function distributionForInvoice()
+    public function childrenTaxes()
     {
-        return $this->hasMany(TaxPartition::class, 'tax_id');
+        return $this->belongsToMany(self::class, 'accounts_tax_taxes', 'parent_tax_id', 'child_tax_id');
     }
 
-    public function distributionForRefund()
+    public function invoiceRepartitionLines()
     {
-        return $this->hasMany(TaxPartition::class, 'tax_id');
+        return $this->hasMany(TaxPartition::class, 'tax_id')
+            ->where('document_type', DocumentType::INVOICE);
+    }
+
+    public function refundRepartitionLines()
+    {
+        return $this->hasMany(TaxPartition::class, 'tax_id')
+            ->where('document_type', DocumentType::REFUND);
+    }
+
+    public function getPriceIncludeAttribute()
+    {
+        return $this->price_include_override == TaxIncludeOverride::TAX_INCLUDED
+            || (new TaxesSettings)->account_price_include == TaxIncludeOverride::TAX_INCLUDED && ! $this->price_include_override;
+    }
+
+    public function evalTaxAmountFixedAmount($batch, $rawBase, $evaluationContext)
+    {
+        if ($this->amount_type === AmountType::FIXED) {
+            return $evaluationContext['quantity'] + $this->amount;
+        }
+    }
+
+    public function evalTaxAmountPriceIncluded($batch, $rawBase, $evaluationContext)
+    {
+        if ($this->amount_type === AmountType::PERCENT) {
+            $totalPercentage = array_sum(array_map(function ($tax) {
+                return $tax->amount;
+            }, $batch)) / 100.0;
+
+            $toPriceExcludedFactor = ($totalPercentage != -1)
+                ? 1 / (1 + $totalPercentage)
+                : 0.0;
+
+            return $rawBase * $toPriceExcludedFactor * $this->amount / 100.0;
+        }
+
+        if ($this->amount_type === AmountType::DIVISION) {
+            return $rawBase * $this->amount / 100.0;
+        }
+    }
+
+    public function evalTaxAmountPriceExcluded($batch, $rawBase, $evaluationContext)
+    {
+        if ($this->amount_type === AmountType::PERCENT) {
+            return $rawBase * $this->amount / 100.0;
+        }
+
+        if ($this->amount_type === AmountType::DIVISION) {
+            $totalPercentage = array_sum(array_map(function ($tax) {
+                return $tax->amount;
+            }, $batch)) / 100.0;
+
+            $inclBaseMultiplicator = ($totalPercentage == 1.0)
+                ? 1.0
+                : 1 - $totalPercentage;
+
+            return $rawBase * $this->amount / 100.0 / $inclBaseMultiplicator;
+        }
     }
 
     public function parentTaxes()
@@ -91,77 +161,23 @@ class Tax extends Model implements Sortable
     {
         parent::boot();
 
-        static::created(function (self $tax) {
-            $tax->attachDistributionForInvoice($tax);
-            $tax->attachDistributionForRefund($tax);
+        static::creating(function ($tax) {
+            $tax->creator_id ??= Auth::id();
+        });
+
+        static::saved(function (self $tax) {
+            try {
+                if ($tax->invoiceRepartitionLines()->exists() && $tax->refundRepartitionLines()->exists()) {
+                    TaxPartition::validateRepartitionLines($tax->id);
+                }
+            } catch (Exception $e) {
+                throw $e;
+            }
         });
     }
 
-    private function attachDistributionForInvoice(self $tax)
+    protected static function newFactory(): TaxFactory
     {
-        $distributionForInvoices = [
-            [
-                'tax_id'             => $tax->id,
-                'company_id'         => $tax->company_id,
-                'sort'               => 1,
-                'creator_id'         => $tax->creator_id,
-                'repartition_type'   => RepartitionType::BASE->value,
-                'document_type'      => DocumentType::INVOICE->value,
-                'use_in_tax_closing' => false,
-                'factor_percent'     => null,
-                'factor'             => null,
-                'created_at'         => now(),
-                'updated_at'         => now(),
-            ],
-            [
-                'tax_id'             => $tax->id,
-                'company_id'         => $tax->company_id,
-                'sort'               => 1,
-                'creator_id'         => $tax->creator_id,
-                'repartition_type'   => RepartitionType::TAX->value,
-                'document_type'      => DocumentType::INVOICE->value,
-                'use_in_tax_closing' => false,
-                'factor_percent'     => 100,
-                'factor'             => 1,
-                'created_at'         => now(),
-                'updated_at'         => now(),
-            ],
-        ];
-
-        DB::table('accounts_tax_partition_lines')->insert($distributionForInvoices);
-    }
-
-    private function attachDistributionForRefund(self $tax)
-    {
-        $distributionForRefunds = [
-            [
-                'tax_id'             => $tax->id,
-                'company_id'         => $tax->company_id,
-                'sort'               => 1,
-                'creator_id'         => $tax->creator_id,
-                'repartition_type'   => RepartitionType::BASE->value,
-                'document_type'      => DocumentType::REFUND->value,
-                'use_in_tax_closing' => false,
-                'factor_percent'     => null,
-                'factor'             => null,
-                'created_at'         => now(),
-                'updated_at'         => now(),
-            ],
-            [
-                'tax_id'             => $tax->id,
-                'company_id'         => $tax->company_id,
-                'sort'               => 1,
-                'creator_id'         => $tax->creator_id,
-                'repartition_type'   => RepartitionType::TAX->value,
-                'document_type'      => DocumentType::REFUND->value,
-                'use_in_tax_closing' => false,
-                'factor_percent'     => 100,
-                'factor'             => 1,
-                'created_at'         => now(),
-                'updated_at'         => now(),
-            ],
-        ];
-
-        DB::table('accounts_tax_partition_lines')->insert($distributionForRefunds);
+        return TaxFactory::new();
     }
 }

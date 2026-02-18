@@ -11,25 +11,27 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "awcodes/filament-badgeable-column": "^3.0",
         "barryvdh/laravel-debugbar": "^3.15",
         "barryvdh/laravel-dompdf": "^3.1",
         "bezhansalleh/filament-language-switch": "^4.0",
         "bezhansalleh/filament-shield": "^4.0",
-        "filament/filament": "^4.1",
+        "filament/filament": "^4.0",
         "filament/spatie-laravel-settings-plugin": "^4.0",
         "flowframe/laravel-trend": "^0.3.0",
         "guava/filament-icon-picker": "^3.0",
-        "hugomyb/filament-media-action": "^4.0",
+        "knuckleswtf/scribe": "^5.6",
         "laravel/framework": "^11.9",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
+        "maatwebsite/excel": "^3.1",
+        "malzariey/filament-daterangepicker-filter": "^4.0",
         "milon/barcode": "^11.0",
         "spatie/eloquent-sortable": "^4.4",
+        "spatie/laravel-query-builder": "^6.4",
         "wikimedia/composer-merge-plugin": "^2.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
-        "filament/upgrade": "^4.0",
         "laravel/boost": "^1.1",
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",
@@ -92,7 +94,7 @@
             "wikimedia/composer-merge-plugin": true
         }
     },
-    "minimum-stability": "beta",
+    "minimum-stability": "stable",
     "prefer-stable": true,
     "support": {
         "issues": "https://github.com/aureuserp/aureuserp/issues",

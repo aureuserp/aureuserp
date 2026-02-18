@@ -3,6 +3,7 @@
 namespace Webkul\Website\Filament\Customer\Clusters;
 
 use Filament\Clusters\Cluster;
+use Filament\Facades\Filament;
 
 class Account extends Cluster
 {
@@ -16,14 +17,14 @@ class Account extends Cluster
     // public static function canAccess(): bool
     // {
     //     return false;
-    //     return filament()->auth()->check();
+    //     return Filament::auth()->check();
     // }
 
     public static function canAccessClusteredComponents(): bool
     {
         return false;
 
-        return filament()->auth()->check();
+        return Filament::auth()->check();
     }
 
     public static function shouldRegisterNavigation(): bool

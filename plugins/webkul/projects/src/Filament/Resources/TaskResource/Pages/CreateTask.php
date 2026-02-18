@@ -4,7 +4,6 @@ namespace Webkul\Project\Filament\Resources\TaskResource\Pages;
 
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Project\Filament\Resources\TaskResource;
 
 class CreateTask extends CreateRecord
@@ -22,12 +21,5 @@ class CreateTask extends CreateRecord
             ->success()
             ->title(__('projects::filament/resources/task/pages/create-task.notification.title'))
             ->body(__('projects::filament/resources/task/pages/create-task.notification.body'));
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['creator_id'] = Auth::id();
-
-        return $data;
     }
 }

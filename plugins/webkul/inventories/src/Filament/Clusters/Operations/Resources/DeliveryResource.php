@@ -2,6 +2,7 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Operations\Resources;
 
+use BackedEnum;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -30,9 +31,11 @@ class DeliveryResource extends Resource
 {
     protected static ?string $model = Delivery::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-truck';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-truck';
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    protected static bool $isGloballySearchable = true;
 
     protected static ?int $navigationSort = 3;
 
@@ -51,6 +54,26 @@ class DeliveryResource extends Resource
     public static function getNavigationGroup(): string
     {
         return __('inventories::filament/clusters/operations/resources/delivery.navigation.group');
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'partner.name', 'origin'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('inventories::filament/clusters/operations/resources/delivery.global-search.partner') => $record->partner?->name ?? '—',
+            __('inventories::filament/clusters/operations/resources/delivery.global-search.origin')  => $record->origin ?? '—',
+        ];
+    }
+
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return parent::getGlobalSearchEloquentQuery()->whereHas('operationType', function (Builder $query) {
+            $query->where('type', OperationType::OUTGOING);
+        });
     }
 
     public static function form(Schema $schema): Schema

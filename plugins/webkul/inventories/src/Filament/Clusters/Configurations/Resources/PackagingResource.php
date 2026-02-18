@@ -14,10 +14,10 @@ use Webkul\Inventory\Filament\Clusters\Configurations;
 use Webkul\Inventory\Filament\Clusters\Configurations\Resources\PackagingResource\Pages\ManagePackagings;
 use Webkul\Inventory\Models\Packaging;
 use Webkul\Inventory\Settings\OperationSettings;
-use Webkul\Inventory\Settings\ProductSettings;
 use Webkul\Inventory\Settings\WarehouseSettings;
 use Webkul\Product\Enums\ProductType;
 use Webkul\Product\Filament\Resources\PackagingResource as BasePackagingResource;
+use Webkul\Product\Settings\ProductSettings;
 
 class PackagingResource extends BasePackagingResource
 {
@@ -157,17 +157,17 @@ class PackagingResource extends BasePackagingResource
         return $schema;
     }
 
-    static public function getOperationSettings(): OperationSettings
+    public static function getOperationSettings(): OperationSettings
     {
         return once(fn () => app(OperationSettings::class));
     }
 
-    static public function getProductSettings(): ProductSettings
+    public static function getProductSettings(): ProductSettings
     {
         return once(fn () => app(ProductSettings::class));
     }
 
-    static public function getWarehouseSettings(): WarehouseSettings
+    public static function getWarehouseSettings(): WarehouseSettings
     {
         return once(fn () => app(WarehouseSettings::class));
     }

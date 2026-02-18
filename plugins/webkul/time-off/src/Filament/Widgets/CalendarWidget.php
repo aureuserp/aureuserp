@@ -25,10 +25,15 @@ use Webkul\TimeOff\Traits\TimeOffHelper;
 
 class CalendarWidget extends FullCalendarWidget
 {
+    use HasWidgetShield;
     use TimeOffHelper;
 
-     use HasWidgetShield;
     public Model|string|null $model = Leave::class;
+
+    protected static function getPagePermission(): ?string
+    {
+        return 'widget_time_off_calendar_widget';
+    }
 
     public function getHeading(): string|Htmlable|null
     {
@@ -43,6 +48,12 @@ class CalendarWidget extends FullCalendarWidget
                 'left'   => 'prev,next today',
                 'center' => 'title',
                 'right'  => 'dayGridMonth,timeGridWeek,listWeek',
+            ],
+            'buttonText' => [
+                'today'        => __('time-off::filament/widgets/calendar-widget.config.button-text.today'),
+                'dayGridMonth' => __('time-off::filament/widgets/calendar-widget.config.button-text.month'),
+                'timeGridWeek' => __('time-off::filament/widgets/calendar-widget.config.button-text.week'),
+                'listWeek'     => __('time-off::filament/widgets/calendar-widget.config.button-text.list'),
             ],
             'height'           => 'auto',
             'aspectRatio'      => 1.8,

@@ -184,4 +184,45 @@ class Repeater extends BaseRepeater
     {
         return false;
     }
+
+    public function getSummaryForColumn(string $columnName): ?string
+    {
+        $column = collect($this->getTableColumns())
+            ->first(fn (TableColumn $col) => $col->getName() === $columnName);
+
+        if (
+            ! $column
+            || ! $column->hasSummarizer()
+        ) {
+            return null;
+        }
+
+        $summarizer = $column->getSummarizer();
+
+        $items = collect($this->getState() ?? []);
+
+        if ($items->isEmpty()) {
+            return null;
+        }
+
+        $value = $summarizer->summarize($items, $columnName);
+
+        if (is_null($value)) {
+            return null;
+        }
+
+        if ($summarizer->isNumeric() && is_numeric($value)) {
+            $value = number_format($value, 2);
+        }
+
+        $label = $summarizer->getLabel();
+
+        return $label ? "{$label}: {$value}" : (string) $value;
+    }
+
+    public function hasAnySummarizers(): bool
+    {
+        return collect($this->getTableColumns())
+            ->some(fn (TableColumn $column) => $column->hasSummarizer());
+    }
 }

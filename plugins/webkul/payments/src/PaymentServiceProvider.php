@@ -2,10 +2,11 @@
 
 namespace Webkul\Payment;
 
-use Webkul\Support\Console\Commands\InstallCommand;
-use Webkul\Support\Console\Commands\UninstallCommand;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Filament\Panel;
+use Webkul\PluginManager\Console\Commands\InstallCommand;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class PaymentServiceProvider extends PackageServiceProvider
 {
@@ -20,6 +21,7 @@ class PaymentServiceProvider extends PackageServiceProvider
                 '2025_02_11_101123_create_payments_payment_tokens_table',
                 '2025_02_11_103602_create_payments_payment_transactions_table',
                 '2025_02_12_103602_add_columns_to_account_payments_table',
+                '2025_08_08_105243_alter_payments_payment_methods_table',
             ])
             ->runsMigrations()
             ->hasDependencies([
@@ -33,5 +35,12 @@ class PaymentServiceProvider extends PackageServiceProvider
                     ->runsSeeders();
             })
             ->hasUninstallCommand(function (UninstallCommand $command) {});
+    }
+
+    public function packageRegistered(): void
+    {
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(PaymentPlugin::make());
+        });
     }
 }

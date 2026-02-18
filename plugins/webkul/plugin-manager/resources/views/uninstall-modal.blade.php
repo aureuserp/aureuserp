@@ -32,7 +32,7 @@
                             {{ ucfirst($dependent) }}
                         </span>
 
-                        @if(\Webkul\Support\Package::isPluginInstalled($dependent))
+                        @if(\Webkul\PluginManager\Package::isPluginInstalled($dependent))
                             <span
                                 class="inline-flex items-center rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
                                 {{ __('plugin-manager::views/uninstall-modal.dependents.installed') }}
@@ -52,7 +52,7 @@
     {{-- Data Impact --}}
     @if(count($tables) > 0)
         <div class="rounded-lg bg-white p-4 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
-            <h3 class="text-base font-semibold text-gray-950 dark:text-white">
+            <h3 class="text-base font-semibold text-gray-950 dark:text-gray-100">
                 {{ __('plugin-manager::views/uninstall-modal.data_impact.title') }}
             </h3>
 
@@ -64,7 +64,7 @@
                 @foreach($tables as $tableData)
                     <div class="flex items-center justify-between rounded-md bg-gray-50 px-3 py-2 dark:bg-gray-800">
                         <div>
-                            <span class="text-sm font-medium text-gray-900 dark:text-white">
+                            <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
                                 {{ $tableData['table'] }}
                             </span>
                         </div>

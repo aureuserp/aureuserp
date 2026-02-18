@@ -6,7 +6,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\Facades\Auth;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\LeaveTypeResource;
 
 class EditLeaveType extends EditRecord
@@ -47,16 +46,5 @@ class EditLeaveType extends EditRecord
                         ->body(__('time-off::filament/clusters/configurations/resources/leave-type/pages/edit-leave-type.header-actions.delete.notification.body'))
                 ),
         ];
-    }
-
-    protected function mutateFormDataBeforeSave(array $data): array
-    {
-        $user = Auth::user();
-
-        $data['company_id'] = $user->default_company_id;
-
-        $data['creator_id'] = $user?->id;
-
-        return $data;
     }
 }

@@ -2,6 +2,9 @@
 
 namespace Webkul\Purchase\Models;
 
-use Webkul\Product\Models\Category as BaseCategory;
+use Webkul\Invoice\Models\Category as BaseCategory;
 
-class Category extends BaseCategory {}
+class Category extends BaseCategory
+{
+    //
+}

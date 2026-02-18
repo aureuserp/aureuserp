@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Models\FiscalPosition;
 use Webkul\Account\Models\Journal;
 use Webkul\Account\Models\Move;
@@ -18,9 +19,11 @@ use Webkul\Field\Traits\HasCustomFields;
 use Webkul\Inventory\Models\Operation;
 use Webkul\Inventory\Models\Warehouse;
 use Webkul\Partner\Models\Partner;
+use Webkul\Sale\Database\Factories\OrderFactory;
 use Webkul\Sale\Enums\InvoiceStatus;
 use Webkul\Sale\Enums\OrderState;
 use Webkul\Security\Models\User;
+use Webkul\Security\Traits\HasPermissionScope;
 use Webkul\Support\Models\Company;
 use Webkul\Support\Models\Currency;
 use Webkul\Support\Models\UtmCampaign;
@@ -29,9 +32,14 @@ use Webkul\Support\Models\UTMSource;
 
 class Order extends Model
 {
-    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, SoftDeletes;
+    use HasChatter, HasCustomFields, HasFactory, HasLogActivity, HasPermissionScope, SoftDeletes;
 
     protected $table = 'sales_orders';
+
+    public function getModelTitle(): string
+    {
+        return __('sales::models/order.title');
+    }
 
     protected $fillable = [
         'utm_source_id',
@@ -73,42 +81,25 @@ class Order extends Model
         'warehouse_id',
     ];
 
-    protected array $logAttributes = [
-        'medium.name'          => 'Medium',
-        'utmSource.name'       => 'UTM Source',
-        'partner.name'         => 'Customer',
-        'partnerInvoice.name'  => 'Invoice Address',
-        'partnerShipping.name' => 'Shipping Address',
-        'fiscalPosition.name'  => 'Fiscal Position',
-        'paymentTerm.name'     => 'Payment Term',
-        'currency.name'        => 'Currency',
-        'user.name'            => 'Salesperson',
-        'team.name'            => 'Sales Team',
-        'creator.name'         => 'Created By',
-        'company.name'         => 'Company',
-        'name'                 => 'Order Reference',
-        'state'                => 'Order Status',
-        'client_order_ref'     => 'Customer Reference',
-        'origin'               => 'Source Document',
-        'reference'            => 'Reference',
-        'signed_by'            => 'Signed By',
-        'invoice_status'       => 'Invoice Status',
-        'validity_date'        => 'Validity Date',
-        'note'                 => 'Terms and Conditions',
-        'currency_rate'        => 'Currency Rate',
-        'amount_untaxed'       => 'Subtotal',
-        'amount_tax'           => 'Tax',
-        'amount_total'         => 'Total',
-        'locked'               => 'Locked',
-        'require_signature'    => 'Require Signature',
-        'require_payment'      => 'Require Payment',
-        'commitment_date'      => 'Commitment Date',
-        'date_order'           => 'Order Date',
-        'signed_on'            => 'Signed On',
-        'prepayment_percent'   => 'Prepayment Percentage',
-    ];
+    public function getLogAttributeLabels(): array
+    {
+        return [
+            'state'               => __('sales::models/order.log-attributes.state'),
+            'locked'              => __('sales::models/order.log-attributes.locked'),
+            'amount_untaxed'      => __('sales::models/order.log-attributes.amount-untaxed'),
+            'amount_total'        => __('sales::models/order.log-attributes.amount-total'),
+            'partner.name'        => __('sales::models/order.log-attributes.partner'),
+            'user.name'           => __('sales::models/order.log-attributes.sales-person'),
+            'team.name'           => __('sales::models/order.log-attributes.sales-team'),
+            'paymentTerm.name'    => __('sales::models/order.log-attributes.payment-term'),
+            'fiscalPosition.name' => __('sales::models/order.log-attributes.fiscal-position'),
+        ];
+    }
 
     protected $casts = [
+        'amount_tax'     => 'decimal:4',
+        'amount_total'   => 'decimal:4',
+        'amount_untaxed' => 'decimal:4',
         'state'          => OrderState::class,
         'invoice_status' => InvoiceStatus::class,
     ];
@@ -183,7 +174,7 @@ class Order extends Model
         return $this->belongsTo(Team::class);
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -200,12 +191,12 @@ class Order extends Model
 
     public function lines()
     {
-        return $this->hasMany(OrderLine::class);
+        return $this->hasMany(OrderLine::class, 'order_id');
     }
 
     public function optionalLines()
     {
-        return $this->hasMany(OrderOption::class);
+        return $this->hasMany(OrderOption::class, 'order_id');
     }
 
     public function quotationTemplate()
@@ -223,9 +214,37 @@ class Order extends Model
         return $this->hasMany(Operation::class, 'sale_order_id');
     }
 
+    public function updateName()
+    {
+        $this->name = 'SO/'.$this->id;
+    }
+
+    public function handleOrderCreation()
+    {
+        $authUser = Auth::user();
+
+        $this->creator_id ??= $authUser->id;
+        $this->user_id ??= $authUser->id;
+        $this->company_id ??= $authUser?->default_company_id;
+
+        $this->state ??= OrderState::DRAFT;
+
+        if ($this->partner_id) {
+            $partner = Partner::find($this->partner_id);
+
+            $this->partner_shipping_id ??= $partner->id;
+            $this->partner_invoice_id ??= $partner->id;
+            $this->partner_id ??= $partner->id;
+        }
+    }
+
     protected static function boot()
     {
         parent::boot();
+
+        static::creating(function ($order) {
+            $order->handleOrderCreation();
+        });
 
         static::saving(function ($order) {
             $order->updateName();
@@ -236,11 +255,8 @@ class Order extends Model
         });
     }
 
-    /**
-     * Update the name based on the state without trigger any additional events.
-     */
-    public function updateName()
+    protected static function newFactory(): OrderFactory
     {
-        $this->name = 'SO/'.$this->id;
+        return OrderFactory::new();
     }
 }

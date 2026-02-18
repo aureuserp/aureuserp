@@ -13,7 +13,6 @@ use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\ColorEntry;
@@ -40,12 +39,11 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\CreateDepartment;
 use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\EditDepartment;
 use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\ListDepartments;
-use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\ViewDepartment;
 use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\ManageEmployee;
+use Webkul\Employee\Filament\Resources\DepartmentResource\Pages\ViewDepartment;
 use Webkul\Employee\Models\Department;
 use Webkul\Field\Filament\Traits\HasCustomFields;
 
@@ -55,7 +53,9 @@ class DepartmentResource extends Resource
 
     protected static ?string $model = Department::class;
 
-    protected static ?SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+    protected static ?\Filament\Pages\Enums\SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function getNavigationLabel(): string
     {
@@ -75,7 +75,6 @@ class DepartmentResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            __('employees::filament/resources/department.global-search.name')               => $record->name ?? '—',
             __('employees::filament/resources/department.global-search.department-manager') => $record->manager?->name ?? '—',
             __('employees::filament/resources/department.global-search.company')            => $record->company?->name ?? '—',
         ];
@@ -93,9 +92,6 @@ class DepartmentResource extends Resource
                             ->schema([
                                 Section::make(__('employees::filament/resources/department.form.sections.general.title'))
                                     ->schema([
-                                        Hidden::make('creator_id')
-                                            ->default(Auth::id())
-                                            ->required(),
                                         TextInput::make('name')
                                             ->label(__('employees::filament/resources/department.form.sections.general.fields.name'))
                                             ->required()
@@ -106,13 +102,13 @@ class DepartmentResource extends Resource
                                             ->relationship(
                                                 name: 'parent',
                                                 titleAttribute: 'complete_name',
-                                                modifyQueryUsing: fn(Builder $query) => $query->withTrashed(),
+                                                modifyQueryUsing: fn (Builder $query) => $query->withTrashed(),
                                             )
                                             ->getOptionLabelFromRecordUsing(
-                                                fn(Model $record): string => $record->complete_name . ($record->trashed() ? ' (Deleted)' : ''),
+                                                fn (Model $record): string => $record->complete_name.($record->trashed() ? ' (Deleted)' : ''),
                                             )
                                             ->disableOptionWhen(
-                                                fn(string $label): bool => str_contains($label, ' (Deleted)'),
+                                                fn (string $label): bool => str_contains($label, ' (Deleted)'),
                                             )
                                             ->searchable()
                                             ->preload()
@@ -126,9 +122,9 @@ class DepartmentResource extends Resource
                                             ->nullable(),
                                         Select::make('company_id')
                                             ->label(__('employees::filament/resources/department.form.sections.general.fields.company'))
-                                            ->relationship('company', 'name', modifyQueryUsing: fn(Builder $query) => $query->withTrashed())
+                                            ->relationship('company', 'name', modifyQueryUsing: fn (Builder $query) => $query->withTrashed())
                                             ->getOptionLabelFromRecordUsing(function (Model $record): string {
-                                                return $record->name . ($record->trashed() ? ' (Deleted)' : '');
+                                                return $record->name.($record->trashed() ? ' (Deleted)' : '');
                                             })
                                             ->disableOptionWhen(function ($label) {
                                                 return str_contains($label, ' (Deleted)');
@@ -174,7 +170,7 @@ class DepartmentResource extends Resource
                                 ->sortable()
                                 ->searchable(),
                         ])
-                            ->visible(fn($record) => filled($record?->manager?->name)),
+                            ->visible(fn ($record) => filled($record?->manager?->name)),
                         Stack::make([
                             TextColumn::make('company.name')
                                 ->searchable()
@@ -182,7 +178,7 @@ class DepartmentResource extends Resource
                                 ->icon('heroicon-m-building-office-2')
                                 ->searchable(),
                         ])
-                            ->visible(fn($record) => filled($record?->company?->name)),
+                            ->visible(fn ($record) => filled($record?->company?->name)),
                     ])->space(1),
                 ])->space(4),
             ])
@@ -326,12 +322,12 @@ class DepartmentResource extends Resource
                                             ->placeholder('—')
                                             ->label(__('employees::filament/resources/department.infolist.sections.general.entries.color')),
                                         Fieldset::make(__('employees::filament/resources/department.infolist.sections.general.entries.hierarchy-title'))
-                                            ->hidden(fn(Department $record): bool => $record->parent === null)
+                                            ->hidden(fn (Department $record): bool => $record->parent === null)
                                             ->schema([
                                                 TextEntry::make('hierarchy')
                                                     ->label('')
                                                     ->html()
-                                                    ->state(fn(Department $record): string => static::buildHierarchyTree($record)),
+                                                    ->state(fn (Department $record): string => static::buildHierarchyTree($record)),
                                             ])->columnSpan('full'),
                                     ])
                                     ->columns(2)->columnSpanFull(),
@@ -417,7 +413,7 @@ class DepartmentResource extends Resource
         $managerName = $department->manager?->name ? " · {$department->manager->name}" : '';
 
         $style = $isActive
-            ? 'color: ' . ($department->color ?? '#1D4ED8') . '; font-weight: bold;'
+            ? 'color: '.($department->color ?? '#1D4ED8').'; font-weight: bold;'
             : '';
 
         return sprintf(
@@ -454,10 +450,10 @@ class DepartmentResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => ListDepartments::route('/'),
-            'create' => CreateDepartment::route('/create'),
-            'view'   => ViewDepartment::route('/{record}'),
-            'edit'   => EditDepartment::route('/{record}/edit'),
+            'index'      => ListDepartments::route('/'),
+            'create'     => CreateDepartment::route('/create'),
+            'view'       => ViewDepartment::route('/{record}'),
+            'edit'       => EditDepartment::route('/{record}/edit'),
             'employees'  => ManageEmployee::route('/{record}/employees'),
 
         ];

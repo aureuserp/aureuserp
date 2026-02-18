@@ -2,6 +2,7 @@
 
 namespace Webkul\Inventory\Filament\Clusters\Products\Resources;
 
+use BackedEnum;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
@@ -46,7 +47,7 @@ class PackageResource extends Resource
 {
     protected static ?string $model = Package::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cube';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-cube';
 
     protected static ?string $cluster = Products::class;
 
@@ -66,6 +67,19 @@ class PackageResource extends Resource
     public static function getNavigationLabel(): string
     {
         return __('inventories::filament/clusters/products/resources/package.navigation.title');
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('inventories::filament/clusters/products/resources/package.global-search.package-type') => $record->packageType?->name ?? '—',
+            __('inventories::filament/clusters/products/resources/package.global-search.location')     => $record->location?->full_name ?? '—',
+        ];
     }
 
     public static function form(Schema $schema): Schema

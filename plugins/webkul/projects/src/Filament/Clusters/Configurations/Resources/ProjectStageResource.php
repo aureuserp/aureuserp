@@ -2,7 +2,6 @@
 
 namespace Webkul\Project\Filament\Clusters\Configurations\Resources;
 
-use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -30,7 +29,7 @@ class ProjectStageResource extends Resource
 {
     protected static ?string $model = ProjectStage::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
 
     protected static ?int $navigationSort = 1;
 

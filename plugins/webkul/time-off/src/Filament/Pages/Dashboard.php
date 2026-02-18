@@ -2,6 +2,7 @@
 
 namespace Webkul\TimeOff\Filament\Pages;
 
+use BackedEnum;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Webkul\TimeOff\Filament\Clusters\MyTime;
@@ -14,11 +15,16 @@ class Dashboard extends BaseDashboard
 
     protected static string $routePath = 'time-off';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
 
     protected static ?string $cluster = MyTime::class;
 
     protected static ?int $navigationSort = 1;
+
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_time_off_dashboard';
+    }
 
     public static function getNavigationLabel(): string
     {

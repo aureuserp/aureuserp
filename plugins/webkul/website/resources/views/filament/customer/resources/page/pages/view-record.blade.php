@@ -18,6 +18,6 @@
     @endPush
 
     <div dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}" class="{{ app()->getLocale() === 'ar' ? 'text-right' : 'text-left' }}" style="font-family: {{ app()->getLocale() === 'ar' ? 'Cairo, sans-serif' : 'inherit' }};">
-        {!! $record->content !!}
+        {!! str($record->content)->sanitizeHtml() !!}
     </div>
 </x-filament-panels::page>

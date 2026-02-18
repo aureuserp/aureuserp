@@ -4,7 +4,9 @@ namespace Webkul\Employee\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Employee\Database\Factories\EmployeeSkillFactory;
 use Webkul\Security\Models\User;
 
@@ -42,14 +44,20 @@ class EmployeeSkill extends Model
         return $this->belongsTo(SkillType::class);
     }
 
-    public function createdBy()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'creator_id');
     }
 
-    /**
-     * Get the factory instance for the model.
-     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($employeeSkill) {
+            $employeeSkill->creator_id ??= Auth::id();
+        });
+    }
+
     protected static function newFactory(): EmployeeSkillFactory
     {
         return EmployeeSkillFactory::new();

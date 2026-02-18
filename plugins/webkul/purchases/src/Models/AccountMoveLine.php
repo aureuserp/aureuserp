@@ -7,11 +7,6 @@ use Webkul\Account\Models\MoveLine;
 
 class AccountMoveLine extends MoveLine
 {
-    /**
-     * Create a new Eloquent model instance.
-     *
-     * @return void
-     */
     public function __construct(array $attributes = [])
     {
         $this->mergeFillable([

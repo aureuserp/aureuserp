@@ -15,7 +15,7 @@ class PartnerPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_customer');
+        return $user->can('view_any_sale_customer');
     }
 
     /**
@@ -23,7 +23,7 @@ class PartnerPolicy
      */
     public function view(User $user, Partner $partner): bool
     {
-        return $user->can('view_customer');
+        return $user->can('view_sale_customer');
     }
 
     /**
@@ -31,7 +31,7 @@ class PartnerPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_customer');
+        return $user->can('create_sale_customer');
     }
 
     /**
@@ -39,7 +39,7 @@ class PartnerPolicy
      */
     public function update(User $user, Partner $partner): bool
     {
-        return $user->can('update_customer');
+        return $user->can('update_sale_customer');
     }
 
     /**
@@ -47,7 +47,7 @@ class PartnerPolicy
      */
     public function delete(User $user, Partner $partner): bool
     {
-        return $user->can('delete_customer');
+        return $user->can('delete_sale_customer');
     }
 
     /**
@@ -55,7 +55,7 @@ class PartnerPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_customer');
+        return $user->can('delete_any_sale_customer');
     }
 
     /**
@@ -63,7 +63,7 @@ class PartnerPolicy
      */
     public function forceDelete(User $user, Partner $partner): bool
     {
-        return $user->can('force_delete_customer');
+        return $user->can('force_delete_sale_customer');
     }
 
     /**
@@ -71,7 +71,7 @@ class PartnerPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_customer');
+        return $user->can('force_delete_any_sale_customer');
     }
 
     /**
@@ -79,7 +79,7 @@ class PartnerPolicy
      */
     public function restore(User $user, Partner $partner): bool
     {
-        return $user->can('restore_customer');
+        return $user->can('restore_sale_customer');
     }
 
     /**
@@ -87,6 +87,6 @@ class PartnerPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_customer');
+        return $user->can('restore_any_sale_customer');
     }
 }

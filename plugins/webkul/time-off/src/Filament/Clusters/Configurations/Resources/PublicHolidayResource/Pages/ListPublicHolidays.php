@@ -5,7 +5,6 @@ namespace Webkul\TimeOff\Filament\Clusters\Configurations\Resources\PublicHolida
 use Filament\Actions\CreateAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
-use Illuminate\Support\Facades\Auth;
 use Webkul\TimeOff\Filament\Clusters\Configurations\Resources\PublicHolidayResource;
 
 class ListPublicHolidays extends ListRecords
@@ -23,15 +22,7 @@ class ListPublicHolidays extends ListRecords
                         ->success()
                         ->title(__('time-off::filament/clusters/configurations/resources/public-holiday/pages/list-public-holiday.header-actions.create.notification.created.title'))
                         ->body(__('time-off::filament/clusters/configurations/resources/public-holiday/pages/list-public-holiday.header-actions.create.notification.created.body'))
-                )
-                ->mutateDataUsing(function ($data) {
-                    $user = Auth::user();
-
-                    $data['company_id'] = $user->default_company_id;
-                    $data['creator_id'] = $user->id;
-
-                    return $data;
-                }),
+                ),
         ];
     }
 }

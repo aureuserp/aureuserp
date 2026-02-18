@@ -6,7 +6,6 @@ use Closure;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Concerns\HasExtraItemActions;
 use Filament\Infolists\Components\RepeatableEntry as BaseRepeatableEntry;
-use Filament\Schemas\Components\Component;
 use Filament\Support\Enums\Size;
 use Filament\Tables\Table\Concerns\HasColumnManager;
 use Webkul\Support\Filament\Infolists\Components\Repeater\TableColumn;
@@ -208,7 +207,7 @@ class RepeatableEntry extends BaseRepeatableEntry
         return (string) parent::toEmbeddedHtml();
     }
 
-    protected function toEmbeddedTableHtml(): string
+    public function toEmbeddedTableHtml(): string
     {
         return $this->wrapEmbeddedHtml(
             view('support::filament.infolists.components.repeatable-entry.table', [
@@ -229,7 +228,50 @@ class RepeatableEntry extends BaseRepeatableEntry
                 'getColumnManagerColumns'       => fn () => $this->getColumnManagerColumns(),
                 'hasToggleableColumns'          => fn () => $this->hasToggleableColumns(),
                 'wrapEmbeddedHtml'              => fn ($html) => $this->wrapEmbeddedHtml($html),
+                'hasAnySummarizers'             => fn () => $this->hasAnySummarizers(),
+                'getSummaryForColumn'           => fn (string $columnName) => $this->getSummaryForColumn($columnName),
             ])->render()
         );
+    }
+
+    public function getSummaryForColumn(string $columnName): ?string
+    {
+        $column = collect($this->getTableColumns())
+            ->first(fn (TableColumn $col) => $col->getName() === $columnName);
+
+        if (
+            ! $column
+            || ! $column->hasSummarizer()
+        ) {
+            return null;
+        }
+
+        $summarizer = $column->getSummarizer();
+
+        $items = collect($this->getState() ?? []);
+
+        if ($items->isEmpty()) {
+            return null;
+        }
+
+        $value = $summarizer->summarize($items, $columnName);
+
+        if (is_null($value)) {
+            return null;
+        }
+
+        if ($summarizer->isNumeric() && is_numeric($value)) {
+            $value = number_format($value, 2);
+        }
+
+        $label = $summarizer->getLabel();
+
+        return $label ? "{$label}: {$value}" : (string) $value;
+    }
+
+    public function hasAnySummarizers(): bool
+    {
+        return collect($this->getTableColumns())
+            ->some(fn (TableColumn $column) => $column->hasSummarizer());
     }
 }

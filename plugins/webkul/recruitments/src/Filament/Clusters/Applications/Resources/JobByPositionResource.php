@@ -15,11 +15,11 @@ use Filament\Tables\Table;
 use Webkul\Employee\Filament\Clusters\Configurations\Resources\JobPositionResource;
 use Webkul\Recruitment\Filament\Clusters\Applications;
 use Webkul\Recruitment\Filament\Clusters\Applications\Resources\JobByPositionResource\Pages\ListJobByPositions;
-use Webkul\Recruitment\Models\JobPosition;
+use Webkul\Recruitment\Models\JobByPosition;
 
 class JobByPositionResource extends Resource
 {
-    protected static ?string $model = JobPosition::class;
+    protected static ?string $model = JobByPosition::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
 

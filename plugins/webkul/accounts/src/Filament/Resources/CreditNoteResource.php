@@ -2,28 +2,21 @@
 
 namespace Webkul\Account\Filament\Resources;
 
-use Illuminate\Database\Eloquent\Model;
+use BackedEnum;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
+use Webkul\Account\Enums\MoveType;
 use Webkul\Account\Filament\Resources\CreditNoteResource\Pages\CreateCreditNote;
 use Webkul\Account\Filament\Resources\CreditNoteResource\Pages\EditCreditNote;
 use Webkul\Account\Filament\Resources\CreditNoteResource\Pages\ListCreditNotes;
 use Webkul\Account\Filament\Resources\CreditNoteResource\Pages\ViewCreditNote;
-use Webkul\Account\Models\Move as AccountMove;
+use Webkul\Account\Models\CreditNote;
 
 class CreditNoteResource extends InvoiceResource
 {
-    protected static ?string $model = AccountMove::class;
+    protected static ?string $model = CreditNote::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-credit-card';
-
-    public static function getGlobalSearchResultDetails(Model $record): array
-    {
-        return [
-            __('accounts::filament/resources/credit-note.global-search.number')           => $record?->name ?? '—',
-            __('accounts::filament/resources/credit-note.global-search.customer')         => $record?->invoice_partner_display_name ?? '—',
-            __('accounts::filament/resources/credit-note.global-search.invoice-date')     => $record?->invoice_date ?? '—',
-            __('accounts::filament/resources/credit-note.global-search.invoice-date-due') => $record?->invoice_date_due ?? '—',
-        ];
-    }
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-credit-card';
 
     public static function getPages(): array
     {
@@ -33,5 +26,14 @@ class CreditNoteResource extends InvoiceResource
             'edit'   => EditCreditNote::route('/{record}/edit'),
             'view'   => ViewCreditNote::route('/{record}'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->when(Str::contains(static::class, 'CreditNoteResource'), function (Builder $query) {
+                $query->where('move_type', MoveType::OUT_REFUND);
+            })
+            ->orderByDesc('id');
     }
 }

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 use Webkul\Project\Database\Factories\ProjectStageFactory;
@@ -17,18 +18,8 @@ class ProjectStage extends Model implements Sortable
 {
     use HasFactory, SoftDeletes, SortableTrait;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'projects_project_stages';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'is_active',
@@ -38,11 +29,6 @@ class ProjectStage extends Model implements Sortable
         'creator_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'is_active'    => 'boolean',
         'is_collapsed' => 'boolean',
@@ -66,6 +52,15 @@ class ProjectStage extends Model implements Sortable
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class, 'stage_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($projectStage) {
+            $projectStage->creator_id ??= Auth::id();
+        });
     }
 
     protected static function newFactory(): ProjectStageFactory

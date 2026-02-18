@@ -4,24 +4,15 @@ namespace Webkul\Analytic\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Partner\Models\Partner;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
 
 class Record extends Model
 {
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'analytic_records';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'type',
         'name',
@@ -34,11 +25,6 @@ class Record extends Model
         'creator_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'date' => 'date',
     ];
@@ -61,5 +47,14 @@ class Record extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($record) {
+            $record->creator_id ??= Auth::id();
+        });
     }
 }

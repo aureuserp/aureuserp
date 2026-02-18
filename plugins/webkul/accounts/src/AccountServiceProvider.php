@@ -2,15 +2,16 @@
 
 namespace Webkul\Account;
 
+use Filament\Panel;
 use Illuminate\Foundation\AliasLoader;
 use Livewire\Livewire;
 use Webkul\Account\Facades\Account as AccountFacade;
 use Webkul\Account\Facades\Tax as TaxFacade;
 use Webkul\Account\Livewire\InvoiceSummary;
-use Webkul\Support\Console\Commands\InstallCommand;
-use Webkul\Support\Console\Commands\UninstallCommand;
-use Webkul\Support\Package;
-use Webkul\Support\PackageServiceProvider;
+use Webkul\PluginManager\Console\Commands\InstallCommand;
+use Webkul\PluginManager\Console\Commands\UninstallCommand;
+use Webkul\PluginManager\Package;
+use Webkul\PluginManager\PackageServiceProvider;
 
 class AccountServiceProvider extends PackageServiceProvider
 {
@@ -23,12 +24,14 @@ class AccountServiceProvider extends PackageServiceProvider
         $package->name(static::$name)
             ->hasViews()
             ->hasTranslations()
+            ->hasRoutes(['api'])
             ->hasMigrations([
                 '2025_01_29_044430_create_accounts_payment_terms_table',
                 '2025_01_29_064646_create_accounts_payment_due_terms_table',
                 '2025_01_29_134156_create_accounts_incoterms_table',
                 '2025_01_29_134157_create_accounts_tax_groups_table',
                 '2025_01_30_054952_create_accounts_accounts_table',
+                '2025_01_30_054955_create_accounts_account_companies_table',
                 '2025_01_30_061945_create_accounts_account_tags_table',
                 '2025_01_30_083208_create_accounts_taxes_table',
                 '2025_01_30_123324_create_accounts_tax_partition_lines_table',
@@ -40,7 +43,9 @@ class AccountServiceProvider extends PackageServiceProvider
                 '2025_02_03_055709_create_accounts_account_journals_table',
                 '2025_02_03_121847_create_accounts_fiscal_positions_table',
                 '2025_02_03_131858_create_accounts_fiscal_position_taxes_table',
+                '2025_02_03_131860_create_accounts_fiscal_position_accounts_table',
                 '2025_02_03_144139_create_accounts_cash_roundings_table',
+                '2025_02_04_082243_alter_products_products_table',
                 '2025_02_04_104958_create_accounts_product_taxes_table',
                 '2025_02_04_111337_create_accounts_product_supplier_taxes_table',
                 '2025_02_10_073440_create_accounts_reconciles_table',
@@ -67,10 +72,29 @@ class AccountServiceProvider extends PackageServiceProvider
                 '2025_02_28_142520_create_accounts_accounts_move_payment_table',
                 '2025_04_10_053345_alter_accounts_account_moves_table',
                 '2025_04_10_053349_alter_accounts_account_move_lines_table',
+                '2025_08_11_043945_alter_accounts_reconciles_table',
+                '2025_08_11_044151_alter_accounts_payments_methods_table',
+                '2025_08_11_044258_alter_accounts_bank_statements_table',
+                '2025_08_11_044445_alter_accounts_account_payments_table',
+                '2025_08_11_044603_alter_accounts_bank_statement_lines_table',
+                '2025_08_11_044842_alter_accounts_account_move_lines_table',
+                '2025_08_11_044931_alter_accounts_partial_reconciles_table',
                 '2025_08_04_062050_alter_accounts_taxes_table',
                 '2025_08_01_091957_alter_accounts_payment_terms_table',
+                '2025_10_23_082243_alter_products_categories_table',
+                '2025_11_19_081920_alter_accounts_account_move_lines_table',
+                '2025_12_09_103848_alter_accounts_payment_method_lines_table',
+                '2025_12_16_074557_add_journal_id_in_accounts_accounts_move_reversals_table',
+                '2026_01_15_060822_backfill_customer_and_supplier_rank_in_partners_table',
+                '2026_02_16_063000_alter_partners_partners_table',
             ])
             ->runsMigrations()
+            ->hasSettings([
+                '2025_12_02_094021_create_accounts_default_accounts_settings',
+                '2025_12_02_094021_create_accounts_taxes_settings',
+                '2025_12_02_094021_create_customer_invoice_settings',
+            ])
+            ->runsSettings()
             ->hasDependencies([
                 'products',
             ])
@@ -86,11 +110,17 @@ class AccountServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
+        include __DIR__.'/helpers.php';
+
         Livewire::component('invoice-summary', InvoiceSummary::class);
     }
 
     public function packageRegistered(): void
     {
+        Panel::configureUsing(function (Panel $panel): void {
+            $panel->plugin(AccountPlugin::make());
+        });
+
         $loader = AliasLoader::getInstance();
 
         $loader->alias('tax', TaxFacade::class);

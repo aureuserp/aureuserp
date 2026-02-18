@@ -2,6 +2,7 @@
 
 namespace Webkul\Sale\Filament\Clusters\Configuration\Resources;
 
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -45,11 +46,13 @@ class TeamResource extends Resource
 {
     protected static ?string $model = Team::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
     protected static ?string $cluster = Configuration::class;
 
     protected static bool $shouldRegisterNavigation = false;
+
+    protected static ?int $navigationSort = 9;
 
     public static function getModelLabel(): string
     {
@@ -131,7 +134,7 @@ class TeamResource extends Resource
                 ColorColumn::make('color')
                     ->label(__('sales::filament/clusters/configurations/resources/team.table.columns.color'))
                     ->searchable(),
-                TextColumn::make('createdBy.name')
+                TextColumn::make('creator.name')
                     ->label(__('sales::filament/clusters/configurations/resources/team.table.columns.created-by'))
                     ->sortable(),
                 TextColumn::make('name')

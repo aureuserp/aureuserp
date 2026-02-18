@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Inventory\Database\Factories\MoveFactory;
 use Webkul\Inventory\Enums\LocationType;
 use Webkul\Inventory\Enums\MoveState;
@@ -21,18 +22,8 @@ class Move extends Model
 {
     use HasFactory;
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $table = 'inventories_moves';
 
-    /**
-     * Fillable.
-     *
-     * @var array
-     */
     protected $fillable = [
         'name',
         'state',
@@ -73,11 +64,6 @@ class Move extends Model
         'sale_order_line_id',
     ];
 
-    /**
-     * Table name.
-     *
-     * @var string
-     */
     protected $casts = [
         'state'            => MoveState::class,
         'is_favorite'      => 'boolean',
@@ -91,11 +77,6 @@ class Move extends Model
         'alert_Date'       => 'datetime',
     ];
 
-    /**
-     * Determines if a stock move is a purchase return
-     *
-     * @return bool True if the move is a purchase return, false otherwise
-     */
     public function isPurchaseReturn()
     {
         return $this->destinationLocation->type === LocationType::SUPPLIER
@@ -105,11 +86,6 @@ class Move extends Model
             );
     }
 
-    /**
-     * Determines if a stock move is a purchase return
-     *
-     * @return bool True if the move is a purchase return, false otherwise
-     */
     public function isDropshipped()
     {
         return (
@@ -122,11 +98,6 @@ class Move extends Model
             );
     }
 
-    /**
-     * Determines if a stock move is a purchase return
-     *
-     * @return bool True if the move is a purchase return, false otherwise
-     */
     public function isDropshippedReturned()
     {
         return (
@@ -252,5 +223,14 @@ class Move extends Model
     protected static function newFactory(): MoveFactory
     {
         return MoveFactory::new();
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($move) {
+            $move->creator_id ??= Auth::id();
+        });
     }
 }

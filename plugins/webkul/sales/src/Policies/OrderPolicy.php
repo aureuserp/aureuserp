@@ -16,7 +16,7 @@ class OrderPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_quotation');
+        return $user->can('view_any_sale_order');
     }
 
     /**
@@ -24,7 +24,7 @@ class OrderPolicy
      */
     public function view(User $user, Order $order): bool
     {
-        return $user->can('view_quotation');
+        return $user->can('view_sale_order');
     }
 
     /**
@@ -32,7 +32,7 @@ class OrderPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_quotation');
+        return $user->can('create_sale_order');
     }
 
     /**
@@ -40,7 +40,7 @@ class OrderPolicy
      */
     public function update(User $user, Order $order): bool
     {
-        if (! $user->can('update_quotation')) {
+        if (! $user->can('update_sale_order')) {
             return false;
         }
 
@@ -52,7 +52,7 @@ class OrderPolicy
      */
     public function delete(User $user, Order $order): bool
     {
-        if (! $user->can('delete_quotation')) {
+        if (! $user->can('delete_sale_order')) {
             return false;
         }
 
@@ -64,7 +64,7 @@ class OrderPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_quotation');
+        return $user->can('delete_any_sale_order');
     }
 
     /**
@@ -72,7 +72,7 @@ class OrderPolicy
      */
     public function forceDelete(User $user, Order $order): bool
     {
-        if (! $user->can('force_delete_quotation')) {
+        if (! $user->can('force_delete_sale_order')) {
             return false;
         }
 
@@ -84,7 +84,7 @@ class OrderPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_quotation');
+        return $user->can('force_delete_any_sale_order');
     }
 
     /**
@@ -92,7 +92,7 @@ class OrderPolicy
      */
     public function restore(User $user, Order $order): bool
     {
-        if (! $user->can('restore_quotation')) {
+        if (! $user->can('restore_sale_order')) {
             return false;
         }
 
@@ -104,6 +104,6 @@ class OrderPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_quotation');
+        return $user->can('restore_any_sale_order');
     }
 }

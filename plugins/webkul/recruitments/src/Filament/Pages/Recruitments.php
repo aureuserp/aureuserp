@@ -21,10 +21,15 @@ use Webkul\Support\Models\Company;
 
 class Recruitments extends BaseDashboard
 {
-     use HasPageShield;
     use BaseDashboard\Concerns\HasFiltersForm;
+    use HasPageShield;
 
     protected static string $routePath = 'recruitment';
+
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_recruitment_recruitments';
+    }
 
     public static function getNavigationLabel(): string
     {

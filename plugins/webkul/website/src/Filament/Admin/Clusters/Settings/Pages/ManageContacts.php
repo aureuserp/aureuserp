@@ -18,15 +18,20 @@ class ManageContacts extends SettingsPage
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-truck';
 
-    protected static ?string $slug = 'website/manage-contacts';
-
     protected static string|UnitEnum|null $navigationGroup = 'Website';
+
+    protected static ?string $slug = 'website/manage-contacts';
 
     protected static ?int $navigationSort = 5;
 
     protected static string $settings = ContactSettings::class;
 
     protected static ?string $cluster = Settings::class;
+
+    protected static function getPagePermission(): ?string
+    {
+        return 'page_website_manage_contacts';
+    }
 
     public function getBreadcrumbs(): array
     {
