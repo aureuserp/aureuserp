@@ -208,7 +208,7 @@ endpoints:
         name: commitment_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-02-18T12:25:38'
+        example: '2026-02-18T13:37:25'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -332,7 +332,6 @@ endpoints:
         required: true
         example:
           -
-            id: 101
             product_id: 10
             product_qty: 2
             product_uom_id: 1
@@ -476,7 +475,7 @@ endpoints:
       payment_term_id: 1
       date_order: '2026-02-18'
       validity_date: '2026-02-28'
-      commitment_date: '2026-02-18T12:25:38'
+      commitment_date: '2026-02-18T13:37:25'
       client_order_ref: b
       origin: 'n'
       note: 'Delivery within 7 business days.'
@@ -490,7 +489,6 @@ endpoints:
         - 16
       lines:
         -
-          id: 101
           product_id: 10
           product_qty: 2
           product_uom_id: 1
@@ -693,7 +691,7 @@ endpoints:
         name: commitment_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-02-18T12:25:38'
+        example: '2026-02-18T13:37:25'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -817,7 +815,6 @@ endpoints:
         required: true
         example:
           -
-            id: 101
             product_id: 10
             product_qty: 2
             product_uom_id: 1
@@ -961,7 +958,7 @@ endpoints:
       payment_term_id: 1
       date_order: '2026-02-18'
       validity_date: '2026-02-28'
-      commitment_date: '2026-02-18T12:25:38'
+      commitment_date: '2026-02-18T13:37:25'
       client_order_ref: b
       origin: 'n'
       note: 'Delivery within 7 business days.'
@@ -975,7 +972,6 @@ endpoints:
         - 16
       lines:
         -
-          id: 101
           product_id: 10
           product_qty: 2
           product_uom_id: 1
@@ -1832,7 +1828,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":null,"name":null,"color":null,"creator_id":null,"created_at":null,"updated_at":null},{"id":null,"name":null,"color":null,"creator_id":null,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":1,"name":"High Priority","color":null,"creator_id":1,"created_at":"2026-02-18T13:20:06+00:00","updated_at":"2026-02-18T13:20:06+00:00"},{"id":1,"name":"High Priority","color":null,"creator_id":1,"created_at":"2026-02-18T13:20:06+00:00","updated_at":"2026-02-18T13:20:06+00:00"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -1903,7 +1899,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":null,"name":null,"color":null,"creator_id":null,"created_at":null,"updated_at":null},"message":"Tag created successfully."}'
+        content: '{"data":{"id":1,"name":"High Priority","color":null,"creator_id":1,"created_at":"2026-02-18T13:20:06+00:00","updated_at":"2026-02-18T13:20:06+00:00"},"message":"Tag created successfully."}'
         headers: []
         description: ''
       -
@@ -1980,7 +1976,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":null,"color":null,"creator_id":null,"created_at":null,"updated_at":null}}'
+        content: '{"data":{"id":1,"name":"High Priority","color":null,"creator_id":1,"created_at":"2026-02-18T13:20:06+00:00","updated_at":"2026-02-18T13:20:06+00:00"}}'
         headers: []
         description: ''
       -
@@ -2070,7 +2066,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":null,"color":null,"creator_id":null,"created_at":null,"updated_at":null},"message":"Tag updated successfully."}'
+        content: '{"data":{"id":1,"name":"High Priority","color":null,"creator_id":1,"created_at":"2026-02-18T13:20:06+00:00","updated_at":"2026-02-18T13:20:06+00:00"},"message":"Tag updated successfully."}'
         headers: []
         description: ''
       -

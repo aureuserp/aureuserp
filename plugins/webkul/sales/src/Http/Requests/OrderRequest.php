@@ -142,7 +142,6 @@ class OrderRequest extends FormRequest
                 'description' => 'Array of order line items with writable fields from the quotation form.',
                 'example'     => [
                     [
-                        'id'                    => 101,
                         'product_id'            => 10,
                         'product_qty'           => 2,
                         'product_uom_id'        => 1,

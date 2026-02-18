@@ -139,7 +139,6 @@ class PurchaseAgreementRequest extends FormRequest
                 'description' => 'Array of agreement lines with writable fields from the purchase agreement form.',
                 'example'     => [
                     [
-                        'id'         => 301,
                         'product_id' => 101,
                         'qty'        => 100,
                         'uom_id'     => 1,

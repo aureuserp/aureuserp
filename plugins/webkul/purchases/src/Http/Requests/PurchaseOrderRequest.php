@@ -147,7 +147,6 @@ class PurchaseOrderRequest extends FormRequest
                 'description' => 'Array of purchase order lines with writable fields from the order form.',
                 'example'     => [
                     [
-                        'id'                    => 2001,
                         'product_id'            => 101,
                         'planned_at'            => '2026-02-28 12:00:00',
                         'product_qty'           => 20,

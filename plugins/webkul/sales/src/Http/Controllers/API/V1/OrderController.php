@@ -231,9 +231,9 @@ class OrderController extends Controller
 
         $data = $request->validate([
             'partners' => ['nullable', 'array'],
-            'partners.*' => ['integer', 'exists:partners,id'],
-            'subject' => ['required_with:partners', 'string', 'max:255'],
-            'description' => ['required_with:partners', 'string'],
+            'partners.*' => ['integer', 'exists:partners_partners,id'],
+            'subject' => ['required_with:partners_partners', 'string', 'max:255'],
+            'description' => ['required_with:partners_partners', 'string'],
         ]);
 
         $order = SaleOrderFacade::cancelSaleOrder($order, ! empty($data['partners']) ? $data : []);

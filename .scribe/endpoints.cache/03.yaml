@@ -943,7 +943,7 @@ endpoints:
         name: planned_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-02-18T12:25:37'
+        example: '2026-02-18T13:37:24'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1057,7 +1057,7 @@ endpoints:
         name: 'lines[].planned_at'
         description: 'Must be a valid date.'
         required: true
-        example: '2026-02-18T12:25:37'
+        example: '2026-02-18T13:37:24'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1170,7 +1170,7 @@ endpoints:
       company_id: 1
       partner_reference: VEN-REF-009
       requisition_id: 5
-      planned_at: '2026-02-18T12:25:37'
+      planned_at: '2026-02-18T13:37:24'
       user_id: 2
       payment_term_id: 4
       incoterm_id: 3
@@ -1405,7 +1405,7 @@ endpoints:
         name: planned_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-02-18T12:25:37'
+        example: '2026-02-18T13:37:24'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1519,7 +1519,7 @@ endpoints:
         name: 'lines[].planned_at'
         description: 'Must be a valid date.'
         required: true
-        example: '2026-02-18T12:25:37'
+        example: '2026-02-18T13:37:24'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1632,7 +1632,7 @@ endpoints:
       company_id: 1
       partner_reference: VEN-REF-009
       requisition_id: 5
-      planned_at: '2026-02-18T12:25:37'
+      planned_at: '2026-02-18T13:37:24'
       user_id: 2
       payment_term_id: 4
       incoterm_id: 3
@@ -2438,7 +2438,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35617,"created_at":null,"updated_at":null,"deleted_at":null},{"id":null,"name":"Shayna Raynor Jr.","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35618,"created_at":null,"updated_at":null,"deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35644,"created_at":null,"updated_at":null,"deleted_at":null},{"id":null,"name":"Shayna Raynor Jr.","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35645,"created_at":null,"updated_at":null,"deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2674,7 +2674,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":null,"name":"Ramiro Okuneva","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35619,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement created successfully."}'
+        content: '{"data":{"id":null,"name":"Ramiro Okuneva","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35646,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement created successfully."}'
         headers: []
         description: ''
       -
@@ -2751,7 +2751,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35620,"created_at":null,"updated_at":null,"deleted_at":null}}'
+        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35647,"created_at":null,"updated_at":null,"deleted_at":null}}'
         headers: []
         description: ''
       -
@@ -3006,7 +3006,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"Ramiro Okuneva","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35621,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement updated successfully."}'
+        content: '{"data":{"id":null,"name":"Ramiro Okuneva","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35648,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement updated successfully."}'
         headers: []
         description: ''
       -
@@ -3142,7 +3142,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35622,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement restored successfully."}'
+        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35649,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement restored successfully."}'
         headers: []
         description: ''
       -
@@ -3272,7 +3272,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35623,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement confirmed successfully."}'
+        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35650,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement confirmed successfully."}'
         headers: []
         description: ''
       -
@@ -3343,7 +3343,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35624,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement closed successfully."}'
+        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35651,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement closed successfully."}'
         headers: []
         description: ''
       -
@@ -3414,7 +3414,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35625,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement canceled successfully."}'
+        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35652,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement canceled successfully."}'
         headers: []
         description: ''
       -
@@ -3543,7 +3543,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":null,"qty":0,"price_unit":0,"requisition_id":null,"product_id":null,"uom_id":null,"company_id":null,"creator_id":35626,"created_at":null,"updated_at":null},{"id":null,"qty":0,"price_unit":0,"requisition_id":null,"product_id":null,"uom_id":null,"company_id":null,"creator_id":35627,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":null,"qty":0,"price_unit":0,"requisition_id":null,"product_id":null,"uom_id":null,"company_id":null,"creator_id":35653,"created_at":null,"updated_at":null},{"id":null,"qty":0,"price_unit":0,"requisition_id":null,"product_id":null,"uom_id":null,"company_id":null,"creator_id":35654,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -3626,7 +3626,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"qty":0,"price_unit":0,"requisition_id":null,"product_id":null,"uom_id":null,"company_id":null,"creator_id":35628,"created_at":null,"updated_at":null}}'
+        content: '{"data":{"id":null,"qty":0,"price_unit":0,"requisition_id":null,"product_id":null,"uom_id":null,"company_id":null,"creator_id":35655,"created_at":null,"updated_at":null}}'
         headers: []
         description: ''
       -
