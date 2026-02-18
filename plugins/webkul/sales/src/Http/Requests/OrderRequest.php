@@ -50,7 +50,6 @@ class OrderRequest extends FormRequest
             'lines.*.customer_lead'         => 'nullable|numeric|min:0|max:99999999999',
             'lines.*.product_uom_id'        => 'nullable|integer|exists:unit_of_measures,id',
             'lines.*.product_packaging_id'  => 'nullable|integer|exists:products_packagings,id',
-            'lines.*.warehouse_id'          => 'nullable|integer|exists:inventories_warehouses,id',
             'lines.*.taxes'                 => 'nullable|array',
             'lines.*.taxes.*'               => 'integer|exists:accounts_taxes,id',
         ];
@@ -152,8 +151,6 @@ class OrderRequest extends FormRequest
                         'customer_lead'         => 0,
                         'product_packaging_id'  => null,
                         'product_packaging_qty' => 0,
-                        'qty_delivered'         => 0,
-                        'warehouse_id'          => 1,
                         'taxes'                 => [1, 2],
                     ],
                 ],

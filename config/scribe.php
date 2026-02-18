@@ -185,6 +185,7 @@ return [
         // Note: does not work for `external` docs types
         'order' => [
             'Security API Management',
+            'Purchase API Management',
             'Sales API Management',
             'Support API Management',
             'Partner API Management',

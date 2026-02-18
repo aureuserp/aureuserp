@@ -24,6 +24,7 @@ class PurchaseServiceProvider extends PackageServiceProvider
         $package->name(static::$name)
             ->hasViews()
             ->hasRoute('web')
+            ->hasRoute('api')
             ->hasTranslations()
             ->hasMigrations([
                 '2025_02_11_101100_create_purchases_order_groups_table',

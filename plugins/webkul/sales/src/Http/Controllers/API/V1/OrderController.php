@@ -2,6 +2,8 @@
 
 namespace Webkul\Sale\Http\Controllers\API\V1;
 
+use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Arr;
@@ -17,6 +19,7 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 use Webkul\Product\Models\Product;
 use Webkul\Sale\Enums\OrderState;
+use Webkul\Sale\Facades\SaleOrder as SaleOrderFacade;
 use Webkul\Sale\Http\Requests\OrderRequest;
 use Webkul\Sale\Http\Resources\V1\OrderResource;
 use Webkul\Sale\Models\Order;
@@ -111,6 +114,8 @@ class OrderController extends Controller
 
             $this->syncOrderLines($order, $lines);
 
+            $order = SaleOrderFacade::computeSaleOrder($order->refresh());
+
             $order->load(['partner', 'paymentTerm', 'currency', 'lines.product', 'lines.uom']);
 
             return (new OrderResource($order))
@@ -167,11 +172,122 @@ class OrderController extends Controller
                 $this->syncOrderLines($order, $lines);
             }
 
+            $order = SaleOrderFacade::computeSaleOrder($order->refresh());
+
             $order->load(['partner', 'paymentTerm', 'currency', 'lines.product', 'lines.uom']);
 
             return (new OrderResource($order))
                 ->additional(['message' => 'Order updated successfully.']);
         });
+    }
+
+    #[Endpoint('Confirm order', 'Confirm a quotation and convert it to a sale order')]
+    #[UrlParam('id', 'integer', 'The order ID', required: true, example: 1)]
+    #[ResponseFromApiResource(OrderResource::class, Order::class, with: ['partner', 'lines'], additional: ['message' => 'Order confirmed successfully.'])]
+    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only draft or sent orders can be confirmed."}')]
+    #[Response(status: 404, description: 'Order not found', content: '{"message": "Resource not found."}')]
+    #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
+    public function confirm(string $id)
+    {
+        $order = Order::findOrFail($id);
+
+        Gate::authorize('update', $order);
+
+        if (! in_array($order->state, [OrderState::DRAFT, OrderState::SENT], true)) {
+            return response()->json([
+                'message' => 'Only draft or sent orders can be confirmed.',
+            ], 422);
+        }
+
+        try {
+            $order = SaleOrderFacade::confirmSaleOrder($order);
+        } catch (Exception $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+            ], 422);
+        }
+
+        return (new OrderResource($order->load(['partner', 'paymentTerm', 'currency', 'lines.product', 'lines.uom'])))
+            ->additional(['message' => 'Order confirmed successfully.']);
+    }
+
+    #[Endpoint('Cancel order', 'Cancel a sale order')]
+    #[UrlParam('id', 'integer', 'The order ID', required: true, example: 1)]
+    #[ResponseFromApiResource(OrderResource::class, Order::class, with: ['partner', 'lines'], additional: ['message' => 'Order canceled successfully.'])]
+    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only draft, sent, or sale orders can be canceled."}')]
+    #[Response(status: 404, description: 'Order not found', content: '{"message": "Resource not found."}')]
+    #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
+    public function cancel(Request $request, string $id)
+    {
+        $order = Order::findOrFail($id);
+
+        Gate::authorize('update', $order);
+
+        if (! in_array($order->state, [OrderState::DRAFT, OrderState::SENT, OrderState::SALE], true)) {
+            return response()->json([
+                'message' => 'Only draft, sent, or sale orders can be canceled.',
+            ], 422);
+        }
+
+        $data = $request->validate([
+            'partners' => ['nullable', 'array'],
+            'partners.*' => ['integer', 'exists:partners,id'],
+            'subject' => ['required_with:partners', 'string', 'max:255'],
+            'description' => ['required_with:partners', 'string'],
+        ]);
+
+        $order = SaleOrderFacade::cancelSaleOrder($order, ! empty($data['partners']) ? $data : []);
+
+        return (new OrderResource($order->load(['partner', 'paymentTerm', 'currency', 'lines.product', 'lines.uom'])))
+            ->additional(['message' => 'Order canceled successfully.']);
+    }
+
+    #[Endpoint('Set order as quotation', 'Set a canceled sale order back to quotation')]
+    #[UrlParam('id', 'integer', 'The order ID', required: true, example: 1)]
+    #[ResponseFromApiResource(OrderResource::class, Order::class, with: ['partner', 'lines'], additional: ['message' => 'Order set as quotation successfully.'])]
+    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only canceled orders can be set as quotation."}')]
+    #[Response(status: 404, description: 'Order not found', content: '{"message": "Resource not found."}')]
+    #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
+    public function setAsQuotation(string $id)
+    {
+        $order = Order::findOrFail($id);
+
+        Gate::authorize('update', $order);
+
+        if ($order->state !== OrderState::CANCEL) {
+            return response()->json([
+                'message' => 'Only canceled orders can be set as quotation.',
+            ], 422);
+        }
+
+        $order = SaleOrderFacade::backToQuotation($order);
+
+        return (new OrderResource($order->load(['partner', 'paymentTerm', 'currency', 'lines.product', 'lines.uom'])))
+            ->additional(['message' => 'Order set as quotation successfully.']);
+    }
+
+    #[Endpoint('Toggle sale order lock', 'Toggle lock status for a confirmed sale order')]
+    #[UrlParam('id', 'integer', 'The order ID', required: true, example: 1)]
+    #[ResponseFromApiResource(OrderResource::class, Order::class, with: ['partner', 'lines'], additional: ['message' => 'Order lock state updated successfully.'])]
+    #[Response(status: 422, description: 'Invalid state transition', content: '{"message": "Only sale orders can toggle lock state."}')]
+    #[Response(status: 404, description: 'Order not found', content: '{"message": "Resource not found."}')]
+    #[Response(status: 401, description: 'Unauthenticated', content: '{"message": "Unauthenticated."}')]
+    public function toggleLock(string $id)
+    {
+        $order = Order::findOrFail($id);
+
+        Gate::authorize('update', $order);
+
+        if ($order->state !== OrderState::SALE) {
+            return response()->json([
+                'message' => 'Only sale orders can toggle lock state.',
+            ], 422);
+        }
+
+        $order = SaleOrderFacade::lockAndUnlock($order);
+
+        return (new OrderResource($order->load(['partner', 'paymentTerm', 'currency', 'lines.product', 'lines.uom'])))
+            ->additional(['message' => 'Order lock state updated successfully.']);
     }
 
     #[Endpoint('Delete order', 'Soft delete an order')]
