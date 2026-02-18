@@ -67,8 +67,35 @@ class PurchaseOrder
 
     public function confirmPurchaseOrder(Order $record): Order
     {
+        $user = Auth::user();
+
+        $settings = static::getOrderSettings();
+
+        $requiresApproval = $settings->enable_order_approval;
+
+        $amountExceeds = $record->total_amount >= $settings->order_validation_amount;
+
+        $needsApproval = $requiresApproval && $amountExceeds;
+
+        if (! $needsApproval) {
+            return $this->finalizeOrder($record, $settings);
+        }
+
+        if (static::canUserApprove($user)) {
+            return $this->finalizeOrder($record, $settings);
+        }
+
         $record->update([
-            'state'       => static::getOrderSettings()->enable_lock_confirmed_orders
+            'state' => PurchaseEnums\OrderState::TO_APPROVE,
+        ]);
+
+        return $this->computePurchaseOrder($record);
+    }
+
+    private function finalizeOrder(Order $record, $settings): Order
+    {
+        $record->update([
+            'state' => $settings->enable_lock_confirmed_orders
                 ? PurchaseEnums\OrderState::DONE
                 : PurchaseEnums\OrderState::PURCHASE,
             'approved_at' => now(),
@@ -79,6 +106,19 @@ class PurchaseOrder
         $this->createInventoryReceipt($record);
 
         return $record;
+    }
+
+    public function canUserApprove($user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        if (in_array($user->resource_permission, [\Webkul\Security\Enums\PermissionType::GLOBAL, \Webkul\Security\Enums\PermissionType::GROUP])) {
+            return true;
+        }
+
+        return false;
     }
 
     public function sendPurchaseOrder(Order $record, array $data): Order
