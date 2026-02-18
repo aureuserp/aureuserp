@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Webkul\Sale\Http\Controllers\API\V1\OrderDeliveryController;
+use Webkul\Sale\Http\Controllers\API\V1\OrderInvoiceController;
 use Webkul\Sale\Http\Controllers\API\V1\OrderController;
 use Webkul\Sale\Http\Controllers\API\V1\OrderLineController;
 use Webkul\Sale\Http\Controllers\API\V1\TagController;
@@ -16,6 +18,8 @@ Route::name('admin.api.v1.sales.')->prefix('admin/api/v1/sales')->middleware(['a
     });
 
     Route::apiResource('orders.lines', OrderLineController::class)->only(['index', 'show']);
+    Route::apiResource('orders.deliveries', OrderDeliveryController::class)->only(['index']);
+    Route::apiResource('orders.invoices', OrderInvoiceController::class)->only(['index']);
 
     Route::apiResource('tags', TagController::class);
 });

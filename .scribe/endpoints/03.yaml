@@ -941,7 +941,7 @@ endpoints:
         name: planned_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-02-18T13:37:24'
+        example: '2026-02-18T13:59:58'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1009,7 +1009,6 @@ endpoints:
         required: true
         example:
           -
-            id: 2001
             product_id: 101
             planned_at: '2026-02-28 12:00:00'
             product_qty: 20
@@ -1055,7 +1054,7 @@ endpoints:
         name: 'lines[].planned_at'
         description: 'Must be a valid date.'
         required: true
-        example: '2026-02-18T13:37:24'
+        example: '2026-02-18T13:59:58'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1168,7 +1167,7 @@ endpoints:
       company_id: 1
       partner_reference: VEN-REF-009
       requisition_id: 5
-      planned_at: '2026-02-18T13:37:24'
+      planned_at: '2026-02-18T13:59:58'
       user_id: 2
       payment_term_id: 4
       incoterm_id: 3
@@ -1176,7 +1175,6 @@ endpoints:
       origin: b
       lines:
         -
-          id: 2001
           product_id: 101
           planned_at: '2026-02-28 12:00:00'
           product_qty: 20
@@ -1403,7 +1401,7 @@ endpoints:
         name: planned_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-02-18T13:37:24'
+        example: '2026-02-18T13:59:58'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1471,7 +1469,6 @@ endpoints:
         required: true
         example:
           -
-            id: 2001
             product_id: 101
             planned_at: '2026-02-28 12:00:00'
             product_qty: 20
@@ -1517,7 +1514,7 @@ endpoints:
         name: 'lines[].planned_at'
         description: 'Must be a valid date.'
         required: true
-        example: '2026-02-18T13:37:24'
+        example: '2026-02-18T13:59:58'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1630,7 +1627,7 @@ endpoints:
       company_id: 1
       partner_reference: VEN-REF-009
       requisition_id: 5
-      planned_at: '2026-02-18T13:37:24'
+      planned_at: '2026-02-18T13:59:58'
       user_id: 2
       payment_term_id: 4
       incoterm_id: 3
@@ -1638,7 +1635,6 @@ endpoints:
       origin: b
       lines:
         -
-          id: 2001
           product_id: 101
           planned_at: '2026-02-28 12:00:00'
           product_qty: 20
@@ -2316,6 +2312,266 @@ endpoints:
     custom: []
     httpMethods:
       - GET
+    uri: 'admin/api/v1/purchases/purchase-orders/{purchase_order_id}/receipts'
+    metadata:
+      custom: []
+      groupName: 'Purchase API Management'
+      groupDescription: ''
+      subgroup: 'Purchase Order Receipts'
+      subgroupDescription: 'Manage purchase order receipts'
+      title: 'List purchase order receipts'
+      description: 'Retrieve a paginated list of receipts for a specific purchase order'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      purchase_order_id:
+        custom: []
+        name: purchase_order_id
+        description: 'The purchase order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      purchase_order_id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> user, owner, operationType, sourceLocation, destinationLocation, backOrder, return, partner, company, creator, moves, moveLines'
+        required: false
+        example: 'partner,moves'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of receipt IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[state]':
+        custom: []
+        name: 'filter[state]'
+        description: 'Filter by receipt state'
+        required: false
+        example: assigned
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[move_type]':
+        custom: []
+        name: 'filter[move_type]'
+        description: 'Filter by move type'
+        required: false
+        example: incoming
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: '-created_at'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'partner,moves'
+      'filter[state]': assigned
+      'filter[move_type]': incoming
+      sort: '-created_at'
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1,"name":"WH\/INT\/1","origin":null,"move_type":"direct","state":"draft","is_favorite":false,"description":null,"has_deadline_issue":false,"is_printed":false,"is_locked":false,"deadline":null,"scheduled_at":"2025-04-10T12:10:18.000000Z","closed_at":null,"created_at":"2025-04-10T12:11:32.000000Z","updated_at":"2025-04-10T12:11:32.000000Z"},{"id":1,"name":"WH\/INT\/1","origin":null,"move_type":"direct","state":"draft","is_favorite":false,"description":null,"has_deadline_issue":false,"is_printed":false,"is_locked":false,"deadline":null,"scheduled_at":"2025-04-10T12:10:18.000000Z","closed_at":null,"created_at":"2025-04-10T12:11:32.000000Z","updated_at":"2025-04-10T12:11:32.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/purchases/purchase-orders/{purchase_order_id}/bills'
+    metadata:
+      custom: []
+      groupName: 'Purchase API Management'
+      groupDescription: ''
+      subgroup: 'Purchase Order Bills'
+      subgroupDescription: 'Manage purchase order bills'
+      title: 'List purchase order bills'
+      description: 'Retrieve a paginated list of bills for a specific purchase order'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      purchase_order_id:
+        custom: []
+        name: purchase_order_id
+        description: 'The purchase order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      purchase_order_id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> campaign, journal, company, originPayment, taxCashBasisOriginMove, autoPostOrigin, invoicePaymentTerm, partner, commercialPartner, partnerShipping, partnerBank, fiscalPosition, currency, reversedEntry, invoiceUser, invoiceIncoterm, invoiceCashRounding, createdBy, source, medium, paymentMethodLine'
+        required: false
+        example: 'journal,partner'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of bill IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[state]':
+        custom: []
+        name: 'filter[state]'
+        description: 'Filter by bill state'
+        required: false
+        example: posted
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[payment_state]':
+        custom: []
+        name: 'filter[payment_state]'
+        description: 'Filter by payment state'
+        required: false
+        example: paid
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: '-created_at'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'journal,partner'
+      'filter[state]': posted
+      'filter[payment_state]': paid
+      sort: '-created_at'
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1,"sort":1,"journal_id":2,"company_id":1,"campaign_id":null,"tax_cash_basis_origin_move_id":null,"auto_post_origin_id":null,"origin_payment_id":null,"secure_sequence_number":null,"invoice_payment_term_id":null,"partner_id":41,"commercial_partner_id":41,"partner_shipping_id":41,"partner_bank_id":null,"fiscal_position_id":null,"currency_id":1,"reversed_entry_id":null,"invoice_user_id":null,"invoice_incoterm_id":null,"invoice_cash_rounding_id":null,"preferred_payment_method_line_id":null,"creator_id":1,"sequence_prefix":"BILL\/2026","access_token":null,"name":"BILL\/2026\/1","reference":null,"state":"draft","move_type":"in_invoice","auto_post":0,"inalterable_hash":null,"payment_reference":null,"qr_code_method":null,"payment_state":"not_paid","invoice_source_email":null,"invoice_partner_display_name":"Eden Hebert -Supplier","invoice_origin":"PO\/1","incoterm_location":null,"date":"2026-01-08T00:00:00.000000Z","auto_post_until":null,"invoice_date":null,"invoice_date_due":null,"delivery_date":null,"sending_data":null,"narration":null,"invoice_currency_rate":"1.0000","amount_untaxed":"35000.0000","amount_tax":"0.0000","amount_total":"35000.0000","amount_residual":"35000.0000","amount_untaxed_signed":"-35000.0000","amount_untaxed_in_currency_signed":"-35000.0000","amount_tax_signed":"0.0000","amount_total_signed":"-35000.0000","amount_total_in_currency_signed":"-35000.0000","amount_residual_signed":"-35000.0000","quick_edit_total_amount":null,"is_storno":0,"always_tax_exigible":0,"checked":false,"posted_before":0,"made_sequence_gap":0,"is_manually_modified":0,"is_move_sent":0,"source_id":null,"medium_id":null,"created_at":"2026-01-08T12:56:46.000000Z","updated_at":"2026-01-08T12:56:47.000000Z"},{"id":1,"sort":1,"journal_id":2,"company_id":1,"campaign_id":null,"tax_cash_basis_origin_move_id":null,"auto_post_origin_id":null,"origin_payment_id":null,"secure_sequence_number":null,"invoice_payment_term_id":null,"partner_id":41,"commercial_partner_id":41,"partner_shipping_id":41,"partner_bank_id":null,"fiscal_position_id":null,"currency_id":1,"reversed_entry_id":null,"invoice_user_id":null,"invoice_incoterm_id":null,"invoice_cash_rounding_id":null,"preferred_payment_method_line_id":null,"creator_id":1,"sequence_prefix":"BILL\/2026","access_token":null,"name":"BILL\/2026\/1","reference":null,"state":"draft","move_type":"in_invoice","auto_post":0,"inalterable_hash":null,"payment_reference":null,"qr_code_method":null,"payment_state":"not_paid","invoice_source_email":null,"invoice_partner_display_name":"Eden Hebert -Supplier","invoice_origin":"PO\/1","incoterm_location":null,"date":"2026-01-08T00:00:00.000000Z","auto_post_until":null,"invoice_date":null,"invoice_date_due":null,"delivery_date":null,"sending_data":null,"narration":null,"invoice_currency_rate":"1.0000","amount_untaxed":"35000.0000","amount_tax":"0.0000","amount_total":"35000.0000","amount_residual":"35000.0000","amount_untaxed_signed":"-35000.0000","amount_untaxed_in_currency_signed":"-35000.0000","amount_tax_signed":"0.0000","amount_total_signed":"-35000.0000","amount_total_in_currency_signed":"-35000.0000","amount_residual_signed":"-35000.0000","quick_edit_total_amount":null,"is_storno":0,"always_tax_exigible":0,"checked":false,"posted_before":0,"made_sequence_gap":0,"is_manually_modified":0,"is_move_sent":0,"source_id":null,"medium_id":null,"created_at":"2026-01-08T12:56:46.000000Z","updated_at":"2026-01-08T12:56:47.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
     uri: admin/api/v1/purchases/purchase-agreements
     metadata:
       custom: []
@@ -2436,7 +2692,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35644,"created_at":null,"updated_at":null,"deleted_at":null},{"id":null,"name":"Shayna Raynor Jr.","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35645,"created_at":null,"updated_at":null,"deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":null,"name":"Dr. Marisa Parker","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35671,"created_at":null,"updated_at":null,"deleted_at":null},{"id":null,"name":"Rowena Nicolas I","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35672,"created_at":null,"updated_at":null,"deleted_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -2585,7 +2841,6 @@ endpoints:
         required: true
         example:
           -
-            id: 301
             product_id: 101
             qty: 100
             uom_id: 1
@@ -2662,7 +2917,6 @@ endpoints:
       description: 'Blanket agreement for monthly supply.'
       lines:
         -
-          id: 301
           product_id: 101
           qty: 100
           uom_id: 1
@@ -2672,7 +2926,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":null,"name":"Ramiro Okuneva","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35646,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement created successfully."}'
+        content: '{"data":{"id":null,"name":"Ramiro Okuneva","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35673,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement created successfully."}'
         headers: []
         description: ''
       -
@@ -2749,7 +3003,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35647,"created_at":null,"updated_at":null,"deleted_at":null}}'
+        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35674,"created_at":null,"updated_at":null,"deleted_at":null}}'
         headers: []
         description: ''
       -
@@ -2917,7 +3171,6 @@ endpoints:
         required: true
         example:
           -
-            id: 301
             product_id: 101
             qty: 100
             uom_id: 1
@@ -2994,7 +3247,6 @@ endpoints:
       description: 'Blanket agreement for monthly supply.'
       lines:
         -
-          id: 301
           product_id: 101
           qty: 100
           uom_id: 1
@@ -3004,7 +3256,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"Ramiro Okuneva","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35648,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement updated successfully."}'
+        content: '{"data":{"id":null,"name":"Ramiro Okuneva","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35675,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement updated successfully."}'
         headers: []
         description: ''
       -
@@ -3140,7 +3392,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35649,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement restored successfully."}'
+        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35676,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement restored successfully."}'
         headers: []
         description: ''
       -
@@ -3270,7 +3522,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35650,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement confirmed successfully."}'
+        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35677,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement confirmed successfully."}'
         headers: []
         description: ''
       -
@@ -3341,7 +3593,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35651,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement closed successfully."}'
+        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35678,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement closed successfully."}'
         headers: []
         description: ''
       -
@@ -3412,7 +3664,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35652,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement canceled successfully."}'
+        content: '{"data":{"id":null,"name":"Morgan Hirthe","type":null,"state":null,"reference":null,"starts_at":null,"ends_at":null,"description":null,"currency_id":null,"partner_id":null,"user_id":null,"company_id":null,"creator_id":35679,"created_at":null,"updated_at":null,"deleted_at":null},"message":"Purchase agreement canceled successfully."}'
         headers: []
         description: ''
       -
@@ -3541,7 +3793,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":null,"qty":0,"price_unit":0,"requisition_id":null,"product_id":null,"uom_id":null,"company_id":null,"creator_id":35653,"created_at":null,"updated_at":null},{"id":null,"qty":0,"price_unit":0,"requisition_id":null,"product_id":null,"uom_id":null,"company_id":null,"creator_id":35654,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":null,"qty":0,"price_unit":0,"requisition_id":null,"product_id":null,"uom_id":null,"company_id":null,"creator_id":35680,"created_at":null,"updated_at":null},{"id":null,"qty":0,"price_unit":0,"requisition_id":null,"product_id":null,"uom_id":null,"company_id":null,"creator_id":35681,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -3624,7 +3876,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"qty":0,"price_unit":0,"requisition_id":null,"product_id":null,"uom_id":null,"company_id":null,"creator_id":35655,"created_at":null,"updated_at":null}}'
+        content: '{"data":{"id":null,"qty":0,"price_unit":0,"requisition_id":null,"product_id":null,"uom_id":null,"company_id":null,"creator_id":35682,"created_at":null,"updated_at":null}}'
         headers: []
         description: ''
       -

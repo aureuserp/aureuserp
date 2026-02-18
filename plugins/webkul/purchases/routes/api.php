@@ -3,8 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use Webkul\Purchase\Http\Controllers\API\V1\PurchaseAgreementController;
 use Webkul\Purchase\Http\Controllers\API\V1\PurchaseAgreementLineController;
+use Webkul\Purchase\Http\Controllers\API\V1\PurchaseOrderBillController;
 use Webkul\Purchase\Http\Controllers\API\V1\PurchaseOrderController;
 use Webkul\Purchase\Http\Controllers\API\V1\PurchaseOrderLineController;
+use Webkul\Purchase\Http\Controllers\API\V1\PurchaseOrderReceiptController;
 use Webkul\Purchase\Http\Controllers\API\V1\VendorPriceListController;
 
 Route::name('admin.api.v1.purchases.')->prefix('admin/api/v1/purchases')->middleware(['auth:sanctum'])->group(function () {
@@ -19,6 +21,8 @@ Route::name('admin.api.v1.purchases.')->prefix('admin/api/v1/purchases')->middle
         Route::post('confirm-receipt-date', [PurchaseOrderController::class, 'confirmReceiptDate'])->name('confirm-receipt-date');
     });
     Route::apiResource('purchase-orders.lines', PurchaseOrderLineController::class)->only(['index', 'show']);
+    Route::apiResource('purchase-orders.receipts', PurchaseOrderReceiptController::class)->only(['index']);
+    Route::apiResource('purchase-orders.bills', PurchaseOrderBillController::class)->only(['index']);
 
     Route::softDeletableApiResource('purchase-agreements', PurchaseAgreementController::class);
     Route::prefix('purchase-agreements/{id}')->name('purchase-agreements.')->group(function () {
