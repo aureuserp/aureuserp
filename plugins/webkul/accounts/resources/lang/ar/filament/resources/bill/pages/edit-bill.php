@@ -7,8 +7,20 @@ return [
     ],
 
     'header-actions' => [
+        'delete' => [
+            'notification' => [
+                'title' => 'تم حذف الفاتورة',
+                'body'  => 'تم حذف الفاتورة بنجاح.',
+            ],
+        ],
+
         'preview' => [
             'modal-heading' => 'معاينة الفاتورة',
+        ],
+
+        'reverse' => [
+            'label'         => 'استرداد',
+            'modal-heading' => 'إنشاء استرداد',
         ],
     ],
 ];
