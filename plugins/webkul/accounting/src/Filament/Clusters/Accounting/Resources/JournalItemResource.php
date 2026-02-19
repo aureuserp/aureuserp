@@ -19,6 +19,7 @@ use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Accounting\Filament\Clusters\Accounting;
 use Webkul\Accounting\Filament\Clusters\Accounting\Resources\JournalItemResource\Pages\ListJournalItems;
 use Webkul\Accounting\Filament\Exports\JournalItemExporter;
@@ -297,7 +298,8 @@ class JournalItemResource extends Resource
                     ->exporter(JournalItemExporter::class),
             ])
             ->modifyQueryUsing(function (Builder $query) {
-                $query->with(['currency', 'account', 'partner', 'journal', 'company', 'move']);
+                $query->with(['currency', 'account', 'partner', 'journal', 'company', 'move'])
+                    ->where('company_id', Auth::user()->default_company_id);
             })
             ->defaultSort('date', 'desc');
     }
