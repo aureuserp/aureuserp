@@ -185,13 +185,14 @@ return [
         // Note: does not work for `external` docs types
         'order' => [
             'Security API Management',
-            'Projects API Management',
-            'Purchase API Management',
+            'Inventory API Management',
             'Sales API Management',
             'Support API Management',
             'Partner API Management',
             'Product API Management',
             'Account API Management',
+            'Project API Management',
+            'Purchase API Management',
         ],
     ],
 

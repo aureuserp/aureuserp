@@ -17,7 +17,7 @@ use Webkul\Project\Http\Requests\ProjectStageRequest;
 use Webkul\Project\Http\Resources\V1\ProjectStageResource;
 use Webkul\Project\Models\ProjectStage;
 
-#[Group('Projects API Management')]
+#[Group('Project API Management')]
 #[Subgroup('Project Stages', 'Manage project stages')]
 #[Authenticated]
 class ProjectStageController extends Controller

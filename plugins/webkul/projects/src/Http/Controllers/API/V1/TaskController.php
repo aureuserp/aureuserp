@@ -19,7 +19,7 @@ use Webkul\Project\Http\Resources\V1\TaskResource;
 use Webkul\Project\Models\Project;
 use Webkul\Project\Models\Task;
 
-#[Group('Projects API Management')]
+#[Group('Project API Management')]
 #[Subgroup('Tasks', 'Manage tasks')]
 #[Authenticated]
 class TaskController extends Controller

@@ -1,6 +1,6 @@
 <?php
 
-namespace Webkul\Project\Http\Controllers\API\V1;
+namespace Webkul\Inventory\Http\Controllers\API\V1;
 
 use Illuminate\Support\Facades\Gate;
 use Knuckles\Scribe\Attributes\Authenticated;
@@ -13,12 +13,12 @@ use Knuckles\Scribe\Attributes\Subgroup;
 use Knuckles\Scribe\Attributes\UrlParam;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
-use Webkul\Project\Http\Requests\TagRequest;
-use Webkul\Project\Http\Resources\V1\TagResource;
-use Webkul\Project\Models\Tag;
+use Webkul\Inventory\Http\Requests\TagRequest;
+use Webkul\Inventory\Http\Resources\V1\TagResource;
+use Webkul\Inventory\Models\Tag;
 
-#[Group('Project API Management')]
-#[Subgroup('Tags', 'Manage project and task tags')]
+#[Group('Inventory API Management')]
+#[Subgroup('Tags', 'Manage inventory tags')]
 #[Authenticated]
 class TagController extends Controller
 {
@@ -26,9 +26,12 @@ class TagController extends Controller
         'creator',
     ];
 
-    #[Endpoint('List tags', 'Retrieve a paginated list of tags')]
+    #[Endpoint('List tags', 'Retrieve a paginated list of tags with filtering and sorting')]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator', required: false, example: 'creator')]
-    #[QueryParam('filter[trashed]', 'string', 'Filter by trashed status. </br></br><b>Available options:</b> with, only', required: false, example: 'with')]
+    #[QueryParam('filter[id]', 'string', 'Comma-separated list of IDs to filter by', required: false)]
+    #[QueryParam('filter[name]', 'string', 'Filter by tag name', required: false, example: 'Fragile')]
+    #[QueryParam('filter[color]', 'string', 'Filter by color', required: false, example: '#f97316')]
+    #[QueryParam('sort', 'string', 'Sort field', required: false, example: '-created_at')]
     #[ResponseFromApiResource(TagResource::class, Tag::class, collection: true, paginate: 10)]
     public function index()
     {
@@ -37,12 +40,10 @@ class TagController extends Controller
         $tags = QueryBuilder::for(Tag::class)
             ->allowedFilters([
                 AllowedFilter::exact('id'),
-                AllowedFilter::exact('name'),
-                AllowedFilter::exact('color'),
-                AllowedFilter::exact('creator_id'),
-                AllowedFilter::trashed(),
+                AllowedFilter::partial('name'),
+                AllowedFilter::partial('color'),
             ])
-            ->allowedSorts(['id', 'name', 'color', 'created_at', 'updated_at'])
+            ->allowedSorts(['id', 'name', 'color', 'sort', 'created_at', 'updated_at'])
             ->allowedIncludes($this->allowedIncludes)
             ->paginate();
 
@@ -51,16 +52,14 @@ class TagController extends Controller
 
     #[Endpoint('Create tag', 'Create a new tag')]
     #[ResponseFromApiResource(TagResource::class, Tag::class, status: 201, additional: ['message' => 'Tag created successfully.'])]
+    #[Response(status: 422, description: 'Validation error')]
     public function store(TagRequest $request)
     {
         Gate::authorize('create', Tag::class);
 
-        $data = $request->validated();
-        $data['color'] = $data['color'] ?? '#808080';
+        $tag = Tag::create($request->validated());
 
-        $tag = Tag::create($data);
-
-        return (new TagResource($tag->load(['creator'])))
+        return (new TagResource($tag->load($this->allowedIncludes)))
             ->additional(['message' => 'Tag created successfully.'])
             ->response()
             ->setStatusCode(201);
@@ -70,7 +69,7 @@ class TagController extends Controller
     #[UrlParam('id', 'integer', 'The tag ID', required: true, example: 1)]
     #[QueryParam('include', 'string', 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator', required: false, example: 'creator')]
     #[ResponseFromApiResource(TagResource::class, Tag::class)]
-    #[Response(status: 404, description: 'Tag not found', content: '{"message":"Resource not found."}')]
+    #[Response(status: 404, description: 'Tag not found')]
     public function show(string $id)
     {
         $tag = QueryBuilder::for(Tag::where('id', $id))
@@ -85,27 +84,24 @@ class TagController extends Controller
     #[Endpoint('Update tag', 'Update an existing tag')]
     #[UrlParam('id', 'integer', 'The tag ID', required: true, example: 1)]
     #[ResponseFromApiResource(TagResource::class, Tag::class, additional: ['message' => 'Tag updated successfully.'])]
+    #[Response(status: 404, description: 'Tag not found')]
+    #[Response(status: 422, description: 'Validation error')]
     public function update(TagRequest $request, string $id)
     {
         $tag = Tag::findOrFail($id);
 
         Gate::authorize('update', $tag);
 
-        $data = $request->validated();
+        $tag->update($request->validated());
 
-        if (array_key_exists('color', $data) && empty($data['color'])) {
-            $data['color'] = '#808080';
-        }
-
-        $tag->update($data);
-
-        return (new TagResource($tag->load(['creator'])))
+        return (new TagResource($tag->load($this->allowedIncludes)))
             ->additional(['message' => 'Tag updated successfully.']);
     }
 
     #[Endpoint('Delete tag', 'Soft delete a tag')]
     #[UrlParam('id', 'integer', 'The tag ID', required: true, example: 1)]
     #[Response(status: 200, description: 'Tag deleted successfully', content: '{"message":"Tag deleted successfully."}')]
+    #[Response(status: 404, description: 'Tag not found')]
     public function destroy(string $id)
     {
         $tag = Tag::findOrFail($id);
@@ -119,9 +115,10 @@ class TagController extends Controller
         ]);
     }
 
-    #[Endpoint('Restore tag', 'Restore a soft-deleted tag')]
+    #[Endpoint('Restore tag', 'Restore a soft deleted tag')]
     #[UrlParam('id', 'integer', 'The tag ID', required: true, example: 1)]
     #[ResponseFromApiResource(TagResource::class, Tag::class, additional: ['message' => 'Tag restored successfully.'])]
+    #[Response(status: 404, description: 'Tag not found')]
     public function restore(string $id)
     {
         $tag = Tag::withTrashed()->findOrFail($id);
@@ -130,13 +127,14 @@ class TagController extends Controller
 
         $tag->restore();
 
-        return (new TagResource($tag->load(['creator'])))
+        return (new TagResource($tag->fresh()->load($this->allowedIncludes)))
             ->additional(['message' => 'Tag restored successfully.']);
     }
 
     #[Endpoint('Force delete tag', 'Permanently delete a tag')]
     #[UrlParam('id', 'integer', 'The tag ID', required: true, example: 1)]
-    #[Response(status: 200, description: 'Tag permanently deleted', content: '{"message":"Tag permanently deleted."}')]
+    #[Response(status: 200, description: 'Tag permanently deleted successfully', content: '{"message":"Tag permanently deleted successfully."}')]
+    #[Response(status: 404, description: 'Tag not found')]
     public function forceDestroy(string $id)
     {
         $tag = Tag::withTrashed()->findOrFail($id);
@@ -146,7 +144,7 @@ class TagController extends Controller
         $tag->forceDelete();
 
         return response()->json([
-            'message' => 'Tag permanently deleted.',
+            'message' => 'Tag permanently deleted successfully.',
         ]);
     }
 }

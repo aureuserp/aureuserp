@@ -18,7 +18,7 @@ use Webkul\Project\Http\Requests\ProjectRequest;
 use Webkul\Project\Http\Resources\V1\ProjectResource;
 use Webkul\Project\Models\Project;
 
-#[Group('Projects API Management')]
+#[Group('Project API Management')]
 #[Subgroup('Projects', 'Manage projects')]
 #[Authenticated]
 class ProjectController extends Controller

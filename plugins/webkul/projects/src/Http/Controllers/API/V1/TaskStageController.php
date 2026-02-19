@@ -17,7 +17,7 @@ use Webkul\Project\Http\Requests\TaskStageRequest;
 use Webkul\Project\Http\Resources\V1\TaskStageResource;
 use Webkul\Project\Models\TaskStage;
 
-#[Group('Projects API Management')]
+#[Group('Project API Management')]
 #[Subgroup('Task Stages', 'Manage task stages')]
 #[Authenticated]
 class TaskStageController extends Controller

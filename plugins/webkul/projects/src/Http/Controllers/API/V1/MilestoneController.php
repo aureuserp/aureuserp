@@ -17,7 +17,7 @@ use Webkul\Project\Http\Requests\MilestoneRequest;
 use Webkul\Project\Http\Resources\V1\MilestoneResource;
 use Webkul\Project\Models\Milestone;
 
-#[Group('Projects API Management')]
+#[Group('Project API Management')]
 #[Subgroup('Milestones', 'Manage milestones')]
 #[Authenticated]
 class MilestoneController extends Controller
