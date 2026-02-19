@@ -3,6 +3,7 @@
 namespace Webkul\Inventory\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Webkul\Inventory\Enums\RuleAction;
 
 class RuleRequest extends FormRequest
@@ -17,15 +18,15 @@ class RuleRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         return [
-            'name'                    => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'action'                  => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(RuleAction::cases(), 'value')),
-            'operation_type_id'       => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:inventories_operation_types,id',
-            'source_location_id'      => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:inventories_locations,id',
-            'destination_location_id' => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:inventories_locations,id',
-            'partner_address_id'      => 'nullable|integer|exists:partners_partners,id',
-            'delay'                   => 'nullable|integer|min:0',
-            'route_id'                => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:inventories_routes,id',
-            'company_id'              => 'nullable|integer|exists:companies,id',
+            'name'                    => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'action'                  => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(RuleAction::class)],
+            'operation_type_id'       => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:inventories_operation_types,id'],
+            'source_location_id'      => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:inventories_locations,id'],
+            'destination_location_id' => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:inventories_locations,id'],
+            'partner_address_id'      => ['nullable', 'integer', 'exists:partners_partners,id'],
+            'delay'                   => ['nullable', 'integer', 'min:0'],
+            'route_id'                => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:inventories_routes,id'],
+            'company_id'              => ['nullable', 'integer', 'exists:companies,id'],
         ];
     }
 

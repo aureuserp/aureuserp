@@ -3,6 +3,7 @@
 namespace Webkul\Product\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Webkul\Product\Enums\AttributeType;
 
 class AttributeRequest extends FormRequest
@@ -25,9 +26,9 @@ class AttributeRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         $rules = [
-            'name' => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'type' => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(AttributeType::cases(), 'value')),
-            'sort' => 'nullable|integer|min:0',
+            'name' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'type' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(AttributeType::class)],
+            'sort' => ['nullable', 'integer', 'min:0'],
         ];
 
         return $rules;

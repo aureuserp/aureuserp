@@ -16,10 +16,10 @@ class MilestoneRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         return [
-            'name' => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'deadline' => 'nullable|date',
-            'is_completed' => 'nullable|boolean',
-            'project_id' => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:projects_projects,id',
+            'name' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'deadline' => ['nullable', 'date'],
+            'is_completed' => ['nullable', 'boolean'],
+            'project_id' => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:projects_projects,id'],
         ];
     }
 

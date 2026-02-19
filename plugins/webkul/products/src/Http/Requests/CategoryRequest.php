@@ -24,8 +24,8 @@ class CategoryRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         $rules = [
-            'name'      => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'parent_id' => 'nullable|integer|exists:products_categories,id',
+            'name'      => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'parent_id' => ['nullable', 'integer', 'exists:products_categories,id'],
         ];
 
         return $rules;

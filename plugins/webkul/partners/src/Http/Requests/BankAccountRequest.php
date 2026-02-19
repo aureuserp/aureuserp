@@ -24,9 +24,9 @@ class BankAccountRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         $rules = [
-            'account_number' => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'can_send_money' => ($isUpdate ? 'sometimes|' : '').'required|boolean',
-            'bank_id'        => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:banks,id',
+            'account_number' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'can_send_money' => [($isUpdate ? 'sometimes|required' : 'required'), 'boolean'],
+            'bank_id'        => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:banks,id'],
         ];
 
         return $rules;

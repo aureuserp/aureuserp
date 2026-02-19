@@ -25,18 +25,18 @@ class VendorPriceListRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         $rules = [
-            'partner_id'    => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:partners_partners,id',
-            'product_id'    => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:products_products,id',
-            'currency_id'   => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:currencies,id',
-            'company_id'    => 'nullable|integer|exists:companies,id',
-            'product_name'  => 'nullable|string|max:255',
-            'product_code'  => 'nullable|string|max:255',
-            'delay'         => 'nullable|integer|min:0|max:99999999',
-            'min_qty'       => 'nullable|numeric|min:0|max:99999999999',
-            'price'         => 'nullable|numeric|min:0|max:99999999999',
-            'discount'      => 'nullable|numeric|min:0|max:99999999999',
-            'starts_at'     => 'nullable|date',
-            'ends_at'       => 'nullable|date|after_or_equal:starts_at',
+            'partner_id'    => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:partners_partners,id'],
+            'product_id'    => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:products_products,id'],
+            'currency_id'   => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:currencies,id'],
+            'company_id'    => ['nullable', 'integer', 'exists:companies,id'],
+            'product_name'  => ['nullable', 'string', 'max:255'],
+            'product_code'  => ['nullable', 'string', 'max:255'],
+            'delay'         => ['nullable', 'integer', 'min:0', 'max:99999999'],
+            'min_qty'       => ['nullable', 'numeric', 'min:0', 'max:99999999999'],
+            'price'         => ['nullable', 'numeric', 'min:0', 'max:99999999999'],
+            'discount'      => ['nullable', 'numeric', 'min:0', 'max:99999999999'],
+            'starts_at'     => ['nullable', 'date'],
+            'ends_at'       => ['nullable', 'date', 'after_or_equal:starts_at'],
         ];
 
         return $rules;

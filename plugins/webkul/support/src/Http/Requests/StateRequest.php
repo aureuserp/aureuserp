@@ -24,9 +24,9 @@ class StateRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         $rules = [
-            'name'       => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'code'       => 'nullable|string|max:50',
-            'country_id' => ($isUpdate ? 'sometimes|' : '').'required|exists:countries,id',
+            'name'       => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'code'       => ['nullable', 'string', 'max:50'],
+            'country_id' => [($isUpdate ? 'sometimes|required' : 'required'), 'exists:countries,id'],
         ];
 
         return $rules;

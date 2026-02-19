@@ -22,14 +22,14 @@ class MovePaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'journal_id'             => 'sometimes|required|integer|exists:accounts_journals,id',
-            'payment_method_line_id' => 'sometimes|required|integer|exists:accounts_payment_method_lines,id',
-            'partner_bank_id'        => 'nullable|integer|exists:partners_bank_accounts,id',
-            'currency_id'            => 'sometimes|required|integer|exists:currencies,id',
-            'payment_date'           => 'sometimes|required|date',
-            'communication'          => 'sometimes|required|string|max:255',
-            'installments_mode'      => 'nullable|string|in:full,overdue,before_date,next',
-            'amount'                 => 'sometimes|required|numeric|min:0.0001',
+            'journal_id'             => ['sometimes', 'required', 'integer', 'exists:accounts_journals,id'],
+            'payment_method_line_id' => ['sometimes', 'required', 'integer', 'exists:accounts_payment_method_lines,id'],
+            'partner_bank_id'        => ['nullable', 'integer', 'exists:partners_bank_accounts,id'],
+            'currency_id'            => ['sometimes', 'required', 'integer', 'exists:currencies,id'],
+            'payment_date'           => ['sometimes', 'required', 'date'],
+            'communication'          => ['sometimes', 'required', 'string', 'max:255'],
+            'installments_mode'      => ['nullable', 'string', 'in:full,overdue,before_date,next'],
+            'amount'                 => ['sometimes', 'required', 'numeric', 'min:0.0001'],
         ];
     }
 

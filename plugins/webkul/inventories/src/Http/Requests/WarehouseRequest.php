@@ -18,14 +18,14 @@ class WarehouseRequest extends FormRequest
         $warehouseId = $this->route('warehouse') ?? $this->route('id');
 
         return [
-            'name'                  => ($isUpdate ? 'sometimes|' : '').'required|string|max:255|unique:inventories_warehouses,name'.($warehouseId ? ','.$warehouseId : ''),
-            'code'                  => ($isUpdate ? 'sometimes|' : '').'required|string|max:255|unique:inventories_warehouses,code'.($warehouseId ? ','.$warehouseId : ''),
-            'company_id'            => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:companies,id',
-            'partner_address_id'    => 'nullable|integer|exists:partners_partners,id',
-            'reception_steps'       => 'nullable|string',
-            'delivery_steps'        => 'nullable|string',
-            'supplier_warehouses'   => 'nullable|array',
-            'supplier_warehouses.*' => 'integer|exists:inventories_warehouses,id',
+            'name'                  => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255', 'unique:inventories_warehouses,name'.($warehouseId ? ','.$warehouseId : '')],
+            'code'                  => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255', 'unique:inventories_warehouses,code'.($warehouseId ? ','.$warehouseId : '')],
+            'company_id'            => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:companies,id'],
+            'partner_address_id'    => ['nullable', 'integer', 'exists:partners_partners,id'],
+            'reception_steps'       => ['nullable', 'string'],
+            'delivery_steps'        => ['nullable', 'string'],
+            'supplier_warehouses'   => ['nullable', 'array'],
+            'supplier_warehouses.*' => ['integer', 'exists:inventories_warehouses,id'],
         ];
     }
 

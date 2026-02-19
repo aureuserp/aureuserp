@@ -16,8 +16,8 @@ class TaskStageRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         return [
-            'name' => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'project_id' => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:projects_projects,id',
+            'name' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'project_id' => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:projects_projects,id'],
         ];
     }
 

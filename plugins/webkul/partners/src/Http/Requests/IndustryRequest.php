@@ -24,8 +24,8 @@ class IndustryRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         $rules = [
-            'name'        => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'description' => 'nullable|string',
+            'name'        => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
         ];
 
         return $rules;

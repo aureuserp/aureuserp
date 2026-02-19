@@ -16,8 +16,8 @@ class TagRequest extends FormRequest
         $tagId = $this->route('tag');
 
         return [
-            'name' => ($isUpdate ? 'sometimes|' : '').'required|string|max:255|unique:projects_tags,name'.($tagId ? ','.$tagId.',id,deleted_at,NULL' : ',NULL,id,deleted_at,NULL'),
-            'color' => 'nullable|string|regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/',
+            'name' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255', 'unique:projects_tags,name'.($tagId ? ','.$tagId.',id,deleted_at,NULL' : ',NULL,id,deleted_at,NULL')],
+            'color' => ['nullable', 'string', 'regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/'],
         ];
     }
 

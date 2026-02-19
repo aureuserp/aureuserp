@@ -3,6 +3,7 @@
 namespace Webkul\Partner\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Webkul\Partner\Enums\AddressType;
 
 class AddressRequest extends FormRequest
@@ -25,17 +26,17 @@ class AddressRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         $rules = [
-            'sub_type'   => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(AddressType::cases(), 'value')),
-            'name'       => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'email'      => 'nullable|email|max:255',
-            'phone'      => 'nullable|string|max:20',
-            'mobile'     => 'nullable|string|max:20',
-            'street1'    => 'nullable|string|max:255',
-            'street2'    => 'nullable|string|max:255',
-            'city'       => 'nullable|string|max:255',
-            'zip'        => 'nullable|string|max:20',
-            'state_id'   => 'nullable|integer|exists:states,id',
-            'country_id' => 'nullable|integer|exists:countries,id',
+            'sub_type'   => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(AddressType::class)],
+            'name'       => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'email'      => ['nullable', 'email', 'max:255'],
+            'phone'      => ['nullable', 'string', 'max:20'],
+            'mobile'     => ['nullable', 'string', 'max:20'],
+            'street1'    => ['nullable', 'string', 'max:255'],
+            'street2'    => ['nullable', 'string', 'max:255'],
+            'city'       => ['nullable', 'string', 'max:255'],
+            'zip'        => ['nullable', 'string', 'max:20'],
+            'state_id'   => ['nullable', 'integer', 'exists:states,id'],
+            'country_id' => ['nullable', 'integer', 'exists:countries,id'],
         ];
 
         return $rules;

@@ -24,10 +24,10 @@ class AttributeOptionRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         $rules = [
-            'name'        => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'color'       => 'nullable|string|max:7',
-            'extra_price' => 'nullable|numeric|min:0',
-            'sort'        => 'nullable|integer|min:0',
+            'name'        => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'color'       => ['nullable', 'string', 'max:7'],
+            'extra_price' => ['nullable', 'numeric', 'min:0'],
+            'sort'        => ['nullable', 'integer', 'min:0'],
         ];
 
         return $rules;

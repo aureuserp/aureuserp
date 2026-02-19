@@ -16,10 +16,10 @@ class PackageRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         return [
-            'name'            => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'package_type_id' => 'nullable|integer|exists:inventories_package_types,id',
-            'pack_date'       => 'nullable|date',
-            'location_id'     => 'nullable|integer|exists:inventories_locations,id',
+            'name'            => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'package_type_id' => ['nullable', 'integer', 'exists:inventories_package_types,id'],
+            'pack_date'       => ['nullable', 'date'],
+            'location_id'     => ['nullable', 'integer', 'exists:inventories_locations,id'],
         ];
     }
 

@@ -3,6 +3,7 @@
 namespace Webkul\Account\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 use Webkul\Account\Enums\AmountType;
 use Webkul\Account\Enums\RepartitionType;
@@ -30,36 +31,36 @@ class TaxRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         return [
-            'name'                                           => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'type_tax_use'                                   => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(TypeTaxUse::cases(), 'value')),
-            'amount_type'                                    => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(AmountType::cases(), 'value')),
-            'amount'                                         => ($isUpdate ? 'sometimes|' : '').'required|numeric|min:0',
-            'tax_group_id'                                   => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:accounts_tax_groups,id',
-            'company_id'                                     => 'nullable|integer|exists:companies,id',
-            'country_id'                                     => 'nullable|integer|exists:countries,id',
-            'tax_scope'                                      => 'nullable|string|in:'.implode(',', array_column(TaxScope::cases(), 'value')),
-            'price_include_override'                         => 'nullable|string|in:'.implode(',', array_column(TaxIncludeOverride::cases(), 'value')),
-            'cash_basis_transition_account_id'               => 'nullable|integer|exists:accounts_accounts,id',
-            'description'                                    => 'nullable|string',
-            'invoice_label'                                  => 'nullable|string|max:255',
-            'invoice_legal_notes'                            => 'nullable|string',
-            'tax_exigibility'                                => 'nullable|string|max:255',
-            'is_active'                                      => 'nullable|boolean',
-            'include_base_amount'                            => 'nullable|boolean',
-            'is_base_affected'                               => 'nullable|boolean',
-            'analytic'                                       => 'nullable|boolean',
-            'invoice_repartition_lines'                      => ($isUpdate ? 'sometimes|' : '').'required|array|min:2',
-            'invoice_repartition_lines.*.id'                 => 'sometimes|integer|exists:accounts_tax_partition_lines,id',
-            'invoice_repartition_lines.*.repartition_type'   => 'required|string|in:'.implode(',', array_column(RepartitionType::cases(), 'value')),
-            'invoice_repartition_lines.*.factor_percent'     => 'nullable|numeric|min:-100|max:100',
-            'invoice_repartition_lines.*.account_id'         => 'nullable|integer|exists:accounts_accounts,id',
-            'invoice_repartition_lines.*.use_in_tax_closing' => 'sometimes|boolean',
-            'refund_repartition_lines'                       => ($isUpdate ? 'sometimes|' : '').'required|array|min:2',
-            'refund_repartition_lines.*.id'                  => 'sometimes|integer|exists:accounts_tax_partition_lines,id',
-            'refund_repartition_lines.*.repartition_type'    => 'required|string|in:'.implode(',', array_column(RepartitionType::cases(), 'value')),
-            'refund_repartition_lines.*.factor_percent'      => 'nullable|numeric|min:-100|max:100',
-            'refund_repartition_lines.*.account_id'          => 'nullable|integer|exists:accounts_accounts,id',
-            'refund_repartition_lines.*.use_in_tax_closing'  => 'sometimes|boolean',
+            'name'                                           => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'type_tax_use'                                   => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(TypeTaxUse::class)],
+            'amount_type'                                    => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(AmountType::class)],
+            'amount'                                         => [($isUpdate ? 'sometimes|required' : 'required'), 'numeric', 'min:0'],
+            'tax_group_id'                                   => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:accounts_tax_groups,id'],
+            'company_id'                                     => ['nullable', 'integer', 'exists:companies,id'],
+            'country_id'                                     => ['nullable', 'integer', 'exists:countries,id'],
+            'tax_scope'                                      => ['nullable', 'string', Rule::enum(TaxScope::class)],
+            'price_include_override'                         => ['nullable', 'string', Rule::enum(TaxIncludeOverride::class)],
+            'cash_basis_transition_account_id'               => ['nullable', 'integer', 'exists:accounts_accounts,id'],
+            'description'                                    => ['nullable', 'string'],
+            'invoice_label'                                  => ['nullable', 'string', 'max:255'],
+            'invoice_legal_notes'                            => ['nullable', 'string'],
+            'tax_exigibility'                                => ['nullable', 'string', 'max:255'],
+            'is_active'                                      => ['nullable', 'boolean'],
+            'include_base_amount'                            => ['nullable', 'boolean'],
+            'is_base_affected'                               => ['nullable', 'boolean'],
+            'analytic'                                       => ['nullable', 'boolean'],
+            'invoice_repartition_lines'                      => [($isUpdate ? 'sometimes|required' : 'required'), 'array', 'min:2'],
+            'invoice_repartition_lines.*.id'                 => ['sometimes', 'integer', 'exists:accounts_tax_partition_lines,id'],
+            'invoice_repartition_lines.*.repartition_type'   => ['required', 'string', Rule::enum(RepartitionType::class)],
+            'invoice_repartition_lines.*.factor_percent'     => ['nullable', 'numeric', 'min:-100', 'max:100'],
+            'invoice_repartition_lines.*.account_id'         => ['nullable', 'integer', 'exists:accounts_accounts,id'],
+            'invoice_repartition_lines.*.use_in_tax_closing' => ['sometimes', 'boolean'],
+            'refund_repartition_lines'                       => [($isUpdate ? 'sometimes|required' : 'required'), 'array', 'min:2'],
+            'refund_repartition_lines.*.id'                  => ['sometimes', 'integer', 'exists:accounts_tax_partition_lines,id'],
+            'refund_repartition_lines.*.repartition_type'    => ['required', 'string', Rule::enum(RepartitionType::class)],
+            'refund_repartition_lines.*.factor_percent'      => ['nullable', 'numeric', 'min:-100', 'max:100'],
+            'refund_repartition_lines.*.account_id'          => ['nullable', 'integer', 'exists:accounts_accounts,id'],
+            'refund_repartition_lines.*.use_in_tax_closing'  => ['sometimes', 'boolean'],
         ];
     }
 

@@ -2,6 +2,7 @@
 
 namespace Webkul\Inventory\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Webkul\Account\Http\Requests\ProductRequest as BaseProductRequest;
 use Webkul\Inventory\Enums\ProductTracking;
 
@@ -10,17 +11,17 @@ class ProductRequest extends BaseProductRequest
     public function rules(): array
     {
         return array_merge(parent::rules(), [
-            'is_storable'         => 'nullable|boolean',
-            'tracking'            => 'nullable|string|in:'.implode(',', array_column(ProductTracking::cases(), 'value')),
-            'use_expiration_date' => 'nullable|boolean',
-            'sale_delay'          => 'nullable|numeric|min:0|max:99999999999',
-            'expiration_time'     => 'nullable|numeric|min:0|max:99999999999',
-            'use_time'            => 'nullable|numeric|min:0|max:99999999999',
-            'removal_time'        => 'nullable|numeric|min:0|max:99999999999',
-            'alert_time'          => 'nullable|numeric|min:0|max:99999999999',
-            'responsible_id'      => 'nullable|integer|exists:users,id',
-            'routes'              => 'nullable|array',
-            'routes.*'            => 'integer|exists:inventories_routes,id',
+            'is_storable'         => ['nullable', 'boolean'],
+            'tracking'            => ['nullable', 'string', Rule::enum(ProductTracking::class)],
+            'use_expiration_date' => ['nullable', 'boolean'],
+            'sale_delay'          => ['nullable', 'numeric', 'min:0', 'max:99999999999'],
+            'expiration_time'     => ['nullable', 'numeric', 'min:0', 'max:99999999999'],
+            'use_time'            => ['nullable', 'numeric', 'min:0', 'max:99999999999'],
+            'removal_time'        => ['nullable', 'numeric', 'min:0', 'max:99999999999'],
+            'alert_time'          => ['nullable', 'numeric', 'min:0', 'max:99999999999'],
+            'responsible_id'      => ['nullable', 'integer', 'exists:users,id'],
+            'routes'              => ['nullable', 'array'],
+            'routes.*'            => ['integer', 'exists:inventories_routes,id'],
         ]);
     }
 

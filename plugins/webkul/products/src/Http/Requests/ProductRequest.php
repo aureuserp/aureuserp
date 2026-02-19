@@ -3,6 +3,7 @@
 namespace Webkul\Product\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Webkul\Product\Enums\ProductType;
 
 class ProductRequest extends FormRequest
@@ -25,29 +26,29 @@ class ProductRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         return [
-            'type'                 => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(ProductType::cases(), 'value')),
-            'name'                 => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'service_tracking'     => 'nullable|string|max:255',
-            'reference'            => 'nullable|string|max:255',
-            'barcode'              => 'nullable|string|max:255',
-            'price'                => ($isUpdate ? 'sometimes|' : '').'required|numeric|min:0',
-            'cost'                 => 'nullable|numeric|min:0',
-            'volume'               => 'nullable|numeric|min:0|max:99999999999',
-            'weight'               => 'nullable|numeric|min:0|max:99999999999',
-            'description'          => 'nullable|string',
-            'description_purchase' => 'nullable|string',
-            'description_sale'     => 'nullable|string',
-            'enable_sales'         => 'nullable|boolean',
-            'enable_purchase'      => 'nullable|boolean',
-            'is_favorite'          => 'nullable|boolean',
-            'images'               => 'nullable|array',
-            'images.*'             => 'nullable|string',
-            'uom_id'               => 'nullable|integer',
-            'uom_po_id'            => 'nullable|integer',
-            'category_id'          => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:products_categories,id',
-            'company_id'           => 'nullable|integer',
-            'tags'                 => 'nullable|array',
-            'tags.*'               => 'integer|exists:products_tags,id',
+            'type'                 => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(ProductType::class)],
+            'name'                 => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'service_tracking'     => ['nullable', 'string', 'max:255'],
+            'reference'            => ['nullable', 'string', 'max:255'],
+            'barcode'              => ['nullable', 'string', 'max:255'],
+            'price'                => [($isUpdate ? 'sometimes|required' : 'required'), 'numeric', 'min:0'],
+            'cost'                 => ['nullable', 'numeric', 'min:0'],
+            'volume'               => ['nullable', 'numeric', 'min:0', 'max:99999999999'],
+            'weight'               => ['nullable', 'numeric', 'min:0', 'max:99999999999'],
+            'description'          => ['nullable', 'string'],
+            'description_purchase' => ['nullable', 'string'],
+            'description_sale'     => ['nullable', 'string'],
+            'enable_sales'         => ['nullable', 'boolean'],
+            'enable_purchase'      => ['nullable', 'boolean'],
+            'is_favorite'          => ['nullable', 'boolean'],
+            'images'               => ['nullable', 'array'],
+            'images.*'             => ['nullable', 'string'],
+            'uom_id'               => ['nullable', 'integer'],
+            'uom_po_id'            => ['nullable', 'integer'],
+            'category_id'          => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:products_categories,id'],
+            'company_id'           => ['nullable', 'integer'],
+            'tags'                 => ['nullable', 'array'],
+            'tags.*'               => ['integer', 'exists:products_tags,id'],
         ];
     }
 

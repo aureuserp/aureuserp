@@ -24,7 +24,7 @@ class UOMCategoryRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         return [
-            'name' => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
+            'name' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
         ];
     }
 

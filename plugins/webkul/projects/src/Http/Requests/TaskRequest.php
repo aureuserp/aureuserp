@@ -3,6 +3,7 @@
 namespace Webkul\Project\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Webkul\Project\Enums\TaskState;
 use Webkul\Project\Models\Milestone;
 use Webkul\Project\Models\Task;
@@ -19,21 +20,21 @@ class TaskRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         return [
-            'title' => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'description' => 'nullable|string',
-            'state' => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(TaskState::cases(), 'value')),
-            'stage_id' => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:projects_task_stages,id',
-            'project_id' => 'nullable|integer|exists:projects_projects,id',
-            'milestone_id' => 'nullable|integer|exists:projects_milestones,id',
-            'partner_id' => 'nullable|integer|exists:partners_partners,id',
-            'parent_id' => 'nullable|integer|exists:projects_tasks,id',
-            'deadline' => 'nullable|date',
-            'allocated_hours' => 'nullable|numeric|min:0',
-            'priority' => 'nullable|boolean',
-            'users' => 'nullable|array',
-            'users.*' => 'integer|exists:users,id',
-            'tags' => 'nullable|array',
-            'tags.*' => 'integer|exists:projects_tags,id',
+            'title' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'state' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(TaskState::class)],
+            'stage_id' => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:projects_task_stages,id'],
+            'project_id' => ['nullable', 'integer', 'exists:projects_projects,id'],
+            'milestone_id' => ['nullable', 'integer', 'exists:projects_milestones,id'],
+            'partner_id' => ['nullable', 'integer', 'exists:partners_partners,id'],
+            'parent_id' => ['nullable', 'integer', 'exists:projects_tasks,id'],
+            'deadline' => ['nullable', 'date'],
+            'allocated_hours' => ['nullable', 'numeric', 'min:0'],
+            'priority' => ['nullable', 'boolean'],
+            'users' => ['nullable', 'array'],
+            'users.*' => ['integer', 'exists:users,id'],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['integer', 'exists:projects_tags,id'],
         ];
     }
 

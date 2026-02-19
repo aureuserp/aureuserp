@@ -24,12 +24,12 @@ class CountryRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         $rules = [
-            'name'           => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'code'           => ($isUpdate ? 'sometimes|' : '').'required|string|max:2',
-            'phone_code'     => 'nullable|string|max:10',
-            'currency_id'    => 'nullable|exists:currencies,id',
-            'state_required' => ($isUpdate ? 'sometimes|' : '').'required|boolean',
-            'zip_required'   => ($isUpdate ? 'sometimes|' : '').'required|boolean',
+            'name'           => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'code'           => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:2'],
+            'phone_code'     => ['nullable', 'string', 'max:10'],
+            'currency_id'    => ['nullable', 'exists:currencies,id'],
+            'state_required' => [($isUpdate ? 'sometimes|required' : 'required'), 'boolean'],
+            'zip_required'   => [($isUpdate ? 'sometimes|required' : 'required'), 'boolean'],
         ];
 
         return $rules;

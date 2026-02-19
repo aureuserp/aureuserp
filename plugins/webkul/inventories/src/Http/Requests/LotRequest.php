@@ -16,10 +16,10 @@ class LotRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         return [
-            'name'        => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'product_id'  => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:products_products,id',
-            'reference'   => 'nullable|string|max:255',
-            'description' => 'nullable|string',
+            'name'        => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'product_id'  => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:products_products,id'],
+            'reference'   => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
         ];
     }
 

@@ -16,14 +16,14 @@ class RouteRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         return [
-            'name'                        => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'company_id'                  => 'nullable|integer|exists:companies,id',
-            'product_category_selectable' => 'nullable|boolean',
-            'product_selectable'          => 'nullable|boolean',
-            'packaging_selectable'        => 'nullable|boolean',
-            'warehouse_selectable'        => 'nullable|boolean',
-            'warehouses'                  => 'nullable|array',
-            'warehouses.*'                => 'integer|exists:inventories_warehouses,id',
+            'name'                        => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'company_id'                  => ['nullable', 'integer', 'exists:companies,id'],
+            'product_category_selectable' => ['nullable', 'boolean'],
+            'product_selectable'          => ['nullable', 'boolean'],
+            'packaging_selectable'        => ['nullable', 'boolean'],
+            'warehouse_selectable'        => ['nullable', 'boolean'],
+            'warehouses'                  => ['nullable', 'array'],
+            'warehouses.*'                => ['integer', 'exists:inventories_warehouses,id'],
         ];
     }
 

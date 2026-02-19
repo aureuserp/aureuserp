@@ -14,9 +14,9 @@ class CategoryRequest extends BaseCategoryRequest
     public function rules(): array
     {
         return array_merge(parent::rules(), [
-            'property_account_income_id'       => 'nullable|integer|exists:accounts_accounts,id',
-            'property_account_expense_id'      => 'nullable|integer|exists:accounts_accounts,id',
-            'property_account_down_payment_id' => 'nullable|integer|exists:accounts_accounts,id',
+            'property_account_income_id'       => ['nullable', 'integer', 'exists:accounts_accounts,id'],
+            'property_account_expense_id'      => ['nullable', 'integer', 'exists:accounts_accounts,id'],
+            'property_account_down_payment_id' => ['nullable', 'integer', 'exists:accounts_accounts,id'],
         ]);
     }
 

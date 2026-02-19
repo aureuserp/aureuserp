@@ -3,6 +3,7 @@
 namespace Webkul\Support\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Webkul\Support\Enums\UOMType;
 
 class UOMRequest extends FormRequest
@@ -25,11 +26,11 @@ class UOMRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         return [
-            'type'        => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(UOMType::cases(), 'value')),
-            'name'        => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'factor'      => ($isUpdate ? 'sometimes|' : '').'required|numeric|min:0',
-            'rounding'    => ($isUpdate ? 'sometimes|' : '').'required|numeric|min:0',
-            'category_id' => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:unit_of_measure_categories,id',
+            'type'        => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(UOMType::class)],
+            'name'        => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'factor'      => [($isUpdate ? 'sometimes|required' : 'required'), 'numeric', 'min:0'],
+            'rounding'    => [($isUpdate ? 'sometimes|required' : 'required'), 'numeric', 'min:0'],
+            'category_id' => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:unit_of_measure_categories,id'],
         ];
     }
 

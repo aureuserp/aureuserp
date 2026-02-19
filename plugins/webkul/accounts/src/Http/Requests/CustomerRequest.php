@@ -17,21 +17,21 @@ class CustomerRequest extends BasePartnerRequest
 
         // Add account-specific validation rules
         $additionalRules = [
-            'autopost_bills'                              => 'nullable|boolean',
-            'ignore_abnormal_invoice_date'                => 'nullable|boolean',
-            'ignore_abnormal_invoice_amount'              => 'nullable|numeric',
-            'invoice_sending_method'                      => 'nullable|string|max:255',
-            'invoice_edi_format_store'                    => 'nullable|string|max:255',
-            'peppol_endpoint'                             => 'nullable|string|max:255',
-            'peppol_eas'                                  => 'nullable|string|max:255',
-            'comment'                                     => 'nullable|string',
-            'property_account_payable_id'                 => 'nullable|integer|exists:accounts_accounts,id',
-            'property_account_receivable_id'              => 'nullable|integer|exists:accounts_accounts,id',
-            'property_account_position_id'                => 'nullable|integer|exists:accounts_fiscal_positions,id',
-            'property_payment_term_id'                    => 'nullable|integer|exists:accounts_payment_terms,id',
-            'property_supplier_payment_term_id'           => 'nullable|integer|exists:accounts_payment_terms,id',
-            'property_outbound_payment_method_line_id'    => 'nullable|integer|exists:accounts_payment_method_lines,id',
-            'property_inbound_payment_method_line_id'     => 'nullable|integer|exists:accounts_payment_method_lines,id',
+            'autopost_bills'                              => ['nullable', 'boolean'],
+            'ignore_abnormal_invoice_date'                => ['nullable', 'boolean'],
+            'ignore_abnormal_invoice_amount'              => ['nullable', 'numeric'],
+            'invoice_sending_method'                      => ['nullable', 'string', 'max:255'],
+            'invoice_edi_format_store'                    => ['nullable', 'string', 'max:255'],
+            'peppol_endpoint'                             => ['nullable', 'string', 'max:255'],
+            'peppol_eas'                                  => ['nullable', 'string', 'max:255'],
+            'comment'                                     => ['nullable', 'string'],
+            'property_account_payable_id'                 => ['nullable', 'integer', 'exists:accounts_accounts,id'],
+            'property_account_receivable_id'              => ['nullable', 'integer', 'exists:accounts_accounts,id'],
+            'property_account_position_id'                => ['nullable', 'integer', 'exists:accounts_fiscal_positions,id'],
+            'property_payment_term_id'                    => ['nullable', 'integer', 'exists:accounts_payment_terms,id'],
+            'property_supplier_payment_term_id'           => ['nullable', 'integer', 'exists:accounts_payment_terms,id'],
+            'property_outbound_payment_method_line_id'    => ['nullable', 'integer', 'exists:accounts_payment_method_lines,id'],
+            'property_inbound_payment_method_line_id'     => ['nullable', 'integer', 'exists:accounts_payment_method_lines,id'],
         ];
 
         return array_merge($rules, $additionalRules);

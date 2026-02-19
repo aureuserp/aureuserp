@@ -24,10 +24,10 @@ class TaxGroupRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         return [
-            'name'               => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'company_id'         => 'nullable|integer|exists:companies,id',
-            'country_id'         => 'nullable|integer|exists:countries,id',
-            'preceding_subtotal' => 'nullable|string|max:255',
+            'name'               => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'company_id'         => ['nullable', 'integer', 'exists:companies,id'],
+            'country_id'         => ['nullable', 'integer', 'exists:countries,id'],
+            'preceding_subtotal' => ['nullable', 'string', 'max:255'],
         ];
     }
 

@@ -24,8 +24,8 @@ class IncotermRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         return [
-            'code' => ($isUpdate ? 'sometimes|' : '').'required|string|max:3',
-            'name' => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
+            'code' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:3'],
+            'name' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
         ];
     }
 

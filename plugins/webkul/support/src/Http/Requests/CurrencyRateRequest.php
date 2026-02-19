@@ -24,9 +24,9 @@ class CurrencyRateRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         $rules = [
-            'name'       => ($isUpdate ? 'sometimes|' : '').'required|date',
-            'rate'       => ($isUpdate ? 'sometimes|' : '').'required|numeric|min:0',
-            'company_id' => 'nullable|integer|exists:companies,id',
+            'name'       => [($isUpdate ? 'sometimes|required' : 'required'), 'date'],
+            'rate'       => [($isUpdate ? 'sometimes|required' : 'required'), 'numeric', 'min:0'],
+            'company_id' => ['nullable', 'integer', 'exists:companies,id'],
         ];
 
         return $rules;

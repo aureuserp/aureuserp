@@ -24,8 +24,8 @@ class TitleRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         $rules = [
-            'name'       => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'short_name' => 'nullable|string|max:50',
+            'name'       => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'short_name' => ['nullable', 'string', 'max:50'],
         ];
 
         return $rules;

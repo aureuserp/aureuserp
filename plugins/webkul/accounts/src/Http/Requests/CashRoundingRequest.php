@@ -3,6 +3,7 @@
 namespace Webkul\Account\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Webkul\Account\Enums\RoundingMethod;
 use Webkul\Account\Enums\RoundingStrategy;
 
@@ -26,12 +27,12 @@ class CashRoundingRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         return [
-            'name'              => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'strategy'          => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(RoundingStrategy::cases(), 'value')),
-            'rounding_method'   => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(RoundingMethod::cases(), 'value')),
-            'rounding'          => ($isUpdate ? 'sometimes|' : '').'required|numeric|min:0',
-            'profit_account_id' => 'nullable|integer|exists:accounts_accounts,id',
-            'loss_account_id'   => 'nullable|integer|exists:accounts_accounts,id',
+            'name'              => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'strategy'          => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(RoundingStrategy::class)],
+            'rounding_method'   => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(RoundingMethod::class)],
+            'rounding'          => [($isUpdate ? 'sometimes|required' : 'required'), 'numeric', 'min:0'],
+            'profit_account_id' => ['nullable', 'integer', 'exists:accounts_accounts,id'],
+            'loss_account_id'   => ['nullable', 'integer', 'exists:accounts_accounts,id'],
         ];
     }
 

@@ -3,6 +3,7 @@
 namespace Webkul\Account\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Webkul\Account\Enums\JournalType;
 
 class JournalRequest extends FormRequest
@@ -25,34 +26,34 @@ class JournalRequest extends FormRequest
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
         return [
-            'name'                      => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
-            'code'                      => ($isUpdate ? 'sometimes|' : '').'required|string|max:5',
-            'type'                      => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(JournalType::cases(), 'value')),
-            'company_id'                => 'nullable|integer|exists:companies,id',
-            'currency_id'               => 'nullable|integer|exists:currencies,id',
-            'default_account_id'        => 'nullable|integer|exists:accounts_accounts,id',
-            'suspense_account_id'       => 'nullable|integer|exists:accounts_accounts,id',
-            'profit_account_id'         => 'nullable|integer|exists:accounts_accounts,id',
-            'loss_account_id'           => 'nullable|integer|exists:accounts_accounts,id',
-            'bank_account_id'           => 'nullable|integer|exists:partners_bank_accounts,id',
-            'color'                     => 'nullable|string|max:7',
-            'show_on_dashboard'         => 'nullable|boolean',
-            'refund_order'              => 'nullable|boolean',
-            'payment_order'             => 'nullable|boolean',
+            'name'                      => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'code'                      => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:5'],
+            'type'                      => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(JournalType::class)],
+            'company_id'                => ['nullable', 'integer', 'exists:companies,id'],
+            'currency_id'               => ['nullable', 'integer', 'exists:currencies,id'],
+            'default_account_id'        => ['nullable', 'integer', 'exists:accounts_accounts,id'],
+            'suspense_account_id'       => ['nullable', 'integer', 'exists:accounts_accounts,id'],
+            'profit_account_id'         => ['nullable', 'integer', 'exists:accounts_accounts,id'],
+            'loss_account_id'           => ['nullable', 'integer', 'exists:accounts_accounts,id'],
+            'bank_account_id'           => ['nullable', 'integer', 'exists:partners_bank_accounts,id'],
+            'color'                     => ['nullable', 'string', 'max:7'],
+            'show_on_dashboard'         => ['nullable', 'boolean'],
+            'refund_order'              => ['nullable', 'boolean'],
+            'payment_order'             => ['nullable', 'boolean'],
 
             // Inbound payment method lines
-            'inbound_payment_method_lines'                       => 'nullable|array',
-            'inbound_payment_method_lines.*.id'                  => 'sometimes|integer|exists:accounts_payment_method_lines,id',
-            'inbound_payment_method_lines.*.payment_method_id'   => 'required|integer|exists:accounts_payment_methods,id',
-            'inbound_payment_method_lines.*.name'                => 'required|string|max:255',
-            'inbound_payment_method_lines.*.payment_account_id'  => 'nullable|integer|exists:accounts_accounts,id',
+            'inbound_payment_method_lines'                       => ['nullable', 'array'],
+            'inbound_payment_method_lines.*.id'                  => ['sometimes', 'integer', 'exists:accounts_payment_method_lines,id'],
+            'inbound_payment_method_lines.*.payment_method_id'   => ['required', 'integer', 'exists:accounts_payment_methods,id'],
+            'inbound_payment_method_lines.*.name'                => ['required', 'string', 'max:255'],
+            'inbound_payment_method_lines.*.payment_account_id'  => ['nullable', 'integer', 'exists:accounts_accounts,id'],
 
             // Outbound payment method lines
-            'outbound_payment_method_lines'                      => 'nullable|array',
-            'outbound_payment_method_lines.*.id'                 => 'sometimes|integer|exists:accounts_payment_method_lines,id',
-            'outbound_payment_method_lines.*.payment_method_id'  => 'required|integer|exists:accounts_payment_methods,id',
-            'outbound_payment_method_lines.*.name'               => 'required|string|max:255',
-            'outbound_payment_method_lines.*.payment_account_id' => 'nullable|integer|exists:accounts_accounts,id',
+            'outbound_payment_method_lines'                      => ['nullable', 'array'],
+            'outbound_payment_method_lines.*.id'                 => ['sometimes', 'integer', 'exists:accounts_payment_method_lines,id'],
+            'outbound_payment_method_lines.*.payment_method_id'  => ['required', 'integer', 'exists:accounts_payment_methods,id'],
+            'outbound_payment_method_lines.*.name'               => ['required', 'string', 'max:255'],
+            'outbound_payment_method_lines.*.payment_account_id' => ['nullable', 'integer', 'exists:accounts_accounts,id'],
         ];
     }
 
