@@ -1,4 +1,0 @@
-interface:
-  display_name: "API Generation"
-  short_description: "Generate generic AureusERP plugin APIs."
-  default_prompt: "Generate or update plugin API endpoints for this module using shared AureusERP conventions for routes, controllers, requests, resources, policies, QueryBuilder, and Scribe attributes."

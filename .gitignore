@@ -20,6 +20,8 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/.codex
+/.kilocode
 /.zed
 
 /playwright-report
