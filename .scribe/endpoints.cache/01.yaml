@@ -203,10 +203,7 @@ endpoints:
         required: false
         example: one_step
         type: string
-        enumValues:
-          - one_step
-          - two_steps
-          - three_steps
+        enumValues: []
         exampleWasSpecified: false
         nullable: true
         deprecated: false
@@ -217,10 +214,7 @@ endpoints:
         required: false
         example: one_step
         type: string
-        enumValues:
-          - one_step
-          - two_steps
-          - three_steps
+        enumValues: []
         exampleWasSpecified: false
         nullable: true
         deprecated: false
@@ -426,10 +420,7 @@ endpoints:
         required: false
         example: one_step
         type: string
-        enumValues:
-          - one_step
-          - two_steps
-          - three_steps
+        enumValues: []
         exampleWasSpecified: false
         nullable: true
         deprecated: false
@@ -440,10 +431,7 @@ endpoints:
         required: false
         example: one_step
         type: string
-        enumValues:
-          - one_step
-          - two_steps
-          - three_steps
+        enumValues: []
         exampleWasSpecified: false
         nullable: true
         deprecated: false

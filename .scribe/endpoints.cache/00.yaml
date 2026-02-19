@@ -337,7 +337,7 @@ endpoints:
         custom: []
         name: name
         description: 'Payment term name. Must not be greater than 255 characters.'
-        required: true
+        required: false
         example: '30 Days'
         type: string
         enumValues: []
@@ -1006,7 +1006,7 @@ endpoints:
         custom: []
         name: value
         description: 'Due term value type.'
-        required: true
+        required: false
         example: percent
         type: string
         enumValues:
@@ -1019,7 +1019,7 @@ endpoints:
         custom: []
         name: value_amount
         description: 'Value amount (percentage or fixed amount). Must be at least 0. Must not be greater than 100.'
-        required: true
+        required: false
         example: 100.0
         type: number
         enumValues: []
@@ -1030,7 +1030,7 @@ endpoints:
         custom: []
         name: delay_type
         description: 'Delay type.'
-        required: true
+        required: false
         example: days_after
         type: string
         enumValues:
@@ -1045,7 +1045,7 @@ endpoints:
         custom: []
         name: nb_days
         description: 'Number of days. Must be at least 0.'
-        required: true
+        required: false
         example: 30
         type: integer
         enumValues: []
@@ -1502,7 +1502,7 @@ endpoints:
         custom: []
         name: code
         description: 'Incoterm code (3 characters). Must not be greater than 3 characters.'
-        required: true
+        required: false
         example: EXW
         type: string
         enumValues: []
@@ -1513,7 +1513,7 @@ endpoints:
         custom: []
         name: name
         description: 'Incoterm name. Must not be greater than 255 characters.'
-        required: true
+        required: false
         example: 'Ex Works'
         type: string
         enumValues: []
@@ -2215,7 +2215,7 @@ endpoints:
         custom: []
         name: name
         description: 'Account name. Must not be greater than 255 characters.'
-        required: true
+        required: false
         example: 'Cash and Bank'
         type: string
         enumValues: []
@@ -2226,7 +2226,7 @@ endpoints:
         custom: []
         name: code
         description: 'Account code. Must not be greater than 64 characters.'
-        required: true
+        required: false
         example: '1000'
         type: string
         enumValues: []
@@ -2237,7 +2237,7 @@ endpoints:
         custom: []
         name: account_type
         description: 'Account type.'
-        required: true
+        required: false
         example: asset_receivable
         type: string
         enumValues:
@@ -3053,7 +3053,7 @@ endpoints:
         custom: []
         name: name
         description: 'Journal name. Must not be greater than 255 characters.'
-        required: true
+        required: false
         example: 'Bank Journal'
         type: string
         enumValues: []
@@ -3064,7 +3064,7 @@ endpoints:
         custom: []
         name: code
         description: 'Journal code (max 5 chars). Must not be greater than 5 characters.'
-        required: true
+        required: false
         example: BNK
         type: string
         enumValues: []
@@ -3075,7 +3075,7 @@ endpoints:
         custom: []
         name: type
         description: 'Journal type.'
-        required: true
+        required: false
         example: bank
         type: string
         enumValues:
@@ -3980,7 +3980,7 @@ endpoints:
         custom: []
         name: name
         description: 'Fiscal position name. Must not be greater than 255 characters.'
-        required: true
+        required: false
         example: Domestic
         type: string
         enumValues: []
@@ -3991,7 +3991,7 @@ endpoints:
         custom: []
         name: company_id
         description: 'Company ID. The <code>id</code> of an existing record in the companies table.'
-        required: true
+        required: false
         example: 1
         type: integer
         enumValues: []
@@ -4411,7 +4411,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":null,"name":"molestiae similique","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":0.05,"profit_account_id":1479,"loss_account_id":1480,"creator_id":35954,"created_at":null,"updated_at":null},{"id":null,"name":"itaque consectetur","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":0.05,"profit_account_id":1481,"loss_account_id":1482,"creator_id":35957,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        content: '{"data":[{"id":null,"name":"ut temporibus","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":0.05,"profit_account_id":1489,"loss_account_id":1490,"creator_id":35995,"created_at":null,"updated_at":null},{"id":null,"name":"voluptates molestias","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":0.05,"profit_account_id":1491,"loss_account_id":1492,"creator_id":35998,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
         headers: []
         description: ''
       -
@@ -4535,7 +4535,7 @@ endpoints:
       -
         custom: []
         status: 201
-        content: '{"data":{"id":null,"name":"architecto eius","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":0.05,"profit_account_id":1483,"loss_account_id":1484,"creator_id":35960,"created_at":null,"updated_at":null},"message":"Cash rounding created successfully."}'
+        content: '{"data":{"id":null,"name":"architecto eius","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":0.05,"profit_account_id":1493,"loss_account_id":1494,"creator_id":36001,"created_at":null,"updated_at":null},"message":"Cash rounding created successfully."}'
         headers: []
         description: ''
       -
@@ -4612,7 +4612,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"aut adipisci","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":0.05,"profit_account_id":1485,"loss_account_id":1486,"creator_id":35963,"created_at":null,"updated_at":null}}'
+        content: '{"data":{"id":null,"name":"aut adipisci","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":0.05,"profit_account_id":1495,"loss_account_id":1496,"creator_id":36004,"created_at":null,"updated_at":null}}'
         headers: []
         description: ''
       -
@@ -4676,7 +4676,7 @@ endpoints:
         custom: []
         name: name
         description: 'Cash rounding name. Must not be greater than 255 characters.'
-        required: true
+        required: false
         example: '0.05 Rounding'
         type: string
         enumValues: []
@@ -4687,7 +4687,7 @@ endpoints:
         custom: []
         name: strategy
         description: 'Rounding strategy.'
-        required: true
+        required: false
         example: biggest_tax
         type: string
         enumValues:
@@ -4700,7 +4700,7 @@ endpoints:
         custom: []
         name: rounding_method
         description: 'Rounding method.'
-        required: true
+        required: false
         example: UP
         type: string
         enumValues:
@@ -4714,7 +4714,7 @@ endpoints:
         custom: []
         name: rounding
         description: 'Rounding precision. Must be at least 0.'
-        required: true
+        required: false
         example: 0.05
         type: number
         enumValues: []
@@ -4755,7 +4755,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":null,"name":"architecto eius","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":0.05,"profit_account_id":1487,"loss_account_id":1488,"creator_id":35966,"created_at":null,"updated_at":null},"message":"Cash rounding updated successfully."}'
+        content: '{"data":{"id":null,"name":"architecto eius","strategy":"biggest_tax","rounding_method":"HALF-UP","rounding":0.05,"profit_account_id":1497,"loss_account_id":1498,"creator_id":36007,"created_at":null,"updated_at":null},"message":"Cash rounding updated successfully."}'
         headers: []
         description: ''
       -
@@ -5195,7 +5195,7 @@ endpoints:
         custom: []
         name: name
         description: 'Tax group name. Must not be greater than 255 characters.'
-        required: true
+        required: false
         example: 'VAT Group'
         type: string
         enumValues: []
@@ -5838,7 +5838,7 @@ endpoints:
         name: 'invoice_repartition_lines[].repartition_type'
         description: ''
         required: true
-        example: base
+        example: architecto
         type: string
         enumValues:
           - base
@@ -5873,7 +5873,7 @@ endpoints:
         name: 'invoice_repartition_lines[].use_in_tax_closing'
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -5895,7 +5895,7 @@ endpoints:
         name: 'refund_repartition_lines[].repartition_type'
         description: ''
         required: true
-        example: tax
+        example: architecto
         type: string
         enumValues:
           - base
@@ -5930,7 +5930,7 @@ endpoints:
         name: 'refund_repartition_lines[].use_in_tax_closing'
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -5960,7 +5960,7 @@ endpoints:
           repartition_type: base
           factor_percent: null
           account_id: null
-          use_in_tax_closing: false
+          use_in_tax_closing: true
         -
           repartition_type: tax
           factor_percent: 100.0
@@ -5971,7 +5971,7 @@ endpoints:
           repartition_type: base
           factor_percent: null
           account_id: null
-          use_in_tax_closing: false
+          use_in_tax_closing: true
         -
           repartition_type: tax
           factor_percent: 100.0
@@ -6123,7 +6123,7 @@ endpoints:
         custom: []
         name: name
         description: 'Tax name. Must not be greater than 255 characters.'
-        required: true
+        required: false
         example: 'VAT 20%'
         type: string
         enumValues: []
@@ -6134,7 +6134,7 @@ endpoints:
         custom: []
         name: type_tax_use
         description: 'Tax type usage.'
-        required: true
+        required: false
         example: sale
         type: string
         enumValues:
@@ -6148,7 +6148,7 @@ endpoints:
         custom: []
         name: amount_type
         description: 'Tax computation type.'
-        required: true
+        required: false
         example: percent
         type: string
         enumValues:
@@ -6164,7 +6164,7 @@ endpoints:
         custom: []
         name: amount
         description: 'Tax amount/percentage. Must be at least 0.'
-        required: true
+        required: false
         example: 20.0
         type: number
         enumValues: []
@@ -6175,7 +6175,7 @@ endpoints:
         custom: []
         name: tax_group_id
         description: 'Tax group ID. The <code>id</code> of an existing record in the accounts_tax_groups table.'
-        required: true
+        required: false
         example: 1
         type: integer
         enumValues: []
@@ -6334,7 +6334,7 @@ endpoints:
         custom: []
         name: invoice_repartition_lines
         description: 'Tax repartition lines for invoices (at least 1 base and 1 tax line required). For updates: include "id" to update existing line, omit to create new. Lines not included will be deleted. Must have at least 2 items.'
-        required: true
+        required: false
         example:
           -
             repartition_type: base
@@ -6355,7 +6355,7 @@ endpoints:
         custom: []
         name: refund_repartition_lines
         description: 'Tax repartition lines for refunds (must match invoice lines structure). For updates: include "id" to update existing line, omit to create new. Lines not included will be deleted. Must have at least 2 items.'
-        required: true
+        required: false
         example:
           -
             repartition_type: base
@@ -6388,7 +6388,7 @@ endpoints:
         name: 'invoice_repartition_lines[].repartition_type'
         description: ''
         required: true
-        example: tax
+        example: architecto
         type: string
         enumValues:
           - base
@@ -6445,7 +6445,7 @@ endpoints:
         name: 'refund_repartition_lines[].repartition_type'
         description: ''
         required: true
-        example: base
+        example: architecto
         type: string
         enumValues:
           - base
@@ -13213,7 +13213,7 @@ endpoints:
         custom: []
         name: invoice_lines
         description: 'Array of invoice line items with product details, quantities, prices, and taxes. Must have at least 1 items.'
-        required: true
+        required: false
         example:
           -
             product_id: 1
@@ -13816,7 +13816,7 @@ endpoints:
         name: date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-02-19T10:06:03'
+        example: '2026-02-19T11:42:34'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -13825,7 +13825,7 @@ endpoints:
     cleanBodyParameters:
       reason: b
       journal_id: 16
-      date: '2026-02-19T10:06:03'
+      date: '2026-02-19T11:42:34'
     fileParameters: []
     responses:
       -
@@ -14810,7 +14810,7 @@ endpoints:
         custom: []
         name: invoice_lines
         description: 'Array of invoice line items with product details, quantities, prices, and taxes. Must have at least 1 items.'
-        required: true
+        required: false
         example:
           -
             product_id: 1
@@ -16312,7 +16312,7 @@ endpoints:
         custom: []
         name: invoice_lines
         description: 'Array of invoice line items with product details, quantities, prices, and taxes. Must have at least 1 items.'
-        required: true
+        required: false
         example:
           -
             product_id: 1
@@ -16921,7 +16921,7 @@ endpoints:
         name: date
         description: 'Must be a valid date.'
         required: true
-        example: '2026-02-19T10:06:03'
+        example: '2026-02-19T11:42:34'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -16930,7 +16930,7 @@ endpoints:
     cleanBodyParameters:
       reason: b
       journal_id: 16
-      date: '2026-02-19T10:06:03'
+      date: '2026-02-19T11:42:34'
     fileParameters: []
     responses:
       -
@@ -17927,7 +17927,7 @@ endpoints:
         custom: []
         name: invoice_lines
         description: 'Array of invoice line items with product details, quantities, prices, and taxes. Must have at least 1 items.'
-        required: true
+        required: false
         example:
           -
             product_id: 1

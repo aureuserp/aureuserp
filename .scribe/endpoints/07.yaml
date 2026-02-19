@@ -206,7 +206,7 @@ endpoints:
         name: commitment_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-02-19T10:06:07'
+        example: '2026-02-19T11:42:39'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -473,7 +473,7 @@ endpoints:
       payment_term_id: 1
       date_order: '2026-02-18'
       validity_date: '2026-02-28'
-      commitment_date: '2026-02-19T10:06:07'
+      commitment_date: '2026-02-19T11:42:39'
       client_order_ref: b
       origin: 'n'
       note: 'Delivery within 7 business days.'
@@ -689,7 +689,7 @@ endpoints:
         name: commitment_date
         description: 'Must be a valid date.'
         required: false
-        example: '2026-02-19T10:06:07'
+        example: '2026-02-19T11:42:39'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -810,7 +810,7 @@ endpoints:
         custom: []
         name: lines
         description: 'Array of order line items with writable fields from the quotation form. Must have at least 1 items.'
-        required: true
+        required: false
         example:
           -
             product_id: 10
@@ -956,7 +956,7 @@ endpoints:
       payment_term_id: 1
       date_order: '2026-02-18'
       validity_date: '2026-02-28'
-      commitment_date: '2026-02-19T10:06:07'
+      commitment_date: '2026-02-19T11:42:39'
       client_order_ref: b
       origin: 'n'
       note: 'Delivery within 7 business days.'

@@ -2846,7 +2846,7 @@ endpoints:
         custom: []
         name: name
         description: 'UOM category name. Must not be greater than 255 characters.'
-        required: true
+        required: false
         example: Weight
         type: string
         enumValues: []
@@ -3363,7 +3363,7 @@ endpoints:
         custom: []
         name: type
         description: 'UOM type (reference, bigger, smaller).'
-        required: true
+        required: false
         example: reference
         type: string
         enumValues:
@@ -3377,7 +3377,7 @@ endpoints:
         custom: []
         name: name
         description: 'UOM name. Must not be greater than 255 characters.'
-        required: true
+        required: false
         example: Kilogram
         type: string
         enumValues: []
@@ -3388,7 +3388,7 @@ endpoints:
         custom: []
         name: factor
         description: 'Conversion factor. Must be at least 0.'
-        required: true
+        required: false
         example: 1.0
         type: number
         enumValues: []
@@ -3399,7 +3399,7 @@ endpoints:
         custom: []
         name: rounding
         description: 'Rounding precision. Must be at least 0.'
-        required: true
+        required: false
         example: 0.01
         type: number
         enumValues: []
@@ -3410,7 +3410,7 @@ endpoints:
         custom: []
         name: category_id
         description: 'UOM category ID. The <code>id</code> of an existing record in the unit_of_measure_categories table.'
-        required: true
+        required: false
         example: 1
         type: integer
         enumValues: []

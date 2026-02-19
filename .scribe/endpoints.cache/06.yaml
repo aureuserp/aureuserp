@@ -943,7 +943,7 @@ endpoints:
         name: planned_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-02-19T10:06:06'
+        example: '2026-02-19T11:42:38'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1056,7 +1056,7 @@ endpoints:
         name: 'lines[].planned_at'
         description: 'Must be a valid date.'
         required: true
-        example: '2026-02-19T10:06:06'
+        example: '2026-02-19T11:42:38'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1169,7 +1169,7 @@ endpoints:
       company_id: 1
       partner_reference: VEN-REF-009
       requisition_id: 5
-      planned_at: '2026-02-19T10:06:06'
+      planned_at: '2026-02-19T11:42:38'
       user_id: 2
       payment_term_id: 4
       incoterm_id: 3
@@ -1403,7 +1403,7 @@ endpoints:
         name: planned_at
         description: 'Must be a valid date.'
         required: false
-        example: '2026-02-19T10:06:07'
+        example: '2026-02-19T11:42:38'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1468,7 +1468,7 @@ endpoints:
         custom: []
         name: lines
         description: 'Array of purchase order lines with writable fields from the order form. Must have at least 1 items.'
-        required: true
+        required: false
         example:
           -
             product_id: 101
@@ -1516,7 +1516,7 @@ endpoints:
         name: 'lines[].planned_at'
         description: 'Must be a valid date.'
         required: true
-        example: '2026-02-19T10:06:07'
+        example: '2026-02-19T11:42:38'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1629,7 +1629,7 @@ endpoints:
       company_id: 1
       partner_reference: VEN-REF-009
       requisition_id: 5
-      planned_at: '2026-02-19T10:06:07'
+      planned_at: '2026-02-19T11:42:38'
       user_id: 2
       payment_term_id: 4
       incoterm_id: 3
@@ -3170,7 +3170,7 @@ endpoints:
         custom: []
         name: lines
         description: 'Array of agreement lines with writable fields from the purchase agreement form. Must have at least 1 items.'
-        required: true
+        required: false
         example:
           -
             product_id: 101
