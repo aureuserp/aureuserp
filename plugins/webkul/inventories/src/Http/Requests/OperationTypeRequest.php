@@ -3,7 +3,6 @@
 namespace Webkul\Inventory\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Webkul\Inventory\Enums\CreateBackorder;
 use Webkul\Inventory\Enums\MoveType;
 use Webkul\Inventory\Enums\OperationType as InventoryOperationType;
@@ -18,44 +17,25 @@ class OperationTypeRequest extends FormRequest
 
     public function rules(): array
     {
-        $rules = [
-            'name'                               => ['required', 'string', 'max:255'],
-            'type'                               => ['required', Rule::enum(InventoryOperationType::class)],
-            'sequence_code'                      => ['required', 'string', 'max:255'],
-            'print_label'                        => ['nullable', 'boolean'],
-            'warehouse_id'                       => ['nullable', 'integer', 'exists:inventories_warehouses,id'],
-            'reservation_method'                 => ['nullable', Rule::enum(ReservationMethod::class)],
-            'auto_show_reception_report'         => ['nullable', 'boolean'],
-            'company_id'                         => ['nullable', 'integer', 'exists:companies,id'],
-            'return_operation_type_id'           => ['nullable', 'integer', 'exists:inventories_operation_types,id'],
-            'create_backorder'                   => ['required', Rule::enum(CreateBackorder::class)],
-            'move_type'                          => ['nullable', Rule::enum(MoveType::class)],
-            'use_create_lots'                    => ['nullable', 'boolean'],
-            'use_existing_lots'                  => ['nullable', 'boolean'],
-            'source_location_id'                 => ['required', 'integer', 'exists:inventories_locations,id'],
-            'destination_location_id'            => ['required', 'integer', 'exists:inventories_locations,id'],
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
+        return [
+            'name'                               => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
+            'type'                               => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(InventoryOperationType::cases(), 'value')),
+            'sequence_code'                      => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
+            'print_label'                        => 'nullable|boolean',
+            'warehouse_id'                       => 'nullable|integer|exists:inventories_warehouses,id',
+            'reservation_method'                 => 'nullable|string|in:'.implode(',', array_column(ReservationMethod::cases(), 'value')),
+            'auto_show_reception_report'         => 'nullable|boolean',
+            'company_id'                         => 'nullable|integer|exists:companies,id',
+            'return_operation_type_id'           => 'nullable|integer|exists:inventories_operation_types,id',
+            'create_backorder'                   => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(CreateBackorder::cases(), 'value')),
+            'move_type'                          => 'nullable|string|in:'.implode(',', array_column(MoveType::cases(), 'value')),
+            'use_create_lots'                    => 'nullable|boolean',
+            'use_existing_lots'                  => 'nullable|boolean',
+            'source_location_id'                 => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:inventories_locations,id',
+            'destination_location_id'            => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:inventories_locations,id',
         ];
-
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            foreach ($rules as $key => $rule) {
-                if (str_contains($key, '.')) {
-                    continue;
-                }
-
-                if (is_array($rule) && in_array('required', $rule, true)) {
-                    $index = array_search('required', $rule, true);
-
-                    if ($index !== false) {
-                        unset($rule[$index]);
-                    }
-
-                    array_unshift($rule, 'sometimes', 'required');
-                    $rules[$key] = array_values($rule);
-                }
-            }
-        }
-
-        return $rules;
     }
 
     public function bodyParameters(): array

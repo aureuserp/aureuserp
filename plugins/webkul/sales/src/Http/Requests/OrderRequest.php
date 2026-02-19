@@ -22,10 +22,12 @@ class OrderRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
         $rules = [
-            'partner_id'                    => 'required|integer|exists:partners_partners,id',
-            'payment_term_id'               => 'required|integer|exists:accounts_payment_terms,id',
-            'date_order'                    => 'required|date',
+            'partner_id'                    => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:partners_partners,id',
+            'payment_term_id'               => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:accounts_payment_terms,id',
+            'date_order'                    => ($isUpdate ? 'sometimes|' : '').'required|date',
             'validity_date'                 => 'nullable|date',
             'commitment_date'               => 'nullable|date',
             'client_order_ref'              => 'nullable|string|max:255',
@@ -39,7 +41,7 @@ class OrderRequest extends FormRequest
             'medium_id'                     => 'nullable|integer|exists:utm_mediums,id',
             'sales_order_tags'              => 'nullable|array',
             'sales_order_tags.*'            => 'integer|exists:sales_tags,id',
-            'lines'                         => 'required|array|min:1',
+            'lines'                         => ($isUpdate ? 'sometimes|' : '').'required|array|min:1',
             'lines.*.id'                    => 'nullable|integer|exists:sales_order_lines,id',
             'lines.*.product_id'            => 'required|integer|exists:products_products,id',
             'lines.*.product_qty'           => 'required|numeric|min:0|max:99999999999',
@@ -53,16 +55,6 @@ class OrderRequest extends FormRequest
             'lines.*.taxes'                 => 'nullable|array',
             'lines.*.taxes.*'               => 'integer|exists:accounts_taxes,id',
         ];
-
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            foreach ($rules as $key => $rule) {
-                if (! str_starts_with($key, 'lines')) {
-                    if (is_string($rule) && str_starts_with($rule, 'required')) {
-                        $rules[$key] = str_replace('required', 'sometimes|required', $rule);
-                    }
-                }
-            }
-        }
 
         return $rules;
     }

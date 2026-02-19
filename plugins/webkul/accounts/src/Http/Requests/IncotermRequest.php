@@ -21,9 +21,11 @@ class IncotermRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
         return [
-            'code' => ['required', 'string', 'max:3'],
-            'name' => ['required', 'string', 'max:255'],
+            'code' => ($isUpdate ? 'sometimes|' : '').'required|string|max:3',
+            'name' => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
         ];
     }
 

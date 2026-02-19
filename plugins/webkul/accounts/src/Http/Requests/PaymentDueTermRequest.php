@@ -3,7 +3,6 @@
 namespace Webkul\Account\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Webkul\Account\Enums\DelayType;
 use Webkul\Account\Enums\DueTermValue;
 
@@ -24,12 +23,14 @@ class PaymentDueTermRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
         return [
-            'value'           => ['required', Rule::enum(DueTermValue::class)],
-            'value_amount'    => ['required', 'numeric', 'min:0', 'max:100'],
-            'delay_type'      => ['required', Rule::enum(DelayType::class)],
-            'nb_days'         => ['required', 'integer', 'min:0'],
-            'days_next_month' => ['nullable', 'integer', 'min:1', 'max:31'],
+            'value'           => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(DueTermValue::cases(), 'value')),
+            'value_amount'    => ($isUpdate ? 'sometimes|' : '').'required|numeric|min:0|max:100',
+            'delay_type'      => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(DelayType::cases(), 'value')),
+            'nb_days'         => ($isUpdate ? 'sometimes|' : '').'required|integer|min:0',
+            'days_next_month' => 'nullable|integer|min:1|max:31',
         ];
     }
 

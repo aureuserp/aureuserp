@@ -13,28 +13,14 @@ class MilestoneRequest extends FormRequest
 
     public function rules(): array
     {
-        $rules = [
-            'name' => ['required', 'string', 'max:255'],
-            'deadline' => ['nullable', 'date'],
-            'is_completed' => ['nullable', 'boolean'],
-            'project_id' => ['required', 'integer', 'exists:projects_projects,id'],
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
+        return [
+            'name' => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
+            'deadline' => 'nullable|date',
+            'is_completed' => 'nullable|boolean',
+            'project_id' => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:projects_projects,id',
         ];
-
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            foreach ($rules as $key => $rule) {
-                if (is_array($rule) && in_array('required', $rule, true)) {
-                    $updatedRule = $rule;
-
-                    if (! in_array('sometimes', $updatedRule, true)) {
-                        array_unshift($updatedRule, 'sometimes');
-                    }
-
-                    $rules[$key] = $updatedRule;
-                }
-            }
-        }
-
-        return $rules;
     }
 
     public function bodyParameters(): array

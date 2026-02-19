@@ -22,11 +22,13 @@ class InvoiceRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
         $rules = [
-            'partner_id'                       => 'required|integer|exists:partners_partners,id',
-            'currency_id'                      => 'required|integer|exists:currencies,id',
-            'journal_id'                       => 'required|integer|exists:accounts_journals,id',
-            'invoice_date'                     => 'required|date',
+            'partner_id'                       => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:partners_partners,id',
+            'currency_id'                      => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:currencies,id',
+            'journal_id'                       => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:accounts_journals,id',
+            'invoice_date'                     => ($isUpdate ? 'sometimes|' : '').'required|date',
             'invoice_date_due'                 => 'nullable|date|prohibited_if:invoice_payment_term_id,*',
             'invoice_payment_term_id'          => 'nullable|integer|exists:accounts_payment_terms,id|prohibited_if:invoice_date_due,*',
             'fiscal_position_id'               => 'nullable|integer|exists:accounts_fiscal_positions,id',
@@ -40,7 +42,7 @@ class InvoiceRequest extends FormRequest
             'narration'                        => 'nullable|string',
             'incoterm_location'                => 'nullable|string|max:255',
             'delivery_date'                    => 'nullable|date',
-            'invoice_lines'                    => 'required|array|min:1',
+            'invoice_lines'                    => ($isUpdate ? 'sometimes|' : '').'required|array|min:1',
             'invoice_lines.*.product_id'       => 'required|integer|exists:products_products,id',
             'invoice_lines.*.quantity'         => 'required|numeric|min:0.0001',
             'invoice_lines.*.uom_id'           => 'required|integer|exists:unit_of_measures,id',
@@ -50,16 +52,6 @@ class InvoiceRequest extends FormRequest
             'invoice_lines.*.taxes.*'          => 'integer|exists:accounts_taxes,id',
             'invoice_lines.*.id'               => 'nullable|integer|exists:accounts_account_move_lines,id',
         ];
-
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            foreach ($rules as $key => $rule) {
-                if (! str_starts_with($key, 'invoice_lines')) {
-                    if (is_string($rule) && str_starts_with($rule, 'required')) {
-                        $rules[$key] = str_replace('required', 'sometimes|required', $rule);
-                    }
-                }
-            }
-        }
 
         return $rules;
     }

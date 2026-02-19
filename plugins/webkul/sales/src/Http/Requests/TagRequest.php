@@ -21,22 +21,13 @@ class TagRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
         $tagId = $this->route('tag');
 
-        $rules = [
-            'name'  => 'required|string|max:255|unique:sales_tags,name'.($tagId ? ','.$tagId : ''),
+        return [
+            'name'  => ($isUpdate ? 'sometimes|' : '').'required|string|max:255|unique:sales_tags,name,'.($tagId ?: 'NULL').',id,deleted_at,NULL',
             'color' => 'nullable|string|max:7',
         ];
-
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            foreach ($rules as $key => $rule) {
-                if (is_string($rule) && str_starts_with($rule, 'required')) {
-                    $rules[$key] = str_replace('required', 'sometimes|required', $rule);
-                }
-            }
-        }
-
-        return $rules;
     }
 
     /**

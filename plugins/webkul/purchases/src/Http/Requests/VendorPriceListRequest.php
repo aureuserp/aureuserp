@@ -22,10 +22,12 @@ class VendorPriceListRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
         $rules = [
-            'partner_id'    => 'required|integer|exists:partners_partners,id',
-            'product_id'    => 'required|integer|exists:products_products,id',
-            'currency_id'   => 'required|integer|exists:currencies,id',
+            'partner_id'    => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:partners_partners,id',
+            'product_id'    => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:products_products,id',
+            'currency_id'   => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:currencies,id',
             'company_id'    => 'nullable|integer|exists:companies,id',
             'product_name'  => 'nullable|string|max:255',
             'product_code'  => 'nullable|string|max:255',
@@ -36,14 +38,6 @@ class VendorPriceListRequest extends FormRequest
             'starts_at'     => 'nullable|date',
             'ends_at'       => 'nullable|date|after_or_equal:starts_at',
         ];
-
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            foreach ($rules as $key => $rule) {
-                if (is_string($rule) && str_starts_with($rule, 'required')) {
-                    $rules[$key] = str_replace('required', 'sometimes|required', $rule);
-                }
-            }
-        }
 
         return $rules;
     }

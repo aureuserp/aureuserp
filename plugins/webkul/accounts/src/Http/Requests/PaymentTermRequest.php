@@ -21,10 +21,12 @@ class PaymentTermRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
         return [
-            'name'       => ['required', 'string', 'max:255'],
-            'company_id' => ['nullable', 'integer', 'exists:companies,id'],
-            'note'       => ['nullable', 'string'],
+            'name'       => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
+            'company_id' => 'nullable|integer|exists:companies,id',
+            'note'       => 'nullable|string',
         ];
     }
 

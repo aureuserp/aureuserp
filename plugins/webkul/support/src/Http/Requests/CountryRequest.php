@@ -21,25 +21,16 @@ class CountryRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
         $rules = [
-            'name'           => 'required|string|max:255',
-            'code'           => 'required|string|max:2',
+            'name'           => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
+            'code'           => ($isUpdate ? 'sometimes|' : '').'required|string|max:2',
             'phone_code'     => 'nullable|string|max:10',
             'currency_id'    => 'nullable|exists:currencies,id',
-            'state_required' => 'required|boolean',
-            'zip_required'   => 'required|boolean',
+            'state_required' => ($isUpdate ? 'sometimes|' : '').'required|boolean',
+            'zip_required'   => ($isUpdate ? 'sometimes|' : '').'required|boolean',
         ];
-
-        // On update, make all fields optional
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $rules = array_map(function ($rule) {
-                if (is_string($rule) && str_starts_with($rule, 'required')) {
-                    return str_replace('required', 'sometimes|required', $rule);
-                }
-
-                return $rule;
-            }, $rules);
-        }
 
         return $rules;
     }

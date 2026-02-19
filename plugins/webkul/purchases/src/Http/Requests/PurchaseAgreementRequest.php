@@ -23,33 +23,25 @@ class PurchaseAgreementRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
         $rules = [
-            'partner_id'        => 'required|integer|exists:partners_partners,id',
-            'type'              => 'required|string|in:'.implode(',', array_column(RequisitionType::cases(), 'value')),
-            'currency_id'       => 'required|integer|exists:currencies,id',
-            'company_id'        => 'required|integer|exists:companies,id',
+            'partner_id'        => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:partners_partners,id',
+            'type'              => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(RequisitionType::cases(), 'value')),
+            'currency_id'       => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:currencies,id',
+            'company_id'        => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:companies,id',
             'user_id'           => 'nullable|integer|exists:users,id',
             'starts_at'         => 'nullable|date|after_or_equal:today',
             'ends_at'           => 'nullable|date|after_or_equal:starts_at',
             'reference'         => 'nullable|string|max:255',
             'description'       => 'nullable|string',
-            'lines'             => 'required|array|min:1',
+            'lines'             => ($isUpdate ? 'sometimes|' : '').'required|array|min:1',
             'lines.*.id'        => 'nullable|integer|exists:purchases_requisition_lines,id',
             'lines.*.product_id'=> 'required|integer|exists:products_products,id',
             'lines.*.qty'       => 'required|numeric|min:0|max:99999999999',
             'lines.*.uom_id'    => 'nullable|integer|exists:unit_of_measures,id',
             'lines.*.price_unit'=> 'required|numeric|min:0|max:99999999999',
         ];
-
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            foreach ($rules as $key => $rule) {
-                if (! str_starts_with($key, 'lines')) {
-                    if (is_string($rule) && str_starts_with($rule, 'required')) {
-                        $rules[$key] = str_replace('required', 'sometimes|required', $rule);
-                    }
-                }
-            }
-        }
 
         return $rules;
     }

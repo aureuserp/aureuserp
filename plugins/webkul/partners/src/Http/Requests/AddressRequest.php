@@ -22,9 +22,11 @@ class AddressRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
         $rules = [
-            'sub_type'   => 'required|string|in:'.implode(',', array_column(AddressType::cases(), 'value')),
-            'name'       => 'required|string|max:255',
+            'sub_type'   => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(AddressType::cases(), 'value')),
+            'name'       => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
             'email'      => 'nullable|email|max:255',
             'phone'      => 'nullable|string|max:20',
             'mobile'     => 'nullable|string|max:20',
@@ -35,17 +37,6 @@ class AddressRequest extends FormRequest
             'state_id'   => 'nullable|integer|exists:states,id',
             'country_id' => 'nullable|integer|exists:countries,id',
         ];
-
-        // On update, make all fields optional
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $rules = array_map(function ($rule) {
-                if (is_string($rule) && str_starts_with($rule, 'required')) {
-                    return str_replace('required', 'sometimes|required', $rule);
-                }
-
-                return $rule;
-            }, $rules);
-        }
 
         return $rules;
     }

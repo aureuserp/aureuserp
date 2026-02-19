@@ -3,8 +3,6 @@
 namespace Webkul\Project\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
-
 class TagRequest extends FormRequest
 {
     public function authorize(): bool
@@ -14,31 +12,13 @@ class TagRequest extends FormRequest
 
     public function rules(): array
     {
-        $rules = [
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('projects_tags', 'name')->whereNull('deleted_at')->ignore($this->route('tag')),
-            ],
-            'color' => ['nullable', 'string', 'regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/'],
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $tagId = $this->route('tag');
+
+        return [
+            'name' => ($isUpdate ? 'sometimes|' : '').'required|string|max:255|unique:projects_tags,name'.($tagId ? ','.$tagId.',id,deleted_at,NULL' : ',NULL,id,deleted_at,NULL'),
+            'color' => 'nullable|string|regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/',
         ];
-
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            foreach ($rules as $key => $rule) {
-                if (is_array($rule) && in_array('required', $rule, true)) {
-                    $updatedRule = $rule;
-
-                    if (! in_array('sometimes', $updatedRule, true)) {
-                        array_unshift($updatedRule, 'sometimes');
-                    }
-
-                    $rules[$key] = $updatedRule;
-                }
-            }
-        }
-
-        return $rules;
     }
 
     public function bodyParameters(): array

@@ -3,7 +3,6 @@
 namespace Webkul\Inventory\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Webkul\Inventory\Enums\LocationType;
 
 class LocationRequest extends FormRequest
@@ -15,40 +14,21 @@ class LocationRequest extends FormRequest
 
     public function rules(): array
     {
-        $rules = [
-            'name'                       => ['required', 'string', 'max:255'],
-            'parent_id'                  => ['nullable', 'integer', 'exists:inventories_locations,id'],
-            'description'                => ['nullable', 'string'],
-            'type'                       => ['required', Rule::enum(LocationType::class)],
-            'company_id'                 => ['nullable', 'integer', 'exists:companies,id'],
-            'storage_category_id'        => ['nullable', 'integer', 'exists:inventories_storage_categories,id'],
-            'is_scrap'                   => ['nullable', 'boolean'],
-            'is_dock'                    => ['nullable', 'boolean'],
-            'is_replenish'               => ['nullable', 'boolean'],
-            'cyclic_inventory_frequency' => ['nullable', 'integer', 'min:0'],
-            'barcode'                    => ['nullable', 'string', 'max:255'],
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
+        return [
+            'name'                       => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
+            'parent_id'                  => 'nullable|integer|exists:inventories_locations,id',
+            'description'                => 'nullable|string',
+            'type'                       => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(LocationType::cases(), 'value')),
+            'company_id'                 => 'nullable|integer|exists:companies,id',
+            'storage_category_id'        => 'nullable|integer|exists:inventories_storage_categories,id',
+            'is_scrap'                   => 'nullable|boolean',
+            'is_dock'                    => 'nullable|boolean',
+            'is_replenish'               => 'nullable|boolean',
+            'cyclic_inventory_frequency' => 'nullable|integer|min:0',
+            'barcode'                    => 'nullable|string|max:255',
         ];
-
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            foreach ($rules as $key => $rule) {
-                if (str_contains($key, '.')) {
-                    continue;
-                }
-
-                if (is_array($rule) && in_array('required', $rule, true)) {
-                    $index = array_search('required', $rule, true);
-
-                    if ($index !== false) {
-                        unset($rule[$index]);
-                    }
-
-                    array_unshift($rule, 'sometimes', 'required');
-                    $rules[$key] = array_values($rule);
-                }
-            }
-        }
-
-        return $rules;
     }
 
     public function bodyParameters(): array

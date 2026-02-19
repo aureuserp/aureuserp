@@ -23,26 +23,17 @@ class CurrencyRequest extends FormRequest
     {
         $currencyId = $this->route('currency') ?? $this->route('id');
 
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
         $rules = [
-            'name'           => 'required|string|max:255|unique:currencies,name'.($currencyId ? ','.$currencyId : ''),
-            'symbol'         => 'required|string|max:10',
+            'name'           => ($isUpdate ? 'sometimes|' : '').'required|string|max:255|unique:currencies,name'.($currencyId ? ','.$currencyId : ''),
+            'symbol'         => ($isUpdate ? 'sometimes|' : '').'required|string|max:10',
             'iso_numeric'    => 'nullable|string|max:3',
-            'decimal_places' => 'required|integer|min:0|max:10',
+            'decimal_places' => ($isUpdate ? 'sometimes|' : '').'required|integer|min:0|max:10',
             'full_name'      => 'nullable|string|max:255',
             'rounding'       => 'nullable|numeric|min:0',
-            'active'         => 'required|boolean',
+            'active'         => ($isUpdate ? 'sometimes|' : '').'required|boolean',
         ];
-
-        // On update, make all fields optional
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $rules = array_map(function ($rule) {
-                if (is_string($rule) && str_starts_with($rule, 'required')) {
-                    return str_replace('required', 'sometimes|required', $rule);
-                }
-
-                return $rule;
-            }, $rules);
-        }
 
         return $rules;
     }

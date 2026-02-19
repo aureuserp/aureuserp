@@ -21,25 +21,16 @@ class PackagingRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
         $rules = [
-            'name'       => 'required|string|max:255',
+            'name'       => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
             'barcode'    => 'nullable|string|max:255',
-            'qty'        => 'required|numeric|min:0',
+            'qty'        => ($isUpdate ? 'sometimes|' : '').'required|numeric|min:0',
             'sort'       => 'nullable|integer',
-            'product_id' => 'required|integer|exists:products_products,id',
+            'product_id' => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:products_products,id',
             'company_id' => 'nullable|integer|exists:companies,id',
         ];
-
-        // On update, make all fields optional
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $rules = array_map(function ($rule) {
-                if (is_string($rule) && str_starts_with($rule, 'required')) {
-                    return str_replace('required', 'sometimes|required', $rule);
-                }
-
-                return $rule;
-            }, $rules);
-        }
 
         return $rules;
     }

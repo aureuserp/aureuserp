@@ -3,7 +3,6 @@
 namespace Webkul\Account\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Webkul\Account\Enums\AccountType;
 
 class AccountRequest extends FormRequest
@@ -23,15 +22,17 @@ class AccountRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
         return [
-            'name'         => ['required', 'string', 'max:255'],
-            'code'         => ['required', 'string', 'max:64'],
-            'account_type' => ['required', Rule::enum(AccountType::class)],
-            'currency_id'  => ['nullable', 'integer', 'exists:currencies,id'],
-            'note'         => ['nullable', 'string'],
-            'deprecated'   => ['nullable', 'boolean'],
-            'reconcile'    => ['nullable', 'boolean'],
-            'non_trade'    => ['nullable', 'boolean'],
+            'name'         => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
+            'code'         => ($isUpdate ? 'sometimes|' : '').'required|string|max:64',
+            'account_type' => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(AccountType::cases(), 'value')),
+            'currency_id'  => 'nullable|integer|exists:currencies,id',
+            'note'         => 'nullable|string',
+            'deprecated'   => 'nullable|boolean',
+            'reconcile'    => 'nullable|boolean',
+            'non_trade'    => 'nullable|boolean',
         ];
     }
 

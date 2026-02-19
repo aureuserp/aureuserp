@@ -21,22 +21,13 @@ class BankAccountRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
         $rules = [
-            'account_number' => 'required|string|max:255',
-            'can_send_money' => 'required|boolean',
-            'bank_id'        => 'required|integer|exists:banks,id',
+            'account_number' => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
+            'can_send_money' => ($isUpdate ? 'sometimes|' : '').'required|boolean',
+            'bank_id'        => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:banks,id',
         ];
-
-        // On update, make all fields optional
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $rules = array_map(function ($rule) {
-                if (is_string($rule) && str_starts_with($rule, 'required')) {
-                    return str_replace('required', 'sometimes|required', $rule);
-                }
-
-                return $rule;
-            }, $rules);
-        }
 
         return $rules;
     }

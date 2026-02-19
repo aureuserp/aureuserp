@@ -22,11 +22,13 @@ class PurchaseOrderRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
         $rules = [
-            'partner_id'                   => 'required|integer|exists:partners_partners,id',
-            'currency_id'                  => 'required|integer|exists:currencies,id',
-            'ordered_at'                   => 'required|date',
-            'company_id'                   => 'required|integer|exists:companies,id',
+            'partner_id'                   => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:partners_partners,id',
+            'currency_id'                  => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:currencies,id',
+            'ordered_at'                   => ($isUpdate ? 'sometimes|' : '').'required|date',
+            'company_id'                   => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:companies,id',
             'partner_reference'            => 'nullable|string|max:255',
             'requisition_id'               => 'nullable|integer|exists:purchases_requisitions,id',
             'planned_at'                   => 'nullable|date',
@@ -35,7 +37,7 @@ class PurchaseOrderRequest extends FormRequest
             'incoterm_id'                  => 'nullable|integer|exists:accounts_incoterms,id',
             'description'                  => 'nullable|string',
             'origin'                       => 'nullable|string|max:255',
-            'lines'                        => 'required|array|min:1',
+            'lines'                        => ($isUpdate ? 'sometimes|' : '').'required|array|min:1',
             'lines.*.id'                   => 'nullable|integer|exists:purchases_order_lines,id',
             'lines.*.product_id'           => 'required|integer|exists:products_products,id',
             'lines.*.planned_at'           => 'required|date',
@@ -50,16 +52,6 @@ class PurchaseOrderRequest extends FormRequest
             'lines.*.qty_received'         => 'nullable|numeric|min:0|max:99999999999',
             'lines.*.qty_received_manual'  => 'nullable|numeric|min:0|max:99999999999',
         ];
-
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            foreach ($rules as $key => $rule) {
-                if (! str_starts_with($key, 'lines')) {
-                    if (is_string($rule) && str_starts_with($rule, 'required')) {
-                        $rules[$key] = str_replace('required', 'sometimes|required', $rule);
-                    }
-                }
-            }
-        }
 
         return $rules;
     }

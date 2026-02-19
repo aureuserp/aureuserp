@@ -21,29 +21,31 @@ class FiscalPositionRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
         return [
-            'name'             => ['required', 'string', 'max:255'],
-            'company_id'       => ['required', 'integer', 'exists:companies,id'],
-            'country_id'       => ['nullable', 'integer', 'exists:countries,id'],
-            'country_group_id' => ['nullable', 'integer', 'exists:countries,id'],
-            'zip_from'         => ['nullable', 'string', 'max:10'],
-            'zip_to'           => ['nullable', 'string', 'max:10'],
-            'notes'            => ['nullable', 'string'],
-            'auto_reply'       => ['nullable', 'boolean'],
-            'vat_required'     => ['nullable', 'boolean'],
-            'foreign_vat'      => ['nullable', 'string', 'max:255'],
+            'name'             => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
+            'company_id'       => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:companies,id',
+            'country_id'       => 'nullable|integer|exists:countries,id',
+            'country_group_id' => 'nullable|integer|exists:countries,id',
+            'zip_from'         => 'nullable|string|max:10',
+            'zip_to'           => 'nullable|string|max:10',
+            'notes'            => 'nullable|string',
+            'auto_reply'       => 'nullable|boolean',
+            'vat_required'     => 'nullable|boolean',
+            'foreign_vat'      => 'nullable|string|max:255',
 
             // Tax mappings
-            'taxes'                          => ['nullable', 'array'],
-            'taxes.*.id'                     => ['sometimes', 'integer', 'exists:accounts_fiscal_position_taxes,id'],
-            'taxes.*.tax_source_id'          => ['required', 'integer', 'exists:accounts_taxes,id'],
-            'taxes.*.tax_destination_id'     => ['nullable', 'integer', 'exists:accounts_taxes,id'],
+            'taxes'                          => 'nullable|array',
+            'taxes.*.id'                     => 'sometimes|integer|exists:accounts_fiscal_position_taxes,id',
+            'taxes.*.tax_source_id'          => 'required|integer|exists:accounts_taxes,id',
+            'taxes.*.tax_destination_id'     => 'nullable|integer|exists:accounts_taxes,id',
 
             // Account mappings
-            'accounts'                          => ['nullable', 'array'],
-            'accounts.*.id'                     => ['sometimes', 'integer', 'exists:accounts_fiscal_position_accounts,id'],
-            'accounts.*.account_source_id'      => ['required', 'integer', 'exists:accounts_accounts,id'],
-            'accounts.*.account_destination_id' => ['required', 'integer', 'exists:accounts_accounts,id'],
+            'accounts'                          => 'nullable|array',
+            'accounts.*.id'                     => 'sometimes|integer|exists:accounts_fiscal_position_accounts,id',
+            'accounts.*.account_source_id'      => 'required|integer|exists:accounts_accounts,id',
+            'accounts.*.account_destination_id' => 'required|integer|exists:accounts_accounts,id',
         ];
     }
 

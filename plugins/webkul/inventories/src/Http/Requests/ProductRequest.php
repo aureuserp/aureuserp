@@ -2,7 +2,6 @@
 
 namespace Webkul\Inventory\Http\Requests;
 
-use Illuminate\Validation\Rule;
 use Webkul\Account\Http\Requests\ProductRequest as BaseProductRequest;
 use Webkul\Inventory\Enums\ProductTracking;
 
@@ -12,7 +11,7 @@ class ProductRequest extends BaseProductRequest
     {
         return array_merge(parent::rules(), [
             'is_storable'         => 'nullable|boolean',
-            'tracking'            => ['nullable', Rule::enum(ProductTracking::class)],
+            'tracking'            => 'nullable|string|in:'.implode(',', array_column(ProductTracking::cases(), 'value')),
             'use_expiration_date' => 'nullable|boolean',
             'sale_delay'          => 'nullable|numeric|min:0|max:99999999999',
             'expiration_time'     => 'nullable|numeric|min:0|max:99999999999',

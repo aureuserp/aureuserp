@@ -3,7 +3,6 @@
 namespace Webkul\Inventory\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Webkul\Inventory\Enums\RuleAction;
 
 class RuleRequest extends FormRequest
@@ -15,38 +14,19 @@ class RuleRequest extends FormRequest
 
     public function rules(): array
     {
-        $rules = [
-            'name'                    => ['required', 'string', 'max:255'],
-            'action'                  => ['required', Rule::enum(RuleAction::class)],
-            'operation_type_id'       => ['required', 'integer', 'exists:inventories_operation_types,id'],
-            'source_location_id'      => ['required', 'integer', 'exists:inventories_locations,id'],
-            'destination_location_id' => ['required', 'integer', 'exists:inventories_locations,id'],
-            'partner_address_id'      => ['nullable', 'integer', 'exists:partners_partners,id'],
-            'delay'                   => ['nullable', 'integer', 'min:0'],
-            'route_id'                => ['required', 'integer', 'exists:inventories_routes,id'],
-            'company_id'              => ['nullable', 'integer', 'exists:companies,id'],
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
+        return [
+            'name'                    => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
+            'action'                  => ($isUpdate ? 'sometimes|' : '').'required|string|in:'.implode(',', array_column(RuleAction::cases(), 'value')),
+            'operation_type_id'       => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:inventories_operation_types,id',
+            'source_location_id'      => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:inventories_locations,id',
+            'destination_location_id' => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:inventories_locations,id',
+            'partner_address_id'      => 'nullable|integer|exists:partners_partners,id',
+            'delay'                   => 'nullable|integer|min:0',
+            'route_id'                => ($isUpdate ? 'sometimes|' : '').'required|integer|exists:inventories_routes,id',
+            'company_id'              => 'nullable|integer|exists:companies,id',
         ];
-
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            foreach ($rules as $key => $rule) {
-                if (str_contains($key, '.')) {
-                    continue;
-                }
-
-                if (is_array($rule) && in_array('required', $rule, true)) {
-                    $index = array_search('required', $rule, true);
-
-                    if ($index !== false) {
-                        unset($rule[$index]);
-                    }
-
-                    array_unshift($rule, 'sometimes', 'required');
-                    $rules[$key] = array_values($rule);
-                }
-            }
-        }
-
-        return $rules;
     }
 
     public function bodyParameters(): array

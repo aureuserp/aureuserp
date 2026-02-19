@@ -13,37 +13,18 @@ class RouteRequest extends FormRequest
 
     public function rules(): array
     {
-        $rules = [
-            'name'                      => ['required', 'string', 'max:255'],
-            'company_id'                => ['nullable', 'integer', 'exists:companies,id'],
-            'product_category_selectable' => ['nullable', 'boolean'],
-            'product_selectable'        => ['nullable', 'boolean'],
-            'packaging_selectable'      => ['nullable', 'boolean'],
-            'warehouse_selectable'      => ['nullable', 'boolean'],
-            'warehouses'                => ['nullable', 'array'],
-            'warehouses.*'              => ['integer', 'exists:inventories_warehouses,id'],
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+
+        return [
+            'name'                        => ($isUpdate ? 'sometimes|' : '').'required|string|max:255',
+            'company_id'                  => 'nullable|integer|exists:companies,id',
+            'product_category_selectable' => 'nullable|boolean',
+            'product_selectable'          => 'nullable|boolean',
+            'packaging_selectable'        => 'nullable|boolean',
+            'warehouse_selectable'        => 'nullable|boolean',
+            'warehouses'                  => 'nullable|array',
+            'warehouses.*'                => 'integer|exists:inventories_warehouses,id',
         ];
-
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            foreach ($rules as $key => $rule) {
-                if (str_contains($key, '.')) {
-                    continue;
-                }
-
-                if (is_array($rule) && in_array('required', $rule, true)) {
-                    $index = array_search('required', $rule, true);
-
-                    if ($index !== false) {
-                        unset($rule[$index]);
-                    }
-
-                    array_unshift($rule, 'sometimes', 'required');
-                    $rules[$key] = array_values($rule);
-                }
-            }
-        }
-
-        return $rules;
     }
 
     public function bodyParameters(): array
