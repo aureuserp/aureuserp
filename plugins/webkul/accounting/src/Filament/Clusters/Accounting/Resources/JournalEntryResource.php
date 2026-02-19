@@ -404,7 +404,8 @@ class JournalEntryResource extends Resource
                     ->exporter(JournalEntryExporter::class),
             ])
             ->modifyQueryUsing(function (Builder $query) {
-                $query->with('currency');
+                $query->with('currency')
+                    ->where('company_id', Auth::user()->default_company_id);
             });
     }
 
