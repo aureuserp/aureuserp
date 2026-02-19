@@ -155,7 +155,6 @@ class BranchesRelationManager extends RelationManager
                                                 modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
                                             )
                                             ->label(__('support::filament/resources/company/relation-managers/manage-branch.form.tabs.address-information.sections.additional-information.fields.default-currency'))
-                                            ->relationship('currency', 'full_name')
                                             ->searchable()
                                             ->required()
                                             ->live()
