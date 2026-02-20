@@ -14,14 +14,15 @@ class PackageTypeRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         return [
-            'name'                => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
-            'length'              => [($isUpdate ? 'sometimes|required' : 'required'), 'numeric', 'min:0', 'max:99999999999'],
-            'width'               => [($isUpdate ? 'sometimes|required' : 'required'), 'numeric', 'min:0', 'max:99999999999'],
-            'height'              => [($isUpdate ? 'sometimes|required' : 'required'), 'numeric', 'min:0', 'max:99999999999'],
-            'base_weight'         => [($isUpdate ? 'sometimes|required' : 'required'), 'numeric', 'min:0', 'max:99999999999'],
-            'max_weight'          => [($isUpdate ? 'sometimes|required' : 'required'), 'numeric', 'min:0', 'max:99999999999'],
+            'name'                => [...$requiredRule, 'string', 'max:255'],
+            'length'              => [...$requiredRule, 'numeric', 'min:0', 'max:99999999999'],
+            'width'               => [...$requiredRule, 'numeric', 'min:0', 'max:99999999999'],
+            'height'              => [...$requiredRule, 'numeric', 'min:0', 'max:99999999999'],
+            'base_weight'         => [...$requiredRule, 'numeric', 'min:0', 'max:99999999999'],
+            'max_weight'          => [...$requiredRule, 'numeric', 'min:0', 'max:99999999999'],
             'barcode'             => ['nullable', 'string', 'max:255'],
             'company_id'          => ['nullable', 'integer', 'exists:companies,id'],
         ];

@@ -14,12 +14,13 @@ class MilestoneRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         return [
-            'name' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
-            'deadline' => ['nullable', 'date'],
+            'name'         => [...$requiredRule, 'string', 'max:255'],
+            'deadline'     => ['nullable', 'date'],
             'is_completed' => ['nullable', 'boolean'],
-            'project_id' => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:projects_projects,id'],
+            'project_id'   => [...$requiredRule, 'integer', 'exists:projects_projects,id'],
         ];
     }
 
@@ -28,19 +29,19 @@ class MilestoneRequest extends FormRequest
         return [
             'name' => [
                 'description' => 'Milestone name.',
-                'example' => 'Phase 1 Signoff',
+                'example'     => 'Phase 1 Signoff',
             ],
             'deadline' => [
                 'description' => 'Milestone deadline date-time.',
-                'example' => '2026-03-20 12:00:00',
+                'example'     => '2026-03-20 12:00:00',
             ],
             'is_completed' => [
                 'description' => 'Completion flag.',
-                'example' => false,
+                'example'     => false,
             ],
             'project_id' => [
                 'description' => 'Project ID.',
-                'example' => 1,
+                'example'     => 1,
             ],
         ];
     }

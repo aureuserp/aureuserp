@@ -19,23 +19,24 @@ class OperationTypeRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         return [
-            'name'                               => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
-            'type'                               => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(InventoryOperationType::class)],
-            'sequence_code'                      => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'name'                               => [...$requiredRule, 'string', 'max:255'],
+            'type'                               => [...$requiredRule, 'string', Rule::enum(InventoryOperationType::class)],
+            'sequence_code'                      => [...$requiredRule, 'string', 'max:255'],
             'print_label'                        => ['nullable', 'boolean'],
             'warehouse_id'                       => ['nullable', 'integer', 'exists:inventories_warehouses,id'],
             'reservation_method'                 => ['nullable', 'string', Rule::enum(ReservationMethod::class)],
             'auto_show_reception_report'         => ['nullable', 'boolean'],
             'company_id'                         => ['nullable', 'integer', 'exists:companies,id'],
             'return_operation_type_id'           => ['nullable', 'integer', 'exists:inventories_operation_types,id'],
-            'create_backorder'                   => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(CreateBackorder::class)],
+            'create_backorder'                   => [...$requiredRule, 'string', Rule::enum(CreateBackorder::class)],
             'move_type'                          => ['nullable', 'string', Rule::enum(MoveType::class)],
             'use_create_lots'                    => ['nullable', 'boolean'],
             'use_existing_lots'                  => ['nullable', 'boolean'],
-            'source_location_id'                 => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:inventories_locations,id'],
-            'destination_location_id'            => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:inventories_locations,id'],
+            'source_location_id'                 => [...$requiredRule, 'integer', 'exists:inventories_locations,id'],
+            'destination_location_id'            => [...$requiredRule, 'integer', 'exists:inventories_locations,id'],
         ];
     }
 

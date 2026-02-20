@@ -14,9 +14,10 @@ class PackageRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         return [
-            'name'            => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'name'            => [...$requiredRule, 'string', 'max:255'],
             'package_type_id' => ['nullable', 'integer', 'exists:inventories_package_types,id'],
             'pack_date'       => ['nullable', 'date'],
             'location_id'     => ['nullable', 'integer', 'exists:inventories_locations,id'],

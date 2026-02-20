@@ -22,9 +22,10 @@ class TaxGroupRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         return [
-            'name'               => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'name'               => [...$requiredRule, 'string', 'max:255'],
             'company_id'         => ['nullable', 'integer', 'exists:companies,id'],
             'country_id'         => ['nullable', 'integer', 'exists:countries,id'],
             'preceding_subtotal' => ['nullable', 'string', 'max:255'],

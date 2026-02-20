@@ -3,6 +3,7 @@
 namespace Webkul\Project\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+
 class TagRequest extends FormRequest
 {
     public function authorize(): bool
@@ -13,10 +14,11 @@ class TagRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
         $tagId = $this->route('tag');
 
         return [
-            'name' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255', 'unique:projects_tags,name'.($tagId ? ','.$tagId.',id,deleted_at,NULL' : ',NULL,id,deleted_at,NULL')],
+            'name'  => [...$requiredRule, 'string', 'max:255', 'unique:projects_tags,name'.($tagId ? ','.$tagId.',id,deleted_at,NULL' : ',NULL,id,deleted_at,NULL')],
             'color' => ['nullable', 'string', 'regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/'],
         ];
     }
@@ -26,11 +28,11 @@ class TagRequest extends FormRequest
         return [
             'name' => [
                 'description' => 'Tag name.',
-                'example' => 'Urgent',
+                'example'     => 'Urgent',
             ],
             'color' => [
                 'description' => 'Hex color.',
-                'example' => '#ff0000',
+                'example'     => '#ff0000',
             ],
         ];
     }

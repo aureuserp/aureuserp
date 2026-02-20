@@ -16,11 +16,12 @@ class StorageCategoryRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         return [
-            'name'               => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'name'               => [...$requiredRule, 'string', 'max:255'],
             'max_weight'         => ['nullable', 'numeric', 'min:0', 'max:99999999'],
-            'allow_new_products' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(AllowNewProduct::class)],
+            'allow_new_products' => [...$requiredRule, 'string', Rule::enum(AllowNewProduct::class)],
             'company_id'         => ['nullable', 'integer', 'exists:companies,id'],
         ];
     }

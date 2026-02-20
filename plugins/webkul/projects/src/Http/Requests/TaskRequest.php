@@ -18,23 +18,24 @@ class TaskRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         return [
-            'title' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'state' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(TaskState::class)],
-            'stage_id' => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:projects_task_stages,id'],
-            'project_id' => ['nullable', 'integer', 'exists:projects_projects,id'],
-            'milestone_id' => ['nullable', 'integer', 'exists:projects_milestones,id'],
-            'partner_id' => ['nullable', 'integer', 'exists:partners_partners,id'],
-            'parent_id' => ['nullable', 'integer', 'exists:projects_tasks,id'],
-            'deadline' => ['nullable', 'date'],
+            'title'           => [...$requiredRule, 'string', 'max:255'],
+            'description'     => ['nullable', 'string'],
+            'state'           => [...$requiredRule, 'string', Rule::enum(TaskState::class)],
+            'stage_id'        => [...$requiredRule, 'integer', 'exists:projects_task_stages,id'],
+            'project_id'      => ['nullable', 'integer', 'exists:projects_projects,id'],
+            'milestone_id'    => ['nullable', 'integer', 'exists:projects_milestones,id'],
+            'partner_id'      => ['nullable', 'integer', 'exists:partners_partners,id'],
+            'parent_id'       => ['nullable', 'integer', 'exists:projects_tasks,id'],
+            'deadline'        => ['nullable', 'date'],
             'allocated_hours' => ['nullable', 'numeric', 'min:0'],
-            'priority' => ['nullable', 'boolean'],
-            'users' => ['nullable', 'array'],
-            'users.*' => ['integer', 'exists:users,id'],
-            'tags' => ['nullable', 'array'],
-            'tags.*' => ['integer', 'exists:projects_tags,id'],
+            'priority'        => ['nullable', 'boolean'],
+            'users'           => ['nullable', 'array'],
+            'users.*'         => ['integer', 'exists:users,id'],
+            'tags'            => ['nullable', 'array'],
+            'tags.*'          => ['integer', 'exists:projects_tags,id'],
         ];
     }
 
@@ -78,55 +79,55 @@ class TaskRequest extends FormRequest
         return [
             'title' => [
                 'description' => 'Task title.',
-                'example' => 'Prepare homepage wireframe',
+                'example'     => 'Prepare homepage wireframe',
             ],
             'description' => [
                 'description' => 'Task description.',
-                'example' => 'Create initial wireframe and review notes.',
+                'example'     => 'Create initial wireframe and review notes.',
             ],
             'state' => [
                 'description' => 'Task state.',
-                'example' => 'in_progress',
+                'example'     => 'in_progress',
             ],
             'stage_id' => [
                 'description' => 'Task stage ID.',
-                'example' => 1,
+                'example'     => 1,
             ],
             'project_id' => [
                 'description' => 'Project ID.',
-                'example' => 1,
+                'example'     => 1,
             ],
             'milestone_id' => [
                 'description' => 'Milestone ID.',
-                'example' => 1,
+                'example'     => 1,
             ],
             'partner_id' => [
                 'description' => 'Customer ID.',
-                'example' => 1,
+                'example'     => 1,
             ],
             'parent_id' => [
                 'description' => 'Parent task ID for sub-task.',
-                'example' => 10,
+                'example'     => 10,
             ],
             'deadline' => [
                 'description' => 'Task deadline date-time.',
-                'example' => '2026-03-10 18:00:00',
+                'example'     => '2026-03-10 18:00:00',
             ],
             'allocated_hours' => [
                 'description' => 'Allocated effort in hours.',
-                'example' => 12,
+                'example'     => 12,
             ],
             'priority' => [
                 'description' => 'Priority flag.',
-                'example' => true,
+                'example'     => true,
             ],
             'users' => [
                 'description' => 'Assigned user IDs.',
-                'example' => [1, 2],
+                'example'     => [1, 2],
             ],
             'tags' => [
                 'description' => 'Task tag IDs.',
-                'example' => [1, 3],
+                'example'     => [1, 3],
             ],
         ];
     }

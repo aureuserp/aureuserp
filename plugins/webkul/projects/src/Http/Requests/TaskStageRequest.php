@@ -14,10 +14,11 @@ class TaskStageRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         return [
-            'name' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
-            'project_id' => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:projects_projects,id'],
+            'name'       => [...$requiredRule, 'string', 'max:255'],
+            'project_id' => [...$requiredRule, 'integer', 'exists:projects_projects,id'],
         ];
     }
 
@@ -26,11 +27,11 @@ class TaskStageRequest extends FormRequest
         return [
             'name' => [
                 'description' => 'Task stage name.',
-                'example' => 'Backlog',
+                'example'     => 'Backlog',
             ],
             'project_id' => [
                 'description' => 'Project ID this stage belongs to.',
-                'example' => 1,
+                'example'     => 1,
             ],
         ];
     }

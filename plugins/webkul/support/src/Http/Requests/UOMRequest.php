@@ -24,13 +24,14 @@ class UOMRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         return [
-            'type'        => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(UOMType::class)],
-            'name'        => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
-            'factor'      => [($isUpdate ? 'sometimes|required' : 'required'), 'numeric', 'min:0'],
-            'rounding'    => [($isUpdate ? 'sometimes|required' : 'required'), 'numeric', 'min:0'],
-            'category_id' => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:unit_of_measure_categories,id'],
+            'type'        => [...$requiredRule, 'string', Rule::enum(UOMType::class)],
+            'name'        => [...$requiredRule, 'string', 'max:255'],
+            'factor'      => [...$requiredRule, 'numeric', 'min:0'],
+            'rounding'    => [...$requiredRule, 'numeric', 'min:0'],
+            'category_id' => [...$requiredRule, 'integer', 'exists:unit_of_measure_categories,id'],
         ];
     }
 
@@ -42,23 +43,23 @@ class UOMRequest extends FormRequest
         return [
             'type'        => [
                 'description' => 'UOM type (reference, bigger, smaller)',
-                'example' => 'reference'
+                'example'     => 'reference',
             ],
             'name'        => [
                 'description' => 'UOM name',
-                'example' => 'Kilogram'
+                'example'     => 'Kilogram',
             ],
             'factor'      => [
                 'description' => 'Conversion factor',
-                'example' => 1.0
+                'example'     => 1.0,
             ],
             'rounding'    => [
                 'description' => 'Rounding precision',
-                'example' => 0.01
+                'example'     => 0.01,
             ],
             'category_id' => [
                 'description' => 'UOM category ID',
-                'example' => 1
+                'example'     => 1,
             ],
         ];
     }

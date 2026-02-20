@@ -3,7 +3,6 @@
 namespace Webkul\Inventory\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class WarehouseRequest extends FormRequest
 {
@@ -15,12 +14,13 @@ class WarehouseRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
         $warehouseId = $this->route('warehouse') ?? $this->route('id');
 
         return [
-            'name'                  => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255', 'unique:inventories_warehouses,name'.($warehouseId ? ','.$warehouseId : '')],
-            'code'                  => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255', 'unique:inventories_warehouses,code'.($warehouseId ? ','.$warehouseId : '')],
-            'company_id'            => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:companies,id'],
+            'name'                  => [...$requiredRule, 'string', 'max:255', 'unique:inventories_warehouses,name'.($warehouseId ? ','.$warehouseId : '')],
+            'code'                  => [...$requiredRule, 'string', 'max:255', 'unique:inventories_warehouses,code'.($warehouseId ? ','.$warehouseId : '')],
+            'company_id'            => [...$requiredRule, 'integer', 'exists:companies,id'],
             'partner_address_id'    => ['nullable', 'integer', 'exists:partners_partners,id'],
             'reception_steps'       => ['nullable', 'string'],
             'delivery_steps'        => ['nullable', 'string'],

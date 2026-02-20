@@ -23,11 +23,12 @@ class OrderRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         $rules = [
-            'partner_id'                    => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:partners_partners,id'],
-            'payment_term_id'               => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:accounts_payment_terms,id'],
-            'date_order'                    => [($isUpdate ? 'sometimes|required' : 'required'), 'date'],
+            'partner_id'                    => [...$requiredRule, 'integer', 'exists:partners_partners,id'],
+            'payment_term_id'               => [...$requiredRule, 'integer', 'exists:accounts_payment_terms,id'],
+            'date_order'                    => [...$requiredRule, 'date'],
             'validity_date'                 => ['nullable', 'date'],
             'commitment_date'               => ['nullable', 'date'],
             'client_order_ref'              => ['nullable', 'string', 'max:255'],
@@ -41,7 +42,7 @@ class OrderRequest extends FormRequest
             'medium_id'                     => ['nullable', 'integer', 'exists:utm_mediums,id'],
             'sales_order_tags'              => ['nullable', 'array'],
             'sales_order_tags.*'            => ['integer', 'exists:sales_tags,id'],
-            'lines'                         => [($isUpdate ? 'sometimes|required' : 'required'), 'array', 'min:1'],
+            'lines'                         => [...$requiredRule, 'array', 'min:1'],
             'lines.*.id'                    => ['nullable', 'integer', 'exists:sales_order_lines,id'],
             'lines.*.product_id'            => ['required', 'integer', 'exists:products_products,id'],
             'lines.*.product_qty'           => ['required', 'numeric', 'min:0', 'max:99999999999'],

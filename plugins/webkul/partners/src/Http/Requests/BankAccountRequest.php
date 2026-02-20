@@ -22,11 +22,12 @@ class BankAccountRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         $rules = [
-            'account_number' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
-            'can_send_money' => [($isUpdate ? 'sometimes|required' : 'required'), 'boolean'],
-            'bank_id'        => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:banks,id'],
+            'account_number' => [...$requiredRule, 'string', 'max:255'],
+            'can_send_money' => [...$requiredRule, 'boolean'],
+            'bank_id'        => [...$requiredRule, 'integer', 'exists:banks,id'],
         ];
 
         return $rules;

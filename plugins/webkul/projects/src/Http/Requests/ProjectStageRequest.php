@@ -3,6 +3,7 @@
 namespace Webkul\Project\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+
 class ProjectStageRequest extends FormRequest
 {
     public function authorize(): bool
@@ -13,11 +14,12 @@ class ProjectStageRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
         $stage = $this->route('project_stage');
         $stageId = is_object($stage) ? $stage->id : $stage;
 
         return [
-            'name' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255', 'unique:projects_project_stages,name,'.($stageId ?: 'NULL').',id,deleted_at,NULL'],
+            'name' => [...$requiredRule, 'string', 'max:255', 'unique:projects_project_stages,name,'.($stageId ?: 'NULL').',id,deleted_at,NULL'],
         ];
     }
 
@@ -26,7 +28,7 @@ class ProjectStageRequest extends FormRequest
         return [
             'name' => [
                 'description' => 'Project stage name.',
-                'example' => 'In Progress',
+                'example'     => 'In Progress',
             ],
         ];
     }

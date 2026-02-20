@@ -22,13 +22,14 @@ class PackagingRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         $rules = [
-            'name'       => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'name'       => [...$requiredRule, 'string', 'max:255'],
             'barcode'    => ['nullable', 'string', 'max:255'],
-            'qty'        => [($isUpdate ? 'sometimes|required' : 'required'), 'numeric', 'min:0'],
+            'qty'        => [...$requiredRule, 'numeric', 'min:0'],
             'sort'       => ['nullable', 'integer'],
-            'product_id' => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:products_products,id'],
+            'product_id' => [...$requiredRule, 'integer', 'exists:products_products,id'],
             'company_id' => ['nullable', 'integer', 'exists:companies,id'],
         ];
 

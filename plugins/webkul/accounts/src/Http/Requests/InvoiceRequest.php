@@ -23,12 +23,13 @@ class InvoiceRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         $rules = [
-            'partner_id'                       => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:partners_partners,id'],
-            'currency_id'                      => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:currencies,id'],
-            'journal_id'                       => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:accounts_journals,id'],
-            'invoice_date'                     => [($isUpdate ? 'sometimes|required' : 'required'), 'date'],
+            'partner_id'                       => [...$requiredRule, 'integer', 'exists:partners_partners,id'],
+            'currency_id'                      => [...$requiredRule, 'integer', 'exists:currencies,id'],
+            'journal_id'                       => [...$requiredRule, 'integer', 'exists:accounts_journals,id'],
+            'invoice_date'                     => [...$requiredRule, 'date'],
             'invoice_date_due'                 => ['nullable', 'date', 'prohibited_if:invoice_payment_term_id,*'],
             'invoice_payment_term_id'          => ['nullable', 'integer', 'exists:accounts_payment_terms,id', 'prohibited_if:invoice_date_due,*'],
             'fiscal_position_id'               => ['nullable', 'integer', 'exists:accounts_fiscal_positions,id'],
@@ -42,7 +43,7 @@ class InvoiceRequest extends FormRequest
             'narration'                        => ['nullable', 'string'],
             'incoterm_location'                => ['nullable', 'string', 'max:255'],
             'delivery_date'                    => ['nullable', 'date'],
-            'invoice_lines'                    => [($isUpdate ? 'sometimes|required' : 'required'), 'array', 'min:1'],
+            'invoice_lines'                    => [...$requiredRule, 'array', 'min:1'],
             'invoice_lines.*.product_id'       => ['required', 'integer', 'exists:products_products,id'],
             'invoice_lines.*.quantity'         => ['required', 'numeric', 'min:0.0001'],
             'invoice_lines.*.uom_id'           => ['required', 'integer', 'exists:unit_of_measures,id'],

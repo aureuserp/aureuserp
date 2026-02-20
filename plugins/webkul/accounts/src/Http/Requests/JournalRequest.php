@@ -24,11 +24,12 @@ class JournalRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         return [
-            'name'                      => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
-            'code'                      => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:5'],
-            'type'                      => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(JournalType::class)],
+            'name'                      => [...$requiredRule, 'string', 'max:255'],
+            'code'                      => [...$requiredRule, 'string', 'max:5'],
+            'type'                      => [...$requiredRule, 'string', Rule::enum(JournalType::class)],
             'company_id'                => ['nullable', 'integer', 'exists:companies,id'],
             'currency_id'               => ['nullable', 'integer', 'exists:currencies,id'],
             'default_account_id'        => ['nullable', 'integer', 'exists:accounts_accounts,id'],

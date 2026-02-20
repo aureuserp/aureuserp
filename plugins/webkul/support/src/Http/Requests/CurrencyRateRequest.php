@@ -22,10 +22,11 @@ class CurrencyRateRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         $rules = [
-            'name'       => [($isUpdate ? 'sometimes|required' : 'required'), 'date'],
-            'rate'       => [($isUpdate ? 'sometimes|required' : 'required'), 'numeric', 'min:0'],
+            'name'       => [...$requiredRule, 'date'],
+            'rate'       => [...$requiredRule, 'numeric', 'min:0'],
             'company_id' => ['nullable', 'integer', 'exists:companies,id'],
         ];
 

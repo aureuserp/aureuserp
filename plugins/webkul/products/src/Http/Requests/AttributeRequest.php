@@ -24,10 +24,11 @@ class AttributeRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         $rules = [
-            'name' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
-            'type' => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(AttributeType::class)],
+            'name' => [...$requiredRule, 'string', 'max:255'],
+            'type' => [...$requiredRule, 'string', Rule::enum(AttributeType::class)],
             'sort' => ['nullable', 'integer', 'min:0'],
         ];
 

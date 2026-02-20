@@ -14,10 +14,11 @@ class LotRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         return [
-            'name'        => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
-            'product_id'  => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:products_products,id'],
+            'name'        => [...$requiredRule, 'string', 'max:255'],
+            'product_id'  => [...$requiredRule, 'integer', 'exists:products_products,id'],
             'reference'   => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
         ];

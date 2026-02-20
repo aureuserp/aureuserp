@@ -14,10 +14,11 @@ class TagRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
         $tagId = $this->route('tag') ?? $this->route('id');
 
         return [
-            'name'  => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255', 'unique:inventories_tags,name'.($tagId ? ','.$tagId : '')],
+            'name'  => [...$requiredRule, 'string', 'max:255', 'unique:inventories_tags,name'.($tagId ? ','.$tagId : '')],
             'color' => ['nullable', 'string', 'max:255'],
         ];
     }

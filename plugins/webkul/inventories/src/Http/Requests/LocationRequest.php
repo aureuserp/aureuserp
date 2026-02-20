@@ -16,12 +16,13 @@ class LocationRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         return [
-            'name'                       => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'name'                       => [...$requiredRule, 'string', 'max:255'],
             'parent_id'                  => ['nullable', 'integer', 'exists:inventories_locations,id'],
             'description'                => ['nullable', 'string'],
-            'type'                       => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(LocationType::class)],
+            'type'                       => [...$requiredRule, 'string', Rule::enum(LocationType::class)],
             'company_id'                 => ['nullable', 'integer', 'exists:companies,id'],
             'storage_category_id'        => ['nullable', 'integer', 'exists:inventories_storage_categories,id'],
             'is_scrap'                   => ['nullable', 'boolean'],

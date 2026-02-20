@@ -22,10 +22,11 @@ class FiscalPositionRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         return [
-            'name'             => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
-            'company_id'       => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:companies,id'],
+            'name'             => [...$requiredRule, 'string', 'max:255'],
+            'company_id'       => [...$requiredRule, 'integer', 'exists:companies,id'],
             'country_id'       => ['nullable', 'integer', 'exists:countries,id'],
             'country_group_id' => ['nullable', 'integer', 'exists:countries,id'],
             'zip_from'         => ['nullable', 'string', 'max:10'],

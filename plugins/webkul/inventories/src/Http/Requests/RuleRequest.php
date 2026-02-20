@@ -16,16 +16,17 @@ class RuleRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         return [
-            'name'                    => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
-            'action'                  => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(RuleAction::class)],
-            'operation_type_id'       => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:inventories_operation_types,id'],
-            'source_location_id'      => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:inventories_locations,id'],
-            'destination_location_id' => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:inventories_locations,id'],
+            'name'                    => [...$requiredRule, 'string', 'max:255'],
+            'action'                  => [...$requiredRule, 'string', Rule::enum(RuleAction::class)],
+            'operation_type_id'       => [...$requiredRule, 'integer', 'exists:inventories_operation_types,id'],
+            'source_location_id'      => [...$requiredRule, 'integer', 'exists:inventories_locations,id'],
+            'destination_location_id' => [...$requiredRule, 'integer', 'exists:inventories_locations,id'],
             'partner_address_id'      => ['nullable', 'integer', 'exists:partners_partners,id'],
             'delay'                   => ['nullable', 'integer', 'min:0'],
-            'route_id'                => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:inventories_routes,id'],
+            'route_id'                => [...$requiredRule, 'integer', 'exists:inventories_routes,id'],
             'company_id'              => ['nullable', 'integer', 'exists:companies,id'],
         ];
     }

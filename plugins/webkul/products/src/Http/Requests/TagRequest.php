@@ -24,9 +24,10 @@ class TagRequest extends FormRequest
         $tagId = $this->route('id');
 
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         $rules = [
-            'name'  => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255', 'unique:products_tags,name'.($tagId ? ','.$tagId : '')],
+            'name'  => [...$requiredRule, 'string', 'max:255', 'unique:products_tags,name'.($tagId ? ','.$tagId : '')],
             'color' => ['nullable', 'string', 'max:7'],
         ];
 

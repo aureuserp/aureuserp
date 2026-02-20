@@ -24,14 +24,15 @@ class ProductRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         return [
-            'type'                 => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(ProductType::class)],
-            'name'                 => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'type'                 => [...$requiredRule, 'string', Rule::enum(ProductType::class)],
+            'name'                 => [...$requiredRule, 'string', 'max:255'],
             'service_tracking'     => ['nullable', 'string', 'max:255'],
             'reference'            => ['nullable', 'string', 'max:255'],
             'barcode'              => ['nullable', 'string', 'max:255'],
-            'price'                => [($isUpdate ? 'sometimes|required' : 'required'), 'numeric', 'min:0'],
+            'price'                => [...$requiredRule, 'numeric', 'min:0'],
             'cost'                 => ['nullable', 'numeric', 'min:0'],
             'volume'               => ['nullable', 'numeric', 'min:0', 'max:99999999999'],
             'weight'               => ['nullable', 'numeric', 'min:0', 'max:99999999999'],
@@ -45,7 +46,7 @@ class ProductRequest extends FormRequest
             'images.*'             => ['nullable', 'string'],
             'uom_id'               => ['nullable', 'integer'],
             'uom_po_id'            => ['nullable', 'integer'],
-            'category_id'          => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:products_categories,id'],
+            'category_id'          => [...$requiredRule, 'integer', 'exists:products_categories,id'],
             'company_id'           => ['nullable', 'integer'],
             'tags'                 => ['nullable', 'array'],
             'tags.*'               => ['integer', 'exists:products_tags,id'],

@@ -22,12 +22,13 @@ class ProductAttributeValueRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         $rules = [
             'extra_price'          => ['nullable', 'numeric', 'min:0'],
-            'attribute_id'         => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:products_attributes,id'],
-            'product_attribute_id' => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:products_product_attributes,id'],
-            'attribute_option_id'  => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:products_attribute_options,id'],
+            'attribute_id'         => [...$requiredRule, 'integer', 'exists:products_attributes,id'],
+            'product_attribute_id' => [...$requiredRule, 'integer', 'exists:products_product_attributes,id'],
+            'attribute_option_id'  => [...$requiredRule, 'integer', 'exists:products_attribute_options,id'],
         ];
 
         return $rules;

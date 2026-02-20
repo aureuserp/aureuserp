@@ -23,11 +23,12 @@ class VendorPriceListRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         $rules = [
-            'partner_id'    => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:partners_partners,id'],
-            'product_id'    => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:products_products,id'],
-            'currency_id'   => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:currencies,id'],
+            'partner_id'    => [...$requiredRule, 'integer', 'exists:partners_partners,id'],
+            'product_id'    => [...$requiredRule, 'integer', 'exists:products_products,id'],
+            'currency_id'   => [...$requiredRule, 'integer', 'exists:currencies,id'],
             'company_id'    => ['nullable', 'integer', 'exists:companies,id'],
             'product_name'  => ['nullable', 'string', 'max:255'],
             'product_code'  => ['nullable', 'string', 'max:255'],

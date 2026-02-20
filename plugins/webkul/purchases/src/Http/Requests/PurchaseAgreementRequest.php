@@ -25,18 +25,19 @@ class PurchaseAgreementRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         $rules = [
-            'partner_id'        => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:partners_partners,id'],
-            'type'              => [($isUpdate ? 'sometimes|required' : 'required'), 'string', Rule::enum(RequisitionType::class)],
-            'currency_id'       => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:currencies,id'],
-            'company_id'        => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:companies,id'],
+            'partner_id'        => [...$requiredRule, 'integer', 'exists:partners_partners,id'],
+            'type'              => [...$requiredRule, 'string', Rule::enum(RequisitionType::class)],
+            'currency_id'       => [...$requiredRule, 'integer', 'exists:currencies,id'],
+            'company_id'        => [...$requiredRule, 'integer', 'exists:companies,id'],
             'user_id'           => ['nullable', 'integer', 'exists:users,id'],
             'starts_at'         => ['nullable', 'date', 'after_or_equal:today'],
             'ends_at'           => ['nullable', 'date', 'after_or_equal:starts_at'],
             'reference'         => ['nullable', 'string', 'max:255'],
             'description'       => ['nullable', 'string'],
-            'lines'             => [($isUpdate ? 'sometimes|required' : 'required'), 'array', 'min:1'],
+            'lines'             => [...$requiredRule, 'array', 'min:1'],
             'lines.*.id'        => ['nullable', 'integer', 'exists:purchases_requisition_lines,id'],
             'lines.*.product_id'=> ['required', 'integer', 'exists:products_products,id'],
             'lines.*.qty'       => ['required', 'numeric', 'min:0', 'max:99999999999'],

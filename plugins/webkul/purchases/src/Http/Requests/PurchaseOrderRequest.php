@@ -23,12 +23,13 @@ class PurchaseOrderRequest extends FormRequest
     public function rules(): array
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
         $rules = [
-            'partner_id'                   => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:partners_partners,id'],
-            'currency_id'                  => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:currencies,id'],
-            'ordered_at'                   => [($isUpdate ? 'sometimes|required' : 'required'), 'date'],
-            'company_id'                   => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'exists:companies,id'],
+            'partner_id'                   => [...$requiredRule, 'integer', 'exists:partners_partners,id'],
+            'currency_id'                  => [...$requiredRule, 'integer', 'exists:currencies,id'],
+            'ordered_at'                   => [...$requiredRule, 'date'],
+            'company_id'                   => [...$requiredRule, 'integer', 'exists:companies,id'],
             'partner_reference'            => ['nullable', 'string', 'max:255'],
             'requisition_id'               => ['nullable', 'integer', 'exists:purchases_requisitions,id'],
             'planned_at'                   => ['nullable', 'date'],
@@ -37,7 +38,7 @@ class PurchaseOrderRequest extends FormRequest
             'incoterm_id'                  => ['nullable', 'integer', 'exists:accounts_incoterms,id'],
             'description'                  => ['nullable', 'string'],
             'origin'                       => ['nullable', 'string', 'max:255'],
-            'lines'                        => [($isUpdate ? 'sometimes|required' : 'required'), 'array', 'min:1'],
+            'lines'                        => [...$requiredRule, 'array', 'min:1'],
             'lines.*.id'                   => ['nullable', 'integer', 'exists:purchases_order_lines,id'],
             'lines.*.product_id'           => ['required', 'integer', 'exists:products_products,id'],
             'lines.*.planned_at'           => ['required', 'date'],
