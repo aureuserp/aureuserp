@@ -24,11 +24,14 @@ class PaymentDueTermRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
+
         return [
-            'value'           => ['required', Rule::enum(DueTermValue::class)],
-            'value_amount'    => ['required', 'numeric', 'min:0', 'max:100'],
-            'delay_type'      => ['required', Rule::enum(DelayType::class)],
-            'nb_days'         => ['required', 'integer', 'min:0'],
+            'value'           => [...$requiredRule, 'string', Rule::enum(DueTermValue::class)],
+            'value_amount'    => [...$requiredRule, 'numeric', 'min:0', 'max:100'],
+            'delay_type'      => [...$requiredRule, 'string', Rule::enum(DelayType::class)],
+            'nb_days'         => [...$requiredRule, 'integer', 'min:0'],
             'days_next_month' => ['nullable', 'integer', 'min:1', 'max:31'],
         ];
     }

@@ -3,6 +3,7 @@
 namespace Webkul\Partner\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Webkul\Partner\Enums\AccountType;
 
 class PartnerRequest extends FormRequest
@@ -22,42 +23,34 @@ class PartnerRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
+
         $rules = [
-            'account_type'     => 'required|string|in:'.implode(',', array_column(AccountType::cases(), 'value')),
-            'name'             => 'required|string|max:255',
-            'email'            => 'nullable|email|max:255',
-            'phone'            => 'nullable|string|max:20',
-            'mobile'           => 'nullable|string|max:20',
-            'avatar'           => 'nullable|string|max:255',
-            'job_title'        => 'nullable|string|max:255',
-            'website'          => 'nullable|url|max:255',
-            'tax_id'           => 'nullable|string|max:255',
-            'company_registry' => 'nullable|string|max:255',
-            'reference'        => 'nullable|string|max:255',
-            'color'            => 'nullable|string|max:7',
-            'street1'          => 'nullable|string|max:255',
-            'street2'          => 'nullable|string|max:255',
-            'city'             => 'nullable|string|max:255',
-            'zip'              => 'nullable|string|max:20',
-            'state_id'         => 'nullable|integer|exists:states,id',
-            'country_id'       => 'nullable|integer|exists:countries,id',
-            'parent_id'        => 'nullable|integer|exists:partners_partners,id',
-            'title_id'         => 'nullable|integer|exists:partners_titles,id',
-            'company_id'       => 'nullable|integer|exists:companies,id',
-            'industry_id'      => 'nullable|integer|exists:partners_industries,id',
-            'user_id'          => 'nullable|integer|exists:users,id',
+            'account_type'     => [...$requiredRule, 'string', Rule::enum(AccountType::class)],
+            'name'             => [...$requiredRule, 'string', 'max:255'],
+            'email'            => ['nullable', 'email', 'max:255'],
+            'phone'            => ['nullable', 'string', 'max:20'],
+            'mobile'           => ['nullable', 'string', 'max:20'],
+            'avatar'           => ['nullable', 'string', 'max:255'],
+            'job_title'        => ['nullable', 'string', 'max:255'],
+            'website'          => ['nullable', 'url', 'max:255'],
+            'tax_id'           => ['nullable', 'string', 'max:255'],
+            'company_registry' => ['nullable', 'string', 'max:255'],
+            'reference'        => ['nullable', 'string', 'max:255'],
+            'color'            => ['nullable', 'string', 'max:7'],
+            'street1'          => ['nullable', 'string', 'max:255'],
+            'street2'          => ['nullable', 'string', 'max:255'],
+            'city'             => ['nullable', 'string', 'max:255'],
+            'zip'              => ['nullable', 'string', 'max:20'],
+            'state_id'         => ['nullable', 'integer', 'exists:states,id'],
+            'country_id'       => ['nullable', 'integer', 'exists:countries,id'],
+            'parent_id'        => ['nullable', 'integer', 'exists:partners_partners,id'],
+            'title_id'         => ['nullable', 'integer', 'exists:partners_titles,id'],
+            'company_id'       => ['nullable', 'integer', 'exists:companies,id'],
+            'industry_id'      => ['nullable', 'integer', 'exists:partners_industries,id'],
+            'user_id'          => ['nullable', 'integer', 'exists:users,id'],
         ];
-
-        // On update, make all fields optional
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $rules = array_map(function ($rule) {
-                if (is_string($rule) && str_starts_with($rule, 'required')) {
-                    return str_replace('required', 'sometimes|required', $rule);
-                }
-
-                return $rule;
-            }, $rules);
-        }
 
         return $rules;
     }

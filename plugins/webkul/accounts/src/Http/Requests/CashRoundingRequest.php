@@ -24,11 +24,14 @@ class CashRoundingRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
+
         return [
-            'name'              => ['required', 'string', 'max:255'],
-            'strategy'          => ['required', Rule::enum(RoundingStrategy::class)],
-            'rounding_method'   => ['required', Rule::enum(RoundingMethod::class)],
-            'rounding'          => ['required', 'numeric', 'min:0'],
+            'name'              => [...$requiredRule, 'string', 'max:255'],
+            'strategy'          => [...$requiredRule, 'string', Rule::enum(RoundingStrategy::class)],
+            'rounding_method'   => [...$requiredRule, 'string', Rule::enum(RoundingMethod::class)],
+            'rounding'          => [...$requiredRule, 'numeric', 'min:0'],
             'profit_account_id' => ['nullable', 'integer', 'exists:accounts_accounts,id'],
             'loss_account_id'   => ['nullable', 'integer', 'exists:accounts_accounts,id'],
         ];

@@ -22,44 +22,37 @@ class InvoiceRequest extends FormRequest
      */
     public function rules(): array
     {
-        $rules = [
-            'partner_id'                       => 'required|integer|exists:partners_partners,id',
-            'currency_id'                      => 'required|integer|exists:currencies,id',
-            'journal_id'                       => 'required|integer|exists:accounts_journals,id',
-            'invoice_date'                     => 'required|date',
-            'invoice_date_due'                 => 'nullable|date|prohibited_if:invoice_payment_term_id,*',
-            'invoice_payment_term_id'          => 'nullable|integer|exists:accounts_payment_terms,id|prohibited_if:invoice_date_due,*',
-            'fiscal_position_id'               => 'nullable|integer|exists:accounts_fiscal_positions,id',
-            'invoice_user_id'                  => 'nullable|integer|exists:users,id',
-            'partner_bank_id'                  => 'nullable|integer|exists:partners_bank_accounts,id',
-            'invoice_incoterm_id'              => 'nullable|integer|exists:accounts_incoterms,id',
-            'invoice_cash_rounding_id'         => 'nullable|integer|exists:accounts_cash_roundings,id',
-            'preferred_payment_method_line_id' => 'nullable|integer|exists:accounts_payment_method_lines,id',
-            'reference'                        => 'nullable|string|max:255',
-            'payment_reference'                => 'nullable|string|max:255',
-            'narration'                        => 'nullable|string',
-            'incoterm_location'                => 'nullable|string|max:255',
-            'delivery_date'                    => 'nullable|date',
-            'invoice_lines'                    => 'required|array|min:1',
-            'invoice_lines.*.product_id'       => 'required|integer|exists:products_products,id',
-            'invoice_lines.*.quantity'         => 'required|numeric|min:0.0001',
-            'invoice_lines.*.uom_id'           => 'required|integer|exists:unit_of_measures,id',
-            'invoice_lines.*.price_unit'       => 'required|numeric',
-            'invoice_lines.*.discount'         => 'nullable|numeric|min:0|max:100',
-            'invoice_lines.*.taxes'            => 'nullable|array',
-            'invoice_lines.*.taxes.*'          => 'integer|exists:accounts_taxes,id',
-            'invoice_lines.*.id'               => 'nullable|integer|exists:accounts_account_move_lines,id',
-        ];
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
 
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            foreach ($rules as $key => $rule) {
-                if (! str_starts_with($key, 'invoice_lines')) {
-                    if (is_string($rule) && str_starts_with($rule, 'required')) {
-                        $rules[$key] = str_replace('required', 'sometimes|required', $rule);
-                    }
-                }
-            }
-        }
+        $rules = [
+            'partner_id'                       => [...$requiredRule, 'integer', 'exists:partners_partners,id'],
+            'currency_id'                      => [...$requiredRule, 'integer', 'exists:currencies,id'],
+            'journal_id'                       => [...$requiredRule, 'integer', 'exists:accounts_journals,id'],
+            'invoice_date'                     => [...$requiredRule, 'date'],
+            'invoice_date_due'                 => ['nullable', 'date', 'prohibited_if:invoice_payment_term_id,*'],
+            'invoice_payment_term_id'          => ['nullable', 'integer', 'exists:accounts_payment_terms,id', 'prohibited_if:invoice_date_due,*'],
+            'fiscal_position_id'               => ['nullable', 'integer', 'exists:accounts_fiscal_positions,id'],
+            'invoice_user_id'                  => ['nullable', 'integer', 'exists:users,id'],
+            'partner_bank_id'                  => ['nullable', 'integer', 'exists:partners_bank_accounts,id'],
+            'invoice_incoterm_id'              => ['nullable', 'integer', 'exists:accounts_incoterms,id'],
+            'invoice_cash_rounding_id'         => ['nullable', 'integer', 'exists:accounts_cash_roundings,id'],
+            'preferred_payment_method_line_id' => ['nullable', 'integer', 'exists:accounts_payment_method_lines,id'],
+            'reference'                        => ['nullable', 'string', 'max:255'],
+            'payment_reference'                => ['nullable', 'string', 'max:255'],
+            'narration'                        => ['nullable', 'string'],
+            'incoterm_location'                => ['nullable', 'string', 'max:255'],
+            'delivery_date'                    => ['nullable', 'date'],
+            'invoice_lines'                    => [...$requiredRule, 'array', 'min:1'],
+            'invoice_lines.*.product_id'       => ['required', 'integer', 'exists:products_products,id'],
+            'invoice_lines.*.quantity'         => ['required', 'numeric', 'min:0.0001'],
+            'invoice_lines.*.uom_id'           => ['required', 'integer', 'exists:unit_of_measures,id'],
+            'invoice_lines.*.price_unit'       => ['required', 'numeric'],
+            'invoice_lines.*.discount'         => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'invoice_lines.*.taxes'            => ['nullable', 'array'],
+            'invoice_lines.*.taxes.*'          => ['integer', 'exists:accounts_taxes,id'],
+            'invoice_lines.*.id'               => ['nullable', 'integer', 'exists:accounts_account_move_lines,id'],
+        ];
 
         return $rules;
     }

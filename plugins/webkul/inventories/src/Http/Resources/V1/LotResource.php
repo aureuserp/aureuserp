@@ -4,7 +4,6 @@ namespace Webkul\Inventory\Http\Resources\V1;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Webkul\Product\Http\Resources\V1\ProductResource;
 use Webkul\Security\Http\Resources\V1\UserResource;
 use Webkul\Support\Http\Resources\V1\CompanyResource;
 use Webkul\Support\Http\Resources\V1\UOMResource;

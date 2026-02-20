@@ -28,16 +28,19 @@ class TaxRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
+
         return [
-            'name'                                           => ['required', 'string', 'max:255'],
-            'type_tax_use'                                   => ['required', Rule::enum(TypeTaxUse::class)],
-            'amount_type'                                    => ['required', Rule::enum(AmountType::class)],
-            'amount'                                         => ['required', 'numeric', 'min:0'],
-            'tax_group_id'                                   => ['required', 'integer', 'exists:accounts_tax_groups,id'],
+            'name'                                           => [...$requiredRule, 'string', 'max:255'],
+            'type_tax_use'                                   => [...$requiredRule, 'string', Rule::enum(TypeTaxUse::class)],
+            'amount_type'                                    => [...$requiredRule, 'string', Rule::enum(AmountType::class)],
+            'amount'                                         => [...$requiredRule, 'numeric', 'min:0'],
+            'tax_group_id'                                   => [...$requiredRule, 'integer', 'exists:accounts_tax_groups,id'],
             'company_id'                                     => ['nullable', 'integer', 'exists:companies,id'],
             'country_id'                                     => ['nullable', 'integer', 'exists:countries,id'],
-            'tax_scope'                                      => ['nullable', Rule::enum(TaxScope::class)],
-            'price_include_override'                         => ['nullable', Rule::enum(TaxIncludeOverride::class)],
+            'tax_scope'                                      => ['nullable', 'string', Rule::enum(TaxScope::class)],
+            'price_include_override'                         => ['nullable', 'string', Rule::enum(TaxIncludeOverride::class)],
             'cash_basis_transition_account_id'               => ['nullable', 'integer', 'exists:accounts_accounts,id'],
             'description'                                    => ['nullable', 'string'],
             'invoice_label'                                  => ['nullable', 'string', 'max:255'],
@@ -47,15 +50,15 @@ class TaxRequest extends FormRequest
             'include_base_amount'                            => ['nullable', 'boolean'],
             'is_base_affected'                               => ['nullable', 'boolean'],
             'analytic'                                       => ['nullable', 'boolean'],
-            'invoice_repartition_lines'                      => ['required', 'array', 'min:2'],
+            'invoice_repartition_lines'                      => [...$requiredRule, 'array', 'min:2'],
             'invoice_repartition_lines.*.id'                 => ['sometimes', 'integer', 'exists:accounts_tax_partition_lines,id'],
-            'invoice_repartition_lines.*.repartition_type'   => ['required', Rule::enum(RepartitionType::class)],
+            'invoice_repartition_lines.*.repartition_type'   => ['required', 'string', Rule::enum(RepartitionType::class)],
             'invoice_repartition_lines.*.factor_percent'     => ['nullable', 'numeric', 'min:-100', 'max:100'],
             'invoice_repartition_lines.*.account_id'         => ['nullable', 'integer', 'exists:accounts_accounts,id'],
             'invoice_repartition_lines.*.use_in_tax_closing' => ['sometimes', 'boolean'],
-            'refund_repartition_lines'                       => ['required', 'array', 'min:2'],
+            'refund_repartition_lines'                       => [...$requiredRule, 'array', 'min:2'],
             'refund_repartition_lines.*.id'                  => ['sometimes', 'integer', 'exists:accounts_tax_partition_lines,id'],
-            'refund_repartition_lines.*.repartition_type'    => ['required', Rule::enum(RepartitionType::class)],
+            'refund_repartition_lines.*.repartition_type'    => ['required', 'string', Rule::enum(RepartitionType::class)],
             'refund_repartition_lines.*.factor_percent'      => ['nullable', 'numeric', 'min:-100', 'max:100'],
             'refund_repartition_lines.*.account_id'          => ['nullable', 'integer', 'exists:accounts_accounts,id'],
             'refund_repartition_lines.*.use_in_tax_closing'  => ['sometimes', 'boolean'],

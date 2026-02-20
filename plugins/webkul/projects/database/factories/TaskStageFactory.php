@@ -3,6 +3,7 @@
 namespace Webkul\Project\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Webkul\Project\Models\Project;
 use Webkul\Project\Models\TaskStage;
 use Webkul\Security\Models\User;
 use Webkul\Support\Models\Company;
@@ -31,6 +32,7 @@ class TaskStageFactory extends Factory
             'sort'         => fake()->randomNumber(),
             'is_active'    => true,
             'is_collapsed' => false,
+            'project_id'   => Project::factory(),
             'company_id'   => Company::factory(),
             'user_id'      => User::factory(),
             'creator_id'   => User::factory(),

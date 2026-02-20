@@ -185,11 +185,14 @@ return [
         // Note: does not work for `external` docs types
         'order' => [
             'Security API Management',
-            'Account API Management',
+            'Inventory API Management',
+            'Sales API Management',
             'Support API Management',
             'Partner API Management',
             'Product API Management',
-            'Sales API Management',
+            'Account API Management',
+            'Project API Management',
+            'Purchase API Management',
         ],
     ],
 
@@ -217,7 +220,7 @@ return [
         // With API resources and transformers, Scribe tries to generate example models to use in your API responses.
         // By default, Scribe will try the model's factory, and if that fails, try fetching the first from the database.
         // You can reorder or remove strategies here.
-        'models_source' => ['factoryCreate', 'factoryMake', 'databaseFirst'],
+        'models_source' => ['databaseFirst', 'factoryMake', 'factoryCreate'],
     ],
 
     // The strategies Scribe will use to extract information about your routes at each stage.

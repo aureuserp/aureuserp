@@ -21,21 +21,13 @@ class CategoryRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
+
         $rules = [
-            'name'      => 'required|string|max:255',
-            'parent_id' => 'nullable|integer|exists:products_categories,id',
+            'name'      => [...$requiredRule, 'string', 'max:255'],
+            'parent_id' => ['nullable', 'integer', 'exists:products_categories,id'],
         ];
-
-        // On update, make all fields optional
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $rules = array_map(function ($rule) {
-                if (is_string($rule) && str_starts_with($rule, 'required')) {
-                    return str_replace('required', 'sometimes|required', $rule);
-                }
-
-                return $rule;
-            }, $rules);
-        }
 
         return $rules;
     }

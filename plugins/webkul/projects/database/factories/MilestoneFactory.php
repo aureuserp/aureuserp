@@ -3,12 +3,12 @@
 namespace Webkul\Project\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Webkul\Project\Models\Milestone;
 use Webkul\Project\Models\Project;
-use Webkul\Project\Models\Tag;
 use Webkul\Security\Models\User;
 
 /**
- * @extends Factory<Tag>
+ * @extends Factory<Milestone>
  */
 class MilestoneFactory extends Factory
 {
@@ -17,7 +17,7 @@ class MilestoneFactory extends Factory
      *
      * @var string
      */
-    protected $model = Tag::class;
+    protected $model = Milestone::class;
 
     /**
      * Define the model's default state.

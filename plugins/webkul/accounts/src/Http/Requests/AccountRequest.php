@@ -23,10 +23,13 @@ class AccountRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
+        $requiredRule = $isUpdate ? ['sometimes', 'required'] : ['required'];
+
         return [
-            'name'         => ['required', 'string', 'max:255'],
-            'code'         => ['required', 'string', 'max:64'],
-            'account_type' => ['required', Rule::enum(AccountType::class)],
+            'name'         => [...$requiredRule, 'string', 'max:255'],
+            'code'         => [...$requiredRule, 'string', 'max:64'],
+            'account_type' => [...$requiredRule, 'string', Rule::enum(AccountType::class)],
             'currency_id'  => ['nullable', 'integer', 'exists:currencies,id'],
             'note'         => ['nullable', 'string'],
             'deprecated'   => ['nullable', 'boolean'],

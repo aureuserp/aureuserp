@@ -1,0 +1,2420 @@
+name: 'Sales API Management'
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: admin/api/v1/sales/orders
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Manage sales orders'
+      title: 'List orders'
+      description: 'Retrieve a paginated list of orders with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, partnerInvoice, partnerShipping, user, team, company, currency, paymentTerm, fiscalPosition, journal, campaign, utmSource, medium, warehouse, lines, lines.product, lines.linkedSaleOrderSale, lines.uom, lines.productPackaging, lines.currency, lines.orderPartner, lines.salesman, lines.warehouse, lines.route, lines.company'
+        required: false
+        example: 'partner,lines'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[state]':
+        custom: []
+        name: 'filter[state]'
+        description: 'Filter by state'
+        required: false
+        example: null
+        type: string
+        enumValues:
+          - draft
+          - sent
+          - sale
+          - cancel
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[partner_id]':
+        custom: []
+        name: 'filter[partner_id]'
+        description: 'Comma-separated list of partner IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[trashed]':
+        custom: []
+        name: 'filter[trashed]'
+        description: 'Filter by trashed status. </br></br><b>Available options:</b> with, only'
+        required: false
+        example: with
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: '-created_at'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'partner,lines'
+      'filter[trashed]': with
+      sort: '-created_at'
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1,"name":"SO\/1","state":"sale","invoice_status":"invoiced","client_order_ref":null,"origin":null,"reference":null,"date_order":"2026-01-07","validity_date":"2026-02-06","commitment_date":null,"currency_rate":0,"amount_untaxed":2440,"amount_tax":366,"amount_total":2806,"locked":true,"require_signature":false,"require_payment":false,"signed_by":null,"signed_on":null,"prepayment_percent":0,"note":"<p><\/p>","access_token":null,"partner_id":33,"partner_invoice_id":33,"partner_shipping_id":33,"user_id":1,"team_id":null,"company_id":1,"currency_id":1,"payment_term_id":2,"fiscal_position_id":null,"journal_id":null,"campaign_id":null,"utm_source_id":null,"medium_id":null,"warehouse_id":5,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00","deleted_at":null,"partner":{"id":33,"account_type":"individual","sub_type":"customer","name":"Lyle Holman","email":"lyle@holman.com","phone":"12121221212","mobile":"1212121215294","avatar":null,"avatar_url":null,"job_title":"Itaque ratione dicta tenetur omnis reiciendis quidem consequatur","website":"https:\/\/www.zecikapuleze.mobi","tax_id":"Esse dolorum quo vel animi fugiat ipsum dicta et","company_registry":"TEST COMPANY","reference":"Ea aliquid debitis m","is_active":true,"color":null,"street1":"Street 69","street2":"Reprehenderit eos saepe deserunt ut eu ea aliquam magnam saepe reprehenderit cum alias dicta amet ducimus saepe excepturi facere qui","city":"California","zip":"90006","country_id":233,"state_id":13,"parent_id":18,"title_id":1,"company_id":null,"industry_id":null,"user_id":2,"creator_id":null,"created_at":"2025-04-10T10:45:51.000000Z","updated_at":"2025-12-09T11:12:13.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"lines":[{"id":1,"sort":1,"name":"Big Vision 4K Action Camera - Fisheye Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":210,"technical_price_unit":210,"discount":0,"price_subtotal":1050,"price_tax":157.5,"price_total":1207.5,"price_reduce_taxexcl":210,"price_reduce_taxinc":241.5,"purchase_price":100,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1050,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":2,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":2,"sort":2,"name":"Bass Blaze Waterproof Bluetooth Speaker - Blue","display_type":null,"product_uom_qty":4,"product_qty":4,"qty_delivered":4,"qty_invoiced":4,"qty_to_invoice":0,"product_packaging_qty":0.2,"price_unit":60,"technical_price_unit":60,"discount":0,"price_subtotal":240,"price_tax":36,"price_total":276,"price_reduce_taxexcl":60,"price_reduce_taxinc":69,"purchase_price":45,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":240,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":12,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":2,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":3,"sort":3,"name":"Flim Rocket Mini Projector - Telecentric Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":230,"technical_price_unit":230,"discount":0,"price_subtotal":1150,"price_tax":172.5,"price_total":1322.5,"price_reduce_taxexcl":230,"price_reduce_taxinc":264.5,"purchase_price":120,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1150,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":8,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"}]},{"id":1,"name":"SO\/1","state":"sale","invoice_status":"invoiced","client_order_ref":null,"origin":null,"reference":null,"date_order":"2026-01-07","validity_date":"2026-02-06","commitment_date":null,"currency_rate":0,"amount_untaxed":2440,"amount_tax":366,"amount_total":2806,"locked":true,"require_signature":false,"require_payment":false,"signed_by":null,"signed_on":null,"prepayment_percent":0,"note":"<p><\/p>","access_token":null,"partner_id":33,"partner_invoice_id":33,"partner_shipping_id":33,"user_id":1,"team_id":null,"company_id":1,"currency_id":1,"payment_term_id":2,"fiscal_position_id":null,"journal_id":null,"campaign_id":null,"utm_source_id":null,"medium_id":null,"warehouse_id":5,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00","deleted_at":null,"partner":{"id":33,"account_type":"individual","sub_type":"customer","name":"Lyle Holman","email":"lyle@holman.com","phone":"12121221212","mobile":"1212121215294","avatar":null,"avatar_url":null,"job_title":"Itaque ratione dicta tenetur omnis reiciendis quidem consequatur","website":"https:\/\/www.zecikapuleze.mobi","tax_id":"Esse dolorum quo vel animi fugiat ipsum dicta et","company_registry":"TEST COMPANY","reference":"Ea aliquid debitis m","is_active":true,"color":null,"street1":"Street 69","street2":"Reprehenderit eos saepe deserunt ut eu ea aliquam magnam saepe reprehenderit cum alias dicta amet ducimus saepe excepturi facere qui","city":"California","zip":"90006","country_id":233,"state_id":13,"parent_id":18,"title_id":1,"company_id":null,"industry_id":null,"user_id":2,"creator_id":null,"created_at":"2025-04-10T10:45:51.000000Z","updated_at":"2025-12-09T11:12:13.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"lines":[{"id":1,"sort":1,"name":"Big Vision 4K Action Camera - Fisheye Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":210,"technical_price_unit":210,"discount":0,"price_subtotal":1050,"price_tax":157.5,"price_total":1207.5,"price_reduce_taxexcl":210,"price_reduce_taxinc":241.5,"purchase_price":100,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1050,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":2,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":2,"sort":2,"name":"Bass Blaze Waterproof Bluetooth Speaker - Blue","display_type":null,"product_uom_qty":4,"product_qty":4,"qty_delivered":4,"qty_invoiced":4,"qty_to_invoice":0,"product_packaging_qty":0.2,"price_unit":60,"technical_price_unit":60,"discount":0,"price_subtotal":240,"price_tax":36,"price_total":276,"price_reduce_taxexcl":60,"price_reduce_taxinc":69,"purchase_price":45,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":240,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":12,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":2,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":3,"sort":3,"name":"Flim Rocket Mini Projector - Telecentric Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":230,"technical_price_unit":230,"discount":0,"price_subtotal":1150,"price_tax":172.5,"price_total":1322.5,"price_reduce_taxexcl":230,"price_reduce_taxinc":264.5,"purchase_price":120,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1150,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":8,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"}]}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: admin/api/v1/sales/orders
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Manage sales orders'
+      title: 'Create order'
+      description: 'Create a new order with line items'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      partner_id:
+        custom: []
+        name: partner_id
+        description: 'Customer (partner) ID. The <code>id</code> of an existing record in the partners_partners table.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      payment_term_id:
+        custom: []
+        name: payment_term_id
+        description: 'Payment term ID. The <code>id</code> of an existing record in the accounts_payment_terms table.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      date_order:
+        custom: []
+        name: date_order
+        description: 'Order date in YYYY-MM-DD format. Must be a valid date.'
+        required: true
+        example: '2026-02-18'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      validity_date:
+        custom: []
+        name: validity_date
+        description: 'Quotation validity date in YYYY-MM-DD format. Must be a valid date.'
+        required: false
+        example: '2026-02-28'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      commitment_date:
+        custom: []
+        name: commitment_date
+        description: 'Must be a valid date.'
+        required: false
+        example: '2026-02-20T08:26:26'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      client_order_ref:
+        custom: []
+        name: client_order_ref
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      origin:
+        custom: []
+        name: origin
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      note:
+        custom: []
+        name: note
+        description: 'Terms and conditions or internal note.'
+        required: false
+        example: 'Delivery within 7 business days.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      user_id:
+        custom: []
+        name: user_id
+        description: 'The <code>id</code> of an existing record in the users table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID. The <code>id</code> of an existing record in the companies table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      currency_id:
+        custom: []
+        name: currency_id
+        description: 'Currency ID. The <code>id</code> of an existing record in the currencies table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      campaign_id:
+        custom: []
+        name: campaign_id
+        description: 'The <code>id</code> of an existing record in the utm_campaigns table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      utm_source_id:
+        custom: []
+        name: utm_source_id
+        description: 'The <code>id</code> of an existing record in the utm_sources table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      medium_id:
+        custom: []
+        name: medium_id
+        description: 'The <code>id</code> of an existing record in the utm_mediums table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      sales_order_tags:
+        custom: []
+        name: sales_order_tags
+        description: 'The <code>id</code> of an existing record in the sales_tags table.'
+        required: false
+        example:
+          - 16
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      lines:
+        custom: []
+        name: lines
+        description: 'Array of order line items with writable fields from the quotation form. Must have at least 1 items.'
+        required: true
+        example:
+          -
+            product_id: 10
+            product_qty: 2
+            product_uom_id: 1
+            price_unit: 120.5
+            discount: 5
+            customer_lead: 0
+            product_packaging_id: null
+            product_packaging_qty: 0
+            taxes:
+              - 1
+              - 2
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'lines[].id':
+        custom: []
+        name: 'lines[].id'
+        description: 'The <code>id</code> of an existing record in the sales_order_lines table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'lines[].product_id':
+        custom: []
+        name: 'lines[].product_id'
+        description: 'The <code>id</code> of an existing record in the products_products table.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'lines[].product_qty':
+        custom: []
+        name: 'lines[].product_qty'
+        description: 'Must be at least 0. Must not be greater than 99999999999.'
+        required: true
+        example: 22
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'lines[].qty_delivered':
+        custom: []
+        name: 'lines[].qty_delivered'
+        description: 'Must be at least 0. Must not be greater than 99999999999.'
+        required: false
+        example: 7
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'lines[].product_packaging_qty':
+        custom: []
+        name: 'lines[].product_packaging_qty'
+        description: 'Must be at least 0. Must not be greater than 99999999999.'
+        required: false
+        example: 16
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'lines[].price_unit':
+        custom: []
+        name: 'lines[].price_unit'
+        description: 'Must be at least 0. Must not be greater than 99999999999.'
+        required: true
+        example: 17
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'lines[].discount':
+        custom: []
+        name: 'lines[].discount'
+        description: 'Must be at least 0. Must not be greater than 100.'
+        required: false
+        example: 15
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'lines[].customer_lead':
+        custom: []
+        name: 'lines[].customer_lead'
+        description: 'Must be at least 0. Must not be greater than 99999999999.'
+        required: false
+        example: 8
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'lines[].product_uom_id':
+        custom: []
+        name: 'lines[].product_uom_id'
+        description: 'The <code>id</code> of an existing record in the unit_of_measures table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'lines[].product_packaging_id':
+        custom: []
+        name: 'lines[].product_packaging_id'
+        description: 'The <code>id</code> of an existing record in the products_packagings table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'lines[].taxes':
+        custom: []
+        name: 'lines[].taxes'
+        description: 'The <code>id</code> of an existing record in the accounts_taxes table.'
+        required: false
+        example:
+          - 16
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      partner_id: 1
+      payment_term_id: 1
+      date_order: '2026-02-18'
+      validity_date: '2026-02-28'
+      commitment_date: '2026-02-20T08:26:26'
+      client_order_ref: b
+      origin: 'n'
+      note: 'Delivery within 7 business days.'
+      user_id: 16
+      company_id: 1
+      currency_id: 1
+      campaign_id: 16
+      utm_source_id: 16
+      medium_id: 16
+      sales_order_tags:
+        - 16
+      lines:
+        -
+          product_id: 10
+          product_qty: 2
+          product_uom_id: 1
+          price_unit: 120.5
+          discount: 5
+          customer_lead: 8
+          product_packaging_id: null
+          product_packaging_qty: 16
+          taxes:
+            - 1
+            - 2
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":1,"name":"SO\/1","state":"sale","invoice_status":"invoiced","client_order_ref":null,"origin":null,"reference":null,"date_order":"2026-01-07","validity_date":"2026-02-06","commitment_date":null,"currency_rate":0,"amount_untaxed":2440,"amount_tax":366,"amount_total":2806,"locked":true,"require_signature":false,"require_payment":false,"signed_by":null,"signed_on":null,"prepayment_percent":0,"note":"<p><\/p>","access_token":null,"partner_id":33,"partner_invoice_id":33,"partner_shipping_id":33,"user_id":1,"team_id":null,"company_id":1,"currency_id":1,"payment_term_id":2,"fiscal_position_id":null,"journal_id":null,"campaign_id":null,"utm_source_id":null,"medium_id":null,"warehouse_id":5,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00","deleted_at":null,"partner":{"id":33,"account_type":"individual","sub_type":"customer","name":"Lyle Holman","email":"lyle@holman.com","phone":"12121221212","mobile":"1212121215294","avatar":null,"avatar_url":null,"job_title":"Itaque ratione dicta tenetur omnis reiciendis quidem consequatur","website":"https:\/\/www.zecikapuleze.mobi","tax_id":"Esse dolorum quo vel animi fugiat ipsum dicta et","company_registry":"TEST COMPANY","reference":"Ea aliquid debitis m","is_active":true,"color":null,"street1":"Street 69","street2":"Reprehenderit eos saepe deserunt ut eu ea aliquam magnam saepe reprehenderit cum alias dicta amet ducimus saepe excepturi facere qui","city":"California","zip":"90006","country_id":233,"state_id":13,"parent_id":18,"title_id":1,"company_id":null,"industry_id":null,"user_id":2,"creator_id":null,"created_at":"2025-04-10T10:45:51.000000Z","updated_at":"2025-12-09T11:12:13.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"lines":[{"id":1,"sort":1,"name":"Big Vision 4K Action Camera - Fisheye Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":210,"technical_price_unit":210,"discount":0,"price_subtotal":1050,"price_tax":157.5,"price_total":1207.5,"price_reduce_taxexcl":210,"price_reduce_taxinc":241.5,"purchase_price":100,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1050,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":2,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":2,"sort":2,"name":"Bass Blaze Waterproof Bluetooth Speaker - Blue","display_type":null,"product_uom_qty":4,"product_qty":4,"qty_delivered":4,"qty_invoiced":4,"qty_to_invoice":0,"product_packaging_qty":0.2,"price_unit":60,"technical_price_unit":60,"discount":0,"price_subtotal":240,"price_tax":36,"price_total":276,"price_reduce_taxexcl":60,"price_reduce_taxinc":69,"purchase_price":45,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":240,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":12,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":2,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":3,"sort":3,"name":"Flim Rocket Mini Projector - Telecentric Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":230,"technical_price_unit":230,"discount":0,"price_subtotal":1150,"price_tax":172.5,"price_total":1322.5,"price_reduce_taxexcl":230,"price_reduce_taxinc":264.5,"purchase_price":120,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1150,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":8,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"}]},"message":"Order created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"partner_id": ["The partner id field is required."], "lines": ["The lines field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/sales/orders/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Manage sales orders'
+      title: 'Show order'
+      description: 'Retrieve a specific order by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> partner, partnerInvoice, partnerShipping, user, team, company, currency, paymentTerm, fiscalPosition, journal, campaign, utmSource, medium, warehouse, lines, lines.product, lines.linkedSaleOrderSale, lines.uom, lines.productPackaging, lines.currency, lines.orderPartner, lines.salesman, lines.warehouse, lines.route, lines.company'
+        required: false
+        example: 'partner,lines'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'partner,lines'
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"name":"SO\/1","state":"sale","invoice_status":"invoiced","client_order_ref":null,"origin":null,"reference":null,"date_order":"2026-01-07","validity_date":"2026-02-06","commitment_date":null,"currency_rate":0,"amount_untaxed":2440,"amount_tax":366,"amount_total":2806,"locked":true,"require_signature":false,"require_payment":false,"signed_by":null,"signed_on":null,"prepayment_percent":0,"note":"<p><\/p>","access_token":null,"partner_id":33,"partner_invoice_id":33,"partner_shipping_id":33,"user_id":1,"team_id":null,"company_id":1,"currency_id":1,"payment_term_id":2,"fiscal_position_id":null,"journal_id":null,"campaign_id":null,"utm_source_id":null,"medium_id":null,"warehouse_id":5,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00","deleted_at":null,"partner":{"id":33,"account_type":"individual","sub_type":"customer","name":"Lyle Holman","email":"lyle@holman.com","phone":"12121221212","mobile":"1212121215294","avatar":null,"avatar_url":null,"job_title":"Itaque ratione dicta tenetur omnis reiciendis quidem consequatur","website":"https:\/\/www.zecikapuleze.mobi","tax_id":"Esse dolorum quo vel animi fugiat ipsum dicta et","company_registry":"TEST COMPANY","reference":"Ea aliquid debitis m","is_active":true,"color":null,"street1":"Street 69","street2":"Reprehenderit eos saepe deserunt ut eu ea aliquam magnam saepe reprehenderit cum alias dicta amet ducimus saepe excepturi facere qui","city":"California","zip":"90006","country_id":233,"state_id":13,"parent_id":18,"title_id":1,"company_id":null,"industry_id":null,"user_id":2,"creator_id":null,"created_at":"2025-04-10T10:45:51.000000Z","updated_at":"2025-12-09T11:12:13.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"lines":[{"id":1,"sort":1,"name":"Big Vision 4K Action Camera - Fisheye Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":210,"technical_price_unit":210,"discount":0,"price_subtotal":1050,"price_tax":157.5,"price_total":1207.5,"price_reduce_taxexcl":210,"price_reduce_taxinc":241.5,"purchase_price":100,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1050,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":2,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":2,"sort":2,"name":"Bass Blaze Waterproof Bluetooth Speaker - Blue","display_type":null,"product_uom_qty":4,"product_qty":4,"qty_delivered":4,"qty_invoiced":4,"qty_to_invoice":0,"product_packaging_qty":0.2,"price_unit":60,"technical_price_unit":60,"discount":0,"price_subtotal":240,"price_tax":36,"price_total":276,"price_reduce_taxexcl":60,"price_reduce_taxinc":69,"purchase_price":45,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":240,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":12,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":2,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":3,"sort":3,"name":"Flim Rocket Mini Projector - Telecentric Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":230,"technical_price_unit":230,"discount":0,"price_subtotal":1150,"price_tax":172.5,"price_total":1322.5,"price_reduce_taxexcl":230,"price_reduce_taxinc":264.5,"purchase_price":120,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1150,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":8,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"}]}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Order not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/sales/orders/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Manage sales orders'
+      title: 'Update order'
+      description: 'Update an existing order and sync line items'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      partner_id:
+        custom: []
+        name: partner_id
+        description: 'Customer (partner) ID. The <code>id</code> of an existing record in the partners_partners table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      payment_term_id:
+        custom: []
+        name: payment_term_id
+        description: 'Payment term ID. The <code>id</code> of an existing record in the accounts_payment_terms table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      date_order:
+        custom: []
+        name: date_order
+        description: 'Order date in YYYY-MM-DD format. Must be a valid date.'
+        required: false
+        example: '2026-02-18'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      validity_date:
+        custom: []
+        name: validity_date
+        description: 'Quotation validity date in YYYY-MM-DD format. Must be a valid date.'
+        required: false
+        example: '2026-02-28'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      commitment_date:
+        custom: []
+        name: commitment_date
+        description: 'Must be a valid date.'
+        required: false
+        example: '2026-02-20T08:26:26'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      client_order_ref:
+        custom: []
+        name: client_order_ref
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: b
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      origin:
+        custom: []
+        name: origin
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      note:
+        custom: []
+        name: note
+        description: 'Terms and conditions or internal note.'
+        required: false
+        example: 'Delivery within 7 business days.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      user_id:
+        custom: []
+        name: user_id
+        description: 'The <code>id</code> of an existing record in the users table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      company_id:
+        custom: []
+        name: company_id
+        description: 'Company ID. The <code>id</code> of an existing record in the companies table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      currency_id:
+        custom: []
+        name: currency_id
+        description: 'Currency ID. The <code>id</code> of an existing record in the currencies table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      campaign_id:
+        custom: []
+        name: campaign_id
+        description: 'The <code>id</code> of an existing record in the utm_campaigns table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      utm_source_id:
+        custom: []
+        name: utm_source_id
+        description: 'The <code>id</code> of an existing record in the utm_sources table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      medium_id:
+        custom: []
+        name: medium_id
+        description: 'The <code>id</code> of an existing record in the utm_mediums table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      sales_order_tags:
+        custom: []
+        name: sales_order_tags
+        description: 'The <code>id</code> of an existing record in the sales_tags table.'
+        required: false
+        example:
+          - 16
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      lines:
+        custom: []
+        name: lines
+        description: 'Array of order line items with writable fields from the quotation form. Must have at least 1 items.'
+        required: false
+        example:
+          -
+            product_id: 10
+            product_qty: 2
+            product_uom_id: 1
+            price_unit: 120.5
+            discount: 5
+            customer_lead: 0
+            product_packaging_id: null
+            product_packaging_qty: 0
+            taxes:
+              - 1
+              - 2
+        type: 'object[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'lines[].id':
+        custom: []
+        name: 'lines[].id'
+        description: 'The <code>id</code> of an existing record in the sales_order_lines table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'lines[].product_id':
+        custom: []
+        name: 'lines[].product_id'
+        description: 'The <code>id</code> of an existing record in the products_products table.'
+        required: true
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'lines[].product_qty':
+        custom: []
+        name: 'lines[].product_qty'
+        description: 'Must be at least 0. Must not be greater than 99999999999.'
+        required: true
+        example: 22
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'lines[].qty_delivered':
+        custom: []
+        name: 'lines[].qty_delivered'
+        description: 'Must be at least 0. Must not be greater than 99999999999.'
+        required: false
+        example: 7
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'lines[].product_packaging_qty':
+        custom: []
+        name: 'lines[].product_packaging_qty'
+        description: 'Must be at least 0. Must not be greater than 99999999999.'
+        required: false
+        example: 16
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'lines[].price_unit':
+        custom: []
+        name: 'lines[].price_unit'
+        description: 'Must be at least 0. Must not be greater than 99999999999.'
+        required: true
+        example: 17
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'lines[].discount':
+        custom: []
+        name: 'lines[].discount'
+        description: 'Must be at least 0. Must not be greater than 100.'
+        required: false
+        example: 15
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'lines[].customer_lead':
+        custom: []
+        name: 'lines[].customer_lead'
+        description: 'Must be at least 0. Must not be greater than 99999999999.'
+        required: false
+        example: 8
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'lines[].product_uom_id':
+        custom: []
+        name: 'lines[].product_uom_id'
+        description: 'The <code>id</code> of an existing record in the unit_of_measures table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'lines[].product_packaging_id':
+        custom: []
+        name: 'lines[].product_packaging_id'
+        description: 'The <code>id</code> of an existing record in the products_packagings table.'
+        required: false
+        example: 16
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'lines[].taxes':
+        custom: []
+        name: 'lines[].taxes'
+        description: 'The <code>id</code> of an existing record in the accounts_taxes table.'
+        required: false
+        example:
+          - 16
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      partner_id: 1
+      payment_term_id: 1
+      date_order: '2026-02-18'
+      validity_date: '2026-02-28'
+      commitment_date: '2026-02-20T08:26:26'
+      client_order_ref: b
+      origin: 'n'
+      note: 'Delivery within 7 business days.'
+      user_id: 16
+      company_id: 1
+      currency_id: 1
+      campaign_id: 16
+      utm_source_id: 16
+      medium_id: 16
+      sales_order_tags:
+        - 16
+      lines:
+        -
+          product_id: 10
+          product_qty: 2
+          product_uom_id: 1
+          price_unit: 120.5
+          discount: 5
+          customer_lead: 8
+          product_packaging_id: null
+          product_packaging_qty: 16
+          taxes:
+            - 1
+            - 2
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"name":"SO\/1","state":"sale","invoice_status":"invoiced","client_order_ref":null,"origin":null,"reference":null,"date_order":"2026-01-07","validity_date":"2026-02-06","commitment_date":null,"currency_rate":0,"amount_untaxed":2440,"amount_tax":366,"amount_total":2806,"locked":true,"require_signature":false,"require_payment":false,"signed_by":null,"signed_on":null,"prepayment_percent":0,"note":"<p><\/p>","access_token":null,"partner_id":33,"partner_invoice_id":33,"partner_shipping_id":33,"user_id":1,"team_id":null,"company_id":1,"currency_id":1,"payment_term_id":2,"fiscal_position_id":null,"journal_id":null,"campaign_id":null,"utm_source_id":null,"medium_id":null,"warehouse_id":5,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00","deleted_at":null,"partner":{"id":33,"account_type":"individual","sub_type":"customer","name":"Lyle Holman","email":"lyle@holman.com","phone":"12121221212","mobile":"1212121215294","avatar":null,"avatar_url":null,"job_title":"Itaque ratione dicta tenetur omnis reiciendis quidem consequatur","website":"https:\/\/www.zecikapuleze.mobi","tax_id":"Esse dolorum quo vel animi fugiat ipsum dicta et","company_registry":"TEST COMPANY","reference":"Ea aliquid debitis m","is_active":true,"color":null,"street1":"Street 69","street2":"Reprehenderit eos saepe deserunt ut eu ea aliquam magnam saepe reprehenderit cum alias dicta amet ducimus saepe excepturi facere qui","city":"California","zip":"90006","country_id":233,"state_id":13,"parent_id":18,"title_id":1,"company_id":null,"industry_id":null,"user_id":2,"creator_id":null,"created_at":"2025-04-10T10:45:51.000000Z","updated_at":"2025-12-09T11:12:13.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"lines":[{"id":1,"sort":1,"name":"Big Vision 4K Action Camera - Fisheye Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":210,"technical_price_unit":210,"discount":0,"price_subtotal":1050,"price_tax":157.5,"price_total":1207.5,"price_reduce_taxexcl":210,"price_reduce_taxinc":241.5,"purchase_price":100,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1050,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":2,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":2,"sort":2,"name":"Bass Blaze Waterproof Bluetooth Speaker - Blue","display_type":null,"product_uom_qty":4,"product_qty":4,"qty_delivered":4,"qty_invoiced":4,"qty_to_invoice":0,"product_packaging_qty":0.2,"price_unit":60,"technical_price_unit":60,"discount":0,"price_subtotal":240,"price_tax":36,"price_total":276,"price_reduce_taxexcl":60,"price_reduce_taxinc":69,"purchase_price":45,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":240,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":12,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":2,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":3,"sort":3,"name":"Flim Rocket Mini Projector - Telecentric Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":230,"technical_price_unit":230,"discount":0,"price_subtotal":1150,"price_tax":172.5,"price_total":1322.5,"price_reduce_taxexcl":230,"price_reduce_taxinc":264.5,"purchase_price":120,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1150,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":8,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"}]},"message":"Order updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Order not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"partner_id": ["The partner id field must be an integer."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/sales/orders/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Manage sales orders'
+      title: 'Delete order'
+      description: 'Soft delete an order'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Order deleted successfully."}'
+        headers: []
+        description: 'Order deleted successfully'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Order not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/sales/orders/{id}/restore'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Manage sales orders'
+      title: 'Restore order'
+      description: 'Restore a soft-deleted order'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"name":"SO\/1","state":"sale","invoice_status":"invoiced","client_order_ref":null,"origin":null,"reference":null,"date_order":"2026-01-07","validity_date":"2026-02-06","commitment_date":null,"currency_rate":0,"amount_untaxed":2440,"amount_tax":366,"amount_total":2806,"locked":true,"require_signature":false,"require_payment":false,"signed_by":null,"signed_on":null,"prepayment_percent":0,"note":"<p><\/p>","access_token":null,"partner_id":33,"partner_invoice_id":33,"partner_shipping_id":33,"user_id":1,"team_id":null,"company_id":1,"currency_id":1,"payment_term_id":2,"fiscal_position_id":null,"journal_id":null,"campaign_id":null,"utm_source_id":null,"medium_id":null,"warehouse_id":5,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00","deleted_at":null,"partner":{"id":33,"account_type":"individual","sub_type":"customer","name":"Lyle Holman","email":"lyle@holman.com","phone":"12121221212","mobile":"1212121215294","avatar":null,"avatar_url":null,"job_title":"Itaque ratione dicta tenetur omnis reiciendis quidem consequatur","website":"https:\/\/www.zecikapuleze.mobi","tax_id":"Esse dolorum quo vel animi fugiat ipsum dicta et","company_registry":"TEST COMPANY","reference":"Ea aliquid debitis m","is_active":true,"color":null,"street1":"Street 69","street2":"Reprehenderit eos saepe deserunt ut eu ea aliquam magnam saepe reprehenderit cum alias dicta amet ducimus saepe excepturi facere qui","city":"California","zip":"90006","country_id":233,"state_id":13,"parent_id":18,"title_id":1,"company_id":null,"industry_id":null,"user_id":2,"creator_id":null,"created_at":"2025-04-10T10:45:51.000000Z","updated_at":"2025-12-09T11:12:13.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"lines":[{"id":1,"sort":1,"name":"Big Vision 4K Action Camera - Fisheye Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":210,"technical_price_unit":210,"discount":0,"price_subtotal":1050,"price_tax":157.5,"price_total":1207.5,"price_reduce_taxexcl":210,"price_reduce_taxinc":241.5,"purchase_price":100,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1050,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":2,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":2,"sort":2,"name":"Bass Blaze Waterproof Bluetooth Speaker - Blue","display_type":null,"product_uom_qty":4,"product_qty":4,"qty_delivered":4,"qty_invoiced":4,"qty_to_invoice":0,"product_packaging_qty":0.2,"price_unit":60,"technical_price_unit":60,"discount":0,"price_subtotal":240,"price_tax":36,"price_total":276,"price_reduce_taxexcl":60,"price_reduce_taxinc":69,"purchase_price":45,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":240,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":12,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":2,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":3,"sort":3,"name":"Flim Rocket Mini Projector - Telecentric Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":230,"technical_price_unit":230,"discount":0,"price_subtotal":1150,"price_tax":172.5,"price_total":1322.5,"price_reduce_taxexcl":230,"price_reduce_taxinc":264.5,"purchase_price":120,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1150,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":8,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"}]},"message":"Order restored successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Order not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/sales/orders/{id}/force'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Manage sales orders'
+      title: 'Force delete order'
+      description: 'Permanently delete an order'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Order permanently deleted."}'
+        headers: []
+        description: 'Order permanently deleted'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Order not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/sales/orders/{id}/confirm'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Manage sales orders'
+      title: 'Confirm order'
+      description: 'Confirm a quotation and convert it to a sale order'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"name":"SO\/1","state":"sale","invoice_status":"invoiced","client_order_ref":null,"origin":null,"reference":null,"date_order":"2026-01-07","validity_date":"2026-02-06","commitment_date":null,"currency_rate":0,"amount_untaxed":2440,"amount_tax":366,"amount_total":2806,"locked":true,"require_signature":false,"require_payment":false,"signed_by":null,"signed_on":null,"prepayment_percent":0,"note":"<p><\/p>","access_token":null,"partner_id":33,"partner_invoice_id":33,"partner_shipping_id":33,"user_id":1,"team_id":null,"company_id":1,"currency_id":1,"payment_term_id":2,"fiscal_position_id":null,"journal_id":null,"campaign_id":null,"utm_source_id":null,"medium_id":null,"warehouse_id":5,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00","deleted_at":null,"partner":{"id":33,"account_type":"individual","sub_type":"customer","name":"Lyle Holman","email":"lyle@holman.com","phone":"12121221212","mobile":"1212121215294","avatar":null,"avatar_url":null,"job_title":"Itaque ratione dicta tenetur omnis reiciendis quidem consequatur","website":"https:\/\/www.zecikapuleze.mobi","tax_id":"Esse dolorum quo vel animi fugiat ipsum dicta et","company_registry":"TEST COMPANY","reference":"Ea aliquid debitis m","is_active":true,"color":null,"street1":"Street 69","street2":"Reprehenderit eos saepe deserunt ut eu ea aliquam magnam saepe reprehenderit cum alias dicta amet ducimus saepe excepturi facere qui","city":"California","zip":"90006","country_id":233,"state_id":13,"parent_id":18,"title_id":1,"company_id":null,"industry_id":null,"user_id":2,"creator_id":null,"created_at":"2025-04-10T10:45:51.000000Z","updated_at":"2025-12-09T11:12:13.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"lines":[{"id":1,"sort":1,"name":"Big Vision 4K Action Camera - Fisheye Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":210,"technical_price_unit":210,"discount":0,"price_subtotal":1050,"price_tax":157.5,"price_total":1207.5,"price_reduce_taxexcl":210,"price_reduce_taxinc":241.5,"purchase_price":100,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1050,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":2,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":2,"sort":2,"name":"Bass Blaze Waterproof Bluetooth Speaker - Blue","display_type":null,"product_uom_qty":4,"product_qty":4,"qty_delivered":4,"qty_invoiced":4,"qty_to_invoice":0,"product_packaging_qty":0.2,"price_unit":60,"technical_price_unit":60,"discount":0,"price_subtotal":240,"price_tax":36,"price_total":276,"price_reduce_taxexcl":60,"price_reduce_taxinc":69,"purchase_price":45,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":240,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":12,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":2,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":3,"sort":3,"name":"Flim Rocket Mini Projector - Telecentric Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":230,"technical_price_unit":230,"discount":0,"price_subtotal":1150,"price_tax":172.5,"price_total":1322.5,"price_reduce_taxexcl":230,"price_reduce_taxinc":264.5,"purchase_price":120,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1150,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":8,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"}]},"message":"Order confirmed successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Order not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "Only draft or sent orders can be confirmed."}'
+        headers: []
+        description: 'Invalid state transition'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/sales/orders/{id}/cancel'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Manage sales orders'
+      title: 'Cancel order'
+      description: 'Cancel a sale order'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      partners:
+        custom: []
+        name: partners
+        description: 'The <code>id</code> of an existing record in the partners_partners table.'
+        required: false
+        example:
+          - 16
+        type: 'integer[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      subject:
+        custom: []
+        name: subject
+        description: 'This field is required when <code>partners_partners</code> is present. Must not be greater than 255 characters.'
+        required: false
+        example: 'n'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      description:
+        custom: []
+        name: description
+        description: 'This field is required when <code>partners_partners</code> is present.'
+        required: false
+        example: 'Eius et animi quos velit et.'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      partners:
+        - 16
+      subject: 'n'
+      description: 'Eius et animi quos velit et.'
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"name":"SO\/1","state":"sale","invoice_status":"invoiced","client_order_ref":null,"origin":null,"reference":null,"date_order":"2026-01-07","validity_date":"2026-02-06","commitment_date":null,"currency_rate":0,"amount_untaxed":2440,"amount_tax":366,"amount_total":2806,"locked":true,"require_signature":false,"require_payment":false,"signed_by":null,"signed_on":null,"prepayment_percent":0,"note":"<p><\/p>","access_token":null,"partner_id":33,"partner_invoice_id":33,"partner_shipping_id":33,"user_id":1,"team_id":null,"company_id":1,"currency_id":1,"payment_term_id":2,"fiscal_position_id":null,"journal_id":null,"campaign_id":null,"utm_source_id":null,"medium_id":null,"warehouse_id":5,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00","deleted_at":null,"partner":{"id":33,"account_type":"individual","sub_type":"customer","name":"Lyle Holman","email":"lyle@holman.com","phone":"12121221212","mobile":"1212121215294","avatar":null,"avatar_url":null,"job_title":"Itaque ratione dicta tenetur omnis reiciendis quidem consequatur","website":"https:\/\/www.zecikapuleze.mobi","tax_id":"Esse dolorum quo vel animi fugiat ipsum dicta et","company_registry":"TEST COMPANY","reference":"Ea aliquid debitis m","is_active":true,"color":null,"street1":"Street 69","street2":"Reprehenderit eos saepe deserunt ut eu ea aliquam magnam saepe reprehenderit cum alias dicta amet ducimus saepe excepturi facere qui","city":"California","zip":"90006","country_id":233,"state_id":13,"parent_id":18,"title_id":1,"company_id":null,"industry_id":null,"user_id":2,"creator_id":null,"created_at":"2025-04-10T10:45:51.000000Z","updated_at":"2025-12-09T11:12:13.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"lines":[{"id":1,"sort":1,"name":"Big Vision 4K Action Camera - Fisheye Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":210,"technical_price_unit":210,"discount":0,"price_subtotal":1050,"price_tax":157.5,"price_total":1207.5,"price_reduce_taxexcl":210,"price_reduce_taxinc":241.5,"purchase_price":100,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1050,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":2,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":2,"sort":2,"name":"Bass Blaze Waterproof Bluetooth Speaker - Blue","display_type":null,"product_uom_qty":4,"product_qty":4,"qty_delivered":4,"qty_invoiced":4,"qty_to_invoice":0,"product_packaging_qty":0.2,"price_unit":60,"technical_price_unit":60,"discount":0,"price_subtotal":240,"price_tax":36,"price_total":276,"price_reduce_taxexcl":60,"price_reduce_taxinc":69,"purchase_price":45,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":240,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":12,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":2,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":3,"sort":3,"name":"Flim Rocket Mini Projector - Telecentric Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":230,"technical_price_unit":230,"discount":0,"price_subtotal":1150,"price_tax":172.5,"price_total":1322.5,"price_reduce_taxexcl":230,"price_reduce_taxinc":264.5,"purchase_price":120,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1150,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":8,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"}]},"message":"Order canceled successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Order not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "Only draft, sent, or sale orders can be canceled."}'
+        headers: []
+        description: 'Invalid state transition'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/sales/orders/{id}/set-as-quotation'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Manage sales orders'
+      title: 'Set order as quotation'
+      description: 'Set a canceled sale order back to quotation'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"name":"SO\/1","state":"sale","invoice_status":"invoiced","client_order_ref":null,"origin":null,"reference":null,"date_order":"2026-01-07","validity_date":"2026-02-06","commitment_date":null,"currency_rate":0,"amount_untaxed":2440,"amount_tax":366,"amount_total":2806,"locked":true,"require_signature":false,"require_payment":false,"signed_by":null,"signed_on":null,"prepayment_percent":0,"note":"<p><\/p>","access_token":null,"partner_id":33,"partner_invoice_id":33,"partner_shipping_id":33,"user_id":1,"team_id":null,"company_id":1,"currency_id":1,"payment_term_id":2,"fiscal_position_id":null,"journal_id":null,"campaign_id":null,"utm_source_id":null,"medium_id":null,"warehouse_id":5,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00","deleted_at":null,"partner":{"id":33,"account_type":"individual","sub_type":"customer","name":"Lyle Holman","email":"lyle@holman.com","phone":"12121221212","mobile":"1212121215294","avatar":null,"avatar_url":null,"job_title":"Itaque ratione dicta tenetur omnis reiciendis quidem consequatur","website":"https:\/\/www.zecikapuleze.mobi","tax_id":"Esse dolorum quo vel animi fugiat ipsum dicta et","company_registry":"TEST COMPANY","reference":"Ea aliquid debitis m","is_active":true,"color":null,"street1":"Street 69","street2":"Reprehenderit eos saepe deserunt ut eu ea aliquam magnam saepe reprehenderit cum alias dicta amet ducimus saepe excepturi facere qui","city":"California","zip":"90006","country_id":233,"state_id":13,"parent_id":18,"title_id":1,"company_id":null,"industry_id":null,"user_id":2,"creator_id":null,"created_at":"2025-04-10T10:45:51.000000Z","updated_at":"2025-12-09T11:12:13.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"lines":[{"id":1,"sort":1,"name":"Big Vision 4K Action Camera - Fisheye Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":210,"technical_price_unit":210,"discount":0,"price_subtotal":1050,"price_tax":157.5,"price_total":1207.5,"price_reduce_taxexcl":210,"price_reduce_taxinc":241.5,"purchase_price":100,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1050,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":2,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":2,"sort":2,"name":"Bass Blaze Waterproof Bluetooth Speaker - Blue","display_type":null,"product_uom_qty":4,"product_qty":4,"qty_delivered":4,"qty_invoiced":4,"qty_to_invoice":0,"product_packaging_qty":0.2,"price_unit":60,"technical_price_unit":60,"discount":0,"price_subtotal":240,"price_tax":36,"price_total":276,"price_reduce_taxexcl":60,"price_reduce_taxinc":69,"purchase_price":45,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":240,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":12,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":2,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":3,"sort":3,"name":"Flim Rocket Mini Projector - Telecentric Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":230,"technical_price_unit":230,"discount":0,"price_subtotal":1150,"price_tax":172.5,"price_total":1322.5,"price_reduce_taxexcl":230,"price_reduce_taxinc":264.5,"purchase_price":120,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1150,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":8,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"}]},"message":"Order set as quotation successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Order not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "Only canceled orders can be set as quotation."}'
+        headers: []
+        description: 'Invalid state transition'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'admin/api/v1/sales/orders/{id}/toggle-lock'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Orders
+      subgroupDescription: 'Manage sales orders'
+      title: 'Toggle sale order lock'
+      description: 'Toggle lock status for a confirmed sale order'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"name":"SO\/1","state":"sale","invoice_status":"invoiced","client_order_ref":null,"origin":null,"reference":null,"date_order":"2026-01-07","validity_date":"2026-02-06","commitment_date":null,"currency_rate":0,"amount_untaxed":2440,"amount_tax":366,"amount_total":2806,"locked":true,"require_signature":false,"require_payment":false,"signed_by":null,"signed_on":null,"prepayment_percent":0,"note":"<p><\/p>","access_token":null,"partner_id":33,"partner_invoice_id":33,"partner_shipping_id":33,"user_id":1,"team_id":null,"company_id":1,"currency_id":1,"payment_term_id":2,"fiscal_position_id":null,"journal_id":null,"campaign_id":null,"utm_source_id":null,"medium_id":null,"warehouse_id":5,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00","deleted_at":null,"partner":{"id":33,"account_type":"individual","sub_type":"customer","name":"Lyle Holman","email":"lyle@holman.com","phone":"12121221212","mobile":"1212121215294","avatar":null,"avatar_url":null,"job_title":"Itaque ratione dicta tenetur omnis reiciendis quidem consequatur","website":"https:\/\/www.zecikapuleze.mobi","tax_id":"Esse dolorum quo vel animi fugiat ipsum dicta et","company_registry":"TEST COMPANY","reference":"Ea aliquid debitis m","is_active":true,"color":null,"street1":"Street 69","street2":"Reprehenderit eos saepe deserunt ut eu ea aliquam magnam saepe reprehenderit cum alias dicta amet ducimus saepe excepturi facere qui","city":"California","zip":"90006","country_id":233,"state_id":13,"parent_id":18,"title_id":1,"company_id":null,"industry_id":null,"user_id":2,"creator_id":null,"created_at":"2025-04-10T10:45:51.000000Z","updated_at":"2025-12-09T11:12:13.000000Z","deleted_at":null,"country":{"id":233,"name":"United States","code":"US","phone_code":"1","state_required":true,"zip_required":true,"currency_id":1,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"},"state":{"id":13,"name":"California","code":"CA","country_id":233,"created_at":"2025-04-07T12:34:34.000000Z","updated_at":"2025-04-07T12:34:34.000000Z"}},"lines":[{"id":1,"sort":1,"name":"Big Vision 4K Action Camera - Fisheye Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":210,"technical_price_unit":210,"discount":0,"price_subtotal":1050,"price_tax":157.5,"price_total":1207.5,"price_reduce_taxexcl":210,"price_reduce_taxinc":241.5,"purchase_price":100,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1050,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":2,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":2,"sort":2,"name":"Bass Blaze Waterproof Bluetooth Speaker - Blue","display_type":null,"product_uom_qty":4,"product_qty":4,"qty_delivered":4,"qty_invoiced":4,"qty_to_invoice":0,"product_packaging_qty":0.2,"price_unit":60,"technical_price_unit":60,"discount":0,"price_subtotal":240,"price_tax":36,"price_total":276,"price_reduce_taxexcl":60,"price_reduce_taxinc":69,"purchase_price":45,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":240,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":12,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":2,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"},{"id":3,"sort":3,"name":"Flim Rocket Mini Projector - Telecentric Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":230,"technical_price_unit":230,"discount":0,"price_subtotal":1150,"price_tax":172.5,"price_total":1322.5,"price_reduce_taxexcl":230,"price_reduce_taxinc":264.5,"purchase_price":120,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1150,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":8,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00"}]},"message":"Order lock state updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Order not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "Only sale orders can toggle lock state."}'
+        headers: []
+        description: 'Invalid state transition'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/sales/orders/{order_id}/lines'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: 'Order Lines'
+      subgroupDescription: 'Manage order line items'
+      title: 'List order lines'
+      description: 'Retrieve a paginated list of line items for a specific order'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      order_id:
+        custom: []
+        name: order_id
+        description: 'The order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      order_id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> product, linkedSaleOrderSale, uom, productPackaging, currency, orderPartner, salesman, warehouse, route, company, order'
+        required: false
+        example: product
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of line IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[product_id]':
+        custom: []
+        name: 'filter[product_id]'
+        description: 'Comma-separated list of product IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: '-id'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: product
+      sort: '-id'
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1,"sort":1,"name":"Big Vision 4K Action Camera - Fisheye Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":210,"technical_price_unit":210,"discount":0,"price_subtotal":1050,"price_tax":157.5,"price_total":1207.5,"price_reduce_taxexcl":210,"price_reduce_taxinc":241.5,"purchase_price":100,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1050,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":2,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00","product":{"id":2,"type":"goods","name":"Big Vision 4K Action Camera - Fisheye Lens","service_tracking":"none","reference":"Action-01-big-vision-4k-action-camera---fisheye-lens","barcode":null,"price":210,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":1,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:49:27.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null}},{"id":1,"sort":1,"name":"Big Vision 4K Action Camera - Fisheye Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":210,"technical_price_unit":210,"discount":0,"price_subtotal":1050,"price_tax":157.5,"price_total":1207.5,"price_reduce_taxexcl":210,"price_reduce_taxinc":241.5,"purchase_price":100,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1050,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":2,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00","product":{"id":2,"type":"goods","name":"Big Vision 4K Action Camera - Fisheye Lens","service_tracking":"none","reference":"Action-01-big-vision-4k-action-camera---fisheye-lens","barcode":null,"price":210,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":1,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:49:27.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null}}]}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/sales/orders/{order_id}/lines/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: 'Order Lines'
+      subgroupDescription: 'Manage order line items'
+      title: 'Show order line'
+      description: 'Retrieve a specific line item from an order'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      order_id:
+        custom: []
+        name: order_id
+        description: 'The order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      id:
+        custom: []
+        name: id
+        description: 'The order line ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      order_id: 1
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> product, linkedSaleOrderSale, uom, productPackaging, currency, orderPartner, salesman, warehouse, route, company, order'
+        required: false
+        example: product
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: product
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"sort":1,"name":"Big Vision 4K Action Camera - Fisheye Lens","display_type":null,"product_uom_qty":5,"product_qty":5,"qty_delivered":5,"qty_invoiced":5,"qty_to_invoice":0,"product_packaging_qty":0.5,"price_unit":210,"technical_price_unit":210,"discount":0,"price_subtotal":1050,"price_tax":157.5,"price_total":1207.5,"price_reduce_taxexcl":210,"price_reduce_taxinc":241.5,"purchase_price":100,"margin":0,"margin_percent":0,"untaxed_amount_invoiced":0,"untaxed_amount_to_invoice":1050,"state":"sale","invoice_status":"invoiced","qty_delivered_method":"stock_move","virtual_id":null,"linked_virtual_id":null,"is_downpayment":false,"is_expense":false,"customer_lead":0,"analytic_distribution":null,"order_id":1,"product_id":2,"linked_sale_order_sale_id":null,"product_uom_id":1,"product_packaging_id":1,"currency_id":1,"order_partner_id":33,"salesman_id":1,"warehouse_id":5,"route_id":null,"company_id":1,"created_at":"2026-01-07T11:12:56+00:00","updated_at":"2026-01-08T12:59:31+00:00","product":{"id":2,"type":"goods","name":"Big Vision 4K Action Camera - Fisheye Lens","service_tracking":"none","reference":"Action-01-big-vision-4k-action-camera---fisheye-lens","barcode":null,"price":210,"cost":100,"volume":0,"weight":1.2,"description":"<p>A high-quality 4k action camera designed for everyday use.<\/p><p>The <strong>4K Action Camera<\/strong> is crafted with premium materials, ensuring durability and functionality. Perfect for those who value quality and innovation in their everyday essentials.<\/p>","description_purchase":null,"description_sale":null,"enable_sales":false,"enable_purchase":false,"is_favorite":false,"is_configurable":false,"images":["01JR9QKPXFKP1S054PZDM17MEP.png","01JR9QKPXPX1TJKCH0DMZ29M12.png"],"sort":null,"parent_id":1,"uom_id":1,"uom_po_id":1,"category_id":11,"creator_id":1,"company_id":1,"created_at":"2025-04-08T03:49:27.000000Z","updated_at":"2025-09-23T07:28:33.000000Z","deleted_at":null}}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Order or order line not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/sales/orders/{order_id}/deliveries'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: 'Order Deliveries'
+      subgroupDescription: 'Manage sales order deliveries'
+      title: 'List order deliveries'
+      description: 'Retrieve a paginated list of deliveries for a specific order'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      order_id:
+        custom: []
+        name: order_id
+        description: 'The order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      order_id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> user, owner, operationType, sourceLocation, destinationLocation, backOrder, return, partner, company, creator, moves, moveLines'
+        required: false
+        example: 'partner,moves'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of delivery IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[state]':
+        custom: []
+        name: 'filter[state]'
+        description: 'Filter by delivery state'
+        required: false
+        example: assigned
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[move_type]':
+        custom: []
+        name: 'filter[move_type]'
+        description: 'Filter by move type'
+        required: false
+        example: incoming
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: '-created_at'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'partner,moves'
+      'filter[state]': assigned
+      'filter[move_type]': incoming
+      sort: '-created_at'
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1,"name":"WH\/INT\/1","origin":null,"move_type":"direct","state":"draft","is_favorite":false,"description":null,"has_deadline_issue":false,"is_printed":false,"is_locked":false,"deadline":null,"scheduled_at":"2025-04-10T12:10:18.000000Z","closed_at":null,"created_at":"2025-04-10T12:11:32.000000Z","updated_at":"2025-04-10T12:11:32.000000Z"},{"id":1,"name":"WH\/INT\/1","origin":null,"move_type":"direct","state":"draft","is_favorite":false,"description":null,"has_deadline_issue":false,"is_printed":false,"is_locked":false,"deadline":null,"scheduled_at":"2025-04-10T12:10:18.000000Z","closed_at":null,"created_at":"2025-04-10T12:11:32.000000Z","updated_at":"2025-04-10T12:11:32.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/sales/orders/{order_id}/invoices'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: 'Order Invoices'
+      subgroupDescription: 'Manage sales order invoices'
+      title: 'List order invoices'
+      description: 'Retrieve a paginated list of invoices for a specific order'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      order_id:
+        custom: []
+        name: order_id
+        description: 'The order ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      order_id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> campaign, journal, company, originPayment, taxCashBasisOriginMove, autoPostOrigin, invoicePaymentTerm, partner, commercialPartner, partnerShipping, partnerBank, fiscalPosition, currency, reversedEntry, invoiceUser, invoiceIncoterm, invoiceCashRounding, createdBy, source, medium, paymentMethodLine'
+        required: false
+        example: 'journal,partner'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of invoice IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[state]':
+        custom: []
+        name: 'filter[state]'
+        description: 'Filter by invoice state'
+        required: false
+        example: posted
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[payment_state]':
+        custom: []
+        name: 'filter[payment_state]'
+        description: 'Filter by payment state'
+        required: false
+        example: paid
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: '-created_at'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: 'journal,partner'
+      'filter[state]': posted
+      'filter[payment_state]': paid
+      sort: '-created_at'
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1,"sort":1,"journal_id":2,"company_id":1,"campaign_id":null,"tax_cash_basis_origin_move_id":null,"auto_post_origin_id":null,"origin_payment_id":null,"secure_sequence_number":null,"invoice_payment_term_id":null,"partner_id":41,"commercial_partner_id":41,"partner_shipping_id":41,"partner_bank_id":null,"fiscal_position_id":null,"currency_id":1,"reversed_entry_id":null,"invoice_user_id":null,"invoice_incoterm_id":null,"invoice_cash_rounding_id":null,"preferred_payment_method_line_id":null,"creator_id":1,"sequence_prefix":"BILL\/2026","access_token":null,"name":"BILL\/2026\/1","reference":null,"state":"draft","move_type":"in_invoice","auto_post":0,"inalterable_hash":null,"payment_reference":null,"qr_code_method":null,"payment_state":"not_paid","invoice_source_email":null,"invoice_partner_display_name":"Eden Hebert -Supplier","invoice_origin":"PO\/1","incoterm_location":null,"date":"2026-01-08T00:00:00.000000Z","auto_post_until":null,"invoice_date":null,"invoice_date_due":null,"delivery_date":null,"sending_data":null,"narration":null,"invoice_currency_rate":"1.0000","amount_untaxed":"35000.0000","amount_tax":"0.0000","amount_total":"35000.0000","amount_residual":"35000.0000","amount_untaxed_signed":"-35000.0000","amount_untaxed_in_currency_signed":"-35000.0000","amount_tax_signed":"0.0000","amount_total_signed":"-35000.0000","amount_total_in_currency_signed":"-35000.0000","amount_residual_signed":"-35000.0000","quick_edit_total_amount":null,"is_storno":0,"always_tax_exigible":0,"checked":false,"posted_before":0,"made_sequence_gap":0,"is_manually_modified":0,"is_move_sent":0,"source_id":null,"medium_id":null,"created_at":"2026-01-08T12:56:46.000000Z","updated_at":"2026-01-08T12:56:47.000000Z"},{"id":1,"sort":1,"journal_id":2,"company_id":1,"campaign_id":null,"tax_cash_basis_origin_move_id":null,"auto_post_origin_id":null,"origin_payment_id":null,"secure_sequence_number":null,"invoice_payment_term_id":null,"partner_id":41,"commercial_partner_id":41,"partner_shipping_id":41,"partner_bank_id":null,"fiscal_position_id":null,"currency_id":1,"reversed_entry_id":null,"invoice_user_id":null,"invoice_incoterm_id":null,"invoice_cash_rounding_id":null,"preferred_payment_method_line_id":null,"creator_id":1,"sequence_prefix":"BILL\/2026","access_token":null,"name":"BILL\/2026\/1","reference":null,"state":"draft","move_type":"in_invoice","auto_post":0,"inalterable_hash":null,"payment_reference":null,"qr_code_method":null,"payment_state":"not_paid","invoice_source_email":null,"invoice_partner_display_name":"Eden Hebert -Supplier","invoice_origin":"PO\/1","incoterm_location":null,"date":"2026-01-08T00:00:00.000000Z","auto_post_until":null,"invoice_date":null,"invoice_date_due":null,"delivery_date":null,"sending_data":null,"narration":null,"invoice_currency_rate":"1.0000","amount_untaxed":"35000.0000","amount_tax":"0.0000","amount_total":"35000.0000","amount_residual":"35000.0000","amount_untaxed_signed":"-35000.0000","amount_untaxed_in_currency_signed":"-35000.0000","amount_tax_signed":"0.0000","amount_total_signed":"-35000.0000","amount_total_in_currency_signed":"-35000.0000","amount_residual_signed":"-35000.0000","quick_edit_total_amount":null,"is_storno":0,"always_tax_exigible":0,"checked":false,"posted_before":0,"made_sequence_gap":0,"is_manually_modified":0,"is_move_sent":0,"source_id":null,"medium_id":null,"created_at":"2026-01-08T12:56:46.000000Z","updated_at":"2026-01-08T12:56:47.000000Z"}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: admin/api/v1/sales/tags
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Tags
+      subgroupDescription: 'Manage sales tags'
+      title: 'List tags'
+      description: 'Retrieve a paginated list of sales tags with filtering and sorting'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator'
+        required: false
+        example: creator
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[id]':
+        custom: []
+        name: 'filter[id]'
+        description: 'Comma-separated list of IDs to filter by'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      'filter[name]':
+        custom: []
+        name: 'filter[name]'
+        description: 'Filter by tag name (partial match)'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: 'Sort field'
+        required: true
+        example: name
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Page number'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: creator
+      sort: name
+      page: 1
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":null,"name":"adipisci quidem","color":"#4137f1","creator_id":848,"created_at":null,"updated_at":null},{"id":null,"name":"nostrum omnis","color":"#865450","creator_id":849,"created_at":null,"updated_at":null}],"links":{"first":"\/?page=1","last":"\/?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"\/?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"\/","per_page":10,"to":2,"total":2}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: admin/api/v1/sales/tags
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Tags
+      subgroupDescription: 'Manage sales tags'
+      title: 'Create tag'
+      description: 'Create a new sales tag'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Sales tag name (max 255 characters). Must not be greater than 255 characters.'
+        required: true
+        example: Urgent
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      color:
+        custom: []
+        name: color
+        description: 'Tag color in hex format (max 7 characters). Must not be greater than 7 characters.'
+        required: false
+        example: '#FF5733'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: Urgent
+      color: '#FF5733'
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: '{"data":{"id":null,"name":"eius et","color":"#076b61","creator_id":850,"created_at":null,"updated_at":null},"message":"Tag created successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field is required."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'admin/api/v1/sales/tags/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Tags
+      subgroupDescription: 'Manage sales tags'
+      title: 'Show tag'
+      description: 'Retrieve a specific sales tag by its ID'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The tag ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters:
+      include:
+        custom: []
+        name: include
+        description: 'Comma-separated list of relationships to include. </br></br><b>Available options:</b> creator'
+        required: false
+        example: creator
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      include: creator
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":null,"name":"adipisci quidem","color":"#4137f1","creator_id":851,"created_at":null,"updated_at":null}}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Tag not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'admin/api/v1/sales/tags/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Tags
+      subgroupDescription: 'Manage sales tags'
+      title: 'Update tag'
+      description: 'Update an existing sales tag'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The tag ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Sales tag name (max 255 characters). Must not be greater than 255 characters.'
+        required: false
+        example: Urgent
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      color:
+        custom: []
+        name: color
+        description: 'Tag color in hex format (max 7 characters). Must not be greater than 7 characters.'
+        required: false
+        example: '#FF5733'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: Urgent
+      color: '#FF5733'
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":null,"name":"eius et","color":"#076b61","creator_id":852,"created_at":null,"updated_at":null},"message":"Tag updated successfully."}'
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Tag not found'
+      -
+        custom: []
+        status: 422
+        content: '{"message": "The given data was invalid.", "errors": {"name": ["The name field must be a string."]}}'
+        headers: []
+        description: 'Validation error'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'admin/api/v1/sales/tags/{id}'
+    metadata:
+      custom: []
+      groupName: 'Sales API Management'
+      groupDescription: ''
+      subgroup: Tags
+      subgroupDescription: 'Manage sales tags'
+      title: 'Delete tag'
+      description: 'Delete a sales tag'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer Bearer {YOUR_AUTH_TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The tag ID'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message": "Tag deleted successfully."}'
+        headers: []
+        description: 'Tag deleted successfully'
+      -
+        custom: []
+        status: 401
+        content: '{"message": "Unauthenticated."}'
+        headers: []
+        description: Unauthenticated
+      -
+        custom: []
+        status: 404
+        content: '{"message": "Resource not found."}'
+        headers: []
+        description: 'Tag not found'
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null

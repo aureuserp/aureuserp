@@ -20,7 +20,9 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/.agents
 /.zed
-
+boost.json
+opencode.json
 /playwright-report
 /test-results
