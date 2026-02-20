@@ -11,7 +11,6 @@ use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
@@ -31,6 +30,7 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Oper
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Webkul\Account\Enums\JournalType;
 use Webkul\Account\Enums\PaymentStatus;
 use Webkul\Account\Enums\PaymentType;
@@ -164,9 +164,9 @@ class PaymentResource extends Resource
                                                 Select::make('currency_id')
                                                     ->label(__('accounts::filament/resources/payment.form.sections.fields.currency'))
                                                     ->relationship(
-                                                        'currency',
-                                                        'name',
-                                                        modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                                        name: 'currency',
+                                                        titleAttribute: 'name',
+                                                        modifyQueryUsing: fn (Builder $query) => $query->active(),
                                                     )
                                                     ->required()
                                                     ->searchable()

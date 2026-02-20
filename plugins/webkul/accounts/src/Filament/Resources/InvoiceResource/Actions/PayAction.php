@@ -239,9 +239,9 @@ class PayAction extends Action
                                     Select::make('currency_id')
                                         ->label(__('accounts::filament/resources/invoice/actions/pay-action.form.fields.currency'))
                                         ->relationship(
-                                            'currency',
-                                            'name',
-                                            modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                            name: 'currency',
+                                            titleAttribute: 'name',
+                                            modifyQueryUsing: fn (Builder $query) => $query->active(),
                                         )
                                         ->default(function ($record, Get $get) {
                                             $journal = Journal::find($get('journal_id'));

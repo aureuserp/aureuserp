@@ -92,9 +92,9 @@ class JournalResource extends Resource
                                                                 Select::make('currency_id')
                                                                     ->label(__('accounts::filament/resources/journal.form.tabs.journal-entries.field-set.accounting-information.fields.currency'))
                                                                     ->relationship(
-                                                                        'currency',
-                                                                        'name',
-                                                                        modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                                                        name: 'currency',
+                                                                        titleAttribute: 'name',
+                                                                        modifyQueryUsing: fn (Builder $query) => $query->active(),
                                                                     )
                                                                     ->preload()
                                                                     ->searchable()

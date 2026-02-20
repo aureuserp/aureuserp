@@ -179,16 +179,16 @@ class CompanyResource extends Resource
                                     ->schema([
                                         Select::make('currency_id')
                                             ->relationship(
-                                                'currency',
-                                                'full_name',
-                                                modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                                name: 'currency',
+                                                titleAttribute: 'full_name',
+                                                modifyQueryUsing: fn (Builder $query) => $query->active(),
                                             )
                                             ->label(__('security::filament/resources/company.form.sections.additional-information.fields.default-currency'))
                                             ->searchable()
                                             ->required()
                                             ->live()
                                             ->preload()
-                                            ->default(Currency::first()?->id)
+                                            ->default(Currency::active()->first()?->id)
                                             ->createOptionForm([
                                                 Section::make()
                                                     ->schema([

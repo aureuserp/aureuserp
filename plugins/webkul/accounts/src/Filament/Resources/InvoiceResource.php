@@ -253,9 +253,9 @@ class InvoiceResource extends Resource
                                                 Select::make('currency_id')
                                                     ->label(__('accounts::filament/resources/invoice.form.section.general.fields.currency'))
                                                     ->relationship(
-                                                        'currency',
-                                                        'name',
-                                                        modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                                        name: 'currency',
+                                                        titleAttribute: 'name',
+                                                        modifyQueryUsing: fn (Builder $query) => $query->active(),
                                                     )
                                                     ->required()
                                                     ->searchable()

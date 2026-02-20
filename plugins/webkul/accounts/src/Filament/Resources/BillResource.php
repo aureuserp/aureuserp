@@ -68,8 +68,8 @@ use Webkul\Account\Filament\Resources\BillResource\Pages\EditBill;
 use Webkul\Account\Filament\Resources\BillResource\Pages\ListBills;
 use Webkul\Account\Filament\Resources\BillResource\Pages\ViewBill;
 use Webkul\Account\Livewire\InvoiceSummary;
-use Webkul\Account\Models\CashRounding;
 use Webkul\Account\Models\Bill;
+use Webkul\Account\Models\CashRounding;
 use Webkul\Account\Models\MoveLine;
 use Webkul\Account\Models\Partner;
 use Webkul\Account\Models\Product;
@@ -271,9 +271,9 @@ class BillResource extends Resource
                                                 Select::make('currency_id')
                                                     ->label(__('accounts::filament/resources/bill.form.section.general.fields.currency'))
                                                     ->relationship(
-                                                        'currency',
-                                                        'name',
-                                                        modifyQueryUsing: fn (Builder $query) => $query->where('active', 1),
+                                                        name: 'currency',
+                                                        titleAttribute: 'name',
+                                                        modifyQueryUsing: fn (Builder $query) => $query->active(),
                                                     )
                                                     ->required()
                                                     ->searchable()
