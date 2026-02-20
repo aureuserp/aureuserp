@@ -25,14 +25,18 @@ class CurrencyRequest extends FormRequest
 
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
+        $requiredRule = $isUpdate
+            ? ['sometimes', 'required']
+            : ['required'];
+
         $rules = [
-            'name'           => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255', 'unique:currencies,name'.($currencyId ? ','.$currencyId : '')],
-            'symbol'         => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:10'],
+            'name'           => [...$requiredRule, 'string', 'max:255', 'unique:currencies,name'.($currencyId ? ','.$currencyId : '')],
+            'symbol'         => [...$requiredRule, 'string', 'max:10'],
             'iso_numeric'    => ['nullable', 'string', 'max:3'],
-            'decimal_places' => [($isUpdate ? 'sometimes|required' : 'required'), 'integer', 'min:0', 'max:10'],
+            'decimal_places' => [...$requiredRule, 'integer', 'min:0', 'max:10'],
             'full_name'      => ['nullable', 'string', 'max:255'],
             'rounding'       => ['nullable', 'numeric', 'min:0'],
-            'active'         => [($isUpdate ? 'sometimes|required' : 'required'), 'boolean'],
+            'active'         => [...$requiredRule, 'boolean'],
         ];
 
         return $rules;

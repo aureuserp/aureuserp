@@ -23,10 +23,14 @@ class StateRequest extends FormRequest
     {
         $isUpdate = $this->isMethod('PUT') || $this->isMethod('PATCH');
 
+        $requiredRule = $isUpdate
+            ? ['sometimes', 'required']
+            : ['required'];
+
         $rules = [
-            'name'       => [($isUpdate ? 'sometimes|required' : 'required'), 'string', 'max:255'],
+            'name'       => [...$requiredRule, 'string', 'max:255'],
             'code'       => ['nullable', 'string', 'max:50'],
-            'country_id' => [($isUpdate ? 'sometimes|required' : 'required'), 'exists:countries,id'],
+            'country_id' => [...$requiredRule, 'exists:countries,id'],
         ];
 
         return $rules;
@@ -40,15 +44,15 @@ class StateRequest extends FormRequest
         return [
             'name'       => [
                 'description' => 'State/Province name',
-                'example' => 'California'
+                'example'     => 'California',
             ],
             'code'       => [
                 'description' => 'State/Province code',
-                'example' => 'CA'
+                'example'     => 'CA',
             ],
             'country_id' => [
                 'description' => 'Country ID',
-                'example' => 233
+                'example'     => 233,
             ],
         ];
     }
