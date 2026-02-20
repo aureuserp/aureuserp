@@ -114,6 +114,10 @@ class OrderResource extends Resource
                             unset($options[OrderState::DONE->value]);
                         }
 
+                        if (! $record || $record->state !== OrderState::TO_APPROVE) {
+                            unset($options[OrderState::TO_APPROVE->value]);
+                        }
+
                         return $options;
                     })
                     ->default(OrderState::DRAFT)
